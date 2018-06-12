@@ -50,7 +50,7 @@ import UIKit
     /**
      Sets the track parameters
      
-     - parameter trackParams: the track parameters
+     - parameter params: the track parameters
      */
     @objc public func ITESetTrackParams(_ params:IterableNotificationMetadata?) {
         trackParams = params

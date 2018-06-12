@@ -30,7 +30,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
 - (void)setUp {
     [super setUp];
     
-    [IterableAPI sharedInstanceWithApiKey:@"" andEmail:@"" launchOptions:nil];
+    [IterableAPI createSharedInstanceWithApiKey:@"" email:@"" userId:nil launchOptions:nil useCustomLaunchOptions:nil];
 }
 
 - (void)tearDown {
@@ -125,9 +125,9 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     XCTestExpectation *expectation = [self expectationWithDescription:@"High Expectations"];
     NSURL *normalLink = [NSURL URLWithString:iterableRewriteURL];
     ITEActionBlock uBlock = ^(NSString* redirectUrl) {
-        XCTAssertEqualObjects(IterableAPI.sharedInstance.attributionInfo.campaignId, campaignId);
-        XCTAssertEqualObjects(IterableAPI.sharedInstance.attributionInfo.templateId, templateId);
-        XCTAssertEqualObjects(IterableAPI.sharedInstance.attributionInfo.messageId, messageId);
+        XCTAssertEqualObjects(IterableAPI.instance.attributionInfo.campaignId, campaignId);
+        XCTAssertEqualObjects(IterableAPI.instance.attributionInfo.templateId, templateId);
+        XCTAssertEqualObjects(IterableAPI.instance.attributionInfo.messageId, messageId);
         [expectation fulfill];
     };
     [IterableAPI getAndTrackDeeplink:normalLink callbackBlock:uBlock];
@@ -192,8 +192,8 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
 }
 
 - (void)testURLQueryParamRewrite {
-    [IterableAPI sharedInstanceWithApiKey:@"" andEmail:@"" launchOptions:nil];
-    
+    [IterableAPI createSharedInstanceWithApiKey:@"" email:@"" userId:nil launchOptions:nil useCustomLaunchOptions:nil];
+
     NSCharacterSet* set = [NSCharacterSet URLQueryAllowedCharacterSet];
     
     NSMutableString* strSet =[NSMutableString string];
@@ -211,20 +211,20 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     }
     
     //Test full set of possible URLQueryAllowedCharacterSet characters
-    NSString* encodedSet = [[IterableAPI sharedInstance] encodeURLParam:strSet];
+    NSString* encodedSet = [[IterableAPI instance] encodeURLParam:strSet];
     XCTAssertNotEqual(encodedSet, strSet);
     XCTAssert([encodedSet isEqualToString:@"!$&'()*%2B,-./0123456789:;=?@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz~"]);
     
-    NSString* encoded = [[IterableAPI sharedInstance] encodeURLParam:@"you+me@iterable.com"];
+    NSString* encoded = [[IterableAPI instance] encodeURLParam:@"you+me@iterable.com"];
     XCTAssertNotEqual(encoded, @"you+me@iterable.com");
     XCTAssert([encoded isEqualToString:@"you%2Bme@iterable.com"]);
     
-    NSString* emptySet = [[IterableAPI sharedInstance] encodeURLParam:@""];
+    NSString* emptySet = [[IterableAPI instance] encodeURLParam:@""];
     XCTAssertEqual(emptySet, @"");
     XCTAssert([emptySet isEqualToString:@""]);
     
-    NSString* nilSet = [[IterableAPI sharedInstance] encodeURLParam:nil];
-    XCTAssertEqualObjects(nilSet, @"");
+    NSString* nilSet = [[IterableAPI instance] encodeURLParam:nil];
+    XCTAssertEqualObjects(nilSet, nil);
 }
 
 @end

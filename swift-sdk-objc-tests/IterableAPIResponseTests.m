@@ -23,7 +23,7 @@ static CGFloat const IterableResponseExpectationTimeout = 1.0;
 
 - (void)setUp {
     [super setUp];
-    [IterableAPI sharedInstanceWithApiKey:@"" andEmail:@"" launchOptions:nil];
+    [IterableAPI createSharedInstanceWithApiKey:@"" email:@"" userId:nil launchOptions:nil useCustomLaunchOptions:nil];
 }
 
 - (void)tearDown {
@@ -56,8 +56,8 @@ static CGFloat const IterableResponseExpectationTimeout = 1.0;
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"onSuccess is called"];
     
-    NSURLRequest *request = [[IterableAPI sharedInstance] createPostRequestForAction:@"" withArgs:@{}];
-    [[IterableAPI sharedInstance] sendRequest:request onSuccess:^(NSDictionary * _Nonnull data) {
+    NSURLRequest *request = [[IterableAPI instance] createPostRequestForAction:@"" withArgs:@{}];
+    [[IterableAPI instance] sendRequest:request onSuccess:^(NSDictionary * _Nonnull data) {
         [expectation fulfill];
         XCTAssert([data isEqualToDictionary:responseData]);
     } onFailure:nil];
@@ -69,8 +69,8 @@ static CGFloat const IterableResponseExpectationTimeout = 1.0;
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"onFailure is called"];
     
-    NSURLRequest *request = [[IterableAPI sharedInstance] createPostRequestForAction:@"" withArgs:@{}];
-    [[IterableAPI sharedInstance] sendRequest:request onSuccess:nil onFailure:^(NSString * _Nonnull reason, NSData * _Nullable data) {
+    NSURLRequest *request = [[IterableAPI instance] createPostRequestForAction:@"" withArgs:@{}];
+    [[IterableAPI instance] sendRequest:request onSuccess:nil onFailure:^(NSString * _Nonnull reason, NSData * _Nullable data) {
         [expectation fulfill];
         XCTAssertEqualObjects(reason, @"No data received");
     }];
@@ -82,8 +82,8 @@ static CGFloat const IterableResponseExpectationTimeout = 1.0;
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"onFailure is called"];
     
-    NSURLRequest *request = [[IterableAPI sharedInstance] createPostRequestForAction:@"" withArgs:@{}];
-    [[IterableAPI sharedInstance] sendRequest:request onSuccess:nil onFailure:^(NSString * _Nonnull reason, NSData * _Nullable data) {
+    NSURLRequest *request = [[IterableAPI instance] createPostRequestForAction:@"" withArgs:@{}];
+    [[IterableAPI instance] sendRequest:request onSuccess:nil onFailure:^(NSString * _Nonnull reason, NSData * _Nullable data) {
         [expectation fulfill];
         XCTAssert([reason containsString:@"Could not parse json"]);
     }];
@@ -95,8 +95,8 @@ static CGFloat const IterableResponseExpectationTimeout = 1.0;
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"onFailure is called"];
     
-    NSURLRequest *request = [[IterableAPI sharedInstance] createPostRequestForAction:@"" withArgs:@{}];
-    [[IterableAPI sharedInstance] sendRequest:request onSuccess:nil onFailure:^(NSString * _Nonnull reason, NSData * _Nullable data) {
+    NSURLRequest *request = [[IterableAPI instance] createPostRequestForAction:@"" withArgs:@{}];
+    [[IterableAPI instance] sendRequest:request onSuccess:nil onFailure:^(NSString * _Nonnull reason, NSData * _Nullable data) {
         [expectation fulfill];
         XCTAssert([reason containsString:@"Invalid Request"]);
     }];
@@ -108,8 +108,8 @@ static CGFloat const IterableResponseExpectationTimeout = 1.0;
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"onFailure is called"];
     
-    NSURLRequest *request = [[IterableAPI sharedInstance] createPostRequestForAction:@"" withArgs:@{}];
-    [[IterableAPI sharedInstance] sendRequest:request onSuccess:nil onFailure:^(NSString * _Nonnull reason, NSData * _Nullable data) {
+    NSURLRequest *request = [[IterableAPI instance] createPostRequestForAction:@"" withArgs:@{}];
+    [[IterableAPI instance] sendRequest:request onSuccess:nil onFailure:^(NSString * _Nonnull reason, NSData * _Nullable data) {
         [expectation fulfill];
         XCTAssertEqualObjects(reason, @"Test error");
     }];
@@ -121,8 +121,8 @@ static CGFloat const IterableResponseExpectationTimeout = 1.0;
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"onFailure is called"];
     
-    NSURLRequest *request = [[IterableAPI sharedInstance] createPostRequestForAction:@"" withArgs:@{}];
-    [[IterableAPI sharedInstance] sendRequest:request onSuccess:nil onFailure:^(NSString * _Nonnull reason, NSData * _Nullable data) {
+    NSURLRequest *request = [[IterableAPI instance] createPostRequestForAction:@"" withArgs:@{}];
+    [[IterableAPI instance] sendRequest:request onSuccess:nil onFailure:^(NSString * _Nonnull reason, NSData * _Nullable data) {
         [expectation fulfill];
         XCTAssertEqualObjects(reason, @"Invalid API Key");
     }];
@@ -134,8 +134,8 @@ static CGFloat const IterableResponseExpectationTimeout = 1.0;
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"onFailure is called"];
     
-    NSURLRequest *request = [[IterableAPI sharedInstance] createPostRequestForAction:@"" withArgs:@{}];
-    [[IterableAPI sharedInstance] sendRequest:request onSuccess:nil onFailure:^(NSString * _Nonnull reason, NSData * _Nullable data) {
+    NSURLRequest *request = [[IterableAPI instance] createPostRequestForAction:@"" withArgs:@{}];
+    [[IterableAPI instance] sendRequest:request onSuccess:nil onFailure:^(NSString * _Nonnull reason, NSData * _Nullable data) {
         [expectation fulfill];
         XCTAssertEqualObjects(reason, @"Internal Server Error");
     }];
@@ -147,8 +147,8 @@ static CGFloat const IterableResponseExpectationTimeout = 1.0;
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"onFailure is called"];
     
-    NSURLRequest *request = [[IterableAPI sharedInstance] createPostRequestForAction:@"" withArgs:@{}];
-    [[IterableAPI sharedInstance] sendRequest:request onSuccess:nil onFailure:^(NSString * _Nonnull reason, NSData * _Nullable data) {
+    NSURLRequest *request = [[IterableAPI instance] createPostRequestForAction:@"" withArgs:@{}];
+    [[IterableAPI instance] sendRequest:request onSuccess:nil onFailure:^(NSString * _Nonnull reason, NSData * _Nullable data) {
         [expectation fulfill];
         XCTAssert([reason containsString:@"Received non-200 response"]);
     }];
@@ -165,8 +165,8 @@ static CGFloat const IterableResponseExpectationTimeout = 1.0;
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"onFailure is called"];
     
-    NSURLRequest *request = [[IterableAPI sharedInstance] createPostRequestForAction:@"" withArgs:@{}];
-    [[IterableAPI sharedInstance] sendRequest:request onSuccess:nil onFailure:^(NSString * _Nonnull reason, NSData * _Nullable data) {
+    NSURLRequest *request = [[IterableAPI instance] createPostRequestForAction:@"" withArgs:@{}];
+    [[IterableAPI instance] sendRequest:request onSuccess:nil onFailure:^(NSString * _Nonnull reason, NSData * _Nullable data) {
         [expectation fulfill];
         XCTAssert([reason containsString:@"NSURLErrorDomain"]);
     }];
@@ -183,9 +183,9 @@ static CGFloat const IterableResponseExpectationTimeout = 1.0;
     
     XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"onFailure is called"];
     
-    NSMutableURLRequest *request = (NSMutableURLRequest *) [[IterableAPI sharedInstance] createPostRequestForAction:@"" withArgs:@{}];
+    NSMutableURLRequest *request = (NSMutableURLRequest *) [[IterableAPI instance] createPostRequestForAction:@"" withArgs:@{}];
     request.timeoutInterval = 0.01;
-    [[IterableAPI sharedInstance] sendRequest:request onSuccess:nil onFailure:^(NSString * _Nonnull reason, NSData * _Nullable data) {
+    [[IterableAPI instance] sendRequest:request onSuccess:nil onFailure:^(NSString * _Nonnull reason, NSData * _Nullable data) {
         [expectation fulfill];
         XCTAssert([reason containsString:@"timed out"]);
     }];

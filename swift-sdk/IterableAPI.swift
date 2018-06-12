@@ -108,7 +108,7 @@ import Foundation
     /// - parameter launchOptions:          launchOptions from application:didFinishLaunchingWithOptions or custom launchOptions
     /// - parameter useCustomLaunchOptions: Whether or not to use the custom launchOption without the UIApplicationLaunchOptionsRemoteNotificationKey
     /// - returns: an instance of IterableAPI
-    @objc public static func createSharedInstance(withApiKey apiKey: String,
+    @objc @discardableResult public static func createSharedInstance(withApiKey apiKey: String,
                                                   email: String? = nil,
                                                   userId: String? = nil,
                                                   launchOptions: Dictionary<AnyHashable, Any>? = nil,

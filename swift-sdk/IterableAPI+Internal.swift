@@ -111,7 +111,10 @@ extension IterableAPI {
         sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
     }
     
-    @objc public func encodeURLParam(_ paramValue: String) -> String? {
+    @objc public func encodeURLParam(_ paramValue: String?) -> String? {
+        guard let paramValue = paramValue else {
+            return nil
+        }
         return paramValue.addingPercentEncoding(withAllowedCharacters: encodedCharacterSet)
     }
     
