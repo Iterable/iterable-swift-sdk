@@ -1,0 +1,12 @@
+.DS_Store
+xcuserdata
+
+*~
+Podfile.lock
+Pods/
+
+*.xccheckout
+.idea/
+
+scripts/
+
