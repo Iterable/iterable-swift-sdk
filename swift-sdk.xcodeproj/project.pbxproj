@@ -30,6 +30,8 @@
 		AC72A0D220CF4D12004D7997 /* IterableUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0AD20CF4C16004D7997 /* IterableUtil.swift */; };
 		AC72A0D320CF4D19004D7997 /* IterableAPI+Internal.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0BC20CF4C98004D7997 /* IterableAPI+Internal.swift */; };
 		AC72A0D420CF4D19004D7997 /* IterableDeeplinkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0BD20CF4C98004D7997 /* IterableDeeplinkManager.swift */; };
+		AC72A0E220CF5713004D7997 /* ITBNotificationServiceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0E120CF5712004D7997 /* ITBNotificationServiceExtension.swift */; };
+		AC72A0E320CF5764004D7997 /* ITBConsts.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0BE20CF4CB8004D7997 /* ITBConsts.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +71,9 @@
 		AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableActionRunner.swift; sourceTree = "<group>"; };
 		AC72A0C520CF4CB9004D7997 /* IterableAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPI.swift; sourceTree = "<group>"; };
 		AC72A0C620CF4CB9004D7997 /* IterableAppIntegration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAppIntegration.swift; sourceTree = "<group>"; };
+		AC72A0D920CF568F004D7997 /* notification-extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "notification-extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AC72A0DD20CF568F004D7997 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AC72A0E120CF5712004D7997 /* ITBNotificationServiceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ITBNotificationServiceExtension.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +92,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AC72A0D620CF568F004D7997 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -94,16 +106,8 @@
 			isa = PBXGroup;
 			children = (
 				AC2263E120CF49B8009800EB /* swift-sdk */,
-				AC72A0C120CF4CB8004D7997 /* CommerceItem.swift */,
-				AC72A0BE20CF4CB8004D7997 /* ITBConsts.swift */,
-				AC72A0BF20CF4CB8004D7997 /* IterableAction.swift */,
-				AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */,
-				AC72A0C520CF4CB9004D7997 /* IterableAPI.swift */,
-				AC72A0C320CF4CB8004D7997 /* IterableAPI+Deprecated.swift */,
-				AC72A0C620CF4CB9004D7997 /* IterableAppIntegration.swift */,
-				AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */,
-				AC72A0C220CF4CB8004D7997 /* IterableNotificationMetadata.swift */,
 				AC2263EC20CF49B8009800EB /* swift-sdkTests */,
+				AC72A0DA20CF568F004D7997 /* notification-extension */,
 				AC2263E020CF49B8009800EB /* Products */,
 			);
 			sourceTree = "<group>";
@@ -113,6 +117,7 @@
 			children = (
 				AC2263DF20CF49B8009800EB /* IterableSDK.framework */,
 				AC2263E820CF49B8009800EB /* swift-sdkTests.xctest */,
+				AC72A0D920CF568F004D7997 /* notification-extension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -125,6 +130,15 @@
 				AC72A0AC20CF4C08004D7997 /* Util */,
 				AC2263FA20CF4B84009800EB /* InApp Notifications */,
 				AC2263F920CF4B63009800EB /* Helper Files */,
+				AC72A0BE20CF4CB8004D7997 /* ITBConsts.swift */,
+				AC72A0BF20CF4CB8004D7997 /* IterableAction.swift */,
+				AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */,
+				AC72A0C520CF4CB9004D7997 /* IterableAPI.swift */,
+				AC72A0C320CF4CB8004D7997 /* IterableAPI+Deprecated.swift */,
+				AC72A0C620CF4CB9004D7997 /* IterableAppIntegration.swift */,
+				AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */,
+				AC72A0C220CF4CB8004D7997 /* IterableNotificationMetadata.swift */,
+				AC72A0C120CF4CB8004D7997 /* CommerceItem.swift */,
 			);
 			path = "swift-sdk";
 			sourceTree = "<group>";
@@ -186,6 +200,15 @@
 			name = Internal;
 			sourceTree = "<group>";
 		};
+		AC72A0DA20CF568F004D7997 /* notification-extension */ = {
+			isa = PBXGroup;
+			children = (
+				AC72A0E120CF5712004D7997 /* ITBNotificationServiceExtension.swift */,
+				AC72A0DD20CF568F004D7997 /* Info.plist */,
+			);
+			path = "notification-extension";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -239,6 +262,23 @@
 			productReference = AC2263E820CF49B8009800EB /* swift-sdkTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		AC72A0D820CF568F004D7997 /* notification-extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AC72A0DE20CF568F004D7997 /* Build configuration list for PBXNativeTarget "notification-extension" */;
+			buildPhases = (
+				AC72A0D520CF568F004D7997 /* Sources */,
+				AC72A0D620CF568F004D7997 /* Frameworks */,
+				AC72A0D720CF568F004D7997 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "notification-extension";
+			productName = "notification-extension";
+			productReference = AC72A0D920CF568F004D7997 /* notification-extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -253,6 +293,9 @@
 						CreatedOnToolsVersion = 9.4;
 					};
 					AC2263E720CF49B8009800EB = {
+						CreatedOnToolsVersion = 9.4;
+					};
+					AC72A0D820CF568F004D7997 = {
 						CreatedOnToolsVersion = 9.4;
 					};
 				};
@@ -271,6 +314,7 @@
 			targets = (
 				AC2263DE20CF49B8009800EB /* swift-sdk */,
 				AC2263E720CF49B8009800EB /* swift-sdkTests */,
+				AC72A0D820CF568F004D7997 /* notification-extension */,
 			);
 		};
 /* End PBXProject section */
@@ -284,6 +328,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		AC2263E620CF49B8009800EB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AC72A0D720CF568F004D7997 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -322,6 +373,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC2263EE20CF49B8009800EB /* swift_sdkTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AC72A0D520CF568F004D7997 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AC72A0E220CF5713004D7997 /* ITBNotificationServiceExtension.swift in Sources */,
+				AC72A0E320CF5764004D7997 /* ITBConsts.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -550,6 +610,44 @@
 			};
 			name = Release;
 		};
+		AC72A0DF20CF568F004D7997 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = BP98Z28R86;
+				INFOPLIST_FILE = "notification-extension/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "iterable.notification-extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		AC72A0E020CF568F004D7997 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = BP98Z28R86;
+				INFOPLIST_FILE = "notification-extension/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "iterable.notification-extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -576,6 +674,15 @@
 			buildConfigurations = (
 				AC2263F720CF49B8009800EB /* Debug */,
 				AC2263F820CF49B8009800EB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AC72A0DE20CF568F004D7997 /* Build configuration list for PBXNativeTarget "notification-extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC72A0DF20CF568F004D7997 /* Debug */,
+				AC72A0E020CF568F004D7997 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
