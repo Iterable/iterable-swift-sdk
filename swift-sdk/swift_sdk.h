@@ -16,4 +16,6 @@ FOUNDATION_EXPORT const unsigned char swift_sdkVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <swift_sdk/PublicHeader.h>
 
-
+#import <swift_sdk/IterableConstants.h>
+#import <swift_sdk/IterableDateUtil.h>
+#import <swift_sdk/NSData+Conversion.h>

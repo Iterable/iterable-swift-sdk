@@ -10,6 +10,26 @@
 		AC2263E920CF49B8009800EB /* swift_sdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2263DF20CF49B8009800EB /* swift_sdk.framework */; };
 		AC2263EE20CF49B8009800EB /* swift_sdkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2263ED20CF49B8009800EB /* swift_sdkTests.swift */; };
 		AC2263F020CF49B8009800EB /* swift_sdk.h in Headers */ = {isa = PBXBuildFile; fileRef = AC2263E220CF49B8009800EB /* swift_sdk.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AC72A0B520CF4C49004D7997 /* IterableConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = AC72A0B120CF4C32004D7997 /* IterableConstants.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AC72A0B620CF4C53004D7997 /* IterableConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0B420CF4C32004D7997 /* IterableConstants.m */; };
+		AC72A0B720CF4C5F004D7997 /* IterableDateUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = AC72A0B020CF4C31004D7997 /* IterableDateUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AC72A0B820CF4C6C004D7997 /* IterableDateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0B220CF4C32004D7997 /* IterableDateUtil.m */; };
+		AC72A0B920CF4C79004D7997 /* NSData+Conversion.h in Headers */ = {isa = PBXBuildFile; fileRef = AC72A0B320CF4C32004D7997 /* NSData+Conversion.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AC72A0BA20CF4C83004D7997 /* NSData+Conversion.m in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0AF20CF4C31004D7997 /* NSData+Conversion.m */; };
+		AC72A0C720CF4CE2004D7997 /* CommerceItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C120CF4CB8004D7997 /* CommerceItem.swift */; };
+		AC72A0C820CF4CE2004D7997 /* ITBConsts.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0BE20CF4CB8004D7997 /* ITBConsts.swift */; };
+		AC72A0C920CF4CE2004D7997 /* IterableAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0BF20CF4CB8004D7997 /* IterableAction.swift */; };
+		AC72A0CA20CF4CE2004D7997 /* IterableActionRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */; };
+		AC72A0CB20CF4CE2004D7997 /* IterableAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C520CF4CB9004D7997 /* IterableAPI.swift */; };
+		AC72A0CC20CF4CE2004D7997 /* IterableAPI+Deprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C320CF4CB8004D7997 /* IterableAPI+Deprecated.swift */; };
+		AC72A0CD20CF4CE2004D7997 /* IterableAppIntegration.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C620CF4CB9004D7997 /* IterableAppIntegration.swift */; };
+		AC72A0CE20CF4CE2004D7997 /* IterableAttributionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */; };
+		AC72A0CF20CF4CE2004D7997 /* IterableNotificationMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C220CF4CB8004D7997 /* IterableNotificationMetadata.swift */; };
+		AC72A0D020CF4D0B004D7997 /* IterableInAppHTMLViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0AB20CF4BEB004D7997 /* IterableInAppHTMLViewController.swift */; };
+		AC72A0D120CF4D0B004D7997 /* IterableInAppManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0AA20CF4BEB004D7997 /* IterableInAppManager.swift */; };
+		AC72A0D220CF4D12004D7997 /* IterableUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0AD20CF4C16004D7997 /* IterableUtil.swift */; };
+		AC72A0D320CF4D19004D7997 /* IterableAPI+Internal.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0BC20CF4C98004D7997 /* IterableAPI+Internal.swift */; };
+		AC72A0D420CF4D19004D7997 /* IterableDeeplinkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0BD20CF4C98004D7997 /* IterableDeeplinkManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,6 +49,26 @@
 		AC2263E820CF49B8009800EB /* swift-sdkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "swift-sdkTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC2263ED20CF49B8009800EB /* swift_sdkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = swift_sdkTests.swift; sourceTree = "<group>"; };
 		AC2263EF20CF49B8009800EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AC72A0AA20CF4BEB004D7997 /* IterableInAppManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInAppManager.swift; sourceTree = "<group>"; };
+		AC72A0AB20CF4BEB004D7997 /* IterableInAppHTMLViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInAppHTMLViewController.swift; sourceTree = "<group>"; };
+		AC72A0AD20CF4C16004D7997 /* IterableUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableUtil.swift; sourceTree = "<group>"; };
+		AC72A0AF20CF4C31004D7997 /* NSData+Conversion.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSData+Conversion.m"; sourceTree = "<group>"; };
+		AC72A0B020CF4C31004D7997 /* IterableDateUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IterableDateUtil.h; sourceTree = "<group>"; };
+		AC72A0B120CF4C32004D7997 /* IterableConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IterableConstants.h; sourceTree = "<group>"; };
+		AC72A0B220CF4C32004D7997 /* IterableDateUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IterableDateUtil.m; sourceTree = "<group>"; };
+		AC72A0B320CF4C32004D7997 /* NSData+Conversion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSData+Conversion.h"; sourceTree = "<group>"; };
+		AC72A0B420CF4C32004D7997 /* IterableConstants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IterableConstants.m; sourceTree = "<group>"; };
+		AC72A0BC20CF4C98004D7997 /* IterableAPI+Internal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IterableAPI+Internal.swift"; sourceTree = "<group>"; };
+		AC72A0BD20CF4C98004D7997 /* IterableDeeplinkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableDeeplinkManager.swift; sourceTree = "<group>"; };
+		AC72A0BE20CF4CB8004D7997 /* ITBConsts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ITBConsts.swift; sourceTree = "<group>"; };
+		AC72A0BF20CF4CB8004D7997 /* IterableAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAction.swift; sourceTree = "<group>"; };
+		AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAttributionInfo.swift; sourceTree = "<group>"; };
+		AC72A0C120CF4CB8004D7997 /* CommerceItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommerceItem.swift; sourceTree = "<group>"; };
+		AC72A0C220CF4CB8004D7997 /* IterableNotificationMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableNotificationMetadata.swift; sourceTree = "<group>"; };
+		AC72A0C320CF4CB8004D7997 /* IterableAPI+Deprecated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IterableAPI+Deprecated.swift"; sourceTree = "<group>"; };
+		AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableActionRunner.swift; sourceTree = "<group>"; };
+		AC72A0C520CF4CB9004D7997 /* IterableAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPI.swift; sourceTree = "<group>"; };
+		AC72A0C620CF4CB9004D7997 /* IterableAppIntegration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAppIntegration.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +94,15 @@
 			isa = PBXGroup;
 			children = (
 				AC2263E120CF49B8009800EB /* swift-sdk */,
+				AC72A0C120CF4CB8004D7997 /* CommerceItem.swift */,
+				AC72A0BE20CF4CB8004D7997 /* ITBConsts.swift */,
+				AC72A0BF20CF4CB8004D7997 /* IterableAction.swift */,
+				AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */,
+				AC72A0C520CF4CB9004D7997 /* IterableAPI.swift */,
+				AC72A0C320CF4CB8004D7997 /* IterableAPI+Deprecated.swift */,
+				AC72A0C620CF4CB9004D7997 /* IterableAppIntegration.swift */,
+				AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */,
+				AC72A0C220CF4CB8004D7997 /* IterableNotificationMetadata.swift */,
 				AC2263EC20CF49B8009800EB /* swift-sdkTests */,
 				AC2263E020CF49B8009800EB /* Products */,
 			);
@@ -71,8 +120,11 @@
 		AC2263E120CF49B8009800EB /* swift-sdk */ = {
 			isa = PBXGroup;
 			children = (
-				AC2263E220CF49B8009800EB /* swift_sdk.h */,
-				AC2263E320CF49B8009800EB /* Info.plist */,
+				AC72A0BB20CF4C8C004D7997 /* Internal */,
+				AC72A0AE20CF4C1E004D7997 /* Objective C */,
+				AC72A0AC20CF4C08004D7997 /* Util */,
+				AC2263FA20CF4B84009800EB /* InApp Notifications */,
+				AC2263F920CF4B63009800EB /* Helper Files */,
 			);
 			path = "swift-sdk";
 			sourceTree = "<group>";
@@ -86,6 +138,54 @@
 			path = "swift-sdkTests";
 			sourceTree = "<group>";
 		};
+		AC2263F920CF4B63009800EB /* Helper Files */ = {
+			isa = PBXGroup;
+			children = (
+				AC2263E220CF49B8009800EB /* swift_sdk.h */,
+				AC2263E320CF49B8009800EB /* Info.plist */,
+			);
+			name = "Helper Files";
+			sourceTree = "<group>";
+		};
+		AC2263FA20CF4B84009800EB /* InApp Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				AC72A0AB20CF4BEB004D7997 /* IterableInAppHTMLViewController.swift */,
+				AC72A0AA20CF4BEB004D7997 /* IterableInAppManager.swift */,
+			);
+			name = "InApp Notifications";
+			sourceTree = "<group>";
+		};
+		AC72A0AC20CF4C08004D7997 /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				AC72A0AD20CF4C16004D7997 /* IterableUtil.swift */,
+			);
+			name = Util;
+			sourceTree = "<group>";
+		};
+		AC72A0AE20CF4C1E004D7997 /* Objective C */ = {
+			isa = PBXGroup;
+			children = (
+				AC72A0B120CF4C32004D7997 /* IterableConstants.h */,
+				AC72A0B420CF4C32004D7997 /* IterableConstants.m */,
+				AC72A0B020CF4C31004D7997 /* IterableDateUtil.h */,
+				AC72A0B220CF4C32004D7997 /* IterableDateUtil.m */,
+				AC72A0B320CF4C32004D7997 /* NSData+Conversion.h */,
+				AC72A0AF20CF4C31004D7997 /* NSData+Conversion.m */,
+			);
+			name = "Objective C";
+			sourceTree = "<group>";
+		};
+		AC72A0BB20CF4C8C004D7997 /* Internal */ = {
+			isa = PBXGroup;
+			children = (
+				AC72A0BC20CF4C98004D7997 /* IterableAPI+Internal.swift */,
+				AC72A0BD20CF4C98004D7997 /* IterableDeeplinkManager.swift */,
+			);
+			name = Internal;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -93,6 +193,9 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC72A0B520CF4C49004D7997 /* IterableConstants.h in Headers */,
+				AC72A0B920CF4C79004D7997 /* NSData+Conversion.h in Headers */,
+				AC72A0B720CF4C5F004D7997 /* IterableDateUtil.h in Headers */,
 				AC2263F020CF49B8009800EB /* swift_sdk.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -194,6 +297,23 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC72A0D020CF4D0B004D7997 /* IterableInAppHTMLViewController.swift in Sources */,
+				AC72A0CD20CF4CE2004D7997 /* IterableAppIntegration.swift in Sources */,
+				AC72A0CE20CF4CE2004D7997 /* IterableAttributionInfo.swift in Sources */,
+				AC72A0BA20CF4C83004D7997 /* NSData+Conversion.m in Sources */,
+				AC72A0D420CF4D19004D7997 /* IterableDeeplinkManager.swift in Sources */,
+				AC72A0C920CF4CE2004D7997 /* IterableAction.swift in Sources */,
+				AC72A0CA20CF4CE2004D7997 /* IterableActionRunner.swift in Sources */,
+				AC72A0CF20CF4CE2004D7997 /* IterableNotificationMetadata.swift in Sources */,
+				AC72A0D220CF4D12004D7997 /* IterableUtil.swift in Sources */,
+				AC72A0C820CF4CE2004D7997 /* ITBConsts.swift in Sources */,
+				AC72A0B620CF4C53004D7997 /* IterableConstants.m in Sources */,
+				AC72A0B820CF4C6C004D7997 /* IterableDateUtil.m in Sources */,
+				AC72A0D120CF4D0B004D7997 /* IterableInAppManager.swift in Sources */,
+				AC72A0CB20CF4CE2004D7997 /* IterableAPI.swift in Sources */,
+				AC72A0CC20CF4CE2004D7997 /* IterableAPI+Deprecated.swift in Sources */,
+				AC72A0C720CF4CE2004D7997 /* CommerceItem.swift in Sources */,
+				AC72A0D320CF4D19004D7997 /* IterableAPI+Internal.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -354,6 +474,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACH_O_TYPE = staticlib;
 				PRODUCT_BUNDLE_IDENTIFIER = "iterable.swift-sdk";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -380,6 +501,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MACH_O_TYPE = staticlib;
 				PRODUCT_BUNDLE_IDENTIFIER = "iterable.swift-sdk";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -391,6 +513,7 @@
 		AC2263F720CF49B8009800EB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "swift-sdkTests/Info.plist";
@@ -409,6 +532,7 @@
 		AC2263F820CF49B8009800EB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "swift-sdkTests/Info.plist";
