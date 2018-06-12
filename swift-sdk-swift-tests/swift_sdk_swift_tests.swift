@@ -1,15 +1,16 @@
 //
-//  swift_sdkTests.swift
-//  swift-sdkTests
+//  swift_sdk_swift_tests.swift
+//  swift-sdk-swift-tests
 //
-//  Created by Tapash Majumder on 6/11/18.
+//  Created by Tapash Majumder on 6/12/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
 import XCTest
-@testable import swift_sdk
 
-class swift_sdkTests: XCTestCase {
+@testable import IterableSDK
+
+class swift_sdk_swift_tests: XCTestCase {
     
     override func setUp() {
         super.setUp()

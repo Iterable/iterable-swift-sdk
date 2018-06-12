@@ -27,7 +27,7 @@ extension IterableAPI {
         }
     }
     
-    func createPostRequest(forAction action: String, withArgs args: [AnyHashable : Any]) -> URLRequest? {
+    @objc public func createPostRequest(forAction action: String, withArgs args: [AnyHashable : Any]) -> URLRequest? {
         guard let url = getUrlComponents(forAction: action)?.url else {
             return nil
         }
