@@ -20,7 +20,7 @@ import UserNotifications
      * automatically if you pass one. If you handle completionHandler in the app code, pass a nil value to this argument.
      */
     @objc public static func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: ((UIBackgroundFetchResult)->Void)?) {
-        ITLog()
+        ITBInfo()
         switch application.applicationState {
         case .active:
             break
@@ -49,7 +49,7 @@ import UserNotifications
      */
     @available(iOS 10.0, *)
     @objc public static func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: (()->Void)?) {
-        ITLog()
+        ITBInfo()
         let userInfo = response.notification.request.content.userInfo
         guard let itbl = itblValue(fromUserInfo: userInfo) else {
             return

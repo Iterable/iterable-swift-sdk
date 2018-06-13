@@ -15,10 +15,10 @@ import Foundation
                 if let url = URL(string: data) {
                     open(url: url, action: action)
                 } else {
-                    ITLog("Could not create url from: \(data)")
+                    ITBError("Could not create url from data: \(data)")
                 }
             } else {
-                ITLog("data is required for action type 'openUrl'")
+                ITBError("data is required for action type 'openUrl'")
             }
         } else {
             callCustomActionIfSpecified(action: action)
@@ -35,7 +35,7 @@ import Foundation
             if #available(iOS 10.0, *) {
                 UIApplication.shared.open(url, options: [:]) { (success) in
                     if !success {
-                        ITLog("Could not open url: \(url)")
+                        ITBError("Could not open url: \(url)")
                     }
                 }
             } else {

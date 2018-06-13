@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import os
 
 @objc public final class IterableUtil : NSObject {
     static var rootViewController : UIViewController {
@@ -30,9 +31,28 @@ import Foundation
     }
 }
 
-/// Counterpart to NSLog.
+public func ITBError(_ message: String? = nil, file: String = #file, method: String = #function, line: Int = #line) {
+    let logMessage = formatLogMessage(message: message, file: file, method: method, line: line)
+    if #available(iOS 10.0, *) {
+        os_log("%@", log: OSLog.default, type: .error, logMessage)
+    } else {
+        print(logMessage)
+    }
+}
+
+private func formatLogMessage(message: String?, file: String, method: String, line: Int) -> String {
+    let fileUrl = NSURL(fileURLWithPath: file)
+    let fileToDisplay = fileUrl.deletingPathExtension!.lastPathComponent
+    
+    if let zeeMessage = message {
+        return "\(fileToDisplay):\(method):\(line): \(zeeMessage)"
+    } else {
+        return "\(fileToDisplay):\(method):\(line)"
+    }
+}
+
 /// It will print the output only if 'LOG' is defined in the project via -D LOG as 'Other Swift Flags'
-public func ITLog(_ message: String? = nil, file: String = #file, method: String = #function, line: Int = #line) {
+public func ITBInfo(_ message: String? = nil, file: String = #file, method: String = #function, line: Int = #line) {
     #if LOG
     let fileUrl = NSURL(fileURLWithPath: file)
     let fileToDisplay = fileUrl.deletingPathExtension!.lastPathComponent

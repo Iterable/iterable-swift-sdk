@@ -12,7 +12,7 @@ public extension IterableAPI {
     @available(*, deprecated, message: "use IterableAPI.instance instead.")
     @objc public static func sharedInstance() -> IterableAPI? {
         if _sharedInstance == nil {
-            ITLog("sharedInstance called before createSharedInstanceWithApiKey")
+            ITBError("sharedInstance called before createSharedInstanceWithApiKey")
         }
         return _sharedInstance
     }

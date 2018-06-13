@@ -30,7 +30,7 @@ import UIKit
         var insetPadding = padding
         
         if insetPadding.left + insetPadding.right >= 100 {
-            ITLog("Can't display an in-app with padding > 100%. Defaulting to 0 for padding left/right")
+            ITBError("Can't display an in-app with padding > 100%. Defaulting to 0 for padding left/right")
             insetPadding.left = 0
             insetPadding.right = 0
         }
@@ -226,7 +226,7 @@ extension IterableInAppHTMLViewController : UIWebViewDelegate {
             callbackURL = destinationURL
 
             //Warn the client that the request url does not contain a valid scheme
-            ITLog("Request url contains an invalid scheme: \(destinationURL)")
+            ITBError("Request url contains an invalid scheme: \(destinationURL)")
         } else if destinationURL.hasPrefix(itblUrlScheme) == true {
             callbackURL = destinationURL.replacingOccurrences(of: itblUrlScheme, with: "")
         }

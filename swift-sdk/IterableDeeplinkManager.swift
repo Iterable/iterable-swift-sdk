@@ -32,7 +32,7 @@ class IterableDeeplinkManager : NSObject {
 
             let trackAndRedirectTask = redirectUrlSession.dataTask(with: webpageURL) {[unowned self] (data, response, error) in
                 if let error = error {
-                    ITLog("error: \(error.localizedDescription)")
+                    ITBError("error: \(error.localizedDescription)")
                     callbackBlock(self.deepLinkLocation)
                     return
                 }

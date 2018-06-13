@@ -46,7 +46,7 @@ import Foundation
      */
     @objc public static var instance : IterableAPI? {
         if _sharedInstance == nil {
-            ITLog("instance called before createSharedInstanceWithApiKey")
+            ITBError("instance called before createSharedInstanceWithApiKey")
         }
         return _sharedInstance
     }
@@ -188,14 +188,14 @@ import Foundation
                     ITBL_KEY_DEVICE: deviceDictionary
                 ]
             } else {
-                ITLog("Either email or userId is required.")
+                ITBError("Either email or userId is required.")
                 args = [
                     ITBL_KEY_DEVICE: deviceDictionary
                 ]
             }
         }
         
-        ITLog("sending registerToken request with args \(args)")
+        ITBInfo("sending registerToken request with args \(args)")
         if let request = createPostRequest(forAction: ENDPOINT_REGISTER_DEVICE_TOKEN, withArgs: args) {
             sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
         }
@@ -630,7 +630,7 @@ import Foundation
                 return
             }
             guard let dialogOptions = IterableInAppManager.getNextMessageFromPayload(payload) else {
-                ITLog("No notifications found fro inApp payload \(payload)")
+                ITBError("No notifications found fro inApp payload \(payload)")
                 return
             }
             guard let message = dialogOptions[ITERABLE_IN_APP_CONTENT] as? [AnyHashable : Any] else {
@@ -643,7 +643,7 @@ import Foundation
                 return
             }
             if html.range(of: ITERABLE_IN_APP_HREF, options: [.caseInsensitive]) == nil {
-                ITLog("No href tag found in in-app html payload \(html)")
+                ITBError("No href tag found in in-app html payload \(html)")
             }
 
             let inAppDisplaySettings = message[ITERABLE_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
@@ -857,7 +857,7 @@ import Foundation
     init(apiKey: String, email: String? = nil, userId: String? = nil, launchOptions: Dictionary<AnyHashable, Any>? = nil, useCustomLaunchOptions: Bool = false) {
         self.apiKey = apiKey
         if email  == nil && userId == nil {
-            ITLog("Both email and userId should not be nil!!")
+            ITBError("Both email and userId should not be nil!!")
         }
         self.email = email
         self.userId = userId

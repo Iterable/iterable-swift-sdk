@@ -739,6 +739,8 @@
 					"@loader_path/Frameworks",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_SWIFT_FLAGS = "";
+				"OTHER_SWIFT_FLAGS[arch=*]" = "-D LOG";
 				PRODUCT_BUNDLE_IDENTIFIER = "iterable.swift-sdk";
 				PRODUCT_NAME = IterableSDK;
 				SKIP_INSTALL = YES;
@@ -767,6 +769,7 @@
 					"@loader_path/Frameworks",
 				);
 				MACH_O_TYPE = mh_dylib;
+				OTHER_SWIFT_FLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = "iterable.swift-sdk";
 				PRODUCT_NAME = IterableSDK;
 				SKIP_INSTALL = YES;

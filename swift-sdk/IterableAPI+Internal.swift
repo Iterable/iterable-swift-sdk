@@ -104,7 +104,7 @@ extension IterableAPI {
 
     @objc public func getCampaigns(withOnSuccess onSuccess: OnSuccessHandler?, withOnFailure onFailure: OnFailureHandler?) {
         guard let request = createGetRequest(forAction: "campaigns", withArgs: [:]) else {
-            ITLog("Couldn't create get request for campaigns")
+            ITBError("Couldn't create get request for campaigns")
             onFailure?("couldn't create get request", nil)
             return
         }
@@ -123,7 +123,7 @@ extension IterableAPI {
             let jsonData = try JSONSerialization.data(withJSONObject: dict, options: [])
             return String(data: jsonData, encoding: .utf8)
         } catch (let error) {
-            ITLog("dictToJson failed: \(error.localizedDescription)")
+            ITBError("dictToJson failed: \(error.localizedDescription)")
             return nil
         }
     }
@@ -207,9 +207,9 @@ extension IterableAPI {
     static func defaultOnSucess(identifier: String) -> OnSuccessHandler {
         return { data in
             if let data = data {
-                ITLog("\(identifier) succeeded, got response: \(data)")
+                ITBInfo("\(identifier) succeeded, got response: \(data)")
             } else {
-                ITLog("\(identifier) succeeded.")
+                ITBInfo("\(identifier) succeeded.")
             }
         }
     }
@@ -223,7 +223,7 @@ extension IterableAPI {
             if let data = data {
                 toLog += ", got response \(data)"
             }
-            ITLog(toLog)
+            ITBError(toLog)
         }
     }
     
@@ -303,11 +303,11 @@ extension IterableAPI {
     
     func disableDevice(forAllUsers allUsers: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         guard let hexToken = hexToken else {
-            ITLog("Device not registered")
+            ITBError("Device not registered")
             return
         }
         guard !(allUsers == false && email == nil && userId == nil) else {
-            ITLog("Emal or userId must be set.")
+            ITBError("Emal or userId must be set.")
             return
         }
         
@@ -326,7 +326,7 @@ extension IterableAPI {
             }
         }
 
-        ITLog("sending disableToken request with args \(args)")
+        ITBInfo("sending disableToken request with args \(args)")
         if let request = createPostRequest(forAction: ENDPOINT_DISABLE_DEVICE, withArgs:args) {
             sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
         }
