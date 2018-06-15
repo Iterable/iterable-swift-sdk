@@ -33,7 +33,7 @@ import Foundation
     @objc func handleIterableCustomAction(_ action:IterableAction) -> Bool
 }
 
-@objc public final class IterableAPI : NSObject {
+@objc public final class IterableAPI : NSObject, PushTrackerProtocol {
     /**
      Get the previously instantiated singleton instance of the API
      
@@ -91,7 +91,7 @@ import Foundation
             if let value = newValue {
                 let expiration = Calendar.current.date(byAdding: .hour,
                                                        value: Int(ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_EXPIRATION_HOURS),
-                                                       to: IterableDateUtil.currentDate)
+                                                       to: dateProvider.currentDate)
                 saveToUserDefaults(value: value, withKey: ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_KEY, andExpiration: expiration)
 
             } else {
@@ -113,12 +113,7 @@ import Foundation
                                                   userId: String? = nil,
                                                   launchOptions: Dictionary<AnyHashable, Any>? = nil,
                                                   useCustomLaunchOptions: Bool = false) -> IterableAPI {
-        queue.sync {
-            if _sharedInstance == nil {
-                _sharedInstance = IterableAPI(apiKey: apiKey, email: email, userId: userId, launchOptions: launchOptions, useCustomLaunchOptions: useCustomLaunchOptions)
-            }
-        }
-        return _sharedInstance!
+        return createSharedInstance(withApiKey: apiKey, email: email, userId: userId, launchOptions: launchOptions, useCustomLaunchOptions: useCustomLaunchOptions, dateProvider: SystemDateProvider())
     }
     
     /**
@@ -843,6 +838,8 @@ import Foundation
     // the API endpoint
     let endpoint = "https://api.iterable.com/api/"
     
+    let dateProvider: DateProviderProtocol
+    
     var urlSession: URLSession = {
         return URLSession(configuration: URLSessionConfiguration.default)
     } ()
@@ -854,13 +851,19 @@ import Foundation
     } ()
     
     // Package private method. Do not call this directly.
-    init(apiKey: String, email: String? = nil, userId: String? = nil, launchOptions: Dictionary<AnyHashable, Any>? = nil, useCustomLaunchOptions: Bool = false) {
+    init(apiKey: String,
+         email: String? = nil,
+         userId: String? = nil,
+         launchOptions: Dictionary<AnyHashable, Any>? = nil,
+         useCustomLaunchOptions: Bool = false,
+         dateProvider: DateProviderProtocol = SystemDateProvider()) {
         self.apiKey = apiKey
         if email  == nil && userId == nil {
             ITBError("Both email and userId should not be nil!!")
         }
         self.email = email
         self.userId = userId
+        self.dateProvider = dateProvider
         super.init()
         
         performDefaultNotificationAction(withLaunchOptions: launchOptions, useCustomLaunchOptions: useCustomLaunchOptions)
