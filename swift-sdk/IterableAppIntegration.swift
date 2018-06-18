@@ -21,7 +21,7 @@ import UserNotifications
      */
     @objc public static func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: ((UIBackgroundFetchResult)->Void)?) {
         ITBInfo()
-        minion.application(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler)
+        minion?.application(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler)
     }
     
     /**
@@ -36,13 +36,14 @@ import UserNotifications
     @available(iOS 10.0, *)
     @objc public static func userNotificationCenter(_ center: UNUserNotificationCenter?, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: (()->Void)?) {
         ITBInfo()
-        minion.userNotificationCenter(center, didReceive: UserNotificationResponse(response: response), withCompletionHandler: completionHandler)
+        minion?.userNotificationCenter(center, didReceive: UserNotificationResponse(response: response), withCompletionHandler: completionHandler)
     }
     
     //MARK: Private
-    private override init() { // Make it private
+    // This class is a utility facade. Don't initialize this class
+    private override init() {
         super.init()
     }
     
-    static let minion = IterableAppIntegrationInternal()
+    static var minion: IterableAppIntegrationInternal?
 }

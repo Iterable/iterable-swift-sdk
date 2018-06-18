@@ -16,7 +16,7 @@ import Foundation
      * Callback called for a deeplink action. Return true to override default behavior
      * - parameter url:     Deeplink URL
      * - parameter action:  Original openUrl Action object
-     * - returns: Boolean value. Return YES if the URL was handled to override default behavior.
+     * - returns: Boolean value. Return true if the URL was handled to override default behavior.
      */
     @objc func handleIterableURL(_ url: URL, fromAction action: IterableAction) -> Bool
 }
@@ -34,19 +34,35 @@ import Foundation
 }
 
 @objc public final class IterableAPI : NSObject, PushTrackerProtocol {
+    // MARK: Initialization
+    /// The big daddy of initialization. You should call this method and not call the init method directly.
+    /// - parameter apiKey: Iterable API Key. This is the only required parameter.
+    /// - parameter launchOptions: The launchOptions coming from application:didLaunching:withOptions
+    /// - parameter config: Iterable config object.
+    /// - parameter email: user email for the logged in user.
+    /// - parameter userId: user id for the logged in user
+    /// - returns: an instance of IterableAPI
+    @objc @discardableResult public static func initializeAPI(apiKey: String,
+                                                              launchOptions: [UIApplicationLaunchOptionsKey: Any]? = nil,
+                                                              config: IterableAPIConfig? = nil,
+                                                              email: String? = nil,
+                                                              userId: String? = nil) -> IterableAPI {
+        return initializeAPI(apiKey: apiKey, launchOptions: launchOptions, config:config, email: email, userId:userId, dateProvider: SystemDateProvider())
+    }
+    
     /**
      Get the previously instantiated singleton instance of the API
      
-     Must be initialized with `createSharedInstanceWithApiKey:` before
+     Must be initialized with `initializeAPI:` before
      calling this class method.
      
      - returns: the existing `IterableAPI` instance
      
-     - warning: `instance` will return `nil` if called before calling `createSharedInstanceWithApiKey`
+     - warning: `instance` will return `nil` if called before calling `initializeAPI`
      */
     @objc public static var instance : IterableAPI? {
         if _sharedInstance == nil {
-            ITBError("instance called before createSharedInstanceWithApiKey")
+            ITBError("instance called before initializing API")
         }
         return _sharedInstance
     }
@@ -57,22 +73,38 @@ import Foundation
         }
     }
 
+    private var config: IterableAPIConfig?
+    
     /**
      The apiKey that this IterableAPI is using
      */
     @objc public var apiKey: String
+    
     /**
      The email of the logged in user that this IterableAPI is using
      */
     @objc public var email: String?
+
     /**
      The userId of the logged in user that this IterableAPI is using
      */
     @objc public var userId: String?
 
-    @objc public weak var urlDelegate: IterableURLDelegate?
+    @objc public weak var urlDelegate: IterableURLDelegate? {
+        get {
+            return config?.urlDelegate
+        } set {
+            config?.urlDelegate = newValue
+        }
+    }
     
-    @objc public weak var customActionDelegate: IterableCustomActionDelegate?
+    @objc public weak var customActionDelegate: IterableCustomActionDelegate? {
+        get {
+            return config?.customActionDelegate
+        } set {
+            config?.customActionDelegate = newValue
+        }
+    }
     
     /**
      The userInfo dictionary which came with last push.
@@ -98,22 +130,6 @@ import Foundation
                 UserDefaults.standard.removeObject(forKey: ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_KEY)
             }
         }
-    }
-    
-    // MARK: Initialization
-    /// The big daddy of initialization. You should not call the init method directly.
-    /// - parameter apiKey:                 Your Iterable apiKey
-    /// - parameter email:                  The email of the user logged in
-    /// - parameter userId:                 The userId of user logged in
-    /// - parameter launchOptions:          launchOptions from application:didFinishLaunchingWithOptions or custom launchOptions
-    /// - parameter useCustomLaunchOptions: Whether or not to use the custom launchOption without the UIApplicationLaunchOptionsRemoteNotificationKey
-    /// - returns: an instance of IterableAPI
-    @objc @discardableResult public static func createSharedInstance(withApiKey apiKey: String,
-                                                  email: String? = nil,
-                                                  userId: String? = nil,
-                                                  launchOptions: Dictionary<AnyHashable, Any>? = nil,
-                                                  useCustomLaunchOptions: Bool = false) -> IterableAPI {
-        return createSharedInstance(withApiKey: apiKey, email: email, userId: userId, launchOptions: launchOptions, useCustomLaunchOptions: useCustomLaunchOptions, dateProvider: SystemDateProvider())
     }
     
     /**
@@ -852,21 +868,21 @@ import Foundation
     
     // Package private method. Do not call this directly.
     init(apiKey: String,
+         launchOptions: [UIApplicationLaunchOptionsKey: Any]? = nil,
+         config: IterableAPIConfig? = nil,
          email: String? = nil,
          userId: String? = nil,
-         launchOptions: Dictionary<AnyHashable, Any>? = nil,
-         useCustomLaunchOptions: Bool = false,
          dateProvider: DateProviderProtocol = SystemDateProvider()) {
         self.apiKey = apiKey
-        if email  == nil && userId == nil {
-            ITBError("Both email and userId should not be nil!!")
-        }
         self.email = email
         self.userId = userId
+        self.config = config
         self.dateProvider = dateProvider
         super.init()
         
-        performDefaultNotificationAction(withLaunchOptions: launchOptions, useCustomLaunchOptions: useCustomLaunchOptions)
+        // setup
+        IterableAppIntegration.minion = IterableAppIntegrationInternal(tracker: self)
+        
+        performDefaultNotificationAction(withLaunchOptions: launchOptions)
     }
-    
 }

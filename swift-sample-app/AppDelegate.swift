@@ -8,6 +8,8 @@
 
 import UIKit
 
+import IterableSDK
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -16,6 +18,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        //ITBL:
+        // !!!REPLACE 
+        IterableAPI.initializeAPI(apiKey: "5b1e4ae1e4004b3cbf72d7c38f0b0c48", launchOptions: launchOptions, email:"tapash@iterable.com")
         return true
     }
 

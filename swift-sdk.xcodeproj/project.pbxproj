@@ -17,10 +17,11 @@
 		AC2C668420D3370600D46CC9 /* Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668320D3370600D46CC9 /* Mocks.swift */; };
 		AC2C668720D3435700D46CC9 /* IterableActionRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668620D3435700D46CC9 /* IterableActionRunnerTests.swift */; };
 		AC431DFE20D1DD7600BFAFD1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC431DFD20D1DD7600BFAFD1 /* AppDelegate.swift */; };
-		AC431E0020D1DD7600BFAFD1 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC431DFF20D1DD7600BFAFD1 /* ViewController.swift */; };
 		AC431E0320D1DD7600BFAFD1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AC431E0120D1DD7600BFAFD1 /* Main.storyboard */; };
 		AC431E0520D1DD7700BFAFD1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC431E0420D1DD7700BFAFD1 /* Assets.xcassets */; };
 		AC431E0820D1DD7700BFAFD1 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AC431E0620D1DD7700BFAFD1 /* LaunchScreen.storyboard */; };
+		AC7125E920D42AEB0043BBC1 /* CoffeeListTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7125E820D42AEB0043BBC1 /* CoffeeListTableViewController.swift */; };
+		AC7125EF20D4579E0043BBC1 /* IterableAPIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7125EE20D4579E0043BBC1 /* IterableAPIConfig.swift */; };
 		AC72A0B520CF4C49004D7997 /* IterableConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = AC72A0B120CF4C32004D7997 /* IterableConstants.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AC72A0B620CF4C53004D7997 /* IterableConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0B420CF4C32004D7997 /* IterableConstants.m */; };
 		AC72A0B920CF4C79004D7997 /* NSData+Conversion.h in Headers */ = {isa = PBXBuildFile; fileRef = AC72A0B320CF4C32004D7997 /* NSData+Conversion.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -48,6 +49,7 @@
 		AC7B145220D038C400877BFE /* IterableNotificationMetadataTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AC7B144A20D038C400877BFE /* IterableNotificationMetadataTests.m */; };
 		AC7B145320D038C400877BFE /* IterableAPITests.m in Sources */ = {isa = PBXBuildFile; fileRef = AC7B144B20D038C400877BFE /* IterableAPITests.m */; };
 		AC7B145420D038C400877BFE /* IterableInAppNotificationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AC7B144C20D038C400877BFE /* IterableInAppNotificationTests.m */; };
+		AC90C49C20D8296400EECA5D /* IterableSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2263DF20CF49B8009800EB /* IterableSDK.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -90,11 +92,12 @@
 		AC431DF320D18E9000BFAFD1 /* swift-sdk-objc-tests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "swift-sdk-objc-tests-Bridging-Header.h"; sourceTree = "<group>"; };
 		AC431DFB20D1DD7600BFAFD1 /* swift-sample-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "swift-sample-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC431DFD20D1DD7600BFAFD1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		AC431DFF20D1DD7600BFAFD1 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		AC431E0220D1DD7600BFAFD1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		AC431E0420D1DD7700BFAFD1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AC431E0720D1DD7700BFAFD1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		AC431E0920D1DD7700BFAFD1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AC7125E820D42AEB0043BBC1 /* CoffeeListTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoffeeListTableViewController.swift; sourceTree = "<group>"; };
+		AC7125EE20D4579E0043BBC1 /* IterableAPIConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPIConfig.swift; sourceTree = "<group>"; };
 		AC72A0AA20CF4BEB004D7997 /* IterableInAppManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInAppManager.swift; sourceTree = "<group>"; };
 		AC72A0AB20CF4BEB004D7997 /* IterableInAppHTMLViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInAppHTMLViewController.swift; sourceTree = "<group>"; };
 		AC72A0AD20CF4C16004D7997 /* IterableUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableUtil.swift; sourceTree = "<group>"; };
@@ -145,6 +148,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC90C49C20D8296400EECA5D /* IterableSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -205,6 +209,7 @@
 		AC2263E120CF49B8009800EB /* swift-sdk */ = {
 			isa = PBXGroup;
 			children = (
+				AC7125F020D45BC90043BBC1 /* Deprecated */,
 				AC72A0BB20CF4C8C004D7997 /* Internal */,
 				AC72A0AE20CF4C1E004D7997 /* Objective C */,
 				AC72A0AC20CF4C08004D7997 /* Util */,
@@ -212,9 +217,8 @@
 				AC2263F920CF4B63009800EB /* Helper Files */,
 				AC72A0BE20CF4CB8004D7997 /* ITBConsts.swift */,
 				AC72A0BF20CF4CB8004D7997 /* IterableAction.swift */,
-				AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */,
+				AC7125EE20D4579E0043BBC1 /* IterableAPIConfig.swift */,
 				AC72A0C520CF4CB9004D7997 /* IterableAPI.swift */,
-				AC72A0C320CF4CB8004D7997 /* IterableAPI+Deprecated.swift */,
 				AC72A0C620CF4CB9004D7997 /* IterableAppIntegration.swift */,
 				AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */,
 				AC72A0C220CF4CB8004D7997 /* IterableNotificationMetadata.swift */,
@@ -258,17 +262,65 @@
 			name = "Helper Files";
 			sourceTree = "<group>";
 		};
+		AC2C668820D4263F00D46CC9 /* Helper Files */ = {
+			isa = PBXGroup;
+			children = (
+				AC431E0920D1DD7700BFAFD1 /* Info.plist */,
+			);
+			name = "Helper Files";
+			sourceTree = "<group>";
+		};
+		AC2C668920D4265C00D46CC9 /* Storyboards */ = {
+			isa = PBXGroup;
+			children = (
+				AC431E0120D1DD7600BFAFD1 /* Main.storyboard */,
+				AC431E0620D1DD7700BFAFD1 /* LaunchScreen.storyboard */,
+			);
+			name = Storyboards;
+			sourceTree = "<group>";
+		};
 		AC431DFC20D1DD7600BFAFD1 /* swift-sample-app */ = {
 			isa = PBXGroup;
 			children = (
+				AC7125E520D428120043BBC1 /* Helpers */,
+				AC7125E420D427670043BBC1 /* ViewControllers */,
+				AC7125E320D427530043BBC1 /* Assets */,
+				AC2C668920D4265C00D46CC9 /* Storyboards */,
+				AC2C668820D4263F00D46CC9 /* Helper Files */,
 				AC431DFD20D1DD7600BFAFD1 /* AppDelegate.swift */,
-				AC431DFF20D1DD7600BFAFD1 /* ViewController.swift */,
-				AC431E0120D1DD7600BFAFD1 /* Main.storyboard */,
-				AC431E0420D1DD7700BFAFD1 /* Assets.xcassets */,
-				AC431E0620D1DD7700BFAFD1 /* LaunchScreen.storyboard */,
-				AC431E0920D1DD7700BFAFD1 /* Info.plist */,
 			);
 			path = "swift-sample-app";
+			sourceTree = "<group>";
+		};
+		AC7125E320D427530043BBC1 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				AC431E0420D1DD7700BFAFD1 /* Assets.xcassets */,
+			);
+			name = Assets;
+			sourceTree = "<group>";
+		};
+		AC7125E420D427670043BBC1 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				AC7125E820D42AEB0043BBC1 /* CoffeeListTableViewController.swift */,
+			);
+			name = ViewControllers;
+			sourceTree = "<group>";
+		};
+		AC7125E520D428120043BBC1 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Helpers;
+			sourceTree = "<group>";
+		};
+		AC7125F020D45BC90043BBC1 /* Deprecated */ = {
+			isa = PBXGroup;
+			children = (
+				AC72A0C320CF4CB8004D7997 /* IterableAPI+Deprecated.swift */,
+			);
+			name = Deprecated;
 			sourceTree = "<group>";
 		};
 		AC72A0AC20CF4C08004D7997 /* Util */ = {
@@ -294,6 +346,7 @@
 			isa = PBXGroup;
 			children = (
 				AC72A0BC20CF4C98004D7997 /* IterableAPI+Internal.swift */,
+				AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */,
 				AC72A0BD20CF4C98004D7997 /* IterableDeeplinkManager.swift */,
 				AC2C667D20D3111900D46CC9 /* DateProvider.swift */,
 				AC2C668120D32F2800D46CC9 /* IterableAppIntegrationInternal.swift */,
@@ -630,6 +683,7 @@
 				AC72A0D220CF4D12004D7997 /* IterableUtil.swift in Sources */,
 				AC2C668220D32F2800D46CC9 /* IterableAppIntegrationInternal.swift in Sources */,
 				AC72A0C820CF4CE2004D7997 /* ITBConsts.swift in Sources */,
+				AC7125EF20D4579E0043BBC1 /* IterableAPIConfig.swift in Sources */,
 				AC72A0B620CF4C53004D7997 /* IterableConstants.m in Sources */,
 				AC72A0D120CF4D0B004D7997 /* IterableInAppManager.swift in Sources */,
 				AC72A0CB20CF4CE2004D7997 /* IterableAPI.swift in Sources */,
@@ -644,8 +698,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AC431E0020D1DD7600BFAFD1 /* ViewController.swift in Sources */,
 				AC431DFE20D1DD7600BFAFD1 /* AppDelegate.swift in Sources */,
+				AC7125E920D42AEB0043BBC1 /* CoffeeListTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
