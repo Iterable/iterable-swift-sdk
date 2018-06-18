@@ -85,7 +85,6 @@ struct IterableAppIntegrationInternal {
     
     /**
      * This method handles incoming Iterable notifications and actions for iOS < 10
-     * Call it from your app delegate's application:didReceiveRemoteNotification:fetchCompletionHandler:.
      *
      * - parameter application: UIApplication singleton object
      * - parameter userInfo: Dictionary containing the notification data
@@ -113,7 +112,6 @@ struct IterableAppIntegrationInternal {
     
     /**
      * This method handles user actions on incoming Iterable notifications
-     * Call it from your notification center delegate's userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:.
      *
      * - parameter center: `UNUserNotificationCenter` singleton object
      * - parameter response: Notification response containing the user action and notification data. Passed from the original call.
