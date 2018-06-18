@@ -21,9 +21,9 @@ extension IterableAPI {
         }
         
         if useCustomLaunchOptions {
-            IterableAppIntegration.performDefaultNotificationAction(launchOptions, api: self)
+            IterableAppIntegration.minion.performDefaultNotificationAction(launchOptions)
         } else if let remoteNotificationPayload = launchOptions[UIApplicationLaunchOptionsKey.remoteNotification] as? [AnyHashable : Any] {
-            IterableAppIntegration.performDefaultNotificationAction(remoteNotificationPayload, api: self)
+            IterableAppIntegration.minion.performDefaultNotificationAction(remoteNotificationPayload)
         }
     }
     
@@ -230,7 +230,7 @@ extension IterableAPI {
     func save(pushPayload payload: [AnyHashable : Any]) {
         let expiration = Calendar.current.date(byAdding: .hour,
                                                value: Int(ITBL_USER_DEFAULTS_PAYLOAD_EXPIRATION_HOURS),
-                                               to: IterableDateUtil.currentDate)
+                                               to: dateProvider.currentDate)
         saveToUserDefaults(value: payload, withKey: ITBL_USER_DEFAULTS_PAYLOAD_KEY, andExpiration: expiration)
 
         if let metadata = IterableNotificationMetadata.metadata(fromLaunchOptions: payload) {
@@ -267,7 +267,7 @@ extension IterableAPI {
             return value
         }
 
-        if expiration.timeIntervalSinceReferenceDate > IterableDateUtil.currentDate.timeIntervalSinceReferenceDate {
+        if expiration.timeIntervalSinceReferenceDate > dateProvider.currentDate.timeIntervalSinceReferenceDate {
             return value
         } else {
             return nil
@@ -340,4 +340,19 @@ extension IterableAPI {
         }
         assertionFailure("either email or userId should be set")
     }
+    
+    static func createSharedInstance(withApiKey apiKey: String,
+                                            email: String? = nil,
+                                            userId: String? = nil,
+                                            launchOptions: Dictionary<AnyHashable, Any>? = nil,
+                                            useCustomLaunchOptions: Bool = false,
+                                            dateProvider: DateProviderProtocol = SystemDateProvider()) -> IterableAPI {
+        queue.sync {
+            if _sharedInstance == nil {
+                _sharedInstance = IterableAPI(apiKey: apiKey, email: email, userId: userId, launchOptions: launchOptions, useCustomLaunchOptions: useCustomLaunchOptions, dateProvider: dateProvider)
+            }
+        }
+        return _sharedInstance!
+    }
+
 }

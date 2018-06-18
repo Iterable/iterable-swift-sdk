@@ -8,8 +8,49 @@
 
 import Foundation
 
-@objc public class IterableActionRunner : NSObject {
-    @objc public static func executeAction(_ action: IterableAction) {
+/// IterableActionRunner implements this.
+@objc public protocol ActionRunnerProtocol : class {
+    @objc func execute(action: IterableAction)
+}
+
+/// handles opening of Urls
+@objc public protocol UrlOpenerProtocol : class {
+    @objc func open(url: URL)
+}
+
+/// Default app opener. Defers to UIApplication open
+class AppUrlOpener : UrlOpenerProtocol {
+    func open(url: URL) {
+        if #available(iOS 10.0, *) {
+            UIApplication.shared.open(url, options: [:]) { (success) in
+                if !success {
+                    ITBError("Could not open url: \(url)")
+                }
+            }
+        } else {
+            UIApplication.shared.openURL(url)
+        }
+    }
+}
+
+class IterableActionRunner : NSObject, ActionRunnerProtocol {
+    private let urlDelegate: IterableURLDelegate?
+    private let customActionDelegate: IterableCustomActionDelegate?
+    private let urlOpener: UrlOpenerProtocol
+    
+    override convenience init() {
+        self.init(urlDelegate: IterableAPI.instance?.urlDelegate,
+                  customActionDelegate: IterableAPI.instance?.customActionDelegate,
+                  urlOpener: AppUrlOpener())
+    }
+    
+    init(urlDelegate: IterableURLDelegate?, customActionDelegate: IterableCustomActionDelegate?, urlOpener: UrlOpenerProtocol) {
+        self.urlDelegate = urlDelegate
+        self.customActionDelegate = customActionDelegate
+        self.urlOpener = urlOpener
+    }
+    
+    func execute(action: IterableAction) {
         if action.isOfType(IterableAction.actionTypeOpenUrl) {
             if let data = action.data {
                 if let url = URL(string: data) {
@@ -25,29 +66,20 @@ import Foundation
         }
     }
     
-    private static func open(url: URL, action: IterableAction) {
-        guard IterableAPI.instance?.urlDelegate?.handleIterableURL(url, fromAction: action) == false else {
+    private func open(url: URL, action: IterableAction) {
+        guard urlDelegate?.handleIterableURL(url, fromAction: action) == false else {
             // only proceed if it was not handled
             return
         }
         
         if let scheme = url.scheme, scheme == "http" || scheme == "https" {
-            if #available(iOS 10.0, *) {
-                UIApplication.shared.open(url, options: [:]) { (success) in
-                    if !success {
-                        ITBError("Could not open url: \(url)")
-                    }
-                }
-            } else {
-                UIApplication.shared.openURL(url)
-            }
+            urlOpener.open(url: url)
         }
-        
     }
     
-    private static func callCustomActionIfSpecified(action: IterableAction) {
+    private func callCustomActionIfSpecified(action: IterableAction) {
         if IterableUtil.isNotNullOrEmpty(string: action.type) {
-            _ = IterableAPI.instance?.customActionDelegate?.handleIterableCustomAction(action)
+            _ = customActionDelegate?.handleIterableCustomAction(action)
         }
     }
 }
