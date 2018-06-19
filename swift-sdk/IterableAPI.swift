@@ -881,7 +881,8 @@ import Foundation
         super.init()
         
         // setup
-        IterableAppIntegration.minion = IterableAppIntegrationInternal(tracker: self)
+        let actionRunner = IterableActionRunner(urlDelegate: config?.urlDelegate, customActionDelegate: config?.customActionDelegate, urlOpener: AppUrlOpener())
+        IterableAppIntegration.minion = IterableAppIntegrationInternal(tracker: self, actionRunner: actionRunner, versionInfo: SystemVersionInfo())
         
         performDefaultNotificationAction(withLaunchOptions: launchOptions)
     }

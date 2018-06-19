@@ -12,7 +12,7 @@ import Foundation
  Iterable Configuration Object. Use this when initializing the API.
  */
 @objc public class IterableAPIConfig : NSObject {
-    /// How to handle IterableActions which are other than 'openUrl'
+                                                                                                               /// How to handle IterableActions which are other than 'openUrl'
     @objc public weak var customActionDelegate: IterableCustomActionDelegate?
     
     /// Handles Iterable actions of type 'openUrl'

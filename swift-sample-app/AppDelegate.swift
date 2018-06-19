@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import UserNotifications
 
 import IterableSDK
 
@@ -15,12 +16,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
-        //ITBL:
-        // !!!REPLACE 
-        IterableAPI.initializeAPI(apiKey: "5b1e4ae1e4004b3cbf72d7c38f0b0c48", launchOptions: launchOptions, email:"tapash@iterable.com")
+        //ITBL: Setup Notification
+        setupNotifications()
+
+        //ITBL: Initialize API
+        let config = IterableAPIConfig()
+        config.customActionDelegate = self
+        config.urlDelegate = self
+        // Replace with your api key and email here.
+        IterableAPI.initializeAPI(apiKey:"a415841b631a4c97924bc09660c658fc", launchOptions:launchOptions, config: config, email:"tapash@iterable.com")
         return true
     }
 
@@ -45,7 +50,71 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
+    
+    // MARK: Deep link
+    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
 
+        return false
+    }
+    
+    //MARK: Notification
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        IterableAPI.instance?.registerToken(deviceToken, appName: "swift-sample-app", pushServicePlatform: .APNS_SANDBOX)
 
+    }
+
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+    }
+    
+    private func setupNotifications() {
+        UNUserNotificationCenter.current().delegate = self
+        UNUserNotificationCenter.current().getNotificationSettings { (settings) in
+            if settings.authorizationStatus != .authorized {
+                // not authorized, ask for permission
+                UNUserNotificationCenter.current().requestAuthorization(options:[.alert, .badge, .sound]) { (success, error) in
+                    if success == true {
+                        DispatchQueue.main.async {
+                            UIApplication.shared.registerForRemoteNotifications()
+                        }
+                    }
+                    //TODO: Handle error etc.
+                }
+            } else {
+                // already authorized
+                DispatchQueue.main.async {
+                    UIApplication.shared.registerForRemoteNotifications()
+                }
+            }
+        }
+    }
+}
+
+//MARK: UNUserNotificationCenterDelegate
+extension AppDelegate : UNUserNotificationCenterDelegate {
+    public func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.alert, .badge, .sound])
+    }
+    
+    // The method will be called on the delegate when the user responded to the notification by opening the application, dismissing the notification or choosing a UNNotificationAction. The delegate must be set before the application returns from applicationDidFinishLaunching:.
+    public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        IterableAppIntegration.userNotificationCenter(center, didReceive: response, withCompletionHandler: completionHandler)
+    }
+}
+
+//MARK: IterableURLDelegate
+extension AppDelegate : IterableURLDelegate {
+    // return true if we handled the url
+    func handleIterableURL(_ url: URL, fromAction: IterableAction) -> Bool {
+        return false
+    }
+}
+
+//Mark: IterableCustomActionDelegate
+extension AppDelegate : IterableCustomActionDelegate {
+    // handle the cutom action from push
+    // return value true/false doesn't matter here, stored for future use
+    func handleIterableCustomAction(_ action: IterableAction) -> Bool {
+        return false
+    }
 }
 
