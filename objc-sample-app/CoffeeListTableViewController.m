@@ -17,6 +17,14 @@
 @implementation CoffeeListTableViewController
 
 - (void)setSearchTerm:(NSString *)searchTerm {
+    _searchTerm = searchTerm;
+    if (_searchTerm != nil && _searchTerm.length > 0) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            searchController.searchBar.text = searchTerm;
+            [searchController.searchBar becomeFirstResponder];
+            [searchController becomeFirstResponder];
+        });
+    }
 }
 
 - (void)viewDidLoad {

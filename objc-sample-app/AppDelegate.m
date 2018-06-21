@@ -20,7 +20,7 @@
     // Override point for customization after application launch.
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NSURL *url = [[NSURL alloc] initWithString:@"https://iterable-sample-app.firebaseapp.com/coffee/cappuccino"];
+        NSURL *url = [[NSURL alloc] initWithString:@"https://iterable-sample-app.firebaseapp.com/coffee?q=mo"];
         [DeeplinkHandler handleURL:url];
 
     });
