@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-@interface CoffeeListTableViewController : UITableViewController
+@interface CoffeeListTableViewController : UITableViewController<UISearchControllerDelegate, UISearchResultsUpdating>
 
 @property (nonatomic, copy) NSString *searchTerm;
 

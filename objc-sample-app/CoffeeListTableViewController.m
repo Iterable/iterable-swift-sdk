@@ -8,8 +8,10 @@
 
 #import "CoffeeListTableViewController.h"
 #import "CoffeeType.h"
+#import "CoffeeViewController.h"
 
 @interface CoffeeListTableViewController ()
+@property (nonatomic, strong, readonly) NSArray *coffeeList;
 @end
 
 @implementation CoffeeListTableViewController
@@ -24,6 +26,8 @@
     
     searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
     searchController.searchBar.placeholder = @"Search";
+    searchController.delegate = self;
+    searchController.searchResultsUpdater = self;
     self.navigationItem.searchController = searchController;
 }
 
@@ -34,13 +38,14 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return coffees.count;
+
+    return self.coffeeList.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"coffeeCell" forIndexPath:indexPath];
 
-    CoffeeType *coffee = coffees[indexPath.row];
+    CoffeeType *coffee = self.coffeeList[indexPath.row];
     cell.textLabel.text = coffee.name;
     cell.imageView.image = coffee.image;
     
@@ -51,12 +56,38 @@
 #pragma mark - Navigation
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    NSIndexPath *indexPath = self.tableView.indexPathForSelectedRow;
+    if (indexPath != nil) {
+        CoffeeViewController *coffeeVC = (CoffeeViewController *) segue.destinationViewController;
+        if (coffeeVC != nil) {
+            coffeeVC.coffeeType = self.coffeeList[indexPath.row];
+        }
+    }
+}
+
+#pragma mark - UISearchControllerDelegate
+- (void)willDismissSearchController:(UISearchController *)searchController {
+    self.searchTerm = nil;
+}
+
+#pragma mark - UISearchResultsUpdating
+- (void)updateSearchResultsForSearchController:(UISearchController *)searchController {
+    NSString *text = searchController.searchBar.text;
+    if (text != nil && text.length > 0) {
+        filtering = true;
+        filteredCoffees = [coffees filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.name contains[c] %@", text]];
+    } else {
+        filtering = false;
+    }
+    [self.tableView reloadData];
 }
 
 #pragma mark - private
 UISearchController *searchController;
+bool filtering = false;
 
 NSArray *coffees;
+NSArray *filteredCoffees;
 
 - (void) initializeCoffees {
     CoffeeType *cappuccino = [[CoffeeType alloc] initWithName:@"Cappuccino" andImage: [UIImage imageNamed:@"Cappuccino"]];
@@ -65,6 +96,12 @@ NSArray *coffees;
     CoffeeType *black = [[CoffeeType alloc] initWithName:@"Black" andImage: [UIImage imageNamed:@"Black"]];
 
     coffees = @[cappuccino, latte, mocha, black];
+    
+    filteredCoffees = @[];
+}
+
+- (NSArray *) coffeeList {
+    return filtering ? filteredCoffees : coffees;
 }
 
 @end

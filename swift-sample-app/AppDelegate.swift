@@ -83,6 +83,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
     }
     
+    //ITBL:
+    // Ask for permission for notifications etc.
+    // setup self as delegate to listen to push notifications.
     private func setupNotifications() {
         UNUserNotificationCenter.current().delegate = self
         UNUserNotificationCenter.current().getNotificationSettings { (settings) in

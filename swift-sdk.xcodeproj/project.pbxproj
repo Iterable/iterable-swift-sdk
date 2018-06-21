@@ -67,6 +67,7 @@
 		ACE7944920DC0F0400B1A427 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = ACE7944820DC0F0400B1A427 /* main.m */; };
 		ACE7945620DC172800B1A427 /* CoffeeListTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ACE7945520DC172800B1A427 /* CoffeeListTableViewController.m */; };
 		ACE7945920DC2F0D00B1A427 /* CoffeeType.m in Sources */ = {isa = PBXBuildFile; fileRef = ACE7945820DC2F0D00B1A427 /* CoffeeType.m */; };
+		ACE7945C20DC472C00B1A427 /* CoffeeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ACE7945B20DC472C00B1A427 /* CoffeeViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -230,6 +231,8 @@
 		ACE7945520DC172800B1A427 /* CoffeeListTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CoffeeListTableViewController.m; sourceTree = "<group>"; };
 		ACE7945720DC2F0D00B1A427 /* CoffeeType.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CoffeeType.h; sourceTree = "<group>"; };
 		ACE7945820DC2F0D00B1A427 /* CoffeeType.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CoffeeType.m; sourceTree = "<group>"; };
+		ACE7945A20DC472C00B1A427 /* CoffeeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CoffeeViewController.h; sourceTree = "<group>"; };
+		ACE7945B20DC472C00B1A427 /* CoffeeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CoffeeViewController.m; sourceTree = "<group>"; };
 		AE6D2D1801330BD6AD4BEB45 /* Pods-swift-sdk-swift-tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-swift-sdk-swift-tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-swift-sdk-swift-tests/Pods-swift-sdk-swift-tests.release.xcconfig"; sourceTree = "<group>"; };
 		DDD4A68DE6BBB9230E1FF789 /* Pods-swift-sdk-swift-tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-swift-sdk-swift-tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-swift-sdk-swift-tests/Pods-swift-sdk-swift-tests.debug.xcconfig"; sourceTree = "<group>"; };
 		EA3B895070C574A2D2D4FC80 /* libPods-swift-sdk-swift-tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-swift-sdk-swift-tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -618,6 +621,8 @@
 			children = (
 				ACE7945420DC172800B1A427 /* CoffeeListTableViewController.h */,
 				ACE7945520DC172800B1A427 /* CoffeeListTableViewController.m */,
+				ACE7945A20DC472C00B1A427 /* CoffeeViewController.h */,
+				ACE7945B20DC472C00B1A427 /* CoffeeViewController.m */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -1107,6 +1112,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ACE7945C20DC472C00B1A427 /* CoffeeViewController.m in Sources */,
 				ACE7944920DC0F0400B1A427 /* main.m in Sources */,
 				ACE7945920DC2F0D00B1A427 /* CoffeeType.m in Sources */,
 				ACE7945620DC172800B1A427 /* CoffeeListTableViewController.m in Sources */,
