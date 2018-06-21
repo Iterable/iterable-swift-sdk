@@ -36,6 +36,21 @@ class CoffeeListTableViewController: UITableViewController {
         searchController.searchResultsUpdater = self
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) {_ in
+            IterableAPI.instance?.spawn(inAppNotification: { (_) in
+            })
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        timer?.invalidate()
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -92,6 +107,7 @@ class CoffeeListTableViewController: UITableViewController {
     private var filtering = false
     private var filteredCoffees: [CoffeeType] = []
     private var searchController: UISearchController!
+    private var timer: Timer?
 }
 
 extension CoffeeListTableViewController : UISearchControllerDelegate {
