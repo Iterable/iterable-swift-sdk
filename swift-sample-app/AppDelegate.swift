@@ -24,8 +24,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let config = IterableAPIConfig()
         config.customActionDelegate = self
         config.urlDelegate = self
-        // Replace with your api key and email here.
-        IterableAPI.initializeAPI(apiKey:"a415841b631a4c97924bc09660c658fc", launchOptions:launchOptions, config: config, email:"tapash@iterable.com")
+        // !! Replace with your api key and email here.
+        IterableAPI.initializeAPI(apiKey:"a415841b631a4c97924bc09660c658fc",
+                                  launchOptions:launchOptions,
+                                  config: config,
+                                  email:"tapash@iterable.com")
+
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+            _ = DeeplinkHandler.handle(url: URL(string: "https://iterable-sample-app.firebaseapp.com/coffee/mocha")!)
+        }
         return true
     }
 
@@ -58,6 +65,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     //MARK: Notification
+    //ITBL:
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         IterableAPI.instance?.registerToken(deviceToken, appName: "swift-sample-app", pushServicePlatform: .APNS_SANDBOX)
 
@@ -97,6 +105,7 @@ extension AppDelegate : UNUserNotificationCenterDelegate {
     
     // The method will be called on the delegate when the user responded to the notification by opening the application, dismissing the notification or choosing a UNNotificationAction. The delegate must be set before the application returns from applicationDidFinishLaunching:.
     public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        //!!ITBL:
         IterableAppIntegration.userNotificationCenter(center, didReceive: response, withCompletionHandler: completionHandler)
     }
 }

@@ -7,7 +7,7 @@
 	<key>com.apple.developer.associated-domains</key>
 	<array>
 		<string>applinks:links.iterable.com</string>
-		<string>applinks:swift-sample-app.iterable.com</string>
+		<string>applinks:iterable-sample-app.firebaseapp.com</string>
 	</array>
 </dict>
 </plist>

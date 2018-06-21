@@ -56,6 +56,10 @@
 		AC98294420D9C9DF00796DAA /* IterableSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AC2263DF20CF49B8009800EB /* IterableSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		AC98294C20D9D8DC00796DAA /* IterableAppExtensions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC90C4C420D8632D00EECA5D /* IterableAppExtensions.framework */; };
 		AC98294E20D9DBC600796DAA /* IterableAppExtensions.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AC90C4C420D8632D00EECA5D /* IterableAppExtensions.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		AC98295320DAB5E700796DAA /* DeeplinkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC98295220DAB5DE00796DAA /* DeeplinkHandler.swift */; };
+		AC98295520DABC6D00796DAA /* CoffeeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC98295420DABC6D00796DAA /* CoffeeType.swift */; };
+		AC98295820DB15AC00796DAA /* CoffeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC98295720DB15AB00796DAA /* CoffeeViewController.swift */; };
+		AC98295A20DB15F500796DAA /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC98295920DB15EA00796DAA /* UIViewController+Extension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -203,6 +207,10 @@
 		AC90C4D520D8632E00EECA5D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AC90C4E120D8639E00EECA5D /* ITBNotificationServiceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ITBNotificationServiceExtension.swift; sourceTree = "<group>"; };
 		AC98294A20D9D65E00796DAA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		AC98295220DAB5DE00796DAA /* DeeplinkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkHandler.swift; sourceTree = "<group>"; };
+		AC98295420DABC6D00796DAA /* CoffeeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoffeeType.swift; sourceTree = "<group>"; };
+		AC98295720DB15AB00796DAA /* CoffeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoffeeViewController.swift; sourceTree = "<group>"; };
+		AC98295920DB15EA00796DAA /* UIViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
 		AE6D2D1801330BD6AD4BEB45 /* Pods-swift-sdk-swift-tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-swift-sdk-swift-tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-swift-sdk-swift-tests/Pods-swift-sdk-swift-tests.release.xcconfig"; sourceTree = "<group>"; };
 		DDD4A68DE6BBB9230E1FF789 /* Pods-swift-sdk-swift-tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-swift-sdk-swift-tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-swift-sdk-swift-tests/Pods-swift-sdk-swift-tests.debug.xcconfig"; sourceTree = "<group>"; };
 		EA3B895070C574A2D2D4FC80 /* libPods-swift-sdk-swift-tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-swift-sdk-swift-tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -367,6 +375,7 @@
 		AC2C668820D4263F00D46CC9 /* Helper Files */ = {
 			isa = PBXGroup;
 			children = (
+				AC0674E120D8702F00C2806D /* swift-sample-app.entitlements */,
 				AC431E0920D1DD7700BFAFD1 /* Info.plist */,
 			);
 			name = "Helper Files";
@@ -384,7 +393,8 @@
 		AC431DFC20D1DD7600BFAFD1 /* swift-sample-app */ = {
 			isa = PBXGroup;
 			children = (
-				AC0674E120D8702F00C2806D /* swift-sample-app.entitlements */,
+				AC98295620DAC0D600796DAA /* Model */,
+				AC98295120DAB5BF00796DAA /* Deep Links */,
 				AC7125E520D428120043BBC1 /* Helpers */,
 				AC7125E420D427670043BBC1 /* ViewControllers */,
 				AC7125E320D427530043BBC1 /* Assets */,
@@ -407,6 +417,7 @@
 			isa = PBXGroup;
 			children = (
 				AC7125E820D42AEB0043BBC1 /* CoffeeListTableViewController.swift */,
+				AC98295720DB15AB00796DAA /* CoffeeViewController.swift */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -414,6 +425,7 @@
 		AC7125E520D428120043BBC1 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				AC98295920DB15EA00796DAA /* UIViewController+Extension.swift */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -514,6 +526,22 @@
 				AC90C4C720D8632E00EECA5D /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		AC98295120DAB5BF00796DAA /* Deep Links */ = {
+			isa = PBXGroup;
+			children = (
+				AC98295220DAB5DE00796DAA /* DeeplinkHandler.swift */,
+			);
+			name = "Deep Links";
+			sourceTree = "<group>";
+		};
+		AC98295620DAC0D600796DAA /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				AC98295420DABC6D00796DAA /* CoffeeType.swift */,
+			);
+			name = Model;
 			sourceTree = "<group>";
 		};
 		B45C88EB52A42BAD4D6B1EAF /* Frameworks */ = {
@@ -895,6 +923,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC431DFE20D1DD7600BFAFD1 /* AppDelegate.swift in Sources */,
+				AC98295520DABC6D00796DAA /* CoffeeType.swift in Sources */,
+				AC98295A20DB15F500796DAA /* UIViewController+Extension.swift in Sources */,
+				AC98295820DB15AC00796DAA /* CoffeeViewController.swift in Sources */,
+				AC98295320DAB5E700796DAA /* DeeplinkHandler.swift in Sources */,
 				AC7125E920D42AEB0043BBC1 /* CoffeeListTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -11,16 +11,6 @@ import UIKit
 import IterableSDK
 
 class CoffeeListTableViewController: UITableViewController {
-    struct CoffeeType {
-        let name: String
-        let image: UIImage
-        
-        static let cappuccino = CoffeeType(name: "Cappuccino",image: #imageLiteral(resourceName: "Cappuccino"))
-        static let latte = CoffeeType(name: "Latte", image: #imageLiteral(resourceName: "Latte"))
-        static let mocha = CoffeeType(name: "Mocha", image: #imageLiteral(resourceName: "Mocha"))
-        static let black = CoffeeType(name: "Black", image: #imageLiteral(resourceName: "Black"))
-    }
-    
     private let coffees: [CoffeeType] = [
         .cappuccino,
         .latte,
@@ -50,4 +40,24 @@ class CoffeeListTableViewController: UITableViewController {
         
         return cell
     }
+    
+    // MARK: - Navigation
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard let indexPath = tableView.indexPathForSelectedRow else {
+            return
+        }
+        
+        guard let coffeeViewController = segue.destination as? CoffeeViewController else {
+            return
+        }
+        
+        coffeeViewController.coffee = coffees[indexPath.row]
+    }
+
 }
+
+extension CoffeeListTableViewController : StoryboardInstantiable {
+    static var storyboardName = "Main"
+    static var storyboardId = "CoffeeListTableViewController"
+}
+
