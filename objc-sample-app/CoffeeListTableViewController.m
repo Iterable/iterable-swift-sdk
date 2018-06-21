@@ -90,12 +90,7 @@ NSArray *coffees;
 NSArray *filteredCoffees;
 
 - (void) initializeCoffees {
-    CoffeeType *cappuccino = [[CoffeeType alloc] initWithName:@"Cappuccino" andImage: [UIImage imageNamed:@"Cappuccino"]];
-    CoffeeType *latte = [[CoffeeType alloc] initWithName:@"Latte" andImage: [UIImage imageNamed:@"Latte"]];
-    CoffeeType *mocha = [[CoffeeType alloc] initWithName:@"Mocha" andImage: [UIImage imageNamed:@"Mocha"]];
-    CoffeeType *black = [[CoffeeType alloc] initWithName:@"Black" andImage: [UIImage imageNamed:@"Black"]];
-
-    coffees = @[cappuccino, latte, mocha, black];
+    coffees = @[CoffeeType.cappuccino, CoffeeType.latte, CoffeeType.mocha, CoffeeType.black];
     
     filteredCoffees = @[];
 }
