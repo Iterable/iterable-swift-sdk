@@ -56,6 +56,9 @@ struct DeeplinkHandler {
     private static func showCoffeeList(query: String?) {
         if let rootNav = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController {
             rootNav.popToRootViewController(animated: true)
+            if let coffeeListVC = rootNav.viewControllers[0] as? CoffeeListTableViewController {
+                coffeeListVC.searchTerm = query
+            }
         }
     }
 

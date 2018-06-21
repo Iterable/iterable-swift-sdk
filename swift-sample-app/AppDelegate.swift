@@ -30,8 +30,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                   config: config,
                                   email:"tapash@iterable.com")
 
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-            _ = DeeplinkHandler.handle(url: URL(string: "https://iterable-sample-app.firebaseapp.com/coffee/mocha")!)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            _ = DeeplinkHandler.handle(url: URL(string: "https://iterable-sample-app.firebaseapp.com/coffee?q=mo")!)
         }
         return true
     }
