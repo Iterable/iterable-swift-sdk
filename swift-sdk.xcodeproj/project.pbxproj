@@ -69,6 +69,13 @@
 		ACE7945920DC2F0D00B1A427 /* CoffeeType.m in Sources */ = {isa = PBXBuildFile; fileRef = ACE7945820DC2F0D00B1A427 /* CoffeeType.m */; };
 		ACE7945C20DC472C00B1A427 /* CoffeeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ACE7945B20DC472C00B1A427 /* CoffeeViewController.m */; };
 		ACE7945F20DC520D00B1A427 /* DeeplinkHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = ACE7945E20DC520D00B1A427 /* DeeplinkHandler.m */; };
+		ACE7946920DC6ED200B1A427 /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = ACE7946820DC6ED200B1A427 /* NotificationService.m */; };
+		ACE7946D20DC6ED200B1A427 /* objc-sample-app-notification-extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = ACE7946520DC6ED200B1A427 /* objc-sample-app-notification-extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		ACE7947220DC6F1900B1A427 /* IterableAppExtensions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC90C4C420D8632D00EECA5D /* IterableAppExtensions.framework */; };
+		ACE7947920DC6F5E00B1A427 /* IterableSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2263DF20CF49B8009800EB /* IterableSDK.framework */; };
+		ACE7947A20DC6F5E00B1A427 /* IterableSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AC2263DF20CF49B8009800EB /* IterableSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		ACE7947E20DC6F7C00B1A427 /* IterableAppExtensions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC90C4C420D8632D00EECA5D /* IterableAppExtensions.framework */; };
+		ACE7947F20DC6F7C00B1A427 /* IterableAppExtensions.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AC90C4C420D8632D00EECA5D /* IterableAppExtensions.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -128,6 +135,27 @@
 			remoteGlobalIDString = AC90C4C320D8632D00EECA5D;
 			remoteInfo = "notification-extension";
 		};
+		ACE7946B20DC6ED200B1A427 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AC2263D620CF49B8009800EB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ACE7946420DC6ED200B1A427;
+			remoteInfo = "objc-sample-app-notification-extension";
+		};
+		ACE7947B20DC6F5E00B1A427 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AC2263D620CF49B8009800EB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AC2263DE20CF49B8009800EB;
+			remoteInfo = "swift-sdk";
+		};
+		ACE7948020DC6F7C00B1A427 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AC2263D620CF49B8009800EB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AC90C4C320D8632D00EECA5D;
+			remoteInfo = "notification-extension";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -150,6 +178,29 @@
 			files = (
 				AC98294E20D9DBC600796DAA /* IterableAppExtensions.framework in Embed Frameworks */,
 				AC98294420D9C9DF00796DAA /* IterableSDK.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ACE7947120DC6ED200B1A427 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				ACE7946D20DC6ED200B1A427 /* objc-sample-app-notification-extension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ACE7947D20DC6F5E00B1A427 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				ACE7947F20DC6F7C00B1A427 /* IterableAppExtensions.framework in Embed Frameworks */,
+				ACE7947A20DC6F5E00B1A427 /* IterableSDK.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -236,6 +287,11 @@
 		ACE7945B20DC472C00B1A427 /* CoffeeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CoffeeViewController.m; sourceTree = "<group>"; };
 		ACE7945D20DC520D00B1A427 /* DeeplinkHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeeplinkHandler.h; sourceTree = "<group>"; };
 		ACE7945E20DC520D00B1A427 /* DeeplinkHandler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeeplinkHandler.m; sourceTree = "<group>"; };
+		ACE7946020DC6D9D00B1A427 /* objc-sample-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "objc-sample-app.entitlements"; sourceTree = "<group>"; };
+		ACE7946520DC6ED200B1A427 /* objc-sample-app-notification-extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "objc-sample-app-notification-extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		ACE7946720DC6ED200B1A427 /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
+		ACE7946820DC6ED200B1A427 /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
+		ACE7946A20DC6ED200B1A427 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AE6D2D1801330BD6AD4BEB45 /* Pods-swift-sdk-swift-tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-swift-sdk-swift-tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-swift-sdk-swift-tests/Pods-swift-sdk-swift-tests.release.xcconfig"; sourceTree = "<group>"; };
 		DDD4A68DE6BBB9230E1FF789 /* Pods-swift-sdk-swift-tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-swift-sdk-swift-tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-swift-sdk-swift-tests/Pods-swift-sdk-swift-tests.debug.xcconfig"; sourceTree = "<group>"; };
 		EA3B895070C574A2D2D4FC80 /* libPods-swift-sdk-swift-tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-swift-sdk-swift-tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -303,6 +359,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ACE7947E20DC6F7C00B1A427 /* IterableAppExtensions.framework in Frameworks */,
+				ACE7947920DC6F5E00B1A427 /* IterableSDK.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ACE7946220DC6ED200B1A427 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ACE7947220DC6F1900B1A427 /* IterableAppExtensions.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -326,6 +392,7 @@
 				AC431DFC20D1DD7600BFAFD1 /* swift-sample-app */,
 				AC90C4A220D860F900EECA5D /* swift-sample-app-notification-extension */,
 				ACE7943820DC0F0400B1A427 /* objc-sample-app */,
+				ACE7946620DC6ED200B1A427 /* objc-sample-app-notification-extension */,
 				AC7B142C20D02CE200877BFE /* swift-sdk-swift-tests */,
 				AC7B143B20D02D8700877BFE /* swift-sdk-objc-tests */,
 				AC90C4D220D8632E00EECA5D /* notification-extension-tests */,
@@ -346,6 +413,7 @@
 				AC90C4C420D8632D00EECA5D /* IterableAppExtensions.framework */,
 				AC90C4CC20D8632E00EECA5D /* notification-extension-tests.xctest */,
 				ACE7943720DC0F0400B1A427 /* objc-sample-app.app */,
+				ACE7946520DC6ED200B1A427 /* objc-sample-app-notification-extension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -581,6 +649,7 @@
 		ACE7943820DC0F0400B1A427 /* objc-sample-app */ = {
 			isa = PBXGroup;
 			children = (
+				ACE7946020DC6D9D00B1A427 /* objc-sample-app.entitlements */,
 				ACE7945220DC13F600B1A427 /* Model */,
 				ACE7945120DC13EB00B1A427 /* Deep Links */,
 				ACE7945020DC13D100B1A427 /* ViewControllers */,
@@ -646,6 +715,16 @@
 				ACE7945820DC2F0D00B1A427 /* CoffeeType.m */,
 			);
 			name = Model;
+			sourceTree = "<group>";
+		};
+		ACE7946620DC6ED200B1A427 /* objc-sample-app-notification-extension */ = {
+			isa = PBXGroup;
+			children = (
+				ACE7946720DC6ED200B1A427 /* NotificationService.h */,
+				ACE7946820DC6ED200B1A427 /* NotificationService.m */,
+				ACE7946A20DC6ED200B1A427 /* Info.plist */,
+			);
+			path = "objc-sample-app-notification-extension";
 			sourceTree = "<group>";
 		};
 		B45C88EB52A42BAD4D6B1EAF /* Frameworks */ = {
@@ -833,15 +912,37 @@
 				ACE7943320DC0F0400B1A427 /* Sources */,
 				ACE7943420DC0F0400B1A427 /* Frameworks */,
 				ACE7943520DC0F0400B1A427 /* Resources */,
+				ACE7947120DC6ED200B1A427 /* Embed App Extensions */,
+				ACE7947D20DC6F5E00B1A427 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				ACE7946C20DC6ED200B1A427 /* PBXTargetDependency */,
+				ACE7947C20DC6F5E00B1A427 /* PBXTargetDependency */,
+				ACE7948120DC6F7C00B1A427 /* PBXTargetDependency */,
 			);
 			name = "objc-sample-app";
 			productName = "objc-sample-app";
 			productReference = ACE7943720DC0F0400B1A427 /* objc-sample-app.app */;
 			productType = "com.apple.product-type.application";
+		};
+		ACE7946420DC6ED200B1A427 /* objc-sample-app-notification-extension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = ACE7946E20DC6ED200B1A427 /* Build configuration list for PBXNativeTarget "objc-sample-app-notification-extension" */;
+			buildPhases = (
+				ACE7946120DC6ED200B1A427 /* Sources */,
+				ACE7946220DC6ED200B1A427 /* Frameworks */,
+				ACE7946320DC6ED200B1A427 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "objc-sample-app-notification-extension";
+			productName = "objc-sample-app-notification-extension";
+			productReference = ACE7946520DC6ED200B1A427 /* objc-sample-app-notification-extension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -894,6 +995,20 @@
 					};
 					ACE7943620DC0F0400B1A427 = {
 						CreatedOnToolsVersion = 9.4;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+							com.apple.Push = {
+								enabled = 1;
+							};
+							com.apple.SafariKeychain = {
+								enabled = 1;
+							};
+						};
+					};
+					ACE7946420DC6ED200B1A427 = {
+						CreatedOnToolsVersion = 9.4;
 					};
 				};
 			};
@@ -915,6 +1030,7 @@
 				AC431DFA20D1DD7600BFAFD1 /* swift-sample-app */,
 				AC90C4A020D860F800EECA5D /* swift-sample-app-notification-extension */,
 				ACE7943620DC0F0400B1A427 /* objc-sample-app */,
+				ACE7946420DC6ED200B1A427 /* objc-sample-app-notification-extension */,
 				AC7B142A20D02CE200877BFE /* swift-sdk-swift-tests */,
 				AC7B143920D02D8700877BFE /* swift-sdk-objc-tests */,
 				AC90C4CB20D8632E00EECA5D /* notification-extension-tests */,
@@ -982,6 +1098,13 @@
 				ACE7944620DC0F0400B1A427 /* LaunchScreen.storyboard in Resources */,
 				ACE7944320DC0F0400B1A427 /* Assets.xcassets in Resources */,
 				ACE7944120DC0F0400B1A427 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		ACE7946320DC6ED200B1A427 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1126,6 +1249,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		ACE7946120DC6ED200B1A427 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ACE7946920DC6ED200B1A427 /* NotificationService.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -1168,6 +1299,21 @@
 			isa = PBXTargetDependency;
 			target = AC90C4C320D8632D00EECA5D /* notification-extension */;
 			targetProxy = AC98294F20D9DBC600796DAA /* PBXContainerItemProxy */;
+		};
+		ACE7946C20DC6ED200B1A427 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ACE7946420DC6ED200B1A427 /* objc-sample-app-notification-extension */;
+			targetProxy = ACE7946B20DC6ED200B1A427 /* PBXContainerItemProxy */;
+		};
+		ACE7947C20DC6F5E00B1A427 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AC2263DE20CF49B8009800EB /* swift-sdk */;
+			targetProxy = ACE7947B20DC6F5E00B1A427 /* PBXContainerItemProxy */;
+		};
+		ACE7948120DC6F7C00B1A427 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AC90C4C320D8632D00EECA5D /* notification-extension */;
+			targetProxy = ACE7948020DC6F7C00B1A427 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1335,7 +1481,7 @@
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = BP98Z28R86;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -1365,7 +1511,7 @@
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = BP98Z28R86;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -1677,7 +1823,9 @@
 		ACE7944B20DC0F0500B1A427 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "objc-sample-app/objc-sample-app.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "objc-sample-app/Info.plist";
@@ -1694,7 +1842,9 @@
 		ACE7944C20DC0F0500B1A427 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "objc-sample-app/objc-sample-app.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "objc-sample-app/Info.plist";
@@ -1704,6 +1854,42 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "iterable.objc-sample-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		ACE7946F20DC6ED200B1A427 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = BP98Z28R86;
+				INFOPLIST_FILE = "objc-sample-app-notification-extension/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "iterable.objc-sample-app.objc-sample-app-notification-extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		ACE7947020DC6ED200B1A427 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = BP98Z28R86;
+				INFOPLIST_FILE = "objc-sample-app-notification-extension/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "iterable.objc-sample-app.objc-sample-app-notification-extension";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -1788,6 +1974,15 @@
 			buildConfigurations = (
 				ACE7944B20DC0F0500B1A427 /* Debug */,
 				ACE7944C20DC0F0500B1A427 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		ACE7946E20DC6ED200B1A427 /* Build configuration list for PBXNativeTarget "objc-sample-app-notification-extension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ACE7946F20DC6ED200B1A427 /* Debug */,
+				ACE7947020DC6ED200B1A427 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

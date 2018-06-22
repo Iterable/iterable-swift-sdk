@@ -6,8 +6,11 @@
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
+
 #import "AppDelegate.h"
 #import "DeeplinkHandler.h"
+
+@import IterableSDK;
 
 @interface AppDelegate ()
 
@@ -17,13 +20,22 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+    //ITBL: Setup Notifications
+    [self setupNotifications];
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        NSURL *url = [[NSURL alloc] initWithString:@"https://iterable-sample-app.firebaseapp.com/coffee?q=mo"];
-        [DeeplinkHandler handleURL:url];
-
-    });
+    //ITBL: Initialize API
+    IterableAPIConfig *config = [[IterableAPIConfig alloc] init];
+    [IterableAPI initializeAPIWithApiKey:@"a415841b631a4c97924bc09660c658fc"
+                           launchOptions:launchOptions
+                                  config:config
+                                   email:@"tapash@iterable.com"
+                                  userId:nil];
+    
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        NSURL *url = [[NSURL alloc] initWithString:@"https://iterable-sample-app.firebaseapp.com/coffee?q=mo"];
+//        [DeeplinkHandler handleURL:url];
+//
+//    });
 
     return YES;
 }
@@ -55,5 +67,48 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
+#pragma mark - notification registration
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    [IterableAPI.instance registerToken:deviceToken appName:@"objc-sample-app" pushServicePlatform:APNS_SANDBOX];
+}
+
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+    //TODO: handle
+}
+
+#pragma mark - UNUserNotificationCenterDelegate
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
+    completionHandler (UNAuthorizationOptionAlert | UNAuthorizationOptionBadge | UNAuthorizationOptionSound);
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
+    [IterableAppIntegration userNotificationCenter:center didReceive:response withCompletionHandler:completionHandler];
+}
+
+#pragma mark - private
+//ITBL:
+// Ask for permission for notifications etc.
+// setup self as delegate to listen to push notifications.
+- (void) setupNotifications {
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    center.delegate = self;
+    [center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
+        if (settings.authorizationStatus != UNAuthorizationStatusAuthorized) {
+            // not authorized, ask for permission
+            [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:(UNAuthorizationOptionAlert | UNAuthorizationOptionBadge | UNAuthorizationOptionSound) completionHandler:^(BOOL granted, NSError * _Nullable error) {
+                if (granted) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [UIApplication.sharedApplication registerForRemoteNotifications];
+                    });
+                } // TODO: handle errors
+            }];
+        } else {
+            // already authorized
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [UIApplication.sharedApplication registerForRemoteNotifications];
+            });
+        }
+    }];
+}
 
 @end
