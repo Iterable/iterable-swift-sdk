@@ -8,6 +8,8 @@
 
 #import "CoffeeViewController.h"
 
+@import IterableSDK;
+
 @interface CoffeeViewController ()
 
 @end
@@ -25,10 +27,26 @@
 
 #pragma mark action
 - (IBAction)buyButtonTap:(UIButton *)sender {
-    
+    if (self.coffeeType != nil) {
+        IterableAttributionInfo *attributionInfo = IterableAPI.instance.attributionInfo;
+        NSDictionary *dataFields;
+        if (attributionInfo != nil) {
+            dataFields = @{@"campaignId" : attributionInfo.campaignId,
+                           @"templateId" : attributionInfo.templateId,
+                           @"messageId" : attributionInfo.messageId
+                           };
+        } else {
+            dataFields = @{};
+        }
+        
+        NSNumber *price = [[NSNumber alloc] initWithDouble:10.0];
+        CommerceItem *item = [[CommerceItem alloc] initWithId:self.coffeeType.name.lowercaseString name:self.coffeeType.name price:price quantity:1];
+        [IterableAPI.instance trackPurchase:price items:@[item] dataFields:dataFields];
+    }
 }
 
 - (IBAction)cancelButtonTap:(UIButton *)sender {
+    [self.navigationController popViewControllerAnimated:true];
 }
 
 @end

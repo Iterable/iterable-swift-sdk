@@ -474,13 +474,13 @@
 			name = "Helper Files";
 			sourceTree = "<group>";
 		};
-		AC2C668820D4263F00D46CC9 /* Helper Files */ = {
+		AC2C668820D4263F00D46CC9 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
 				AC0674E120D8702F00C2806D /* swift-sample-app.entitlements */,
 				AC431E0920D1DD7700BFAFD1 /* Info.plist */,
 			);
-			name = "Helper Files";
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		AC2C668920D4265C00D46CC9 /* Storyboards */ = {
@@ -501,7 +501,7 @@
 				AC7125E420D427670043BBC1 /* ViewControllers */,
 				AC7125E320D427530043BBC1 /* Assets */,
 				AC2C668920D4265C00D46CC9 /* Storyboards */,
-				AC2C668820D4263F00D46CC9 /* Helper Files */,
+				AC2C668820D4263F00D46CC9 /* Supporting Files */,
 				AC431DFD20D1DD7600BFAFD1 /* AppDelegate.swift */,
 			);
 			path = "swift-sample-app";
@@ -649,13 +649,12 @@
 		ACE7943820DC0F0400B1A427 /* objc-sample-app */ = {
 			isa = PBXGroup;
 			children = (
-				ACE7946020DC6D9D00B1A427 /* objc-sample-app.entitlements */,
 				ACE7945220DC13F600B1A427 /* Model */,
 				ACE7945120DC13EB00B1A427 /* Deep Links */,
 				ACE7945020DC13D100B1A427 /* ViewControllers */,
 				ACE7944F20DC13C100B1A427 /* Assets */,
 				ACE7944E20DC13A900B1A427 /* Storyboards */,
-				ACE7944D20DC137E00B1A427 /* Helper Files */,
+				ACE7944D20DC137E00B1A427 /* Supporting Files */,
 				ACE7943920DC0F0400B1A427 /* AppDelegate.h */,
 				ACE7943A20DC0F0400B1A427 /* AppDelegate.m */,
 				ACE7944820DC0F0400B1A427 /* main.m */,
@@ -663,12 +662,13 @@
 			path = "objc-sample-app";
 			sourceTree = "<group>";
 		};
-		ACE7944D20DC137E00B1A427 /* Helper Files */ = {
+		ACE7944D20DC137E00B1A427 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
 				ACE7944720DC0F0400B1A427 /* Info.plist */,
+				ACE7946020DC6D9D00B1A427 /* objc-sample-app.entitlements */,
 			);
-			name = "Helper Files";
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		ACE7944E20DC13A900B1A427 /* Storyboards */ = {

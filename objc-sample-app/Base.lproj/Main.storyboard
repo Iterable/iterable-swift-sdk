@@ -97,11 +97,17 @@
                                             </userDefinedRuntimeAttribute>
                                             <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
                                         </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="buyButtonTap:" destination="ulh-Eh-voV" eventType="touchUpInside" id="Lh9-WU-NXK"/>
+                                        </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZeH-4c-Vdi">
                                         <rect key="frame" x="0.0" y="335.5" width="250" height="30"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                         <state key="normal" title="Cancel"/>
+                                        <connections>
+                                            <action selector="cancelButtonTap:" destination="ulh-Eh-voV" eventType="touchUpInside" id="tOL-w8-9VK"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                             </stackView>
