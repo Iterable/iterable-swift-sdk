@@ -8,29 +8,24 @@
 
 #import "NotificationService.h"
 
+@import IterableAppExtensions;
+
 @interface NotificationService ()
 
-@property (nonatomic, strong) void (^contentHandler)(UNNotificationContent *contentToDeliver);
-@property (nonatomic, strong) UNMutableNotificationContent *bestAttemptContent;
+@property (nonatomic, strong) ITBNotificationServiceExtension *baseExtension;
 
 @end
 
 @implementation NotificationService
 
 - (void)didReceiveNotificationRequest:(UNNotificationRequest *)request withContentHandler:(void (^)(UNNotificationContent * _Nonnull))contentHandler {
-    self.contentHandler = contentHandler;
-    self.bestAttemptContent = [request.content mutableCopy];
     
-    // Modify the notification content here...
-    self.bestAttemptContent.title = [NSString stringWithFormat:@"%@ [modified]", self.bestAttemptContent.title];
-    
-    self.contentHandler(self.bestAttemptContent);
+    self.baseExtension = [[ITBNotificationServiceExtension alloc] init];
+    [self.baseExtension didReceiveNotificationRequest:request withContentHandler:contentHandler];
 }
 
 - (void)serviceExtensionTimeWillExpire {
-    // Called just before the extension will be terminated by the system.
-    // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
-    self.contentHandler(self.bestAttemptContent);
+    [self.baseExtension serviceExtensionTimeWillExpire];
 }
 
 @end
