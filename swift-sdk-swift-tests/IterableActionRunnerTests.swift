@@ -15,7 +15,7 @@ class IterableActionRunnerTests: XCTestCase {
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
-        _ = IterableAPI.createSharedInstance(withApiKey: "", email: "", userId: nil, launchOptions: nil, useCustomLaunchOptions: false)
+        IterableAPI.initializeAPI(apiKey:"", config: IterableAPIConfig())
     }
     
     override func tearDown() {

@@ -15,15 +15,12 @@ extension IterableAPI {
      - parameter launchOptions: from application:didFinishLaunchingWithOptions or custom launchOptions
      - parameter useCustomLaunchOptions: whether or not to use the custom launchOption without the UIApplicationLaunchOptionsRemoteNotificationKey
      */
-    @objc public func performDefaultNotificationAction(withLaunchOptions launchOptions: [AnyHashable : Any]?, useCustomLaunchOptions: Bool = false) {
+    func performDefaultNotificationAction(withLaunchOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) {
         guard let launchOptions = launchOptions else {
             return
         }
-        
-        if useCustomLaunchOptions {
-            IterableAppIntegration.minion.performDefaultNotificationAction(launchOptions)
-        } else if let remoteNotificationPayload = launchOptions[UIApplicationLaunchOptionsKey.remoteNotification] as? [AnyHashable : Any] {
-            IterableAppIntegration.minion.performDefaultNotificationAction(remoteNotificationPayload)
+        if let remoteNotificationPayload = launchOptions[UIApplicationLaunchOptionsKey.remoteNotification] as? [AnyHashable : Any] {
+            IterableAppIntegration.minion?.performDefaultNotificationAction(remoteNotificationPayload)
         }
     }
     
@@ -341,15 +338,16 @@ extension IterableAPI {
         assertionFailure("either email or userId should be set")
     }
     
-    static func createSharedInstance(withApiKey apiKey: String,
-                                            email: String? = nil,
-                                            userId: String? = nil,
-                                            launchOptions: Dictionary<AnyHashable, Any>? = nil,
-                                            useCustomLaunchOptions: Bool = false,
-                                            dateProvider: DateProviderProtocol = SystemDateProvider()) -> IterableAPI {
+    // Internal Only used in unit tests.
+    @discardableResult static func initializeAPI(apiKey: String,
+                                                 launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil,
+                                                 config: IterableAPIConfig? = nil,
+                                                 email: String? = nil,
+                                                 userId: String? = nil,
+                                                 dateProvider: DateProviderProtocol) -> IterableAPI {
         queue.sync {
             if _sharedInstance == nil {
-                _sharedInstance = IterableAPI(apiKey: apiKey, email: email, userId: userId, launchOptions: launchOptions, useCustomLaunchOptions: useCustomLaunchOptions, dateProvider: dateProvider)
+                _sharedInstance = IterableAPI(apiKey: apiKey, config: config, email: email, userId: userId, dateProvider: dateProvider)
             }
         }
         return _sharedInstance!

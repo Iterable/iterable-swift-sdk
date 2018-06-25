@@ -71,13 +71,13 @@ class SystemVersionInfo : VersionInfoProtocol {
 }
 
 struct IterableAppIntegrationInternal {
-    private let tracker: PushTrackerProtocol?
+    private let tracker: PushTrackerProtocol
     private let actionRunner: ActionRunnerProtocol
     private let versionInfo: VersionInfoProtocol
 
-    init(tracker: PushTrackerProtocol? = IterableAPI.instance,
-         actionRunner: ActionRunnerProtocol = IterableActionRunner(),
-         versionInfo: VersionInfoProtocol = SystemVersionInfo()) {
+    init(tracker: PushTrackerProtocol,
+         actionRunner: ActionRunnerProtocol,
+         versionInfo: VersionInfoProtocol) {
         self.tracker = tracker
         self.actionRunner = actionRunner
         self.versionInfo = versionInfo
@@ -159,7 +159,7 @@ struct IterableAppIntegrationInternal {
         
         // Track push open
         if let _ = dataFields[ITBL_KEY_ACTION_IDENTIFIER] {
-            tracker?.trackPushOpen(userInfo, dataFields: dataFields)
+            tracker.trackPushOpen(userInfo, dataFields: dataFields)
         }
         
         //Execute the action
@@ -174,7 +174,7 @@ struct IterableAppIntegrationInternal {
     func performDefaultNotificationAction(_ userInfo:[AnyHashable : Any]) {
         // Track push open
         let dataFields = [ITBL_KEY_ACTION_IDENTIFIER : ITBL_VALUE_DEFAULT_PUSH_OPEN_ACTION_ID]
-        tracker?.trackPushOpen(userInfo, dataFields: dataFields)
+        tracker.trackPushOpen(userInfo, dataFields: dataFields)
         
         guard let itbl = IterableAppIntegrationInternal.itblValue(fromUserInfo: userInfo) else {
             return

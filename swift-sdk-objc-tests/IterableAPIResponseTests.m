@@ -23,7 +23,7 @@ static CGFloat const IterableResponseExpectationTimeout = 1.0;
 
 - (void)setUp {
     [super setUp];
-    [IterableAPI createSharedInstanceWithApiKey:@"" email:@"" userId:nil launchOptions:nil useCustomLaunchOptions:nil];
+    [IterableAPI initializeAPIWithApiKey:@"" launchOptions:nil config: nil email:nil userId:nil];
 }
 
 - (void)tearDown {
