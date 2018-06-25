@@ -60,8 +60,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // MARK: Deep link
     func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
-
-        return false
+        
+        if let url = userActivity.webpageURL {
+            return DeeplinkHandler.handle(url: url)
+        } else {
+            return false
+        }
     }
     
     //MARK: Notification
