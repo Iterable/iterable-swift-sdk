@@ -67,6 +67,17 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
+#pragma mark - Url handling
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler {
+    
+    if (userActivity.webpageURL != nil) {
+        return [DeeplinkHandler handleURL:userActivity.webpageURL];
+    } else {
+        return false;
+    }
+    
+}
+
 #pragma mark - notification registration
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     [IterableAPI.instance registerToken:deviceToken appName:@"objc-sample-app" pushServicePlatform:APNS_SANDBOX];
