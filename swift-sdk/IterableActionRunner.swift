@@ -61,8 +61,7 @@ class IterableActionRunner : NSObject, ActionRunnerProtocol {
     }
     
     private func open(url: URL, action: IterableAction) {
-        guard urlDelegate?.handleIterableURL(url, fromAction: action) == false else {
-            // only proceed if it was not handled
+        if urlDelegate?.handleIterableURL(url, fromAction: action) == true {
             return
         }
         
