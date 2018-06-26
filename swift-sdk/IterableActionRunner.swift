@@ -38,12 +38,6 @@ class IterableActionRunner : NSObject, ActionRunnerProtocol {
     private let customActionDelegate: IterableCustomActionDelegate?
     private let urlOpener: UrlOpenerProtocol
     
-    override convenience init() {
-        self.init(urlDelegate: IterableAPI.instance?.urlDelegate,
-                  customActionDelegate: IterableAPI.instance?.customActionDelegate,
-                  urlOpener: AppUrlOpener())
-    }
-    
     init(urlDelegate: IterableURLDelegate?, customActionDelegate: IterableCustomActionDelegate?, urlOpener: UrlOpenerProtocol) {
         self.urlDelegate = urlDelegate
         self.customActionDelegate = customActionDelegate
@@ -67,8 +61,7 @@ class IterableActionRunner : NSObject, ActionRunnerProtocol {
     }
     
     private func open(url: URL, action: IterableAction) {
-        guard urlDelegate?.handleIterableURL(url, fromAction: action) == false else {
-            // only proceed if it was not handled
+        if urlDelegate?.handleIterableURL(url, fromAction: action) == true {
             return
         }
         

@@ -21,7 +21,8 @@ class IterableNotificationResponseTests: XCTestCase {
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
-        _ = IterableAPI.createSharedInstance(withApiKey: "", email: "", userId: nil, launchOptions: nil, useCustomLaunchOptions: false, dateProvider: dateProvider)
+        IterableAPI.clearInstance()
+        IterableAPI.initialize(apiKey:"", config: IterableConfig(), dateProvider: dateProvider)
     }
     
     override func tearDown() {

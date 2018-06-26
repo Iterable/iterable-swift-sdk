@@ -30,7 +30,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
 - (void)setUp {
     [super setUp];
     
-    [IterableAPI createSharedInstanceWithApiKey:@"" email:@"" userId:nil launchOptions:nil useCustomLaunchOptions:nil];
+    [IterableAPI initializeWithApiKey:@"" launchOptions:nil config: nil email:nil userId:nil];
 }
 
 - (void)tearDown {
@@ -85,7 +85,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     XCTAssertEqualObjects(@"Unspecified", [IterableAPI userInterfaceIdiomEnumToString:192387]);
 }
 
-- (void)testUniversalDeepLinkRewrite {
+- (void)testUniversalDeeplinkRewrite {
     XCTestExpectation *expectation = [self expectationWithDescription:@"High Expectations"];
     NSURL *iterableLink = [NSURL URLWithString:iterableRewriteURL];
     ITEActionBlock aBlock = ^(NSString* redirectUrl) {
@@ -101,7 +101,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     }];
 }
 
-- (void)testUniversalDeepLinkNoRewrite {
+- (void)testUniversalDeeplinkNoRewrite {
     XCTestExpectation *expectation = [self expectationWithDescription:@"High Expectations"];
     NSURL *normalLink = [NSURL URLWithString:iterableNoRewriteURL];
     ITEActionBlock uBlock = ^(NSString* redirectUrl) {
@@ -117,7 +117,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     }];
 }
 
-- (void)testDeepLinkAttributionInfo {
+- (void)testDeeplinkAttributionInfo {
     NSNumber *campaignId = [NSNumber numberWithLong:83306];
     NSNumber *templateId = [NSNumber numberWithInt:124348];
     NSString *messageId = @"93125f33ba814b13a882358f8e0852e0";
@@ -156,7 +156,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     }];
 }
 
-- (void)testUniversalDeepLinkHttp {
+- (void)testUniversalDeeplinkHttp {
     XCTestExpectation *expectation = [self expectationWithDescription:@"High Expectations"];
     NSURL *googleHttpLink = [NSURL URLWithString:googleHttps];
     ITEActionBlock googleHttpBlock = ^(NSString* redirectUrl) {
@@ -173,7 +173,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     }];
 }
 
-- (void)testUniversalDeepLinkHttps {
+- (void)testUniversalDeeplinkHttps {
     XCTestExpectation *expectation = [self expectationWithDescription:@"High Expectations"];
     NSString *googleHttps = @"https://www.google.com";
     
@@ -192,7 +192,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
 }
 
 - (void)testURLQueryParamRewrite {
-    [IterableAPI createSharedInstanceWithApiKey:@"" email:@"" userId:nil launchOptions:nil useCustomLaunchOptions:nil];
+    [IterableAPI initializeWithApiKey:@"" launchOptions:nil config: nil email:nil userId:nil];
 
     NSCharacterSet* set = [NSCharacterSet URLQueryAllowedCharacterSet];
     
