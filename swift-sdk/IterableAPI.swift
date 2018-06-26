@@ -840,6 +840,17 @@ import Foundation
     @objc public static func getAndTrackDeeplink(_ webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {
         IterableDeeplinkManager.instance.getAndTrackDeeplink(webpageURL: webpageURL, callbackBlock: callbackBlock)
     }
+
+    /**
+     Tracks a link click and passes the redirected URL to the callback
+     
+     - parameter applinkURL:      the URL that was clicked
+     - parameter callbackBlock:   the callback to send when the link is resolved
+     - returns: true if the link was an Iterable tracking link
+     */
+    @objc public static func resolve(applinkURL: URL, callbackBlock: @escaping ItblUrlBlock) {
+        IterableDeeplinkManager.instance.resolve(applinkURL:applinkURL, callbackBlock:callbackBlock)
+    }
     
     // MARK: For Private and Internal Use
     static var _sharedInstance: IterableAPI?

@@ -23,32 +23,46 @@ class IterableDeeplinkManager : NSObject {
      - remark:            passes the string of the redirected URL to the callback
      */
     func getAndTrackDeeplink(webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {
+        _ = resolve(applinkURL: webpageURL) { (resolvedUrl) in
+            callbackBlock(resolvedUrl?.absoluteString)
+        }
+    }
+
+    /**
+     Tracks a link click and passes the redirected URL to the callback
+     
+     - parameter applinkURL:      the URL that was clicked
+     - parameter callbackBlock:   the callback to send when the link is resolved
+     - returns: true if the link was an Iterable tracking link
+     - remark:            passes the string of the redirected URL to the callback
+     */
+    func resolve(applinkURL: URL, callbackBlock: @escaping ItblUrlBlock) {
         deepLinkCampaignId = nil
         deepLinkTemplateId = nil
         deepLinkMessageId = nil
         
-        let urlString = webpageURL.absoluteString
-        if isDeeplink(urlString) {
-
-            let trackAndRedirectTask = redirectUrlSession.dataTask(with: webpageURL) {[unowned self] (data, response, error) in
+        if isDeeplink(applinkURL.absoluteString) {
+            let trackAndRedirectTask = redirectUrlSession.dataTask(with: applinkURL) {[unowned self] (data, response, error) in
                 if let error = error {
                     ITBError("error: \(error.localizedDescription)")
                     callbackBlock(self.deepLinkLocation)
                     return
                 }
                 
-                if let deepLinkCampaignId = self.deepLinkCampaignId, let deepLinkTemplateId = self.deepLinkTemplateId, let deepLinkMessageId = self.deepLinkMessageId {
+                if let deepLinkCampaignId = self.deepLinkCampaignId,
+                    let deepLinkTemplateId = self.deepLinkTemplateId,
+                    let deepLinkMessageId = self.deepLinkMessageId {
                     IterableAPI.instance?.attributionInfo = IterableAttributionInfo(campaignId: deepLinkCampaignId, templateId: deepLinkTemplateId, messageId: deepLinkMessageId)
                 }
                 callbackBlock(self.deepLinkLocation)
             }
-
+            
             trackAndRedirectTask.resume()
         } else {
-            callbackBlock(urlString)
+            callbackBlock(applinkURL)
         }
     }
-    
+
     private func isDeeplink(_ urlString: String) -> Bool {
         guard let regex = try? NSRegularExpression(pattern: ITBL_DEEPLINK_IDENTIFIER, options: []) else {
             return false
@@ -60,7 +74,7 @@ class IterableDeeplinkManager : NSObject {
         return URLSession(configuration: .default, delegate: self, delegateQueue: nil)
     } ()
     
-    private var deepLinkLocation: String?
+    private var deepLinkLocation: URL?
     private var deepLinkCampaignId: NSNumber?
     private var deepLinkTemplateId: NSNumber?
     private var deepLinkMessageId: String?
@@ -82,7 +96,7 @@ extension IterableDeeplinkManager : URLSessionDelegate , URLSessionTaskDelegate 
         - completionHandler: the completionHandler
      */
     public func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) {
-        deepLinkLocation = request.url?.absoluteString
+        deepLinkLocation = request.url
         
         guard let headerFields = response.allHeaderFields as? [String : String] else {
             return
