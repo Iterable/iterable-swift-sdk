@@ -71,7 +71,7 @@ class IterableDeeplinkManager : NSObject {
     }
     
     private lazy var redirectUrlSession: URLSession = {
-        return URLSession(configuration: .default, delegate: self, delegateQueue: nil)
+        return URLSession(configuration: .default, delegate: self, delegateQueue: OperationQueue.main)
     } ()
     
     private var deeplinkLocation: URL?
