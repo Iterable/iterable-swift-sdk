@@ -124,7 +124,8 @@ extension AppDelegate : UNUserNotificationCenterDelegate {
 extension AppDelegate : IterableURLDelegate {
     // return true if we handled the url
     func handleIterableURL(_ url: URL, fromAction: IterableAction) -> Bool {
-        return false
+        DeeplinkHandler.handle(url: url)
+        return DeeplinkHandler.canHandle(url: url)
     }
 }
 
@@ -133,6 +134,11 @@ extension AppDelegate : IterableCustomActionDelegate {
     // handle the cutom action from push
     // return value true/false doesn't matter here, stored for future use
     func handleIterableCustomAction(_ action: IterableAction) -> Bool {
+        if action.type == "handleFindCoffee" {
+            if let query = action.userInput {
+                DeeplinkHandler.handle(url: URL(string: "https://majumder.me/coffee?q=\(query)")!)
+            }
+        }
         return false
     }
 }
