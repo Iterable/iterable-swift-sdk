@@ -6,8 +6,8 @@
 	<string>development</string>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>applinks:links.iterable.com</string>
-		<string>applinks:iterable-sample-app.firebaseapp.com</string>
+		<string>applinks:majumder.me</string>
+		<string>applinks:links.majumder.me</string>
 	</array>
 </dict>
 </plist>

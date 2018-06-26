@@ -64,9 +64,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //ITBL:
         IterableAPI.resolve(applinkURL: url) { (resolvedUrl) in
             if let resolvedUrl = resolvedUrl {
-                DispatchQueue.main.async {
-                    _ = DeeplinkHandler.handle(url: resolvedUrl)
-                }
+                DeeplinkHandler.handle(url: resolvedUrl)
             }
         }
 
