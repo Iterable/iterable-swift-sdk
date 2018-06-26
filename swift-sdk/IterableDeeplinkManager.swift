@@ -36,7 +36,7 @@ class IterableDeeplinkManager : NSObject {
      - returns: true if the link was an Iterable tracking link
      - remark:            passes the string of the redirected URL to the callback
      */
-    func resolve(applinkURL: URL, callbackBlock: @escaping ItblUrlBlock) {
+    func resolve(applinkURL: URL, callbackBlock: @escaping ITBURLCallback) {
         deeplinkCampaignId = nil
         deeplinkTemplateId = nil
         deeplinkMessageId = nil

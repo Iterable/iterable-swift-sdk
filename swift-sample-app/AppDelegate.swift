@@ -25,7 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         config.customActionDelegate = self
         config.urlDelegate = self
         // !! Replace with your api key and email here.
-        IterableAPI.initializeAPI(apiKey:"a415841b631a4c97924bc09660c658fc",
+        IterableAPI.initialize(apiKey:"a415841b631a4c97924bc09660c658fc",
                                   launchOptions:launchOptions,
                                   config: config,
                                   email:"tapash@iterable.com")

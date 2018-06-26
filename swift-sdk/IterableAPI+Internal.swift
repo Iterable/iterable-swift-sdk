@@ -339,7 +339,7 @@ extension IterableAPI {
     }
     
     // Internal Only used in unit tests.
-    @discardableResult static func initializeAPI(apiKey: String,
+    @discardableResult static func initialize(apiKey: String,
                                                  launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil,
                                                  config: IterableAPIConfig? = nil,
                                                  email: String? = nil,

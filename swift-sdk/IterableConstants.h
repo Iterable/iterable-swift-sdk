@@ -140,7 +140,7 @@ extern NSString *const ITBL_DEVICE_USER_INTERFACE;
 
 typedef void (^ITEActionBlock)(NSString *);
 
-typedef void (^ItblUrlBlock)(NSURL *);
+typedef void (^ITBURLCallback)(NSURL *);
 
 /**
  The prototype for the completion handler block that gets called when an Iterable call is successful

@@ -42,23 +42,23 @@ import Foundation
     /// - parameter email: user email for the logged in user.
     /// - parameter userId: user id for the logged in user
     /// - returns: an instance of IterableAPI
-    @objc @discardableResult public static func initializeAPI(apiKey: String,
+    @objc @discardableResult public static func initialize(apiKey: String,
                                                               launchOptions: [UIApplicationLaunchOptionsKey: Any]? = nil,
                                                               config: IterableAPIConfig? = nil,
                                                               email: String? = nil,
                                                               userId: String? = nil) -> IterableAPI {
-        return initializeAPI(apiKey: apiKey, launchOptions: launchOptions, config:config, email: email, userId:userId, dateProvider: SystemDateProvider())
+        return initialize(apiKey: apiKey, launchOptions: launchOptions, config:config, email: email, userId:userId, dateProvider: SystemDateProvider())
     }
     
     /**
      Get the previously instantiated singleton instance of the API
      
-     Must be initialized with `initializeAPI:` before
+     Must be initialized with `initialize:` before
      calling this class method.
      
      - returns: the existing `IterableAPI` instance
      
-     - warning: `instance` will return `nil` if called before calling `initializeAPI`
+     - warning: `instance` will return `nil` if called before calling `initialize`
      */
     @objc public static var instance : IterableAPI? {
         if _sharedInstance == nil {
@@ -848,7 +848,7 @@ import Foundation
      - parameter callbackBlock:   the callback to send when the link is resolved
      - returns: true if the link was an Iterable tracking link
      */
-    @objc public static func resolve(applinkURL: URL, callbackBlock: @escaping ItblUrlBlock) {
+    @objc public static func resolve(applinkURL: URL, callbackBlock: @escaping ITBURLCallback) {
         IterableDeeplinkManager.instance.resolve(applinkURL:applinkURL, callbackBlock:callbackBlock)
     }
     

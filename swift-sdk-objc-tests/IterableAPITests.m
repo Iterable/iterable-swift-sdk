@@ -30,7 +30,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
 - (void)setUp {
     [super setUp];
     
-    [IterableAPI initializeAPIWithApiKey:@"" launchOptions:nil config: nil email:nil userId:nil];
+    [IterableAPI initializeWithApiKey:@"" launchOptions:nil config: nil email:nil userId:nil];
 }
 
 - (void)tearDown {
@@ -192,7 +192,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
 }
 
 - (void)testURLQueryParamRewrite {
-    [IterableAPI initializeAPIWithApiKey:@"" launchOptions:nil config: nil email:nil userId:nil];
+    [IterableAPI initializeWithApiKey:@"" launchOptions:nil config: nil email:nil userId:nil];
 
     NSCharacterSet* set = [NSCharacterSet URLQueryAllowedCharacterSet];
     
