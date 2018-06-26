@@ -11,6 +11,10 @@ import UIKit
 import IterableSDK
 
 class CoffeeListTableViewController: UITableViewController {
+    // Whether we are checking for inAppMessages
+    let checkForInApp = false
+    let inAppCheckInterval = 5.0
+
     /**
      Set this value to show search.
      */
@@ -39,16 +43,20 @@ class CoffeeListTableViewController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        timer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) {_ in
-            IterableAPI.instance?.spawn(inAppNotification: { (_) in
-            })
+        if checkForInApp {
+            timer = Timer.scheduledTimer(withTimeInterval: inAppCheckInterval, repeats: true) {_ in
+                IterableAPI.instance?.spawn(inAppNotification: { (_) in
+                })
+            }
         }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        timer?.invalidate()
+        if checkForInApp {
+            timer?.invalidate()
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {

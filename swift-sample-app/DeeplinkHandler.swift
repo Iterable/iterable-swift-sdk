@@ -12,21 +12,13 @@ import UIKit
 import IterableSDK
 
 struct DeeplinkHandler {
-    // return true if we handled showing of the deep link url.
-    static func handle(url: URL) -> Bool {
-        if url.host == "iterable-sample-app.firebaseapp.com" {
-            show(deeplink: Deeplink.from(url: url))
-            return true
-        } else if url.host == "links.iterable.com" {
-            IterableAPI.getAndTrackDeeplink(url) { (originalUrlString) in
-                if let originalUrlString = originalUrlString, let originalUrl = URL(string: originalUrlString)  {
-                    show(deeplink: Deeplink.from(url: originalUrl))
-                }
-            }
-            return true
-        } else {
-            // unhandled deep link
-            return false
+    static func canHandle(url: URL) -> Bool {
+        return Deeplink.from(url: url) != nil
+    }
+    
+    static func handle(url: URL) {
+        if let deeplink = Deeplink.from(url: url) {
+            show(deeplink: deeplink)
         }
     }
     
@@ -48,6 +40,9 @@ struct DeeplinkHandler {
         let coffeeVC = CoffeeViewController.createFromStoryboard()
         coffeeVC.coffee = coffee
         if let rootNav = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController {
+            if let coffeeListVC = rootNav.viewControllers[0] as? CoffeeListTableViewController {
+                coffeeListVC.searchTerm = nil
+            }
             rootNav.popToRootViewController(animated: false)
             rootNav.pushViewController(coffeeVC, animated: true)
         }
@@ -74,9 +69,7 @@ struct DeeplinkHandler {
         case black
         case coffee(q:String?)
         
-        private static var `default` : Deeplink = .coffee(q:nil)
-            
-        static func from(url: URL) -> Deeplink {
+        static func from(url: URL) -> Deeplink? {
             let page = url.lastPathComponent.lowercased()
             switch page {
             case "mocha":
@@ -89,9 +82,8 @@ struct DeeplinkHandler {
                 return .black
             case "coffee":
                 return parseCoffeeList(fromUrl: url)
-                
             default:
-                return Deeplink.default
+                return nil
             }
         }
         

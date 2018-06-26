@@ -30,9 +30,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                   config: config,
                                   email:"tapash@iterable.com")
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            _ = DeeplinkHandler.handle(url: URL(string: "https://iterable-sample-app.firebaseapp.com/coffee?q=mo")!)
-        }
         return true
     }
 
@@ -60,12 +57,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // MARK: Deep link
     func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
-        
-        if let url = userActivity.webpageURL {
-            return DeeplinkHandler.handle(url: url)
-        } else {
+        guard let url = userActivity.webpageURL else {
             return false
         }
+
+        //ITBL:
+        IterableAPI.resolve(applinkURL: url) { (resolvedUrl) in
+            if let resolvedUrl = resolvedUrl {
+                DispatchQueue.main.async {
+                    _ = DeeplinkHandler.handle(url: resolvedUrl)
+                }
+            }
+        }
+
+        return DeeplinkHandler.canHandle(url: url)
     }
     
     //MARK: Notification
