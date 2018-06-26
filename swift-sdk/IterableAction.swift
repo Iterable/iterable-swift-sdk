@@ -18,7 +18,7 @@ import Foundation
     /**
      * Action type
      *
-     * If type is "openUrl", the SDK will call `IterableURLDelegate` and then try to open the URL if
+     * If type is `openUrl`, the SDK will call `IterableURLDelegate` and then try to open the URL if
      * the delegate returned false or was not set.
      *
      * For other types, `IterableCustomActionDelegate` will be called.
