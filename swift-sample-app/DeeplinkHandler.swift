@@ -1,5 +1,5 @@
 //
-//  DeepLinkHandler.swift
+//  DeeplinkHandler.swift
 //  iOS Demo
 //
 //  Created by Tapash Majumder on 5/18/18.

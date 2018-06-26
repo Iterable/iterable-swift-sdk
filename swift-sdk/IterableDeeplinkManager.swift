@@ -37,24 +37,24 @@ class IterableDeeplinkManager : NSObject {
      - remark:            passes the string of the redirected URL to the callback
      */
     func resolve(applinkURL: URL, callbackBlock: @escaping ItblUrlBlock) {
-        deepLinkCampaignId = nil
-        deepLinkTemplateId = nil
-        deepLinkMessageId = nil
+        deeplinkCampaignId = nil
+        deeplinkTemplateId = nil
+        deeplinkMessageId = nil
         
         if isDeeplink(applinkURL.absoluteString) {
             let trackAndRedirectTask = redirectUrlSession.dataTask(with: applinkURL) {[unowned self] (data, response, error) in
                 if let error = error {
                     ITBError("error: \(error.localizedDescription)")
-                    callbackBlock(self.deepLinkLocation)
+                    callbackBlock(self.deeplinkLocation)
                     return
                 }
                 
-                if let deepLinkCampaignId = self.deepLinkCampaignId,
-                    let deepLinkTemplateId = self.deepLinkTemplateId,
-                    let deepLinkMessageId = self.deepLinkMessageId {
-                    IterableAPI.instance?.attributionInfo = IterableAttributionInfo(campaignId: deepLinkCampaignId, templateId: deepLinkTemplateId, messageId: deepLinkMessageId)
+                if let deeplinkCampaignId = self.deeplinkCampaignId,
+                    let deeplinkTemplateId = self.deeplinkTemplateId,
+                    let deeplinkMessageId = self.deeplinkMessageId {
+                    IterableAPI.instance?.attributionInfo = IterableAttributionInfo(campaignId: deeplinkCampaignId, templateId: deeplinkTemplateId, messageId: deeplinkMessageId)
                 }
-                callbackBlock(self.deepLinkLocation)
+                callbackBlock(self.deeplinkLocation)
             }
             
             trackAndRedirectTask.resume()
@@ -74,10 +74,10 @@ class IterableDeeplinkManager : NSObject {
         return URLSession(configuration: .default, delegate: self, delegateQueue: nil)
     } ()
     
-    private var deepLinkLocation: URL?
-    private var deepLinkCampaignId: NSNumber?
-    private var deepLinkTemplateId: NSNumber?
-    private var deepLinkMessageId: String?
+    private var deeplinkLocation: URL?
+    private var deeplinkCampaignId: NSNumber?
+    private var deeplinkTemplateId: NSNumber?
+    private var deeplinkMessageId: String?
 
     // Singleton, only initialized via 'instance'
     private override init() {
@@ -96,7 +96,7 @@ extension IterableDeeplinkManager : URLSessionDelegate , URLSessionTaskDelegate 
         - completionHandler: the completionHandler
      */
     public func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) {
-        deepLinkLocation = request.url
+        deeplinkLocation = request.url
         
         guard let headerFields = response.allHeaderFields as? [String : String] else {
             return
@@ -107,11 +107,11 @@ extension IterableDeeplinkManager : URLSessionDelegate , URLSessionTaskDelegate 
 
         for cookie in HTTPCookie.cookies(withResponseHeaderFields: headerFields, for: url) {
             if cookie.name == "iterableEmailCampaignId" {
-                deepLinkCampaignId = number(fromString: cookie.value)
+                deeplinkCampaignId = number(fromString: cookie.value)
             } else if cookie.name == "iterableTemplateId" {
-                deepLinkTemplateId = number(fromString: cookie.value)
+                deeplinkTemplateId = number(fromString: cookie.value)
             } else if cookie.name == "iterableMessageId" {
-                deepLinkMessageId = cookie.value
+                deeplinkMessageId = cookie.value
             }
         }
         
