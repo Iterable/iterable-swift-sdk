@@ -13,18 +13,11 @@
 
 @implementation DeeplinkHandler
 
-+ (bool)handleURL:(NSURL *)url {
-    if ([url.host  isEqualToString: @"iterable-sample-app.firebaseapp.com"]) {
-        [DeeplinkHandler showURL:url];
-        return true;
-    } else if ([url.host isEqualToString:@"links.iterable.com"]) {
-        return true;
-    } else {
-        return false;
-    }
++ (bool)canHandleURL:(NSURL *)url {
+    return YES;
 }
 
-+ (void)showURL:(NSURL *)url {
++ (void)handleURL:(NSURL *)url {
     NSString *page = url.lastPathComponent.lowercaseString;
     if ([page isEqualToString:@"mocha"]) {
         [DeeplinkHandler showCoffee:CoffeeType.mocha];

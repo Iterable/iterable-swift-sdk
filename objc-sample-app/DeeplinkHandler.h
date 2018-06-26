@@ -10,6 +10,7 @@
 
 @interface DeeplinkHandler : NSObject
 
-+ (bool)handleURL:(NSURL *)url;
++ (bool)canHandleURL:(NSURL *)url;
++ (void)handleURL:(NSURL *)url;
 
 @end

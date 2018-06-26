@@ -24,19 +24,13 @@
     [self setupNotifications];
     
     //ITBL: Initialize API
-    IterableAPIConfig *config = [[IterableAPIConfig alloc] init];
-    [IterableAPI initializeAPIWithApiKey:@"a415841b631a4c97924bc09660c658fc"
+    IterableConfig *config = [[IterableConfig alloc] init];
+    [IterableAPI initializeWithApiKey:@"a415841b631a4c97924bc09660c658fc"
                            launchOptions:launchOptions
                                   config:config
                                    email:@"tapash@iterable.com"
                                   userId:nil];
     
-//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//        NSURL *url = [[NSURL alloc] initWithString:@"https://iterable-sample-app.firebaseapp.com/coffee?q=mo"];
-//        [DeeplinkHandler handleURL:url];
-//
-//    });
-
     return YES;
 }
 
@@ -70,12 +64,19 @@
 #pragma mark - Url handling
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler {
     
-    if (userActivity.webpageURL != nil) {
-        return [DeeplinkHandler handleURL:userActivity.webpageURL];
-    } else {
-        return false;
+    //ITBL:
+    NSURL *url = userActivity.webpageURL;
+    if (url == nil) {
+        return NO;
     }
     
+    [IterableAPI resolveWithApplinkURL:url callbackBlock:^(NSURL *resolvedUrl) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [DeeplinkHandler handleURL:resolvedUrl];
+        });
+    }];
+    
+    return [DeeplinkHandler canHandleURL:url];
 }
 
 #pragma mark - notification registration
