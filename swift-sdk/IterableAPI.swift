@@ -44,7 +44,7 @@ import Foundation
     /// - returns: an instance of IterableAPI
     @objc @discardableResult public static func initialize(apiKey: String,
                                                               launchOptions: [UIApplicationLaunchOptionsKey: Any]? = nil,
-                                                              config: IterableAPIConfig? = nil,
+                                                              config: IterableConfig? = nil,
                                                               email: String? = nil,
                                                               userId: String? = nil) -> IterableAPI {
         return initialize(apiKey: apiKey, launchOptions: launchOptions, config:config, email: email, userId:userId, dateProvider: SystemDateProvider())
@@ -73,7 +73,7 @@ import Foundation
         }
     }
 
-    private var config: IterableAPIConfig?
+    private var config: IterableConfig?
     
     /**
      The apiKey that this IterableAPI is using
@@ -880,7 +880,7 @@ import Foundation
     // Package private method. Do not call this directly.
     init(apiKey: String,
          launchOptions: [UIApplicationLaunchOptionsKey: Any]? = nil,
-         config: IterableAPIConfig? = nil,
+         config: IterableConfig? = nil,
          email: String? = nil,
          userId: String? = nil,
          dateProvider: DateProviderProtocol = SystemDateProvider()) {

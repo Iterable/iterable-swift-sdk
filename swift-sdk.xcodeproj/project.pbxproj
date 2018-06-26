@@ -22,7 +22,7 @@
 		AC431E0520D1DD7700BFAFD1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC431E0420D1DD7700BFAFD1 /* Assets.xcassets */; };
 		AC431E0820D1DD7700BFAFD1 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AC431E0620D1DD7700BFAFD1 /* LaunchScreen.storyboard */; };
 		AC7125E920D42AEB0043BBC1 /* CoffeeListTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7125E820D42AEB0043BBC1 /* CoffeeListTableViewController.swift */; };
-		AC7125EF20D4579E0043BBC1 /* IterableAPIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7125EE20D4579E0043BBC1 /* IterableAPIConfig.swift */; };
+		AC7125EF20D4579E0043BBC1 /* IterableConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */; };
 		AC72A0B520CF4C49004D7997 /* IterableConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = AC72A0B120CF4C32004D7997 /* IterableConstants.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AC72A0B620CF4C53004D7997 /* IterableConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0B420CF4C32004D7997 /* IterableConstants.m */; };
 		AC72A0B920CF4C79004D7997 /* NSData+Conversion.h in Headers */ = {isa = PBXBuildFile; fileRef = AC72A0B320CF4C32004D7997 /* NSData+Conversion.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -170,7 +170,7 @@
 		AC431E0720D1DD7700BFAFD1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		AC431E0920D1DD7700BFAFD1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AC7125E820D42AEB0043BBC1 /* CoffeeListTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoffeeListTableViewController.swift; sourceTree = "<group>"; };
-		AC7125EE20D4579E0043BBC1 /* IterableAPIConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPIConfig.swift; sourceTree = "<group>"; };
+		AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableConfig.swift; sourceTree = "<group>"; };
 		AC72A0AA20CF4BEB004D7997 /* IterableInAppManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInAppManager.swift; sourceTree = "<group>"; };
 		AC72A0AB20CF4BEB004D7997 /* IterableInAppHTMLViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInAppHTMLViewController.swift; sourceTree = "<group>"; };
 		AC72A0AD20CF4C16004D7997 /* IterableUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableUtil.swift; sourceTree = "<group>"; };
@@ -327,7 +327,7 @@
 				AC2263F920CF4B63009800EB /* Helper Files */,
 				AC72A0BE20CF4CB8004D7997 /* ITBConsts.swift */,
 				AC72A0BF20CF4CB8004D7997 /* IterableAction.swift */,
-				AC7125EE20D4579E0043BBC1 /* IterableAPIConfig.swift */,
+				AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */,
 				AC72A0C520CF4CB9004D7997 /* IterableAPI.swift */,
 				AC72A0C620CF4CB9004D7997 /* IterableAppIntegration.swift */,
 				AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */,
@@ -907,7 +907,7 @@
 				AC72A0D220CF4D12004D7997 /* IterableUtil.swift in Sources */,
 				AC2C668220D32F2800D46CC9 /* IterableAppIntegrationInternal.swift in Sources */,
 				AC72A0C820CF4CE2004D7997 /* ITBConsts.swift in Sources */,
-				AC7125EF20D4579E0043BBC1 /* IterableAPIConfig.swift in Sources */,
+				AC7125EF20D4579E0043BBC1 /* IterableConfig.swift in Sources */,
 				AC72A0B620CF4C53004D7997 /* IterableConstants.m in Sources */,
 				AC72A0D120CF4D0B004D7997 /* IterableInAppManager.swift in Sources */,
 				AC72A0CB20CF4CE2004D7997 /* IterableAPI.swift in Sources */,

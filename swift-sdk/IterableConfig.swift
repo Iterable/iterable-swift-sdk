@@ -1,5 +1,5 @@
 //
-//  IterableAPIConfig.swift
+//  IterableConfig.swift
 //  swift-sdk
 //
 //  Created by Tapash Majumder on 6/15/18.
@@ -11,7 +11,7 @@ import Foundation
 /**
  Iterable Configuration Object. Use this when initializing the API.
  */
-@objc public class IterableAPIConfig : NSObject {
+@objc public class IterableConfig : NSObject {
                                                                                                                /// How to handle IterableActions which are other than 'openUrl'
     @objc public weak var customActionDelegate: IterableCustomActionDelegate?
     

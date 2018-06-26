@@ -21,7 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         setupNotifications()
 
         //ITBL: Initialize API
-        let config = IterableAPIConfig()
+        let config = IterableConfig()
         config.customActionDelegate = self
         config.urlDelegate = self
         // !! Replace with your api key and email here.

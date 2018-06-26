@@ -22,7 +22,7 @@ class IterableNotificationResponseTests: XCTestCase {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
         IterableAPI.clearInstance()
-        IterableAPI.initialize(apiKey:"", config: IterableAPIConfig(), dateProvider: dateProvider)
+        IterableAPI.initialize(apiKey:"", config: IterableConfig(), dateProvider: dateProvider)
     }
     
     override func tearDown() {
