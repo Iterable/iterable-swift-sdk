@@ -25,6 +25,9 @@
     
     //ITBL: Initialize API
     IterableConfig *config = [[IterableConfig alloc] init];
+    config.urlDelegate = self;
+    config.customActionDelegate = self;
+    
     [IterableAPI initializeWithApiKey:@"a415841b631a4c97924bc09660c658fc"
                            launchOptions:launchOptions
                                   config:config
@@ -95,6 +98,28 @@
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
     [IterableAppIntegration userNotificationCenter:center didReceive:response withCompletionHandler:completionHandler];
+}
+
+#pragma mark - IterableURLDelegate
+// return true if we handled the url
+- (BOOL)handleIterableURL:(NSURL *)url fromAction:(IterableAction *)action {
+    [DeeplinkHandler handleURL:url];
+    return [DeeplinkHandler canHandleURL:url];
+}
+
+#pragma mark - IterableCustomActionDelegate
+// handle the cutom action from push
+// return value true/false doesn't matter here, stored for future use
+- (BOOL)handleIterableCustomAction:(IterableAction *)action {
+    if ([action.type isEqualToString:@"handleFindCoffee"]) {
+        if (action.userInput != nil) {
+            NSString *urlString = [[NSString alloc] initWithFormat:@"https://majumder/me/coffee?q=%@", action.userInput];
+            NSURL *url = [[NSURL alloc] initWithString:urlString];
+            [DeeplinkHandler handleURL:url];
+        }
+    }
+
+    return FALSE;
 }
 
 #pragma mark - private

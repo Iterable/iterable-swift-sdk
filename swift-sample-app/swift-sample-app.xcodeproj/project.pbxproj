@@ -90,13 +90,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		AC5ECD9B20E3038B0081E1DA /* Helpers */ = {
+		AC5ECD9B20E3038B0081E1DA /* Deeplink Handling */ = {
 			isa = PBXGroup;
 			children = (
 				AC1BDF5720E30436000010CA /* DeeplinkHandler.swift */,
 				AC5ECD9C20E303D20081E1DA /* UIViewController+Extension.swift */,
 			);
-			name = Helpers;
+			name = "Deeplink Handling";
 			sourceTree = "<group>";
 		};
 		AC5ECD9D20E303F50081E1DA /* ViewControllers */ = {
@@ -132,7 +132,7 @@
 			isa = PBXGroup;
 			children = (
 				AC5ECD9D20E303F50081E1DA /* ViewControllers */,
-				AC5ECD9B20E3038B0081E1DA /* Helpers */,
+				AC5ECD9B20E3038B0081E1DA /* Deeplink Handling */,
 				ACFA148620E3034800AF4A5A /* Assets */,
 				ACFA148320E3031800AF4A5A /* Supporting Files */,
 				ACFA148420E3033700AF4A5A /* Model */,

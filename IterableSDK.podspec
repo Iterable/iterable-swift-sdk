@@ -73,6 +73,10 @@ Pod::Spec.new do |s|
 
   s.source_files  = "swift-sdk/*.{h,m,swift}"
 
+  s.pod_target_xcconfig = {
+    'SWIFT_VERSION' => '4.1'
+  }
+
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
   #  A list of resources included with the Pod. These are copied into the

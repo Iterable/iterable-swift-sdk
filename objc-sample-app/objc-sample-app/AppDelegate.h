@@ -9,7 +9,9 @@
 #import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate>
+@import IterableSDK;
+
+@interface AppDelegate : UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate, IterableURLDelegate, IterableCustomActionDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 
