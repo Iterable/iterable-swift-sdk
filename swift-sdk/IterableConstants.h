@@ -84,6 +84,7 @@ extern NSString *const ITBL_DEVICE_USER_INTERFACE;
 //Push Payload
 #define ITBL_PAYLOAD_METADATA @"itbl"
 #define ITBL_PAYLOAD_MESSAGE_ID @"messageId"
+#define ITBL_PAYLOAD_DEEP_LINK_URL @"url"
 #define ITBL_PAYLOAD_ATTACHMENT_URL @"attachment-url"
 #define ITBL_PAYLOAD_ACTION_BUTTONS @"actionButtons"
 #define ITBL_PAYLOAD_DEFAULT_ACTION @"defaultAction"

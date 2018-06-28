@@ -198,4 +198,32 @@ class IterableNotificationResponseTests: XCTestCase {
         dateProvider.currentDate = Calendar.current.date(byAdding: Calendar.Component.hour, value: 24, to: Date())!
         XCTAssertNil(api.attributionInfo)
     }
+    
+    func testLegacyDeeplinkPayload() {
+        let messageId = UUID().uuidString
+        let userInfo: [AnyHashable : Any] = [
+            "itbl" : [
+                "campaignId": 1234,
+                "templateId": 4321,
+                "isGhostPush": false,
+                "messageId": messageId,
+            ],
+            "url" : "https://example.com"
+        ]
+        
+        let response = MockNotificationResponse(userInfo: userInfo, actionIdentifier: UNNotificationDefaultActionIdentifier)
+        let urlOpener = MockUrlOpener()
+        let pushTracker = MockPushTracker()
+        let actionRunner = IterableActionRunner(urlDelegate: nil,
+                                                customActionDelegate: nil,
+                                                urlOpener: urlOpener)
+        let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker, actionRunner: actionRunner, versionInfo: MockVersionInfo(version: 10))
+        appIntegration.userNotificationCenter(nil, didReceive: response, withCompletionHandler: nil)
+        
+        XCTAssertEqual(pushTracker.campaignId, 1234)
+        XCTAssertEqual(pushTracker.templateId, 4321)
+        XCTAssertEqual(pushTracker.messageId, messageId)
+        
+        XCTAssertEqual(urlOpener.ios10OpenedUrl?.absoluteString, "https://example.com")
+    }
 }

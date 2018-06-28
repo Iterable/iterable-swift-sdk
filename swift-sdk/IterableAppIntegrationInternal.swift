@@ -131,10 +131,11 @@ struct IterableAppIntegrationInternal {
         
         if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
             dataFields[ITBL_KEY_ACTION_IDENTIFIER] = ITBL_VALUE_DEFAULT_PUSH_OPEN_ACTION_ID
-            guard let defaultActionConfig = itbl[ITBL_PAYLOAD_DEFAULT_ACTION] as? [AnyHashable : Any] else {
-                return
+            if let defaultActionConfig = itbl[ITBL_PAYLOAD_DEFAULT_ACTION] as? [AnyHashable : Any] {
+                action = IterableAction.action(fromDictionary: defaultActionConfig)
+            } else {
+                action = IterableAppIntegrationInternal.legacyDefaultActionFromPayload(userInfo: userInfo)
             }
-            action = IterableAction.action(fromDictionary: defaultActionConfig)
         } else if response.actionIdentifier == UNNotificationDismissActionIdentifier {
             // We don't track dismiss actions yet
         } else {
@@ -179,15 +180,19 @@ struct IterableAppIntegrationInternal {
         guard let itbl = IterableAppIntegrationInternal.itblValue(fromUserInfo: userInfo) else {
             return
         }
-        
+
         //Execute the action
-        guard let actionConfig = itbl[ITBL_PAYLOAD_DEFAULT_ACTION] as? [AnyHashable : Any] else {
-            return
+
+        let action: IterableAction?
+        if let actionConfig = itbl[ITBL_PAYLOAD_DEFAULT_ACTION] as? [AnyHashable : Any] {
+            action = IterableAction.action(fromDictionary: actionConfig)
+        } else {
+            action = IterableAppIntegrationInternal.legacyDefaultActionFromPayload(userInfo: userInfo)
         }
-        guard let action = IterableAction.action(fromDictionary: actionConfig) else {
-            return
+
+        if let action = action {
+            actionRunner.execute(action: action)
         }
-        actionRunner.execute(action: action)
     }
     
     private static func itblValue(fromUserInfo userInfo: [AnyHashable : Any]) -> [AnyHashable : Any]? {
@@ -205,4 +210,11 @@ struct IterableAppIntegrationInternal {
         return itbl
     }
 
+    private static func legacyDefaultActionFromPayload(userInfo: [AnyHashable : Any]) -> IterableAction? {
+        if let deeplinkUrl = userInfo[ITBConsts.Payload.deeplinkUrl] as? String {
+            return IterableAction.action(fromDictionary: ["type" : IterableAction.actionTypeOpenUrl, "data" : deeplinkUrl])
+        } else {
+            return nil
+        }
+    }
 }
