@@ -73,13 +73,7 @@
         return NO;
     }
     
-    [IterableAPI resolveWithApplinkURL:url callbackBlock:^(NSURL *resolvedUrl) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [DeeplinkHandler handleURL:resolvedUrl];
-        });
-    }];
-    
-    return [DeeplinkHandler canHandleURL:url];
+    return [IterableAPI handleUniversalLink:url];
 }
 
 #pragma mark - notification registration
@@ -102,15 +96,14 @@
 
 #pragma mark - IterableURLDelegate
 // return true if we handled the url
-- (BOOL)handleIterableURL:(NSURL *)url fromAction:(IterableAction *)action {
-    [DeeplinkHandler handleURL:url];
-    return [DeeplinkHandler canHandleURL:url];
+- (BOOL)handleIterableURL:(NSURL *)url context:(IterableActionContext *)context {
+    return [DeeplinkHandler handleURL:url];
 }
 
 #pragma mark - IterableCustomActionDelegate
 // handle the cutom action from push
 // return value true/false doesn't matter here, stored for future use
-- (BOOL)handleIterableCustomAction:(IterableAction *)action {
+- (BOOL)handleIterableCustomAction:(IterableAction *)action context:(IterableActionContext *)context {
     if ([action.type isEqualToString:@"handleFindCoffee"]) {
         if (action.userInput != nil) {
             NSString *urlString = [[NSString alloc] initWithFormat:@"https://majumder/me/coffee?q=%@", action.userInput];

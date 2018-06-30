@@ -16,6 +16,9 @@
 		AC2C668220D32F2800D46CC9 /* IterableAppIntegrationInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668120D32F2800D46CC9 /* IterableAppIntegrationInternal.swift */; };
 		AC2C668420D3370600D46CC9 /* Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668320D3370600D46CC9 /* Mocks.swift */; };
 		AC2C668720D3435700D46CC9 /* IterableActionRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668620D3435700D46CC9 /* IterableActionRunnerTests.swift */; };
+		AC347B5C20E5A7E1003449CF /* IterableAPNSUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC347B5B20E5A7E1003449CF /* IterableAPNSUtil.swift */; };
+		AC347B5D20E5C7C6003449CF /* IterableConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = AC72A0B120CF4C32004D7997 /* IterableConstants.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AC347B6720E699FA003449CF /* IterableAppExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = AC347B6620E699D8003449CF /* IterableAppExtensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AC7125EF20D4579E0043BBC1 /* IterableConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */; };
 		AC72A0B520CF4C49004D7997 /* IterableConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = AC72A0B120CF4C32004D7997 /* IterableConstants.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AC72A0B620CF4C53004D7997 /* IterableConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0B420CF4C32004D7997 /* IterableConstants.m */; };
@@ -50,9 +53,17 @@
 		ACF560DB20E443BF000AAC23 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACF560D920E443BF000AAC23 /* Main.storyboard */; };
 		ACF560DD20E443C0000AAC23 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ACF560DC20E443C0000AAC23 /* Assets.xcassets */; };
 		ACF560E020E443C0000AAC23 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACF560DE20E443C0000AAC23 /* LaunchScreen.storyboard */; };
+		ACF560E820E55A6B000AAC23 /* IterableActionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF560E720E55A6B000AAC23 /* IterableActionContext.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		AC347B6820E6B5F4003449CF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AC2263D620CF49B8009800EB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ACF560D220E443BF000AAC23;
+			remoteInfo = "host-app";
+		};
 		AC7B143120D02CE200877BFE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AC2263D620CF49B8009800EB /* Project object */;
@@ -97,6 +108,8 @@
 		AC2C668120D32F2800D46CC9 /* IterableAppIntegrationInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAppIntegrationInternal.swift; sourceTree = "<group>"; };
 		AC2C668320D3370600D46CC9 /* Mocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mocks.swift; sourceTree = "<group>"; };
 		AC2C668620D3435700D46CC9 /* IterableActionRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableActionRunnerTests.swift; sourceTree = "<group>"; };
+		AC347B5B20E5A7E1003449CF /* IterableAPNSUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPNSUtil.swift; sourceTree = "<group>"; };
+		AC347B6620E699D8003449CF /* IterableAppExtensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IterableAppExtensions.h; sourceTree = "<group>"; };
 		AC431DF320D18E9000BFAFD1 /* swift-sdk-objc-tests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "swift-sdk-objc-tests-Bridging-Header.h"; sourceTree = "<group>"; };
 		AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableConfig.swift; sourceTree = "<group>"; };
 		AC72A0AA20CF4BEB004D7997 /* IterableInAppManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInAppManager.swift; sourceTree = "<group>"; };
@@ -139,6 +152,7 @@
 		ACF560DC20E443C0000AAC23 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		ACF560DF20E443C0000AAC23 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		ACF560E120E443C0000AAC23 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		ACF560E720E55A6B000AAC23 /* IterableActionContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableActionContext.swift; sourceTree = "<group>"; };
 		AE6D2D1801330BD6AD4BEB45 /* Pods-swift-sdk-swift-tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-swift-sdk-swift-tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-swift-sdk-swift-tests/Pods-swift-sdk-swift-tests.release.xcconfig"; sourceTree = "<group>"; };
 		DDD4A68DE6BBB9230E1FF789 /* Pods-swift-sdk-swift-tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-swift-sdk-swift-tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-swift-sdk-swift-tests/Pods-swift-sdk-swift-tests.debug.xcconfig"; sourceTree = "<group>"; };
 		EA3B895070C574A2D2D4FC80 /* libPods-swift-sdk-swift-tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-swift-sdk-swift-tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -241,9 +255,10 @@
 				AC72A0AE20CF4C1E004D7997 /* Objective C */,
 				AC72A0AC20CF4C08004D7997 /* Util */,
 				AC2263FA20CF4B84009800EB /* InApp Notifications */,
-				AC2263F920CF4B63009800EB /* Helper Files */,
+				AC2263F920CF4B63009800EB /* Supporting Files */,
 				AC72A0BE20CF4CB8004D7997 /* ITBConsts.swift */,
 				AC72A0BF20CF4CB8004D7997 /* IterableAction.swift */,
+				ACF560E720E55A6B000AAC23 /* IterableActionContext.swift */,
 				AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */,
 				AC72A0C520CF4CB9004D7997 /* IterableAPI.swift */,
 				AC72A0C620CF4CB9004D7997 /* IterableAppIntegration.swift */,
@@ -254,13 +269,13 @@
 			path = "swift-sdk";
 			sourceTree = "<group>";
 		};
-		AC2263F920CF4B63009800EB /* Helper Files */ = {
+		AC2263F920CF4B63009800EB /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
 				AC2263E220CF49B8009800EB /* IterableSDK.h */,
 				AC2263E320CF49B8009800EB /* Info.plist */,
 			);
-			name = "Helper Files";
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 		AC2263FA20CF4B84009800EB /* InApp Notifications */ = {
@@ -301,6 +316,7 @@
 			isa = PBXGroup;
 			children = (
 				AC72A0AD20CF4C16004D7997 /* IterableUtil.swift */,
+				AC347B5B20E5A7E1003449CF /* IterableAPNSUtil.swift */,
 			);
 			name = Util;
 			sourceTree = "<group>";
@@ -374,6 +390,7 @@
 			isa = PBXGroup;
 			children = (
 				AC90C4C720D8632E00EECA5D /* Info.plist */,
+				AC347B6620E699D8003449CF /* IterableAppExtensions.h */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -430,6 +447,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC347B6720E699FA003449CF /* IterableAppExtensions.h in Headers */,
+				AC347B5D20E5C7C6003449CF /* IterableConstants.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -523,6 +542,7 @@
 			);
 			dependencies = (
 				AC90C4CF20D8632E00EECA5D /* PBXTargetDependency */,
+				AC347B6920E6B5F4003449CF /* PBXTargetDependency */,
 			);
 			name = "notification-extension-tests";
 			productName = "notification-extensionTests";
@@ -569,11 +589,12 @@
 					};
 					AC90C4C320D8632D00EECA5D = {
 						CreatedOnToolsVersion = 9.4;
+						LastSwiftMigration = 0940;
 					};
 					AC90C4CB20D8632E00EECA5D = {
 						CreatedOnToolsVersion = 9.4;
 						LastSwiftMigration = 0940;
-						TestTargetID = AC431DFA20D1DD7600BFAFD1;
+						TestTargetID = ACF560D220E443BF000AAC23;
 					};
 					ACF560D220E443BF000AAC23 = {
 						CreatedOnToolsVersion = 9.4;
@@ -704,6 +725,7 @@
 				AC72A0CA20CF4CE2004D7997 /* IterableActionRunner.swift in Sources */,
 				AC72A0CF20CF4CE2004D7997 /* IterableNotificationMetadata.swift in Sources */,
 				AC72A0D220CF4D12004D7997 /* IterableUtil.swift in Sources */,
+				ACF560E820E55A6B000AAC23 /* IterableActionContext.swift in Sources */,
 				AC2C668220D32F2800D46CC9 /* IterableAppIntegrationInternal.swift in Sources */,
 				AC72A0C820CF4CE2004D7997 /* ITBConsts.swift in Sources */,
 				AC7125EF20D4579E0043BBC1 /* IterableConfig.swift in Sources */,
@@ -714,6 +736,7 @@
 				AC72A0C720CF4CE2004D7997 /* CommerceItem.swift in Sources */,
 				AC72A0D320CF4D19004D7997 /* IterableAPI+Internal.swift in Sources */,
 				AC2C667E20D3111900D46CC9 /* DateProvider.swift in Sources */,
+				AC347B5C20E5A7E1003449CF /* IterableAPNSUtil.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -768,6 +791,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		AC347B6920E6B5F4003449CF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ACF560D220E443BF000AAC23 /* host-app */;
+			targetProxy = AC347B6820E6B5F4003449CF /* PBXContainerItemProxy */;
+		};
 		AC7B143220D02CE200877BFE /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = AC2263DE20CF49B8009800EB /* swift-sdk */;
@@ -1096,6 +1124,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
 				DEFINES_MODULE = YES;
@@ -1116,6 +1145,7 @@
 				PRODUCT_NAME = IterableAppExtensions;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -1125,6 +1155,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Manual;
 				DEFINES_MODULE = YES;
@@ -1169,7 +1200,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/swift-sample-app.app/swift-sample-app";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/host-app.app/host-app";
 			};
 			name = Debug;
 		};
@@ -1191,7 +1222,7 @@
 				SWIFT_OBJC_BRIDGING_HEADER = "notification-extensionTests/notification-extensionTests-Bridging-Header.h";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/swift-sample-app.app/swift-sample-app";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/host-app.app/host-app";
 			};
 			name = Release;
 		};

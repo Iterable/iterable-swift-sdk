@@ -13,25 +13,27 @@
 
 @implementation DeeplinkHandler
 
-+ (bool)canHandleURL:(NSURL *)url {
-    return YES;
-}
-
-+ (void)handleURL:(NSURL *)url {
++ (BOOL)handleURL:(NSURL *)url {
     NSString *page = url.lastPathComponent.lowercaseString;
     if ([page isEqualToString:@"mocha"]) {
         [DeeplinkHandler showCoffee:CoffeeType.mocha];
+        return YES;
     } else if ([page isEqualToString:@"latte"]) {
         [DeeplinkHandler showCoffee:CoffeeType.latte];
+        return YES;
     } else if ([page isEqualToString:@"cappuccino"]) {
         [DeeplinkHandler showCoffee:CoffeeType.cappuccino];
+        return YES;
     } else if ([page isEqualToString:@"black"]) {
         [DeeplinkHandler showCoffee:CoffeeType.black];
+        return YES;
     } else if ([page isEqualToString:@"coffee"]) {
         NSString *query = [DeeplinkHandler parseQueryFromURL:url];
         [DeeplinkHandler showCoffeeListWithQuery:query];
+        return YES;
     } else {
         [UIApplication.sharedApplication openURL:url options:@{} completionHandler:nil];
+        return NO;
     }
 }
 

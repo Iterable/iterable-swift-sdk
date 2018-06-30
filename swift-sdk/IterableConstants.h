@@ -160,7 +160,9 @@ typedef NS_ENUM(NSInteger, PushServicePlatform) {
     /** The sandbox push service */
     APNS_SANDBOX,
     /** The production push service */
-    APNS
+    APNS,
+    /** Detect automatically */
+    AUTO
 };
 
 typedef NS_ENUM(NSInteger, INAPP_NOTIFICATION_TYPE) {

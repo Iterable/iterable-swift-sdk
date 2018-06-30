@@ -26,23 +26,24 @@ struct MockNotificationResponse : NotificationResponseProtocol {
 }
 
 
-@objc public class MockUrlDelegate : NSObject, IterableURLDelegate {
+@objcMembers
+public class MockUrlDelegate : NSObject, IterableURLDelegate {
     // returnValue = true if we handle the url, else false
     private override convenience init() {
         self.init(returnValue: false)
     }
     
-    @objc public init(returnValue: Bool) {
+    public init(returnValue: Bool) {
         self.returnValue = returnValue
     }
     
-    @objc var returnValue: Bool
-    @objc var url: URL?
-    @objc var action: IterableAction?
-
-    @objc public func handleIterableURL(_ url: URL, fromAction action: IterableAction) -> Bool {
+    var returnValue: Bool
+    var url: URL?
+    var context: IterableActionContext?
+    
+    public func handle(iterableURL url: URL, inContext context: IterableActionContext) -> Bool {
         self.url = url
-        self.action = action
+        self.context = context
         return returnValue
     }
 }
@@ -60,35 +61,40 @@ struct MockNotificationResponse : NotificationResponseProtocol {
     }
 }
 
-@objc public class MockCustomActionDelegate : NSObject, IterableCustomActionDelegate {
+@objcMembers
+public class MockCustomActionDelegate : NSObject, IterableCustomActionDelegate {
     // returnValue = true if we handle the url, else false
     private override convenience init() {
         self.init(returnValue: false)
     }
     
-    @objc public init(returnValue: Bool) {
+    public init(returnValue: Bool) {
         self.returnValue = returnValue
     }
     
-    @objc var returnValue: Bool
-    @objc var action: IterableAction?
+    var returnValue: Bool
+    var action: IterableAction?
+    var context: IterableActionContext?
     
-    public func handleIterableCustomAction(_ action: IterableAction) -> Bool {
+    public func handle(iterableCustomAction action: IterableAction, inContext context: IterableActionContext) -> Bool {
         self.action = action
+        self.context = context
         return returnValue
     }
 }
 
-@objc public class MockPushTracker : NSObject, PushTrackerProtocol {
-    @objc var campaignId: NSNumber?
-    @objc var templateId: NSNumber?
-    @objc var messageId: String?
-    @objc var appAlreadyRunnnig: Bool = false
-    @objc var dataFields: [AnyHashable : Any]?
-    @objc var onSuccess: OnSuccessHandler?
-    @objc var onFailure: OnFailureHandler?
+@objcMembers
+public class MockPushTracker : NSObject, PushTrackerProtocol {
+    var campaignId: NSNumber?
+    var templateId: NSNumber?
+    var messageId: String?
+    var appAlreadyRunnnig: Bool = false
+    var dataFields: [AnyHashable : Any]?
+    var onSuccess: OnSuccessHandler?
+    var onFailure: OnFailureHandler?
+    public var lastPushPayload: [AnyHashable : Any]?
     
-    @objc public func trackPushOpen(_ userInfo: [AnyHashable : Any]) {
+    public func trackPushOpen(_ userInfo: [AnyHashable : Any]) {
         trackPushOpen(userInfo, dataFields: nil)
     }
     
@@ -97,6 +103,9 @@ struct MockNotificationResponse : NotificationResponseProtocol {
     }
     
     public func trackPushOpen(_ userInfo: [AnyHashable : Any], dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+        // save payload
+        lastPushPayload = userInfo
+        
         if let metadata = IterableNotificationMetadata.metadata(fromLaunchOptions: userInfo), metadata.isRealCampaignNotification() {
             trackPushOpen(metadata.campaignId, templateId: metadata.templateId, messageId: metadata.messageId, appAlreadyRunning: false, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
         } else {

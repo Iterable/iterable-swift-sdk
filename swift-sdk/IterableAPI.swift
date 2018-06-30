@@ -8,31 +8,6 @@
 
 import Foundation
 
-/**
- * Custom URL handling delegate
- */
-@objc public protocol IterableURLDelegate: class {
-    /**
-     * Callback called for a deeplink action. Return true to override default behavior
-     * - parameter url:     Deeplink URL
-     * - parameter action:  Original openUrl Action object
-     * - returns: Boolean value. Return true if the URL was handled to override default behavior.
-     */
-    @objc func handleIterableURL(_ url: URL, fromAction action: IterableAction) -> Bool
-}
-
-/**
- * Custom action handling delegate
- */
-@objc public protocol IterableCustomActionDelegate: class {
-    /**
-     * Callback called for custom actions from push notifications
-     * - parameter action:  `IterableAction` object containing action payload
-     * - returns: Boolean value. Reserved for future use.
-     */
-    @objc func handleIterableCustomAction(_ action:IterableAction) -> Bool
-}
-
 @objc public final class IterableAPI : NSObject, PushTrackerProtocol {
     // MARK: Initialization
     /// The big daddy of initialization. You should call this method and not call the init method directly.
@@ -73,8 +48,6 @@ import Foundation
         }
     }
 
-    private var config: IterableConfig?
-    
     /**
      The apiKey that this IterableAPI is using
      */
@@ -838,21 +811,31 @@ import Foundation
      - parameter callbackBlock:   the callback to send after the webpageURL is called
      */
     @objc public static func getAndTrackDeeplink(_ webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {
-        IterableDeeplinkManager.instance.getAndTrackDeeplink(webpageURL: webpageURL, callbackBlock: callbackBlock)
+        _sharedInstance?.deeplinkManager.getAndTrackDeeplink(webpageURL: webpageURL, callbackBlock: callbackBlock)
     }
 
     /**
-     Tracks a link click and passes the redirected URL to the callback
-     
-     - parameter applinkURL:      the URL that was clicked
-     - parameter callbackBlock:   the callback to send when the link is resolved
-     - returns: true if the link was an Iterable tracking link
+     * Handles a Universal Link
+     * For Iterable links, it will track the click and retrieve the original URL,
+     * pass it to `IterableURLDelegate` for handling
+     * If it's not an Iterable link, it just passes the same URL to `IterableURLDelegate`
+     *
+     - parameter url: the URL obtained from `UserActivity.webpageURL`
+     - returns: true if it is an Iterable link, or the value returned from `IterableURLDelegate` otherwise
      */
-    @objc public static func resolve(applinkURL: URL, callbackBlock: @escaping ITBURLCallback) {
-        IterableDeeplinkManager.instance.resolve(applinkURL:applinkURL, callbackBlock:callbackBlock)
+    @objc public static func handleUniversalLink(_ url: URL) -> Bool {
+        if let zeeInstance = _sharedInstance {
+            return zeeInstance.deeplinkManager.handleUniversalLink(url)
+        } else {
+            return false
+        }
     }
     
-    // MARK: For Private and Internal Use
+    // MARK: For Private and Internal Use ========================================>
+    
+    var config: IterableConfig?
+    var deeplinkManager: IterableDeeplinkManager
+    
     static var _sharedInstance: IterableAPI?
     
     static var queue = DispatchQueue(label: "MyLockQueue")
@@ -889,10 +872,12 @@ import Foundation
         self.userId = userId
         self.config = config
         self.dateProvider = dateProvider
-        super.init()
-        
+
         // setup
         let actionRunner = IterableActionRunner(urlDelegate: config?.urlDelegate, customActionDelegate: config?.customActionDelegate, urlOpener: AppUrlOpener())
+        deeplinkManager = IterableDeeplinkManager(actionRunner: actionRunner)
+        super.init()
+        
         IterableAppIntegration.minion = IterableAppIntegrationInternal(tracker: self, actionRunner: actionRunner, versionInfo: SystemVersionInfo())
         
         performDefaultNotificationAction(withLaunchOptions: launchOptions)

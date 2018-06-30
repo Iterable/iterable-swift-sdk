@@ -10,9 +10,11 @@ import Foundation
 
 class IterableDeeplinkManager : NSObject {
     /**
-     A singleton of IterableDeeplinkManager
-     */
-    static var instance = IterableDeeplinkManager()
+     Initializer
+    */
+    init(actionRunner: IterableActionRunner) {
+        self.actionRunner = actionRunner
+    }
     
     /**
      Tracks a link click and passes the redirected URL to the callback
@@ -23,8 +25,41 @@ class IterableDeeplinkManager : NSObject {
      - remark:            passes the string of the redirected URL to the callback
      */
     func getAndTrackDeeplink(webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {
-        _ = resolve(applinkURL: webpageURL) { (resolvedUrl) in
+        resolve(applinkURL: webpageURL) { (resolvedUrl) in
             callbackBlock(resolvedUrl?.absoluteString)
+        }
+    }
+    
+    /**
+     * Handles a Universal Link
+     * For Iterable links, it will track the click and retrieve the original URL,
+     * pass it to `IterableURLDelegate` for handling
+     * If it's not an Iterable link, it just passes the same URL to `IterableURLDelegate`
+     *
+     - parameter url: the URL obtained from `UserActivity.webpageURL`
+     - returns: true if it is an Iterable link, or the value returned from `IterableURLDelegate` otherwise
+     */
+    func handleUniversalLink(_ url: URL) -> Bool {
+        if isDeeplink(url.absoluteString) {
+            resolve(applinkURL: url) {[actionRunner] (resolvedUrl) in
+                var resolvedUrlString: String
+                if let resolvedUrl = resolvedUrl {
+                    resolvedUrlString = resolvedUrl.absoluteString
+                } else {
+                    resolvedUrlString = url.absoluteString
+                }
+                if let action = IterableAction.actionOpenUrl(fromUrlString: resolvedUrlString) {
+                    _ = actionRunner.execute(action: action, from: .universalLink)
+                }
+            }
+            // Always return true for deep link
+            return true
+        } else {
+            if let action = IterableAction.actionOpenUrl(fromUrlString: url.absoluteString) {
+                return actionRunner.execute(action: action, from: .universalLink)
+            } else {
+                return false
+            }
         }
     }
 
@@ -36,7 +71,7 @@ class IterableDeeplinkManager : NSObject {
      - returns: true if the link was an Iterable tracking link
      - remark:            passes the string of the redirected URL to the callback
      */
-    func resolve(applinkURL: URL, callbackBlock: @escaping ITBURLCallback) {
+    private func resolve(applinkURL: URL, callbackBlock: @escaping ITBURLCallback) {
         deeplinkCampaignId = nil
         deeplinkTemplateId = nil
         deeplinkMessageId = nil
@@ -74,15 +109,12 @@ class IterableDeeplinkManager : NSObject {
         return URLSession(configuration: .default, delegate: self, delegateQueue: OperationQueue.main)
     } ()
     
+    private var actionRunner: IterableActionRunner
+    
     private var deeplinkLocation: URL?
     private var deeplinkCampaignId: NSNumber?
     private var deeplinkTemplateId: NSNumber?
     private var deeplinkMessageId: String?
-
-    // Singleton, only initialized via 'instance'
-    private override init() {
-        super.init()
-    }
 }
 
 extension IterableDeeplinkManager : URLSessionDelegate , URLSessionTaskDelegate {

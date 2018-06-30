@@ -62,13 +62,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         //ITBL:
-        IterableAPI.resolve(applinkURL: url) { (resolvedUrl) in
-            if let resolvedUrl = resolvedUrl {
-                DeeplinkHandler.handle(url: resolvedUrl)
-            }
-        }
-
-        return DeeplinkHandler.canHandle(url: url)
+        return IterableAPI.handleUniversalLink(url)
     }
     
     //MARK: Notification
@@ -115,7 +109,7 @@ extension AppDelegate : UNUserNotificationCenterDelegate {
     
     // The method will be called on the delegate when the user responded to the notification by opening the application, dismissing the notification or choosing a UNNotificationAction. The delegate must be set before the application returns from applicationDidFinishLaunching:.
     public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        //!!ITBL:
+        //ITBL:
         IterableAppIntegration.userNotificationCenter(center, didReceive: response, withCompletionHandler: completionHandler)
     }
 }
@@ -123,9 +117,8 @@ extension AppDelegate : UNUserNotificationCenterDelegate {
 //MARK: IterableURLDelegate
 extension AppDelegate : IterableURLDelegate {
     // return true if we handled the url
-    func handleIterableURL(_ url: URL, fromAction: IterableAction) -> Bool {
-        DeeplinkHandler.handle(url: url)
-        return DeeplinkHandler.canHandle(url: url)
+    func handle(iterableURL url: URL, inContext context: IterableActionContext) -> Bool {
+        return DeeplinkHandler.handle(url: url)
     }
 }
 
@@ -133,10 +126,10 @@ extension AppDelegate : IterableURLDelegate {
 extension AppDelegate : IterableCustomActionDelegate {
     // handle the cutom action from push
     // return value true/false doesn't matter here, stored for future use
-    func handleIterableCustomAction(_ action: IterableAction) -> Bool {
+    func handle(iterableCustomAction action: IterableAction, inContext context: IterableActionContext) -> Bool {
         if action.type == "handleFindCoffee" {
             if let query = action.userInput {
-                DeeplinkHandler.handle(url: URL(string: "https://majumder.me/coffee?q=\(query)")!)
+                _ = DeeplinkHandler.handle(url: URL(string: "https://majumder.me/coffee?q=\(query)")!)
             }
         }
         return false

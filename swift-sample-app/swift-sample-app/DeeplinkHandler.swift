@@ -12,13 +12,12 @@ import UIKit
 import IterableSDK
 
 struct DeeplinkHandler {
-    static func canHandle(url: URL) -> Bool {
-        return Deeplink.from(url: url) != nil
-    }
-    
-    static func handle(url: URL) {
+    static func handle(url: URL) -> Bool {
         if let deeplink = Deeplink.from(url: url) {
             show(deeplink: deeplink)
+            return true
+        } else {
+            return false
         }
     }
     

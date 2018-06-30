@@ -40,6 +40,7 @@ struct UserNotificationResponse : NotificationResponseProtocol {
 
 /// Abstraction of PushTacking
 @objc public protocol PushTrackerProtocol : class {
+    @objc var lastPushPayload: [AnyHashable : Any]? {get}
     @objc func trackPushOpen(_ userInfo: [AnyHashable : Any])
     @objc func trackPushOpen(_ userInfo: [AnyHashable : Any], dataFields: [AnyHashable : Any]?)
     @objc func trackPushOpen(_ userInfo: [AnyHashable : Any], dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?)
@@ -122,7 +123,13 @@ struct IterableAppIntegrationInternal {
     func userNotificationCenter(_ center: UNUserNotificationCenter?, didReceive response: NotificationResponseProtocol, withCompletionHandler completionHandler: (()->Void)?) {
         ITBInfo()
         let userInfo = response.userInfo
+        // Ignore the notification if we've already processed it from launchOptions while initializing SDK
+        guard !alreadyTracked(userInfo: userInfo) else {
+            completionHandler?()
+            return
+        }
         guard let itbl = IterableAppIntegrationInternal.itblValue(fromUserInfo: userInfo) else {
+            completionHandler?()
             return
         }
         
@@ -165,7 +172,7 @@ struct IterableAppIntegrationInternal {
         
         //Execute the action
         if let action = action {
-            actionRunner.execute(action: action)
+            _ = actionRunner.execute(action: action, from: .push)
         }
         
         completionHandler?()
@@ -173,6 +180,11 @@ struct IterableAppIntegrationInternal {
     
     
     func performDefaultNotificationAction(_ userInfo:[AnyHashable : Any]) {
+        // Ignore the notification if we've already processed it from launchOptions while initializing SDK
+        guard !alreadyTracked(userInfo: userInfo) else{
+            return
+        }
+        
         // Track push open
         let dataFields = [ITBL_KEY_ACTION_IDENTIFIER : ITBL_VALUE_DEFAULT_PUSH_OPEN_ACTION_ID]
         tracker.trackPushOpen(userInfo, dataFields: dataFields)
@@ -191,8 +203,15 @@ struct IterableAppIntegrationInternal {
         }
 
         if let action = action {
-            actionRunner.execute(action: action)
+            _ = actionRunner.execute(action: action, from: .push)
         }
+    }
+    
+    private func alreadyTracked(userInfo: [AnyHashable : Any]) -> Bool {
+        guard let lastPushPayload = tracker.lastPushPayload else {
+            return false
+        }
+        return NSDictionary(dictionary: lastPushPayload).isEqual(to: userInfo)
     }
     
     private static func itblValue(fromUserInfo userInfo: [AnyHashable : Any]) -> [AnyHashable : Any]? {
@@ -212,7 +231,7 @@ struct IterableAppIntegrationInternal {
 
     private static func legacyDefaultActionFromPayload(userInfo: [AnyHashable : Any]) -> IterableAction? {
         if let deeplinkUrl = userInfo[ITBConsts.Payload.deeplinkUrl] as? String {
-            return IterableAction.action(fromDictionary: ["type" : IterableAction.actionTypeOpenUrl, "data" : deeplinkUrl])
+            return IterableAction.actionOpenUrl(fromUrlString: deeplinkUrl)
         } else {
             return nil
         }

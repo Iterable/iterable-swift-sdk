@@ -284,6 +284,8 @@ extension IterableAPI {
             return ITBL_KEY_APNS
         case .APNS_SANDBOX:
             return ITBL_KEY_APNS_SANDBOX
+        case .AUTO:
+            return IterableAPNSUtil.isSandboxAPNS() ? ITBL_KEY_APNS_SANDBOX : ITBL_KEY_APNS
         }
     }
     
