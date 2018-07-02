@@ -9,8 +9,8 @@ import Foundation
 import os
 
 @objc public final class IterableUtil : NSObject {
-    static var rootViewController : UIViewController {
-        return UIApplication.shared.keyWindow!.rootViewController!
+    static var rootViewController : UIViewController? {
+        return UIApplication.shared.delegate?.window??.rootViewController
     }
     
     static func trim(string: String) -> String {

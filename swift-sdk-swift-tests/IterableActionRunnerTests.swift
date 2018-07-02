@@ -8,6 +8,8 @@
 
 import XCTest
 
+import OHHTTPStubs
+
 @testable import IterableSDK
 
 class IterableActionRunnerTests: XCTestCase {

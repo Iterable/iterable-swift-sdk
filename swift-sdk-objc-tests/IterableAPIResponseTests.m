@@ -23,7 +23,7 @@ static CGFloat const IterableResponseExpectationTimeout = 1.0;
 
 - (void)setUp {
     [super setUp];
-    [IterableAPI initializeWithApiKey:@"" launchOptions:nil config: nil email:nil userId:nil];
+    [IterableAPI initializeWithApiKey:@""];
 }
 
 - (void)tearDown {

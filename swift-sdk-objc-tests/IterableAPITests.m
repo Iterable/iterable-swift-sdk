@@ -9,6 +9,8 @@
 #import <XCTest/XCTest.h>
 
 #import <asl.h>
+#import <OHHTTPStubs.h>
+#import <OHHTTPStubs/NSURLRequest+HTTPBodyTesting.h>
 
 @import IterableSDK;
 
@@ -30,7 +32,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
 - (void)setUp {
     [super setUp];
     
-    [IterableAPI initializeWithApiKey:@"" launchOptions:nil config: nil email:nil userId:nil];
+    [IterableAPI initializeWithApiKey:@""];
 }
 
 - (void)tearDown {
@@ -192,7 +194,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
 }
 
 - (void)testURLQueryParamRewrite {
-    [IterableAPI initializeWithApiKey:@"" launchOptions:nil config: nil email:nil userId:nil];
+    [IterableAPI initializeWithApiKey:@""];
 
     NSCharacterSet* set = [NSCharacterSet URLQueryAllowedCharacterSet];
     
@@ -226,5 +228,50 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     NSString* nilSet = [[IterableAPI instance] encodeURLParam:nil];
     XCTAssertEqualObjects(nilSet, nil);
 }
+
+- (void)testRegisterToken {
+    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"Request is sent"];
+    [OHHTTPStubs stubRequestsPassingTest:^BOOL(NSURLRequest *request) {
+        return YES;
+    } withStubResponse:^OHHTTPStubsResponse *(NSURLRequest *request) {
+        [expectation fulfill];
+        NSDictionary *json = [NSJSONSerialization
+                              JSONObjectWithData:request.OHHTTPStubs_HTTPBody
+                              options:0 error:nil];
+        XCTAssertEqualObjects(json[@"email"], @"user@example.com");
+        XCTAssertEqualObjects(json[@"device"][@"applicationName"], @"pushIntegration");
+        XCTAssertEqualObjects(json[@"device"][@"platform"], @"APNS_SANDBOX");
+        XCTAssertEqualObjects(json[@"device"][@"token"], [[@"token" dataUsingEncoding:kCFStringEncodingUTF8] ITEHexadecimalString]);
+        return [OHHTTPStubsResponse responseWithData:[@"" dataUsingEncoding:kCFStringEncodingUTF8] statusCode:200 headers:@{@"Content-Type":@"application/json"}];
+    }];
+    
+    IterableConfig *config = [[IterableConfig alloc] init];
+    config.pushIntegrationName = @"pushIntegration";
+    [IterableAPI clearInstance];
+    [IterableAPI initializeWithApiKey:@"apiKey" config:config];
+    [[IterableAPI instance] setEmail:@"user@example.com"];
+    [[IterableAPI instance] registerToken:[@"token" dataUsingEncoding:kCFStringEncodingUTF8]];
+    
+    [self waitForExpectations:@[expectation] timeout:5.0];
+    [OHHTTPStubs removeAllStubs];
+}
+
+- (void)testEmailUserIdPersistence {
+    [IterableAPI clearInstance];
+    [IterableAPI initializeWithApiKey:@"apiKey"];
+    [[IterableAPI instance] setEmail:@"test@email.com"];
+    
+    [IterableAPI clearInstance];
+    [IterableAPI initializeWithApiKey:@"apiKey"];
+    XCTAssertEqualObjects([IterableAPI instance].email, @"test@email.com");
+    XCTAssertNil([IterableAPI instance].userId);
+    
+    [[IterableAPI instance] setUserId:@"testUserId"];
+    [IterableAPI clearInstance];
+    [IterableAPI initializeWithApiKey:@"apiKey"];
+    XCTAssertEqualObjects([IterableAPI instance].userId, @"testUserId");
+    XCTAssertNil([IterableAPI instance].email);
+}
+
 
 @end

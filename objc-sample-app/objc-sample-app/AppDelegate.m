@@ -27,12 +27,13 @@
     IterableConfig *config = [[IterableConfig alloc] init];
     config.urlDelegate = self;
     config.customActionDelegate = self;
+    config.pushIntegrationName = @"objc-sample-app";
+    config.sandboxPushIntegrationName = @"objc-sample-app";
     
     [IterableAPI initializeWithApiKey:@"a415841b631a4c97924bc09660c658fc"
                            launchOptions:launchOptions
-                                  config:config
-                                   email:@"tapash@iterable.com"
-                                  userId:nil];
+                                  config:config];
+    IterableAPI.instance.email = @"tapash@iterable.com";
     
     return YES;
 }
@@ -78,7 +79,7 @@
 
 #pragma mark - notification registration
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-    [IterableAPI.instance registerToken:deviceToken appName:@"objc-sample-app" pushServicePlatform:APNS_SANDBOX];
+    [IterableAPI.instance registerToken:deviceToken];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {

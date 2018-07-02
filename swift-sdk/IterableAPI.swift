@@ -10,19 +10,41 @@ import Foundation
 
 @objc public final class IterableAPI : NSObject, PushTrackerProtocol {
     // MARK: Initialization
+
+    /// You should call this method and not call the init method directly.
+    /// - parameter apiKey: Iterable API Key.
+    /// - returns: an instance of IterableAPI
+    @objc @discardableResult public static func initialize(apiKey: String) -> IterableAPI {
+        return initialize(apiKey: apiKey, launchOptions: nil, config:IterableConfig(), dateProvider: SystemDateProvider())
+    }
+
+    /// You should call this method and not call the init method directly.
+    /// - parameter apiKey: Iterable API Key.
+    /// - parameter config: Iterable config object.
+    /// - returns: an instance of IterableAPI
+    @objc @discardableResult public static func initialize(apiKey: String,
+                                                           config: IterableConfig) -> IterableAPI {
+        return initialize(apiKey: apiKey, launchOptions: nil, config:config, dateProvider: SystemDateProvider())
+    }
+
+    /// You should call this method and not call the init method directly.
+    /// - parameter apiKey: Iterable API Key.
+    /// - parameter launchOptions: The launchOptions coming from application:didLaunching:withOptions
+    /// - returns: an instance of IterableAPI
+    @objc @discardableResult public static func initialize(apiKey: String,
+                                                           launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> IterableAPI {
+        return initialize(apiKey: apiKey, launchOptions: launchOptions, config:IterableConfig(), dateProvider: SystemDateProvider())
+    }
+
     /// The big daddy of initialization. You should call this method and not call the init method directly.
     /// - parameter apiKey: Iterable API Key. This is the only required parameter.
     /// - parameter launchOptions: The launchOptions coming from application:didLaunching:withOptions
     /// - parameter config: Iterable config object.
-    /// - parameter email: user email for the logged in user.
-    /// - parameter userId: user id for the logged in user
     /// - returns: an instance of IterableAPI
     @objc @discardableResult public static func initialize(apiKey: String,
                                                               launchOptions: [UIApplicationLaunchOptionsKey: Any]? = nil,
-                                                              config: IterableConfig? = nil,
-                                                              email: String? = nil,
-                                                              userId: String? = nil) -> IterableAPI {
-        return initialize(apiKey: apiKey, launchOptions: launchOptions, config:config, email: email, userId:userId, dateProvider: SystemDateProvider())
+                                                              config: IterableConfig = IterableConfig()) -> IterableAPI {
+        return initialize(apiKey: apiKey, launchOptions: launchOptions, config:config, dateProvider: SystemDateProvider())
     }
     
     /**
@@ -42,12 +64,6 @@ import Foundation
         return _sharedInstance
     }
     
-    @objc public static func clearInstance() {
-        queue.sync {
-            _sharedInstance = nil
-        }
-    }
-
     /**
      The apiKey that this IterableAPI is using
      */
@@ -56,26 +72,42 @@ import Foundation
     /**
      The email of the logged in user that this IterableAPI is using
      */
-    @objc public var email: String?
+    @objc public var email: String? {
+        get {
+            return _email
+        } set {
+            _email = newValue
+            _userId = nil
+            storeEmailAndUserId()
+        }
+    }
 
     /**
      The userId of the logged in user that this IterableAPI is using
      */
-    @objc public var userId: String?
+    @objc public var userId: String? {
+        get {
+            return _userId
+        } set {
+            _userId = newValue
+            _email = nil
+            storeEmailAndUserId()
+        }
+    }
 
     @objc public weak var urlDelegate: IterableURLDelegate? {
         get {
-            return config?.urlDelegate
+            return config.urlDelegate
         } set {
-            config?.urlDelegate = newValue
+            config.urlDelegate = newValue
         }
     }
     
     @objc public weak var customActionDelegate: IterableCustomActionDelegate? {
         get {
-            return config?.customActionDelegate
+            return config.customActionDelegate
         } set {
-            config?.customActionDelegate = newValue
+            config.customActionDelegate = newValue
         }
     }
     
@@ -83,7 +115,7 @@ import Foundation
      The userInfo dictionary which came with last push.
      */
     @objc public var lastPushPayload: [AnyHashable : Any]? {
-        return expirableValueFromUserDefaults(withKey: ITBL_USER_DEFAULTS_PAYLOAD_KEY) as? [AnyHashable : Any]
+        return expirableValueFromUserDefaults(withKey: ITBConsts.UserDefaults.payloadKey) as? [AnyHashable : Any]
     }
     
     /**
@@ -91,100 +123,54 @@ import Foundation
      */
     @objc public var attributionInfo : IterableAttributionInfo? {
         get {
-            return expirableValueFromUserDefaults(withKey: ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_KEY) as? IterableAttributionInfo
+            return expirableValueFromUserDefaults(withKey: ITBConsts.UserDefaults.attributionInfoKey) as? IterableAttributionInfo
         } set {
             if let value = newValue {
                 let expiration = Calendar.current.date(byAdding: .hour,
-                                                       value: Int(ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_EXPIRATION_HOURS),
+                                                       value: Int(ITBConsts.UserDefaults.attributionInfoExpirationHours),
                                                        to: dateProvider.currentDate)
-                saveToUserDefaults(value: value, withKey: ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_KEY, andExpiration: expiration)
+                saveToUserDefaults(value: value, withKey: ITBConsts.UserDefaults.attributionInfoKey, andExpiration: expiration)
 
             } else {
-                UserDefaults.standard.removeObject(forKey: ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_KEY)
+                UserDefaults.standard.removeObject(forKey: ITBConsts.UserDefaults.attributionInfoKey)
             }
         }
     }
-    
+
     /**
-     Register this device's token with Iterable
-     
+     * Register this device's token with Iterable
+     * Push integration name and platform are read from `IterableConfig`. If platform is set to `AUTO`, it will
+     * read APNS environment from the provisioning profile and use an integration name specified in `IterableConfig`.
      - parameters:
-        - token:       The token representing this device/application pair, obtained from
+     - token:       The token representing this device/application pair, obtained from
      `application:didRegisterForRemoteNotificationsWithDeviceToken`
      after registering for remote notifications
-        - appName:     The application name, as configured in Iterable during set up of the push integration
-        - pushServicePlatform:     The PushServicePlatform to use for this device; dictates whether to register this token in the sandbox or production environment
-     
-     - seeAlso: PushServicePlatform
      */
-    @objc public func registerToken(_ token: Data, appName: String, pushServicePlatform: PushServicePlatform) {
-        registerToken(token, appName: appName, pushServicePlatform: pushServicePlatform, onSuccess: IterableAPI.defaultOnSucess(identifier: "registerToken"), onFailure: IterableAPI.defaultOnFailure(identifier: "registerToken"))
+    @objc(registerToken:) public func register(token: Data) {
+        register(token: token, onSuccess: IterableAPI.defaultOnSucess(identifier: "registerToken"), onFailure: IterableAPI.defaultOnFailure(identifier: "registerToken"))
     }
 
     /**
-     Register this device's token with Iterable
-     
+     * Register this device's token with Iterable
+     * Push integration name and platform are read from `IterableConfig`. If platform is set to `AUTO`, it will
+     * read APNS environment from the provisioning profile and use an integration name specified in `IterableConfig`.
      - parameters:
-        - token:       The token representing this device/application pair, obtained from
-     `application:didRegisterForRemoteNotificationsWithDeviceToken`
-     after registering for remote notifications
-        - appName:     The application name, as configured in Iterable during set up of the push integration
-        - pushServicePlatform:     The PushServicePlatform to use for this device; dictates whether to register this token in the sandbox or production environment
-        - onSuccess:   OnSuccessHandler to invoke if token registration is successful
-        - onFailure:   OnFailureHandler to invoke if token registration fails
-     
-     - SeeAlso: PushServicePlatform, OnSuccessHandler, OnFailureHandler
+     - token:       The token representing this device/application pair, obtained from
+                    `application:didRegisterForRemoteNotificationsWithDeviceToken`
+                    after registering for remote notifications
+     - onSuccess:   OnSuccessHandler to invoke if token registration is successful
+     - onFailure:   OnFailureHandler to invoke if token registration fails
      */
-    @objc public func registerToken(_ token: Data, appName: String, pushServicePlatform: PushServicePlatform, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        hexToken = (token as NSData).iteHexadecimalString()
-
-        let device = UIDevice.current
-        let psp = IterableAPI.pushServicePlatformToString(pushServicePlatform)
-        
-        var dataFields: [String : Any] = [
-            ITBL_DEVICE_LOCALIZED_MODEL: device.localizedModel,
-            ITBL_DEVICE_USER_INTERFACE: IterableAPI.userInterfaceIdiomEnumToString(device.userInterfaceIdiom),
-            ITBL_DEVICE_SYSTEM_NAME: device.systemName,
-            ITBL_DEVICE_SYSTEM_VERSION: device.systemVersion,
-            ITBL_DEVICE_MODEL: device.model
-        ]
-        if let identifierForVendor = device.identifierForVendor?.uuidString {
-            dataFields[ITBL_DEVICE_ID_VENDOR] = identifierForVendor
+    @objc(registerToken:onSuccess:OnFailure:) public func register(token: Data, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+        guard let appName = pushIntegrationName else {
+            ITBError("registerToken: appName is nil")
+            onFailure?("Not registering device token - appName must not be nil", nil)
+            return
         }
         
-        let deviceDictionary: [String : Any] = [
-            ITBL_KEY_TOKEN: hexToken!,
-            ITBL_KEY_PLATFORM: psp,
-            ITBL_KEY_APPLICATION_NAME: appName,
-            ITBL_KEY_DATA_FIELDS: dataFields
-        ]
-        
-        var args: [String : Any]
-        if let email = email {
-            args = [
-                ITBL_KEY_EMAIL: email,
-                ITBL_KEY_DEVICE: deviceDictionary
-            ]
-        } else {
-            if let userId = userId {
-                args = [
-                    ITBL_KEY_USER_ID: userId,
-                    ITBL_KEY_DEVICE: deviceDictionary
-                ]
-            } else {
-                ITBError("Either email or userId is required.")
-                args = [
-                    ITBL_KEY_DEVICE: deviceDictionary
-                ]
-            }
-        }
-        
-        ITBInfo("sending registerToken request with args \(args)")
-        if let request = createPostRequest(forAction: ENDPOINT_REGISTER_DEVICE_TOKEN, withArgs: args) {
-            sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
-        }
+        register(token: token, appName: appName, pushServicePlatform: config.pushPlatform, onSuccess: onSuccess, onFailure: onFailure)
     }
-    
+
     /**
      Disable this device's token in Iterable, for the current user.
      */
@@ -833,8 +819,11 @@ import Foundation
     
     // MARK: For Private and Internal Use ========================================>
     
-    var config: IterableConfig?
+    var config: IterableConfig
     var deeplinkManager: IterableDeeplinkManager
+    
+    var _email: String? = nil
+    var _userId: String? = nil
     
     static var _sharedInstance: IterableAPI?
     
@@ -863,23 +852,24 @@ import Foundation
     // Package private method. Do not call this directly.
     init(apiKey: String,
          launchOptions: [UIApplicationLaunchOptionsKey: Any]? = nil,
-         config: IterableConfig? = nil,
-         email: String? = nil,
-         userId: String? = nil,
+         config: IterableConfig = IterableConfig(),
          dateProvider: DateProviderProtocol = SystemDateProvider()) {
         self.apiKey = apiKey
-        self.email = email
-        self.userId = userId
         self.config = config
         self.dateProvider = dateProvider
 
         // setup
-        let actionRunner = IterableActionRunner(urlDelegate: config?.urlDelegate, customActionDelegate: config?.customActionDelegate, urlOpener: AppUrlOpener())
+        let actionRunner = IterableActionRunner(urlDelegate: config.urlDelegate, customActionDelegate: config.customActionDelegate, urlOpener: AppUrlOpener())
         deeplinkManager = IterableDeeplinkManager(actionRunner: actionRunner)
+        
+        // super init
         super.init()
+
+        // get email and userId from UserDefaults if present
+        retrieveEmailAndUserId()
         
         IterableAppIntegration.minion = IterableAppIntegrationInternal(tracker: self, actionRunner: actionRunner, versionInfo: SystemVersionInfo())
         
-        performDefaultNotificationAction(withLaunchOptions: launchOptions)
+        handle(launchOptions: launchOptions)
     }
 }

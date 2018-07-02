@@ -12,7 +12,7 @@ struct IterableAPNSUtil {
     static func isSandboxAPNS() -> Bool {
         if mobileProvision.count == 0 {
             // mobileprovision file not found; default to production on devices and sandbox on simulator
-            #if TARGET_IPHONE_SIMULATOR
+            #if targetEnvironment(simulator)
                 return true
             #else
                 return false
@@ -29,10 +29,10 @@ struct IterableAPNSUtil {
     }
 
     private static var mobileProvision: [AnyHashable : Any] = {
-        createMobileProvision()
+        readMobileProvision()
     }()
 
-    private static func createMobileProvision() -> [AnyHashable : Any] {
+    private static func readMobileProvision() -> [AnyHashable : Any] {
         guard let provisioningPath = Bundle.main.path(forResource: "embedded", ofType: "mobileprovision") else {
             print("resource not found")
             return [:]

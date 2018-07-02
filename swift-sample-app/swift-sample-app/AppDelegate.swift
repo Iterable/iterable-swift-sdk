@@ -24,11 +24,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let config = IterableConfig()
         config.customActionDelegate = self
         config.urlDelegate = self
+        config.pushIntegrationName = "swift-sample-app"
+        config.sandboxPushIntegrationName = "swift-sample-app"
         // !! Replace with your api key and email here.
         IterableAPI.initialize(apiKey:"a415841b631a4c97924bc09660c658fc",
                                   launchOptions:launchOptions,
-                                  config: config,
-                                  email:"tapash@iterable.com")
+                                  config: config)
+        IterableAPI.instance?.email = "tapash@iterable.com"
 
         return true
     }
@@ -68,8 +70,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     //MARK: Notification
     //ITBL:
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        IterableAPI.instance?.registerToken(deviceToken, appName: "swift-sample-app", pushServicePlatform: .APNS_SANDBOX)
-
+        IterableAPI.instance?.register(token: deviceToken)
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {

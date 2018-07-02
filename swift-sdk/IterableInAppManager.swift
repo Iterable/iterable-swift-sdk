@@ -194,7 +194,7 @@ import UIKit
     }
     
     private static func getTopViewController() -> UIViewController? {
-        guard let rootViewController = UIApplication.shared.delegate?.window??.rootViewController else {
+        guard let rootViewController = IterableUtil.rootViewController else {
             return nil
         }
         var topViewController = rootViewController

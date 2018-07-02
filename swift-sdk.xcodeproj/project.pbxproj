@@ -29,7 +29,6 @@
 		AC72A0C920CF4CE2004D7997 /* IterableAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0BF20CF4CB8004D7997 /* IterableAction.swift */; };
 		AC72A0CA20CF4CE2004D7997 /* IterableActionRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */; };
 		AC72A0CB20CF4CE2004D7997 /* IterableAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C520CF4CB9004D7997 /* IterableAPI.swift */; };
-		AC72A0CC20CF4CE2004D7997 /* IterableAPI+Deprecated.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C320CF4CB8004D7997 /* IterableAPI+Deprecated.swift */; };
 		AC72A0CD20CF4CE2004D7997 /* IterableAppIntegration.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C620CF4CB9004D7997 /* IterableAppIntegration.swift */; };
 		AC72A0CE20CF4CE2004D7997 /* IterableAttributionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */; };
 		AC72A0CF20CF4CE2004D7997 /* IterableNotificationMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C220CF4CB8004D7997 /* IterableNotificationMetadata.swift */; };
@@ -92,6 +91,13 @@
 			remoteGlobalIDString = ACF560D220E443BF000AAC23;
 			remoteInfo = "host-app";
 		};
+		ACFCA72320EAB2B900BFB277 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AC2263D620CF49B8009800EB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ACF560D220E443BF000AAC23;
+			remoteInfo = "host-app";
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -126,7 +132,6 @@
 		AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAttributionInfo.swift; sourceTree = "<group>"; };
 		AC72A0C120CF4CB8004D7997 /* CommerceItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommerceItem.swift; sourceTree = "<group>"; };
 		AC72A0C220CF4CB8004D7997 /* IterableNotificationMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableNotificationMetadata.swift; sourceTree = "<group>"; };
-		AC72A0C320CF4CB8004D7997 /* IterableAPI+Deprecated.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IterableAPI+Deprecated.swift"; sourceTree = "<group>"; };
 		AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableActionRunner.swift; sourceTree = "<group>"; };
 		AC72A0C520CF4CB9004D7997 /* IterableAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPI.swift; sourceTree = "<group>"; };
 		AC72A0C620CF4CB9004D7997 /* IterableAppIntegration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAppIntegration.swift; sourceTree = "<group>"; };
@@ -250,7 +255,6 @@
 		AC2263E120CF49B8009800EB /* swift-sdk */ = {
 			isa = PBXGroup;
 			children = (
-				AC7125F020D45BC90043BBC1 /* Deprecated */,
 				AC72A0BB20CF4C8C004D7997 /* Internal */,
 				AC72A0AE20CF4C1E004D7997 /* Objective C */,
 				AC72A0AC20CF4C08004D7997 /* Util */,
@@ -302,14 +306,6 @@
 				AC7B142F20D02CE200877BFE /* Info.plist */,
 			);
 			name = "Helper Files";
-			sourceTree = "<group>";
-		};
-		AC7125F020D45BC90043BBC1 /* Deprecated */ = {
-			isa = PBXGroup;
-			children = (
-				AC72A0C320CF4CB8004D7997 /* IterableAPI+Deprecated.swift */,
-			);
-			name = Deprecated;
 			sourceTree = "<group>";
 		};
 		AC72A0AC20CF4C08004D7997 /* Util */ = {
@@ -486,6 +482,7 @@
 			);
 			dependencies = (
 				AC7B143220D02CE200877BFE /* PBXTargetDependency */,
+				ACFCA72420EAB2B900BFB277 /* PBXTargetDependency */,
 			);
 			name = "swift-sdk-swift-tests";
 			productName = "swift-sdk-swift-tests";
@@ -581,6 +578,7 @@
 					};
 					AC7B142A20D02CE200877BFE = {
 						CreatedOnToolsVersion = 9.4;
+						TestTargetID = ACF560D220E443BF000AAC23;
 					};
 					AC7B143920D02D8700877BFE = {
 						CreatedOnToolsVersion = 9.4;
@@ -732,7 +730,6 @@
 				AC72A0B620CF4C53004D7997 /* IterableConstants.m in Sources */,
 				AC72A0D120CF4D0B004D7997 /* IterableInAppManager.swift in Sources */,
 				AC72A0CB20CF4CE2004D7997 /* IterableAPI.swift in Sources */,
-				AC72A0CC20CF4CE2004D7997 /* IterableAPI+Deprecated.swift in Sources */,
 				AC72A0C720CF4CE2004D7997 /* CommerceItem.swift in Sources */,
 				AC72A0D320CF4D19004D7997 /* IterableAPI+Internal.swift in Sources */,
 				AC2C667E20D3111900D46CC9 /* DateProvider.swift in Sources */,
@@ -815,6 +812,11 @@
 			isa = PBXTargetDependency;
 			target = ACF560D220E443BF000AAC23 /* host-app */;
 			targetProxy = ACF560E520E443F7000AAC23 /* PBXContainerItemProxy */;
+		};
+		ACFCA72420EAB2B900BFB277 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ACF560D220E443BF000AAC23 /* host-app */;
+			targetProxy = ACFCA72320EAB2B900BFB277 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1035,6 +1037,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/host-app.app/host-app";
 			};
 			name = Debug;
 		};
@@ -1054,6 +1057,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/host-app.app/host-app";
 			};
 			name = Release;
 		};

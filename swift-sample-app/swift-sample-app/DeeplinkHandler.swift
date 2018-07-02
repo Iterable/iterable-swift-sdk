@@ -38,7 +38,7 @@ struct DeeplinkHandler {
     private static func show(coffee: CoffeeType) {
         let coffeeVC = CoffeeViewController.createFromStoryboard()
         coffeeVC.coffee = coffee
-        if let rootNav = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController {
+        if let rootNav = UIApplication.shared.delegate?.window??.rootViewController as? UINavigationController {
             if let coffeeListVC = rootNav.viewControllers[0] as? CoffeeListTableViewController {
                 coffeeListVC.searchTerm = nil
             }
@@ -48,7 +48,7 @@ struct DeeplinkHandler {
     }
     
     private static func showCoffeeList(query: String?) {
-        if let rootNav = UIApplication.shared.keyWindow?.rootViewController as? UINavigationController {
+        if let rootNav = UIApplication.shared.delegate?.window??.rootViewController as? UINavigationController {
             rootNav.popToRootViewController(animated: true)
             if let coffeeListVC = rootNav.viewControllers[0] as? CoffeeListTableViewController {
                 coffeeListVC.searchTerm = query
