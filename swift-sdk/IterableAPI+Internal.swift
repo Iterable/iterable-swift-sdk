@@ -115,7 +115,7 @@ extension IterableAPI {
     }
     
     // You should not call this.
-    @objc public static func clearInstance() {
+    @objc public static func clearSharedInstance() {
         queue.sync {
             _sharedInstance = nil
         }

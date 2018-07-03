@@ -33,7 +33,7 @@
     [IterableAPI initializeWithApiKey:@"a415841b631a4c97924bc09660c658fc"
                            launchOptions:launchOptions
                                   config:config];
-    IterableAPI.instance.email = @"tapash@iterable.com";
+    IterableAPI.sharedInstance.email = @"tapash@iterable.com";
     
     return YES;
 }
@@ -79,7 +79,7 @@
 
 #pragma mark - notification registration
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-    [IterableAPI.instance registerToken:deviceToken];
+    [IterableAPI.sharedInstance registerToken:deviceToken];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {

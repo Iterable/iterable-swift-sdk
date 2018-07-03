@@ -5,9 +5,9 @@ use_frameworks!
 swift_version = '4.0'
 
 target 'objc-sample-app' do
-  pod 'IterableSDK', :path => '../../swift-sdk'
+  pod 'IterableSDK', :path => '../../../swift-sdk'
 end
 
 target 'objc-sample-app-notification-extension' do
-  pod 'IterableAppExtensions', :path => '../../swift-sdk'
+  pod 'IterableAppExtensions', :path => '../../../swift-sdk'
 end

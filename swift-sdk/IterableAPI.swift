@@ -57,7 +57,7 @@ import Foundation
      
      - warning: `instance` will return `nil` if called before calling `initialize`
      */
-    @objc public static var instance : IterableAPI? {
+    @objc public static var sharedInstance : IterableAPI? {
         if _sharedInstance == nil {
             ITBError("instance called before initializing API")
         }

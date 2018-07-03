@@ -30,7 +30,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         IterableAPI.initialize(apiKey:"a415841b631a4c97924bc09660c658fc",
                                   launchOptions:launchOptions,
                                   config: config)
-        IterableAPI.instance?.email = "tapash@iterable.com"
+        IterableAPI.sharedInstance?.email = "tapash@iterable.com"
 
         return true
     }
@@ -70,7 +70,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     //MARK: Notification
     //ITBL:
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        IterableAPI.instance?.register(token: deviceToken)
+        IterableAPI.sharedInstance?.register(token: deviceToken)
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {

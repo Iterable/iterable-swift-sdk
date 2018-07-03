@@ -21,7 +21,7 @@ class IterableNotificationResponseTests: XCTestCase {
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
-        IterableAPI.clearInstance()
+        IterableAPI.clearSharedInstance()
         IterableAPI.initialize(apiKey:"", config: IterableConfig(), dateProvider: dateProvider)
     }
     
@@ -129,7 +129,7 @@ class IterableNotificationResponseTests: XCTestCase {
     }
     
     func testSavePushPayload() {
-        let api = IterableAPI.instance!
+        let api = IterableAPI.sharedInstance!
         let messageId = UUID().uuidString
         let userInfo: [AnyHashable : Any] = [
             "itbl": [
@@ -164,7 +164,7 @@ class IterableNotificationResponseTests: XCTestCase {
     }
     
     func testSaveAttributionInfo() {
-        let api = IterableAPI.instance!
+        let api = IterableAPI.sharedInstance!
         let messageId = UUID().uuidString
         let userInfo: [AnyHashable : Any] = [
             "itbl": [

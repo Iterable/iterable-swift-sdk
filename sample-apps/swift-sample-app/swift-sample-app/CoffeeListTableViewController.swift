@@ -45,7 +45,7 @@ class CoffeeListTableViewController: UITableViewController {
         
         if checkForInApp {
             timer = Timer.scheduledTimer(withTimeInterval: inAppCheckInterval, repeats: true) {_ in
-                IterableAPI.instance?.spawn(inAppNotification: { (_) in
+                IterableAPI.sharedInstance?.spawn(inAppNotification: { (_) in
                 })
             }
         }

@@ -1037,7 +1037,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
-				INFOPLIST_FILE = "swift-sdk-swift-tests/Info.plist";
+				INFOPLIST_FILE = "Tests/swift-sdk-swift-tests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1057,7 +1057,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
-				INFOPLIST_FILE = "swift-sdk-swift-tests/Info.plist";
+				INFOPLIST_FILE = "Tests/swift-sdk-swift-tests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1087,7 +1087,7 @@
 					"\"${PODS_ROOT}/Headers/Public/OHHTTPStubs\"",
 					"$(CONFIGURATION_TEMP_DIR)/swift-sdk-objc-tests.build/DerivedSources",
 				);
-				INFOPLIST_FILE = "swift-sdk-objc-tests/Info.plist";
+				INFOPLIST_FILE = "Tests/swift-sdk-objc-tests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1095,7 +1095,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "iterable.swift-sdk-objc-tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "swift-sdk-objc-tests/swift-sdk-objc-tests-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Tests/swift-sdk-objc-tests/swift-sdk-objc-tests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1119,7 +1119,7 @@
 					"\"${PODS_ROOT}/Headers/Public/OHHTTPStubs\"",
 					"$(CONFIGURATION_TEMP_DIR)/swift-sdk-objc-tests.build/DerivedSources",
 				);
-				INFOPLIST_FILE = "swift-sdk-objc-tests/Info.plist";
+				INFOPLIST_FILE = "Tests/swift-sdk-objc-tests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1127,7 +1127,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "iterable.swift-sdk-objc-tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "swift-sdk-objc-tests/swift-sdk-objc-tests-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Tests/swift-sdk-objc-tests/swift-sdk-objc-tests-Bridging-Header.h";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/host-app.app/host-app";
@@ -1202,7 +1202,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
-				INFOPLIST_FILE = "notification-extension-tests/Info.plist";
+				INFOPLIST_FILE = "Tests/notification-extension-tests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1225,7 +1225,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
-				INFOPLIST_FILE = "notification-extension-tests/Info.plist";
+				INFOPLIST_FILE = "Tests/notification-extension-tests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
