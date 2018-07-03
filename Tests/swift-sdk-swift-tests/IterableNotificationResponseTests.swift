@@ -200,6 +200,10 @@ class IterableNotificationResponseTests: XCTestCase {
     }
     
     func testLegacyDeeplinkPayload() {
+        guard @available(iOS 10, *) else {
+            return
+        }
+        
         let messageId = UUID().uuidString
         let userInfo: [AnyHashable : Any] = [
             "itbl" : [

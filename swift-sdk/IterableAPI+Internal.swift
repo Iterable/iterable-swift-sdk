@@ -38,14 +38,13 @@ extension IterableAPI {
         }
         if let remoteNotificationPayload = launchOptions[UIApplicationLaunchOptionsKey.remoteNotification] as? [AnyHashable : Any] {
             if let _ = IterableUtil.rootViewController {
+                // we are ready
+                IterableAppIntegration.minion?.performDefaultNotificationAction(remoteNotificationPayload)
+            } else {
                 // keywindow not set yet
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     IterableAppIntegration.minion?.performDefaultNotificationAction(remoteNotificationPayload)
                 }
-                
-            } else {
-                // we are ready
-                IterableAppIntegration.minion?.performDefaultNotificationAction(remoteNotificationPayload)
             }
         }
     }
@@ -94,18 +93,16 @@ extension IterableAPI {
                 ITBL_KEY_EMAIL: email,
                 ITBL_KEY_DEVICE: deviceDictionary
             ]
+        } else if let userId = userId {
+            args = [
+                ITBL_KEY_USER_ID: userId,
+                ITBL_KEY_DEVICE: deviceDictionary
+            ]
         } else {
-            if let userId = userId {
-                args = [
-                    ITBL_KEY_USER_ID: userId,
-                    ITBL_KEY_DEVICE: deviceDictionary
-                ]
-            } else {
-                ITBError("Either email or userId is required.")
-                args = [
-                    ITBL_KEY_DEVICE: deviceDictionary
-                ]
-            }
+            ITBError("Either email or userId is required.")
+            args = [
+                ITBL_KEY_DEVICE: deviceDictionary
+            ]
         }
         
         ITBInfo("sending registerToken request with args \(args)")

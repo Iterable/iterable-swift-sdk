@@ -66,9 +66,9 @@ struct IterableAPNSUtil {
         let scanner = Scanner(string: string)
         var buffer: NSString?
         guard
-            scanner.scanUpTo(begin, into: nil)
-            ,scanner.scanUpTo(end, into: &buffer)
-            ,let plistString = buffer
+            scanner.scanUpTo(begin, into: nil),
+            scanner.scanUpTo(end, into: &buffer),
+            let plistString = buffer
             
             else {
                 return nil

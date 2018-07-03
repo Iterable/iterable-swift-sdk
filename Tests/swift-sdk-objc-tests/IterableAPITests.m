@@ -123,7 +123,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
 }
 
 - (void)testHandleUniversalLinkRewrite {
-    XCTestExpectation *expectation = [self expectationWithDescription:@"High Expectations"];
+    XCTestExpectation *expectation = [self expectationWithDescription:@"urlDelegate is called"];
 
     MockUrlDelegate *urlDelegateMock = [[MockUrlDelegate alloc] initWithReturnValue:NO];
     urlDelegateMock.callback = ^(NSURL *url, IterableActionContext *context) {
@@ -140,9 +140,6 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     [IterableAPI handleUniversalLink:iterableLink];
    
     [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:^(NSError *error) {
-        if (error) {
-            NSLog(@"Timeout Error: %@", error);
-        }
     }];
 }
 

@@ -13,10 +13,18 @@ import IterableSDK
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
+    // ITBL: replace with your api key and email.
+    let apiKey = "" // set Iterable api key here
+    let email = "" // set Iterable user email here.
+    
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        // Initial check
+        if apiKey.isEmpty || email.isEmpty {
+            fatalError("Iterable API Key and email need to be set.")
+        }
+        
         //ITBL: Setup Notification
         setupNotifications()
 
@@ -26,11 +34,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         config.urlDelegate = self
         config.pushIntegrationName = "swift-sample-app"
         config.sandboxPushIntegrationName = "swift-sample-app"
-        // !! Replace with your api key and email here.
-        IterableAPI.initialize(apiKey:"a415841b631a4c97924bc09660c658fc",
+        // Replace with your api key and email here.
+        IterableAPI.initialize(apiKey: apiKey,
                                   launchOptions:launchOptions,
                                   config: config)
-        IterableAPI.sharedInstance?.email = "tapash@iterable.com"
+        IterableAPI.sharedInstance?.email = email
 
         return true
     }

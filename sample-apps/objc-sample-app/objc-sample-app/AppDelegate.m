@@ -13,13 +13,19 @@
 @import IterableSDK;
 
 @interface AppDelegate ()
-
 @end
 
 @implementation AppDelegate
+NSString *apiKey = @""; // set iterable api key here
+NSString *email = @""; // set iterable email here
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    // initial check
+    if (apiKey.length == 0 || email.length == 0) {
+        [NSException raise:@"Not Initialized" format:@"Iterable API key and email must be set."];
+    }
+    
     //ITBL: Setup Notifications
     [self setupNotifications];
     
@@ -30,10 +36,10 @@
     config.pushIntegrationName = @"objc-sample-app";
     config.sandboxPushIntegrationName = @"objc-sample-app";
     
-    [IterableAPI initializeWithApiKey:@"a415841b631a4c97924bc09660c658fc"
+    [IterableAPI initializeWithApiKey: apiKey
                            launchOptions:launchOptions
                                   config:config];
-    IterableAPI.sharedInstance.email = @"tapash@iterable.com";
+    IterableAPI.sharedInstance.email = email;
     
     return YES;
 }
@@ -107,7 +113,7 @@
 - (BOOL)handleIterableCustomAction:(IterableAction *)action context:(IterableActionContext *)context {
     if ([action.type isEqualToString:@"handleFindCoffee"]) {
         if (action.userInput != nil) {
-            NSString *urlString = [[NSString alloc] initWithFormat:@"https://majumder/me/coffee?q=%@", action.userInput];
+            NSString *urlString = [[NSString alloc] initWithFormat:@"https://majumder.me/coffee?q=%@", action.userInput];
             NSURL *url = [[NSURL alloc] initWithString:urlString];
             [DeeplinkHandler handleURL:url];
         }

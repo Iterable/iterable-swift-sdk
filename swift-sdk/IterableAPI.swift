@@ -810,8 +810,8 @@ import Foundation
      - returns: true if it is an Iterable link, or the value returned from `IterableURLDelegate` otherwise
      */
     @objc @discardableResult public static func handleUniversalLink(_ url: URL) -> Bool {
-        if let zeeInstance = _sharedInstance {
-            return zeeInstance.deeplinkManager.handleUniversalLink(url)
+        if let instance = _sharedInstance {
+            return instance.deeplinkManager.handleUniversalLink(url)
         } else {
             return false
         }

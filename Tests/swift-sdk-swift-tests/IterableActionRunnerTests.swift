@@ -65,7 +65,7 @@ class IterableActionRunnerTests: XCTestCase {
         let customActionDelegate = MockCustomActionDelegate(returnValue: false)
         let action = IterableAction.action(fromDictionary: ["type" : "customActionName"])!
         let actionRunner = IterableActionRunner(urlDelegate: nil, customActionDelegate: customActionDelegate, urlOpener: MockUrlOpener())
-        _ = actionRunner.execute(action: action, from:.push)
+        _ = actionRunner.execute(action: action, from: .push)
         
         XCTAssertEqual(customActionDelegate.action, action)
     }

@@ -40,7 +40,7 @@ class IterableDeeplinkManager : NSObject {
      - returns: true if it is an Iterable link, or the value returned from `IterableURLDelegate` otherwise
      */
     func handleUniversalLink(_ url: URL) -> Bool {
-        if isDeeplink(url.absoluteString) {
+        if isIterableDeeplink(url.absoluteString) {
             resolve(applinkURL: url) {[actionRunner] (resolvedUrl) in
                 var resolvedUrlString: String
                 if let resolvedUrl = resolvedUrl {
@@ -76,7 +76,7 @@ class IterableDeeplinkManager : NSObject {
         deeplinkTemplateId = nil
         deeplinkMessageId = nil
         
-        if isDeeplink(applinkURL.absoluteString) {
+        if isIterableDeeplink(applinkURL.absoluteString) {
             let trackAndRedirectTask = redirectUrlSession.dataTask(with: applinkURL) {[unowned self] (data, response, error) in
                 if let error = error {
                     ITBError("error: \(error.localizedDescription)")
@@ -98,7 +98,7 @@ class IterableDeeplinkManager : NSObject {
         }
     }
 
-    private func isDeeplink(_ urlString: String) -> Bool {
+    private func isIterableDeeplink(_ urlString: String) -> Bool {
         guard let regex = try? NSRegularExpression(pattern: ITBL_DEEPLINK_IDENTIFIER, options: []) else {
             return false
         }
