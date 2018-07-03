@@ -230,10 +230,8 @@
 			children = (
 				AC2263E120CF49B8009800EB /* swift-sdk */,
 				AC90C4C520D8632E00EECA5D /* notification-extension */,
-				AC7B142C20D02CE200877BFE /* swift-sdk-swift-tests */,
-				AC7B143B20D02D8700877BFE /* swift-sdk-objc-tests */,
-				AC90C4D220D8632E00EECA5D /* notification-extension-tests */,
 				ACF560D420E443BF000AAC23 /* host-app */,
+				ACFCA72920EB02DB00BFB277 /* Tests */,
 				AC2263E020CF49B8009800EB /* Products */,
 				C83BAB75B2E351B936BA5F68 /* Pods */,
 				B45C88EB52A42BAD4D6B1EAF /* Frameworks */,
@@ -403,6 +401,16 @@
 				ACF560E120E443C0000AAC23 /* Info.plist */,
 			);
 			path = "host-app";
+			sourceTree = "<group>";
+		};
+		ACFCA72920EB02DB00BFB277 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				AC90C4D220D8632E00EECA5D /* notification-extension-tests */,
+				AC7B143B20D02D8700877BFE /* swift-sdk-objc-tests */,
+				AC7B142C20D02CE200877BFE /* swift-sdk-swift-tests */,
+			);
+			path = Tests;
 			sourceTree = "<group>";
 		};
 		B45C88EB52A42BAD4D6B1EAF /* Frameworks */ = {
