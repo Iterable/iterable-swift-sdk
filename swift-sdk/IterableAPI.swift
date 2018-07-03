@@ -809,7 +809,7 @@ import Foundation
      - parameter url: the URL obtained from `UserActivity.webpageURL`
      - returns: true if it is an Iterable link, or the value returned from `IterableURLDelegate` otherwise
      */
-    @objc public static func handleUniversalLink(_ url: URL) -> Bool {
+    @objc @discardableResult public static func handleUniversalLink(_ url: URL) -> Bool {
         if let zeeInstance = _sharedInstance {
             return zeeInstance.deeplinkManager.handleUniversalLink(url)
         } else {

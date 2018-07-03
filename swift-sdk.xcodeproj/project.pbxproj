@@ -53,6 +53,7 @@
 		ACF560DD20E443C0000AAC23 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ACF560DC20E443C0000AAC23 /* Assets.xcassets */; };
 		ACF560E020E443C0000AAC23 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACF560DE20E443C0000AAC23 /* LaunchScreen.storyboard */; };
 		ACF560E820E55A6B000AAC23 /* IterableActionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF560E720E55A6B000AAC23 /* IterableActionContext.swift */; };
+		ACFCA72720EAEC3200BFB277 /* Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668320D3370600D46CC9 /* Mocks.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -754,6 +755,7 @@
 				AC7B145320D038C400877BFE /* IterableAPITests.m in Sources */,
 				AC7B145220D038C400877BFE /* IterableNotificationMetadataTests.m in Sources */,
 				AC7B145120D038C400877BFE /* IterableAPIResponseTests.m in Sources */,
+				ACFCA72720EAEC3200BFB277 /* Mocks.swift in Sources */,
 				AC7B144F20D038C400877BFE /* CommerceItemTests.m in Sources */,
 				AC7B145420D038C400877BFE /* IterableInAppNotificationTests.m in Sources */,
 			);

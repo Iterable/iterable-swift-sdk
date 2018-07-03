@@ -12,6 +12,8 @@
 #import <OHHTTPStubs.h>
 #import <OHHTTPStubs/NSURLRequest+HTTPBodyTesting.h>
 
+#import "swift_sdk_objc_tests-Swift.h"
+
 @import IterableSDK;
 
 static CGFloat const IterableNetworkResponseExpectationTimeout = 5.0;
@@ -92,6 +94,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     NSURL *iterableLink = [NSURL URLWithString:iterableRewriteURL];
     ITEActionBlock aBlock = ^(NSString* redirectUrl) {
         XCTAssertEqualObjects(@"https://links.iterable.com/api/docs#!/email", redirectUrl);
+        XCTAssertTrue(NSThread.isMainThread);
         [expectation fulfill];
     };
     [IterableAPI getAndTrackDeeplink:iterableLink callbackBlock:aBlock];
@@ -112,6 +115,30 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     };
     [IterableAPI getAndTrackDeeplink:normalLink callbackBlock:uBlock];
     
+    [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:^(NSError *error) {
+        if (error) {
+            NSLog(@"Timeout Error: %@", error);
+        }
+    }];
+}
+
+- (void)testHandleUniversalLinkRewrite {
+    XCTestExpectation *expectation = [self expectationWithDescription:@"High Expectations"];
+
+    MockUrlDelegate *urlDelegateMock = [[MockUrlDelegate alloc] initWithReturnValue:NO];
+    urlDelegateMock.callback = ^(NSURL *url, IterableActionContext *context) {
+        XCTAssertEqualObjects(url.absoluteString, @"https://links.iterable.com/api/docs#!/email");
+        XCTAssertEqualObjects(context.action.type, IterableAction.actionTypeOpenUrl);
+        [expectation fulfill];
+    };
+    
+    [IterableAPI clearInstance];
+    IterableConfig *config = [[IterableConfig alloc] init];
+    config.urlDelegate = urlDelegateMock;
+    [IterableAPI initializeWithApiKey:@"" config:config];
+    NSURL *iterableLink = [NSURL URLWithString:iterableRewriteURL];
+    [IterableAPI handleUniversalLink:iterableLink];
+   
     [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:^(NSError *error) {
         if (error) {
             NSLog(@"Timeout Error: %@", error);

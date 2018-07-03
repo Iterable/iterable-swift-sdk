@@ -37,13 +37,15 @@ public class MockUrlDelegate : NSObject, IterableURLDelegate {
         self.returnValue = returnValue
     }
     
-    var returnValue: Bool
-    var url: URL?
-    var context: IterableActionContext?
+    private (set) var returnValue: Bool
+    private (set) var url: URL?
+    private (set) var context: IterableActionContext?
+    var callback: ((URL, IterableActionContext)->Void)? = nil
     
     public func handle(iterableURL url: URL, inContext context: IterableActionContext) -> Bool {
         self.url = url
         self.context = context
+        callback?(url, context)
         return returnValue
     }
 }
