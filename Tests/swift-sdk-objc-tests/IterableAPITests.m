@@ -99,11 +99,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     };
     [IterableAPI getAndTrackDeeplink:iterableLink callbackBlock:aBlock];
     
-    [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:^(NSError *error) {
-        if (error) {
-            NSLog(@"Timeout Error: %@", error);
-        }
-    }];
+    [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:nil];
 }
 
 - (void)testUniversalDeeplinkNoRewrite {
@@ -115,11 +111,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     };
     [IterableAPI getAndTrackDeeplink:normalLink callbackBlock:uBlock];
     
-    [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:^(NSError *error) {
-        if (error) {
-            NSLog(@"Timeout Error: %@", error);
-        }
-    }];
+    [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:nil];
 }
 
 - (void)testHandleUniversalLinkRewrite {
@@ -139,8 +131,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     NSURL *iterableLink = [NSURL URLWithString:iterableRewriteURL];
     [IterableAPI handleUniversalLink:iterableLink];
    
-    [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:^(NSError *error) {
-    }];
+    [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:nil];
 }
 
 - (void)testDeeplinkAttributionInfo {
@@ -158,11 +149,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     };
     [IterableAPI getAndTrackDeeplink:normalLink callbackBlock:uBlock];
     
-    [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:^(NSError *error) {
-        if (error) {
-            NSLog(@"Timeout Error: %@", error);
-        }
-    }];
+    [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:nil];
 }
 
 - (void)testNoURLRedirect {
@@ -175,11 +162,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     };
     [IterableAPI getAndTrackDeeplink:redirectLink callbackBlock:redirectBlock];
     
-    [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:^(NSError *error) {
-        if (error) {
-            NSLog(@"Timeout Error: %@", error);
-        }
-    }];
+    [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:nil];
 }
 
 - (void)testUniversalDeeplinkHttp {
@@ -192,11 +175,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     };
     [IterableAPI getAndTrackDeeplink:googleHttpLink callbackBlock:googleHttpBlock];
     
-    [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:^(NSError *error) {
-        if (error) {
-            NSLog(@"Timeout Error: %@", error);
-        }
-    }];
+    [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:nil];
 }
 
 - (void)testUniversalDeeplinkHttps {
@@ -210,11 +189,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     };
     [IterableAPI getAndTrackDeeplink:googleHttpsLink callbackBlock:googleHttpsBlock];
     
-    [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:^(NSError *error) {
-        if (error) {
-            NSLog(@"Timeout Error: %@", error);
-        }
-    }];
+    [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:nil];
 }
 
 - (void)testURLQueryParamRewrite {
