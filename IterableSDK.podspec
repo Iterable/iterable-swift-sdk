@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   #
 
   s.name         = "IterableSDK"
-  s.version      = "1.0.0"
+  s.version      = "6.0.0"
   s.summary      = "Iterable's official SDK for iOS"
 
   s.description  = <<-DESC
@@ -76,6 +76,8 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = {
     'SWIFT_VERSION' => '4.1'
   }
+
+  s.swift_version = '4.1'
 
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #

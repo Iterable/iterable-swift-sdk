@@ -31,6 +31,10 @@ class IterableNotificationResponseTests: XCTestCase {
     }
     
     func testTrackOpenPushWithCustomAction() {
+        guard #available(iOS 10.0, *) else {
+            return
+        }
+        
         let messageId = UUID().uuidString
         let userInfo: [AnyHashable : Any] = [
             "itbl": [
@@ -63,6 +67,10 @@ class IterableNotificationResponseTests: XCTestCase {
     }
     
     func testActionButtonDismiss() {
+        guard #available(iOS 10.0, *) else {
+            return
+        }
+        
         let messageId = UUID().uuidString
         let userInfo = [
             "itbl": [
@@ -198,8 +206,11 @@ class IterableNotificationResponseTests: XCTestCase {
         XCTAssertNil(api.attributionInfo)
     }
 
-    @available(iOS 10, *)
     func testLegacyDeeplinkPayload() {
+        guard #available(iOS 10.0, *) else {
+            return
+        }
+
         let messageId = UUID().uuidString
         let userInfo: [AnyHashable : Any] = [
             "itbl" : [
