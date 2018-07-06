@@ -1,6 +1,5 @@
 //
 //  IterableUtil.swift
-//  iOS Demo
 //
 //  Created by Tapash Majumder on 5/18/18.
 //  Copyright © 2018 Iterable. All rights reserved.
@@ -10,8 +9,8 @@ import Foundation
 import os
 
 @objc public final class IterableUtil : NSObject {
-    static var rootViewController : UIViewController {
-        return UIApplication.shared.keyWindow!.rootViewController!
+    static var rootViewController : UIViewController? {
+        return UIApplication.shared.delegate?.window??.rootViewController
     }
     
     static func trim(string: String) -> String {

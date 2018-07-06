@@ -46,8 +46,12 @@ import Foundation
      * - parameter dictionary: Dictionary containing action data
      * - returns: `IterableAction` instance
      */
-    @objc public static func action(fromDictionary dictionary: [AnyHashable : Any]) -> IterableAction? {
+    @objc(actionFromDictionary:) public static func action(fromDictionary dictionary: [AnyHashable : Any]) -> IterableAction? {
         return IterableAction(withDictionary: dictionary)
+    }
+    
+    @objc(actionOpenUrl:) public static func actionOpenUrl(fromUrlString: String) -> IterableAction? {
+        return IterableAction(withDictionary: ["type" : IterableAction.actionTypeOpenUrl, "data" : fromUrlString])
     }
 
     // Private

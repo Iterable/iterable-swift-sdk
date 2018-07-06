@@ -11,16 +11,103 @@ import Foundation
 /// Only things that are needed internally by IterableAPI
 extension IterableAPI {
     /**
-     Creates an iterable session with launchOptions.
-     - parameter launchOptions: from application:didFinishLaunchingWithOptions or custom launchOptions
-     - parameter useCustomLaunchOptions: whether or not to use the custom launchOption without the UIApplicationLaunchOptionsRemoteNotificationKey
+     * Returns the push integration name for this app depending on the config options
+     * @return push integration name to use
      */
-    func performDefaultNotificationAction(withLaunchOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) {
+    var pushIntegrationName: String? {
+        if let pushIntegrationName = config.pushIntegrationName, let sandboxPushIntegrationName = config.sandboxPushIntegrationName {
+            switch(config.pushPlatform) {
+            case .APNS:
+                return pushIntegrationName
+            case .APNS_SANDBOX:
+                return sandboxPushIntegrationName
+            case .AUTO:
+                return IterableAPNSUtil.isSandboxAPNS() ? sandboxPushIntegrationName : pushIntegrationName
+            }
+        }
+        return config.pushIntegrationName
+    }
+    
+    /**
+     Creates an iterable session with launchOptions.
+     - parameter launchOptions: from application:didFinishLaunchingWithOptions
+     */
+    func handle(launchOptions: [UIApplicationLaunchOptionsKey: Any]?) {
         guard let launchOptions = launchOptions else {
             return
         }
         if let remoteNotificationPayload = launchOptions[UIApplicationLaunchOptionsKey.remoteNotification] as? [AnyHashable : Any] {
-            IterableAppIntegration.minion?.performDefaultNotificationAction(remoteNotificationPayload)
+            if let _ = IterableUtil.rootViewController {
+                // we are ready
+                IterableAppIntegration.minion?.performDefaultNotificationAction(remoteNotificationPayload)
+            } else {
+                // keywindow not set yet
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    IterableAppIntegration.minion?.performDefaultNotificationAction(remoteNotificationPayload)
+                }
+            }
+        }
+    }
+    
+    /**
+     Register this device's token with Iterable
+     
+     - parameters:
+     - token:       The token representing this device/application pair, obtained from
+     `application:didRegisterForRemoteNotificationsWithDeviceToken`
+     after registering for remote notifications
+     - appName:     The application name, as configured in Iterable during set up of the push integration
+     - pushServicePlatform:     The PushServicePlatform to use for this device; dictates whether to register this token in the sandbox or production environment
+     - onSuccess:   OnSuccessHandler to invoke if token registration is successful
+     - onFailure:   OnFailureHandler to invoke if token registration fails
+     
+     - SeeAlso: PushServicePlatform, OnSuccessHandler, OnFailureHandler
+     */
+    func register(token: Data, appName: String, pushServicePlatform: PushServicePlatform, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+        hexToken = (token as NSData).iteHexadecimalString()
+        
+        let device = UIDevice.current
+        let psp = IterableAPI.pushServicePlatformToString(pushServicePlatform)
+        
+        var dataFields: [String : Any] = [
+            ITBL_DEVICE_LOCALIZED_MODEL: device.localizedModel,
+            ITBL_DEVICE_USER_INTERFACE: IterableAPI.userInterfaceIdiomEnumToString(device.userInterfaceIdiom),
+            ITBL_DEVICE_SYSTEM_NAME: device.systemName,
+            ITBL_DEVICE_SYSTEM_VERSION: device.systemVersion,
+            ITBL_DEVICE_MODEL: device.model
+        ]
+        if let identifierForVendor = device.identifierForVendor?.uuidString {
+            dataFields[ITBL_DEVICE_ID_VENDOR] = identifierForVendor
+        }
+        
+        let deviceDictionary: [String : Any] = [
+            ITBL_KEY_TOKEN: hexToken!,
+            ITBL_KEY_PLATFORM: psp,
+            ITBL_KEY_APPLICATION_NAME: appName,
+            ITBL_KEY_DATA_FIELDS: dataFields
+        ]
+        
+        var args: [String : Any]
+        if let email = email {
+            args = [
+                ITBL_KEY_EMAIL: email,
+                ITBL_KEY_DEVICE: deviceDictionary
+            ]
+        } else if let userId = userId {
+            args = [
+                ITBL_KEY_USER_ID: userId,
+                ITBL_KEY_DEVICE: deviceDictionary
+            ]
+        } else {
+            ITBError("Either email or userId is required.")
+            args = [
+                ITBL_KEY_DEVICE: deviceDictionary
+            ]
+        }
+        
+        ITBInfo("sending registerToken request with args \(args)")
+        if let request = createPostRequest(forAction: ENDPOINT_REGISTER_DEVICE_TOKEN, withArgs: args) {
+            sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
         }
     }
     
@@ -226,9 +313,9 @@ extension IterableAPI {
     
     func save(pushPayload payload: [AnyHashable : Any]) {
         let expiration = Calendar.current.date(byAdding: .hour,
-                                               value: Int(ITBL_USER_DEFAULTS_PAYLOAD_EXPIRATION_HOURS),
+                                               value: Int(ITBConsts.UserDefaults.payloadExpirationHours),
                                                to: dateProvider.currentDate)
-        saveToUserDefaults(value: payload, withKey: ITBL_USER_DEFAULTS_PAYLOAD_KEY, andExpiration: expiration)
+        saveToUserDefaults(value: payload, withKey: ITBConsts.UserDefaults.payloadKey, andExpiration: expiration)
 
         if let metadata = IterableNotificationMetadata.metadata(fromLaunchOptions: payload) {
             if let templateId = metadata.templateId, let messageId = metadata.messageId {
@@ -241,10 +328,10 @@ extension IterableAPI {
         let encodedObject = NSKeyedArchiver.archivedData(withRootObject: value)
         let toSave: [String: Any]
         if let expiration = expiration {
-            toSave = [ITBL_USER_DEFAULTS_OBJECT_TAG : encodedObject,
-                      ITBL_USER_DEFAULTS_EXPIRATION_TAG : expiration]
+            toSave = [ITBConsts.UserDefaults.objectTag : encodedObject,
+                      ITBConsts.UserDefaults.expirationTag : expiration]
         } else {
-            toSave = [ITBL_USER_DEFAULTS_OBJECT_TAG : encodedObject]
+            toSave = [ITBConsts.UserDefaults.objectTag : encodedObject]
         }
         UserDefaults.standard.set(toSave, forKey: key)
     }
@@ -253,13 +340,13 @@ extension IterableAPI {
         guard let saved = UserDefaults.standard.dictionary(forKey: key) else {
             return nil
         }
-        guard let encodedObject = saved[ITBL_USER_DEFAULTS_OBJECT_TAG] as? Data else {
+        guard let encodedObject = saved[ITBConsts.UserDefaults.objectTag] as? Data else {
             return nil
         }
         guard let value = NSKeyedUnarchiver.unarchiveObject(with: encodedObject) else {
             return nil
         }
-        guard let expiration = saved[ITBL_USER_DEFAULTS_EXPIRATION_TAG] as? Date else {
+        guard let expiration = saved[ITBConsts.UserDefaults.expirationTag] as? Date else {
             // note if expiration is nil return the value
             return value
         }
@@ -284,6 +371,8 @@ extension IterableAPI {
             return ITBL_KEY_APNS
         case .APNS_SANDBOX:
             return ITBL_KEY_APNS_SANDBOX
+        case .AUTO:
+            return IterableAPNSUtil.isSandboxAPNS() ? ITBL_KEY_APNS_SANDBOX : ITBL_KEY_APNS
         }
     }
     
@@ -338,19 +427,24 @@ extension IterableAPI {
         assertionFailure("either email or userId should be set")
     }
     
+    func storeEmailAndUserId() {
+        UserDefaults.standard.set(_email, forKey: ITBConsts.UserDefaults.emailKey)
+        UserDefaults.standard.set(_userId, forKey: ITBConsts.UserDefaults.userIdKey)
+    }
+    
+    func retrieveEmailAndUserId() {
+        _email = UserDefaults.standard.string(forKey: ITBConsts.UserDefaults.emailKey)
+        _userId = UserDefaults.standard.string(forKey: ITBConsts.UserDefaults.userIdKey)
+    }
+    
     // Internal Only used in unit tests.
     @discardableResult static func initialize(apiKey: String,
                                                  launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil,
-                                                 config: IterableConfig? = nil,
-                                                 email: String? = nil,
-                                                 userId: String? = nil,
+                                                 config: IterableConfig = IterableConfig(),
                                                  dateProvider: DateProviderProtocol) -> IterableAPI {
         queue.sync {
-            if _sharedInstance == nil {
-                _sharedInstance = IterableAPI(apiKey: apiKey, config: config, email: email, userId: userId, dateProvider: dateProvider)
-            }
+            _sharedInstance = IterableAPI(apiKey: apiKey, config: config, dateProvider: dateProvider)
         }
         return _sharedInstance!
     }
-
 }

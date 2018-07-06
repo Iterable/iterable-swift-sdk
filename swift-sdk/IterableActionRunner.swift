@@ -10,7 +10,7 @@ import Foundation
 
 /// IterableActionRunner implements this.
 @objc public protocol ActionRunnerProtocol : class {
-    @objc func execute(action: IterableAction)
+    func execute(action: IterableAction, from source: IterableActionSource) -> Bool
 }
 
 /// handles opening of Urls
@@ -44,35 +44,47 @@ class IterableActionRunner : NSObject, ActionRunnerProtocol {
         self.urlOpener = urlOpener
     }
     
-    func execute(action: IterableAction) {
+    func execute(action: IterableAction, from source: IterableActionSource) -> Bool {
+        let context = IterableActionContext(action: action, source: source)
+        
         if action.isOfType(IterableAction.actionTypeOpenUrl) {
-            if let data = action.data {
-                if let url = URL(string: data) {
-                    open(url: url, action: action)
-                } else {
-                    ITBError("Could not create url from data: \(data)")
-                }
+            if let urlString = action.data, let url = URL(string: urlString) {
+                return open(url: url, inContext: context)
             } else {
-                ITBError("data is required for action type 'openUrl'")
+                ITBError("Could not create url from action: \(action)")
+                return false
             }
         } else {
-            callCustomActionIfSpecified(action: action)
+            return callCustomActionIfSpecified(action: action, inContext: context)
         }
     }
     
-    private func open(url: URL, action: IterableAction) {
-        if urlDelegate?.handleIterableURL(url, fromAction: action) == true {
-            return
+    private func open(url: URL, inContext context: IterableActionContext) -> Bool {
+        if urlDelegate?.handle(iterableURL:url, inContext: context) == true {
+            return true
+        }
+
+        guard context.source == .push else {
+            // only open urls for push, leave others to delegate
+            return false
         }
         
         if let scheme = url.scheme, scheme == "http" || scheme == "https" {
             urlOpener.open(url: url)
+            return true
+        } else {
+            return false
         }
     }
     
-    private func callCustomActionIfSpecified(action: IterableAction) {
-        if IterableUtil.isNotNullOrEmpty(string: action.type) {
-            _ = customActionDelegate?.handleIterableCustomAction(action)
+    private func callCustomActionIfSpecified(action: IterableAction, inContext context: IterableActionContext) -> Bool {
+        guard IterableUtil.isNotNullOrEmpty(string: action.type) else {
+            return false
         }
+        guard let customActionDelegate = customActionDelegate else {
+            return false
+        }
+        
+        return customActionDelegate.handle(iterableCustomAction:action, inContext:context)
     }
 }
