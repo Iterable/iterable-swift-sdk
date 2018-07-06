@@ -14,15 +14,17 @@ import IterableSDK
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     // ITBL: replace with your api key and email.
+    // IMP: Either userId or email must be set.
     let apiKey = "" // set Iterable api key here
     let email = "" // set Iterable user email here.
+    let userId = "" // set iterable userId here. Either email or userId must be set.
     
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Initial check
-        if apiKey.isEmpty || email.isEmpty {
-            fatalError("Iterable API Key and email need to be set.")
+        if apiKey.isEmpty || (email.isEmpty && userId.isEmpty) {
+            fatalError("Iterable API Key and either email or userId need to be set.")
         }
         
         //ITBL: Setup Notification
@@ -138,7 +140,7 @@ extension AppDelegate : IterableCustomActionDelegate {
     func handle(iterableCustomAction action: IterableAction, inContext context: IterableActionContext) -> Bool {
         if action.type == "handleFindCoffee" {
             if let query = action.userInput {
-                _ = DeeplinkHandler.handle(url: URL(string: "https://majumder.me/coffee?q=\(query)")!)
+                return DeeplinkHandler.handle(url: URL(string: "https://majumder.me/coffee?q=\(query)")!)
             }
         }
         return false

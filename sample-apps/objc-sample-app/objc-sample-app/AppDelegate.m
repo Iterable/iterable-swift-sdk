@@ -16,14 +16,16 @@
 @end
 
 @implementation AppDelegate
+// IMP: Either email or userId must be set.
 NSString *apiKey = @""; // set iterable api key here
 NSString *email = @""; // set iterable email here
+NSString *userId = @"";// set iterable userId here, either email or userId must be set
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // initial check
-    if (apiKey.length == 0 || email.length == 0) {
-        [NSException raise:@"Not Initialized" format:@"Iterable API key and email must be set."];
+    if (apiKey.length == 0 || (email.length == 0 && userId.length == 0)) {
+        [NSException raise:@"Not Initialized" format:@"Iterable API key and either email or userId must be set."];
     }
     
     //ITBL: Setup Notifications
@@ -115,7 +117,7 @@ NSString *email = @""; // set iterable email here
         if (action.userInput != nil) {
             NSString *urlString = [[NSString alloc] initWithFormat:@"https://majumder.me/coffee?q=%@", action.userInput];
             NSURL *url = [[NSURL alloc] initWithString:urlString];
-            [DeeplinkHandler handleURL:url];
+            return [DeeplinkHandler handleURL:url];
         }
     }
 
