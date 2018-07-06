@@ -21,7 +21,6 @@ class IterableNotificationResponseTests: XCTestCase {
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
-        IterableAPI.clearSharedInstance()
         IterableAPI.initialize(apiKey:"", config: IterableConfig(), dateProvider: dateProvider)
     }
     
@@ -198,12 +197,9 @@ class IterableNotificationResponseTests: XCTestCase {
         dateProvider.currentDate = Calendar.current.date(byAdding: Calendar.Component.hour, value: 24, to: Date())!
         XCTAssertNil(api.attributionInfo)
     }
-    
+
+    @available(iOS 10, *)
     func testLegacyDeeplinkPayload() {
-        guard @available(iOS 10, *) else {
-            return
-        }
-        
         let messageId = UUID().uuidString
         let userInfo: [AnyHashable : Any] = [
             "itbl" : [

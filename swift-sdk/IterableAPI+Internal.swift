@@ -111,13 +111,6 @@ extension IterableAPI {
         }
     }
     
-    // You should not call this.
-    @objc public static func clearSharedInstance() {
-        queue.sync {
-            _sharedInstance = nil
-        }
-    }
-    
     @objc public func createPostRequest(forAction action: String, withArgs args: [AnyHashable : Any]) -> URLRequest? {
         guard let url = getUrlComponents(forAction: action)?.url else {
             return nil
@@ -450,9 +443,7 @@ extension IterableAPI {
                                                  config: IterableConfig = IterableConfig(),
                                                  dateProvider: DateProviderProtocol) -> IterableAPI {
         queue.sync {
-            if _sharedInstance == nil {
-                _sharedInstance = IterableAPI(apiKey: apiKey, config: config, dateProvider: dateProvider)
-            }
+            _sharedInstance = IterableAPI(apiKey: apiKey, config: config, dateProvider: dateProvider)
         }
         return _sharedInstance!
     }

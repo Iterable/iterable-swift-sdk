@@ -124,7 +124,6 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
         [expectation fulfill];
     };
     
-    [IterableAPI clearSharedInstance];
     IterableConfig *config = [[IterableConfig alloc] init];
     config.urlDelegate = urlDelegateMock;
     [IterableAPI initializeWithApiKey:@"" config:config];
@@ -246,7 +245,6 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     
     IterableConfig *config = [[IterableConfig alloc] init];
     config.pushIntegrationName = @"pushIntegration";
-    [IterableAPI clearSharedInstance];
     [IterableAPI initializeWithApiKey:@"apiKey" config:config];
     [[IterableAPI sharedInstance] setEmail:@"user@example.com"];
     [[IterableAPI sharedInstance] registerToken:[@"token" dataUsingEncoding:kCFStringEncodingUTF8]];
@@ -256,17 +254,15 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
 }
 
 - (void)testEmailUserIdPersistence {
-    [IterableAPI clearSharedInstance];
     [IterableAPI initializeWithApiKey:@"apiKey"];
     [[IterableAPI sharedInstance] setEmail:@"test@email.com"];
     
-    [IterableAPI clearSharedInstance];
     [IterableAPI initializeWithApiKey:@"apiKey"];
     XCTAssertEqualObjects([IterableAPI sharedInstance].email, @"test@email.com");
     XCTAssertNil([IterableAPI sharedInstance].userId);
     
     [[IterableAPI sharedInstance] setUserId:@"testUserId"];
-    [IterableAPI clearSharedInstance];
+
     [IterableAPI initializeWithApiKey:@"apiKey"];
     XCTAssertEqualObjects([IterableAPI sharedInstance].userId, @"testUserId");
     XCTAssertNil([IterableAPI sharedInstance].email);
