@@ -12,5 +12,7 @@
 import Foundation
 
 class TestFile {
-    static let constant = TestFile()
+    func sayHello() {
+        NSLog("Hello, World!")
+    }
 }
