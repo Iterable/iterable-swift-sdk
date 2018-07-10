@@ -8,6 +8,13 @@
 
 import UIKit
 
+enum InAppNotificationType : Int {
+    case full
+    case top
+    case center
+    case bottom
+}
+
 class IterableInAppHTMLViewController: UIViewController {
     /**
      Constructs an inapp notification with via html
@@ -70,15 +77,15 @@ class IterableInAppHTMLViewController: UIViewController {
      
      - returns: the location as an INAPP_NOTIFICATION_TYPE
      */
-    static func setLocation(_ padding: UIEdgeInsets) -> INAPP_NOTIFICATION_TYPE {
+    static func setLocation(_ padding: UIEdgeInsets) -> InAppNotificationType {
         if padding.top == 0 && padding.bottom == 0 {
-            return .FULL
+            return .full
         } else if padding.top == 0 && padding.bottom < 0 {
-            return .TOP
+            return .top
         } else if padding.top < 0 && padding.bottom == 0 {
-            return .BOTTOM
+            return .bottom
         } else {
-            return .CENTER
+            return .center
         }
     }
     
@@ -129,7 +136,7 @@ class IterableInAppHTMLViewController: UIViewController {
     private var customBlockCallback: ITEActionBlock?
     private var trackParams: IterableNotificationMetadata?
     private var webView: UIWebView?
-    private var location: INAPP_NOTIFICATION_TYPE = .FULL
+    private var location: InAppNotificationType = .full
     private var loaded = false
     
     private let customUrlScheme = "applewebdata"
@@ -153,7 +160,7 @@ class IterableInAppHTMLViewController: UIViewController {
         guard loaded else {
             return
         }
-        guard location != .FULL else {
+        guard location != .full else {
             webView?.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
             return
         }
@@ -176,11 +183,11 @@ class IterableInAppHTMLViewController: UIViewController {
         var center = self.view.center
         let webViewHeight = aWebView.frame.height/2
         switch location {
-        case .TOP:
+        case .top:
             center.y = webViewHeight
-        case .BOTTOM:
+        case .bottom:
             center.y = view.frame.height - webViewHeight
-        case .CENTER,.FULL: break
+        case .center,.full: break
         }
         center.x = resizeCenterX;
         aWebView.center = center;

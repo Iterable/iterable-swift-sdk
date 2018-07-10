@@ -96,7 +96,10 @@ class IterableInAppManager: NSObject {
      
      - returns: a Dictionary containing the InAppMessage parameters
      */
-    static func getNextMessageFromPayload(_ payload: [AnyHashable : Any]) -> [AnyHashable : Any]? {
+    static func getNextMessageFromPayload(_ payload: [AnyHashable : Any]?) -> [AnyHashable : Any]? {
+        guard let payload = payload else {
+            return nil
+        }
         guard let messageArray = payload[ITERABLE_IN_APP_MESSAGE] as? [[AnyHashable : Any]], messageArray.count > 0 else {
             return nil
         }
@@ -165,7 +168,7 @@ class IterableInAppManager: NSObject {
      
      @discussion Passes back -1 for Auto expanded padding
      */
-    static func decodePadding(_ value: Any) -> Int {
+    static func decodePadding(_ value: Any?) -> Int {
         guard let dict = value as? [AnyHashable : Any] else {
             return 0
         }
