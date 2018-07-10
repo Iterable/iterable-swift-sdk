@@ -1,5 +1,5 @@
 //
-//  IterableAPIInternal+Extension.swift
+//  IterableAPIImplementation+Extension.swift
 //  new-ios-sdk
 //
 //  Created by Tapash Majumder on 6/4/18.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension IterableAPIInternal {
+extension IterableAPIImplementation {
     /**
      * Returns the push integration name for this app depending on the config options
      * @return push integration name to use
@@ -66,11 +66,11 @@ extension IterableAPIInternal {
         hexToken = (token as NSData).iteHexadecimalString()
         
         let device = UIDevice.current
-        let psp = IterableAPIInternal.pushServicePlatformToString(pushServicePlatform)
+        let psp = IterableAPIImplementation.pushServicePlatformToString(pushServicePlatform)
         
         var dataFields: [String : Any] = [
             ITBL_DEVICE_LOCALIZED_MODEL: device.localizedModel,
-            ITBL_DEVICE_USER_INTERFACE: IterableAPIInternal.userInterfaceIdiomEnumToString(device.userInterfaceIdiom),
+            ITBL_DEVICE_USER_INTERFACE: IterableAPIImplementation.userInterfaceIdiomEnumToString(device.userInterfaceIdiom),
             ITBL_DEVICE_SYSTEM_NAME: device.systemName,
             ITBL_DEVICE_SYSTEM_VERSION: device.systemVersion,
             ITBL_DEVICE_MODEL: device.model
@@ -116,7 +116,7 @@ extension IterableAPIInternal {
         }
         var request = URLRequest(url: url)
         request.httpMethod = ITBL_KEY_POST
-        if let body = IterableAPIInternal.dictToJson(args) {
+        if let body = IterableAPIImplementation.dictToJson(args) {
             request.httpBody = body.data(using: .utf8)
         }
         return request
@@ -440,9 +440,9 @@ extension IterableAPIInternal {
     @discardableResult static func initialize(apiKey: String,
                                                  launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil,
                                                  config: IterableConfig = IterableConfig(),
-                                                 dateProvider: DateProviderProtocol) -> IterableAPIInternal {
+                                                 dateProvider: DateProviderProtocol) -> IterableAPIImplementation {
         queue.sync {
-            _sharedInstance = IterableAPIInternal(apiKey: apiKey, config: config, dateProvider: dateProvider)
+            _sharedInstance = IterableAPIImplementation(apiKey: apiKey, config: config, dateProvider: dateProvider)
         }
         return _sharedInstance!
     }

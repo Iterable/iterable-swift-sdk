@@ -34,7 +34,7 @@ class CoffeeViewController: UIViewController {
             return
         }
         
-        let attributionInfo = IterableAPI.sharedInstance?.attributionInfo
+        let attributionInfo = IterableAPI.attributionInfo
         
         var dataFields = Dictionary<String, Any>()
         if let attributionInfo = attributionInfo {
@@ -43,7 +43,7 @@ class CoffeeViewController: UIViewController {
             dataFields["messageId"] = attributionInfo.messageId
         }
         //ITBL: Track attribution to purchase
-        IterableAPI.sharedInstance?.trackPurchase(10.0, items: [CommerceItem(id: coffee.name.lowercased(), name: coffee.name, price: 10.0, quantity: 1)], dataFields: dataFields)
+        IterableAPI.track(purchase: 10.0, items: [CommerceItem(id: coffee.name.lowercased(), name: coffee.name, price: 10.0, quantity: 1)], dataFields: dataFields)
     }
 }
 

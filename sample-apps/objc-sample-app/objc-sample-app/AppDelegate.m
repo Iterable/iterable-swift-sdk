@@ -41,7 +41,7 @@ NSString *userId = @"";// set iterable userId here, either email or userId must 
     [IterableAPI initializeWithApiKey: apiKey
                            launchOptions:launchOptions
                                   config:config];
-    IterableAPI.sharedInstance.email = email;
+    IterableAPI.email = email;
     
     return YES;
 }
@@ -87,7 +87,7 @@ NSString *userId = @"";// set iterable userId here, either email or userId must 
 
 #pragma mark - notification registration
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-    [IterableAPI.sharedInstance registerToken:deviceToken];
+    [IterableAPI registerToken:deviceToken];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
