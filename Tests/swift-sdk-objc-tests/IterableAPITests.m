@@ -34,7 +34,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
 - (void)setUp {
     [super setUp];
     
-    [IterableAPI initializeWithApiKey:@""];
+    [IterableAPIInternal initializeWithApiKey:@""];
 }
 
 - (void)tearDown {
@@ -43,8 +43,8 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
 }
 
 - (void)testPushServicePlatformToString {
-    XCTAssertEqualObjects(@"APNS", [IterableAPI pushServicePlatformToString:APNS]);
-    XCTAssertEqualObjects(@"APNS_SANDBOX", [IterableAPI pushServicePlatformToString:APNS_SANDBOX]);
+    XCTAssertEqualObjects(@"APNS", [IterableAPIInternal pushServicePlatformToString:APNS]);
+    XCTAssertEqualObjects(@"APNS_SANDBOX", [IterableAPIInternal pushServicePlatformToString:APNS_SANDBOX]);
 }
 
 - (void)testDictToJson {
@@ -65,7 +65,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
                                            }
                                    }
                            };
-    NSString *result = [IterableAPI dictToJson:args];
+    NSString *result = [IterableAPIInternal dictToJson:args];
     NSData *data = [result dataUsingEncoding:NSUTF8StringEncoding];
     id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
     XCTAssertEqualObjects(args, json);
@@ -81,12 +81,12 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
 }
 
 - (void)testUserInterfaceIdionEnumToString {
-    XCTAssertEqualObjects(@"Phone", [IterableAPI userInterfaceIdiomEnumToString:UIUserInterfaceIdiomPhone]);
-    XCTAssertEqualObjects(@"Pad", [IterableAPI userInterfaceIdiomEnumToString:UIUserInterfaceIdiomPad]);
+    XCTAssertEqualObjects(@"Phone", [IterableAPIInternal userInterfaceIdiomEnumToString:UIUserInterfaceIdiomPhone]);
+    XCTAssertEqualObjects(@"Pad", [IterableAPIInternal userInterfaceIdiomEnumToString:UIUserInterfaceIdiomPad]);
     // we don't care about TVs for now
-    XCTAssertEqualObjects(@"Unspecified", [IterableAPI userInterfaceIdiomEnumToString:UIUserInterfaceIdiomTV]);
-    XCTAssertEqualObjects(@"Unspecified", [IterableAPI userInterfaceIdiomEnumToString:UIUserInterfaceIdiomUnspecified]);
-    XCTAssertEqualObjects(@"Unspecified", [IterableAPI userInterfaceIdiomEnumToString:192387]);
+    XCTAssertEqualObjects(@"Unspecified", [IterableAPIInternal userInterfaceIdiomEnumToString:UIUserInterfaceIdiomTV]);
+    XCTAssertEqualObjects(@"Unspecified", [IterableAPIInternal userInterfaceIdiomEnumToString:UIUserInterfaceIdiomUnspecified]);
+    XCTAssertEqualObjects(@"Unspecified", [IterableAPIInternal userInterfaceIdiomEnumToString:192387]);
 }
 
 - (void)testUniversalDeeplinkRewrite {
@@ -97,7 +97,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
         XCTAssertTrue(NSThread.isMainThread);
         [expectation fulfill];
     };
-    [IterableAPI getAndTrackDeeplink:iterableLink callbackBlock:aBlock];
+    [IterableAPIInternal getAndTrackDeeplink:iterableLink callbackBlock:aBlock];
     
     [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:nil];
 }
@@ -109,7 +109,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
         XCTAssertEqualObjects(iterableNoRewriteURL, redirectUrl);
         [expectation fulfill];
     };
-    [IterableAPI getAndTrackDeeplink:normalLink callbackBlock:uBlock];
+    [IterableAPIInternal getAndTrackDeeplink:normalLink callbackBlock:uBlock];
     
     [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:nil];
 }
@@ -126,9 +126,9 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     
     IterableConfig *config = [[IterableConfig alloc] init];
     config.urlDelegate = urlDelegateMock;
-    [IterableAPI initializeWithApiKey:@"" config:config];
+    [IterableAPIInternal initializeWithApiKey:@"" config:config];
     NSURL *iterableLink = [NSURL URLWithString:iterableRewriteURL];
-    [IterableAPI handleUniversalLink:iterableLink];
+    [IterableAPIInternal handleUniversalLink:iterableLink];
    
     [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:nil];
 }
@@ -141,12 +141,12 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     XCTestExpectation *expectation = [self expectationWithDescription:@"High Expectations"];
     NSURL *normalLink = [NSURL URLWithString:iterableRewriteURL];
     ITEActionBlock uBlock = ^(NSString* redirectUrl) {
-        XCTAssertEqualObjects(IterableAPI.sharedInstance.attributionInfo.campaignId, campaignId);
-        XCTAssertEqualObjects(IterableAPI.sharedInstance.attributionInfo.templateId, templateId);
-        XCTAssertEqualObjects(IterableAPI.sharedInstance.attributionInfo.messageId, messageId);
+        XCTAssertEqualObjects(IterableAPIInternal.sharedInstance.attributionInfo.campaignId, campaignId);
+        XCTAssertEqualObjects(IterableAPIInternal.sharedInstance.attributionInfo.templateId, templateId);
+        XCTAssertEqualObjects(IterableAPIInternal.sharedInstance.attributionInfo.messageId, messageId);
         [expectation fulfill];
     };
-    [IterableAPI getAndTrackDeeplink:normalLink callbackBlock:uBlock];
+    [IterableAPIInternal getAndTrackDeeplink:normalLink callbackBlock:uBlock];
     
     [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:nil];
 }
@@ -159,7 +159,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
         XCTAssertNotEqual(exampleUrl, redirectUrl);
         XCTAssertEqualObjects(redirectRequest, redirectUrl);
     };
-    [IterableAPI getAndTrackDeeplink:redirectLink callbackBlock:redirectBlock];
+    [IterableAPIInternal getAndTrackDeeplink:redirectLink callbackBlock:redirectBlock];
     
     [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:nil];
 }
@@ -172,7 +172,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
         XCTAssertEqualObjects(googleHttps, redirectUrl);
         XCTAssertNotEqual(googleHttp, redirectUrl);
     };
-    [IterableAPI getAndTrackDeeplink:googleHttpLink callbackBlock:googleHttpBlock];
+    [IterableAPIInternal getAndTrackDeeplink:googleHttpLink callbackBlock:googleHttpBlock];
     
     [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:nil];
 }
@@ -186,13 +186,13 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
         [expectation fulfill];
         XCTAssertEqualObjects(googleHttps, redirectUrl);
     };
-    [IterableAPI getAndTrackDeeplink:googleHttpsLink callbackBlock:googleHttpsBlock];
+    [IterableAPIInternal getAndTrackDeeplink:googleHttpsLink callbackBlock:googleHttpsBlock];
     
     [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:nil];
 }
 
 - (void)testURLQueryParamRewrite {
-    [IterableAPI initializeWithApiKey:@""];
+    [IterableAPIInternal initializeWithApiKey:@""];
 
     NSCharacterSet* set = [NSCharacterSet URLQueryAllowedCharacterSet];
     
@@ -211,19 +211,19 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     }
     
     //Test full set of possible URLQueryAllowedCharacterSet characters
-    NSString* encodedSet = [[IterableAPI sharedInstance] encodeURLParam:strSet];
+    NSString* encodedSet = [[IterableAPIInternal sharedInstance] encodeURLParam:strSet];
     XCTAssertNotEqual(encodedSet, strSet);
     XCTAssert([encodedSet isEqualToString:@"!$&'()*%2B,-./0123456789:;=?@ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz~"]);
     
-    NSString* encoded = [[IterableAPI sharedInstance] encodeURLParam:@"you+me@iterable.com"];
+    NSString* encoded = [[IterableAPIInternal sharedInstance] encodeURLParam:@"you+me@iterable.com"];
     XCTAssertNotEqual(encoded, @"you+me@iterable.com");
     XCTAssert([encoded isEqualToString:@"you%2Bme@iterable.com"]);
     
-    NSString* emptySet = [[IterableAPI sharedInstance] encodeURLParam:@""];
+    NSString* emptySet = [[IterableAPIInternal sharedInstance] encodeURLParam:@""];
     XCTAssertEqual(emptySet, @"");
     XCTAssert([emptySet isEqualToString:@""]);
     
-    NSString* nilSet = [[IterableAPI sharedInstance] encodeURLParam:nil];
+    NSString* nilSet = [[IterableAPIInternal sharedInstance] encodeURLParam:nil];
     XCTAssertEqualObjects(nilSet, nil);
 }
 
@@ -245,27 +245,27 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     
     IterableConfig *config = [[IterableConfig alloc] init];
     config.pushIntegrationName = @"pushIntegration";
-    [IterableAPI initializeWithApiKey:@"apiKey" config:config];
-    [[IterableAPI sharedInstance] setEmail:@"user@example.com"];
-    [[IterableAPI sharedInstance] registerToken:[@"token" dataUsingEncoding:kCFStringEncodingUTF8]];
+    [IterableAPIInternal initializeWithApiKey:@"apiKey" config:config];
+    [[IterableAPIInternal sharedInstance] setEmail:@"user@example.com"];
+    [[IterableAPIInternal sharedInstance] registerToken:[@"token" dataUsingEncoding:kCFStringEncodingUTF8]];
     
     [self waitForExpectations:@[expectation] timeout:5.0];
     [OHHTTPStubs removeAllStubs];
 }
 
 - (void)testEmailUserIdPersistence {
-    [IterableAPI initializeWithApiKey:@"apiKey"];
-    [[IterableAPI sharedInstance] setEmail:@"test@email.com"];
+    [IterableAPIInternal initializeWithApiKey:@"apiKey"];
+    [[IterableAPIInternal sharedInstance] setEmail:@"test@email.com"];
     
-    [IterableAPI initializeWithApiKey:@"apiKey"];
-    XCTAssertEqualObjects([IterableAPI sharedInstance].email, @"test@email.com");
-    XCTAssertNil([IterableAPI sharedInstance].userId);
+    [IterableAPIInternal initializeWithApiKey:@"apiKey"];
+    XCTAssertEqualObjects([IterableAPIInternal sharedInstance].email, @"test@email.com");
+    XCTAssertNil([IterableAPIInternal sharedInstance].userId);
     
-    [[IterableAPI sharedInstance] setUserId:@"testUserId"];
+    [[IterableAPIInternal sharedInstance] setUserId:@"testUserId"];
 
-    [IterableAPI initializeWithApiKey:@"apiKey"];
-    XCTAssertEqualObjects([IterableAPI sharedInstance].userId, @"testUserId");
-    XCTAssertNil([IterableAPI sharedInstance].email);
+    [IterableAPIInternal initializeWithApiKey:@"apiKey"];
+    XCTAssertEqualObjects([IterableAPIInternal sharedInstance].userId, @"testUserId");
+    XCTAssertNil([IterableAPIInternal sharedInstance].email);
 }
 
 

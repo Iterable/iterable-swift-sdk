@@ -1,6 +1,5 @@
 //
-//  IterableApi.swift
-//  new-ios-sdk
+//  IterableAPIInternal.swift
 //
 //  Created by Tapash Majumder on 5/30/18.
 //  Copyright © 2018 Iterable. All rights reserved.
@@ -8,31 +7,31 @@
 
 import Foundation
 
-@objc public final class IterableAPI : NSObject, PushTrackerProtocol {
+@objc public final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     // MARK: Initialization
 
     /// You should call this method and not call the init method directly.
     /// - parameter apiKey: Iterable API Key.
-    /// - returns: an instance of IterableAPI
-    @objc @discardableResult public static func initialize(apiKey: String) -> IterableAPI {
+    /// - returns: an instance of IterableAPIInternal
+    @objc @discardableResult public static func initialize(apiKey: String) -> IterableAPIInternal {
         return initialize(apiKey: apiKey, launchOptions: nil, config:IterableConfig(), dateProvider: SystemDateProvider())
     }
 
     /// You should call this method and not call the init method directly.
     /// - parameter apiKey: Iterable API Key.
     /// - parameter config: Iterable config object.
-    /// - returns: an instance of IterableAPI
+    /// - returns: an instance of IterableAPIInternal
     @objc @discardableResult public static func initialize(apiKey: String,
-                                                           config: IterableConfig) -> IterableAPI {
+                                                           config: IterableConfig) -> IterableAPIInternal {
         return initialize(apiKey: apiKey, launchOptions: nil, config:config, dateProvider: SystemDateProvider())
     }
 
     /// You should call this method and not call the init method directly.
     /// - parameter apiKey: Iterable API Key.
     /// - parameter launchOptions: The launchOptions coming from application:didLaunching:withOptions
-    /// - returns: an instance of IterableAPI
+    /// - returns: an instance of IterableAPIInternal
     @objc @discardableResult public static func initialize(apiKey: String,
-                                                           launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> IterableAPI {
+                                                           launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> IterableAPIInternal {
         return initialize(apiKey: apiKey, launchOptions: launchOptions, config:IterableConfig(), dateProvider: SystemDateProvider())
     }
 
@@ -40,10 +39,10 @@ import Foundation
     /// - parameter apiKey: Iterable API Key. This is the only required parameter.
     /// - parameter launchOptions: The launchOptions coming from application:didLaunching:withOptions
     /// - parameter config: Iterable config object.
-    /// - returns: an instance of IterableAPI
+    /// - returns: an instance of IterableAPIInternal
     @objc @discardableResult public static func initialize(apiKey: String,
                                                               launchOptions: [UIApplicationLaunchOptionsKey: Any]? = nil,
-                                                              config: IterableConfig = IterableConfig()) -> IterableAPI {
+                                                              config: IterableConfig = IterableConfig()) -> IterableAPIInternal {
         return initialize(apiKey: apiKey, launchOptions: launchOptions, config:config, dateProvider: SystemDateProvider())
     }
     
@@ -53,11 +52,11 @@ import Foundation
      Must be initialized with `initialize:` before
      calling this class method.
      
-     - returns: the existing `IterableAPI` instance
+     - returns: the existing `IterableAPIInternal` instance
      
      - warning: `instance` will return `nil` if called before calling `initialize`
      */
-    @objc public static var sharedInstance : IterableAPI? {
+    @objc public static var sharedInstance : IterableAPIInternal? {
         if _sharedInstance == nil {
             ITBError("instance called before initializing API")
         }
@@ -65,12 +64,12 @@ import Foundation
     }
     
     /**
-     The apiKey that this IterableAPI is using
+     The apiKey that this IterableAPIInternal is using
      */
     @objc public var apiKey: String
     
     /**
-     The email of the logged in user that this IterableAPI is using
+     The email of the logged in user that this IterableAPIInternal is using
      */
     @objc public var email: String? {
         get {
@@ -83,7 +82,7 @@ import Foundation
     }
 
     /**
-     The userId of the logged in user that this IterableAPI is using
+     The userId of the logged in user that this IterableAPIInternal is using
      */
     @objc public var userId: String? {
         get {
@@ -147,7 +146,7 @@ import Foundation
      after registering for remote notifications
      */
     @objc(registerToken:) public func register(token: Data) {
-        register(token: token, onSuccess: IterableAPI.defaultOnSucess(identifier: "registerToken"), onFailure: IterableAPI.defaultOnFailure(identifier: "registerToken"))
+        register(token: token, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "registerToken"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "registerToken"))
     }
 
     /**
@@ -175,14 +174,14 @@ import Foundation
      Disable this device's token in Iterable, for the current user.
      */
     @objc public func disableDeviceForCurrentUser() {
-        disableDeviceForCurrentUser(withOnSuccess: IterableAPI.defaultOnSucess(identifier: "disableDevice"), onFailure: IterableAPI.defaultOnFailure(identifier: "disableDevice"))
+        disableDeviceForCurrentUser(withOnSuccess: IterableAPIInternal.defaultOnSucess(identifier: "disableDevice"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "disableDevice"))
     }
 
     /**
      Disable this device's token in Iterable, for all users with this device.
      */
     @objc public func disableDeviceForAllUsers() {
-        disableDeviceForAllUsers(withOnSuccess: IterableAPI.defaultOnSucess(identifier: "disableDevice"), onFailure: IterableAPI.defaultOnFailure(identifier: "disableDevice"))
+        disableDeviceForAllUsers(withOnSuccess: IterableAPIInternal.defaultOnSucess(identifier: "disableDevice"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "disableDevice"))
     }
 
     /**
@@ -254,7 +253,7 @@ import Foundation
     /**
      Updates the current user's email.
      
-     - remark:  Also updates the current email in this IterableAPI instance if the API call was successful.
+     - remark:  Also updates the current email in this IterableAPIInternal instance if the API call was successful.
      
      - parameters:
      - newEmail:                New Email
@@ -311,7 +310,7 @@ import Foundation
      - seeAlso: CommerceItem
      */
     @objc public func trackPurchase(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?) {
-        trackPurchase(total, items: items, dataFields: dataFields, onSuccess: IterableAPI.defaultOnSucess(identifier: "trackPurchase"), onFailure: IterableAPI.defaultOnFailure(identifier: "trackPurchase"))
+        trackPurchase(total, items: items, dataFields: dataFields, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackPurchase"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPurchase"))
     }
 
     /**
@@ -392,8 +391,8 @@ import Foundation
     @objc public func trackPushOpen(_ userInfo: [AnyHashable : Any], dataFields: [AnyHashable : Any]?) {
         trackPushOpen(userInfo,
                       dataFields: dataFields,
-                      onSuccess: IterableAPI.defaultOnSucess(identifier: "trackPushOpen"),
-                      onFailure: IterableAPI.defaultOnFailure(identifier: "trackPushOpen"))
+                      onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackPushOpen"),
+                      onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPushOpen"))
     }
 
     /**
@@ -430,7 +429,7 @@ import Foundation
         - dataFields:          A `Dictionary` containing any additional information to save along with the event
      */
     @objc public func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?) {
-        trackPushOpen(campaignId, templateId: templateId, messageId: messageId, appAlreadyRunning: appAlreadyRunning, dataFields: dataFields, onSuccess: IterableAPI.defaultOnSucess(identifier: "trackPushOpen"), onFailure: IterableAPI.defaultOnFailure(identifier: "trackPushOpen"))
+        trackPushOpen(campaignId, templateId: templateId, messageId: messageId, appAlreadyRunning: appAlreadyRunning, dataFields: dataFields, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackPushOpen"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPushOpen"))
     }
 
     /**
@@ -497,7 +496,7 @@ import Foundation
      - parameter dataFields:  A `Dictionary` containing any additional information to save along with the event
      */
     @objc public func track(_ eventName: String, dataFields: [AnyHashable : Any]?) {
-        track(eventName, dataFields: dataFields, onSuccess: IterableAPI.defaultOnSucess(identifier: "track"), onFailure: IterableAPI.defaultOnFailure(identifier: "track"))
+        track(eventName, dataFields: dataFields, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "track"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "track"))
     }
 
     /**
@@ -583,7 +582,7 @@ import Foundation
         }
         
         if let request = createPostRequest(forAction: ENDPOINT_UPDATE_SUBSCRIPTIONS, withArgs: dictionary) {
-            sendRequest(request, onSuccess: IterableAPI.defaultOnSucess(identifier: "updateSubscriptions"), onFailure: IterableAPI.defaultOnFailure(identifier: "updateSubscriptions"))
+            sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "updateSubscriptions"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "updateSubscriptions"))
         }
     }
     
@@ -629,7 +628,7 @@ import Foundation
             self.inAppConsume(messageId)
         }
         
-        getInAppMessages(1, onSuccess: onSuccess, onFailure: IterableAPI.defaultOnFailure(identifier: "getInAppMessages"))
+        getInAppMessages(1, onSuccess: onSuccess, onFailure: IterableAPIInternal.defaultOnFailure(identifier: "getInAppMessages"))
     }
 
     /**
@@ -638,7 +637,7 @@ import Foundation
      - parameter count:  the number of messages to fetch
      */
     @objc public func getInAppMessages(_ count: NSNumber) {
-        getInAppMessages(count, onSuccess: IterableAPI.defaultOnSucess(identifier: "getMessages"), onFailure: IterableAPI.defaultOnFailure(identifier: "getMessages"))
+        getInAppMessages(count, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "getMessages"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "getMessages"))
     }
 
     /**
@@ -701,7 +700,7 @@ import Foundation
         }
         
         if let request = createPostRequest(forAction: ENDPOINT_TRACK_INAPP_OPEN, withArgs: args) {
-            sendRequest(request, onSuccess: IterableAPI.defaultOnSucess(identifier: "trackInAppOpen"), onFailure: IterableAPI.defaultOnFailure(identifier: "trackInAppOpen"))
+            sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppOpen"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"))
         }
     }
 
@@ -719,7 +718,7 @@ import Foundation
         addEmailOrUserId(args: &args)
         
         if let request = createPostRequest(forAction: ENDPOINT_TRACK_INAPP_CLICK, withArgs: args) {
-            sendRequest(request, onSuccess: IterableAPI.defaultOnSucess(identifier: "trackInAppClick"), onFailure: IterableAPI.defaultOnFailure(identifier: "trackInAppClick"))
+            sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"))
         }
     }
 
@@ -738,7 +737,7 @@ import Foundation
         addEmailOrUserId(args: &args)
         
         if let request = createPostRequest(forAction: ENDPOINT_TRACK_INAPP_CLICK, withArgs: args) {
-            sendRequest(request, onSuccess: IterableAPI.defaultOnSucess(identifier: "trackInAppClick"), onFailure: IterableAPI.defaultOnFailure(identifier: "trackInAppClick"))
+            sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"))
         }
     }
 
@@ -754,7 +753,7 @@ import Foundation
         addEmailOrUserId(args: &args)
         
         if let request = createPostRequest(forAction: ENDPOINT_INAPP_CONSUME, withArgs: args) {
-            sendRequest(request, onSuccess: IterableAPI.defaultOnSucess(identifier: "inAppConsume"), onFailure: IterableAPI.defaultOnFailure(identifier: "inAppConsume"))
+            sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "inAppConsume"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "inAppConsume"))
         }
     }
 
@@ -825,7 +824,7 @@ import Foundation
     var _email: String? = nil
     var _userId: String? = nil
     
-    static var _sharedInstance: IterableAPI?
+    static var _sharedInstance: IterableAPIInternal?
     
     static var queue = DispatchQueue(label: "MyLockQueue")
     
