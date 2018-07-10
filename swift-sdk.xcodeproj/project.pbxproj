@@ -47,6 +47,8 @@
 		AC90C4CD20D8632E00EECA5D /* IterableAppExtensions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC90C4C420D8632D00EECA5D /* IterableAppExtensions.framework */; };
 		AC90C4E220D8639E00EECA5D /* ITBNotificationServiceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC90C4E120D8639E00EECA5D /* ITBNotificationServiceExtension.swift */; };
 		AC90C4E320D863B700EECA5D /* ITBConsts.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0BE20CF4CB8004D7997 /* ITBConsts.swift */; };
+		AC9A49AB20F3C8B80007A5A2 /* TestFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9A49AA20F3C8B80007A5A2 /* TestFile.swift */; };
+		AC9A49AE20F41B520007A5A2 /* TestFileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9A49AC20F419AA0007A5A2 /* TestFileTests.swift */; };
 		ACF560D620E443BF000AAC23 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF560D520E443BF000AAC23 /* AppDelegate.swift */; };
 		ACF560D820E443BF000AAC23 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF560D720E443BF000AAC23 /* ViewController.swift */; };
 		ACF560DB20E443BF000AAC23 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACF560D920E443BF000AAC23 /* Main.storyboard */; };
@@ -151,6 +153,8 @@
 		AC90C4D520D8632E00EECA5D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AC90C4E120D8639E00EECA5D /* ITBNotificationServiceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ITBNotificationServiceExtension.swift; sourceTree = "<group>"; };
 		AC98294A20D9D65E00796DAA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		AC9A49AA20F3C8B80007A5A2 /* TestFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFile.swift; sourceTree = "<group>"; };
+		AC9A49AC20F419AA0007A5A2 /* TestFileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFileTests.swift; sourceTree = "<group>"; };
 		ACF560D320E443BF000AAC23 /* host-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "host-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ACF560D520E443BF000AAC23 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		ACF560D720E443BF000AAC23 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -368,6 +372,7 @@
 			children = (
 				AC90C4E520D865BD00EECA5D /* Supporting Files */,
 				AC90C4E120D8639E00EECA5D /* ITBNotificationServiceExtension.swift */,
+				AC9A49AA20F3C8B80007A5A2 /* TestFile.swift */,
 			);
 			path = "notification-extension";
 			sourceTree = "<group>";
@@ -377,6 +382,7 @@
 			children = (
 				AC0674E720D87D5B00C2806D /* Helper Files */,
 				AC0674E520D8766600C2806D /* NotificationExtensionTests.m */,
+				AC9A49AC20F419AA0007A5A2 /* TestFileTests.swift */,
 			);
 			path = "notification-extension-tests";
 			sourceTree = "<group>";
@@ -773,6 +779,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC9A49AB20F3C8B80007A5A2 /* TestFile.swift in Sources */,
 				AC90C4E220D8639E00EECA5D /* ITBNotificationServiceExtension.swift in Sources */,
 				AC90C4E320D863B700EECA5D /* ITBConsts.swift in Sources */,
 			);
@@ -783,6 +790,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC0674E620D8766600C2806D /* NotificationExtensionTests.m in Sources */,
+				AC9A49AE20F41B520007A5A2 /* TestFileTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1038,6 +1046,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "Tests/swift-sdk-swift-tests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1058,6 +1067,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "Tests/swift-sdk-swift-tests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1088,6 +1098,7 @@
 					"$(CONFIGURATION_TEMP_DIR)/swift-sdk-objc-tests.build/DerivedSources",
 				);
 				INFOPLIST_FILE = "Tests/swift-sdk-objc-tests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1120,6 +1131,7 @@
 					"$(CONFIGURATION_TEMP_DIR)/swift-sdk-objc-tests.build/DerivedSources",
 				);
 				INFOPLIST_FILE = "Tests/swift-sdk-objc-tests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1203,6 +1215,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "Tests/notification-extension-tests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1210,7 +1223,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "iterable.notification-extensionTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "notification-extensionTests/notification-extensionTests-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Tests/notification-extension-tests/notification-extensionTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1226,6 +1239,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "Tests/notification-extension-tests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1233,7 +1247,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "iterable.notification-extensionTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "notification-extensionTests/notification-extensionTests-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Tests/notification-extension-tests/notification-extensionTests-Bridging-Header.h";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/host-app.app/host-app";
@@ -1247,6 +1261,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "host-app/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1265,6 +1280,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "host-app/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

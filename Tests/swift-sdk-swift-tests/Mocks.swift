@@ -11,6 +11,7 @@ import UserNotifications
 
 import IterableSDK
 
+@available(iOS 10.0, *)
 struct MockNotificationResponse : NotificationResponseProtocol {
     let userInfo: [AnyHashable : Any]
     let actionIdentifier: String
