@@ -598,7 +598,7 @@ import Foundation
                 return
             }
             guard let dialogOptions = IterableInAppManager.getNextMessageFromPayload(payload) else {
-                ITBError("No notifications found fro inApp payload \(payload)")
+                ITBError("No notifications found for inApp payload \(payload)")
                 return
             }
             guard let message = dialogOptions[ITERABLE_IN_APP_CONTENT] as? [AnyHashable : Any] else {
@@ -831,9 +831,6 @@ import Foundation
      The hex representation of this device token
      */
     var hexToken: String?
-    
-    // the API endpoint
-    let endpoint = "https://api.iterable.com/api/"
     
     let dateProvider: DateProviderProtocol
     

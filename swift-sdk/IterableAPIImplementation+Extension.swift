@@ -123,7 +123,7 @@ extension IterableAPIImplementation {
     }
     
     private func getUrlComponents(forAction action: String) -> URLComponents? {
-        guard var components = URLComponents(string: "\(endpoint)\(action)") else {
+        guard var components = URLComponents(string: "\(ITBConsts.apiEndpoint)\(action)") else {
             return nil
         }
         components.queryItems = [URLQueryItem(name: "api_key", value: apiKey)]
