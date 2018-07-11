@@ -1,18 +1,18 @@
 //
 //  IterableInAppManager.swift
-//  new-ios-sdk
 //
-//  Created by Tapash Majumder on 6/7/18.
+//  Created by David Truong on 9/14/16.
+//  Ported to Swift by Tapash Majumder on 6/7/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
 import UIKit
 
-@objc public class IterableInAppManager: NSObject {
+class IterableInAppManager: NSObject {
     /**
      An array of action objects representing the actions that the user can take in response to the alert view
      */
-    @objc public var actions: [String] = []
+    var actions: [String] = []
 
     /**
      Creates and shows a HTML InApp Notification with trackParameters, backgroundColor with callback handler
@@ -24,7 +24,7 @@ import UIKit
         - backgroundAlpha: The background alpha behind the notification
         - padding:         The padding around the notification
      */
-    @objc public static func showIterableNotificationHTML(_ htmlString: String,
+    static func showIterableNotificationHTML(_ htmlString: String,
                                                           trackParams: IterableNotificationMetadata?,
                                                           callbackBlock: ITEActionBlock?,
                                                           backgroundAlpha: Double,
@@ -51,7 +51,7 @@ import UIKit
      - parameter htmlString:      The NSString containing the dialog HTML
      - parameter callbackBlock:   The callback to send after a button on the notification is clicked
      */
-    @objc public static func showIterableNotificationHTML(_ htmlString:String, callbackBlock: ITEActionBlock?) {
+    static func showIterableNotificationHTML(_ htmlString:String, callbackBlock: ITEActionBlock?) {
         showIterableNotificationHTML(htmlString, trackParams: nil, callbackBlock: callbackBlock, backgroundAlpha: 0, padding: .zero)
     }
     
@@ -67,7 +67,7 @@ import UIKit
      
      - remark:            passes the string of the button clicked to the callbackBlock
      */
-    @objc public static func showSystemNotification(_ title: String,
+    static func showSystemNotification(_ title: String,
                                                     body: String,
                                                     buttonLeft: String?,
                                                     buttonRight: String?,
@@ -96,7 +96,10 @@ import UIKit
      
      - returns: a Dictionary containing the InAppMessage parameters
      */
-    @objc public static func getNextMessageFromPayload(_ payload: [AnyHashable : Any]) -> [AnyHashable : Any]? {
+    static func getNextMessageFromPayload(_ payload: [AnyHashable : Any]?) -> [AnyHashable : Any]? {
+        guard let payload = payload else {
+            return nil
+        }
         guard let messageArray = payload[ITERABLE_IN_APP_MESSAGE] as? [[AnyHashable : Any]], messageArray.count > 0 else {
             return nil
         }
@@ -111,7 +114,7 @@ import UIKit
      
      - returns: the int color
      */
-    @objc public static func getIntColorFromKey(_ payload: [AnyHashable : Any], keyString: String) -> Int {
+    static func getIntColorFromKey(_ payload: [AnyHashable : Any], keyString: String) -> Int {
         guard let colorString = payload[keyString] as? String, colorString.count > 0 else {
             return 0
         }
@@ -132,7 +135,7 @@ import UIKit
      
      - returns: the UIEdgeInset
      */
-    @objc public static func getPaddingFromPayload(_ payload: [AnyHashable : Any]?) -> UIEdgeInsets {
+    static func getPaddingFromPayload(_ payload: [AnyHashable : Any]?) -> UIEdgeInsets {
         guard let payload = payload else {
             return UIEdgeInsets.zero
         }
@@ -165,7 +168,7 @@ import UIKit
      
      @discussion Passes back -1 for Auto expanded padding
      */
-    @objc public static func decodePadding(_ value: Any) -> Int {
+    static func decodePadding(_ value: Any?) -> Int {
         guard let dict = value as? [AnyHashable : Any] else {
             return 0
         }

@@ -9,6 +9,9 @@
 import Foundation
 
 @objc public class ITBConsts : NSObject {
+    // the API endpoint
+    public static let apiEndpoint = "https://api.iterable.com/api/"
+    
     public class UserDefaults {
         public static let objectTag = ITBL_USER_DEFAULTS_OBJECT_TAG
         public static let expirationTag = ITBL_USER_DEFAULTS_EXPIRATION_TAG

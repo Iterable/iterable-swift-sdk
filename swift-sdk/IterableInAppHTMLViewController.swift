@@ -8,13 +8,20 @@
 
 import UIKit
 
-@objc public class IterableInAppHTMLViewController: UIViewController {
+enum InAppNotificationType : Int {
+    case full
+    case top
+    case center
+    case bottom
+}
+
+class IterableInAppHTMLViewController: UIViewController {
     /**
      Constructs an inapp notification with via html
      
      - parameter htmlString: the html string
      */
-    @objc public init(data htmlString: String) {
+    init(data htmlString: String) {
         self.htmlString = htmlString
         super.init(nibName: nil, bundle: nil)
     }
@@ -26,7 +33,7 @@ import UIKit
      
      - remark: defaults to 0 for left/right if left+right > 100
      */
-    @objc public func ITESetPadding(_ padding: UIEdgeInsets) {
+    func ITESetPadding(_ padding: UIEdgeInsets) {
         var insetPadding = padding
         
         if insetPadding.left + insetPadding.right >= 100 {
@@ -43,7 +50,7 @@ import UIKit
      
      - parameter callbackBlock: the payload data
      */
-    @objc public func ITESetCallback(_ callbackBlock: ITEActionBlock?) {
+    func ITESetCallback(_ callbackBlock: ITEActionBlock?) {
         customBlockCallback = callbackBlock
     }
 
@@ -52,7 +59,7 @@ import UIKit
      
      - parameter params: the track parameters
      */
-    @objc public func ITESetTrackParams(_ params:IterableNotificationMetadata?) {
+    func ITESetTrackParams(_ params:IterableNotificationMetadata?) {
         trackParams = params
     }
 
@@ -61,7 +68,7 @@ import UIKit
      
      - returns: a NSString of the html
      */
-    @objc public func getHtml() -> String? {
+    func getHtml() -> String? {
         return htmlString
     }
     
@@ -70,22 +77,22 @@ import UIKit
      
      - returns: the location as an INAPP_NOTIFICATION_TYPE
      */
-    @objc public static func setLocation(_ padding: UIEdgeInsets) -> INAPP_NOTIFICATION_TYPE {
+    static func setLocation(_ padding: UIEdgeInsets) -> InAppNotificationType {
         if padding.top == 0 && padding.bottom == 0 {
-            return .FULL
+            return .full
         } else if padding.top == 0 && padding.bottom < 0 {
-            return .TOP
+            return .top
         } else if padding.top < 0 && padding.bottom == 0 {
-            return .BOTTOM
+            return .bottom
         } else {
-            return .CENTER
+            return .center
         }
     }
     
     /**
      Loads the view and sets up the webView
      */
-    public override func loadView() {
+    override func loadView() {
         super.loadView()
         
         location = IterableInAppHTMLViewController.setLocation(insetPadding)
@@ -105,19 +112,19 @@ import UIKit
     /**
      Tracks an inApp open and layouts the webview
      */
-    public override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         
         if let trackParams = trackParams, let messageId = trackParams.messageId {
-            IterableAPI.sharedInstance?.trackInAppOpen(messageId)
+            IterableAPIImplementation.sharedInstance?.trackInAppOpen(messageId)
         }
 
         webView?.layoutSubviews()
     }
     
-    public override var prefersStatusBarHidden: Bool {return true}
+    override var prefersStatusBarHidden: Bool {return true}
 
-    public override func viewWillLayoutSubviews() {
+    override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         if let webView = webView {
             resizeWebView(webView)
@@ -129,7 +136,7 @@ import UIKit
     private var customBlockCallback: ITEActionBlock?
     private var trackParams: IterableNotificationMetadata?
     private var webView: UIWebView?
-    private var location: INAPP_NOTIFICATION_TYPE = .FULL
+    private var location: InAppNotificationType = .full
     private var loaded = false
     
     private let customUrlScheme = "applewebdata"
@@ -138,7 +145,7 @@ import UIKit
     private let itblUrlScheme = "itbl://"
 
 
-    public required init?(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         self.htmlString = aDecoder.decodeObject(forKey: "htmlString") as? String ?? ""
 
         super.init(coder: aDecoder)
@@ -153,7 +160,7 @@ import UIKit
         guard loaded else {
             return
         }
-        guard location != .FULL else {
+        guard location != .full else {
             webView?.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
             return
         }
@@ -176,11 +183,11 @@ import UIKit
         var center = self.view.center
         let webViewHeight = aWebView.frame.height/2
         switch location {
-        case .TOP:
+        case .top:
             center.y = webViewHeight
-        case .BOTTOM:
+        case .bottom:
             center.y = view.frame.height - webViewHeight
-        case .CENTER,.FULL: break
+        case .center,.full: break
         }
         center.x = resizeCenterX;
         aWebView.center = center;
@@ -188,14 +195,14 @@ import UIKit
 }
 
 extension IterableInAppHTMLViewController : UIWebViewDelegate {
-    public func webViewDidFinishLoad(_ webView: UIWebView) {
+    func webViewDidFinishLoad(_ webView: UIWebView) {
         loaded = true
         if let myWebview = self.webView {
             resizeWebView(myWebview)
         }
     }
     
-    public func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebViewNavigationType) -> Bool {
+    func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebViewNavigationType) -> Bool {
         guard navigationType == .linkClicked else {
             return true
         }
@@ -234,7 +241,7 @@ extension IterableInAppHTMLViewController : UIWebViewDelegate {
         dismiss(animated: false) { [weak self, callbackURL] in
             self?.customBlockCallback?(callbackURL)
             if let trackParams = self?.trackParams, let messageId = trackParams.messageId {
-                IterableAPI.sharedInstance?.trackInAppClick(messageId, buttonURL: destinationURL)
+                IterableAPIImplementation.sharedInstance?.trackInAppClick(messageId, buttonURL: destinationURL)
             }
         }
         return false

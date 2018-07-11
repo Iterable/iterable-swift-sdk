@@ -13,7 +13,7 @@
 @import IterableAppExtensions;
 
 static CGFloat const IterableNotificationCenterRequestDelay = 0.05;
-static CGFloat const IterableNotificationCenterExpectationTimeout = 5.0;
+static CGFloat const IterableNotificationCenterExpectationTimeout = 15.0;
 
 @interface NotificationExtensionTests : XCTestCase
 

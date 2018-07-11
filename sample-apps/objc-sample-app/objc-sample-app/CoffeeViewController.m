@@ -28,7 +28,7 @@
 #pragma mark action
 - (IBAction)buyButtonTap:(UIButton *)sender {
     if (self.coffeeType != nil) {
-        IterableAttributionInfo *attributionInfo = IterableAPI.sharedInstance.attributionInfo;
+        IterableAttributionInfo *attributionInfo = IterableAPI.attributionInfo;
         NSDictionary *dataFields;
         if (attributionInfo != nil) {
             dataFields = @{@"campaignId" : attributionInfo.campaignId,
@@ -41,7 +41,7 @@
         
         NSNumber *price = [[NSNumber alloc] initWithDouble:10.0];
         CommerceItem *item = [[CommerceItem alloc] initWithId:self.coffeeType.name.lowercaseString name:self.coffeeType.name price:price quantity:1];
-        [IterableAPI.sharedInstance trackPurchase:price items:@[item] dataFields:dataFields];
+        [IterableAPI trackPurchase:price items:@[item] dataFields:dataFields];
     }
 }
 

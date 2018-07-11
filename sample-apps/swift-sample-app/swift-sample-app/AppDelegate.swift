@@ -40,7 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         IterableAPI.initialize(apiKey: apiKey,
                                   launchOptions:launchOptions,
                                   config: config)
-        IterableAPI.sharedInstance?.email = email
+        IterableAPI.email = email
 
         return true
     }
@@ -74,13 +74,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         //ITBL:
-        return IterableAPI.handleUniversalLink(url)
+        return IterableAPI.handle(universalLink: url)
     }
     
     //MARK: Notification
     //ITBL:
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        IterableAPI.sharedInstance?.register(token: deviceToken)
+        IterableAPI.register(token: deviceToken)
     }
 
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {

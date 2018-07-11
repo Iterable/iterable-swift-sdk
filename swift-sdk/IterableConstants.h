@@ -166,11 +166,3 @@ typedef NS_ENUM(NSInteger, PushServicePlatform) {
     /** Detect automatically */
     AUTO
 };
-
-typedef NS_ENUM(NSInteger, INAPP_NOTIFICATION_TYPE) {
-    INAPP_FULL,
-    INAPP_TOP,
-    INAPP_CENTER,
-    INAPP_BOTTOM
-};
-
