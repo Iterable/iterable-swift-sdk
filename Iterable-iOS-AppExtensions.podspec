@@ -1,5 +1,5 @@
 #
-#  Be sure to run `pod spec lint Iterable-iOS-SDK.podspec' to ensure this is a
+#  Be sure to run `pod spec lint Iterable-iOS-AppExtensions.podspec' to ensure this is a
 #  valid spec and to remove all comments including this before submitting the spec.
 #
 #  To learn more about Podspec attributes see http://docs.cocoapods.org/specification.html
@@ -15,8 +15,9 @@ Pod::Spec.new do |s|
   #  summary should be tweet-length, and the description more in depth.
   #
 
-  s.name         = "IterableAppExtensions"
-  s.version      = "6.0.0"
+  s.name         = "Iterable-iOS-AppExtensions"
+  s.module_name  = "IterableAppExtensions"
+  s.version      = "1.0.1"
   s.summary      = "App Extensions for Iterable SDK"
 
   s.description  = <<-DESC
@@ -24,7 +25,6 @@ Pod::Spec.new do |s|
                    DESC
 
   s.homepage     = "https://iterable.com/"
-  # s.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
 
 
   # ―――  Spec License  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -35,7 +35,6 @@ Pod::Spec.new do |s|
   #
 
   s.license      = "MIT"
-  # s.license      = { :type => "MIT", :file => "FILE_LICENSE" }
 
 
   # ――― Author Metadata  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -49,9 +48,6 @@ Pod::Spec.new do |s|
   #
 
   s.author             = { "Ilya Brin" => "ilya@iterable.com" }
-  # Or just: s.author    = "Ilya Brin"
-  # s.authors            = { "Ilya Brin" => "ilya@iterable.com" }
-  # s.social_media_url   = "http://twitter.com/Ilya Brin"
 
   # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
@@ -59,14 +55,7 @@ Pod::Spec.new do |s|
   #  the deployment target. You can optionally include the target after the platform.
   #
 
-  # s.platform     = :ios
   s.platform     = :ios, "10.0"
-
-  #  When using multiple platforms
-  # s.ios.deployment_target = "5.0"
-  # s.osx.deployment_target = "10.7"
-  # s.watchos.deployment_target = "2.0"
-
 
   # ――― Source Location ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
@@ -74,7 +63,7 @@ Pod::Spec.new do |s|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  s.source       = { :git => "https://github.com/Iterable/iterable-ios-sdk.git", :tag => s.version }
+  s.source       = { :git => "https://github.com/Iterable/swift-sdk.git", :tag => s.version }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -95,43 +84,4 @@ Pod::Spec.new do |s|
   }
 
   s.swift_version = '4.1'
-
-  # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  A list of resources included with the Pod. These are copied into the
-  #  target bundle with a build phase script. Anything else will be cleaned.
-  #  You can preserve files from being cleaned, please don't preserve
-  #  non-essential files like tests, examples and documentation.
-  #
-
-  # s.resource  = "icon.png"
-  # s.resources = "Resources/*.png"
-
-  # s.preserve_paths = "FilesToSave", "MoreFilesToSave"
-
-
-  # ――― Project Linking ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  Link your library with frameworks, or libraries. Libraries do not include
-  #  the lib prefix of their name.
-  #
-
-  # s.framework  = "JSONModel"
-  # s.frameworks = "JSONModel", "foo"
-
-  # s.library   = "iconv"
-  # s.libraries = "iconv", "xml2"
-
-
-  # ――― Project Settings ――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
-  #
-  #  If your library depends on compiler flags you can set them in the xcconfig hash
-  #  where they will only apply to your library. If you depend on other Podspecs
-  #  you can include multiple dependencies to ensure it works.
-
-  # s.requires_arc = true
-
-  # s.xcconfig = { "HEADER_SEARCH_PATHS" => "$(SDKROOT)/usr/include/libxml2" }
-  # s.dependency "JSONModel", "~> 1.1.0"
-
 end
