@@ -1,73 +1,99 @@
 [![CocoaPods](https://img.shields.io/cocoapods/v/Iterable-iOS-SDK.svg?style=flat)](https://cocoapods.org/pods/Iterable-iOS-SDK)
 [![License](https://img.shields.io/cocoapods/l/Iterable-iOS-SDK.svg?style=flat)](https://opensource.org/licenses/MIT)
-[![Docs](https://img.shields.io/cocoapods/metrics/doc-percent/Iterable-iOS-SDK.svg?style=flat)](http://cocoadocs.org/docsets/Iterable-iOS-SDK)
 [![Build Status](https://travis-ci.com/Iterable/swift-sdk.svg?branch=master)](https://travis-ci.com/Iterable/swift-sdk)
 
 # Iterable iOS SDK
 
 `Iterable-iOS-SDK` is a Swift implementation of an iOS client for Iterable, for iOS versions 9.0 and higher.
 
-# Setting up a push integration in Iterable
+# Before Starting
 
-Before you even start with the SDK, you will need to 
+Before you even start with the SDK, you will need to setup Iterable push notifications for your app. 
 
-1. Set your application up to receive push notifications, and 
-2. Set up a push integration in Iterable. This allows Iterable to communicate on your behalf with Apple's Push Notification Service
-
-If you haven't yet done so, you will need to enable push notifications for your application. This can be done by toggling `Push Notifications` under your target's `Capabilities` in Xcode. You can also do it directly in the app center on Apple's member center; go to `Identifiers -> App IDs -> select your app`. You should see `Push Notifications` under `Application Services`. Hit `Edit` and enable `Push Notifications`.
-
-You will also need to generate an SSL certificate and private key for use with the push service. See the links at the end of this section for more information on how to do that.
-
-Once you have your APNS certificates set up, go to `Integrations -> Mobile Push` in Iterable. When creating an integration, you will need to pick a name and a platform. The name is entirely up to you; it will be the `appName` when you use `registerToken` in our SDK. The platform can be `APNS` or `APNS_SANDBOX`; these correspond to the production and sandbox platforms. Your application will generate a different token depending on whether it is built using a development certificate or a distribution provisioning profile.
-
-![Creating an integration in Iterable](http://support.iterable.com/hc/en-us/article_attachments/202957719/Screen_Shot_2015-07-30_at_3.15.56_PM.png)
-
-For more information, see
-
-* [Configuring Push Notifications](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6)
-* [Creating Certificates](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/MaintainingCertificates/MaintainingCertificates.html#//apple_ref/doc/uid/TP40012582-CH31-SW32)
-* [Amazon's Guide to Creating Certificates](http://docs.aws.amazon.com/sns/latest/dg/mobile-push-apns.html)
-
-Congratulations, you've configured your mobile application to receive push notifications! Now, let's set up the Iterable SDK...
-
+For more information, see [Getting Started Guide](https://support.iterable.com/hc/en-us/sections/201117965-Mobile). 
+ 
 # Automatic Installation (via CocoaPods)
 
-Iterable supports [CocoaPods](https://cocoapods.org) for easy installation. If you don't have it yet, you can install it with `Ruby` by running:
-```
-$ sudo gem install cocoapods 
-```
+Iterable supports [CocoaPods](https://cocoapods.org) for easy installation. If you don't have it yet, please refer to [this document](https://guides.cocoapods.org/using/getting-started.html) to install Cocoapods.
 
-To include the Iterable SDK in your project, you need to add it to your `Podfile`. If you don't have a `Podfile` yet, you can create one by running:
-```
-$ pod init
-```
+To include the Iterable SDK in your project, edit the `Podfile` and add the Iterable-iOS-SDK pod to your app target:
 
-To add the Iterable pod to your target, edit the `Podfile` and include this line under the target:
 ```
 pod 'Iterable-iOS-SDK'
 ```
 
-Now, you need to tell Cocoapods to install the dependencies:
+If you want to include Iterable Rich Notification Extension you will also need to include the Iterable-iOS-AppExtensions pod to your extension target:
+
 ```
-$ pod install
+pod 'Iterable-iOS-AppExtensions'
 ```
+
+
+Please look at the included sample project pod file [HERE](./sample-apps/swift-sample-app/Podfile).
 
 Congratulations! You have now imported the Iterable SDK into your project! 
 
+# Manual Installation
+
+Attached to the release you will find two framework bundles. 
+
+	IterableSDK.framework 
+	IterableAppExtensions.framework
+	
+1. In XCode choose the target for your app. Now add IterableSDK.framework to the **embedded binaries** section. If you want to use Iterable Rich Notification Extension you will have to add IterableAppExtensions.framework to the embedded binaries section as well.
+
+    ![Linking](./images/embedded-binaries.png)
+
+2. If you want to use Iterable Rich Notifiation Extension, you will need to add IterableAppExtension.framework to **Linked Frameworks and Libraries** section of your **app extension** target (not app target). Please note that you will have to add the IterableAppExtension.framework bundle to **both** the app target (step 1) and app extension target (step 2) of your project.
+    ![Linking](./images/app-extension-linked-framework.png)
+3. In build settings, set `Always Embed Swift Standard Libraries` setting to 'Yes'.
+	![Linking](./images/build-setting.png)
+ 
 
 # Using the SDK
-1. Initialize the API with API key. The only required parameter is `apiKey`. You may also like to set default configuration parameters.
+1. ##### Initialize the API with API key.
 
+   On application launch (`application:didFinishLaunchingWithOptions:`), initialize the Iterable SDK:
+
+	```swift
+	let config = IterableConfig()
+	config.pushIntegrationName = "<your-iterable-push-integration-name>"
+	IterableAPI.initialize(apiKey: "<your-api-key>", launchOptions: launchOptions, config:config)
 	```
-	IterableAPI.initialize(apiKey: "your-api-key", optionalParameters.....)
-	```
-  * Ideally, you will call this from inside `application:didFinishLaunchingWithOptions:` and pass in `launchOptions`. This will let the SDK automatically track a push open for you if the application was launched from a remote Iterable push notification. 
+  * See the Iterable guide on how to setup your Iterable push integration [here](https://support.iterable.com/hc/en-us/articles/115000315806-Setting-Up-iOS-Push-Notifications).	
 	
-2. Once you know the email *(Preferred)* or userId of the user, set the value.
+2. ##### Set userId or email. 
 
+	Once you know the email or userId of the user, set the value.
+
+	```swift
+	IterableAPI.email = "user@example.com"
 	```
-	IterableAPI.email = 'user@example.com'
-	```
+	
+3. ##### Send Remote Notification Token to Iterable
+
+	* See [Apple Notification Guide](https://developer.apple.com/documentation/usernotifications) regarding how to register for remote notifiations.
+	* In your `AppDelegate`’s [application:didRegisterForRemoteNotificationsWithDeviceToken:](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622958-application) method, send the token obtained to Iterable.
+
+	```swift
+	func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        IterableAPI.register(token: deviceToken)
+    }
+    ```
+4. ##### Handle Push Notifications
+	When the user taps on the push notification or one of the action buttons, the system calls `UNUserNotificationCenterDelegate`'s [userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:](https://developer.apple.com/documentation/usernotifications/unusernotificationcenterdelegate/1649501-usernotificationcenter?language=objc). Pass this call to `IterableAppIntegration` to track push open event and perform the associated action (see below for custom action and URL delegates).
+
+# Receiving Remote Push Notifications
+
+Application Running? | In foreground? | Notification Shown? | Delegate | When | Notes
+--- | --- | --- | --- | --- | ---
+Yes | Yes | No | `userNotificationCenter:willPresent:withCompletionHandler:` | Immediately | call `IterableAPI.track:pushOpen` and pass in `userInfo`
+Yes | No | Yes | `userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:` | On Notification Click | call `IterableAppIntegration.userNotificationCenter:didReceive:withCompletionHandler:`
+No | N/A | Yes | `application:didFinishLaunchingWithOptions:` | On Notification Click | initialize `IterableAPI` and pass in `launchOptions`; a push open will be tracked automatically
+
+* For iOS 9, UserNotifications is not availa ble, use `application:didReceiveRemoteNotification:` instead.
+
+For more information about local and remote notifications, and which callbacks will be called under which circumstances, see [Local and Remote Notifications in Depth](https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/Chapters/WhatAreRemoteNotif.html#//apple_ref/doc/uid/TP40008194-CH102-SW1).
 
 # Additional Information
 
