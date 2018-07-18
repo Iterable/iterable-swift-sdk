@@ -10,7 +10,7 @@
 
 Before you even start with the SDK, you will need to setup Iterable push notifications for your app. 
 
-For more information, see [Getting Started Guide](https://support.iterable.com/hc/en-us/sections/201117965-Mobile). 
+For more information, see [Getting Started Guide](https://support.iterable.com/hc/en-us/articles/115000315806-Setting-Up-iOS-Push-Notifications). 
  
 # Automatic Installation (via CocoaPods)
 
@@ -29,7 +29,7 @@ pod 'Iterable-iOS-AppExtensions'
 ```
 
 
-Please look at the included sample project pod file [HERE](./sample-apps/swift-sample-app/Podfile).
+Please look at the included sample pod file [HERE](./sample-apps/swift-sample-app/Podfile).
 
 Congratulations! You have now imported Iterable SDK into your project! 
 
@@ -56,12 +56,12 @@ Attached to the release you will find two framework bundles.
 # Initializing the SDK
 **Note:** Sample projects are included in this repo.
 	 
-- [Swift Sample Project](./sample-apps/swift-sample-app/swift-sample-app.xcworkspace)
-- [ObjC Sample Project](./sample-apps/objc-sample-app/objc-sample-app.xcworkspace)
+- [Swift Sample Project](./sample-apps/swift-sample-app)
+- [ObjC Sample Project](./sample-apps/objc-sample-app)
 
 
 1. ##### Initialize the API with API key.
-	   In your app delegate, on application launch in `application:didFinishLaunchingWithOptions:` method, initialize the Iterable SDK:
+	In your app delegate, on application launch in `application:didFinishLaunchingWithOptions:` method, initialize the Iterable SDK:
 
 	Swift:
 
@@ -107,20 +107,20 @@ Attached to the release you will find two framework bundles.
 	
 	```swift
 	func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        IterableAPI.register(token: deviceToken)
-    }
-    ```
+        	IterableAPI.register(token: deviceToken)
+	}
+	```
 
 	Objective-C:
 	
 	```objective-c
 	- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-    	[IterableAPI registerToken:deviceToken];
+		[IterableAPI registerToken:deviceToken];
 	}
-    ```
+	```
     See example in sample app delegate [here](./sample-apps/swift-sample-app/swift-sample-app/AppDelegate.swift).
 
-Congratulations! You can now send remote push notifications to your device from Iterable!
+Congratulations! You can now send remote push notifications to your device from Iterable! Please note that you can't send push notifications until you set the userId or email. Please see sample applications to see a reference implementation.
 
 # Using the SDK
 
@@ -132,15 +132,15 @@ Congratulations! You can now send remote push notifications to your device from 
 	
 	```swift
 	public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-   		IterableAppIntegration.userNotificationCenter(center, didReceive: response, withCompletionHandler: completionHandler)
-   }
+		IterableAppIntegration.userNotificationCenter(center, didReceive: response, withCompletionHandler: completionHandler)
+	}
 	```
 
 	Objective-C:
 	
 	```objective-c
 	- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
-	    [IterableAppIntegration userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
+		[IterableAppIntegration userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
 	}
 	```
 	
@@ -163,13 +163,13 @@ Congratulations! You can now send remote push notifications to your device from 
 			config.urlDelegate = self
 			IterableAPI.initialize(apiKey: apiKey, launchOptions:launchOptions, config: config)
 			...
-    	}
+		}
     
-       // Iterable URL Delegate. It will be called when you receive 
-       // an `openUrl` event from push notification.
-    	func handle(iterableURL url: URL, inContext context: IterableActionContext) -> Bool {
-    		return DeeplinkHandler.handle(url: url)
-    	}
+		// Iterable URL Delegate. It will be called when you receive 
+		// an `openUrl` event from push notification.
+		func handle(iterableURL url: URL, inContext context: IterableActionContext) -> Bool {
+    			return DeeplinkHandler.handle(url: url)
+		}
 		```
 		
 		Objective-C:
@@ -180,7 +180,7 @@ Congratulations! You can now send remote push notifications to your device from 
 		    // Initialize Iterable SDK
 		    IterableConfig *config = [[IterableConfig alloc] init];
 		    ...
-		    config.urlDelegate = self;
+			config.urlDelegate = self;
 		    [IterableAPI initializeWithApiKey:@"YOUR API KEY" launchOptions:launchOptions config:config];
 		    ...
 		}
@@ -201,14 +201,15 @@ Congratulations! You can now send remote push notifications to your device from 
 		Swift:
 		
 		```swift
-    	func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
-        	guard let url = userActivity.webpageURL else {
-        		return false
-        	}
+		func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
+        		guard let url = userActivity.webpageURL else {
+        			return false
+        		}
 
-        	// This will track the click, retrieve the original URL and call `handleIterableURL:context:` with the original URL
-        	return IterableAPI.handle(universalLink: url)
-    	}
+        		// This will track the click, retrieve the original URL and call `handleIterableURL:context:` with the original URL
+        		return IterableAPI.handle(universalLink: url)
+		}
+
 		
 		```
 
@@ -226,16 +227,15 @@ Congratulations! You can now send remote push notifications to your device from 
 		Swift:
 		
 		```swift
-		func application(_ application: UIApplication, continue userActivity: NSUserActivity,
-                  restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
-        	guard let url = userActivity.webpageURL else {
-        		return false
-        	}
+		func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
+	        	guard let url = userActivity.webpageURL else {
+        			return false
+        		}
         	
-        	IterableAPI.getAndTrack(deeplink: url) { (originalUrl) in
-        		// Handle original url deeplink here
-        	}
-        	return true
+	        	IterableAPI.getAndTrack(deeplink: url) { (originalUrl) in
+        			// Handle original url deeplink here
+        		}
+	        	return true
 		}
 		```
 
@@ -265,9 +265,9 @@ Congratulations! You can now send remote push notifications to your device from 
 	User fields can be modified using `IterableAPI.updateXYZ(...)` calls.
 	
 6. ##### Disabling Push Notifications to a Device
-	When a user logs out, you typically want to disable push notifications to that user/device. This can be accomplished by calling `disableDeviceForCurrentUser`. Please note that it will only attempt to disable the device if you have previously called registerToken.
+	When a user logs out, you typically want to disable push notifications to that user/device. This can be accomplished by calling `disableDeviceForCurrentUser`. Please note that it will only attempt to disable the device if you have previously called `registerToken`.
 	
-	In order to re-enable push notifcations to that device, simply call registerToken as usual when the user logs back in.
+	In order to re-enable push notifcations to that device, simply call `registerToken` as usual when the user logs back in.
 	
 7. ##### Uninstall Tracking
 	Iterable will track uninstalls with no additional work by you. 
