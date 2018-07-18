@@ -147,65 +147,6 @@
             </objects>
             <point key="canvasLocation" x="-1090.4000000000001" y="30.134932533733135"/>
         </scene>
-        <!--APIKey View Controller-->
-        <scene sceneID="n5t-3t-hlZ">
-            <objects>
-                <viewController storyboardIdentifier="APIKeyViewController" id="IO9-oF-X4f" userLabel="APIKey View Controller" customClass="APIKeyViewController" customModule="swift_sample_app" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="uk2-mu-eTl">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="50" translatesAutoresizingMaskIntoConstraints="NO" id="b45-tb-FE6">
-                                <rect key="frame" x="40" y="170" width="295" height="143"/>
-                                <subviews>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="iterableLogo" translatesAutoresizingMaskIntoConstraints="NO" id="TRe-GS-hze">
-                                        <rect key="frame" x="0.0" y="0.0" width="295" height="33"/>
-                                    </imageView>
-                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="pZu-mp-bL5">
-                                        <rect key="frame" x="0.0" y="83" width="295" height="60"/>
-                                        <subviews>
-                                            <textField opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="249" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="API Key" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="c11-r1-P78">
-                                                <rect key="frame" x="0.0" y="0.0" width="295" height="30"/>
-                                                <nil key="textColor"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                <textInputTraits key="textInputTraits" enablesReturnKeyAutomatically="YES" textContentType="email"/>
-                                            </textField>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="leading" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hGS-b8-YJK">
-                                                <rect key="frame" x="0.0" y="30" width="295" height="30"/>
-                                                <state key="normal" title="Set API Key">
-                                                    <color key="titleColor" red="0.96078431369999995" green="0.50196078430000002" blue="0.12549019610000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                </state>
-                                                <state key="disabled">
-                                                    <color key="titleColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                                </state>
-                                                <connections>
-                                                    <action selector="setApiKeyTapped:" destination="IO9-oF-X4f" eventType="touchUpInside" id="RE6-B5-vzU"/>
-                                                </connections>
-                                            </button>
-                                        </subviews>
-                                    </stackView>
-                                </subviews>
-                            </stackView>
-                        </subviews>
-                        <color key="backgroundColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <color key="tintColor" red="0.31372549020000001" green="0.71372549019999998" blue="0.98823529409999999" alpha="1" colorSpace="calibratedRGB"/>
-                        <gestureRecognizers/>
-                        <constraints>
-                            <constraint firstItem="b45-tb-FE6" firstAttribute="top" secondItem="JhS-Sw-BlH" secondAttribute="top" constant="150" id="FhC-EV-Rvk"/>
-                            <constraint firstItem="JhS-Sw-BlH" firstAttribute="trailing" secondItem="b45-tb-FE6" secondAttribute="trailing" constant="40" id="VIu-IE-qfF"/>
-                            <constraint firstItem="b45-tb-FE6" firstAttribute="leading" secondItem="JhS-Sw-BlH" secondAttribute="leading" constant="40" id="lFZ-ZB-vBp"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="JhS-Sw-BlH"/>
-                    </view>
-                    <connections>
-                        <outlet property="apiKeyTextField" destination="c11-r1-P78" id="gcl-mJ-Dei"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="d6a-8i-De9" sceneMemberID="firstResponder"/>
-                <tapGestureRecognizer id="yFd-va-2jR"/>
-            </objects>
-            <point key="canvasLocation" x="1367" y="30"/>
-        </scene>
         <!--Login View Controller-->
         <scene sceneID="Lrp-We-A2i">
             <objects>
@@ -231,9 +172,7 @@
                                             </textField>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="leading" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Vl-s0-0tX">
                                                 <rect key="frame" x="0.0" y="30" width="295" height="30"/>
-                                                <state key="normal" title="Log in">
-                                                    <color key="titleColor" red="0.96078431369999995" green="0.50196078430000002" blue="0.12549019610000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                </state>
+                                                <state key="normal" title="Log in"/>
                                                 <state key="disabled">
                                                     <color key="titleColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 </state>

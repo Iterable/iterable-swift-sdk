@@ -15,32 +15,24 @@ import IterableSDK
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
+    //ITBL: Set your actual api key here.
+    let iterableApiKey = ""
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 
         //ITBL: Setup Notification
         setupNotifications()
 
         //ITBL: Initialize API
-        // NOTE: In your application you should hard-code your Iterable API Key. No need to
-        // save in UserDefaults
-        if let iterableApiKey = UserDefaults.standard.string(forKey: "iterableApiKey") {
-            // You code sould always come here in your actual application
-            let config = IterableConfig()
-            config.customActionDelegate = self
-            config.urlDelegate = self
-            config.pushIntegrationName = "swift-sample-app"
-            config.sandboxPushIntegrationName = "swift-sample-app"
-            // Replace with your api key and email here.
-            IterableAPI.initialize(apiKey: iterableApiKey,
-                                   launchOptions:launchOptions,
-                                   config: config)
-        } else {
-            // Your code should never come here in your actual application
-            // For this sample app we don't know the Iterable API Key that's why we have it here.
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let apiKeyVC = storyboard.instantiateViewController(withIdentifier: "APIKeyViewController")
-            window?.rootViewController = apiKeyVC
-        }
+        let config = IterableConfig()
+        config.customActionDelegate = self
+        config.urlDelegate = self
+        config.pushIntegrationName = "swift-sample-app"
+        config.sandboxPushIntegrationName = "swift-sample-app"
+        // Replace with your api key and email here.
+        IterableAPI.initialize(apiKey: iterableApiKey,
+                               launchOptions:launchOptions,
+                               config: config)
 
         return true
     }
@@ -61,6 +53,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+
+        //ITBL:
+        // You don't need to do this in your app. Just set the correct value for 'iterableApiKey' when it is declared.
+        if iterableApiKey == "" {
+            let alert = UIAlertController(title: "API Key Required", message: "You must set Iterable API Key. Run this app again after setting 'AppDelegate.iterableApiKey'.", preferredStyle: .alert)
+            let action = UIAlertAction(title: "OK", style: .default) { (action) in
+                exit(0)
+            }
+            alert.addAction(action)
+            window?.rootViewController?.present(alert, animated: true)
+            return
+        }
+        
+        //ITBL:
+        if IterableAPI.email == nil {
+            let alert = UIAlertController(title: "Please Login", message: "You must set 'IterableAPI.email' before receiving push notifications from Iterable.", preferredStyle: .alert)
+            let action = UIAlertAction(title: "OK", style: .default) { (action) in
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let vc = storyboard.instantiateViewController(withIdentifier: "LoginNavController")
+                self.window?.rootViewController?.present(vc, animated: true)
+            }
+            alert.addAction(action)
+            window?.rootViewController?.present(alert, animated: true)
+            return
+        }
     }
 
     func applicationWillTerminate(_ application: UIApplication) {

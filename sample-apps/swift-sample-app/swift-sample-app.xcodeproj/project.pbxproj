@@ -21,7 +21,6 @@
 		ACA3A15120E2F83E00FEF74F /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA3A15020E2F83E00FEF74F /* NotificationService.swift */; };
 		ACA3A15520E2F83E00FEF74F /* swift-sample-app-notification-extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = ACA3A14E20E2F83D00FEF74F /* swift-sample-app-notification-extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		ACE7624B20FEB2C20040A002 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE7624A20FEB2C20040A002 /* LoginViewController.swift */; };
-		ACF0A43A20FE8C50004B59EB /* APIKeyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF0A43920FE8C50004B59EB /* APIKeyViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,7 +67,6 @@
 		ACA3A15220E2F83E00FEF74F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		ACA3A16420E2FC7500FEF74F /* swift-sample-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "swift-sample-app.entitlements"; sourceTree = "<group>"; };
 		ACE7624A20FEB2C20040A002 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
-		ACF0A43920FE8C50004B59EB /* APIKeyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeyViewController.swift; sourceTree = "<group>"; };
 		ACFA148520E3033700AF4A5A /* CoffeeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoffeeType.swift; sourceTree = "<group>"; };
 		EE45F561E7E4376F9C089941 /* Pods-swift-sample-app.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-swift-sample-app.release.xcconfig"; path = "Pods/Target Support Files/Pods-swift-sample-app/Pods-swift-sample-app.release.xcconfig"; sourceTree = "<group>"; };
 		EF740C567615690E8C39C769 /* Pods-swift-sample-app.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-swift-sample-app.debug.xcconfig"; path = "Pods/Target Support Files/Pods-swift-sample-app/Pods-swift-sample-app.debug.xcconfig"; sourceTree = "<group>"; };
@@ -108,7 +106,6 @@
 			children = (
 				AC5ECD9E20E304000081E1DA /* CoffeeListTableViewController.swift */,
 				AC5ECD9F20E304070081E1DA /* CoffeeViewController.swift */,
-				ACF0A43920FE8C50004B59EB /* APIKeyViewController.swift */,
 				ACE7624A20FEB2C20040A002 /* LoginViewController.swift */,
 			);
 			name = ViewControllers;
@@ -384,7 +381,6 @@
 			files = (
 				AC1BDF5A20E304CC000010CA /* CoffeeViewController.swift in Sources */,
 				ACA3A13920E2F6AF00FEF74F /* AppDelegate.swift in Sources */,
-				ACF0A43A20FE8C50004B59EB /* APIKeyViewController.swift in Sources */,
 				AC1BDF5920E304BF000010CA /* DeeplinkHandler.swift in Sources */,
 				ACE7624B20FEB2C20040A002 /* LoginViewController.swift in Sources */,
 				AC1BDF5C20E304D7000010CA /* CoffeeType.swift in Sources */,
