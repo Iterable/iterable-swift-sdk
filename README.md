@@ -148,7 +148,7 @@ Congratulations! You can now send remote push notifications to your device from 
 	
 	* Handling Links from Push Notifications
 		
-		Push notifications and action buttons may have `openUrl` actions attached to them. When a URL is specified, the SDK first calls `urlDelegate` specified in your `IterableConfig` object. You can use this delegate to handle `openUrl` actions the same way as you handle normal deep links. If the delegate is not set or if it returns `false` (the default), the SDK will open Safari with that URL. If you want to navigate to a UIViewController on receiving a deep link, you should do so in the `urlDelegate`. 
+		Push notifications and action buttons may have `openUrl` actions attached to them. When a URL is specified, the SDK first calls `urlDelegate` specified in your `IterableConfig` object. You can use this delegate to handle `openUrl` actions the same way as you handle normal deep links. If the delegate is not set or if it returns `false` (the default), the SDK will open Safari with that URL. If you want to navigate to a UIViewController on receiving a deep link, you should do so in the `urlDelegate`. 
 		
 		In the code below, `DeepLinkHandler` is a custom handler which is reponsible for deep link navigation. You have to provide implementation for deep link navigation. Please see [sample application](./sample-apps/swift-sample-app/swift-sample-app.xcworkspace) for a reference implementation.
 		
@@ -160,7 +160,7 @@ Congratulations! You can now send remote push notifications to your device from 
 			// Initialize Iterable API
 			let config = IterableConfig()
 			...
-			config.urlDelegate = self
+			config.urlDelegate = self
 			IterableAPI.initialize(apiKey: apiKey, launchOptions:launchOptions, config: config)
 			...
 		}
@@ -262,7 +262,7 @@ Congratulations! You can now send remote push notifications to your device from 
 	Custom events can be tracked using `IterableAPI.track(event:...)` calls.
 	
 5. ##### Updating User Fields
-	User fields can be modified using `IterableAPI.updateXYZ(...)` calls.
+	User fields can be modified using `IterableAPI.updateUser` call. You also have `updateEmail` and `updateSubscriptions` methods.
 	
 6. ##### Disabling Push Notifications to a Device
 	When a user logs out, you typically want to disable push notifications to that user/device. This can be accomplished by calling `disableDeviceForCurrentUser`. Please note that it will only attempt to disable the device if you have previously called `registerToken`.
