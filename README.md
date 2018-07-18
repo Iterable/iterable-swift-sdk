@@ -79,7 +79,6 @@ Attached to the release you will find two framework bundles.
 	[IterableAPI initializeWithApiKey:@"<your-api-key>" launchOptions:launchOptions config:config]
 	```
 	
-	
 	See the Iterable guide on how to setup your Iterable push integration and obtain push integration name [here](https://support.iterable.com/hc/en-us/articles/115000315806-Setting-Up-iOS-Push-Notifications).	
 	
 2. ##### Set userId or email. 
@@ -107,7 +106,7 @@ Attached to the release you will find two framework bundles.
 	
 	```swift
 	func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        	IterableAPI.register(token: deviceToken)
+		IterableAPI.register(token: deviceToken)
 	}
 	```
 
@@ -118,7 +117,7 @@ Attached to the release you will find two framework bundles.
 		[IterableAPI registerToken:deviceToken];
 	}
 	```
-    See example in sample app delegate [here](./sample-apps/swift-sample-app/swift-sample-app/AppDelegate.swift).
+	See example in sample app delegate [here](./sample-apps/swift-sample-app/swift-sample-app/AppDelegate.swift).
 
 Congratulations! You can now send remote push notifications to your device from Iterable! Please note that you can't send push notifications until you set the userId or email. Please see sample applications to see a reference implementation.
 
@@ -191,7 +190,6 @@ Congratulations! You can now send remote push notifications to your device from 
 		}
 		```
 		
-		
 	* Handling Email Links
 		
 		For Universal Links to work with link rewriting in emails, you need to set up apple-app-site-association file in the Iterable project. More instructions here: [Setting up iOS Universal Links](https://support.iterable.com/hc/en-us/articles/115000440206-Setting-up-iOS-Universal-Links).
@@ -209,8 +207,6 @@ Congratulations! You can now send remote push notifications to your device from 
 			// This will track the click, retrieve the original URL and call `handleIterableURL:context:` with the original URL
 			return IterableAPI.handle(universalLink: url)
 		}
-
-		
 		```
 
 		Objective-C:
