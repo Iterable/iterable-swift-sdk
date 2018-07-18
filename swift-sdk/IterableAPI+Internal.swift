@@ -16,4 +16,10 @@ extension IterableAPI {
                                               dateProvider: DateProviderProtocol) {
         implementation = IterableAPIImplementation.init(apiKey: apiKey, launchOptions: launchOptions, config: config, dateProvider: dateProvider)
     }
+    
+    
+    @available(*, deprecated, message: "This is for internal use only.")
+    public static func getImplementation() -> IterableAPIImplementation? {
+        return implementation
+    }
 }

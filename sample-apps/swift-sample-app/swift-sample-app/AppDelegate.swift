@@ -13,38 +13,38 @@ import IterableSDK
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    // ITBL: replace with your api key and email.
-    // IMP: Either userId or email must be set.
-    let apiKey = "" // set Iterable api key here
-    let email = "" // set Iterable user email here.
-    let userId = "" // set iterable userId here. Either email or userId must be set.
-    
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Initial check
-        if apiKey.isEmpty || (email.isEmpty && userId.isEmpty) {
-            fatalError("Iterable API Key and either email or userId need to be set.")
-        }
-        
+
         //ITBL: Setup Notification
         setupNotifications()
 
         //ITBL: Initialize API
-        let config = IterableConfig()
-        config.customActionDelegate = self
-        config.urlDelegate = self
-        config.pushIntegrationName = "swift-sample-app"
-        config.sandboxPushIntegrationName = "swift-sample-app"
-        // Replace with your api key and email here.
-        IterableAPI.initialize(apiKey: apiKey,
-                                  launchOptions:launchOptions,
-                                  config: config)
-        IterableAPI.email = email
+        // NOTE: In your application you should hard-code your Iterable API Key. No need to
+        // save in UserDefaults
+        if let iterableApiKey = UserDefaults.standard.string(forKey: "iterableApiKey") {
+            // You code sould always come here in your actual application
+            let config = IterableConfig()
+            config.customActionDelegate = self
+            config.urlDelegate = self
+            config.pushIntegrationName = "swift-sample-app"
+            config.sandboxPushIntegrationName = "swift-sample-app"
+            // Replace with your api key and email here.
+            IterableAPI.initialize(apiKey: iterableApiKey,
+                                   launchOptions:launchOptions,
+                                   config: config)
+        } else {
+            // Your code should never come here in your actual application
+            // For this sample app we don't know the Iterable API Key that's why we have it here.
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let apiKeyVC = storyboard.instantiateViewController(withIdentifier: "APIKeyViewController")
+            window?.rootViewController = apiKeyVC
+        }
 
         return true
     }
-
+    
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
@@ -146,4 +146,3 @@ extension AppDelegate : IterableCustomActionDelegate {
         return false
     }
 }
-
