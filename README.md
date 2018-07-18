@@ -55,7 +55,7 @@ Attached to the release you will find two framework bundles.
 
 # Initializing the SDK
 **Note:** Sample projects are included in this repo.
-	 
+ 
 - [Swift Sample Project](./sample-apps/swift-sample-app)
 - [ObjC Sample Project](./sample-apps/objc-sample-app)
 
@@ -145,7 +145,7 @@ Congratulations! You can now send remote push notifications to your device from 
 	```
 	
 2. ##### Deep Linking
-	
+
 	* Handling Links from Push Notifications
 		
 		Push notifications and action buttons may have `openUrl` actions attached to them. When a URL is specified, the SDK first calls `urlDelegate` specified in your `IterableConfig` object. You can use this delegate to handle `openUrl` actions the same way as you handle normal deep links. If the delegate is not set or if it returns `false` (the default), the SDK will open Safari with that URL. If you want to navigate to a UIViewController on receiving a deep link, you should do so in the `urlDelegate`. 
@@ -164,11 +164,11 @@ Congratulations! You can now send remote push notifications to your device from 
 			IterableAPI.initialize(apiKey: apiKey, launchOptions:launchOptions, config: config)
 			...
 		}
-    
+
 		// Iterable URL Delegate. It will be called when you receive 
 		// an `openUrl` event from push notification.
 		func handle(iterableURL url: URL, inContext context: IterableActionContext) -> Bool {
-    			return DeeplinkHandler.handle(url: url)
+			return DeeplinkHandler.handle(url: url)
 		}
 		```
 		
@@ -176,18 +176,18 @@ Congratulations! You can now send remote push notifications to your device from 
 		
 		```objective-c
 		- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-		    ...
-		    // Initialize Iterable SDK
-		    IterableConfig *config = [[IterableConfig alloc] init];
-		    ...
+			...
+			// Initialize Iterable SDK
+			IterableConfig *config = [[IterableConfig alloc] init];
+			...
 			config.urlDelegate = self;
-		    [IterableAPI initializeWithApiKey:@"YOUR API KEY" launchOptions:launchOptions config:config];
-		    ...
+			[IterableAPI initializeWithApiKey:@"YOUR API KEY" launchOptions:launchOptions config:config];
+			...
 		}
 		
 		- (BOOL)handleIterableURL:(NSURL *)url context:(IterableActionContext *)context {
-		    // Assuming you have a DeeplinkHandler class that handles all deep link URLs and navigates to the right place in the app
-		    return [DeeplinkHandler handleUrl:url];
+			// Assuming you have a DeeplinkHandler class that handles all deep link URLs and navigates to the right place in the app
+			return [DeeplinkHandler handleUrl:url];
 		}
 		```
 		
@@ -202,12 +202,12 @@ Congratulations! You can now send remote push notifications to your device from 
 		
 		```swift
 		func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
-        		guard let url = userActivity.webpageURL else {
-        			return false
-        		}
+			guard let url = userActivity.webpageURL else {
+				return false
+			}
 
-        		// This will track the click, retrieve the original URL and call `handleIterableURL:context:` with the original URL
-        		return IterableAPI.handle(universalLink: url)
+			// This will track the click, retrieve the original URL and call `handleIterableURL:context:` with the original URL
+			return IterableAPI.handle(universalLink: url)
 		}
 
 		
@@ -216,9 +216,9 @@ Congratulations! You can now send remote push notifications to your device from 
 		Objective-C:
 		
 		```objective-c
-    	- (BOOL)application:(UIApplication *)application continueUserActivity(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray *restorableObjects))restorationHandler {
-    		// This will track the click, retrieve the original URL and call `handleIterableURL:context:` with the original URL
-		    return [IterableAPI handleUniversalLink:userActivity.webpageURL];
+		- (BOOL)application:(UIApplication *)application continueUserActivity(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray *restorableObjects))restorationHandler {
+			// This will track the click, retrieve the original URL and call `handleIterableURL:context:` with the original URL
+			return [IterableAPI handleUniversalLink:userActivity.webpageURL];
 		}
 		```
 		
@@ -228,14 +228,14 @@ Congratulations! You can now send remote push notifications to your device from 
 		
 		```swift
 		func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
-	        	guard let url = userActivity.webpageURL else {
-        			return false
-        		}
-        	
-	        	IterableAPI.getAndTrack(deeplink: url) { (originalUrl) in
-        			// Handle original url deeplink here
-        		}
-	        	return true
+			guard let url = userActivity.webpageURL else {
+				return false
+			}
+
+			IterableAPI.getAndTrack(deeplink: url) { (originalUrl) in
+				// Handle original url deeplink here
+			}
+			return true
 		}
 		```
 
@@ -243,14 +243,14 @@ Congratulations! You can now send remote push notifications to your device from 
 		
 		```objective-c
 		- (BOOL)application:(UIApplication *)application
-		 		continueUserActivity(NSUserActivity *)userActivity 
-		 		restorationHandler:(void (^)(NSArray *restorableObjects))restorationHandler {
-		    
-		    [IterableAPI getAndTrackDeeplink:iterableLink callbackBlock:^(NSString* originalURL) {
-		        //Handle Original URL deeplink here
-		    }];
-		    
-		    return true;
+				continueUserActivity(NSUserActivity *)userActivity 
+				restorationHandler:(void (^)(NSArray *restorableObjects))restorationHandler {
+
+			[IterableAPI getAndTrackDeeplink:iterableLink callbackBlock:^(NSString* originalURL) {
+				//Handle Original URL deeplink here
+			}];
+
+			return true;
 		}
 		```
 		
@@ -282,7 +282,7 @@ Iterable SDK provides an implementation that handles media attachments and actio
 ```
 // If the target name for the notification extension is 'MyAppNotificationExtension'
 target 'MyAppNotificationExtension' do
-    pod 'IterableAppExtensions'
+	pod 'IterableAppExtensions'
 end
 ```
 
@@ -313,13 +313,13 @@ Objective-C: You can not inherit in case of Objective C. You will have to delega
 
 @implementation NotificationService
 - (void)didReceiveNotificationRequest:(UNNotificationRequest *)request withContentHandler:(void (^)(UNNotificationContent * _Nonnull))contentHandler {
-    
-    self.baseExtension = [[ITBNotificationServiceExtension alloc] init];
-    [self.baseExtension didReceiveNotificationRequest:request withContentHandler:contentHandler];
+
+	self.baseExtension = [[ITBNotificationServiceExtension alloc] init];
+	[self.baseExtension didReceiveNotificationRequest:request withContentHandler:contentHandler];
 }
 
 - (void)serviceExtensionTimeWillExpire {
-    [self.baseExtension serviceExtensionTimeWillExpire];
+	[self.baseExtension serviceExtensionTimeWillExpire];
 }
 @end
 
