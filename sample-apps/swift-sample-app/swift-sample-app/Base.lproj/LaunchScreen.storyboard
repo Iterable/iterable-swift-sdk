@@ -10,10 +10,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--APIKey View Controller-->
+        <!--Launch Screen View Controller-->
         <scene sceneID="2UB-Cd-P2g">
             <objects>
-                <viewController storyboardIdentifier="APIKeyViewController" id="PB5-Tr-D5w" userLabel="APIKey View Controller" sceneMemberID="viewController">
+                <viewController id="PB5-Tr-D5w" userLabel="Launch Screen View Controller" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="hDo-Q9-Uge">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

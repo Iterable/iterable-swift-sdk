@@ -36,7 +36,16 @@
                             <outlet property="delegate" destination="wUS-38-HQ9" id="OuF-ao-jSn"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="Wps-Zt-gZc"/>
+                    <navigationItem key="navigationItem" id="Wps-Zt-gZc">
+                        <barButtonItem key="rightBarButtonItem" title="Login" id="fVv-HC-DTM">
+                            <connections>
+                                <action selector="loginOutButtonTapped:" destination="wUS-38-HQ9" id="feE-ty-do0"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="loginOutBarButton" destination="fVv-HC-DTM" id="gCf-VJ-a1h"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sJh-9o-pCn" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -128,5 +137,93 @@
             </objects>
             <point key="canvasLocation" x="1916" y="148"/>
         </scene>
+        <!--Login View Controller-->
+        <scene sceneID="0Hd-XR-cCA">
+            <objects>
+                <viewController storyboardIdentifier="LoginViewController" id="e0v-rS-htn" customClass="LoginViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="5Vs-hD-EAi">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="50" translatesAutoresizingMaskIntoConstraints="NO" id="1Vb-fn-x37">
+                                <rect key="frame" x="40" y="214" width="295" height="143"/>
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="iterableLogo" translatesAutoresizingMaskIntoConstraints="NO" id="KQr-9g-omp">
+                                        <rect key="frame" x="0.0" y="0.0" width="295" height="33"/>
+                                    </imageView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="NzB-kZ-mtV">
+                                        <rect key="frame" x="0.0" y="83" width="295" height="60"/>
+                                        <subviews>
+                                            <textField opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="249" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Email address" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="dqS-LR-5Ax">
+                                                <rect key="frame" x="0.0" y="0.0" width="295" height="30"/>
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <textInputTraits key="textInputTraits" enablesReturnKeyAutomatically="YES" textContentType="email"/>
+                                            </textField>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="leading" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3NC-V4-dLv">
+                                                <rect key="frame" x="0.0" y="30" width="295" height="30"/>
+                                                <state key="normal" title="Log in"/>
+                                                <state key="disabled">
+                                                    <color key="titleColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="logInOutButtonTapped:" destination="e0v-rS-htn" eventType="touchUpInside" id="txB-Mt-HP2"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="tintColor" red="0.31372549020000001" green="0.71372549019999998" blue="0.98823529409999999" alpha="1" colorSpace="calibratedRGB"/>
+                        <gestureRecognizers/>
+                        <constraints>
+                            <constraint firstItem="1Vb-fn-x37" firstAttribute="top" secondItem="mdt-39-bbJ" secondAttribute="top" constant="150" id="2xr-1y-yH1"/>
+                            <constraint firstItem="mdt-39-bbJ" firstAttribute="trailing" secondItem="1Vb-fn-x37" secondAttribute="trailing" constant="40" id="KDX-eY-A6n"/>
+                            <constraint firstItem="1Vb-fn-x37" firstAttribute="leading" secondItem="mdt-39-bbJ" secondAttribute="leading" constant="40" id="x45-F0-xAa"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="mdt-39-bbJ"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="5BQ-Vo-KB0">
+                        <barButtonItem key="rightBarButtonItem" style="plain" systemItem="done" id="OQ7-S8-j6B">
+                            <connections>
+                                <action selector="doneButtonTapped:" destination="e0v-rS-htn" id="Wsh-gP-9al"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="emailAddressTextField" destination="dqS-LR-5Ax" id="bZg-N2-7zk"/>
+                        <outlet property="logInOutButton" destination="3NC-V4-dLv" id="rY4-wJ-TdH"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="i6o-86-LEZ" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="hmM-lT-7aj"/>
+            </objects>
+            <point key="canvasLocation" x="3375" y="110"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="nBk-hM-Mef">
+            <objects>
+                <navigationController storyboardIdentifier="LoginNavController" automaticallyAdjustsScrollViewInsets="NO" id="QL8-Vk-njF" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="1zb-VE-Nrc">
+                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="tintColor" red="0.31372549020000001" green="0.71372549019999998" blue="0.98823529409999999" alpha="1" colorSpace="calibratedRGB"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="e0v-rS-htn" kind="relationship" relationship="rootViewController" id="hQD-hK-3Gk"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="AvU-NS-Lqh" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2593" y="111"/>
+        </scene>
     </scenes>
+    <resources>
+        <image name="iterableLogo" width="143" height="33"/>
+    </resources>
+    <color key="tintColor" red="0.31372549020000001" green="0.71372549019999998" blue="0.98823529409999999" alpha="1" colorSpace="calibratedRGB"/>
 </document>

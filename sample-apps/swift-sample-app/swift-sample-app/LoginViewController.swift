@@ -21,11 +21,11 @@ class LoginViewController: UIViewController {
         if let email = IterableAPI.email {
             emailAddressTextField.text = email
             emailAddressTextField.isEnabled = false
-            logInOutButton.setTitle("Log Out", for: .normal)
+            logInOutButton.setTitle("Logout", for: .normal)
         } else {
             emailAddressTextField.text = nil
             emailAddressTextField.isEnabled = true
-            logInOutButton.setTitle("Log In", for: .normal)
+            logInOutButton.setTitle("Login", for: .normal)
         }
     }
 

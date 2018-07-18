@@ -20,6 +20,7 @@
 		AC9080D620E309B0004BC146 /* CoffeeType.m in Sources */ = {isa = PBXBuildFile; fileRef = AC9080D220E309B0004BC146 /* CoffeeType.m */; };
 		AC9080DF20E30A63004BC146 /* NotificationService.m in Sources */ = {isa = PBXBuildFile; fileRef = AC9080DE20E30A63004BC146 /* NotificationService.m */; };
 		AC9080E320E30A63004BC146 /* objc-sample-app-notification-extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = AC9080DB20E30A63004BC146 /* objc-sample-app-notification-extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		ACEFDCEE20FFC005009B91A2 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = ACEFDCED20FFC005009B91A2 /* LoginViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +71,8 @@
 		AC9080DD20E30A63004BC146 /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
 		AC9080DE20E30A63004BC146 /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
 		AC9080E020E30A63004BC146 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		ACEFDCEC20FFC005009B91A2 /* LoginViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
+		ACEFDCED20FFC005009B91A2 /* LoginViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
 		ACF560C820E30AB8000AAC23 /* objc-sample-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "objc-sample-app.entitlements"; sourceTree = "<group>"; };
 		C63446E13C9D0D41E3092C12 /* Pods_objc_sample_app_notification_extension.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_objc_sample_app_notification_extension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDFF7C4DDD2898BE48245488 /* Pods-objc-sample-app.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-objc-sample-app.release.xcconfig"; path = "Pods/Target Support Files/Pods-objc-sample-app/Pods-objc-sample-app.release.xcconfig"; sourceTree = "<group>"; };
@@ -159,6 +162,8 @@
 				AC9080CF20E309AF004BC146 /* CoffeeViewController.m */,
 				AC9080CB20E309AF004BC146 /* CoffeeListTableViewController.h */,
 				AC9080CC20E309AF004BC146 /* CoffeeListTableViewController.m */,
+				ACEFDCEC20FFC005009B91A2 /* LoginViewController.h */,
+				ACEFDCED20FFC005009B91A2 /* LoginViewController.m */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -391,6 +396,7 @@
 				AC9080D620E309B0004BC146 /* CoffeeType.m in Sources */,
 				AC9080D520E309B0004BC146 /* DeeplinkHandler.m in Sources */,
 				AC9080B920E308D2004BC146 /* main.m in Sources */,
+				ACEFDCEE20FFC005009B91A2 /* LoginViewController.m in Sources */,
 				AC9080D320E309B0004BC146 /* CoffeeListTableViewController.m in Sources */,
 				AC9080AB20E308D1004BC146 /* AppDelegate.m in Sources */,
 			);

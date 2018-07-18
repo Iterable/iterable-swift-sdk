@@ -196,7 +196,7 @@
                         <viewLayoutGuide key="safeArea" id="yud-Uv-4dK"/>
                     </view>
                     <navigationItem key="navigationItem" id="mEu-Bh-eTp">
-                        <barButtonItem key="rightBarButtonItem" title="Done" style="done" id="peu-e0-ngp">
+                        <barButtonItem key="rightBarButtonItem" style="plain" systemItem="done" id="peu-e0-ngp">
                             <connections>
                                 <action selector="doneButtonTapped:" destination="8n5-2h-usW" id="Lof-Z6-EsN"/>
                             </connections>
@@ -210,7 +210,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="419-mc-OCb" sceneMemberID="firstResponder"/>
                 <tapGestureRecognizer id="F5w-sq-8tT"/>
             </objects>
-            <point key="canvasLocation" x="3277.5999999999999" y="31.03448275862069"/>
+            <point key="canvasLocation" x="2183" y="31"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="DZq-q9-YxM">
@@ -229,7 +229,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GAV-w9-1Re" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2336.8000000000002" y="30.134932533733135"/>
+            <point key="canvasLocation" x="1487" y="30"/>
         </scene>
     </scenes>
     <resources>
