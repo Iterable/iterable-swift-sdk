@@ -165,7 +165,7 @@ public final class IterableAPI : NSObject {
      - seeAlso: OnSuccessHandler
      - seeAlso: OnFailureHandler
      */
-    @objc(updateUser:mergeNestedObjects:onSuccess:onFailure:) public static func update(userDataFields dataFields: [AnyHashable : Any], mergeNestedObjects: Bool, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) {
+    @objc(updateUser:mergeNestedObjects:onSuccess:onFailure:) public static func updateUser(_ dataFields: [AnyHashable : Any], mergeNestedObjects: Bool, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) {
         implementation?.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects, onSuccess: onSuccess, onFailure: onFailure)
     }
     
@@ -182,7 +182,7 @@ public final class IterableAPI : NSObject {
      - seeAlso: OnSuccessHandler
      - seeAlso: OnFailureHandler
      */
-    @objc(updateEmail:onSuccess:onFailure:) public static func update(email newEmail: String, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    @objc(updateEmail:onSuccess:onFailure:) public static func updateEmail(_ newEmail: String, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         implementation?.updateEmail(newEmail, onSuccess: onSuccess, onFailure: onFailure)
     }
     
@@ -351,7 +351,7 @@ public final class IterableAPI : NSObject {
      
      - remark: passing in an empty array will clear subscription list, passing in nil will not modify the list
      */
-    @objc(updateSubscriptions:unsubscribedChannelIds:unsubscribedMessageTypeIds:) public static func update(subscriptions emailListIds: [String]?, unsubscribedChannelIds: [String]?, unsubscribedMessageTypeIds: [String]?) {
+    @objc(updateSubscriptions:unsubscribedChannelIds:unsubscribedMessageTypeIds:) public static func updateSubscriptions(_ emailListIds: [String]?, unsubscribedChannelIds: [String]?, unsubscribedMessageTypeIds: [String]?) {
         implementation?.updateSubscriptions(emailListIds, unsubscribedChannelIds: unsubscribedChannelIds, unsubscribedMessageTypeIds: unsubscribedMessageTypeIds)
     }
     

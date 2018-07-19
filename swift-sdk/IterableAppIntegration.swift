@@ -34,7 +34,7 @@ import UserNotifications
      * automatically if you pass one. If you handle completionHandler in the app code, pass a nil value to this argument.
      */
     @available(iOS 10.0, *)
-    @objc public static func userNotificationCenter(_ center: UNUserNotificationCenter?, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: (()->Void)?) {
+    @objc(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:) public static func userNotificationCenter(_ center: UNUserNotificationCenter?, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: (()->Void)?) {
         ITBInfo()
         minion?.userNotificationCenter(center, didReceive: UserNotificationResponse(response: response), withCompletionHandler: completionHandler)
     }

@@ -100,7 +100,7 @@ NSString *userId = @"";// set iterable userId here, either email or userId must 
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
-    [IterableAppIntegration userNotificationCenter:center didReceive:response withCompletionHandler:completionHandler];
+    [IterableAppIntegration userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
 }
 
 #pragma mark - IterableURLDelegate
