@@ -620,7 +620,7 @@ import Foundation
 
             let notificationMetadata = IterableNotificationMetadata.metadata(fromInAppOptions: messageId)
             
-            DispatchQueue.main.sync {
+            DispatchQueue.main.async {
                 IterableInAppManager.showIterableNotificationHTML(html, trackParams: notificationMetadata, callbackBlock: callbackBlock, backgroundAlpha: backgroundAlpha, padding: edgeInsets)
             }
 
