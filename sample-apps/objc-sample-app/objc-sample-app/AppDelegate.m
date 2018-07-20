@@ -17,7 +17,7 @@
 
 @implementation AppDelegate
 // ITBL: Set your actual api key here.
-NSString *iterableApiKey = @"a415841b631a4c97924bc09660c658fc"; // set iterable api key here
+NSString *iterableApiKey = @""; // set iterable api key here
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
