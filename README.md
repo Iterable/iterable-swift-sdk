@@ -29,7 +29,7 @@ pod 'Iterable-iOS-AppExtensions'
 ```
 
 
-Please look at the included sample pod file [HERE](./sample-apps/swift-sample-app/Podfile).
+Please look at the included sample pod file [HERE](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app/Podfile?raw=true).
 
 Congratulations! You have now imported Iterable SDK into your project! 
 
@@ -42,22 +42,22 @@ Attached to the release you will find two framework bundles.
 	
 1. In XCode choose the target for your app. Now add IterableSDK.framework to the **embedded binaries** section. If you want to use Iterable Rich Notification Extension, you will have to add IterableAppExtensions.framework to the embedded binaries section as well.
 
-	![Linking](./images/embedded-binaries.png)
+	![Linking](https://github.com/Iterable/swift-sdk/blob/master/images/embedded-binaries.png?raw=true)
 
 2. If you want to use Iterable Rich Notifiation Extension, you will need to add IterableAppExtension.framework to **Linked Frameworks and Libraries** section of your **app extension** target (not app target). Please note that you will have to add the IterableAppExtension.framework bundle to **both** the app target (step 1) and app extension target (step 2) of your project. In the app target it goes in the 'Embedded Binaries' section and in app extension target it goes in the 'Linked Frameworks and Libraries' section.
 
-	![Linking](./images/app-extension-linked-framework.png)
+	![Linking](https://github.com/Iterable/swift-sdk/blob/master/images/app-extension-linked-framework.png?raw=true)
 
 3. In build settings, set `Always Embed Swift Standard Libraries` setting to 'Yes'. This is required for Objective C projects.
 	
-	![Linking](./images/build-setting.png)
+	![Linking](https://github.com/Iterable/swift-sdk/blob/master/images/build-setting.png?raw=true)
  
 
 # Initializing the SDK
 **Note:** Sample projects are included in this repo.
  
-- [Swift Sample Project](./sample-apps/swift-sample-app)
-- [ObjC Sample Project](./sample-apps/objc-sample-app)
+- [Swift Sample Project](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app?raw=true)
+- [ObjC Sample Project](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/objc-sample-app?raw=true)
 
 
 1. ##### Initialize the API with API key.
@@ -117,7 +117,7 @@ Attached to the release you will find two framework bundles.
 		[IterableAPI registerToken:deviceToken];
 	}
 	```
-	See example in sample app delegate [here](./sample-apps/swift-sample-app/swift-sample-app/AppDelegate.swift).
+	See example in sample app delegate [here](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app/swift-sample-app/AppDelegate.swift).
 
 Congratulations! You can now send remote push notifications to your device from Iterable! Please note that you can't send push notifications until you set the userId or email. Please see sample applications to see a reference implementation.
 
@@ -149,7 +149,7 @@ Congratulations! You can now send remote push notifications to your device from 
 		
 		Push notifications and action buttons may have `openUrl` actions attached to them. When a URL is specified, the SDK first calls `urlDelegate` specified in your `IterableConfig` object. You can use this delegate to handle `openUrl` actions the same way as you handle normal deep links. If the delegate is not set or if it returns `false` (the default), the SDK will open Safari with that URL. If you want to navigate to a UIViewController on receiving a deep link, you should do so in the `urlDelegate`. 
 		
-		In the code below, `DeepLinkHandler` is a custom handler which is reponsible for deep link navigation. You have to provide implementation for deep link navigation. Please see [sample application](./sample-apps/swift-sample-app/swift-sample-app.xcworkspace) for a reference implementation.
+		In the code below, `DeepLinkHandler` is a custom handler which is reponsible for deep link navigation. You have to provide implementation for deep link navigation. Please see [sample application](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app?raw=true) for a reference implementation.
 		
 		Swift:
 		
@@ -331,7 +331,7 @@ Also see our [push notification setup FAQs](http://support.iterable.com/hc/en-us
 
 The MIT License
 
-See [LICENSE](https://github.com/Iterable/swift-sdk/blob/master/LICENSE)
+See [LICENSE](https://github.com/Iterable/swift-sdk/blob/master/LICENSE?raw=true)
 
 ## Want to Contribute?
 
