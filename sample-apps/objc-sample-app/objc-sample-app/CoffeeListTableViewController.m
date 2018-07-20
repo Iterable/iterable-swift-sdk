@@ -10,8 +10,11 @@
 #import "CoffeeType.h"
 #import "CoffeeViewController.h"
 
+@import IterableSDK;
+
 @interface CoffeeListTableViewController ()
 @property (nonatomic, strong, readonly) NSArray *coffeeList;
+@property (weak, nonatomic) IBOutlet UIBarButtonItem *loginOutBarButton;
 @end
 
 @implementation CoffeeListTableViewController
@@ -39,6 +42,16 @@
     self.navigationItem.searchController = searchController;
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    if (IterableAPI.email == nil) {
+        self.loginOutBarButton.title = @"Login";
+    } else {
+        self.loginOutBarButton.title = @"Logout";
+    }
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -60,9 +73,15 @@
     return cell;
 }
 
+#pragma mark - Handlers
+
+- (IBAction)loginOutButtonTapped:(UIBarButtonItem *)sender {
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    UIViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"LoginNavController"];
+    [self presentViewController:vc animated:YES completion:nil];
+}
 
 #pragma mark - Navigation
-
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
     NSIndexPath *indexPath = self.tableView.indexPathForSelectedRow;
     if (indexPath != nil) {

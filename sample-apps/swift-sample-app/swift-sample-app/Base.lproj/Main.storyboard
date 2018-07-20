@@ -4,6 +4,7 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -17,6 +18,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="tintColor" red="0.31372549020000001" green="0.71372549019999998" blue="0.98823529409999999" alpha="1" colorSpace="calibratedRGB"/>
                         <view key="tableFooterView" contentMode="scaleToFill" id="VEA-om-wVt">
                             <rect key="frame" x="0.0" y="72" width="375" height="44"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -40,7 +42,17 @@
                             <outlet property="delegate" destination="AsM-Cj-iLA" id="FMa-8O-Rua"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Coffees" id="8ja-yV-UlZ"/>
+                    <navigationItem key="navigationItem" title="Coffees" id="8ja-yV-UlZ">
+                        <barButtonItem key="rightBarButtonItem" title="Login" id="qwl-yM-cS3">
+                            <color key="tintColor" red="0.31372549020000001" green="0.71372549019999998" blue="0.98823529409999999" alpha="1" colorSpace="calibratedRGB"/>
+                            <connections>
+                                <action selector="loginOutBarButtonTapped:" destination="AsM-Cj-iLA" id="7W6-wN-57r"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="loginOutBarButton" destination="qwl-yM-cS3" id="6CG-Yc-9OU"/>
+                    </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="adS-FT-7sw" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -90,12 +102,15 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Grj-ac-HOT">
                                         <rect key="frame" x="0.0" y="335.5" width="250" height="30"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                        <state key="normal" title="Cancel"/>
+                                        <state key="normal" title="Cancel">
+                                            <color key="titleColor" red="0.31372549020000001" green="0.71372549019999998" blue="0.98823529409999999" alpha="1" colorSpace="calibratedRGB"/>
+                                        </state>
                                     </button>
                                 </subviews>
                             </stackView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="tintColor" red="0.31372549020000001" green="0.71372549019999998" blue="0.98823529409999999" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="qEk-Vx-GkX" firstAttribute="centerY" secondItem="xFI-8B-YBy" secondAttribute="centerY" id="CBP-rK-0WM"/>
                             <constraint firstItem="qEk-Vx-GkX" firstAttribute="centerX" secondItem="xFI-8B-YBy" secondAttribute="centerX" id="o5f-Hs-9x4"/>
@@ -121,6 +136,7 @@
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" largeTitles="YES" id="pds-YC-G8X">
                         <rect key="frame" x="0.0" y="20" width="375" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="tintColor" red="0.31372549020000001" green="0.71372549019999998" blue="0.98823529409999999" alpha="1" colorSpace="calibratedRGB"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
@@ -131,5 +147,92 @@
             </objects>
             <point key="canvasLocation" x="-1090.4000000000001" y="30.134932533733135"/>
         </scene>
+        <!--Login View Controller-->
+        <scene sceneID="Lrp-We-A2i">
+            <objects>
+                <viewController storyboardIdentifier="LoginViewController" id="8n5-2h-usW" customClass="LoginViewController" customModule="swift_sample_app" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="xbL-cm-1Am">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="50" translatesAutoresizingMaskIntoConstraints="NO" id="zHd-qK-BTi">
+                                <rect key="frame" x="40" y="214" width="295" height="143"/>
+                                <subviews>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="iterableLogo" translatesAutoresizingMaskIntoConstraints="NO" id="KPy-RO-OAN">
+                                        <rect key="frame" x="0.0" y="0.0" width="295" height="33"/>
+                                    </imageView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="8Qh-YS-Owy">
+                                        <rect key="frame" x="0.0" y="83" width="295" height="60"/>
+                                        <subviews>
+                                            <textField opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="249" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Email address" textAlignment="natural" minimumFontSize="17" clearButtonMode="whileEditing" translatesAutoresizingMaskIntoConstraints="NO" id="0QX-8K-S3n">
+                                                <rect key="frame" x="0.0" y="0.0" width="295" height="30"/>
+                                                <nil key="textColor"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <textInputTraits key="textInputTraits" enablesReturnKeyAutomatically="YES" textContentType="email"/>
+                                            </textField>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="leading" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8Vl-s0-0tX">
+                                                <rect key="frame" x="0.0" y="30" width="295" height="30"/>
+                                                <state key="normal" title="Log in"/>
+                                                <state key="disabled">
+                                                    <color key="titleColor" white="0.33333333329999998" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                </state>
+                                                <connections>
+                                                    <action selector="loginInOutButtonTapped:" destination="8n5-2h-usW" eventType="touchUpInside" id="85D-2g-gMO"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                    </stackView>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="tintColor" red="0.31372549020000001" green="0.71372549019999998" blue="0.98823529409999999" alpha="1" colorSpace="calibratedRGB"/>
+                        <gestureRecognizers/>
+                        <constraints>
+                            <constraint firstItem="yud-Uv-4dK" firstAttribute="trailing" secondItem="zHd-qK-BTi" secondAttribute="trailing" constant="40" id="C9V-If-eRx"/>
+                            <constraint firstItem="zHd-qK-BTi" firstAttribute="top" secondItem="yud-Uv-4dK" secondAttribute="top" constant="150" id="F4U-WI-VCs"/>
+                            <constraint firstItem="zHd-qK-BTi" firstAttribute="leading" secondItem="yud-Uv-4dK" secondAttribute="leading" constant="40" id="kDv-GS-K4Y"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="yud-Uv-4dK"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="mEu-Bh-eTp">
+                        <barButtonItem key="rightBarButtonItem" style="plain" systemItem="done" id="peu-e0-ngp">
+                            <connections>
+                                <action selector="doneButtonTapped:" destination="8n5-2h-usW" id="Lof-Z6-EsN"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="emailAddressTextField" destination="0QX-8K-S3n" id="nwb-Nn-dSt"/>
+                        <outlet property="logInOutButton" destination="8Vl-s0-0tX" id="MKF-Mc-QQ4"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="419-mc-OCb" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer id="F5w-sq-8tT"/>
+            </objects>
+            <point key="canvasLocation" x="2183" y="31"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="DZq-q9-YxM">
+            <objects>
+                <navigationController storyboardIdentifier="LoginNavController" automaticallyAdjustsScrollViewInsets="NO" id="t5c-0k-chn" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="rrR-7U-NA3">
+                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="tintColor" red="0.31372549020000001" green="0.71372549019999998" blue="0.98823529409999999" alpha="1" colorSpace="calibratedRGB"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="8n5-2h-usW" kind="relationship" relationship="rootViewController" id="5Ma-Tg-YxV"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="GAV-w9-1Re" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1487" y="30"/>
+        </scene>
     </scenes>
+    <resources>
+        <image name="iterableLogo" width="143" height="33"/>
+    </resources>
 </document>

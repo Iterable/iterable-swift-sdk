@@ -13,20 +13,13 @@ import IterableSDK
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    // ITBL: replace with your api key and email.
-    // IMP: Either userId or email must be set.
-    let apiKey = "" // set Iterable api key here
-    let email = "" // set Iterable user email here.
-    let userId = "" // set iterable userId here. Either email or userId must be set.
-    
     var window: UIWindow?
 
+    //ITBL: Set your actual api key here.
+    let iterableApiKey = ""
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Initial check
-        if apiKey.isEmpty || (email.isEmpty && userId.isEmpty) {
-            fatalError("Iterable API Key and either email or userId need to be set.")
-        }
-        
+
         //ITBL: Setup Notification
         setupNotifications()
 
@@ -37,14 +30,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         config.pushIntegrationName = "swift-sample-app"
         config.sandboxPushIntegrationName = "swift-sample-app"
         // Replace with your api key and email here.
-        IterableAPI.initialize(apiKey: apiKey,
-                                  launchOptions:launchOptions,
-                                  config: config)
-        IterableAPI.email = email
+        IterableAPI.initialize(apiKey: iterableApiKey,
+                               launchOptions:launchOptions,
+                               config: config)
 
         return true
     }
-
+    
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
@@ -61,6 +53,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+
+        //ITBL:
+        // You don't need to do this in your app. Just set the correct value for 'iterableApiKey' when it is declared.
+        if iterableApiKey == "" {
+            let alert = UIAlertController(title: "API Key Required", message: "You must set Iterable API Key. Run this app again after setting 'AppDelegate.iterableApiKey'.", preferredStyle: .alert)
+            let action = UIAlertAction(title: "OK", style: .default) { (action) in
+                exit(0)
+            }
+            alert.addAction(action)
+            window?.rootViewController?.present(alert, animated: true)
+            return
+        }
+        
+        //ITBL:
+        if IterableAPI.email == nil {
+            let alert = UIAlertController(title: "Please Login", message: "You must set 'IterableAPI.email' before receiving push notifications from Iterable.", preferredStyle: .alert)
+            let action = UIAlertAction(title: "OK", style: .default) { (action) in
+                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                let vc = storyboard.instantiateViewController(withIdentifier: "LoginNavController")
+                self.window?.rootViewController?.present(vc, animated: true)
+            }
+            alert.addAction(action)
+            window?.rootViewController?.present(alert, animated: true)
+            return
+        }
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -146,4 +163,3 @@ extension AppDelegate : IterableCustomActionDelegate {
         return false
     }
 }
-

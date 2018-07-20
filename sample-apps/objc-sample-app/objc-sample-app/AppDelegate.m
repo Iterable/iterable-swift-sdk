@@ -16,17 +16,11 @@
 @end
 
 @implementation AppDelegate
-// IMP: Either email or userId must be set.
-NSString *apiKey = @""; // set iterable api key here
-NSString *email = @""; // set iterable email here
-NSString *userId = @"";// set iterable userId here, either email or userId must be set
+// ITBL: Set your actual api key here.
+NSString *iterableApiKey = @"a415841b631a4c97924bc09660c658fc"; // set iterable api key here
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // initial check
-    if (apiKey.length == 0 || (email.length == 0 && userId.length == 0)) {
-        [NSException raise:@"Not Initialized" format:@"Iterable API key and either email or userId must be set."];
-    }
     
     //ITBL: Setup Notifications
     [self setupNotifications];
@@ -38,10 +32,9 @@ NSString *userId = @"";// set iterable userId here, either email or userId must 
     config.pushIntegrationName = @"objc-sample-app";
     config.sandboxPushIntegrationName = @"objc-sample-app";
     
-    [IterableAPI initializeWithApiKey: apiKey
-                           launchOptions:launchOptions
-                                  config:config];
-    IterableAPI.email = email;
+    [IterableAPI initializeWithApiKey: iterableApiKey
+                        launchOptions:launchOptions
+                               config:config];
     
     return YES;
 }
@@ -66,6 +59,31 @@ NSString *userId = @"";// set iterable userId here, either email or userId must 
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
     // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    
+    //ITBL:
+    // You don't need to do this in your app. Just set the correct value for 'iterableApiKey' when it is declared.
+    if ([iterableApiKey isEqualToString:@""]) {
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"API Key Required" message:@"You must set Iterable API Key. Run this app again after setting 'AppDelegate.iterableApiKey'." preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *action = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            exit(0);
+        }];
+        [alert addAction:action];
+        [self.window.rootViewController presentViewController:alert animated:YES completion:nil];
+        return;
+    }
+    
+    //ITBL:
+    if (IterableAPI.email == nil) {
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Please Login" message:@"You must set 'IterableAPI.email' before receiving push notifications from Iterable." preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *action = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            UIViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"LoginNavController"];
+            [self.window.rootViewController presentViewController:vc animated:YES completion:nil];
+        }];
+        [alert addAction:action];
+        [self.window.rootViewController presentViewController:alert animated:YES completion:nil];
+        return;
+    }
 }
 
 

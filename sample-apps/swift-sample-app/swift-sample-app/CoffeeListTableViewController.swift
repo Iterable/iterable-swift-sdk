@@ -15,6 +15,8 @@ class CoffeeListTableViewController: UITableViewController {
     let checkForInApp = false
     let inAppCheckInterval = 5.0
 
+    @IBOutlet weak var loginOutBarButton: UIBarButtonItem!
+    
     /**
      Set this value to show search.
      */
@@ -42,6 +44,12 @@ class CoffeeListTableViewController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+        if let _ = IterableAPI.email {
+            loginOutBarButton.title = "Logout"
+        } else {
+            loginOutBarButton.title = "Login"
+        }
         
         if checkForInApp {
             timer = Timer.scheduledTimer(withTimeInterval: inAppCheckInterval, repeats: true) {_ in
@@ -89,6 +97,13 @@ class CoffeeListTableViewController: UITableViewController {
         cell.imageView?.image = coffee.image
         
         return cell
+    }
+
+    // MARK: Tap Handlers
+    @IBAction func loginOutBarButtonTapped(_ sender: UIBarButtonItem) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let vc = storyboard.instantiateViewController(withIdentifier: "LoginNavController")
+        present(vc, animated: true)
     }
     
     // MARK: - Navigation
