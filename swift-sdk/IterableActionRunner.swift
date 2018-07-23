@@ -33,58 +33,70 @@ class AppUrlOpener : UrlOpenerProtocol {
     }
 }
 
-class IterableActionRunner : NSObject, ActionRunnerProtocol {
-    private let urlDelegate: IterableURLDelegate?
-    private let customActionDelegate: IterableCustomActionDelegate?
-    private let urlOpener: UrlOpenerProtocol
-    
-    init(urlDelegate: IterableURLDelegate?, customActionDelegate: IterableCustomActionDelegate?, urlOpener: UrlOpenerProtocol) {
-        self.urlDelegate = urlDelegate
-        self.customActionDelegate = customActionDelegate
-        self.urlOpener = urlOpener
+struct IterableActionRunner {
+    enum Result {
+        case openUrl(URL)
+        case openedUrl(URL)
+        case performedCustomAction(String)
+        case notHandled
     }
     
-    func execute(action: IterableAction, from source: IterableActionSource) -> Bool {
+    static func execute(action: IterableAction, from source: IterableActionSource, urlDelegate: IterableURLDelegate? = nil, customActionDelegate: IterableCustomActionDelegate? = nil) -> Result {
         let context = IterableActionContext(action: action, source: source)
-        
-        if action.isOfType(IterableAction.actionTypeOpenUrl) {
+        let inspectionResult = inspect(action: action)
+        switch(inspectionResult) {
+        case .noop:
+            return .notHandled
+        case .openUrl(let url):
+            if urlDelegate?.handle(iterableURL: url, inContext: context) == true {
+                return .openedUrl(url)
+            } else {
+                if shouldOpenUrl(url: url, from: source) {
+                    return .openUrl(url)
+                } else {
+                    return .notHandled
+                }
+            }
+        case .customAction:
+            if let customActionDelegate = customActionDelegate {
+                _ = customActionDelegate.handle(iterableCustomAction: action, inContext: context)
+                return .performedCustomAction(action.type)
+            } else {
+                return .notHandled
+            }
+        }
+    }
+
+    private static func shouldOpenUrl(url: URL, from source: IterableActionSource) -> Bool {
+        if source == .push, let scheme = url.scheme, (scheme == "http" || scheme == "https") {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    private enum InspectionResult {
+        case openUrl(URL)
+        case customAction(String)
+        case noop
+    }
+    
+    // What type of action needs to be performed.
+    private static func inspect(action: IterableAction) -> InspectionResult {
+        if action.isOpenUrl() {
             if let urlString = action.data, let url = URL(string: urlString) {
-                return open(url: url, inContext: context)
+                return .openUrl(url)
             } else {
                 ITBError("Could not create url from action: \(action)")
-                return false
+                return .noop
             }
         } else {
-            return callCustomActionIfSpecified(action: action, inContext: context)
+            if IterableUtil.isNullOrEmpty(string: action.type) {
+                return .noop
+            } else {
+                return .customAction(action.type)
+            }
         }
-    }
-    
-    private func open(url: URL, inContext context: IterableActionContext) -> Bool {
-        if urlDelegate?.handle(iterableURL:url, inContext: context) == true {
-            return true
-        }
-
-        guard context.source == .push else {
-            // only open urls for push, leave others to delegate
-            return false
-        }
-        
-        if let scheme = url.scheme, scheme == "http" || scheme == "https" {
-            urlOpener.open(url: url)
-            return true
-        } else {
-            return false
-        }
-    }
-    
-    private func callCustomActionIfSpecified(action: IterableAction, inContext context: IterableActionContext) -> Bool {
-        guard IterableUtil.isNotNullOrEmpty(string: action.type) else {
-            return false
-        }
-        guard let customActionDelegate = customActionDelegate else {
-            return false
-        }
-        
-        return customActionDelegate.handle(iterableCustomAction:action, inContext:context)
     }
 }
+

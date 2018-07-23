@@ -27,47 +27,38 @@ class IterableActionRunnerTests: XCTestCase {
     
     func testUrlOpenAction() {
         let urlString = "https://example.com"
-        let urlDelegate = MockUrlDelegate(returnValue: false)
-        let urlOpener = MockUrlOpener()
-        let actionRunner = IterableActionRunner(urlDelegate: urlDelegate, customActionDelegate: nil, urlOpener: urlOpener)
-        
         let action = IterableAction.action(fromDictionary: ["type" : "openUrl", "data" : urlString])!
-        _ = actionRunner.execute(action: action, from: .push)
         
-        if #available(iOS 10.0, *) {
-            XCTAssertEqual(urlOpener.ios10OpenedUrl?.absoluteString, urlString)
-            XCTAssertNil(urlOpener.preIos10openedUrl)
+        let result = IterableActionRunner.execute(action: action, from: .push, urlDelegate: MockUrlDelegate(returnValue: false))
+        if case let IterableActionRunner.Result.openUrl(url) = result {
+            XCTAssertEqual(url.absoluteString, urlString)
         } else {
-            XCTAssertEqual(urlOpener.preIos10openedUrl?.absoluteString, urlString)
-            XCTAssertNil(urlOpener.ios10OpenedUrl)
+            XCTFail()
         }
     }
     
     func testUrlHandlingOverride() {
         let urlString = "https://example.com"
-        let urlDelegate = MockUrlDelegate(returnValue: true)
-        let urlOpener = MockUrlOpener()
-        let actionRunner = IterableActionRunner(urlDelegate: urlDelegate, customActionDelegate: nil, urlOpener: urlOpener)
-        
         let action = IterableAction.action(fromDictionary: ["type" : "openUrl", "data" : urlString])!
-        _ = actionRunner.execute(action: action, from: .push)
         
-        if #available(iOS 10.0, *) {
-            XCTAssertNil(urlOpener.preIos10openedUrl)
-            XCTAssertNil(urlOpener.ios10OpenedUrl)
+        let result = IterableActionRunner.execute(action: action, from: .push, urlDelegate: MockUrlDelegate(returnValue: true))
+        if case let IterableActionRunner.Result.openedUrl(url) = result {
+            XCTAssertEqual(url.absoluteString, urlString)
         } else {
-            XCTAssertNil(urlOpener.preIos10openedUrl)
-            XCTAssertNil(urlOpener.ios10OpenedUrl)
+            XCTFail()
         }
     }
     
     func testCustomAction() {
         let customActionDelegate = MockCustomActionDelegate(returnValue: false)
         let action = IterableAction.action(fromDictionary: ["type" : "customActionName"])!
-        let actionRunner = IterableActionRunner(urlDelegate: nil, customActionDelegate: customActionDelegate, urlOpener: MockUrlOpener())
-        _ = actionRunner.execute(action: action, from: .push)
         
-        XCTAssertEqual(customActionDelegate.action, action)
+        let result = IterableActionRunner.execute(action: action, from: .push, customActionDelegate: customActionDelegate)
+        if case let IterableActionRunner.Result.performedCustomAction(actionName) = result {
+            XCTAssertEqual(actionName, "customActionName")
+        } else {
+            XCTFail()
+        }
     }
     
 }

@@ -125,7 +125,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     config.urlDelegate = urlDelegateMock;
     [IterableAPIImplementation initializeWithApiKey:@"" config:config];
     NSURL *iterableLink = [NSURL URLWithString:iterableRewriteURL];
-    [IterableAPIImplementation handleUniversalLink:iterableLink];
+    [[IterableAPIImplementation sharedInstance] handleUniversalLink:iterableLink];
    
     [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:nil];
 }

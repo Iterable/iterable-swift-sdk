@@ -807,12 +807,8 @@ import Foundation
      - parameter url: the URL obtained from `UserActivity.webpageURL`
      - returns: true if it is an Iterable link, or the value returned from `IterableURLDelegate` otherwise
      */
-    @objc @discardableResult public static func handleUniversalLink(_ url: URL) -> Bool {
-        if let instance = _sharedInstance {
-            return instance.deeplinkManager.handleUniversalLink(url)
-        } else {
-            return false
-        }
+    @objc @discardableResult public func handleUniversalLink(_ url: URL) -> Bool {
+        return deeplinkManager.handleUniversalLink(url, urlDelegate: config.urlDelegate, urlOpener: AppUrlOpener())
     }
     
     // MARK: For Private and Internal Use ========================================>
@@ -854,8 +850,7 @@ import Foundation
         self.dateProvider = dateProvider
 
         // setup
-        let actionRunner = IterableActionRunner(urlDelegate: config.urlDelegate, customActionDelegate: config.customActionDelegate, urlOpener: AppUrlOpener())
-        deeplinkManager = IterableDeeplinkManager(actionRunner: actionRunner)
+        deeplinkManager = IterableDeeplinkManager()
         
         // super init
         super.init()
@@ -863,7 +858,11 @@ import Foundation
         // get email and userId from UserDefaults if present
         retrieveEmailAndUserId()
         
-        IterableAppIntegration.minion = IterableAppIntegrationInternal(tracker: self, actionRunner: actionRunner, versionInfo: SystemVersionInfo())
+        IterableAppIntegration.minion = IterableAppIntegrationInternal(tracker: self,
+                                                                       versionInfo: SystemVersionInfo(),
+                                                                       urlDelegate: config.urlDelegate,
+                                                                       customActionDelegate: config.customActionDelegate,
+                                                                       urlOpener: AppUrlOpener())
         
         handle(launchOptions: launchOptions)
     }

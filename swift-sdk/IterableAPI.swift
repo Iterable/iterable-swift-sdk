@@ -479,7 +479,7 @@ public final class IterableAPI : NSObject {
      - returns: true if it is an Iterable link, or the value returned from `IterableURLDelegate` otherwise
      */
     @objc(handleUniversalLink:) @discardableResult public static func handle(universalLink url: URL) -> Bool {
-        return implementation?.deeplinkManager.handleUniversalLink(url) ?? false
+        return implementation?.handleUniversalLink(url) ?? false
     }
     
     //MARK: Private and Internal

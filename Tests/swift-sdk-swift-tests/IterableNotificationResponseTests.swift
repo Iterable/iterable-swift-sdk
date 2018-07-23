@@ -52,8 +52,11 @@ class IterableNotificationResponseTests: XCTestCase {
         let pushTracker = MockPushTracker()
         let customActionDelegate = MockCustomActionDelegate(returnValue: true)
         
-        let actionRunner = IterableActionRunner(urlDelegate: nil, customActionDelegate: customActionDelegate, urlOpener: MockUrlOpener())
-        let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker, actionRunner: actionRunner, versionInfo: MockVersionInfo(version: 10))
+        let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker,
+                                                            versionInfo: MockVersionInfo(version: 10),
+                                                            urlDelegate: nil,
+                                                            customActionDelegate: customActionDelegate,
+                                                            urlOpener: MockUrlOpener())
         appIntegration.userNotificationCenter(nil, didReceive: response, withCompletionHandler: nil)
         
         XCTAssertEqual(customActionDelegate.action?.type, "customAction");
@@ -92,8 +95,11 @@ class IterableNotificationResponseTests: XCTestCase {
         let pushTracker = MockPushTracker()
         let customActionDelegate = MockCustomActionDelegate(returnValue: true)
         
-        let actionRunner = IterableActionRunner(urlDelegate: nil, customActionDelegate: customActionDelegate, urlOpener: MockUrlOpener())
-        let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker, actionRunner: actionRunner, versionInfo: MockVersionInfo(version: 10))
+        let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker,
+                                                            versionInfo: MockVersionInfo(version: 10),
+                                                            urlDelegate: nil,
+                                                            customActionDelegate: customActionDelegate,
+                                                            urlOpener: MockUrlOpener())
         appIntegration.userNotificationCenter(nil, didReceive: response, withCompletionHandler: nil)
 
         XCTAssertEqual(customActionDelegate.action?.type, "customAction");
@@ -122,8 +128,11 @@ class IterableNotificationResponseTests: XCTestCase {
         let pushTracker = MockPushTracker()
         let customActionDelegate = MockCustomActionDelegate(returnValue: true)
         
-        let actionRunner = IterableActionRunner(urlDelegate: nil, customActionDelegate: customActionDelegate, urlOpener: MockUrlOpener())
-        let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker, actionRunner: actionRunner, versionInfo: MockVersionInfo(version: 9))
+        let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker,
+                                                            versionInfo: MockVersionInfo(version: 9),
+                                                            urlDelegate: nil,
+                                                            customActionDelegate: customActionDelegate,
+                                                            urlOpener: MockUrlOpener())
         appIntegration.application(MockApplicationStateProvider(applicationState: .inactive), didReceiveRemoteNotification: userInfo, fetchCompletionHandler: nil)
         
         
@@ -225,10 +234,11 @@ class IterableNotificationResponseTests: XCTestCase {
         let response = MockNotificationResponse(userInfo: userInfo, actionIdentifier: UNNotificationDefaultActionIdentifier)
         let urlOpener = MockUrlOpener()
         let pushTracker = MockPushTracker()
-        let actionRunner = IterableActionRunner(urlDelegate: nil,
-                                                customActionDelegate: nil,
-                                                urlOpener: urlOpener)
-        let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker, actionRunner: actionRunner, versionInfo: MockVersionInfo(version: 10))
+        let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker,
+                                                            versionInfo: MockVersionInfo(version: 10),
+                                                            urlDelegate: nil,
+                                                            customActionDelegate: nil,
+                                                            urlOpener: urlOpener)
         appIntegration.userNotificationCenter(nil, didReceive: response, withCompletionHandler: nil)
         
         XCTAssertEqual(pushTracker.campaignId, 1234)
