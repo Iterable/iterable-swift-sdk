@@ -50,16 +50,21 @@ class IterableNotificationResponseTests: XCTestCase {
 
         let response = MockNotificationResponse(userInfo: userInfo, actionIdentifier: UNNotificationDefaultActionIdentifier)
         let pushTracker = MockPushTracker()
-        let customActionDelegate = MockCustomActionDelegate(returnValue: true)
+        var calledCustomActionName:String?
+        let customActionDelegateHandler: ((IterableAction) -> (String) -> Bool) = {(_) in { (customActionName) in
+                calledCustomActionName = customActionName
+                return true
+            }
+        }
         
         let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker,
                                                             versionInfo: MockVersionInfo(version: 10),
-                                                            urlDelegate: nil,
-                                                            customActionDelegate: customActionDelegate,
+                                                            urlDelegateHandler: nil,
+                                                            customActionDelegateHandler: customActionDelegateHandler,
                                                             urlOpener: MockUrlOpener())
         appIntegration.userNotificationCenter(nil, didReceive: response, withCompletionHandler: nil)
         
-        XCTAssertEqual(customActionDelegate.action?.type, "customAction");
+        XCTAssertEqual(calledCustomActionName, "customAction");
         
         XCTAssertEqual(pushTracker.campaignId, 1234)
         XCTAssertEqual(pushTracker.templateId, 4321)
@@ -93,16 +98,20 @@ class IterableNotificationResponseTests: XCTestCase {
         
         let response = MockNotificationResponse(userInfo: userInfo, actionIdentifier: "buttonIdentifier")
         let pushTracker = MockPushTracker()
-        let customActionDelegate = MockCustomActionDelegate(returnValue: true)
-        
+        var calledCustomActionName: String?
+        let customActionDelegateHandler: ((IterableAction) -> (String) -> Bool) = {(_) in { (customActionName) in
+            calledCustomActionName = customActionName
+            return true
+            }
+        }
         let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker,
                                                             versionInfo: MockVersionInfo(version: 10),
-                                                            urlDelegate: nil,
-                                                            customActionDelegate: customActionDelegate,
+                                                            urlDelegateHandler: nil,
+                                                            customActionDelegateHandler: customActionDelegateHandler,
                                                             urlOpener: MockUrlOpener())
         appIntegration.userNotificationCenter(nil, didReceive: response, withCompletionHandler: nil)
 
-        XCTAssertEqual(customActionDelegate.action?.type, "customAction");
+        XCTAssertEqual(calledCustomActionName, "customAction");
         
         XCTAssertEqual(pushTracker.campaignId, 1234)
         XCTAssertEqual(pushTracker.templateId, 4321)
@@ -126,17 +135,22 @@ class IterableNotificationResponseTests: XCTestCase {
         ]
         
         let pushTracker = MockPushTracker()
-        let customActionDelegate = MockCustomActionDelegate(returnValue: true)
-        
+        var calledCustomActionName: String?
+        let customActionDelegateHandler: ((IterableAction) -> (String) -> Bool) = {(_) in { (customActionName) in
+            calledCustomActionName = customActionName
+            return true
+            }
+        }
+
         let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker,
                                                             versionInfo: MockVersionInfo(version: 9),
-                                                            urlDelegate: nil,
-                                                            customActionDelegate: customActionDelegate,
+                                                            urlDelegateHandler: nil,
+                                                            customActionDelegateHandler: customActionDelegateHandler,
                                                             urlOpener: MockUrlOpener())
         appIntegration.application(MockApplicationStateProvider(applicationState: .inactive), didReceiveRemoteNotification: userInfo, fetchCompletionHandler: nil)
         
         
-        XCTAssertEqual(customActionDelegate.action?.type, "customAction");
+        XCTAssertEqual(calledCustomActionName, "customAction");
         
         XCTAssertEqual(pushTracker.campaignId, 1234)
         XCTAssertEqual(pushTracker.templateId, 4321)
@@ -236,8 +250,8 @@ class IterableNotificationResponseTests: XCTestCase {
         let pushTracker = MockPushTracker()
         let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker,
                                                             versionInfo: MockVersionInfo(version: 10),
-                                                            urlDelegate: nil,
-                                                            customActionDelegate: nil,
+                                                            urlDelegateHandler: nil,
+                                                            customActionDelegateHandler: nil,
                                                             urlOpener: urlOpener)
         appIntegration.userNotificationCenter(nil, didReceive: response, withCompletionHandler: nil)
         

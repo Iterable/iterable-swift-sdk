@@ -65,28 +65,6 @@ public class MockUrlDelegate : NSObject, IterableURLDelegate {
 }
 
 @objcMembers
-public class MockCustomActionDelegate : NSObject, IterableCustomActionDelegate {
-    // returnValue = true if we handle the url, else false
-    private override convenience init() {
-        self.init(returnValue: false)
-    }
-    
-    public init(returnValue: Bool) {
-        self.returnValue = returnValue
-    }
-    
-    var returnValue: Bool
-    var action: IterableAction?
-    var context: IterableActionContext?
-    
-    public func handle(iterableCustomAction action: IterableAction, inContext context: IterableActionContext) -> Bool {
-        self.action = action
-        self.context = context
-        return returnValue
-    }
-}
-
-@objcMembers
 public class MockPushTracker : NSObject, PushTrackerProtocol {
     var campaignId: NSNumber?
     var templateId: NSNumber?

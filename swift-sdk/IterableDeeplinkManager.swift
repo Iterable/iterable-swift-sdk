@@ -43,7 +43,9 @@ class IterableDeeplinkManager : NSObject {
                     resolvedUrlString = url.absoluteString
                 }
                 if let action = IterableAction.actionOpenUrl(fromUrlString: resolvedUrlString) {
-                    let result = IterableActionRunner.execute(action: action, from: .universalLink, urlDelegate: urlDelegate)
+                    let result = IterableActionRunner.execute(action: action,
+                                                              from: .universalLink,
+                                                              urlDelegateHandler: IterableActionRunner.handler(forUrlDelegate: urlDelegate, andAction: action, from: .universalLink))
                     if case let .openUrl(urlToOpen) = result {
                         urlOpener.open(url: urlToOpen)
                     }
@@ -53,7 +55,9 @@ class IterableDeeplinkManager : NSObject {
             return true
         } else {
             if let action = IterableAction.actionOpenUrl(fromUrlString: url.absoluteString) {
-                let result = IterableActionRunner.execute(action: action, from: .universalLink, urlDelegate: urlDelegate)
+                let result = IterableActionRunner.execute(action: action,
+                                                          from: .universalLink,
+                                                          urlDelegateHandler: IterableActionRunner.handler(forUrlDelegate: urlDelegate, andAction: action, from: .universalLink))
                 if case let .openUrl(urlToOpen) = result {
                     urlOpener.open(url: urlToOpen)
                     return true
@@ -67,7 +71,7 @@ class IterableDeeplinkManager : NSObject {
             }
         }
     }
-
+    
     /**
      Tracks a link click and passes the redirected URL to the callback
      

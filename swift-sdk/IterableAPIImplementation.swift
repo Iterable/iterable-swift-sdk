@@ -860,10 +860,30 @@ import Foundation
         
         IterableAppIntegration.minion = IterableAppIntegrationInternal(tracker: self,
                                                                        versionInfo: SystemVersionInfo(),
-                                                                       urlDelegate: config.urlDelegate,
-                                                                       customActionDelegate: config.customActionDelegate,
+                                                                       urlDelegateHandler: IterableAPIImplementation.handler(forUrlDelegate: config.urlDelegate),
+                                                                       customActionDelegateHandler: IterableAPIImplementation.handler(forCustomActionDelegate: config.customActionDelegate),
                                                                        urlOpener: AppUrlOpener())
         
         handle(launchOptions: launchOptions)
     }
+    
+    static func handler(forUrlDelegate urlDelegate: IterableURLDelegate?) -> (IterableAction) -> (URL) -> Bool {
+        return { (action) in { (url) in
+                return urlDelegate?.handle(iterableURL: url, inContext: IterableActionContext(action: action, source: .push)) == true
+            }
+        }
+    }
+    
+    static func handler(forCustomActionDelegate customActionDelegate: IterableCustomActionDelegate?) -> (IterableAction) -> (String) -> Bool {
+        return { (action) in { (customActionName) in
+                if let customActionDelegate = customActionDelegate {
+                    let _ = customActionDelegate.handle(iterableCustomAction: action, inContext: IterableActionContext(action: action, source: .push))
+                    return true
+                } else {
+                    return false
+                }
+            }
+        }
+    }
+
 }
