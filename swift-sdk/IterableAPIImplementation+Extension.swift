@@ -225,68 +225,17 @@ extension IterableAPIImplementation {
      - parameter onFailure:   A closure to execute if the request fails. It should accept two arguments: an `String` containing the reason this request failed, and an `Data` containing the raw response.
      */
     @objc public func sendRequest(_ request: URLRequest, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) {
-        let task = urlSession.dataTask(with: request) { (data, response, error) in
-            if let error = error {
-                onFailure?("\(error.localizedDescription)", data)
-                return
-            }
-            guard let response = response as? HTTPURLResponse else {
-                return
-            }
-            let responseCode = response.statusCode
-            
-            
-            let json: Any?
-            var jsonError: Error? = nil
-            
-            if let data = data, data.count > 0 {
-                do {
-                    json = try JSONSerialization.jsonObject(with: data, options: [])
-                } catch let error {
-                    jsonError = error
-                    json = nil
-                }
-            } else {
-                json = nil
-            }
-            
-            
-            if responseCode == 401 {
-                onFailure?("Invalid API Key", data)
-            } else if responseCode >= 400 {
-                var errorMessage = "Invalid Request"
-                if let onFailure = onFailure {
-                    if let jsonDict = json as? [AnyHashable : Any], let msgFromDict = jsonDict["msg"] as? String {
-                        errorMessage = msgFromDict
-                    } else if responseCode >= 500 {
-                        errorMessage = "Internal Server Error"
-                    }
-                    onFailure(errorMessage, data)
-                }
-            } else if responseCode == 200 {
-                if let data = data, data.count > 0 {
-                    if let jsonError = jsonError {
-                        var reason = "Could not parse json, error: \(jsonError.localizedDescription)"
-                        if let stringValue = String(data: data, encoding: .utf8) {
-                            reason = "Could not parse json: \(stringValue), error: \(jsonError.localizedDescription)"
-                        }
-                        onFailure?(reason, data)
-                    } else if let json = json as? [AnyHashable : Any] {
-                        onSuccess?(json)
-                    } else {
-                        onFailure?("Response is not a dictionary", data)
-                    }
-                } else {
-                    onFailure?("No data received", data)
-                }
-            } else {
-                onFailure?("Received non-200 response: \(responseCode)", data)
+        NetworkHelper.sendRequest(request, usingSession: networkSession).observe { (result) in
+            switch result {
+            case .value(let json):
+                onSuccess?(json)
+                print()
+            case .error(let failureInfo):
+                onFailure?(failureInfo.errorMessage, failureInfo.data)
             }
         }
-        
-        task.resume()
     }
-    
+
     static func defaultOnSucess(identifier: String) -> OnSuccessHandler {
         return { data in
             if let data = data {
@@ -440,9 +389,10 @@ extension IterableAPIImplementation {
     @discardableResult static func initialize(apiKey: String,
                                                  launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil,
                                                  config: IterableConfig = IterableConfig(),
-                                                 dateProvider: DateProviderProtocol) -> IterableAPIImplementation {
+                                                 dateProvider: DateProviderProtocol = SystemDateProvider(),
+                                                 networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default)) -> IterableAPIImplementation {
         queue.sync {
-            _sharedInstance = IterableAPIImplementation(apiKey: apiKey, config: config, dateProvider: dateProvider)
+            _sharedInstance = IterableAPIImplementation(apiKey: apiKey, config: config, dateProvider: dateProvider, networkSession: networkSession)
         }
         return _sharedInstance!
     }

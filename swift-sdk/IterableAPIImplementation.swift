@@ -13,7 +13,7 @@ import Foundation
     /// - parameter apiKey: Iterable API Key.
     /// - returns: an instance of IterableAPIImplementation
     @objc @discardableResult public static func initialize(apiKey: String) -> IterableAPIImplementation {
-        return initialize(apiKey: apiKey, launchOptions: nil, config:IterableConfig(), dateProvider: SystemDateProvider())
+        return initialize(apiKey: apiKey, config:IterableConfig())
     }
 
     /// You should call this method and not call the init method directly.
@@ -22,29 +22,9 @@ import Foundation
     /// - returns: an instance of IterableAPIImplementation
     @objc @discardableResult public static func initialize(apiKey: String,
                                                            config: IterableConfig) -> IterableAPIImplementation {
-        return initialize(apiKey: apiKey, launchOptions: nil, config:config, dateProvider: SystemDateProvider())
+        return initialize(apiKey: apiKey, launchOptions: nil, config:config)
     }
 
-    /// You should call this method and not call the init method directly.
-    /// - parameter apiKey: Iterable API Key.
-    /// - parameter launchOptions: The launchOptions coming from application:didLaunching:withOptions
-    /// - returns: an instance of IterableAPIImplementation
-    @objc @discardableResult public static func initialize(apiKey: String,
-                                                           launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> IterableAPIImplementation {
-        return initialize(apiKey: apiKey, launchOptions: launchOptions, config:IterableConfig(), dateProvider: SystemDateProvider())
-    }
-
-    /// The big daddy of initialization. You should call this method and not call the init method directly.
-    /// - parameter apiKey: Iterable API Key. This is the only required parameter.
-    /// - parameter launchOptions: The launchOptions coming from application:didLaunching:withOptions
-    /// - parameter config: Iterable config object.
-    /// - returns: an instance of IterableAPIImplementation
-    @objc @discardableResult public static func initialize(apiKey: String,
-                                                              launchOptions: [UIApplicationLaunchOptionsKey: Any]? = nil,
-                                                              config: IterableConfig = IterableConfig()) -> IterableAPIImplementation {
-        return initialize(apiKey: apiKey, launchOptions: launchOptions, config:config, dateProvider: SystemDateProvider())
-    }
-    
     /**
      Get the previously instantiated singleton instance of the API
      
@@ -830,9 +810,11 @@ import Foundation
     
     let dateProvider: DateProviderProtocol
     
-    var urlSession: URLSession = {
-        return URLSession(configuration: URLSessionConfiguration.default)
-    } ()
+    private var networkSessionProvider : () -> NetworkSessionProtocol
+    
+    lazy var networkSession: NetworkSessionProtocol = {
+        networkSessionProvider()
+    }()
     
     var encodedCharacterSet : CharacterSet = {
         var characterSet = CharacterSet.urlQueryAllowed
@@ -844,11 +826,13 @@ import Foundation
     init(apiKey: String,
          launchOptions: [UIApplicationLaunchOptionsKey: Any]? = nil,
          config: IterableConfig = IterableConfig(),
-         dateProvider: DateProviderProtocol = SystemDateProvider()) {
+         dateProvider: DateProviderProtocol = SystemDateProvider(),
+         networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default)) {
         self.apiKey = apiKey
         self.config = config
         self.dateProvider = dateProvider
-
+        self.networkSessionProvider = networkSession
+        
         // setup
         deeplinkManager = IterableDeeplinkManager()
         
