@@ -29,7 +29,7 @@ class IterableActionRunnerTests: XCTestCase {
         let urlString = "https://example.com"
         let action = IterableAction.action(fromDictionary: ["type" : "openUrl", "data" : urlString])!
         
-        let result = IterableActionRunner.execute(action: action, from: .push, urlDelegateHandler: {url in return false})
+        let result = IterableActionRunner.execute(action: action, from: .push, urlHandler: {url in return false})
         if case let IterableActionRunner.Result.openUrl(url) = result {
             XCTAssertEqual(url.absoluteString, urlString)
         } else {
@@ -41,7 +41,7 @@ class IterableActionRunnerTests: XCTestCase {
         let urlString = "https://example.com"
         let action = IterableAction.action(fromDictionary: ["type" : "openUrl", "data" : urlString])!
         
-        let result = IterableActionRunner.execute(action: action, from: .push, urlDelegateHandler: {url in return true})
+        let result = IterableActionRunner.execute(action: action, from: .push, urlHandler: {url in return true})
         if case let IterableActionRunner.Result.openedUrl(url) = result {
             XCTAssertEqual(url.absoluteString, urlString)
         } else {
@@ -52,7 +52,7 @@ class IterableActionRunnerTests: XCTestCase {
     func testCustomAction() {
         let action = IterableAction.action(fromDictionary: ["type" : "customActionName"])!
         
-        let result = IterableActionRunner.execute(action: action, from: .push, customActionDelegateHandler: {actionType in return true})
+        let result = IterableActionRunner.execute(action: action, from: .push, customActionHandler: {actionType in return true})
         if case let IterableActionRunner.Result.performedCustomAction(actionName) = result {
             XCTAssertEqual(actionName, "customActionName")
         } else {

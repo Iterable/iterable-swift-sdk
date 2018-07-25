@@ -51,7 +51,7 @@ class IterableNotificationResponseTests: XCTestCase {
         let response = MockNotificationResponse(userInfo: userInfo, actionIdentifier: UNNotificationDefaultActionIdentifier)
         let pushTracker = MockPushTracker()
         var calledCustomActionName:String?
-        let customActionDelegateHandler: ((IterableAction) -> (String) -> Bool) = {(_) in { (customActionName) in
+        let actionSourceToCustomActionHandler: ((IterableAction, IterableActionSource) -> CustomActionHandler) = {(_, _) in { (customActionName) in
                 calledCustomActionName = customActionName
                 return true
             }
@@ -59,8 +59,8 @@ class IterableNotificationResponseTests: XCTestCase {
         
         let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker,
                                                             versionInfo: MockVersionInfo(version: 10),
-                                                            urlDelegateHandler: nil,
-                                                            customActionDelegateHandler: customActionDelegateHandler,
+                                                            actionSourceToUrlHandler: nil,
+                                                            actionSourceToCustomActionHandler: actionSourceToCustomActionHandler,
                                                             urlOpener: MockUrlOpener())
         appIntegration.userNotificationCenter(nil, didReceive: response, withCompletionHandler: nil)
         
@@ -99,15 +99,15 @@ class IterableNotificationResponseTests: XCTestCase {
         let response = MockNotificationResponse(userInfo: userInfo, actionIdentifier: "buttonIdentifier")
         let pushTracker = MockPushTracker()
         var calledCustomActionName: String?
-        let customActionDelegateHandler: ((IterableAction) -> (String) -> Bool) = {(_) in { (customActionName) in
+        let actionSourceToCustomActionHandler: ((IterableAction, IterableActionSource) -> CustomActionHandler) = {(_, _) in { (customActionName) in
             calledCustomActionName = customActionName
             return true
             }
         }
         let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker,
                                                             versionInfo: MockVersionInfo(version: 10),
-                                                            urlDelegateHandler: nil,
-                                                            customActionDelegateHandler: customActionDelegateHandler,
+                                                            actionSourceToUrlHandler: nil,
+                                                            actionSourceToCustomActionHandler: actionSourceToCustomActionHandler,
                                                             urlOpener: MockUrlOpener())
         appIntegration.userNotificationCenter(nil, didReceive: response, withCompletionHandler: nil)
 
@@ -136,7 +136,7 @@ class IterableNotificationResponseTests: XCTestCase {
         
         let pushTracker = MockPushTracker()
         var calledCustomActionName: String?
-        let customActionDelegateHandler: ((IterableAction) -> (String) -> Bool) = {(_) in { (customActionName) in
+        let actionSourceToCustomActionHandler: ((IterableAction, IterableActionSource) -> CustomActionHandler) = {(_, _) in { (customActionName) in
             calledCustomActionName = customActionName
             return true
             }
@@ -144,8 +144,8 @@ class IterableNotificationResponseTests: XCTestCase {
 
         let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker,
                                                             versionInfo: MockVersionInfo(version: 9),
-                                                            urlDelegateHandler: nil,
-                                                            customActionDelegateHandler: customActionDelegateHandler,
+                                                            actionSourceToUrlHandler: nil,
+                                                            actionSourceToCustomActionHandler: actionSourceToCustomActionHandler,
                                                             urlOpener: MockUrlOpener())
         appIntegration.application(MockApplicationStateProvider(applicationState: .inactive), didReceiveRemoteNotification: userInfo, fetchCompletionHandler: nil)
         
@@ -250,8 +250,8 @@ class IterableNotificationResponseTests: XCTestCase {
         let pushTracker = MockPushTracker()
         let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker,
                                                             versionInfo: MockVersionInfo(version: 10),
-                                                            urlDelegateHandler: nil,
-                                                            customActionDelegateHandler: nil,
+                                                            actionSourceToUrlHandler: nil,
+                                                            actionSourceToCustomActionHandler: nil,
                                                             urlOpener: urlOpener)
         appIntegration.userNotificationCenter(nil, didReceive: response, withCompletionHandler: nil)
         

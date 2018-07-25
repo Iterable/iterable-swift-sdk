@@ -8,6 +8,9 @@
 
 import Foundation
 
+public typealias UrlHandler = (URL) -> Bool
+public typealias CustomActionHandler = (String) -> Bool
+
 /// IterableActionRunner implements this.
 @objc public protocol ActionRunnerProtocol : class {
     func execute(action: IterableAction, from source: IterableActionSource) -> Bool
@@ -43,14 +46,14 @@ struct IterableActionRunner {
 
     static func execute(action: IterableAction,
                         from source: IterableActionSource,
-                        urlDelegateHandler: ((URL) -> Bool)? = nil,
-                        customActionDelegateHandler: ((String) -> Bool)? = nil) -> Result {
+                        urlHandler: UrlHandler? = nil,
+                        customActionHandler: CustomActionHandler? = nil) -> Result {
         let inspectionResult = inspect(action: action)
         switch(inspectionResult) {
         case .noop:
             return .notHandled
         case .openUrl(let url):
-            if urlDelegateHandler?(url) == true {
+            if urlHandler?(url) == true {
                 return .openedUrl(url)
             } else {
                 if shouldOpenUrl(url: url, from: source) {
@@ -60,7 +63,7 @@ struct IterableActionRunner {
                 }
             }
         case .customAction(let type):
-            if customActionDelegateHandler?(type) == true {
+            if customActionHandler?(type) == true {
                 return .performedCustomAction(type)
             } else {
                 return .notHandled
@@ -68,23 +71,23 @@ struct IterableActionRunner {
         }
     }
 
-    // Will the urlDelegate handle this url from this source?
-    // It will return a closure for that
-    static func handler(forUrlDelegate urlDelegate: IterableURLDelegate?, andAction action: IterableAction, from source: IterableActionSource) ->  (URL) -> Bool {
-        return  { url in
-            urlDelegate?.handle(iterableURL: url, inContext: IterableActionContext(action: action, source: source)) == true
+    // converts from IterableURLDelegate to UrlHandler
+    static func actionSourceToUrlHandler(fromUrlDelegate urlDelegate: IterableURLDelegate?) -> (IterableAction, IterableActionSource) -> UrlHandler {
+        return { (action, source) in { (url) in
+            return urlDelegate?.handle(iterableURL: url, inContext: IterableActionContext(action: action, source: source)) == true
+            }
         }
     }
-
-    // Will the customActionDelegate handle this customaction from this source?
-    // It will return a closure for that
-    static func handler(forCustomActionDelegate customActionDelegate: IterableCustomActionDelegate?, andAction action: IterableAction, from source: IterableActionSource) ->  (String) -> Bool {
-        return  { customAction in
-            if let customActionDelegate = customActionDelegate {
-                _ = customActionDelegate.handle(iterableCustomAction: action, inContext: IterableActionContext(action: action, source: source))
-                return true
-            } else {
-                return false
+    
+    // converts from IterableCustomActionDelegate to CustomActionHandler
+    static func actionSourceToCustomActionHandler(fromCustomActionDelegate customActionDelegate: IterableCustomActionDelegate?) -> (IterableAction, IterableActionSource) -> CustomActionHandler {
+        return { (action, source) in { (customActionName) in
+                if let customActionDelegate = customActionDelegate {
+                    let _ = customActionDelegate.handle(iterableCustomAction: action, inContext: IterableActionContext(action: action, source: source))
+                    return true
+                } else {
+                    return false
+                }
             }
         }
     }

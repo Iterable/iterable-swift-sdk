@@ -45,7 +45,7 @@ class IterableDeeplinkManager : NSObject {
                 if let action = IterableAction.actionOpenUrl(fromUrlString: resolvedUrlString) {
                     let result = IterableActionRunner.execute(action: action,
                                                               from: .universalLink,
-                                                              urlDelegateHandler: IterableActionRunner.handler(forUrlDelegate: urlDelegate, andAction: action, from: .universalLink))
+                                                              urlHandler: IterableActionRunner.actionSourceToUrlHandler(fromUrlDelegate: urlDelegate)(action, .universalLink))
                     if case let .openUrl(urlToOpen) = result {
                         urlOpener.open(url: urlToOpen)
                     }
@@ -57,7 +57,7 @@ class IterableDeeplinkManager : NSObject {
             if let action = IterableAction.actionOpenUrl(fromUrlString: url.absoluteString) {
                 let result = IterableActionRunner.execute(action: action,
                                                           from: .universalLink,
-                                                          urlDelegateHandler: IterableActionRunner.handler(forUrlDelegate: urlDelegate, andAction: action, from: .universalLink))
+                                                          urlHandler: IterableActionRunner.actionSourceToUrlHandler(fromUrlDelegate: urlDelegate)(action, .universalLink))
                 if case let .openUrl(urlToOpen) = result {
                     urlOpener.open(url: urlToOpen)
                     return true
