@@ -9,7 +9,7 @@
 import Foundation
 import UserNotifications
 
-import IterableSDK
+@testable import IterableSDK
 
 @available(iOS 10.0, *)
 struct MockNotificationResponse : NotificationResponseProtocol {
@@ -136,4 +136,32 @@ public class MockPushTracker : NSObject, PushTrackerProtocol {
 
     private let version: Int
     
+}
+
+class MockNetworkSession: NetworkSessionProtocol {
+    let statusCode: Int
+    let json: [AnyHashable : Any]
+    let error: Error?
+    var request: URLRequest?
+
+    init(statusCode: Int, json: [AnyHashable : Any] = [:], error: Error? = nil) {
+        self.statusCode = statusCode
+        self.json = json
+        self.error = error
+    }
+    
+    func makeRequest(_ request: URLRequest, completionHandler: @escaping NetworkSessionProtocol.CompletionHandler) {
+        self.request = request
+        let response = HTTPURLResponse(url: request.url!, statusCode: statusCode, httpVersion: "HTTP/1.1", headerFields: [:])
+        let data = try! JSONSerialization.data(withJSONObject: json, options: [])
+        completionHandler(data, response, error)
+    }
+    
+    func getRequestBody() -> [AnyHashable : Any] {
+        return MockNetworkSession.json(fromData: request!.httpBody!)
+    }
+    
+    static func json(fromData data: Data) -> [AnyHashable : Any] {
+        return try! JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable : Any]
+    }
 }

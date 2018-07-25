@@ -41,11 +41,11 @@ class Promise<Value, ErrorType> {
 
 protocol NetworkSessionProtocol {
     typealias CompletionHandler = (Data?, URLResponse?, Error?) -> Void
-    func provideData(with request: URLRequest, completionHandler: @escaping CompletionHandler)
+    func makeRequest(_ request: URLRequest, completionHandler: @escaping CompletionHandler)
 }
 
 extension URLSession : NetworkSessionProtocol {
-    func provideData(with request: URLRequest, completionHandler: @escaping CompletionHandler) {
+    func makeRequest(_ request: URLRequest, completionHandler: @escaping CompletionHandler) {
         let task = dataTask(with: request) { (data, response, error) in
             completionHandler(data, response, error)
         }
@@ -57,7 +57,7 @@ struct NetworkHelper {
     static func sendRequest(_ request: URLRequest, usingSession networkSession: NetworkSessionProtocol) -> Promise<SendRequestValue, SendRequestErrorType>  {
         let result = Promise<SendRequestValue, SendRequestErrorType>()
         
-        networkSession.provideData(with: request) { (data, response, error) in
+        networkSession.makeRequest(request) { (data, response, error) in
             if let error = error {
                 return result.reject(with: SendRequestErrorType(errorMessage: "\(error.localizedDescription)", data: data))
             }

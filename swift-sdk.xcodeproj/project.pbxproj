@@ -52,6 +52,7 @@
 		AC9A49AB20F3C8B80007A5A2 /* TestFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9A49AA20F3C8B80007A5A2 /* TestFile.swift */; };
 		AC9A49AE20F41B520007A5A2 /* TestFileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9A49AC20F419AA0007A5A2 /* TestFileTests.swift */; };
 		ACD6116C2107D004003E7F6B /* NetworkHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD6116B2107D004003E7F6B /* NetworkHelper.swift */; };
+		ACD6116E21080564003E7F6B /* IterableAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD6116D21080564003E7F6B /* IterableAPITests.swift */; };
 		ACF560D620E443BF000AAC23 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF560D520E443BF000AAC23 /* AppDelegate.swift */; };
 		ACF560D820E443BF000AAC23 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF560D720E443BF000AAC23 /* ViewController.swift */; };
 		ACF560DB20E443BF000AAC23 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACF560D920E443BF000AAC23 /* Main.storyboard */; };
@@ -161,6 +162,7 @@
 		AC9A49AA20F3C8B80007A5A2 /* TestFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFile.swift; sourceTree = "<group>"; };
 		AC9A49AC20F419AA0007A5A2 /* TestFileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFileTests.swift; sourceTree = "<group>"; };
 		ACD6116B2107D004003E7F6B /* NetworkHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkHelper.swift; sourceTree = "<group>"; };
+		ACD6116D21080564003E7F6B /* IterableAPITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPITests.swift; sourceTree = "<group>"; };
 		ACF560D320E443BF000AAC23 /* host-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "host-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ACF560D520E443BF000AAC23 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		ACF560D720E443BF000AAC23 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -360,6 +362,7 @@
 				AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */,
 				AC2C668620D3435700D46CC9 /* IterableActionRunnerTests.swift */,
 				AC6FDD8B20F56309005D811E /* IterableInAppNotificationTests.swift */,
+				ACD6116D21080564003E7F6B /* IterableAPITests.swift */,
 			);
 			path = "swift-sdk-swift-tests";
 			sourceTree = "<group>";
@@ -772,6 +775,7 @@
 				AC6FDD8C20F56309005D811E /* IterableInAppNotificationTests.swift in Sources */,
 				AC2C668020D31B1F00D46CC9 /* IterableNotificationResponseTests.swift in Sources */,
 				AC2C668420D3370600D46CC9 /* Mocks.swift in Sources */,
+				ACD6116E21080564003E7F6B /* IterableAPITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
