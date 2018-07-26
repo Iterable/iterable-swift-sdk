@@ -202,6 +202,11 @@ import Foundation
      - seeAlso: OnFailureHandler
      */
     @objc public func updateUser(_ dataFields: [AnyHashable : Any], mergeNestedObjects: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+        guard email != nil || userId != nil else {
+            ITBError("Both email and userId are nil")
+            return
+        }
+        
         let args: [String : Any]
         let mergeNested = NSNumber(value: mergeNestedObjects)
         if let email = email {
@@ -306,6 +311,11 @@ import Foundation
      - seeAlso: CommerceItem, OnSuccessHandler, OnFailureHandler
      */
     @objc public func trackPurchase(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+        guard email != nil || userId != nil else {
+            ITBError("Both email and userId are nil")
+            return
+        }
+
         var itemsToSerialize = [[AnyHashable : Any]]()
         for item in items {
             itemsToSerialize.append(item.toDictionary())
@@ -489,6 +499,11 @@ import Foundation
         - onFailure:           OnFailureHandler to invoke if tracking the open fails
      */
     @objc public func track(_ eventName: String, dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+        guard email != nil || userId != nil else {
+            ITBError("Both email and userId are nil")
+            return
+        }
+
         let args: [String : Any]
         if let dataFields = dataFields {
             if let email = email {
@@ -631,6 +646,11 @@ import Foundation
      - seeAlso: OnFailureHandler
      */
     @objc public func getInAppMessages(_ count: NSNumber, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+        guard email != nil || userId != nil else {
+            ITBError("Both email and userId are nil")
+            return
+        }
+
         let args: [String : String]
         if let email = email {
             args = [
