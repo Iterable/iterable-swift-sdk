@@ -11,7 +11,9 @@ import XCTest
 @testable import IterableSDK
 
 class IterableAPITests: XCTestCase {
-    
+    private static let apiKey = "zeeApiKey"
+    private static let email = "user@example.com"
+
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -23,10 +25,9 @@ class IterableAPITests: XCTestCase {
     }
 
     func testTrackEventWithNoEmailOrUser() {
-        let apiKey = "zeeApiKey"
         let eventName = "MyCustomEvent"
         let networkSession = MockNetworkSession(statusCode: 200)
-        IterableAPI.initialize(apiKey: apiKey, networkSession: networkSession)
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
         IterableAPI.email = nil
         IterableAPI.userId = nil
         IterableAPI.track(event: eventName)
@@ -36,16 +37,15 @@ class IterableAPITests: XCTestCase {
     func testTrackEventWithEmail() {
         let expectation = XCTestExpectation(description: "")
         
-        let apiKey = "zeeApiKey"
         let eventName = "MyCustomEvent"
         let networkSession = MockNetworkSession(statusCode: 200)
-        IterableAPI.initialize(apiKey: apiKey, networkSession: networkSession)
-        IterableAPI.email = "user@example.com"
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
+        IterableAPI.email = IterableAPITests.email
         IterableAPI.track(event: eventName, dataFields: nil, onSuccess: { (json) in
-            TestUtils.validate(request: networkSession.request!, requestType: .post, endPoint: ENDPOINT_TRACK, queryParams: [(name: "api_key", apiKey)])
+            TestUtils.validate(request: networkSession.request!, requestType: .post, endPoint: ENDPOINT_TRACK, queryParams: [(name: "api_key", IterableAPITests.apiKey)])
             let body = networkSession.getRequestBody()
             TestUtils.validateElementPresent(withName: ITBL_KEY_EVENT_NAME, andValue: eventName, inBody: body)
-            TestUtils.validateElementPresent(withName: ITBL_KEY_EMAIL, andValue: "user@example.com", inBody: body)
+            TestUtils.validateElementPresent(withName: ITBL_KEY_EMAIL, andValue: IterableAPITests.email, inBody: body)
             expectation.fulfill()
         }) { (reason, data) in
             expectation.fulfill()
@@ -60,7 +60,7 @@ class IterableAPITests: XCTestCase {
         
         let eventName = "MyCustomEvent"
         let networkSession = MockNetworkSession(statusCode: 502)
-        IterableAPI.initialize(apiKey: "", networkSession: networkSession)
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
         IterableAPI.email = "user@example.com"
         IterableAPI.track(
             event: eventName,
@@ -78,15 +78,14 @@ class IterableAPITests: XCTestCase {
     func testUpdateUser() {
         let expectation = XCTestExpectation(description: "")
         
-        let apiKey = "zeeApiKey"
         let networkSession = MockNetworkSession(statusCode: 200)
-        IterableAPI.initialize(apiKey: apiKey, networkSession: networkSession)
-        IterableAPI.email = "user@example.com"
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
+        IterableAPI.email = IterableAPITests.email
         let dataFields: Dictionary<String, String> = ["var1" : "val1", "var2" : "val2"]
         IterableAPI.updateUser(dataFields, mergeNestedObjects: true, onSuccess: {(json) in
-            TestUtils.validate(request: networkSession.request!, requestType: .post, endPoint: ENDPOINT_UPDATE_USER, queryParams: [(name: "api_key", apiKey)])
+            TestUtils.validate(request: networkSession.request!, requestType: .post, endPoint: ENDPOINT_UPDATE_USER, queryParams: [(name: "api_key", IterableAPITests.apiKey)])
             let body = networkSession.getRequestBody()
-            TestUtils.validateElementPresent(withName: ITBL_KEY_EMAIL, andValue: "user@example.com", inBody: body)
+            TestUtils.validateElementPresent(withName: ITBL_KEY_EMAIL, andValue: IterableAPITests.email, inBody: body)
             TestUtils.validateElementPresent(withName: ITBL_KEY_MERGE_NESTED, andValue: true, inBody: body)
             TestUtils.validateElementPresent(withName: ITBL_KEY_DATA_FIELDS, andValue: dataFields, inBody: body)
             expectation.fulfill()
@@ -101,20 +100,20 @@ class IterableAPITests: XCTestCase {
     func testUpdateEmail() {
         let expectation = XCTestExpectation(description: "")
 
-        let apiKey = "zeeApiKey"
+        let newEmail = "new_user@example.com"
         let networkSession = MockNetworkSession(statusCode: 200)
-        IterableAPI.initialize(apiKey: apiKey, networkSession: networkSession)
-        IterableAPI.email = "user@example.com"
-        IterableAPI.updateEmail("new_user@example.com",
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
+        IterableAPI.email = IterableAPITests.email
+        IterableAPI.updateEmail(newEmail,
                                 onSuccess: {json in
                                     TestUtils.validate(request: networkSession.request!,
                                                        requestType: .post,
                                                        endPoint: ENDPOINT_UPDATE_EMAIL,
-                                                       queryParams: [(name: "api_key", value: apiKey)])
+                                                       queryParams: [(name: "api_key", value: IterableAPITests.apiKey)])
                                     let body = networkSession.getRequestBody()
-                                    TestUtils.validateElementPresent(withName: ITBL_KEY_NEW_EMAIL, andValue: "new_user@example.com", inBody: body)
-                                    TestUtils.validateElementPresent(withName: ITBL_KEY_CURRENT_EMAIL, andValue: "user@example.com", inBody: body)
-                                    XCTAssertEqual(IterableAPI.email, "new_user@example.com")
+                                    TestUtils.validateElementPresent(withName: ITBL_KEY_NEW_EMAIL, andValue: newEmail, inBody: body)
+                                    TestUtils.validateElementPresent(withName: ITBL_KEY_CURRENT_EMAIL, andValue: IterableAPITests.email, inBody: body)
+                                    XCTAssertEqual(IterableAPI.email, newEmail)
                                     expectation.fulfill()
                                 },
                                 onFailure: {(reason, data) in
