@@ -30,15 +30,17 @@ class IterableNotificationResponseTests: XCTestCase {
         dateProvider.currentDate = Date()
     }
     
-    private func customActionHandler(fromPromise promise: Promise<String, Error>, inContext context:IterableActionContext) -> CustomActionHandler {
+    private static func customActionHandler(fromPromise promise: Promise<String, Error>) -> CustomActionHandler {
         return {(customActionName) in
             promise.resolve(with: customActionName)
             return true
         }
     }
     
-    private func contextToCustomActionHandler(fromPromise promise: Promise<String, Error>) -> (IterableActionContext) -> CustomActionHandler {
-        return IterableUtil.curry(customActionHandler(fromPromise:inContext:))(promise)
+    private static func contextToCustomActionHandler(fromPromise promise: Promise<String, Error>) -> (IterableActionContext) -> CustomActionHandler {
+        return {(context) in
+            customActionHandler(fromPromise: promise)
+        }
     }
     
     func testTrackOpenPushWithCustomAction() {
@@ -61,21 +63,22 @@ class IterableNotificationResponseTests: XCTestCase {
 
         let response = MockNotificationResponse(userInfo: userInfo, actionIdentifier: UNNotificationDefaultActionIdentifier)
         let pushTracker = MockPushTracker()
-        var calledCustomActionName:String?
-        let contextToCustomActionHandler: ((IterableActionContext) -> CustomActionHandler) = {(context) in { (customActionName) in
-                calledCustomActionName = customActionName
-                return true
+        let promise = Promise<String, Error>()
+        promise.observe { (result) in
+            switch (result) {
+            case .error(let error):
+                XCTFail(error.localizedDescription)
+            case .value(let customActionName):
+                XCTAssertEqual(customActionName, "customAction")
             }
         }
-        
+
         let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker,
                                                             versionInfo: MockVersionInfo(version: 10),
                                                             contextToUrlHandler: nil,
-                                                            contextToCustomActionHandler: contextToCustomActionHandler,
+                                                            contextToCustomActionHandler: IterableNotificationResponseTests.contextToCustomActionHandler(fromPromise: promise),
                                                             urlOpener: MockUrlOpener())
         appIntegration.userNotificationCenter(nil, didReceive: response, withCompletionHandler: nil)
-        
-        XCTAssertEqual(calledCustomActionName, "customAction");
         
         XCTAssertEqual(pushTracker.campaignId, 1234)
         XCTAssertEqual(pushTracker.templateId, 4321)
@@ -123,7 +126,7 @@ class IterableNotificationResponseTests: XCTestCase {
         let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker,
                                                             versionInfo: MockVersionInfo(version: 10),
                                                             contextToUrlHandler: nil,
-                                                            contextToCustomActionHandler: contextToCustomActionHandler(fromPromise: promise),
+                                                            contextToCustomActionHandler: IterableNotificationResponseTests.contextToCustomActionHandler(fromPromise: promise),
                                                             urlOpener: MockUrlOpener())
         appIntegration.userNotificationCenter(nil, didReceive: response, withCompletionHandler: nil)
 
@@ -163,7 +166,7 @@ class IterableNotificationResponseTests: XCTestCase {
         let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker,
                                                             versionInfo: MockVersionInfo(version: 9),
                                                             contextToUrlHandler: nil,
-                                                            contextToCustomActionHandler: contextToCustomActionHandler(fromPromise: promise),
+                                                            contextToCustomActionHandler: IterableNotificationResponseTests.contextToCustomActionHandler(fromPromise: promise),
                                                             urlOpener: MockUrlOpener())
         appIntegration.application(MockApplicationStateProvider(applicationState: .inactive), didReceiveRemoteNotification: userInfo, fetchCompletionHandler: nil)
         

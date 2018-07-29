@@ -107,7 +107,9 @@ struct IterableActionInterpreter {
     
     // it will partially bind urlDelegate and return a mapping from IterableActionContext to UrlHandler
     static func contextToUrlHandler(fromUrlDelegate urlDelegate: IterableURLDelegate?) -> (IterableActionContext) -> UrlHandler {
-        return IterableUtil.curry(urlHandler(fromUrlDelegate: inContext:))(urlDelegate)
+        return {(context) in
+            urlHandler(fromUrlDelegate: urlDelegate, inContext: context)
+        }
     }
     
     // converts from IterableCustomActionDelegate to CustomActionHandler
@@ -124,8 +126,9 @@ struct IterableActionInterpreter {
     
     // it will partially bind customActionDelegate and return a mapping from IterableActionContext to CustomActionHandler
     static func contextToCustomActionHandler(fromCustomActionDelegate customActionDelegate: IterableCustomActionDelegate?) -> (IterableActionContext) -> CustomActionHandler {
-        return IterableUtil.curry(customActionHandler(fromCustomActionDelegate:inContext:))(customActionDelegate)
+        return {(context) in
+            customActionHandler(fromCustomActionDelegate: customActionDelegate, inContext: context)
+        }
     }
-    
 }
 
