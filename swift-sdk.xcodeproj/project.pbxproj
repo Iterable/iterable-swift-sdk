@@ -16,7 +16,7 @@
 		AC2C668020D31B1F00D46CC9 /* IterableNotificationResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */; };
 		AC2C668220D32F2800D46CC9 /* IterableAppIntegrationInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668120D32F2800D46CC9 /* IterableAppIntegrationInternal.swift */; };
 		AC2C668420D3370600D46CC9 /* Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668320D3370600D46CC9 /* Mocks.swift */; };
-		AC2C668720D3435700D46CC9 /* IterableActionRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668620D3435700D46CC9 /* IterableActionRunnerTests.swift */; };
+		AC2C668720D3435700D46CC9 /* IterableActionInterpreterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668620D3435700D46CC9 /* IterableActionInterpreterTests.swift */; };
 		AC347B5C20E5A7E1003449CF /* IterableAPNSUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC347B5B20E5A7E1003449CF /* IterableAPNSUtil.swift */; };
 		AC347B5D20E5C7C6003449CF /* IterableConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = AC72A0B120CF4C32004D7997 /* IterableConstants.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AC347B6720E699FA003449CF /* IterableAppExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = AC347B6620E699D8003449CF /* IterableAppExtensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -31,7 +31,7 @@
 		AC72A0C720CF4CE2004D7997 /* CommerceItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C120CF4CB8004D7997 /* CommerceItem.swift */; };
 		AC72A0C820CF4CE2004D7997 /* ITBConsts.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0BE20CF4CB8004D7997 /* ITBConsts.swift */; };
 		AC72A0C920CF4CE2004D7997 /* IterableAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0BF20CF4CB8004D7997 /* IterableAction.swift */; };
-		AC72A0CA20CF4CE2004D7997 /* IterableActionRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */; };
+		AC72A0CA20CF4CE2004D7997 /* IterableActionInterpreter.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C420CF4CB8004D7997 /* IterableActionInterpreter.swift */; };
 		AC72A0CB20CF4CE2004D7997 /* IterableAPIImplementation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C520CF4CB9004D7997 /* IterableAPIImplementation.swift */; };
 		AC72A0CD20CF4CE2004D7997 /* IterableAppIntegration.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C620CF4CB9004D7997 /* IterableAppIntegration.swift */; };
 		AC72A0CE20CF4CE2004D7997 /* IterableAttributionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */; };
@@ -122,7 +122,7 @@
 		AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableNotificationResponseTests.swift; sourceTree = "<group>"; };
 		AC2C668120D32F2800D46CC9 /* IterableAppIntegrationInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAppIntegrationInternal.swift; sourceTree = "<group>"; };
 		AC2C668320D3370600D46CC9 /* Mocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mocks.swift; sourceTree = "<group>"; };
-		AC2C668620D3435700D46CC9 /* IterableActionRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableActionRunnerTests.swift; sourceTree = "<group>"; };
+		AC2C668620D3435700D46CC9 /* IterableActionInterpreterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableActionInterpreterTests.swift; sourceTree = "<group>"; };
 		AC347B5B20E5A7E1003449CF /* IterableAPNSUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPNSUtil.swift; sourceTree = "<group>"; };
 		AC347B6620E699D8003449CF /* IterableAppExtensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IterableAppExtensions.h; sourceTree = "<group>"; };
 		AC431DF320D18E9000BFAFD1 /* swift-sdk-objc-tests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "swift-sdk-objc-tests-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -144,7 +144,7 @@
 		AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAttributionInfo.swift; sourceTree = "<group>"; };
 		AC72A0C120CF4CB8004D7997 /* CommerceItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommerceItem.swift; sourceTree = "<group>"; };
 		AC72A0C220CF4CB8004D7997 /* IterableNotificationMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableNotificationMetadata.swift; sourceTree = "<group>"; };
-		AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableActionRunner.swift; sourceTree = "<group>"; };
+		AC72A0C420CF4CB8004D7997 /* IterableActionInterpreter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableActionInterpreter.swift; sourceTree = "<group>"; };
 		AC72A0C520CF4CB9004D7997 /* IterableAPIImplementation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPIImplementation.swift; sourceTree = "<group>"; };
 		AC72A0C620CF4CB9004D7997 /* IterableAppIntegration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAppIntegration.swift; sourceTree = "<group>"; };
 		AC7B142B20D02CE200877BFE /* swift-sdk-swift-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "swift-sdk-swift-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -346,7 +346,7 @@
 				AC72A0AC20CF4C08004D7997 /* Util */,
 				AC72A0C520CF4CB9004D7997 /* IterableAPIImplementation.swift */,
 				AC72A0BC20CF4C98004D7997 /* IterableAPIImplementation+Extension.swift */,
-				AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */,
+				AC72A0C420CF4CB8004D7997 /* IterableActionInterpreter.swift */,
 				AC72A0BD20CF4C98004D7997 /* IterableDeeplinkManager.swift */,
 				AC2C667D20D3111900D46CC9 /* DateProvider.swift */,
 				AC2C668120D32F2800D46CC9 /* IterableAppIntegrationInternal.swift */,
@@ -362,7 +362,7 @@
 				AC2C668520D3370D00D46CC9 /* Helper Files */,
 				AC2C668320D3370600D46CC9 /* Mocks.swift */,
 				AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */,
-				AC2C668620D3435700D46CC9 /* IterableActionRunnerTests.swift */,
+				AC2C668620D3435700D46CC9 /* IterableActionInterpreterTests.swift */,
 				AC6FDD8B20F56309005D811E /* IterableInAppNotificationTests.swift */,
 				ACD6116D21080564003E7F6B /* IterableAPITests.swift */,
 				00CB31B4210960C4004ACDEC /* TestUtils.swift */,
@@ -750,7 +750,7 @@
 				AC72A0BA20CF4C83004D7997 /* NSData+Conversion.m in Sources */,
 				AC72A0D420CF4D19004D7997 /* IterableDeeplinkManager.swift in Sources */,
 				AC72A0C920CF4CE2004D7997 /* IterableAction.swift in Sources */,
-				AC72A0CA20CF4CE2004D7997 /* IterableActionRunner.swift in Sources */,
+				AC72A0CA20CF4CE2004D7997 /* IterableActionInterpreter.swift in Sources */,
 				AC72A0CF20CF4CE2004D7997 /* IterableNotificationMetadata.swift in Sources */,
 				ACD6116C2107D004003E7F6B /* NetworkHelper.swift in Sources */,
 				AC72A0D220CF4D12004D7997 /* IterableUtil.swift in Sources */,
@@ -774,7 +774,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AC2C668720D3435700D46CC9 /* IterableActionRunnerTests.swift in Sources */,
+				AC2C668720D3435700D46CC9 /* IterableActionInterpreterTests.swift in Sources */,
 				00CB31B621096129004ACDEC /* TestUtils.swift in Sources */,
 				AC6FDD8C20F56309005D811E /* IterableInAppNotificationTests.swift in Sources */,
 				AC2C668020D31B1F00D46CC9 /* IterableNotificationResponseTests.swift in Sources */,

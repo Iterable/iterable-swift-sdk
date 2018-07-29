@@ -1,6 +1,4 @@
 //
-//  IterableActionRunnerTests.swift
-//  swift-sdk-swift-tests
 //
 //  Created by Tapash Majumder on 6/14/18.
 //  Copyright © 2018 Iterable. All rights reserved.
@@ -12,7 +10,7 @@ import OHHTTPStubs
 
 @testable import IterableSDK
 
-class IterableActionRunnerTests: XCTestCase {
+class IterableActionInterpreterTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
@@ -29,8 +27,8 @@ class IterableActionRunnerTests: XCTestCase {
         let urlString = "https://example.com"
         let action = IterableAction.action(fromDictionary: ["type" : "openUrl", "data" : urlString])!
         
-        let result = IterableActionRunner.execute(action: action, from: .push, urlHandler: {url in return false})
-        if case let IterableActionRunner.Result.openUrl(url) = result {
+        let result = IterableActionInterpreter.execute(action: action, from: .push, urlHandler: {url in return false})
+        if case let IterableActionInterpreter.Result.openUrl(url) = result {
             XCTAssertEqual(url.absoluteString, urlString)
         } else {
             XCTFail()
@@ -41,8 +39,8 @@ class IterableActionRunnerTests: XCTestCase {
         let urlString = "https://example.com"
         let action = IterableAction.action(fromDictionary: ["type" : "openUrl", "data" : urlString])!
         
-        let result = IterableActionRunner.execute(action: action, from: .push, urlHandler: {url in return true})
-        if case let IterableActionRunner.Result.openedUrl(url) = result {
+        let result = IterableActionInterpreter.execute(action: action, from: .push, urlHandler: {url in return true})
+        if case let IterableActionInterpreter.Result.openedUrl(url) = result {
             XCTAssertEqual(url.absoluteString, urlString)
         } else {
             XCTFail()
@@ -52,8 +50,8 @@ class IterableActionRunnerTests: XCTestCase {
     func testCustomAction() {
         let action = IterableAction.action(fromDictionary: ["type" : "customActionName"])!
         
-        let result = IterableActionRunner.execute(action: action, from: .push, customActionHandler: {actionType in return true})
-        if case let IterableActionRunner.Result.performedCustomAction(actionName) = result {
+        let result = IterableActionInterpreter.execute(action: action, from: .push, customActionHandler: {actionType in return true})
+        if case let IterableActionInterpreter.Result.performedCustomAction(actionName) = result {
             XCTAssertEqual(actionName, "customActionName")
         } else {
             XCTFail()

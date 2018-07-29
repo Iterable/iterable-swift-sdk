@@ -28,6 +28,12 @@ import os
     static func isNotNullOrEmpty(string: String) -> Bool {
         return !isNullOrEmpty(string: string)
     }
+    
+    // Given a function that maps (x,y) to z,
+    // returns a partial function that maps (y) to z.
+    static func curry<X, Y, Z>(_ f: @escaping (X, Y) -> Z) -> (X) -> ((Y) -> Z) {
+        return { x in { y in f(x, y) } }
+    }
 }
 
 public func ITBError(_ message: String? = nil, file: String = #file, method: String = #function, line: Int = #line) {

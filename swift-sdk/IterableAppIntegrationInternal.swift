@@ -74,19 +74,19 @@ class SystemVersionInfo : VersionInfoProtocol {
 struct IterableAppIntegrationInternal {
     private let tracker: PushTrackerProtocol
     private let versionInfo: VersionInfoProtocol
-    private let actionSourceToUrlHandler: ((IterableAction, IterableActionSource) -> UrlHandler)?
-    private let actionSourceToCustomActionHandler: ((IterableAction, IterableActionSource) -> CustomActionHandler)?
+    private let contextToUrlHandler: ((IterableActionContext) -> UrlHandler)?
+    private let contextToCustomActionHandler: ((IterableActionContext) -> CustomActionHandler)?
     private let urlOpener: UrlOpenerProtocol
 
     init(tracker: PushTrackerProtocol,
          versionInfo: VersionInfoProtocol,
-         actionSourceToUrlHandler: ((IterableAction, IterableActionSource) -> UrlHandler)?,
-         actionSourceToCustomActionHandler: ((IterableAction, IterableActionSource) -> CustomActionHandler)?,
+         contextToUrlHandler: ((IterableActionContext) -> UrlHandler)?,
+         contextToCustomActionHandler: ((IterableActionContext) -> CustomActionHandler)?,
          urlOpener: UrlOpenerProtocol) {
         self.tracker = tracker
         self.versionInfo = versionInfo
-        self.actionSourceToUrlHandler = actionSourceToUrlHandler
-        self.actionSourceToCustomActionHandler = actionSourceToCustomActionHandler
+        self.contextToUrlHandler = contextToUrlHandler
+        self.contextToCustomActionHandler = contextToCustomActionHandler
         self.urlOpener = urlOpener
     }
     
@@ -149,14 +149,15 @@ struct IterableAppIntegrationInternal {
         
         //Execute the action
         if let action = action {
-            IterableAppIntegrationInternal.execute(action: action, urlHandler: actionSourceToUrlHandler?(action, .push), customActionHandler: actionSourceToCustomActionHandler?(action, .push), urlOpener: urlOpener)
+            let context = IterableActionContext(action: action, source: .push)
+            IterableAppIntegrationInternal.execute(action: action, urlHandler: contextToUrlHandler?(context), customActionHandler: contextToCustomActionHandler?(context), urlOpener: urlOpener)
         }
 
         completionHandler?()
     }
 
     private static func execute(action: IterableAction, urlHandler: UrlHandler?, customActionHandler: CustomActionHandler?, urlOpener: UrlOpenerProtocol) {
-        if case let .openUrl(url) = IterableActionRunner.execute(action: action,
+        if case let .openUrl(url) = IterableActionInterpreter.execute(action: action,
                                                                  from: .push,
                                                                  urlHandler: urlHandler,
                                                                  customActionHandler: customActionHandler) {
@@ -248,7 +249,8 @@ struct IterableAppIntegrationInternal {
         }
 
         if let action = action {
-            IterableAppIntegrationInternal.execute(action: action, urlHandler: actionSourceToUrlHandler?(action, .push), customActionHandler: actionSourceToCustomActionHandler?(action, .push), urlOpener: urlOpener)
+            let context = IterableActionContext(action: action, source: .push)
+            IterableAppIntegrationInternal.execute(action: action, urlHandler: contextToUrlHandler?(context), customActionHandler: contextToCustomActionHandler?(context), urlOpener: urlOpener)
         }
     }
     

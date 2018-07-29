@@ -42,10 +42,13 @@ class IterableDeeplinkManager : NSObject {
                 } else {
                     resolvedUrlString = url.absoluteString
                 }
+                
+                
                 if let action = IterableAction.actionOpenUrl(fromUrlString: resolvedUrlString) {
-                    let result = IterableActionRunner.execute(action: action,
+                    let context = IterableActionContext(action: action, source: .universalLink)
+                    let result = IterableActionInterpreter.execute(action: action,
                                                               from: .universalLink,
-                                                              urlHandler: IterableActionRunner.actionSourceToUrlHandler(fromUrlDelegate: urlDelegate)(action, .universalLink))
+                                                              urlHandler: IterableActionInterpreter.urlHandler(fromUrlDelegate: urlDelegate, inContext: context))
                     if case let .openUrl(urlToOpen) = result {
                         urlOpener.open(url: urlToOpen)
                     }
@@ -55,9 +58,10 @@ class IterableDeeplinkManager : NSObject {
             return true
         } else {
             if let action = IterableAction.actionOpenUrl(fromUrlString: url.absoluteString) {
-                let result = IterableActionRunner.execute(action: action,
+                let context = IterableActionContext(action: action, source: .universalLink)
+                let result = IterableActionInterpreter.execute(action: action,
                                                           from: .universalLink,
-                                                          urlHandler: IterableActionRunner.actionSourceToUrlHandler(fromUrlDelegate: urlDelegate)(action, .universalLink))
+                                                          urlHandler: IterableActionInterpreter.urlHandler(fromUrlDelegate: urlDelegate, inContext: context))
                 if case let .openUrl(urlToOpen) = result {
                     urlOpener.open(url: urlToOpen)
                     return true

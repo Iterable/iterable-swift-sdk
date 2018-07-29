@@ -864,8 +864,8 @@ import Foundation
         
         IterableAppIntegration.minion = IterableAppIntegrationInternal(tracker: self,
                                                                        versionInfo: SystemVersionInfo(),
-                                                                       actionSourceToUrlHandler: IterableActionRunner.actionSourceToUrlHandler(fromUrlDelegate: config.urlDelegate),
-                                                                       actionSourceToCustomActionHandler: IterableActionRunner.actionSourceToCustomActionHandler(fromCustomActionDelegate: config.customActionDelegate),
+                                                                       contextToUrlHandler: IterableActionInterpreter.contextToUrlHandler(fromUrlDelegate: config.urlDelegate),
+                                                                       contextToCustomActionHandler: IterableActionInterpreter.contextToCustomActionHandler(fromCustomActionDelegate: config.customActionDelegate),
                                                                        urlOpener: AppUrlOpener())
         
         handle(launchOptions: launchOptions)
