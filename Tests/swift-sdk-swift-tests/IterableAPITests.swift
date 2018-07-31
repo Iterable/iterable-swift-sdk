@@ -17,7 +17,7 @@ extension IterableAPI {
                             config: IterableConfig = IterableConfig(),
                             dateProvider: DateProviderProtocol = SystemDateProvider(),
                             networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default)) {
-        implementation = IterableAPIInternal.init(apiKey: apiKey, launchOptions: launchOptions, config: config, dateProvider: dateProvider, networkSession: networkSession)
+        internalImplementation = IterableAPIInternal.init(apiKey: apiKey, launchOptions: launchOptions, config: config, dateProvider: dateProvider, networkSession: networkSession)
     }
 }
 

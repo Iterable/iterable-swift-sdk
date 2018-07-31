@@ -110,39 +110,5 @@ struct IterableActionRunner {
             }
         }
     }
-
-    // MARK: Helper Utility Functions
-    // converts from IterableURLDelegate to UrlHandler
-    static func urlHandler(fromUrlDelegate urlDelegate: IterableURLDelegate?, inContext context: IterableActionContext) -> UrlHandler {
-        return { url in
-            urlDelegate?.handle(iterableURL: url, inContext: context) == true
-        }
-    }
-    
-    // it will partially bind urlDelegate and return a mapping from IterableActionContext to UrlHandler
-    static func contextToUrlHandler(fromUrlDelegate urlDelegate: IterableURLDelegate?) -> (IterableActionContext) -> UrlHandler {
-        return {(context) in
-            urlHandler(fromUrlDelegate: urlDelegate, inContext: context)
-        }
-    }
-    
-    // converts from IterableCustomActionDelegate to CustomActionHandler
-    static func customActionHandler(fromCustomActionDelegate customActionDelegate: IterableCustomActionDelegate?, inContext context: IterableActionContext) -> CustomActionHandler {
-        return { customActionName in
-            if let customActionDelegate = customActionDelegate {
-                let _ = customActionDelegate.handle(iterableCustomAction: context.action, inContext: context)
-                return true
-            } else {
-                return false
-            }
-        }
-    }
-    
-    // it will partially bind customActionDelegate and return a mapping from IterableActionContext to CustomActionHandler
-    static func contextToCustomActionHandler(fromCustomActionDelegate customActionDelegate: IterableCustomActionDelegate?) -> (IterableActionContext) -> CustomActionHandler {
-        return {(context) in
-            customActionHandler(fromCustomActionDelegate: customActionDelegate, inContext: context)
-        }
-    }
 }
 

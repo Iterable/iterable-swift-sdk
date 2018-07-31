@@ -74,19 +74,19 @@ class SystemVersionInfo : VersionInfoProtocol {
 struct IterableAppIntegrationInternal {
     private let tracker: PushTrackerProtocol
     private let versionInfo: VersionInfoProtocol
-    private let contextToUrlHandler: ((IterableActionContext) -> UrlHandler)?
-    private let contextToCustomActionHandler: ((IterableActionContext) -> CustomActionHandler)?
-    private let urlOpener: UrlOpenerProtocol
+    private let urlDelegate: IterableURLDelegate?
+    private let customActionDelegate: IterableCustomActionDelegate?
+    private let urlOpener: UrlOpenerProtocol?
 
     init(tracker: PushTrackerProtocol,
          versionInfo: VersionInfoProtocol,
-         contextToUrlHandler: ((IterableActionContext) -> UrlHandler)?,
-         contextToCustomActionHandler: ((IterableActionContext) -> CustomActionHandler)?,
-         urlOpener: UrlOpenerProtocol) {
+         urlDelegate: IterableURLDelegate? = nil,
+         customActionDelegate: IterableCustomActionDelegate? = nil,
+         urlOpener: UrlOpenerProtocol? = nil) {
         self.tracker = tracker
         self.versionInfo = versionInfo
-        self.contextToUrlHandler = contextToUrlHandler
-        self.contextToCustomActionHandler = contextToCustomActionHandler
+        self.urlDelegate = urlDelegate
+        self.customActionDelegate = customActionDelegate
         self.urlOpener = urlOpener
     }
     
@@ -152,8 +152,8 @@ struct IterableAppIntegrationInternal {
             let context = IterableActionContext(action: action, source: .push)
             IterableActionRunner.execute(action: action,
                                          context: context,
-                                         urlHandler: contextToUrlHandler?(context),
-                                         customActionHandler: contextToCustomActionHandler?(context),
+                                         urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate, inContext: context),
+                                         customActionHandler: IterableUtil.customActionHandler(fromCustomActionDelegate: customActionDelegate, inContext: context),
                                          urlOpener: urlOpener)
         }
 
@@ -247,8 +247,8 @@ struct IterableAppIntegrationInternal {
             let context = IterableActionContext(action: action, source: .push)
             IterableActionRunner.execute(action: action,
                                          context: context,
-                                         urlHandler: contextToUrlHandler?(context),
-                                         customActionHandler: contextToCustomActionHandler?(context),
+                                         urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate, inContext: context),
+                                         customActionHandler: IterableUtil.customActionHandler(fromCustomActionDelegate: customActionDelegate, inContext: context),
                                          urlOpener: urlOpener)
         }
     }

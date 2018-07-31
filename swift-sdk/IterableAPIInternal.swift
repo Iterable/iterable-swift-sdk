@@ -864,8 +864,8 @@ import Foundation
         
         IterableAppIntegration.implementation = IterableAppIntegrationInternal(tracker: self,
                                                                        versionInfo: SystemVersionInfo(),
-                                                                       contextToUrlHandler: IterableActionRunner.contextToUrlHandler(fromUrlDelegate: config.urlDelegate),
-                                                                       contextToCustomActionHandler: IterableActionRunner.contextToCustomActionHandler(fromCustomActionDelegate: config.customActionDelegate),
+                                                                       urlDelegate: config.urlDelegate,
+                                                                       customActionDelegate: config.customActionDelegate,
                                                                        urlOpener: AppUrlOpener())
         
         handle(launchOptions: launchOptions)

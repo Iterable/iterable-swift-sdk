@@ -28,6 +28,27 @@ import os
     static func isNotNullOrEmpty(string: String) -> Bool {
         return !isNullOrEmpty(string: string)
     }
+    
+
+    // MARK: Helper Utility Functions
+    // converts from IterableURLDelegate to UrlHandler
+    static func urlHandler(fromUrlDelegate urlDelegate: IterableURLDelegate?, inContext context: IterableActionContext) -> UrlHandler {
+        return { url in
+            urlDelegate?.handle(iterableURL: url, inContext: context) == true
+        }
+    }
+    
+    // converts from IterableCustomActionDelegate to CustomActionHandler
+    static func customActionHandler(fromCustomActionDelegate customActionDelegate: IterableCustomActionDelegate?, inContext context: IterableActionContext) -> CustomActionHandler {
+        return { customActionName in
+            if let customActionDelegate = customActionDelegate {
+                let _ = customActionDelegate.handle(iterableCustomAction: context.action, inContext: context)
+                return true
+            } else {
+                return false
+            }
+        }
+    }
 }
 
 public func ITBError(_ message: String? = nil, file: String = #file, method: String = #function, line: Int = #line) {

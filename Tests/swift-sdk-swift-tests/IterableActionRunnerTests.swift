@@ -10,8 +10,9 @@ import OHHTTPStubs
 
 @testable import IterableSDK
 
+let testExpectationTimeout = 5.0
+
 class IterableActionRunnerTests: XCTestCase {
-    
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -71,8 +72,10 @@ class IterableActionRunnerTests: XCTestCase {
         let customActionName = "myCustomActionName"
         let action = IterableAction.action(fromDictionary: ["type" : customActionName])!
         let context = IterableActionContext(action: action, source: .push)
+        let expection = XCTestExpectation(description: "callActionHandler")
         let customActionHandler: CustomActionHandler = {name in
             XCTAssertEqual(name, customActionName)
+            expection.fulfill()
             return true
         }
 
@@ -80,6 +83,7 @@ class IterableActionRunnerTests: XCTestCase {
                                      context: context,
                                      customActionHandler: customActionHandler)
         
+        wait(for: [expection], timeout: testExpectationTimeout)
         XCTAssertTrue(handled)
     }
 
@@ -87,8 +91,10 @@ class IterableActionRunnerTests: XCTestCase {
         let customActionName = "myCustomActionName"
         let action = IterableAction.action(fromDictionary: ["type" : customActionName])!
         let context = IterableActionContext(action: action, source: .push)
+        let expection = XCTestExpectation(description: "callActionHandler")
         let customActionHandler: CustomActionHandler = {name in
             XCTAssertEqual(name, customActionName)
+            expection.fulfill()
             return false
         }
         
@@ -96,6 +102,7 @@ class IterableActionRunnerTests: XCTestCase {
                                                    context: context,
                                                    customActionHandler: customActionHandler)
         
+        wait(for: [expection], timeout: testExpectationTimeout)
         XCTAssertFalse(handled)
     }
 
