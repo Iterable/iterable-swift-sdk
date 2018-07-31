@@ -150,21 +150,16 @@ struct IterableAppIntegrationInternal {
         //Execute the action
         if let action = action {
             let context = IterableActionContext(action: action, source: .push)
-            IterableAppIntegrationInternal.execute(action: action, urlHandler: contextToUrlHandler?(context), customActionHandler: contextToCustomActionHandler?(context), urlOpener: urlOpener)
+            IterableActionRunner.execute(action: action,
+                                         context: context,
+                                         urlHandler: contextToUrlHandler?(context),
+                                         customActionHandler: contextToCustomActionHandler?(context),
+                                         urlOpener: urlOpener)
         }
 
         completionHandler?()
     }
 
-    private static func execute(action: IterableAction, urlHandler: UrlHandler?, customActionHandler: CustomActionHandler?, urlOpener: UrlOpenerProtocol) {
-        if case let .openUrl(url) = IterableActionInterpreter.execute(action: action,
-                                                                 from: .push,
-                                                                 urlHandler: urlHandler,
-                                                                 customActionHandler: customActionHandler) {
-            urlOpener.open(url: url)
-        }
-    }
-    
     @available(iOS 10.0, *)
     private static func createIterableAction(actionIdentifier: String, userText: String?, userInfo: [AnyHashable : Any], iterableElement itbl: [AnyHashable : Any]) -> IterableAction? {
         var action: IterableAction? = nil
@@ -250,7 +245,11 @@ struct IterableAppIntegrationInternal {
 
         if let action = action {
             let context = IterableActionContext(action: action, source: .push)
-            IterableAppIntegrationInternal.execute(action: action, urlHandler: contextToUrlHandler?(context), customActionHandler: contextToCustomActionHandler?(context), urlOpener: urlOpener)
+            IterableActionRunner.execute(action: action,
+                                         context: context,
+                                         urlHandler: contextToUrlHandler?(context),
+                                         customActionHandler: contextToCustomActionHandler?(context),
+                                         urlOpener: urlOpener)
         }
     }
     

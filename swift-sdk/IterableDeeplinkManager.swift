@@ -46,12 +46,10 @@ class IterableDeeplinkManager : NSObject {
                 
                 if let action = IterableAction.actionOpenUrl(fromUrlString: resolvedUrlString) {
                     let context = IterableActionContext(action: action, source: .universalLink)
-                    let result = IterableActionInterpreter.execute(action: action,
-                                                              from: .universalLink,
-                                                              urlHandler: IterableActionInterpreter.urlHandler(fromUrlDelegate: urlDelegate, inContext: context))
-                    if case let .openUrl(urlToOpen) = result {
-                        urlOpener.open(url: urlToOpen)
-                    }
+                    IterableActionRunner.execute(action: action,
+                                                 context: context,
+                                                 urlHandler: IterableActionRunner.urlHandler(fromUrlDelegate: urlDelegate, inContext: context),
+                                                 urlOpener: urlOpener)
                 }
             }
             // Always return true for deep link
@@ -59,17 +57,10 @@ class IterableDeeplinkManager : NSObject {
         } else {
             if let action = IterableAction.actionOpenUrl(fromUrlString: url.absoluteString) {
                 let context = IterableActionContext(action: action, source: .universalLink)
-                let result = IterableActionInterpreter.execute(action: action,
-                                                          from: .universalLink,
-                                                          urlHandler: IterableActionInterpreter.urlHandler(fromUrlDelegate: urlDelegate, inContext: context))
-                if case let .openUrl(urlToOpen) = result {
-                    urlOpener.open(url: urlToOpen)
-                    return true
-                } else if case .openedUrl(_) = result {
-                    return true
-                } else {
-                    return false
-                }
+                return IterableActionRunner.execute(action: action,
+                                                    context: context,
+                                                    urlHandler: IterableActionRunner.urlHandler(fromUrlDelegate: urlDelegate, inContext: context),
+                                                    urlOpener: urlOpener)
             } else {
                 return false
             }

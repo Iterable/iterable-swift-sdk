@@ -29,37 +29,51 @@ class AppUrlOpener : UrlOpenerProtocol {
     }
 }
 
-struct IterableActionInterpreter {
-    enum Result {
-        case openUrl(URL)
-        case openedUrl(URL)
-        case performedCustomAction(String)
-        case notHandled
+struct IterableActionRunner {
+    // returns true if an action is performed either by us or by the calling app.
+    @discardableResult static func execute(action: IterableAction,
+                        context: IterableActionContext,
+                        urlHandler: UrlHandler? = nil,
+                        customActionHandler: CustomActionHandler? = nil,
+                        urlOpener: UrlOpenerProtocol? = nil) -> Bool {
+        
+        let handled = callExternalHandlers(action: action,
+                                           from: context.source,
+                                           urlHandler: urlHandler,
+                                           customActionHandler: customActionHandler)
+        
+        if handled {
+            return true
+        } else {
+            if case let .openUrl(url) = detectActionType(fromAction: action), shouldOpenUrl(url: url, from: context.source), let urlOpener = urlOpener {
+                urlOpener.open(url: url)
+                return true
+            } else {
+                return false
+            }
+        }
     }
 
-    static func execute(action: IterableAction,
+    // return true if the action is handled by the calling app either by opening a url or performing a custom action.
+    private static func callExternalHandlers(action: IterableAction,
                         from source: IterableActionSource,
                         urlHandler: UrlHandler? = nil,
-                        customActionHandler: CustomActionHandler? = nil) -> Result {
+                        customActionHandler: CustomActionHandler? = nil) -> Bool {
         let actionType = detectActionType(fromAction: action)
         switch(actionType) {
         case .noop:
-            return .notHandled
+            return false
         case .openUrl(let url):
             if urlHandler?(url) == true {
-                return .openedUrl(url)
+                return true
             } else {
-                if shouldOpenUrl(url: url, from: source) {
-                    return .openUrl(url)
-                } else {
-                    return .notHandled
-                }
+                return false
             }
         case .customAction(let type):
             if customActionHandler?(type) == true {
-                return .performedCustomAction(type)
+                return true
             } else {
-                return .notHandled
+                return false
             }
         }
     }
