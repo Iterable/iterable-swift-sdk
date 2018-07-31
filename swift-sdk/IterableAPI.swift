@@ -16,7 +16,7 @@ public final class IterableAPI : NSObject {
     /// You should call this method and not call the init method directly.
     /// - parameter apiKey: Iterable API Key.
     public static func initialize(apiKey: String) {
-        implementation = IterableAPIImplementation.initialize(apiKey: apiKey)
+        implementation = IterableAPIInternal.initialize(apiKey: apiKey)
     }
     
     /// You should call this method and not call the init method directly.
@@ -24,7 +24,7 @@ public final class IterableAPI : NSObject {
     /// - parameter config: Iterable config object.
     public static func initialize(apiKey: String,
                                   config: IterableConfig) {
-        implementation = IterableAPIImplementation.initialize(apiKey: apiKey, config:config)
+        implementation = IterableAPIInternal.initialize(apiKey: apiKey, config:config)
     }
     
     /// You should call this method and not call the init method directly.
@@ -32,7 +32,7 @@ public final class IterableAPI : NSObject {
     /// - parameter launchOptions: The launchOptions coming from application:didLaunching:withOptions
     public static func initialize(apiKey: String,
                                   launchOptions: [UIApplicationLaunchOptionsKey: Any]?) {
-        implementation = IterableAPIImplementation.initialize(apiKey: apiKey, launchOptions: launchOptions)
+        implementation = IterableAPIInternal.initialize(apiKey: apiKey, launchOptions: launchOptions)
     }
     
     /// The big daddy of initialization. You should call this method and not call the init method directly.
@@ -42,7 +42,7 @@ public final class IterableAPI : NSObject {
     public static func initialize(apiKey: String,
                                   launchOptions: [UIApplicationLaunchOptionsKey: Any]? = nil,
                                   config: IterableConfig = IterableConfig()) {
-        implementation = IterableAPIImplementation.initialize(apiKey: apiKey, launchOptions: launchOptions, config:config)
+        implementation = IterableAPIInternal.initialize(apiKey: apiKey, launchOptions: launchOptions, config:config)
     }
     
     /**
@@ -483,5 +483,5 @@ public final class IterableAPI : NSObject {
     }
     
     //MARK: Private and Internal
-    static var implementation: IterableAPIImplementation?
+    static var implementation: IterableAPIInternal?
 }

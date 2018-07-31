@@ -10,6 +10,17 @@ import XCTest
 
 @testable import IterableSDK
 
+extension IterableAPI {
+    // Internal Only used in unit tests.
+    static func initialize(apiKey: String,
+                            launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil,
+                            config: IterableConfig = IterableConfig(),
+                            dateProvider: DateProviderProtocol = SystemDateProvider(),
+                            networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default)) {
+        implementation = IterableAPIInternal.init(apiKey: apiKey, launchOptions: launchOptions, config: config, dateProvider: dateProvider, networkSession: networkSession)
+    }
+}
+
 class IterableAPITests: XCTestCase {
     private static let apiKey = "zeeApiKey"
     private static let email = "user@example.com"

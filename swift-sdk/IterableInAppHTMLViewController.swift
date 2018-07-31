@@ -116,7 +116,7 @@ class IterableInAppHTMLViewController: UIViewController {
         super.viewDidLoad()
         
         if let trackParams = trackParams, let messageId = trackParams.messageId {
-            IterableAPIImplementation.sharedInstance?.trackInAppOpen(messageId)
+            IterableAPIInternal.sharedInstance?.trackInAppOpen(messageId)
         }
 
         webView?.layoutSubviews()
@@ -241,7 +241,7 @@ extension IterableInAppHTMLViewController : UIWebViewDelegate {
         dismiss(animated: false) { [weak self, callbackURL] in
             self?.customBlockCallback?(callbackURL)
             if let trackParams = self?.trackParams, let messageId = trackParams.messageId {
-                IterableAPIImplementation.sharedInstance?.trackInAppClick(messageId, buttonURL: destinationURL)
+                IterableAPIInternal.sharedInstance?.trackInAppClick(messageId, buttonURL: destinationURL)
             }
         }
         return false

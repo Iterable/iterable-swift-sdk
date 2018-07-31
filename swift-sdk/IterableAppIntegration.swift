@@ -21,7 +21,7 @@ import UserNotifications
      */
     @objc public static func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: ((UIBackgroundFetchResult)->Void)?) {
         ITBInfo()
-        minion?.application(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler)
+        implementation?.application(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler)
     }
     
     /**
@@ -36,7 +36,7 @@ import UserNotifications
     @available(iOS 10.0, *)
     @objc(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:) public static func userNotificationCenter(_ center: UNUserNotificationCenter?, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: (()->Void)?) {
         ITBInfo()
-        minion?.userNotificationCenter(center, didReceive: UserNotificationResponse(response: response), withCompletionHandler: completionHandler)
+        implementation?.userNotificationCenter(center, didReceive: UserNotificationResponse(response: response), withCompletionHandler: completionHandler)
     }
     
     //MARK: Private
@@ -45,5 +45,5 @@ import UserNotifications
         super.init()
     }
     
-    static var minion: IterableAppIntegrationInternal?
+    static var implementation: IterableAppIntegrationInternal?
 }

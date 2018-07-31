@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension IterableAPIImplementation {
+extension IterableAPIInternal {
     /**
      * Returns the push integration name for this app depending on the config options
      * @return push integration name to use
@@ -38,11 +38,11 @@ extension IterableAPIImplementation {
         if let remoteNotificationPayload = launchOptions[UIApplicationLaunchOptionsKey.remoteNotification] as? [AnyHashable : Any] {
             if let _ = IterableUtil.rootViewController {
                 // we are ready
-                IterableAppIntegration.minion?.performDefaultNotificationAction(remoteNotificationPayload)
+                IterableAppIntegration.implementation?.performDefaultNotificationAction(remoteNotificationPayload)
             } else {
                 // keywindow not set yet
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    IterableAppIntegration.minion?.performDefaultNotificationAction(remoteNotificationPayload)
+                    IterableAppIntegration.implementation?.performDefaultNotificationAction(remoteNotificationPayload)
                 }
             }
         }
@@ -66,11 +66,11 @@ extension IterableAPIImplementation {
         hexToken = (token as NSData).iteHexadecimalString()
         
         let device = UIDevice.current
-        let psp = IterableAPIImplementation.pushServicePlatformToString(pushServicePlatform)
+        let psp = IterableAPIInternal.pushServicePlatformToString(pushServicePlatform)
         
         var dataFields: [String : Any] = [
             ITBL_DEVICE_LOCALIZED_MODEL: device.localizedModel,
-            ITBL_DEVICE_USER_INTERFACE: IterableAPIImplementation.userInterfaceIdiomEnumToString(device.userInterfaceIdiom),
+            ITBL_DEVICE_USER_INTERFACE: IterableAPIInternal.userInterfaceIdiomEnumToString(device.userInterfaceIdiom),
             ITBL_DEVICE_SYSTEM_NAME: device.systemName,
             ITBL_DEVICE_SYSTEM_VERSION: device.systemVersion,
             ITBL_DEVICE_MODEL: device.model
@@ -116,7 +116,7 @@ extension IterableAPIImplementation {
         }
         var request = URLRequest(url: url)
         request.httpMethod = ITBL_KEY_POST
-        if let body = IterableAPIImplementation.dictToJson(args) {
+        if let body = IterableAPIInternal.dictToJson(args) {
             request.httpBody = body.data(using: .utf8)
         }
         return request
@@ -390,9 +390,9 @@ extension IterableAPIImplementation {
                                                  launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil,
                                                  config: IterableConfig = IterableConfig(),
                                                  dateProvider: DateProviderProtocol = SystemDateProvider(),
-                                                 networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default)) -> IterableAPIImplementation {
+                                                 networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default)) -> IterableAPIInternal {
         queue.sync {
-            _sharedInstance = IterableAPIImplementation(apiKey: apiKey, config: config, dateProvider: dateProvider, networkSession: networkSession)
+            _sharedInstance = IterableAPIInternal(apiKey: apiKey, config: config, dateProvider: dateProvider, networkSession: networkSession)
         }
         return _sharedInstance!
     }
