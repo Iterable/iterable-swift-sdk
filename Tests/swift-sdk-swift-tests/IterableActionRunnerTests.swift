@@ -10,7 +10,7 @@ import OHHTTPStubs
 
 @testable import IterableSDK
 
-let testExpectationTimeout = 5.0
+let testExpectationTimeout = 15.0
 
 class IterableActionRunnerTests: XCTestCase {
     override func setUp() {
