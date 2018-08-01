@@ -8,9 +8,15 @@ import Foundation
 
 typealias SendRequestValue = [AnyHashable : Any]
 
-struct SendRequestErrorType {
+struct SendRequestError : Error {
     let errorMessage: String?
     let data: Data?
+}
+
+extension SendRequestError : LocalizedError {
+    var localizedDescription: String {
+        return errorMessage ?? ""
+    }
 }
 
 enum Result<Value, ErrorType> {
@@ -54,15 +60,15 @@ extension URLSession : NetworkSessionProtocol {
 }
 
 struct NetworkHelper {
-    static func sendRequest(_ request: URLRequest, usingSession networkSession: NetworkSessionProtocol) -> Promise<SendRequestValue, SendRequestErrorType>  {
-        let result = Promise<SendRequestValue, SendRequestErrorType>()
+    static func sendRequest(_ request: URLRequest, usingSession networkSession: NetworkSessionProtocol) -> Promise<SendRequestValue, SendRequestError>  {
+        let result = Promise<SendRequestValue, SendRequestError>()
         
         networkSession.makeRequest(request) { (data, response, error) in
             if let error = error {
-                return result.reject(with: SendRequestErrorType(errorMessage: "\(error.localizedDescription)", data: data))
+                return result.reject(with: SendRequestError(errorMessage: "\(error.localizedDescription)", data: data))
             }
             guard let response = response as? HTTPURLResponse else {
-                return result.reject(with: SendRequestErrorType(errorMessage: "No response", data: nil))
+                return result.reject(with: SendRequestError(errorMessage: "No response", data: nil))
             }
             
             let responseCode = response.statusCode
@@ -82,7 +88,7 @@ struct NetworkHelper {
             }
             
             if responseCode == 401 {
-                return result.reject(with: SendRequestErrorType(errorMessage: "Invalid API Key", data: data))
+                return result.reject(with: SendRequestError(errorMessage: "Invalid API Key", data: data))
             } else if responseCode >= 400 {
                 var errorMessage = "Invalid Request"
                 if let jsonDict = json as? [AnyHashable : Any], let msgFromDict = jsonDict["msg"] as? String {
@@ -90,7 +96,7 @@ struct NetworkHelper {
                 } else if responseCode >= 500 {
                     errorMessage = "Internal Server Error"
                 }
-                return result.reject(with: SendRequestErrorType(errorMessage: errorMessage, data: data))
+                return result.reject(with: SendRequestError(errorMessage: errorMessage, data: data))
             } else if responseCode == 200 {
                 if let data = data, data.count > 0 {
                     if let jsonError = jsonError {
@@ -98,17 +104,17 @@ struct NetworkHelper {
                         if let stringValue = String(data: data, encoding: .utf8) {
                             reason = "Could not parse json: \(stringValue), error: \(jsonError.localizedDescription)"
                         }
-                        return result.reject(with: SendRequestErrorType(errorMessage: reason, data: data))
+                        return result.reject(with: SendRequestError(errorMessage: reason, data: data))
                     } else if let json = json as? [AnyHashable : Any] {
                         return result.resolve(with: json)
                     } else {
-                        return result.reject(with: SendRequestErrorType(errorMessage: "Response is not a dictionary", data: data))
+                        return result.reject(with: SendRequestError(errorMessage: "Response is not a dictionary", data: data))
                     }
                 } else {
-                    return result.reject(with: SendRequestErrorType(errorMessage: "No data received", data: data))
+                    return result.reject(with: SendRequestError(errorMessage: "No data received", data: data))
                 }
             } else {
-                return result.reject(with: SendRequestErrorType(errorMessage: "Received non-200 response: \(responseCode)", data: data))
+                return result.reject(with: SendRequestError(errorMessage: "Received non-200 response: \(responseCode)", data: data))
             }
         }
         

@@ -29,14 +29,22 @@ class IterableActionRunnerTests: XCTestCase {
         let action = IterableAction.action(fromDictionary: ["type" : "openUrl", "data" : urlString])!
         let context = IterableActionContext(action: action, source: .push)
         let urlOpener = MockUrlOpener()
-
+        let expectation = XCTestExpectation(description: "call UrlHandler")
+        let urlHandler: UrlHandler = {url in
+            XCTAssertEqual(url.absoluteString, urlString)
+            expectation.fulfill()
+            return false
+        }
+        
         let handled = IterableActionRunner.execute(action: action,
                                      context: context,
-                                     urlHandler: { url in return false},
+                                     urlHandler: urlHandler,
                                      urlOpener: urlOpener)
         
+
+        wait(for: [expectation], timeout: testExpectationTimeout)
         XCTAssertTrue(handled)
-        
+
         if #available(iOS 10.0, *) {
             XCTAssertEqual(urlOpener.ios10OpenedUrl?.absoluteString, urlString)
             XCTAssertNil(urlOpener.preIos10openedUrl)
@@ -51,12 +59,20 @@ class IterableActionRunnerTests: XCTestCase {
         let action = IterableAction.action(fromDictionary: ["type" : "openUrl", "data" : urlString])!
         let context = IterableActionContext(action: action, source: .push)
         let urlOpener = MockUrlOpener()
+        let expectation = XCTestExpectation(description: "call UrlHandler")
+        let urlHandler: UrlHandler = {url in
+            XCTAssertEqual(url.absoluteString, urlString)
+            expectation.fulfill()
+            return true
+        }
 
         let handled = IterableActionRunner.execute(action: action,
                                      context: context,
-                                     urlHandler: { url in return true},
+                                     urlHandler: urlHandler,
                                      urlOpener: urlOpener)
         
+
+        wait(for: [expectation], timeout: testExpectationTimeout)
         XCTAssertTrue(handled)
         
         if #available(iOS 10.0, *) {
