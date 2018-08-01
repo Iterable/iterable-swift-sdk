@@ -10,13 +10,6 @@ import Foundation
 
 class IterableDeeplinkManager : NSObject {
     /**
-     Initializer
-    */
-    init(actionRunner: IterableActionRunner) {
-        self.actionRunner = actionRunner
-    }
-    
-    /**
      Tracks a link click and passes the redirected URL to the callback
      
      - parameter webpageURL:      the URL that was clicked
@@ -37,32 +30,43 @@ class IterableDeeplinkManager : NSObject {
      * If it's not an Iterable link, it just passes the same URL to `IterableURLDelegate`
      *
      - parameter url: the URL obtained from `UserActivity.webpageURL`
+     - parameter urlDelegate: url delegate from `IterableConfig`
      - returns: true if it is an Iterable link, or the value returned from `IterableURLDelegate` otherwise
      */
-    func handleUniversalLink(_ url: URL) -> Bool {
+    func handleUniversalLink(_ url: URL, urlDelegate: IterableURLDelegate?, urlOpener: UrlOpenerProtocol) -> Bool {
         if isIterableDeeplink(url.absoluteString) {
-            resolve(applinkURL: url) {[actionRunner] (resolvedUrl) in
+            resolve(applinkURL: url) { (resolvedUrl) in
                 var resolvedUrlString: String
                 if let resolvedUrl = resolvedUrl {
                     resolvedUrlString = resolvedUrl.absoluteString
                 } else {
                     resolvedUrlString = url.absoluteString
                 }
+                
+                
                 if let action = IterableAction.actionOpenUrl(fromUrlString: resolvedUrlString) {
-                    _ = actionRunner.execute(action: action, from: .universalLink)
+                    let context = IterableActionContext(action: action, source: .universalLink)
+                    IterableActionRunner.execute(action: action,
+                                                 context: context,
+                                                 urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate, inContext: context),
+                                                 urlOpener: urlOpener)
                 }
             }
             // Always return true for deep link
             return true
         } else {
             if let action = IterableAction.actionOpenUrl(fromUrlString: url.absoluteString) {
-                return actionRunner.execute(action: action, from: .universalLink)
+                let context = IterableActionContext(action: action, source: .universalLink)
+                return IterableActionRunner.execute(action: action,
+                                                    context: context,
+                                                    urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate, inContext: context),
+                                                    urlOpener: urlOpener)
             } else {
                 return false
             }
         }
     }
-
+    
     /**
      Tracks a link click and passes the redirected URL to the callback
      
@@ -87,7 +91,7 @@ class IterableDeeplinkManager : NSObject {
                 if let deeplinkCampaignId = self.deeplinkCampaignId,
                     let deeplinkTemplateId = self.deeplinkTemplateId,
                     let deeplinkMessageId = self.deeplinkMessageId {
-                    IterableAPIImplementation.sharedInstance?.attributionInfo = IterableAttributionInfo(campaignId: deeplinkCampaignId, templateId: deeplinkTemplateId, messageId: deeplinkMessageId)
+                    IterableAPIInternal.sharedInstance?.attributionInfo = IterableAttributionInfo(campaignId: deeplinkCampaignId, templateId: deeplinkTemplateId, messageId: deeplinkMessageId)
                 }
                 callbackBlock(self.deeplinkLocation)
             }
@@ -108,8 +112,6 @@ class IterableDeeplinkManager : NSObject {
     private lazy var redirectUrlSession: URLSession = {
         return URLSession(configuration: .default, delegate: self, delegateQueue: OperationQueue.main)
     } ()
-    
-    private var actionRunner: IterableActionRunner
     
     private var deeplinkLocation: URL?
     private var deeplinkCampaignId: NSNumber?

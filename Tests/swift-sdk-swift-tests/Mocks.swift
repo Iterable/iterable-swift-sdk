@@ -9,7 +9,7 @@
 import Foundation
 import UserNotifications
 
-import IterableSDK
+@testable import IterableSDK
 
 @available(iOS 10.0, *)
 struct MockNotificationResponse : NotificationResponseProtocol {
@@ -51,6 +51,30 @@ public class MockUrlDelegate : NSObject, IterableURLDelegate {
     }
 }
 
+@objcMembers
+public class MockCustomActionDelegate: NSObject, IterableCustomActionDelegate {
+    // returnValue is reserved for future, don't rely on this
+    private override convenience init() {
+        self.init(returnValue: false)
+    }
+    
+    public init(returnValue: Bool) {
+        self.returnValue = returnValue
+    }
+
+    private (set) var returnValue: Bool
+    private (set) var action: IterableAction?
+    private (set) var context: IterableActionContext?
+    var callback: ((String, IterableActionContext)->Void)? = nil
+    
+    public func handle(iterableCustomAction action: IterableAction, inContext context: IterableActionContext) -> Bool {
+        self.action = action
+        self.context = context
+        callback?(action.type, context)
+        return returnValue
+    }
+}
+
 @objc public class MockUrlOpener : NSObject, UrlOpenerProtocol {
     @objc var ios10OpenedUrl: URL?
     @objc var preIos10openedUrl: URL?
@@ -61,28 +85,6 @@ public class MockUrlDelegate : NSObject, IterableURLDelegate {
         } else {
             preIos10openedUrl = url
         }
-    }
-}
-
-@objcMembers
-public class MockCustomActionDelegate : NSObject, IterableCustomActionDelegate {
-    // returnValue = true if we handle the url, else false
-    private override convenience init() {
-        self.init(returnValue: false)
-    }
-    
-    public init(returnValue: Bool) {
-        self.returnValue = returnValue
-    }
-    
-    var returnValue: Bool
-    var action: IterableAction?
-    var context: IterableActionContext?
-    
-    public func handle(iterableCustomAction action: IterableAction, inContext context: IterableActionContext) -> Bool {
-        self.action = action
-        self.context = context
-        return returnValue
     }
 }
 
@@ -158,4 +160,37 @@ public class MockPushTracker : NSObject, PushTrackerProtocol {
 
     private let version: Int
     
+}
+
+class MockNetworkSession: NetworkSessionProtocol {
+    let statusCode: Int
+    let json: [AnyHashable : Any]
+    let error: Error?
+    let queue: DispatchQueue
+    
+    var request: URLRequest?
+
+    init(statusCode: Int, json: [AnyHashable : Any] = [:], error: Error? = nil) {
+        self.statusCode = statusCode
+        self.json = json
+        self.error = error
+        queue = DispatchQueue(label: "MockNetworkQueue")
+    }
+    
+    func makeRequest(_ request: URLRequest, completionHandler: @escaping NetworkSessionProtocol.CompletionHandler) {
+        queue.async {
+            self.request = request
+            let response = HTTPURLResponse(url: request.url!, statusCode: self.statusCode, httpVersion: "HTTP/1.1", headerFields: [:])
+            let data = try! JSONSerialization.data(withJSONObject: self.json, options: [])
+            completionHandler(data, response, self.error)
+        }
+    }
+    
+    func getRequestBody() -> [AnyHashable : Any] {
+        return MockNetworkSession.json(fromData: request!.httpBody!)
+    }
+    
+    static func json(fromData data: Data) -> [AnyHashable : Any] {
+        return try! JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable : Any]
+    }
 }

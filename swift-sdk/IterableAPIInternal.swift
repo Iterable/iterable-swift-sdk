@@ -6,14 +6,14 @@
 
 import Foundation
 
-@objc public final class IterableAPIImplementation : NSObject, PushTrackerProtocol {
+@objc public final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     // MARK: Initialization
 
     /// You should call this method and not call the init method directly.
     /// - parameter apiKey: Iterable API Key.
     /// - returns: an instance of IterableAPIImplementation
-    @objc @discardableResult public static func initialize(apiKey: String) -> IterableAPIImplementation {
-        return initialize(apiKey: apiKey, launchOptions: nil, config:IterableConfig(), dateProvider: SystemDateProvider())
+    @objc @discardableResult public static func initialize(apiKey: String) -> IterableAPIInternal {
+        return initialize(apiKey: apiKey, config:IterableConfig())
     }
 
     /// You should call this method and not call the init method directly.
@@ -21,30 +21,10 @@ import Foundation
     /// - parameter config: Iterable config object.
     /// - returns: an instance of IterableAPIImplementation
     @objc @discardableResult public static func initialize(apiKey: String,
-                                                           config: IterableConfig) -> IterableAPIImplementation {
-        return initialize(apiKey: apiKey, launchOptions: nil, config:config, dateProvider: SystemDateProvider())
+                                                           config: IterableConfig) -> IterableAPIInternal {
+        return initialize(apiKey: apiKey, launchOptions: nil, config:config)
     }
 
-    /// You should call this method and not call the init method directly.
-    /// - parameter apiKey: Iterable API Key.
-    /// - parameter launchOptions: The launchOptions coming from application:didLaunching:withOptions
-    /// - returns: an instance of IterableAPIImplementation
-    @objc @discardableResult public static func initialize(apiKey: String,
-                                                           launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> IterableAPIImplementation {
-        return initialize(apiKey: apiKey, launchOptions: launchOptions, config:IterableConfig(), dateProvider: SystemDateProvider())
-    }
-
-    /// The big daddy of initialization. You should call this method and not call the init method directly.
-    /// - parameter apiKey: Iterable API Key. This is the only required parameter.
-    /// - parameter launchOptions: The launchOptions coming from application:didLaunching:withOptions
-    /// - parameter config: Iterable config object.
-    /// - returns: an instance of IterableAPIImplementation
-    @objc @discardableResult public static func initialize(apiKey: String,
-                                                              launchOptions: [UIApplicationLaunchOptionsKey: Any]? = nil,
-                                                              config: IterableConfig = IterableConfig()) -> IterableAPIImplementation {
-        return initialize(apiKey: apiKey, launchOptions: launchOptions, config:config, dateProvider: SystemDateProvider())
-    }
-    
     /**
      Get the previously instantiated singleton instance of the API
      
@@ -55,7 +35,7 @@ import Foundation
      
      - warning: `instance` will return `nil` if called before calling `initialize`
      */
-    @objc public static var sharedInstance : IterableAPIImplementation? {
+    @objc public static var sharedInstance : IterableAPIInternal? {
         if _sharedInstance == nil {
             ITBError("instance called before initializing API")
         }
@@ -145,7 +125,7 @@ import Foundation
      after registering for remote notifications
      */
     @objc(registerToken:) public func register(token: Data) {
-        register(token: token, onSuccess: IterableAPIImplementation.defaultOnSucess(identifier: "registerToken"), onFailure: IterableAPIImplementation.defaultOnFailure(identifier: "registerToken"))
+        register(token: token, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "registerToken"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "registerToken"))
     }
 
     /**
@@ -173,14 +153,14 @@ import Foundation
      Disable this device's token in Iterable, for the current user.
      */
     @objc public func disableDeviceForCurrentUser() {
-        disableDeviceForCurrentUser(withOnSuccess: IterableAPIImplementation.defaultOnSucess(identifier: "disableDevice"), onFailure: IterableAPIImplementation.defaultOnFailure(identifier: "disableDevice"))
+        disableDeviceForCurrentUser(withOnSuccess: IterableAPIInternal.defaultOnSucess(identifier: "disableDevice"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "disableDevice"))
     }
 
     /**
      Disable this device's token in Iterable, for all users with this device.
      */
     @objc public func disableDeviceForAllUsers() {
-        disableDeviceForAllUsers(withOnSuccess: IterableAPIImplementation.defaultOnSucess(identifier: "disableDevice"), onFailure: IterableAPIImplementation.defaultOnFailure(identifier: "disableDevice"))
+        disableDeviceForAllUsers(withOnSuccess: IterableAPIInternal.defaultOnSucess(identifier: "disableDevice"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "disableDevice"))
     }
 
     /**
@@ -222,6 +202,11 @@ import Foundation
      - seeAlso: OnFailureHandler
      */
     @objc public func updateUser(_ dataFields: [AnyHashable : Any], mergeNestedObjects: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+        guard email != nil || userId != nil else {
+            ITBError("Both email and userId are nil")
+            return
+        }
+        
         let args: [String : Any]
         let mergeNested = NSNumber(value: mergeNestedObjects)
         if let email = email {
@@ -309,7 +294,7 @@ import Foundation
      - seeAlso: CommerceItem
      */
     @objc public func trackPurchase(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?) {
-        trackPurchase(total, items: items, dataFields: dataFields, onSuccess: IterableAPIImplementation.defaultOnSucess(identifier: "trackPurchase"), onFailure: IterableAPIImplementation.defaultOnFailure(identifier: "trackPurchase"))
+        trackPurchase(total, items: items, dataFields: dataFields, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackPurchase"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPurchase"))
     }
 
     /**
@@ -326,6 +311,11 @@ import Foundation
      - seeAlso: CommerceItem, OnSuccessHandler, OnFailureHandler
      */
     @objc public func trackPurchase(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+        guard email != nil || userId != nil else {
+            ITBError("Both email and userId are nil")
+            return
+        }
+
         var itemsToSerialize = [[AnyHashable : Any]]()
         for item in items {
             itemsToSerialize.append(item.toDictionary())
@@ -390,8 +380,8 @@ import Foundation
     @objc public func trackPushOpen(_ userInfo: [AnyHashable : Any], dataFields: [AnyHashable : Any]?) {
         trackPushOpen(userInfo,
                       dataFields: dataFields,
-                      onSuccess: IterableAPIImplementation.defaultOnSucess(identifier: "trackPushOpen"),
-                      onFailure: IterableAPIImplementation.defaultOnFailure(identifier: "trackPushOpen"))
+                      onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackPushOpen"),
+                      onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPushOpen"))
     }
 
     /**
@@ -428,7 +418,7 @@ import Foundation
         - dataFields:          A `Dictionary` containing any additional information to save along with the event
      */
     @objc public func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?) {
-        trackPushOpen(campaignId, templateId: templateId, messageId: messageId, appAlreadyRunning: appAlreadyRunning, dataFields: dataFields, onSuccess: IterableAPIImplementation.defaultOnSucess(identifier: "trackPushOpen"), onFailure: IterableAPIImplementation.defaultOnFailure(identifier: "trackPushOpen"))
+        trackPushOpen(campaignId, templateId: templateId, messageId: messageId, appAlreadyRunning: appAlreadyRunning, dataFields: dataFields, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackPushOpen"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPushOpen"))
     }
 
     /**
@@ -495,7 +485,7 @@ import Foundation
      - parameter dataFields:  A `Dictionary` containing any additional information to save along with the event
      */
     @objc public func track(_ eventName: String, dataFields: [AnyHashable : Any]?) {
-        track(eventName, dataFields: dataFields, onSuccess: IterableAPIImplementation.defaultOnSucess(identifier: "track"), onFailure: IterableAPIImplementation.defaultOnFailure(identifier: "track"))
+        track(eventName, dataFields: dataFields, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "track"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "track"))
     }
 
     /**
@@ -509,6 +499,11 @@ import Foundation
         - onFailure:           OnFailureHandler to invoke if tracking the open fails
      */
     @objc public func track(_ eventName: String, dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+        guard email != nil || userId != nil else {
+            ITBError("Both email and userId are nil")
+            return
+        }
+
         let args: [String : Any]
         if let dataFields = dataFields {
             if let email = email {
@@ -581,7 +576,7 @@ import Foundation
         }
         
         if let request = createPostRequest(forAction: ENDPOINT_UPDATE_SUBSCRIPTIONS, withArgs: dictionary) {
-            sendRequest(request, onSuccess: IterableAPIImplementation.defaultOnSucess(identifier: "updateSubscriptions"), onFailure: IterableAPIImplementation.defaultOnFailure(identifier: "updateSubscriptions"))
+            sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "updateSubscriptions"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "updateSubscriptions"))
         }
     }
     
@@ -627,7 +622,7 @@ import Foundation
             self.inAppConsume(messageId)
         }
         
-        getInAppMessages(1, onSuccess: onSuccess, onFailure: IterableAPIImplementation.defaultOnFailure(identifier: "getInAppMessages"))
+        getInAppMessages(1, onSuccess: onSuccess, onFailure: IterableAPIInternal.defaultOnFailure(identifier: "getInAppMessages"))
     }
 
     /**
@@ -636,7 +631,7 @@ import Foundation
      - parameter count:  the number of messages to fetch
      */
     @objc public func getInAppMessages(_ count: NSNumber) {
-        getInAppMessages(count, onSuccess: IterableAPIImplementation.defaultOnSucess(identifier: "getMessages"), onFailure: IterableAPIImplementation.defaultOnFailure(identifier: "getMessages"))
+        getInAppMessages(count, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "getMessages"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "getMessages"))
     }
 
     /**
@@ -651,6 +646,11 @@ import Foundation
      - seeAlso: OnFailureHandler
      */
     @objc public func getInAppMessages(_ count: NSNumber, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+        guard email != nil || userId != nil else {
+            ITBError("Both email and userId are nil")
+            return
+        }
+
         let args: [String : String]
         if let email = email {
             args = [
@@ -699,7 +699,7 @@ import Foundation
         }
         
         if let request = createPostRequest(forAction: ENDPOINT_TRACK_INAPP_OPEN, withArgs: args) {
-            sendRequest(request, onSuccess: IterableAPIImplementation.defaultOnSucess(identifier: "trackInAppOpen"), onFailure: IterableAPIImplementation.defaultOnFailure(identifier: "trackInAppOpen"))
+            sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppOpen"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"))
         }
     }
 
@@ -717,7 +717,7 @@ import Foundation
         addEmailOrUserId(args: &args)
         
         if let request = createPostRequest(forAction: ENDPOINT_TRACK_INAPP_CLICK, withArgs: args) {
-            sendRequest(request, onSuccess: IterableAPIImplementation.defaultOnSucess(identifier: "trackInAppClick"), onFailure: IterableAPIImplementation.defaultOnFailure(identifier: "trackInAppClick"))
+            sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"))
         }
     }
 
@@ -736,7 +736,7 @@ import Foundation
         addEmailOrUserId(args: &args)
         
         if let request = createPostRequest(forAction: ENDPOINT_TRACK_INAPP_CLICK, withArgs: args) {
-            sendRequest(request, onSuccess: IterableAPIImplementation.defaultOnSucess(identifier: "trackInAppClick"), onFailure: IterableAPIImplementation.defaultOnFailure(identifier: "trackInAppClick"))
+            sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"))
         }
     }
 
@@ -752,7 +752,7 @@ import Foundation
         addEmailOrUserId(args: &args)
         
         if let request = createPostRequest(forAction: ENDPOINT_INAPP_CONSUME, withArgs: args) {
-            sendRequest(request, onSuccess: IterableAPIImplementation.defaultOnSucess(identifier: "inAppConsume"), onFailure: IterableAPIImplementation.defaultOnFailure(identifier: "inAppConsume"))
+            sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "inAppConsume"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "inAppConsume"))
         }
     }
 
@@ -807,12 +807,8 @@ import Foundation
      - parameter url: the URL obtained from `UserActivity.webpageURL`
      - returns: true if it is an Iterable link, or the value returned from `IterableURLDelegate` otherwise
      */
-    @objc @discardableResult public static func handleUniversalLink(_ url: URL) -> Bool {
-        if let instance = _sharedInstance {
-            return instance.deeplinkManager.handleUniversalLink(url)
-        } else {
-            return false
-        }
+    @objc @discardableResult public func handleUniversalLink(_ url: URL) -> Bool {
+        return deeplinkManager.handleUniversalLink(url, urlDelegate: config.urlDelegate, urlOpener: AppUrlOpener())
     }
     
     // MARK: For Private and Internal Use ========================================>
@@ -823,7 +819,7 @@ import Foundation
     var _email: String? = nil
     var _userId: String? = nil
     
-    static var _sharedInstance: IterableAPIImplementation?
+    static var _sharedInstance: IterableAPIInternal?
     
     static var queue = DispatchQueue(label: "MyLockQueue")
     
@@ -834,9 +830,11 @@ import Foundation
     
     let dateProvider: DateProviderProtocol
     
-    var urlSession: URLSession = {
-        return URLSession(configuration: URLSessionConfiguration.default)
-    } ()
+    private var networkSessionProvider : () -> NetworkSessionProtocol
+    
+    lazy var networkSession: NetworkSessionProtocol = {
+        networkSessionProvider()
+    }()
     
     var encodedCharacterSet : CharacterSet = {
         var characterSet = CharacterSet.urlQueryAllowed
@@ -848,14 +846,15 @@ import Foundation
     init(apiKey: String,
          launchOptions: [UIApplicationLaunchOptionsKey: Any]? = nil,
          config: IterableConfig = IterableConfig(),
-         dateProvider: DateProviderProtocol = SystemDateProvider()) {
+         dateProvider: DateProviderProtocol = SystemDateProvider(),
+         networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default)) {
         self.apiKey = apiKey
         self.config = config
         self.dateProvider = dateProvider
-
+        self.networkSessionProvider = networkSession
+        
         // setup
-        let actionRunner = IterableActionRunner(urlDelegate: config.urlDelegate, customActionDelegate: config.customActionDelegate, urlOpener: AppUrlOpener())
-        deeplinkManager = IterableDeeplinkManager(actionRunner: actionRunner)
+        deeplinkManager = IterableDeeplinkManager()
         
         // super init
         super.init()
@@ -863,7 +862,11 @@ import Foundation
         // get email and userId from UserDefaults if present
         retrieveEmailAndUserId()
         
-        IterableAppIntegration.minion = IterableAppIntegrationInternal(tracker: self, actionRunner: actionRunner, versionInfo: SystemVersionInfo())
+        IterableAppIntegration.implementation = IterableAppIntegrationInternal(tracker: self,
+                                                                       versionInfo: SystemVersionInfo(),
+                                                                       urlDelegate: config.urlDelegate,
+                                                                       customActionDelegate: config.customActionDelegate,
+                                                                       urlOpener: AppUrlOpener())
         
         handle(launchOptions: launchOptions)
     }

@@ -42,6 +42,13 @@ import Foundation
     }
     
     /**
+     Just a shortcut for `isOfType(IterableAction.actionTypeOpenUrl)`.
+    */
+    @objc public func isOpenUrl() -> Bool {
+        return self.type == IterableAction.actionTypeOpenUrl
+    }
+    
+    /**
      * Creates a new `IterableAction` from a dictionary
      * - parameter dictionary: Dictionary containing action data
      * - returns: `IterableAction` instance

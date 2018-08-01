@@ -73,15 +73,21 @@ class SystemVersionInfo : VersionInfoProtocol {
 
 struct IterableAppIntegrationInternal {
     private let tracker: PushTrackerProtocol
-    private let actionRunner: ActionRunnerProtocol
     private let versionInfo: VersionInfoProtocol
+    private let urlDelegate: IterableURLDelegate?
+    private let customActionDelegate: IterableCustomActionDelegate?
+    private let urlOpener: UrlOpenerProtocol?
 
     init(tracker: PushTrackerProtocol,
-         actionRunner: ActionRunnerProtocol,
-         versionInfo: VersionInfoProtocol) {
+         versionInfo: VersionInfoProtocol,
+         urlDelegate: IterableURLDelegate? = nil,
+         customActionDelegate: IterableCustomActionDelegate? = nil,
+         urlOpener: UrlOpenerProtocol? = nil) {
         self.tracker = tracker
-        self.actionRunner = actionRunner
         self.versionInfo = versionInfo
+        self.urlDelegate = urlDelegate
+        self.customActionDelegate = customActionDelegate
+        self.urlOpener = urlOpener
     }
     
     /**
@@ -132,39 +138,10 @@ struct IterableAppIntegrationInternal {
             completionHandler?()
             return
         }
-        
-        var dataFields = [AnyHashable : Any]()
-        var action: IterableAction? = nil
-        
-        if response.actionIdentifier == UNNotificationDefaultActionIdentifier {
-            dataFields[ITBL_KEY_ACTION_IDENTIFIER] = ITBL_VALUE_DEFAULT_PUSH_OPEN_ACTION_ID
-            if let defaultActionConfig = itbl[ITBL_PAYLOAD_DEFAULT_ACTION] as? [AnyHashable : Any] {
-                action = IterableAction.action(fromDictionary: defaultActionConfig)
-            } else {
-                action = IterableAppIntegrationInternal.legacyDefaultActionFromPayload(userInfo: userInfo)
-            }
-        } else if response.actionIdentifier == UNNotificationDismissActionIdentifier {
-            // We don't track dismiss actions yet
-        } else {
-            dataFields[ITBL_KEY_ACTION_IDENTIFIER] = response.actionIdentifier
-            if let buttons = itbl[ITBL_PAYLOAD_ACTION_BUTTONS] as? [[AnyHashable : Any]] {
-                for button in buttons {
-                    if let buttonIdentifier = button[ITBL_BUTTON_IDENTIFIER] as? String, buttonIdentifier == response.actionIdentifier {
-                        if let actionConfig = button[ITBL_BUTTON_ACTION] as? [AnyHashable : Any] {
-                            action = IterableAction.action(fromDictionary: actionConfig)
-                            break
-                        }
-                    }
-                }
-            }
-        }
-        
-        if let textInputResponse = response.textInputResponse {
-            let userText = textInputResponse.userText
-            dataFields[ITBL_KEY_USER_TEXT] = userText
-            action?.userInput = userText
-        }
-        
+
+        let dataFields = IterableAppIntegrationInternal.createIterableDataFields(actionIdentifier: response.actionIdentifier, userText: response.textInputResponse?.userText)
+        let action = IterableAppIntegrationInternal.createIterableAction(actionIdentifier: response.actionIdentifier, userText: response.textInputResponse?.userText, userInfo: userInfo, iterableElement: itbl)
+
         // Track push open
         if let _ = dataFields[ITBL_KEY_ACTION_IDENTIFIER] {
             tracker.trackPushOpen(userInfo, dataFields: dataFields)
@@ -172,12 +149,76 @@ struct IterableAppIntegrationInternal {
         
         //Execute the action
         if let action = action {
-            _ = actionRunner.execute(action: action, from: .push)
+            let context = IterableActionContext(action: action, source: .push)
+            IterableActionRunner.execute(action: action,
+                                         context: context,
+                                         urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate, inContext: context),
+                                         customActionHandler: IterableUtil.customActionHandler(fromCustomActionDelegate: customActionDelegate, inContext: context),
+                                         urlOpener: urlOpener)
         }
-        
+
         completionHandler?()
     }
+
+    @available(iOS 10.0, *)
+    private static func createIterableAction(actionIdentifier: String, userText: String?, userInfo: [AnyHashable : Any], iterableElement itbl: [AnyHashable : Any]) -> IterableAction? {
+        var action: IterableAction? = nil
+        
+        if actionIdentifier == UNNotificationDefaultActionIdentifier {
+            // default
+            if let defaultActionConfig = itbl[ITBL_PAYLOAD_DEFAULT_ACTION] as? [AnyHashable : Any] {
+                action = IterableAction.action(fromDictionary: defaultActionConfig)
+            } else {
+                action = IterableAppIntegrationInternal.legacyDefaultActionFromPayload(userInfo: userInfo)
+            }
+        } else if actionIdentifier == UNNotificationDismissActionIdentifier {
+            // We don't track dismiss actions yet
+        } else {
+            // Action Buttons
+            if let actionConfig = findButtonActionConfig(actionIdentifier: actionIdentifier, iterableElement: itbl) {
+                action = IterableAction.action(fromDictionary: actionConfig)
+            }
+        }
+        
+        if let userText = userText {
+            action?.userInput = userText
+        }
+
+        return action
+    }
     
+    private static func findButtonActionConfig(actionIdentifier: String, iterableElement itbl: [AnyHashable : Any]) -> [AnyHashable : Any]? {
+        guard let buttons = itbl[ITBL_PAYLOAD_ACTION_BUTTONS] as? [[AnyHashable : Any]] else {
+            return nil
+        }
+        let foundButton = buttons.first { (button) -> Bool in
+            guard let buttonIdentifier = button[ITBL_BUTTON_IDENTIFIER] as? String else {
+                return false
+            }
+            return buttonIdentifier == actionIdentifier
+        }
+        
+        return foundButton?[ITBL_BUTTON_ACTION] as? [AnyHashable : Any]
+    }
+    
+    @available(iOS 10.0, *)
+    private static func createIterableDataFields(actionIdentifier: String, userText: String?) -> [AnyHashable : Any] {
+        var dataFields = [AnyHashable : Any]()
+        
+        if actionIdentifier == UNNotificationDefaultActionIdentifier {
+            dataFields[ITBL_KEY_ACTION_IDENTIFIER] = ITBL_VALUE_DEFAULT_PUSH_OPEN_ACTION_ID
+        } else if actionIdentifier == UNNotificationDismissActionIdentifier {
+            // We don't track dismiss actions yet
+        } else {
+            dataFields[ITBL_KEY_ACTION_IDENTIFIER] = actionIdentifier
+        }
+        
+        if let userText = userText {
+            dataFields[ITBL_KEY_USER_TEXT] = userText
+        }
+
+        return dataFields
+    }
     
     func performDefaultNotificationAction(_ userInfo:[AnyHashable : Any]) {
         // Ignore the notification if we've already processed it from launchOptions while initializing SDK
@@ -203,7 +244,12 @@ struct IterableAppIntegrationInternal {
         }
 
         if let action = action {
-            _ = actionRunner.execute(action: action, from: .push)
+            let context = IterableActionContext(action: action, source: .push)
+            IterableActionRunner.execute(action: action,
+                                         context: context,
+                                         urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate, inContext: context),
+                                         customActionHandler: IterableUtil.customActionHandler(fromCustomActionDelegate: customActionDelegate, inContext: context),
+                                         urlOpener: urlOpener)
         }
     }
     

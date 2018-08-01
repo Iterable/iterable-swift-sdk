@@ -16,7 +16,7 @@ public final class IterableAPI : NSObject {
     /// You should call this method and not call the init method directly.
     /// - parameter apiKey: Iterable API Key.
     public static func initialize(apiKey: String) {
-        implementation = IterableAPIImplementation.initialize(apiKey: apiKey, launchOptions: nil, config:IterableConfig(), dateProvider: SystemDateProvider())
+        internalImplementation = IterableAPIInternal.initialize(apiKey: apiKey)
     }
     
     /// You should call this method and not call the init method directly.
@@ -24,7 +24,7 @@ public final class IterableAPI : NSObject {
     /// - parameter config: Iterable config object.
     public static func initialize(apiKey: String,
                                   config: IterableConfig) {
-        implementation = IterableAPIImplementation.initialize(apiKey: apiKey, launchOptions: nil, config:config, dateProvider: SystemDateProvider())
+        internalImplementation = IterableAPIInternal.initialize(apiKey: apiKey, config:config)
     }
     
     /// You should call this method and not call the init method directly.
@@ -32,7 +32,7 @@ public final class IterableAPI : NSObject {
     /// - parameter launchOptions: The launchOptions coming from application:didLaunching:withOptions
     public static func initialize(apiKey: String,
                                   launchOptions: [UIApplicationLaunchOptionsKey: Any]?) {
-        implementation = IterableAPIImplementation.initialize(apiKey: apiKey, launchOptions: launchOptions, config:IterableConfig(), dateProvider: SystemDateProvider())
+        internalImplementation = IterableAPIInternal.initialize(apiKey: apiKey, launchOptions: launchOptions)
     }
     
     /// The big daddy of initialization. You should call this method and not call the init method directly.
@@ -42,7 +42,7 @@ public final class IterableAPI : NSObject {
     public static func initialize(apiKey: String,
                                   launchOptions: [UIApplicationLaunchOptionsKey: Any]? = nil,
                                   config: IterableConfig = IterableConfig()) {
-        implementation = IterableAPIImplementation.initialize(apiKey: apiKey, launchOptions: launchOptions, config:config, dateProvider: SystemDateProvider())
+        internalImplementation = IterableAPIInternal.initialize(apiKey: apiKey, launchOptions: launchOptions, config:config)
     }
     
     /**
@@ -50,9 +50,9 @@ public final class IterableAPI : NSObject {
      */
     public static var email: String? {
         get {
-            return implementation?.email
+            return internalImplementation?.email
         } set {
-            implementation?.email = newValue
+            internalImplementation?.email = newValue
         }
     }
     
@@ -61,9 +61,9 @@ public final class IterableAPI : NSObject {
      */
     public static var userId: String? {
         get {
-            return implementation?.userId
+            return internalImplementation?.userId
         } set {
-            implementation?.userId = newValue
+            internalImplementation?.userId = newValue
         }
     }
     
@@ -71,7 +71,7 @@ public final class IterableAPI : NSObject {
      The userInfo dictionary which came with last push.
      */
     public static var lastPushPayload: [AnyHashable : Any]? {
-        return implementation?.lastPushPayload
+        return internalImplementation?.lastPushPayload
     }
 
     /**
@@ -79,9 +79,9 @@ public final class IterableAPI : NSObject {
      */
     public static var attributionInfo : IterableAttributionInfo? {
         get {
-            return implementation?.attributionInfo
+            return internalImplementation?.attributionInfo
         } set {
-            implementation?.attributionInfo = newValue
+            internalImplementation?.attributionInfo = newValue
         }
     }
 
@@ -95,7 +95,7 @@ public final class IterableAPI : NSObject {
      after registering for remote notifications
      */
     @objc(registerToken:) public static func register(token: Data) {
-        implementation?.register(token: token)
+        internalImplementation?.register(token: token)
     }
     
     /**
@@ -110,21 +110,21 @@ public final class IterableAPI : NSObject {
      - onFailure:   OnFailureHandler to invoke if token registration fails
      */
     @objc(registerToken:onSuccess:OnFailure:) public static func register(token: Data, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        implementation?.register(token: token, onSuccess: onSuccess, onFailure: onFailure)
+        internalImplementation?.register(token: token, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     /**
      Disable this device's token in Iterable, for the current user.
      */
     public static func disableDeviceForCurrentUser() {
-        implementation?.disableDeviceForCurrentUser()
+        internalImplementation?.disableDeviceForCurrentUser()
     }
     
     /**
      Disable this device's token in Iterable, for all users with this device.
      */
     public static func disableDeviceForAllUsers() {
-        implementation?.disableDeviceForAllUsers()
+        internalImplementation?.disableDeviceForAllUsers()
     }
     
     /**
@@ -137,7 +137,7 @@ public final class IterableAPI : NSObject {
      - seeAlso: OnFailureHandler
      */
     public static func disableDeviceForCurrentUser(withOnSuccess onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        implementation?.disableDeviceForCurrentUser(withOnSuccess: onSuccess, onFailure: onFailure)
+        internalImplementation?.disableDeviceForCurrentUser(withOnSuccess: onSuccess, onFailure: onFailure)
     }
     
     /**
@@ -150,7 +150,7 @@ public final class IterableAPI : NSObject {
      - seeAlso: OnFailureHandler
      */
     public static func disableDeviceForAllUsers(withOnSuccess onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        implementation?.disableDeviceForAllUsers(withOnSuccess: onSuccess, onFailure: onFailure)
+        internalImplementation?.disableDeviceForAllUsers(withOnSuccess: onSuccess, onFailure: onFailure)
     }
 
     /**
@@ -166,7 +166,7 @@ public final class IterableAPI : NSObject {
      - seeAlso: OnFailureHandler
      */
     @objc(updateUser:mergeNestedObjects:onSuccess:onFailure:) public static func updateUser(_ dataFields: [AnyHashable : Any], mergeNestedObjects: Bool, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) {
-        implementation?.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects, onSuccess: onSuccess, onFailure: onFailure)
+        internalImplementation?.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     /**
@@ -183,7 +183,7 @@ public final class IterableAPI : NSObject {
      - seeAlso: OnFailureHandler
      */
     @objc(updateEmail:onSuccess:onFailure:) public static func updateEmail(_ newEmail: String, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        implementation?.updateEmail(newEmail, onSuccess: onSuccess, onFailure: onFailure)
+        internalImplementation?.updateEmail(newEmail, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     /**
@@ -197,7 +197,7 @@ public final class IterableAPI : NSObject {
      - seeAlso: CommerceItem
      */
     @objc(trackPurchase:items:) public static func track(purchase withTotal: NSNumber, items: [CommerceItem]) {
-        implementation?.trackPurchase(withTotal, items: items)
+        internalImplementation?.trackPurchase(withTotal, items: items)
     }
 
     /**
@@ -212,7 +212,7 @@ public final class IterableAPI : NSObject {
      - seeAlso: CommerceItem
      */
     @objc(trackPurchase:items:dataFields:) public static func track(purchase withTotal: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?) {
-        implementation?.trackPurchase(withTotal, items: items, dataFields: dataFields)
+        internalImplementation?.trackPurchase(withTotal, items: items, dataFields: dataFields)
     }
     
     /**
@@ -229,7 +229,7 @@ public final class IterableAPI : NSObject {
      - seeAlso: CommerceItem, OnSuccessHandler, OnFailureHandler
      */
     @objc(trackPurchase:items:dataFields:onSuccess:onFailure:) public static func track(purchase withTotal: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        implementation?.trackPurchase(withTotal, items: items, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
+        internalImplementation?.trackPurchase(withTotal, items: items, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     /**
@@ -240,7 +240,7 @@ public final class IterableAPI : NSObject {
      - parameter userInfo:    the push notification payload
      */
     @objc(trackPushOpen:) public static func track(pushOpen userInfo: [AnyHashable : Any]) {
-        implementation?.trackPushOpen(userInfo)
+        internalImplementation?.trackPushOpen(userInfo)
     }
     
     /**
@@ -252,7 +252,7 @@ public final class IterableAPI : NSObject {
      - parameter dataFields:  a `Dictionary` containing any additional information to save along with the event
      */
     @objc(trackPushOpen:dataFields:) public static func track(pushOpen userInfo: [AnyHashable : Any], dataFields: [AnyHashable : Any]?) {
-        implementation?.trackPushOpen(userInfo, dataFields: dataFields)
+        internalImplementation?.trackPushOpen(userInfo, dataFields: dataFields)
     }
     
     /**
@@ -269,7 +269,7 @@ public final class IterableAPI : NSObject {
      - SeeAlso: OnFailureHandler
      */
     @objc(trackPushOpen:dataFields:onSuccess:onFailure:) public static func track(pushOpen userInfo: [AnyHashable : Any], dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        implementation?.trackPushOpen(userInfo, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
+        internalImplementation?.trackPushOpen(userInfo, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     /**
@@ -284,7 +284,7 @@ public final class IterableAPI : NSObject {
      - dataFields:          A `Dictionary` containing any additional information to save along with the event
      */
     @objc(trackPushOpen:templateId:messageId:appAlreadyRunning:dataFields:) public static func track(pushOpen campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?) {
-        implementation?.trackPushOpen(campaignId, templateId: templateId, messageId: messageId, appAlreadyRunning: appAlreadyRunning, dataFields: dataFields)
+        internalImplementation?.trackPushOpen(campaignId, templateId: templateId, messageId: messageId, appAlreadyRunning: appAlreadyRunning, dataFields: dataFields)
     }
     
     /**
@@ -301,7 +301,7 @@ public final class IterableAPI : NSObject {
      - seeAlso: OnFailureHandler
      */
     @objc(trackPushOpen:templateId:messageId:appAlreadyRunning:dataFields:onSuccess:onFailure:) public static func track(pushOpen campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        implementation?.trackPushOpen(campaignId, templateId: templateId, messageId: messageId, appAlreadyRunning: appAlreadyRunning, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
+        internalImplementation?.trackPushOpen(campaignId, templateId: templateId, messageId: messageId, appAlreadyRunning: appAlreadyRunning, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     /**
@@ -312,7 +312,7 @@ public final class IterableAPI : NSObject {
      - parameter eventName:   Name of the event
      */
     @objc(track:) public static func track(event eventName: String) {
-        implementation?.track(eventName)
+        internalImplementation?.track(eventName)
     }
     
     /**
@@ -324,7 +324,7 @@ public final class IterableAPI : NSObject {
      - parameter dataFields:  A `Dictionary` containing any additional information to save along with the event
      */
     @objc(track:dataFields:) public static func track(event eventName: String, dataFields: [AnyHashable : Any]?) {
-        implementation?.track(eventName, dataFields: dataFields)
+        internalImplementation?.track(eventName, dataFields: dataFields)
     }
     
     /**
@@ -338,7 +338,7 @@ public final class IterableAPI : NSObject {
      - onFailure:           OnFailureHandler to invoke if tracking the open fails
      */
     @objc(track:dataFields:onSuccess:onFailure:) public static func track(event eventName: String, dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        implementation?.track(eventName, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
+        internalImplementation?.track(eventName, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     /**
@@ -352,7 +352,7 @@ public final class IterableAPI : NSObject {
      - remark: passing in an empty array will clear subscription list, passing in nil will not modify the list
      */
     @objc(updateSubscriptions:unsubscribedChannelIds:unsubscribedMessageTypeIds:) public static func updateSubscriptions(_ emailListIds: [String]?, unsubscribedChannelIds: [String]?, unsubscribedMessageTypeIds: [String]?) {
-        implementation?.updateSubscriptions(emailListIds, unsubscribedChannelIds: unsubscribedChannelIds, unsubscribedMessageTypeIds: unsubscribedMessageTypeIds)
+        internalImplementation?.updateSubscriptions(emailListIds, unsubscribedChannelIds: unsubscribedChannelIds, unsubscribedMessageTypeIds: unsubscribedMessageTypeIds)
     }
     
     //MARK: In-App Notifications
@@ -364,7 +364,7 @@ public final class IterableAPI : NSObject {
      
      */
     public static func spawnInAppNotification(_ callbackBlock:ITEActionBlock?) {
-        implementation?.spawn(inAppNotification: callbackBlock)
+        internalImplementation?.spawn(inAppNotification: callbackBlock)
     }
     
     /**
@@ -373,7 +373,7 @@ public final class IterableAPI : NSObject {
      - parameter count:  the number of messages to fetch
      */
     @objc(getInAppMessages:) public static func get(inAppMessages count: NSNumber) {
-        implementation?.getInAppMessages(count)
+        internalImplementation?.getInAppMessages(count)
     }
     
     /**
@@ -388,7 +388,7 @@ public final class IterableAPI : NSObject {
      - seeAlso: OnFailureHandler
      */
     @objc(getInAppMessages:onSucess:onFailure:) public static func get(inAppMessages count: NSNumber, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        implementation?.getInAppMessages(count, onSuccess: onSuccess, onFailure: onFailure)
+        internalImplementation?.getInAppMessages(count, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     /**
@@ -396,7 +396,7 @@ public final class IterableAPI : NSObject {
      - parameter messageId:       The messageId of the notification
      */
     @objc(trackInAppOpen:) public static func track(inAppOpen messageId: String) {
-        implementation?.trackInAppOpen(messageId)
+        internalImplementation?.trackInAppOpen(messageId)
     }
     
     /**
@@ -406,7 +406,7 @@ public final class IterableAPI : NSObject {
      - parameter buttonIndex:     The index of the button that was clicked
      */
     @objc(trackInAppClick:buttonIndex:) public static func track(inAppClick messageId: String, buttonIndex: String) {
-        implementation?.trackInAppClick(messageId, buttonIndex: buttonIndex)
+        internalImplementation?.trackInAppClick(messageId, buttonIndex: buttonIndex)
     }
     
     /**
@@ -416,7 +416,7 @@ public final class IterableAPI : NSObject {
      - parameter buttonURL:     The url of the button that was clicked
      */
     @objc(trackInAppClick:buttonURL:) public static func track(inAppClick messageId: String, buttonURL: String) {
-        implementation?.trackInAppClick(messageId, buttonURL: buttonURL)
+        internalImplementation?.trackInAppClick(messageId, buttonURL: buttonURL)
     }
     
     /**
@@ -425,7 +425,7 @@ public final class IterableAPI : NSObject {
      - parameter messageId:       The messageId of the notification
      */
     @objc(inAppConsume:) public static func inAppConsume(messageId: String) {
-        implementation?.inAppConsume(messageId)
+        internalImplementation?.inAppConsume(messageId)
     }
 
     /**
@@ -440,7 +440,7 @@ public final class IterableAPI : NSObject {
      - remark:            passes the string of the button clicked to the callbackBlock
      */
     public static func showSystemNotification(withTitle title: String, body: String, button: String?, callbackBlock: ITEActionBlock?) {
-        implementation?.showSystemNotification(title, body: body, button: button, callbackBlock: callbackBlock)
+        internalImplementation?.showSystemNotification(title, body: body, button: button, callbackBlock: callbackBlock)
     }
     
     /**
@@ -456,7 +456,7 @@ public final class IterableAPI : NSObject {
      - remark:            passes the string of the button clicked to the callbackBlock
      */
     public static func showSystemNotification(withTitle title: String, body: String, buttonLeft: String?, buttonRight:String?, callbackBlock: ITEActionBlock?) {
-        implementation?.showSystemNotification(title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
+        internalImplementation?.showSystemNotification(title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
     }
     
     /**
@@ -466,7 +466,7 @@ public final class IterableAPI : NSObject {
      - parameter callbackBlock:   the callback to send after the webpageURL is called
      */
     @objc(getAndTrackDeepLink:callbackBlock:) public static func getAndTrack(deeplink webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {
-        implementation?.deeplinkManager.getAndTrackDeeplink(webpageURL: webpageURL, callbackBlock: callbackBlock)
+        internalImplementation?.deeplinkManager.getAndTrackDeeplink(webpageURL: webpageURL, callbackBlock: callbackBlock)
     }
     
     /**
@@ -479,9 +479,9 @@ public final class IterableAPI : NSObject {
      - returns: true if it is an Iterable link, or the value returned from `IterableURLDelegate` otherwise
      */
     @objc(handleUniversalLink:) @discardableResult public static func handle(universalLink url: URL) -> Bool {
-        return implementation?.deeplinkManager.handleUniversalLink(url) ?? false
+        return internalImplementation?.handleUniversalLink(url) ?? false
     }
     
     //MARK: Private and Internal
-    static var implementation: IterableAPIImplementation?
+    static var internalImplementation: IterableAPIInternal?
 }
