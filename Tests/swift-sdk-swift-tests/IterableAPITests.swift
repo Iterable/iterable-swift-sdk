@@ -63,7 +63,7 @@ class IterableAPITests: XCTestCase {
             XCTFail()
         }
 
-        wait(for: [expectation], timeout: 5.0)
+        wait(for: [expectation], timeout: testExpectationTimeout)
     }
     
     func testTrackEventBadNetwork() {
@@ -83,7 +83,7 @@ class IterableAPITests: XCTestCase {
             },
             onFailure: {(reason, data) in expectation.fulfill()})
         
-        wait(for: [expectation], timeout: 5.0)
+        wait(for: [expectation], timeout: testExpectationTimeout)
     }
     
     func testUpdateUser() {
@@ -105,7 +105,7 @@ class IterableAPITests: XCTestCase {
             expectation.fulfill()
         }
 
-        wait(for: [expectation], timeout: 5.0)
+        wait(for: [expectation], timeout: testExpectationTimeout)
     }
 
     func testUpdateEmail() {
@@ -132,6 +132,6 @@ class IterableAPITests: XCTestCase {
                                     XCTFail()
                                 })
 
-        wait(for: [expectation], timeout: 5.0)
+        wait(for: [expectation], timeout: testExpectationTimeout)
     }
 }
