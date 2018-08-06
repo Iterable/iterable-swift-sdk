@@ -858,6 +858,9 @@ import Foundation
         
         // super init
         super.init()
+        
+        // Fix for NSArchiver bug
+        NSKeyedUnarchiver.setClass(IterableAttributionInfo.self, forClassName: "IterableAttributionInfo")
 
         // get email and userId from UserDefaults if present
         retrieveEmailAndUserId()
