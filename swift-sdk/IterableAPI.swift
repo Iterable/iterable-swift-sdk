@@ -482,6 +482,10 @@ public final class IterableAPI : NSObject {
         return internalImplementation?.handleUniversalLink(url) ?? false
     }
     
+    @objc(sendDeviceInfo) public static func sendDeviceInfo() {
+        internalImplementation?.sendDeviceInfo()
+    }
+    
     //MARK: Private and Internal
     static var internalImplementation: IterableAPIInternal?
 }

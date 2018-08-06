@@ -205,7 +205,6 @@ extension IterableAPIInternal {
             switch result {
             case .value(let json):
                 onSuccess?(json)
-                print()
             case .error(let failureInfo):
                 onFailure?(failureInfo.errorMessage, failureInfo.data)
             }

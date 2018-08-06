@@ -816,6 +816,25 @@ import UserNotifications
     @objc @discardableResult public func handleUniversalLink(_ url: URL) -> Bool {
         return deeplinkManager.handleUniversalLink(url, urlDelegate: config.urlDelegate, urlOpener: AppUrlOpener())
     }
+
+    func sendDeviceInfo() {
+        let args = ["deviceInfo" : DeviceInfo.createJsDeviceInfo()]
+        guard let request = createPostRequest(forAction: ENDPOINT_DDL_MATCH, withBody: args) else {
+            ITBError("Could not create request")
+            return
+        }
+
+        NetworkHelper.sendRequest(request, usingSession: networkSession).observe {(result) in
+            switch result {
+            case .value(let json):
+                break
+            case .error(let failureInfo):
+                if let errorMessage = failureInfo.errorMessage {
+                    ITBError(errorMessage)
+                }
+            }
+        }
+    }
     
     // MARK: For Private and Internal Use ========================================>
     
