@@ -53,10 +53,10 @@ class IterableAPITests: XCTestCase {
         IterableAPI.initialize(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
         IterableAPI.email = IterableAPITests.email
         IterableAPI.track(event: eventName, dataFields: nil, onSuccess: { (json) in
-            TestUtils.validate(request: networkSession.request!, requestType: .post, endPoint: ENDPOINT_TRACK, queryParams: [(name: "api_key", IterableAPITests.apiKey)])
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: ENDPOINT_TRACK, queryParams: [(name: "api_key", IterableAPITests.apiKey)])
             let body = networkSession.getRequestBody()
-            TestUtils.validateElementPresent(withName: ITBL_KEY_EVENT_NAME, andValue: eventName, inBody: body)
-            TestUtils.validateElementPresent(withName: ITBL_KEY_EMAIL, andValue: IterableAPITests.email, inBody: body)
+            TestUtils.validateElementPresent(withName: ITBL_KEY_EVENT_NAME, andValue: eventName, inDictionary: body)
+            TestUtils.validateElementPresent(withName: ITBL_KEY_EMAIL, andValue: IterableAPITests.email, inDictionary: body)
             expectation.fulfill()
         }) { (reason, data) in
             expectation.fulfill()
@@ -94,11 +94,11 @@ class IterableAPITests: XCTestCase {
         IterableAPI.email = IterableAPITests.email
         let dataFields: Dictionary<String, String> = ["var1" : "val1", "var2" : "val2"]
         IterableAPI.updateUser(dataFields, mergeNestedObjects: true, onSuccess: {(json) in
-            TestUtils.validate(request: networkSession.request!, requestType: .post, endPoint: ENDPOINT_UPDATE_USER, queryParams: [(name: "api_key", IterableAPITests.apiKey)])
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: ENDPOINT_UPDATE_USER, queryParams: [(name: "api_key", IterableAPITests.apiKey)])
             let body = networkSession.getRequestBody()
-            TestUtils.validateElementPresent(withName: ITBL_KEY_EMAIL, andValue: IterableAPITests.email, inBody: body)
-            TestUtils.validateElementPresent(withName: ITBL_KEY_MERGE_NESTED, andValue: true, inBody: body)
-            TestUtils.validateElementPresent(withName: ITBL_KEY_DATA_FIELDS, andValue: dataFields, inBody: body)
+            TestUtils.validateElementPresent(withName: ITBL_KEY_EMAIL, andValue: IterableAPITests.email, inDictionary: body)
+            TestUtils.validateElementPresent(withName: ITBL_KEY_MERGE_NESTED, andValue: true, inDictionary: body)
+            TestUtils.validateElementPresent(withName: ITBL_KEY_DATA_FIELDS, andValue: dataFields, inDictionary: body)
             expectation.fulfill()
         }) {(error, data) in
             XCTFail()
@@ -119,11 +119,12 @@ class IterableAPITests: XCTestCase {
                                 onSuccess: {json in
                                     TestUtils.validate(request: networkSession.request!,
                                                        requestType: .post,
-                                                       endPoint: ENDPOINT_UPDATE_EMAIL,
+                                                       apiEndPoint: ITBConsts.apiEndpoint,
+                                                       path: ENDPOINT_UPDATE_EMAIL,
                                                        queryParams: [(name: "api_key", value: IterableAPITests.apiKey)])
                                     let body = networkSession.getRequestBody()
-                                    TestUtils.validateElementPresent(withName: ITBL_KEY_NEW_EMAIL, andValue: newEmail, inBody: body)
-                                    TestUtils.validateElementPresent(withName: ITBL_KEY_CURRENT_EMAIL, andValue: IterableAPITests.email, inBody: body)
+                                    TestUtils.validateElementPresent(withName: ITBL_KEY_NEW_EMAIL, andValue: newEmail, inDictionary: body)
+                                    TestUtils.validateElementPresent(withName: ITBL_KEY_CURRENT_EMAIL, andValue: IterableAPITests.email, inDictionary: body)
                                     XCTAssertEqual(IterableAPI.email, newEmail)
                                     expectation.fulfill()
                                 },

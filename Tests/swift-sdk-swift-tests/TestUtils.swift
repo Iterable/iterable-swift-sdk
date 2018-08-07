@@ -15,21 +15,21 @@ struct TestUtils {
         case post
     }
     
-    static func validate(request: URLRequest, requestType: RequestType? = nil, endPoint: String?, queryParams: [(name: String, value:String)]? = nil) {
+    static func validate(request: URLRequest, requestType: RequestType? = nil, apiEndPoint:String, path: String, queryParams: [(name: String, value:String)]? = nil) {
         if let requestType = requestType {
             XCTAssertEqual(requestType == .get ? ITBL_KEY_GET : ITBL_KEY_POST, request.httpMethod)
         }
-        if let endPoint = endPoint {
-            XCTAssertTrue(request.url!.absoluteString.starts(with: "\(ITBConsts.apiEndpoint)\(endPoint)"))
-        }
+
+        XCTAssertTrue(request.url!.absoluteString.hasPrefix(IterableRequestUtil.pathCombine(paths: [apiEndPoint, path])), "request: \(request.url!.absoluteString), apiEndPoint: \(apiEndPoint), path: \(path)")
+        
         if let queryParams = queryParams {
             let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
             validateQueryParameters(inUrlComponents: urlComponents, queryParams: queryParams)
         }
     }
     
-    static func validateElementPresent<T:Equatable>(withName name: String, andValue value: T, inBody body: [AnyHashable : Any]) {
-        XCTAssertEqual(body[name] as? T, value)
+    static func validateElementPresent<T:Equatable>(withName name: String, andValue value: T, inDictionary dict: [AnyHashable : Any]) {
+        XCTAssertEqual(dict[name] as? T, value)
     }
     
     private static func validateQueryParameters(inUrlComponents urlComponents: URLComponents, queryParams: [(name:String, value:String)]) {
