@@ -616,10 +616,11 @@ import Foundation
             let notificationMetadata = IterableNotificationMetadata.metadata(fromInAppOptions: messageId)
             
             DispatchQueue.main.async {
-                IterableInAppManager.showIterableNotificationHTML(html, trackParams: notificationMetadata, callbackBlock: callbackBlock, backgroundAlpha: backgroundAlpha, padding: edgeInsets)
+                let opened = IterableInAppManager.showIterableNotificationHTML(html, trackParams: notificationMetadata, callbackBlock: callbackBlock, backgroundAlpha: backgroundAlpha, padding: edgeInsets)
+                if opened {
+                    self.inAppConsume(messageId)
+                }
             }
-
-            self.inAppConsume(messageId)
         }
         
         getInAppMessages(1, onSuccess: onSuccess, onFailure: IterableAPIInternal.defaultOnFailure(identifier: "getInAppMessages"))
