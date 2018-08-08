@@ -605,8 +605,10 @@ import Foundation
             guard let html = message[ITERABLE_IN_APP_HTML] as? String else {
                 return
             }
-            if html.range(of: ITERABLE_IN_APP_HREF, options: [.caseInsensitive]) == nil {
+            guard html.range(of: ITERABLE_IN_APP_HREF, options: [.caseInsensitive]) != nil else {
                 ITBError("No href tag found in in-app html payload \(html)")
+                self.inAppConsume(messageId)
+                return
             }
 
             let inAppDisplaySettings = message[ITERABLE_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
