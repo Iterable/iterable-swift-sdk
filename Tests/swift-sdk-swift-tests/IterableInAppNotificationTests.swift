@@ -148,4 +148,11 @@ class IterableInAppNotificationTests: XCTestCase {
         let notificationType = IterableInAppHTMLViewController.setLocation(UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0))
         XCTAssertEqual(notificationType, .center)
     }
+    
+    func testDoNotShowMultipleTimes() {
+        let shownFirstTime = IterableInAppManager.showIterableNotificationHTML("", callbackBlock: nil)
+        let shownSecondTime = IterableInAppManager.showIterableNotificationHTML("", callbackBlock: nil)
+        XCTAssertTrue(shownFirstTime)
+        XCTAssertFalse(shownSecondTime)
+    }
 }
