@@ -870,7 +870,7 @@ import UserNotifications
     } ()
     
     //!!! TQM:CHANGE
-    final let shouldCheckForDeferredDeeplink = true
+    final let shouldCheckForDeferredDeeplink = false // for unit tests
     
     private func isEitherUserIdOrEmailSet() -> Bool {
         return IterableUtil.isNotNullOrEmpty(string: _email) || IterableUtil.isNotNullOrEmpty(string: _userId)
