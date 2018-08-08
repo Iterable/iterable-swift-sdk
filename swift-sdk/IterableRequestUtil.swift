@@ -15,6 +15,7 @@ struct IterableRequestUtil {
         }
 
         var request = URLRequest(url: url)
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type") //!!!TQM: move to master
         request.httpMethod = ITBL_KEY_POST
         if let body = body {
             if let bodyString = dictToJson(body) {

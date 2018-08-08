@@ -869,6 +869,9 @@ import UserNotifications
         return characterSet
     } ()
     
+    //!!! TQM:CHANGE
+    final let shouldCheckForDeferredDeeplink = true
+    
     private func isEitherUserIdOrEmailSet() -> Bool {
         return IterableUtil.isNotNullOrEmpty(string: _email) || IterableUtil.isNotNullOrEmpty(string: _userId)
     }
@@ -916,6 +919,9 @@ import UserNotifications
         // Fix for NSArchiver bug
         NSKeyedUnarchiver.setClass(IterableAttributionInfo.self, forClassName: "IterableAttributionInfo")
 
+        // check for deferred deeplinking
+        checkForDeferredDeeplink()
+        
         // get email and userId from UserDefaults if present
         retrieveEmailAndUserId()
         

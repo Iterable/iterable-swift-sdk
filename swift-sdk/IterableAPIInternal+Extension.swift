@@ -362,6 +362,50 @@ extension IterableAPIInternal {
         _userId = UserDefaults.standard.string(forKey: ITBConsts.UserDefaults.userIdKey)
     }
     
+    func checkForDeferredDeeplink() {
+        //!!! TQM:CHANGE
+        guard shouldCheckForDeferredDeeplink else {
+            return
+        }
+        
+        let body = ["deviceInfo" : DeviceInfo.createJsDeviceInfo()]
+        let localTestEndpoint = "http://192.168.9.114:8080/" //!!! TQM:CHANGE
+        let path = "ddl/match"
+        guard let request = IterableRequestUtil.createPostRequest(forApiEndPoint: localTestEndpoint, path: path, args: [ITBL_KEY_API_KEY : apiKey], body: body) else {
+            ITBError("Could not create request")
+            return
+        }
+        
+        NetworkHelper.sendRequest(request, usingSession: networkSession).observe {(result) in
+            switch result {
+            case .value(let json):
+                self.handleDDL(json: json)
+                break
+            case .error(let failureInfo):
+                if let errorMessage = failureInfo.errorMessage {
+                    ITBError(errorMessage)
+                }
+            }
+        }
+    }
+    
+    private func handleDDL(json: [AnyHashable : Any]) {
+        if let fpInfo = try? JSONDecoder().decode(FpInfo.self, from: JSONSerialization.data(withJSONObject: json, options: [])),
+            fpInfo.isMatch,
+            let destinationUrlString = fpInfo.destinationUrl,
+            let action = IterableAction.actionOpenUrl(fromUrlString: destinationUrlString) {
+            let context = IterableActionContext(action: action, source: .universalLink)
+            
+            DispatchQueue.main.async {
+                IterableActionRunner.execute(action: action,
+                                             context: context,
+                                             urlHandler: IterableUtil.urlHandler(fromUrlDelegate: self.urlDelegate, inContext: context),
+                                             urlOpener: AppUrlOpener())
+            }
+        }
+    }
+    
+    // Internal Only used in unit tests.
     @discardableResult static func initialize(apiKey: String,
                                                  launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil,
                                                  config: IterableConfig = IterableConfig()) -> IterableAPIInternal {
