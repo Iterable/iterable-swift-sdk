@@ -135,4 +135,69 @@ class IterableAPITests: XCTestCase {
 
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
+    
+    func testRegisterTokenNilAppName() {
+        let expectation = XCTestExpectation(description: "testRegisterToken")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
+        
+        IterableAPI.register(token: "zeeToken".data(using: .utf8)!, onSuccess: { (dict) in
+            XCTFail()
+        }) {(_,_) in
+            // failure
+            expectation.fulfill()
+        }
+        
+        // only wait for small time, supposed to error out
+        wait(for: [expectation], timeout: 1.0)
+    }
+
+    func testRegisterTokenNilEmailAndUserId() {
+        let expectation = XCTestExpectation(description: "testRegisterToken")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let config = IterableConfig()
+        config.pushIntegrationName = "my-push-integration"
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
+        IterableAPI.email = nil
+        IterableAPI.userId = nil
+        
+        IterableAPI.register(token: "zeeToken".data(using: .utf8)!, onSuccess: { (dict) in
+            XCTFail()
+        }) {(_,_) in
+            // failure
+            expectation.fulfill()
+        }
+        
+        // only wait for small time, supposed to error out
+        wait(for: [expectation], timeout: 10.0)
+    }
+
+    func testRegisterToken() {
+        let expectation = XCTestExpectation(description: "testRegisterToken")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let config = IterableConfig()
+        config.pushIntegrationName = "my-push-integration"
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
+        IterableAPI.email = "user@example.com"
+        let token = "zeeToken".data(using: .utf8)!
+        IterableAPI.register(token: token, onSuccess: { (dict) in
+            print(networkSession.getRequestBody())
+            let body = networkSession.getRequestBody() as! [String : Any]
+            TestUtils.validateElementPresent(withName: "email", andValue: "user@example.com", inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("device.applicationName"), value: "my-push-integration", inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("device.platform"), value: ITBL_KEY_APNS_SANDBOX, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("device.token"), value: (token as NSData).iteHexadecimalString(), inDictionary: body)
+
+            expectation.fulfill()
+        }) {(_,_) in
+            // failure
+            XCTFail()
+        }
+        
+        // only wait for small time, supposed to error out
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
 }

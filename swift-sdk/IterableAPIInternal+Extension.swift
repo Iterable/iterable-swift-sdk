@@ -63,6 +63,12 @@ extension IterableAPIInternal {
      - SeeAlso: PushServicePlatform, OnSuccessHandler, OnFailureHandler
      */
     func register(token: Data, appName: String, pushServicePlatform: PushServicePlatform, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+        guard email != nil || userId != nil else {
+            ITBError("Both email and userId are nil")
+            onFailure?("Both email and userId are nil", nil)
+            return
+        }
+
         hexToken = (token as NSData).iteHexadecimalString()
         
         let device = UIDevice.current
@@ -99,6 +105,7 @@ extension IterableAPIInternal {
             ]
         } else {
             ITBError("Either email or userId is required.")
+            assertionFailure("either email or userId should be set")
             args = [
                 ITBL_KEY_DEVICE: deviceDictionary
             ]

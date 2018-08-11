@@ -204,6 +204,7 @@ import Foundation
     @objc public func updateUser(_ dataFields: [AnyHashable : Any], mergeNestedObjects: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         guard email != nil || userId != nil else {
             ITBError("Both email and userId are nil")
+            onFailure?("Both email and userId are nil", nil)
             return
         }
         
@@ -313,6 +314,7 @@ import Foundation
     @objc public func trackPurchase(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         guard email != nil || userId != nil else {
             ITBError("Both email and userId are nil")
+            onFailure?("Both email and userId are nil", nil)
             return
         }
 
@@ -501,6 +503,7 @@ import Foundation
     @objc public func track(_ eventName: String, dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         guard email != nil || userId != nil else {
             ITBError("Both email and userId are nil")
+            onFailure?("Both email and userId are nil", nil)
             return
         }
 
@@ -651,6 +654,7 @@ import Foundation
     @objc public func getInAppMessages(_ count: NSNumber, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         guard email != nil || userId != nil else {
             ITBError("Both email and userId are nil")
+            onFailure?("Both email and userId are nil", nil)
             return
         }
 
@@ -670,7 +674,7 @@ import Foundation
                 ITBL_KEY_SDK_VERSION: "0.0.0"
             ]
         } else {
-            assertionFailure()
+            assertionFailure("either email or userId should be set")
             args = [
                 ITBL_KEY_COUNT: count.description,
                 ITBL_KEY_PLATFORM: ITBL_PLATFORM_IOS,
