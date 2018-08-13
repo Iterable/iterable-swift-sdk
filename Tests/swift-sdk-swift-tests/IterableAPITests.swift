@@ -46,7 +46,7 @@ class IterableAPITests: XCTestCase {
     }
 
     func testTrackEventWithEmail() {
-        let expectation = XCTestExpectation(description: "")
+        let expectation = XCTestExpectation(description: "testTrackEventWithEmail")
         
         let eventName = "MyCustomEvent"
         let networkSession = MockNetworkSession(statusCode: 200)
@@ -67,7 +67,7 @@ class IterableAPITests: XCTestCase {
     }
     
     func testTrackEventBadNetwork() {
-        let expectation = XCTestExpectation(description: "")
+        let expectation = XCTestExpectation(description: "testTrackEventBadNetwork")
         
         let eventName = "MyCustomEvent"
         let networkSession = MockNetworkSession(statusCode: 502)
@@ -87,7 +87,7 @@ class IterableAPITests: XCTestCase {
     }
     
     func testUpdateUser() {
-        let expectation = XCTestExpectation(description: "")
+        let expectation = XCTestExpectation(description: "testUpdateUser")
         
         let networkSession = MockNetworkSession(statusCode: 200)
         IterableAPI.initialize(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
@@ -109,7 +109,7 @@ class IterableAPITests: XCTestCase {
     }
 
     func testUpdateEmail() {
-        let expectation = XCTestExpectation(description: "")
+        let expectation = XCTestExpectation(description: "testUpdateEmail")
 
         let newEmail = "new_user@example.com"
         let networkSession = MockNetworkSession(statusCode: 200)

@@ -174,7 +174,7 @@ class MockNetworkSession: NetworkSessionProtocol {
         self.statusCode = statusCode
         self.json = json
         self.error = error
-        queue = DispatchQueue(label: "MockNetworkQueue")
+        queue = DispatchQueue(label: "MockNetworkQueue", qos: .userInteractive)
     }
     
     func makeRequest(_ request: URLRequest, completionHandler: @escaping NetworkSessionProtocol.CompletionHandler) {
