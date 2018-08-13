@@ -605,8 +605,10 @@ import Foundation
             guard let html = message[ITERABLE_IN_APP_HTML] as? String else {
                 return
             }
-            if html.range(of: ITERABLE_IN_APP_HREF, options: [.caseInsensitive]) == nil {
+            guard html.range(of: ITERABLE_IN_APP_HREF, options: [.caseInsensitive]) != nil else {
                 ITBError("No href tag found in in-app html payload \(html)")
+                self.inAppConsume(messageId)
+                return
             }
 
             let inAppDisplaySettings = message[ITERABLE_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
@@ -616,10 +618,11 @@ import Foundation
             let notificationMetadata = IterableNotificationMetadata.metadata(fromInAppOptions: messageId)
             
             DispatchQueue.main.async {
-                IterableInAppManager.showIterableNotificationHTML(html, trackParams: notificationMetadata, callbackBlock: callbackBlock, backgroundAlpha: backgroundAlpha, padding: edgeInsets)
+                let opened = IterableInAppManager.showIterableNotificationHTML(html, trackParams: notificationMetadata, callbackBlock: callbackBlock, backgroundAlpha: backgroundAlpha, padding: edgeInsets)
+                if opened {
+                    self.inAppConsume(messageId)
+                }
             }
-
-            self.inAppConsume(messageId)
         }
         
         getInAppMessages(1, onSuccess: onSuccess, onFailure: IterableAPIInternal.defaultOnFailure(identifier: "getInAppMessages"))

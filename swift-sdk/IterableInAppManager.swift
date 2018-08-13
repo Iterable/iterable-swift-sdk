@@ -23,14 +23,20 @@ class IterableInAppManager: NSObject {
         - callbackBlock:   The callback to send after a button on the notification is clicked
         - backgroundAlpha: The background alpha behind the notification
         - padding:         The padding around the notification
+     - returns:
+        true if IterableInAppHTMLViewController was shown.
      */
-    static func showIterableNotificationHTML(_ htmlString: String,
-                                                          trackParams: IterableNotificationMetadata?,
+    @discardableResult static func showIterableNotificationHTML(_ htmlString: String,
+                                                          trackParams: IterableNotificationMetadata? = nil,
                                                           callbackBlock: ITEActionBlock?,
-                                                          backgroundAlpha: Double,
-                                                          padding: UIEdgeInsets) {
-        guard let rootViewController = getTopViewController() else {
-            return
+                                                          backgroundAlpha: Double = 0,
+                                                          padding: UIEdgeInsets = .zero) -> Bool {
+        guard let topViewController = getTopViewController() else {
+            return false
+        }
+        if topViewController is IterableInAppHTMLViewController {
+            ITBError("Skipping the in-app notification. Another notification is already being displayed.")
+            return false
         }
         
         let baseNotification = IterableInAppHTMLViewController(data: htmlString)
@@ -38,21 +44,12 @@ class IterableInAppManager: NSObject {
         baseNotification.ITESetCallback(callbackBlock)
         baseNotification.ITESetPadding(padding)
 
-        rootViewController.definesPresentationContext = true
+        topViewController.definesPresentationContext = true
         baseNotification.view.backgroundColor = UIColor(white: 0, alpha: CGFloat(backgroundAlpha))
         baseNotification.modalPresentationStyle = .overCurrentContext
 
-        rootViewController.present(baseNotification, animated: false)
-    }
-    
-    /**
-     Creates and shows a HTML InApp Notification; with callback handler
-     
-     - parameter htmlString:      The NSString containing the dialog HTML
-     - parameter callbackBlock:   The callback to send after a button on the notification is clicked
-     */
-    static func showIterableNotificationHTML(_ htmlString:String, callbackBlock: ITEActionBlock?) {
-        showIterableNotificationHTML(htmlString, trackParams: nil, callbackBlock: callbackBlock, backgroundAlpha: 0, padding: .zero)
+        topViewController.present(baseNotification, animated: false)
+        return true
     }
     
     /**
@@ -72,7 +69,7 @@ class IterableInAppManager: NSObject {
                                                     buttonLeft: String?,
                                                     buttonRight: String?,
                                                     callbackBlock: ITEActionBlock?) {
-        guard let rootViewController = getTopViewController() else {
+        guard let topViewController = getTopViewController() else {
             return
         }
         
@@ -85,7 +82,7 @@ class IterableInAppManager: NSObject {
             addAlertActionButton(alertController: alertController, keyString: buttonRight, callbackBlock: callbackBlock)
         }
         
-        rootViewController.show(alertController, sender: self)
+        topViewController.show(alertController, sender: self)
     }
     
     
