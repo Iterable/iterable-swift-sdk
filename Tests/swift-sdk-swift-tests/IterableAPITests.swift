@@ -27,6 +27,8 @@ class IterableAPITests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        IterableAPI.email = nil
+        IterableAPI.userId = nil
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
     
@@ -184,7 +186,6 @@ class IterableAPITests: XCTestCase {
         IterableAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         IterableAPI.register(token: token, onSuccess: { (dict) in
-            print(networkSession.getRequestBody())
             let body = networkSession.getRequestBody() as! [String : Any]
             TestUtils.validateElementPresent(withName: "email", andValue: "user@example.com", inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath("device.applicationName"), value: "my-push-integration", inDictionary: body)
@@ -239,7 +240,6 @@ class IterableAPITests: XCTestCase {
                 TestUtils.validateElementPresent(withName: ITBL_KEY_EMAIL, andValue: "user@example.com", inDictionary: body)
                 expectation.fulfill()
             }) { (errorMessage, data) in
-                print("onError:")
                 expectation.fulfill()
             }
         }
@@ -269,9 +269,83 @@ class IterableAPITests: XCTestCase {
                 TestUtils.validateElementNotPresent(withName: ITBL_KEY_USER_ID, inDictionary: body)
                 expectation.fulfill()
             }) { (errorMessage, data) in
-                print("onError:")
                 expectation.fulfill()
             }
+        }
+        
+        // only wait for small time, supposed to error out
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+    
+    func testTrackPurchaseNoUserIdOrEmail() {
+        let expectation = XCTestExpectation(description: "testTrackPurchaseNoUserIdOrEmail")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let config = IterableConfig()
+        config.pushIntegrationName = "my-push-integration"
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
+
+        IterableAPI.track(purchase: 10.0, items: [], dataFields: nil, onSuccess: { (json) in
+            // no userid or email should fail
+            XCTFail()
+        }) { (errorMessage, data) in
+            expectation.fulfill()
+        }
+        
+        // only wait for small time, supposed to error out
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+
+    func testTrackPurchaseWithUserId() {
+        let expectation = XCTestExpectation(description: "testTrackPurchaseWithUserId")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let config = IterableConfig()
+        config.pushIntegrationName = "my-push-integration"
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
+        IterableAPI.userId = "zeeUserId"
+        
+        IterableAPI.track(purchase: 10.55, items: [], dataFields: nil, onSuccess: { (json) in
+            let body = networkSession.getRequestBody() as! [String : Any]
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: ENDPOINT_COMMERCE_TRACK_PURCHASE, queryParams: [(name: ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
+            TestUtils.validateMatch(keyPath: KeyPath("\(ITBL_KEY_USER).\(ITBL_KEY_USER_ID)"), value: "zeeUserId", inDictionary: body)
+            TestUtils.validateElementPresent(withName: ITBL_KEY_TOTAL, andValue: 10.55, inDictionary: body)
+
+            expectation.fulfill()
+        }) { (errorMessage, data) in
+            XCTFail()
+        }
+        
+        // only wait for small time, supposed to error out
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+
+    func testTrackPurchaseWithEmail() {
+        let expectation = XCTestExpectation(description: "testTrackPurchaseWithEmail")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let config = IterableConfig()
+        config.pushIntegrationName = "my-push-integration"
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
+        IterableAPI.email = "user@example.com"
+        let total = NSNumber(value: 15.32)
+        let items = [CommerceItem(id: "id1", name: "myCommerceItem", price: 5.0, quantity: 2)]
+        
+        IterableAPI.track(purchase: total, items: items, dataFields: nil, onSuccess: { (json) in
+            let body = networkSession.getRequestBody() as! [String : Any]
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: ENDPOINT_COMMERCE_TRACK_PURCHASE, queryParams: [(name: ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
+            TestUtils.validateMatch(keyPath: KeyPath("\(ITBL_KEY_USER).\(ITBL_KEY_EMAIL)"), value: "user@example.com", inDictionary: body)
+            TestUtils.validateElementPresent(withName: ITBL_KEY_TOTAL, andValue: total, inDictionary: body)
+            let itemsElement = body[ITBL_KEY_ITEMS] as! [[AnyHashable : Any]]
+            XCTAssertEqual(itemsElement.count, 1)
+            let firstElement = itemsElement[0]
+            TestUtils.validateElementPresent(withName: "id", andValue: "id1", inDictionary: firstElement)
+            TestUtils.validateElementPresent(withName: "name", andValue: "myCommerceItem", inDictionary: firstElement)
+            TestUtils.validateElementPresent(withName: "price", andValue: 5.0, inDictionary: firstElement)
+            TestUtils.validateElementPresent(withName: "quantity", andValue: 2, inDictionary: firstElement)
+            expectation.fulfill()
+        }) { (errorMessage, data) in
+            XCTFail()
         }
         
         // only wait for small time, supposed to error out
