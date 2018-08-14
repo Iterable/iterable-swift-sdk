@@ -31,7 +31,11 @@ struct TestUtils {
     static func validateElementPresent<T:Equatable>(withName name: String, andValue value: T, inDictionary dict: [AnyHashable : Any]) {
         XCTAssertEqual(dict[name] as? T, value)
     }
-    
+
+    static func validateElementNotPresent(withName name: String, inDictionary dict: [AnyHashable : Any]) {
+        XCTAssertNil(dict[name])
+    }
+
     static func validateMatch<T:Equatable>(keyPath: KeyPath, value: T, inDictionary dict: [String : Any]) {
         XCTAssertEqual(dict[keyPath: keyPath] as? T, value)
     }

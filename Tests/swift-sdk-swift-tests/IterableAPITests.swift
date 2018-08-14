@@ -200,4 +200,81 @@ class IterableAPITests: XCTestCase {
         // only wait for small time, supposed to error out
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
+
+    func testDisableDeviceNotRegistered() {
+        let expectation = XCTestExpectation(description: "testDisableDevice")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let config = IterableConfig()
+        config.pushIntegrationName = "my-push-integration"
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
+        IterableAPI.email = "user@example.com"
+
+        IterableAPI.disableDeviceForCurrentUser(withOnSuccess: { (json) in
+            XCTFail()
+        }) { (errorMessage, data) in
+            expectation.fulfill()
+        }
+
+        // only wait for small time, supposed to error out
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+
+    func testDisableDeviceForCurrentUser() {
+        let expectation = XCTestExpectation(description: "testDisableDeviceForCurrentUser")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let config = IterableConfig()
+        config.pushIntegrationName = "my-push-integration"
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
+        IterableAPI.email = "user@example.com"
+        let token = "zeeToken".data(using: .utf8)!
+        IterableAPI.register(token: token)
+        networkSession.callback = {(data, response, error) in
+            networkSession.callback = nil
+            IterableAPI.disableDeviceForCurrentUser(withOnSuccess: { (json) in
+                let body = networkSession.getRequestBody() as! [String : Any]
+                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: ENDPOINT_DISABLE_DEVICE, queryParams: [(name: ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
+                TestUtils.validateElementPresent(withName: ITBL_KEY_TOKEN, andValue: (token as NSData).iteHexadecimalString(), inDictionary: body)
+                TestUtils.validateElementPresent(withName: ITBL_KEY_EMAIL, andValue: "user@example.com", inDictionary: body)
+                expectation.fulfill()
+            }) { (errorMessage, data) in
+                print("onError:")
+                expectation.fulfill()
+            }
+        }
+
+        // only wait for small time, supposed to error out
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+
+    func testDisableDeviceForAllUsers() {
+        let expectation = XCTestExpectation(description: "testDisableDeviceForAllUsers")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let config = IterableConfig()
+        config.pushIntegrationName = "my-push-integration"
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
+        IterableAPI.email = "user@example.com"
+        IterableAPI.userId = "zeeUserId"
+        let token = "zeeToken".data(using: .utf8)!
+        IterableAPI.register(token: token)
+        networkSession.callback = {(data, response, error) in
+            networkSession.callback = nil
+            IterableAPI.disableDeviceForAllUsers(withOnSuccess: { (json) in
+                let body = networkSession.getRequestBody() as! [String : Any]
+                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: ENDPOINT_DISABLE_DEVICE, queryParams: [(name: ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
+                TestUtils.validateElementPresent(withName: ITBL_KEY_TOKEN, andValue: (token as NSData).iteHexadecimalString(), inDictionary: body)
+                TestUtils.validateElementNotPresent(withName: ITBL_KEY_EMAIL, inDictionary: body)
+                TestUtils.validateElementNotPresent(withName: ITBL_KEY_USER_ID, inDictionary: body)
+                expectation.fulfill()
+            }) { (errorMessage, data) in
+                print("onError:")
+                expectation.fulfill()
+            }
+        }
+        
+        // only wait for small time, supposed to error out
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
 }

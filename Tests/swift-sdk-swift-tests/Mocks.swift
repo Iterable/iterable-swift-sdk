@@ -163,13 +163,14 @@ public class MockPushTracker : NSObject, PushTrackerProtocol {
 }
 
 class MockNetworkSession: NetworkSessionProtocol {
-    let statusCode: Int
-    let json: [AnyHashable : Any]
-    let error: Error?
-    let queue: DispatchQueue
-    
     var request: URLRequest?
-
+    var callback: ((Data?, URLResponse?, Error?) -> Void)?
+    
+    private let statusCode: Int
+    private let json: [AnyHashable : Any]
+    private let error: Error?
+    private let queue: DispatchQueue
+    
     init(statusCode: Int, json: [AnyHashable : Any] = [:], error: Error? = nil) {
         self.statusCode = statusCode
         self.json = json
@@ -183,6 +184,8 @@ class MockNetworkSession: NetworkSessionProtocol {
             let response = HTTPURLResponse(url: request.url!, statusCode: self.statusCode, httpVersion: "HTTP/1.1", headerFields: [:])
             let data = try! JSONSerialization.data(withJSONObject: self.json, options: [])
             completionHandler(data, response, self.error)
+
+            self.callback?(data, response, self.error)
         }
     }
     

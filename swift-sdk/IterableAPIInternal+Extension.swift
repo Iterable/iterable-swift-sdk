@@ -313,11 +313,13 @@ extension IterableAPIInternal {
     
     func disableDevice(forAllUsers allUsers: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         guard let hexToken = hexToken else {
-            ITBError("Device not registered")
+            ITBError("Device not registered.")
+            onFailure?("Device not registered.", nil)
             return
         }
         guard !(allUsers == false && email == nil && userId == nil) else {
             ITBError("Emal or userId must be set.")
+            onFailure?("Email or userId must be set.", nil)
             return
         }
         
