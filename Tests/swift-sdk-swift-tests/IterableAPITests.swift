@@ -395,9 +395,39 @@ class IterableAPITests: XCTestCase {
         // only wait for small time, supposed to error out
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
+    
+    func testDoNotCallDisableWhenSameValue() {
+        let expectation = XCTestExpectation(description: "testDoNotCallDisableWhenSameValue")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let config = IterableConfig()
+        config.pushIntegrationName = "my-push-integration"
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
+        let email = "user1@example.com"
+        IterableAPI.email = email
+        let token = "zeeToken".data(using: .utf8)!
+        networkSession.callback = {(_, _, _) in
+            // first call back will be called on register
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: ENDPOINT_REGISTER_DEVICE_TOKEN, queryParams: [(name: ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
+            networkSession.callback = {(_, _, _)in
+                // Second callback should not happen
+                XCTFail()
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+                expectation.fulfill()
+            })
+            // set same value
+            IterableAPI.email = email
+        }
+        IterableAPI.register(token: token)
+        
+        // only wait for small time, supposed to error out
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
 
-    func testCallRegisterForRemoteNotificationsWhenEnabled() {
-        let expectation = XCTestExpectation(description: "testCallRegisterForRemoteNotificationsWhenEnabled")
+
+    func testCallRegisterForRemoteNotificationsWhenNotificationsAreEnabled() {
+        let expectation = XCTestExpectation(description: "testCallRegisterForRemoteNotificationsWhenNotificationsAreEnabled")
         
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
@@ -429,8 +459,8 @@ class IterableAPITests: XCTestCase {
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
 
-    func testDoNotCallRegisterForRemoteNotificationsWhenDisabled() {
-        let expectation = XCTestExpectation(description: "testDoNotCallRegisterForRemoteNotificationsWhenDisabled")
+    func testDoNotCallRegisterForRemoteNotificationsWhenNotificationsAreDisabled() {
+        let expectation = XCTestExpectation(description: "testDoNotCallRegisterForRemoteNotificationsWhenNotificationsAreDisabled")
         
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
@@ -456,6 +486,69 @@ class IterableAPITests: XCTestCase {
                 expectation.fulfill()
             }
             IterableAPI.userId = "userId2"
+        }
+        IterableAPI.register(token: token)
+        
+        // only wait for small time, supposed to error out
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+    
+    func testDoNotCallDisableOrEnableWhenAutoPushIsOff() {
+        let expectation = XCTestExpectation(description: "testDoNotCallDisableOrEnableWhenAutoPushIsOff")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let config = IterableConfig()
+        config.pushIntegrationName = "my-push-integration"
+        config.autoPushRegistration = false
+        let notificationStateProvider = MockNotificationStateProvider(enabled: true) {
+            XCTFail()
+        }
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+        IterableAPI.email = "user1@example.com"
+        let token = "zeeToken".data(using: .utf8)!
+        networkSession.callback = {(_, _, _) in
+            // first call back will be called on register
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: ENDPOINT_REGISTER_DEVICE_TOKEN, queryParams: [(name: ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
+            networkSession.callback = {(_, _, _)in
+                // Second callback should not happen
+                XCTFail()
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+                expectation.fulfill()
+            })
+            IterableAPI.email = "user2@example.com"
+        }
+        IterableAPI.register(token: token)
+        
+        // only wait for small time, supposed to error out
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+
+    func testCallDisableAndEnableWhenAutoPushIsOn() {
+        let expectation = XCTestExpectation(description: "testCallDisableAndEnableWhenAutoPushIsOn")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let config = IterableConfig()
+        config.pushIntegrationName = "my-push-integration"
+        config.autoPushRegistration = true
+        let notificationStateProvider = MockNotificationStateProvider(enabled: true) {
+            // third call will call register for remote notification
+            expectation.fulfill()
+        }
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+        IterableAPI.email = "user1@example.com"
+        let token = "zeeToken".data(using: .utf8)!
+        networkSession.callback = {(_, _, _) in
+            // first call back will be called on register
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: ENDPOINT_REGISTER_DEVICE_TOKEN, queryParams: [(name: ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
+            networkSession.callback = {(_, _, _)in
+                // second call back is for disable when we set new user id
+                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: ENDPOINT_DISABLE_DEVICE, queryParams: [(name: ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
+                let body = networkSession.getRequestBody() as! [String : Any]
+                TestUtils.validateElementPresent(withName: ITBL_KEY_TOKEN, andValue: (token as NSData).iteHexadecimalString(), inDictionary: body)
+                TestUtils.validateElementPresent(withName: ITBL_KEY_EMAIL, andValue: "user1@example.com", inDictionary: body)
+            }
+            IterableAPI.email = "user2@example.com"
         }
         IterableAPI.register(token: token)
         

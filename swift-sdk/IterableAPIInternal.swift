@@ -37,13 +37,13 @@ import UserNotifications
         get {
             return _email
         } set {
-            checkPreSet(userIdOrEmail: newValue)
+            disablePrevious(previousValue: _email, newValue: newValue)
 
             _email = newValue
             _userId = nil
             storeEmailAndUserId()
 
-            checkPostSet(userIdOrEmail: newValue)
+            enableCurrent(userIdOrEmail: newValue)
         }
     }
     
@@ -54,23 +54,34 @@ import UserNotifications
         get {
             return _userId
         } set {
-            checkPreSet(userIdOrEmail: newValue)
+            disablePrevious(previousValue: _userId, newValue: newValue)
             
             _userId = newValue
             _email = nil
             storeEmailAndUserId()
             
-            checkPostSet(userIdOrEmail: newValue)
+            enableCurrent(userIdOrEmail: newValue)
         }
     }
     
-    private func checkPreSet(userIdOrEmail: String?) {
+    private func disablePrevious(previousValue: String?, newValue: String?) {
+        guard config.autoPushRegistration == true else {
+            return
+        }
+        guard previousValue != newValue else {
+            return
+        }
+        
         if isEitherUserIdOrEmailSet() {
             disableDeviceForCurrentUser()
         }
     }
     
-    private func checkPostSet(userIdOrEmail: String?) {
+    private func enableCurrent(userIdOrEmail: String?) {
+        guard config.autoPushRegistration == true else {
+            return
+        }
+        
         if IterableUtil.isNotNullOrEmpty(string: userIdOrEmail) {
             notificationStateProvider.notificationsEnabled.observe { (authResult) in
                 if case let Result.value(authorized) = authResult, authorized == true {

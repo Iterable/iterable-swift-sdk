@@ -64,4 +64,8 @@ public class IterableConfig : NSObject {
 
     /// How to handle IterableActions which are other than 'openUrl'
     public weak var customActionDelegate: IterableCustomActionDelegate?
+    
+    /// When set to true, IterableSDK will automatically register and deregister for
+    /// notification tokens.
+    public var autoPushRegistration = true
 }
