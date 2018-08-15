@@ -37,13 +37,17 @@ import UserNotifications
         get {
             return _email
         } set {
-            disablePrevious(previousValue: _email, newValue: newValue)
+            guard newValue != _email else {
+                return
+            }
+
+            disablePrevious()
 
             _email = newValue
             _userId = nil
             storeEmailAndUserId()
 
-            enableCurrent(userIdOrEmail: newValue)
+            enableCurrent()
         }
     }
     
@@ -54,45 +58,20 @@ import UserNotifications
         get {
             return _userId
         } set {
-            disablePrevious(previousValue: _userId, newValue: newValue)
+            guard newValue != _userId else {
+                return
+            }
+            
+            disablePrevious()
             
             _userId = newValue
             _email = nil
             storeEmailAndUserId()
             
-            enableCurrent(userIdOrEmail: newValue)
+            enableCurrent()
         }
     }
     
-    private func disablePrevious(previousValue: String?, newValue: String?) {
-        guard config.autoPushRegistration == true else {
-            return
-        }
-        guard previousValue != newValue else {
-            return
-        }
-        
-        if isEitherUserIdOrEmailSet() {
-            disableDeviceForCurrentUser()
-        }
-    }
-    
-    private func enableCurrent(userIdOrEmail: String?) {
-        guard config.autoPushRegistration == true else {
-            return
-        }
-        
-        if IterableUtil.isNotNullOrEmpty(string: userIdOrEmail) {
-            notificationStateProvider.notificationsEnabled.observe { (authResult) in
-                if case let Result.value(authorized) = authResult, authorized == true {
-                    DispatchQueue.main.async {
-                        self.notificationStateProvider.registerForRemoteNotification()
-                    }
-                }
-            }
-        }
-    }
-
     @objc public weak var urlDelegate: IterableURLDelegate? {
         get {
             return config.urlDelegate
@@ -873,6 +852,34 @@ import UserNotifications
     
     private func isEitherUserIdOrEmailSet() -> Bool {
         return IterableUtil.isNotNullOrEmpty(string: _email) || IterableUtil.isNotNullOrEmpty(string: _userId)
+    }
+    
+    private func disablePrevious() {
+        guard config.autoPushRegistration == true else {
+            return
+        }
+        guard isEitherUserIdOrEmailSet() else {
+            return
+        }
+
+        disableDeviceForCurrentUser()
+    }
+    
+    private func enableCurrent() {
+        guard config.autoPushRegistration == true else {
+            return
+        }
+        guard isEitherUserIdOrEmailSet() else {
+            return
+        }
+
+        notificationStateProvider.notificationsEnabled.observe { (authResult) in
+            if case let Result.value(authorized) = authResult, authorized == true {
+                DispatchQueue.main.async {
+                    self.notificationStateProvider.registerForRemoteNotification()
+                }
+            }
+        }
     }
     
     // MARK: Initialization
