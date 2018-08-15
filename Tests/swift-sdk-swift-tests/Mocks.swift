@@ -197,3 +197,69 @@ class MockNetworkSession: NetworkSessionProtocol {
         return try! JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable : Any]
     }
 }
+
+class MockNotificationStateProvider : NotificationStateProviderProtocol {
+    var notificationsEnabled: Promise<Bool, Error> {
+        let promise = Promise<Bool, Error>()
+        queue.async {
+            promise.resolve(with: self.enabled)
+        }
+        return promise
+    }
+    
+    func registerForRemoteNotification() {
+        callback()
+    }
+    
+    init(enabled: Bool, callback: @escaping () -> Void) {
+        self.enabled = enabled
+        self.callback = callback
+        queue = DispatchQueue(label: "myQueue", qos: .userInteractive)
+    }
+    
+    private let enabled: Bool
+    private let queue: DispatchQueue
+    private var callback: () -> Void
+}
+
+extension IterableAPI {
+    // Internal Only used in unit tests.
+    static func initialize(apiKey: String,
+                           launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil,
+                           config: IterableConfig = IterableConfig(),
+                           dateProvider: DateProviderProtocol = SystemDateProvider(),
+                           networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
+                           notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider()) {
+        internalImplementation = IterableAPIInternal.initialize(apiKey: apiKey, launchOptions: launchOptions, config: config, dateProvider: dateProvider, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+    }
+}
+
+
+// used by objc tests, remove after rewriting in Swift
+@objc public extension IterableAPIInternal {
+    @objc @discardableResult public static func initialize(apiKey: String) -> IterableAPIInternal {
+        return initialize(apiKey: apiKey, config:IterableConfig())
+    }
+    
+    // used by objc tests, remove after rewriting them in Swift
+    @objc @discardableResult public static func initialize(apiKey: String,
+                                                           config: IterableConfig) -> IterableAPIInternal {
+        return initialize(apiKey: apiKey, launchOptions: nil, config:config)
+    }
+}
+
+extension IterableAPIInternal {
+    @discardableResult static func initialize(apiKey: String,
+                                              launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil,
+                                              config: IterableConfig = IterableConfig(),
+                                              dateProvider: DateProviderProtocol = SystemDateProvider(),
+                                              networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
+                                              notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider()) -> IterableAPIInternal {
+        queue.sync {
+            _sharedInstance = IterableAPIInternal(apiKey: apiKey, config: config, dateProvider: dateProvider, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+        }
+        return _sharedInstance!
+    }
+}
+
+

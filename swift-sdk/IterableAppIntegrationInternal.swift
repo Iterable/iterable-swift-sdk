@@ -9,6 +9,40 @@
 import Foundation
 import UserNotifications
 
+// Returns whether notifications are enabled
+protocol NotificationStateProviderProtocol {
+    var notificationsEnabled : Promise<Bool, Error> {get}
+    func registerForRemoteNotification()
+}
+
+struct SystemNotificationStateProvider : NotificationStateProviderProtocol {
+    var notificationsEnabled: Promise<Bool, Error> {
+        let result = Promise<Bool, Error>()
+        
+        if #available(iOS 10.0, *) {
+            UNUserNotificationCenter.current().getNotificationSettings { settings in
+                if settings.authorizationStatus == .authorized {
+                    result.resolve(with: true)
+                } else {
+                    result.resolve(with: false)
+                }
+            }
+        } else {
+            // Fallback on earlier versions
+            if UIApplication.shared.isRegisteredForRemoteNotifications {
+                result.resolve(with: true)
+            } else {
+                result.resolve(with: false)
+            }
+        }
+        
+        return result
+    }
+
+    func registerForRemoteNotification() {
+        UIApplication.shared.registerForRemoteNotifications()
+    }
+}
 
 @available(iOS 10.0, *)
 public protocol NotificationResponseProtocol {

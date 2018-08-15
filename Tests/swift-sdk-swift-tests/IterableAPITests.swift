@@ -7,19 +7,9 @@
 //
 
 import XCTest
+import UserNotifications
 
 @testable import IterableSDK
-
-extension IterableAPI {
-    // Internal Only used in unit tests.
-    static func initialize(apiKey: String,
-                            launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil,
-                            config: IterableConfig = IterableConfig(),
-                            dateProvider: DateProviderProtocol = SystemDateProvider(),
-                            networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default)) {
-        internalImplementation = IterableAPIInternal.init(apiKey: apiKey, launchOptions: launchOptions, config: config, dateProvider: dateProvider, networkSession: networkSession)
-    }
-}
 
 class IterableAPITests: XCTestCase {
     private static let apiKey = "zeeApiKey"
@@ -27,8 +17,8 @@ class IterableAPITests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        IterableAPI.email = nil
-        IterableAPI.userId = nil
+        UserDefaults.standard.removeObject(forKey: ITBConsts.UserDefaults.emailKey)
+        UserDefaults.standard.removeObject(forKey: ITBConsts.UserDefaults.userIdKey)
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
     
@@ -256,9 +246,7 @@ class IterableAPITests: XCTestCase {
         config.pushIntegrationName = "my-push-integration"
         IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
         IterableAPI.email = "user@example.com"
-        IterableAPI.userId = "zeeUserId"
         let token = "zeeToken".data(using: .utf8)!
-        IterableAPI.register(token: token)
         networkSession.callback = {(data, response, error) in
             networkSession.callback = nil
             IterableAPI.disableDeviceForAllUsers(withOnSuccess: { (json) in
@@ -272,6 +260,7 @@ class IterableAPITests: XCTestCase {
                 expectation.fulfill()
             }
         }
+        IterableAPI.register(token: token)
         
         // only wait for small time, supposed to error out
         wait(for: [expectation], timeout: testExpectationTimeout)
@@ -347,6 +336,128 @@ class IterableAPITests: XCTestCase {
         }) { (errorMessage, data) in
             XCTFail()
         }
+        
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+    
+    func testCallDisableWhenCurrentEmailSet() {
+        let expectation = XCTestExpectation(description: "testDisableWhenCurrentEmailSet")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let config = IterableConfig()
+        config.pushIntegrationName = "my-push-integration"
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
+        IterableAPI.email = "user1@example.com"
+        let token = "zeeToken".data(using: .utf8)!
+        networkSession.callback = {(_, _, _) in
+            // first call back will be called on register
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: ENDPOINT_REGISTER_DEVICE_TOKEN, queryParams: [(name: ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
+            networkSession.callback = {(_, _, _)in
+                // second call back is for disable when we set new user id
+                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: ENDPOINT_DISABLE_DEVICE, queryParams: [(name: ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
+                let body = networkSession.getRequestBody() as! [String : Any]
+                TestUtils.validateElementPresent(withName: ITBL_KEY_TOKEN, andValue: (token as NSData).iteHexadecimalString(), inDictionary: body)
+                TestUtils.validateElementPresent(withName: ITBL_KEY_EMAIL, andValue: "user1@example.com", inDictionary: body)
+                expectation.fulfill()
+            }
+            IterableAPI.email = "user2@example.com"
+        }
+        IterableAPI.register(token: token)
+
+        // only wait for small time, supposed to error out
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+
+    func testCallDisableWhenCurrentUserIdSet() {
+        let expectation = XCTestExpectation(description: "testDisableWhenCurrentUserIdSet")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let config = IterableConfig()
+        config.pushIntegrationName = "my-push-integration"
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
+        IterableAPI.userId = "userId1"
+        let token = "zeeToken".data(using: .utf8)!
+        networkSession.callback = {(_, _, _) in
+            // first call back will be called on register
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: ENDPOINT_REGISTER_DEVICE_TOKEN, queryParams: [(name: ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
+            networkSession.callback = {(_, _, _) in
+                // second call back is for disable when we set new user id
+                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: ENDPOINT_DISABLE_DEVICE, queryParams: [(name: ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
+                let body = networkSession.getRequestBody() as! [String : Any]
+                TestUtils.validateElementPresent(withName: ITBL_KEY_TOKEN, andValue: (token as NSData).iteHexadecimalString(), inDictionary: body)
+                TestUtils.validateElementPresent(withName: ITBL_KEY_USER_ID, andValue: "userId1", inDictionary: body)
+                expectation.fulfill()
+            }
+            IterableAPI.userId = "userId2"
+        }
+        IterableAPI.register(token: token)
+
+        // only wait for small time, supposed to error out
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+
+    func testCallRegisterForRemoteNotificationsWhenEnabled() {
+        let expectation = XCTestExpectation(description: "testCallRegisterForRemoteNotificationsWhenEnabled")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let config = IterableConfig()
+        config.pushIntegrationName = "my-push-integration"
+        let notificationStateProvider = MockNotificationStateProvider(enabled: true) {
+            expectation.fulfill()
+        }
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey,
+                               config: config,
+                               networkSession: networkSession,
+                               notificationStateProvider: notificationStateProvider)
+        IterableAPI.userId = "userId1"
+        let token = "zeeToken".data(using: .utf8)!
+        networkSession.callback = {(_, _, _) in
+            // first call back will be called on register
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: ENDPOINT_REGISTER_DEVICE_TOKEN, queryParams: [(name: ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
+            networkSession.callback = {(_, _, _) in
+                // second call back is for disable when we set new user id
+                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: ENDPOINT_DISABLE_DEVICE, queryParams: [(name: ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
+                let body = networkSession.getRequestBody() as! [String : Any]
+                TestUtils.validateElementPresent(withName: ITBL_KEY_TOKEN, andValue: (token as NSData).iteHexadecimalString(), inDictionary: body)
+                TestUtils.validateElementPresent(withName: ITBL_KEY_USER_ID, andValue: "userId1", inDictionary: body)
+            }
+            IterableAPI.userId = "userId2"
+        }
+        IterableAPI.register(token: token)
+        
+        // only wait for small time, supposed to error out
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+
+    func testDoNotCallRegisterForRemoteNotificationsWhenDisabled() {
+        let expectation = XCTestExpectation(description: "testDoNotCallRegisterForRemoteNotificationsWhenDisabled")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let config = IterableConfig()
+        config.pushIntegrationName = "my-push-integration"
+        let notificationStateProvider = MockNotificationStateProvider(enabled: false) {
+            XCTFail()
+        }
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey,
+                               config: config,
+                               networkSession: networkSession,
+                               notificationStateProvider: notificationStateProvider)
+        IterableAPI.userId = "userId1"
+        let token = "zeeToken".data(using: .utf8)!
+        networkSession.callback = {(_, _, _) in
+            // first call back will be called on register
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: ENDPOINT_REGISTER_DEVICE_TOKEN, queryParams: [(name: ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
+            networkSession.callback = {(_, _, _) in
+                // second call back is for disable when we set new user id
+                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: ENDPOINT_DISABLE_DEVICE, queryParams: [(name: ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
+                let body = networkSession.getRequestBody() as! [String : Any]
+                TestUtils.validateElementPresent(withName: ITBL_KEY_TOKEN, andValue: (token as NSData).iteHexadecimalString(), inDictionary: body)
+                TestUtils.validateElementPresent(withName: ITBL_KEY_USER_ID, andValue: "userId1", inDictionary: body)
+                expectation.fulfill()
+            }
+            IterableAPI.userId = "userId2"
+        }
+        IterableAPI.register(token: token)
         
         // only wait for small time, supposed to error out
         wait(for: [expectation], timeout: testExpectationTimeout)

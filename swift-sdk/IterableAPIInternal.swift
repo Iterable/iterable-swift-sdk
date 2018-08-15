@@ -5,26 +5,9 @@
 //
 
 import Foundation
+import UserNotifications
 
 @objc public final class IterableAPIInternal : NSObject, PushTrackerProtocol {
-    // MARK: Initialization
-
-    /// You should call this method and not call the init method directly.
-    /// - parameter apiKey: Iterable API Key.
-    /// - returns: an instance of IterableAPIImplementation
-    @objc @discardableResult public static func initialize(apiKey: String) -> IterableAPIInternal {
-        return initialize(apiKey: apiKey, config:IterableConfig())
-    }
-
-    /// You should call this method and not call the init method directly.
-    /// - parameter apiKey: Iterable API Key.
-    /// - parameter config: Iterable config object.
-    /// - returns: an instance of IterableAPIImplementation
-    @objc @discardableResult public static func initialize(apiKey: String,
-                                                           config: IterableConfig) -> IterableAPIInternal {
-        return initialize(apiKey: apiKey, launchOptions: nil, config:config)
-    }
-
     /**
      Get the previously instantiated singleton instance of the API
      
@@ -54,12 +37,16 @@ import Foundation
         get {
             return _email
         } set {
+            checkPreSet(userIdOrEmail: newValue)
+
             _email = newValue
             _userId = nil
             storeEmailAndUserId()
+
+            checkPostSet(userIdOrEmail: newValue)
         }
     }
-
+    
     /**
      The userId of the logged in user that this IterableAPIImplementation is using
      */
@@ -67,9 +54,31 @@ import Foundation
         get {
             return _userId
         } set {
+            checkPreSet(userIdOrEmail: newValue)
+            
             _userId = newValue
             _email = nil
             storeEmailAndUserId()
+            
+            checkPostSet(userIdOrEmail: newValue)
+        }
+    }
+    
+    private func checkPreSet(userIdOrEmail: String?) {
+        if isEitherUserIdOrEmailSet() {
+            disableDeviceForCurrentUser()
+        }
+    }
+    
+    private func checkPostSet(userIdOrEmail: String?) {
+        if IterableUtil.isNotNullOrEmpty(string: userIdOrEmail) {
+            notificationStateProvider.notificationsEnabled.observe { (authResult) in
+                if case let Result.value(authorized) = authResult, authorized == true {
+                    DispatchQueue.main.async {
+                        self.notificationStateProvider.registerForRemoteNotification()
+                    }
+                }
+            }
         }
     }
 
@@ -837,7 +846,9 @@ import Foundation
     
     let dateProvider: DateProviderProtocol
     
-    private var networkSessionProvider : () -> NetworkSessionProtocol
+    var networkSessionProvider : () -> NetworkSessionProtocol
+    
+    var notificationStateProvider: NotificationStateProviderProtocol
     
     lazy var networkSession: NetworkSessionProtocol = {
         networkSessionProvider()
@@ -849,16 +860,23 @@ import Foundation
         return characterSet
     } ()
     
+    private func isEitherUserIdOrEmailSet() -> Bool {
+        return IterableUtil.isNotNullOrEmpty(string: _email) || IterableUtil.isNotNullOrEmpty(string: _userId)
+    }
+    
+    // MARK: Initialization
     // Package private method. Do not call this directly.
     init(apiKey: String,
          launchOptions: [UIApplicationLaunchOptionsKey: Any]? = nil,
          config: IterableConfig = IterableConfig(),
          dateProvider: DateProviderProtocol = SystemDateProvider(),
-         networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default)) {
+         networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
+         notificationStateProvider:NotificationStateProviderProtocol = SystemNotificationStateProvider()) {
         self.apiKey = apiKey
         self.config = config
         self.dateProvider = dateProvider
         self.networkSessionProvider = networkSession
+        self.notificationStateProvider = notificationStateProvider
         
         // setup
         deeplinkManager = IterableDeeplinkManager()

@@ -378,14 +378,14 @@
 			children = (
 				00B6FACF210E8B10007535CF /* Test Files */,
 				AC2C668520D3370D00D46CC9 /* Helper Files */,
-				AC2C668320D3370600D46CC9 /* Mocks.swift */,
+				ACD6116D21080564003E7F6B /* IterableAPITests.swift */,
 				AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */,
 				AC2C668620D3435700D46CC9 /* IterableActionRunnerTests.swift */,
 				AC6FDD8B20F56309005D811E /* IterableInAppNotificationTests.swift */,
-				ACD6116D21080564003E7F6B /* IterableAPITests.swift */,
 				00CB31B4210960C4004ACDEC /* TestUtils.swift */,
 				00B6FACB210E8484007535CF /* APNSUtilTests.swift */,
 				AC776DA3211A17C700C27C27 /* IterableRequestUtilTests.swift */,
+				AC2C668320D3370600D46CC9 /* Mocks.swift */,
 			);
 			path = "swift-sdk-swift-tests";
 			sourceTree = "<group>";
