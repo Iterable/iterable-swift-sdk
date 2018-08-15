@@ -209,7 +209,7 @@ class MockNotificationStateProvider : NotificationStateProviderProtocol {
     
     var callback: (() -> Void)? = nil
 
-    func registerForRemoteNotification() {
+    func registerForRemoteNotifications() {
         callback?()
     }
     

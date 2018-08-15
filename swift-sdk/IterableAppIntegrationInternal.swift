@@ -12,7 +12,7 @@ import UserNotifications
 // Returns whether notifications are enabled
 protocol NotificationStateProviderProtocol {
     var notificationsEnabled : Promise<Bool, Error> {get}
-    func registerForRemoteNotification()
+    func registerForRemoteNotifications()
 }
 
 struct SystemNotificationStateProvider : NotificationStateProviderProtocol {
@@ -39,7 +39,7 @@ struct SystemNotificationStateProvider : NotificationStateProviderProtocol {
         return result
     }
 
-    func registerForRemoteNotification() {
+    func registerForRemoteNotifications() {
         UIApplication.shared.registerForRemoteNotifications()
     }
 }

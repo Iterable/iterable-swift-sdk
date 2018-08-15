@@ -41,13 +41,13 @@ import UserNotifications
                 return
             }
 
-            disablePrevious()
+            disableDevicePreviousUser()
 
             _email = newValue
             _userId = nil
             storeEmailAndUserId()
 
-            enableCurrent()
+            enableDeviceForCurrentUser()
         }
     }
     
@@ -62,13 +62,13 @@ import UserNotifications
                 return
             }
             
-            disablePrevious()
+            disableDevicePreviousUser()
             
             _userId = newValue
             _email = nil
             storeEmailAndUserId()
             
-            enableCurrent()
+            enableDeviceForCurrentUser()
         }
     }
     
@@ -854,7 +854,7 @@ import UserNotifications
         return IterableUtil.isNotNullOrEmpty(string: _email) || IterableUtil.isNotNullOrEmpty(string: _userId)
     }
     
-    private func disablePrevious() {
+    private func disableDevicePreviousUser() {
         guard config.autoPushRegistration == true else {
             return
         }
@@ -865,7 +865,7 @@ import UserNotifications
         disableDeviceForCurrentUser()
     }
     
-    private func enableCurrent() {
+    private func enableDeviceForCurrentUser() {
         guard config.autoPushRegistration == true else {
             return
         }
@@ -876,7 +876,7 @@ import UserNotifications
         notificationStateProvider.notificationsEnabled.observe { (authResult) in
             if case let Result.value(authorized) = authResult, authorized == true {
                 DispatchQueue.main.async {
-                    self.notificationStateProvider.registerForRemoteNotification()
+                    self.notificationStateProvider.registerForRemoteNotifications()
                 }
             }
         }
@@ -909,7 +909,7 @@ import UserNotifications
         retrieveEmailAndUserId()
         
         if config.autoPushRegistration == true && isEitherUserIdOrEmailSet() {
-            notificationStateProvider.registerForRemoteNotification()
+            notificationStateProvider.registerForRemoteNotifications()
         }
         
         IterableAppIntegration.implementation = IterableAppIntegrationInternal(tracker: self,
