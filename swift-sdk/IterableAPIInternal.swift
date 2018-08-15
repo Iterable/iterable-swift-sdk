@@ -204,6 +204,7 @@ import Foundation
     @objc public func updateUser(_ dataFields: [AnyHashable : Any], mergeNestedObjects: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         guard email != nil || userId != nil else {
             ITBError("Both email and userId are nil")
+            onFailure?("Both email and userId are nil", nil)
             return
         }
         
@@ -229,7 +230,7 @@ import Foundation
             assertionFailure("expecting either userId or email to be set.")
         }
 
-        if let request = createPostRequest(forAction: ENDPOINT_UPDATE_USER, withArgs: args) {
+        if let request = createPostRequest(forAction: ENDPOINT_UPDATE_USER, withBody: args) {
             sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
         }
     }
@@ -258,7 +259,7 @@ import Foundation
             ITBL_KEY_NEW_EMAIL: newEmail
         ]
 
-        if let request = createPostRequest(forAction: ENDPOINT_UPDATE_EMAIL, withArgs: args) {
+        if let request = createPostRequest(forAction: ENDPOINT_UPDATE_EMAIL, withBody: args) {
             sendRequest(request,
                         onSuccess: { data in
                             self.email = newEmail
@@ -313,6 +314,7 @@ import Foundation
     @objc public func trackPurchase(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         guard email != nil || userId != nil else {
             ITBError("Both email and userId are nil")
+            onFailure?("Both email and userId are nil", nil)
             return
         }
 
@@ -353,7 +355,7 @@ import Foundation
             ]
         }
         
-        if let request = createPostRequest(forAction: ENDPOINT_COMMERCE_TRACK_PURCHASE, withArgs: args) {
+        if let request = createPostRequest(forAction: ENDPOINT_COMMERCE_TRACK_PURCHASE, withBody: args) {
             sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
         }
     }
@@ -460,7 +462,7 @@ import Foundation
             args[ITBL_KEY_MESSAGE_ID] = messageId
         }
 
-        if let request = createPostRequest(forAction: ENDPOINT_TRACK_PUSH_OPEN, withArgs: args) {
+        if let request = createPostRequest(forAction: ENDPOINT_TRACK_PUSH_OPEN, withBody: args) {
             sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
         }
     }
@@ -501,6 +503,7 @@ import Foundation
     @objc public func track(_ eventName: String, dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         guard email != nil || userId != nil else {
             ITBError("Both email and userId are nil")
+            onFailure?("Both email and userId are nil", nil)
             return
         }
 
@@ -546,7 +549,7 @@ import Foundation
             }
         }
         
-        if let request = createPostRequest(forAction: ENDPOINT_TRACK, withArgs: args) {
+        if let request = createPostRequest(forAction: ENDPOINT_TRACK, withBody: args) {
             sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
         }
     }
@@ -575,7 +578,7 @@ import Foundation
             dictionary[ITBL_KEY_UNSUB_MESSAGE] = unsubscribedMessageTypeIds
         }
         
-        if let request = createPostRequest(forAction: ENDPOINT_UPDATE_SUBSCRIPTIONS, withArgs: dictionary) {
+        if let request = createPostRequest(forAction: ENDPOINT_UPDATE_SUBSCRIPTIONS, withBody: dictionary) {
             sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "updateSubscriptions"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "updateSubscriptions"))
         }
     }
@@ -651,6 +654,7 @@ import Foundation
     @objc public func getInAppMessages(_ count: NSNumber, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         guard email != nil || userId != nil else {
             ITBError("Both email and userId are nil")
+            onFailure?("Both email and userId are nil", nil)
             return
         }
 
@@ -670,7 +674,7 @@ import Foundation
                 ITBL_KEY_SDK_VERSION: "0.0.0"
             ]
         } else {
-            assertionFailure()
+            assertionFailure("either email or userId should be set")
             args = [
                 ITBL_KEY_COUNT: count.description,
                 ITBL_KEY_PLATFORM: ITBL_PLATFORM_IOS,
@@ -701,7 +705,7 @@ import Foundation
                     ITBL_KEY_MESSAGE_ID : messageId]
         }
         
-        if let request = createPostRequest(forAction: ENDPOINT_TRACK_INAPP_OPEN, withArgs: args) {
+        if let request = createPostRequest(forAction: ENDPOINT_TRACK_INAPP_OPEN, withBody: args) {
             sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppOpen"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"))
         }
     }
@@ -719,7 +723,7 @@ import Foundation
         ]
         addEmailOrUserId(args: &args)
         
-        if let request = createPostRequest(forAction: ENDPOINT_TRACK_INAPP_CLICK, withArgs: args) {
+        if let request = createPostRequest(forAction: ENDPOINT_TRACK_INAPP_CLICK, withBody: args) {
             sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"))
         }
     }
@@ -738,7 +742,7 @@ import Foundation
         ]
         addEmailOrUserId(args: &args)
         
-        if let request = createPostRequest(forAction: ENDPOINT_TRACK_INAPP_CLICK, withArgs: args) {
+        if let request = createPostRequest(forAction: ENDPOINT_TRACK_INAPP_CLICK, withBody: args) {
             sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"))
         }
     }
@@ -754,7 +758,7 @@ import Foundation
         ]
         addEmailOrUserId(args: &args)
         
-        if let request = createPostRequest(forAction: ENDPOINT_INAPP_CONSUME, withArgs: args) {
+        if let request = createPostRequest(forAction: ENDPOINT_INAPP_CONSUME, withBody: args) {
             sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "inAppConsume"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "inAppConsume"))
         }
     }

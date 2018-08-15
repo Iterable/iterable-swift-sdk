@@ -63,6 +63,12 @@ extension IterableAPIInternal {
      - SeeAlso: PushServicePlatform, OnSuccessHandler, OnFailureHandler
      */
     func register(token: Data, appName: String, pushServicePlatform: PushServicePlatform, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+        guard email != nil || userId != nil else {
+            ITBError("Both email and userId are nil")
+            onFailure?("Both email and userId are nil", nil)
+            return
+        }
+
         hexToken = (token as NSData).iteHexadecimalString()
         
         let device = UIDevice.current
@@ -99,56 +105,26 @@ extension IterableAPIInternal {
             ]
         } else {
             ITBError("Either email or userId is required.")
+            assertionFailure("either email or userId should be set")
             args = [
                 ITBL_KEY_DEVICE: deviceDictionary
             ]
         }
         
         ITBInfo("sending registerToken request with args \(args)")
-        if let request = createPostRequest(forAction: ENDPOINT_REGISTER_DEVICE_TOKEN, withArgs: args) {
+        if let request = createPostRequest(forAction: ENDPOINT_REGISTER_DEVICE_TOKEN, withBody: args) {
             sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
         }
     }
     
-    @objc public func createPostRequest(forAction action: String, withArgs args: [AnyHashable : Any]) -> URLRequest? {
-        guard let url = getUrlComponents(forAction: action)?.url else {
-            return nil
-        }
-        var request = URLRequest(url: url)
-        request.httpMethod = ITBL_KEY_POST
-        if let body = IterableAPIInternal.dictToJson(args) {
-            request.httpBody = body.data(using: .utf8)
-        }
-        return request
-    }
-    
-    private func getUrlComponents(forAction action: String) -> URLComponents? {
-        guard var components = URLComponents(string: "\(ITBConsts.apiEndpoint)\(action)") else {
-            return nil
-        }
-        components.queryItems = [URLQueryItem(name: "api_key", value: apiKey)]
-        return components
-    }
-    
-    private func getUrl(forGetAction action: String, withArgs args: [String : String]) -> URL? {
-        guard var components = getUrlComponents(forAction: action) else {
-            return nil
-        }
-        
-        for arg in args {
-            components.queryItems?.append(URLQueryItem(name: arg.key, value: arg.value))
-        }
-        
-        return components.url
+    @objc public func createPostRequest(forAction action: String, withBody body: [AnyHashable : Any]) -> URLRequest? {
+        return IterableRequestUtil.createPostRequest(forApiEndPoint: ITBConsts.apiEndpoint, path: action, args: [ITBL_KEY_API_KEY : apiKey], body: body)
     }
     
     func createGetRequest(forAction action: String, withArgs args: [String : String]) -> URLRequest? {
-        guard let url = getUrl(forGetAction: action, withArgs: args) else {
-            return nil
-        }
-        var request = URLRequest(url: url)
-        request.httpMethod = ITBL_KEY_GET
-        return request
+        var argsWithApiKey = args
+        argsWithApiKey[ITBL_KEY_API_KEY] = apiKey
+        return IterableRequestUtil.createGetRequest(forApiEndPoint: ITBConsts.apiEndpoint, path: action, args: argsWithApiKey)
     }
     
     func addEmailOrUserId(args: inout [AnyHashable : Any]) {
@@ -166,7 +142,7 @@ extension IterableAPIInternal {
             ITBL_KEY_RECIPIENT_EMAIL: email,
             ITBL_KEY_CAMPAIGN_ID: campaignId
         ]
-       if let request = createPostRequest(forAction: ENDPOINT_PUSH_TARGET, withArgs: args) {
+       if let request = createPostRequest(forAction: ENDPOINT_PUSH_TARGET, withBody: args) {
             sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
        } else {
             onFailure?("couldn't create request", nil)
@@ -178,7 +154,7 @@ extension IterableAPIInternal {
             ITBL_KEY_RECIPIENT_EMAIL: email,
             ITBL_KEY_CAMPAIGN_ID: campaignId
         ]
-        if let request = createPostRequest(forAction: ENDPOINT_IN_APP_TARGET, withArgs: args) {
+        if let request = createPostRequest(forAction: ENDPOINT_IN_APP_TARGET, withBody: args) {
             sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
         } else {
             onFailure?("couldn't create request", nil)
@@ -337,11 +313,13 @@ extension IterableAPIInternal {
     
     func disableDevice(forAllUsers allUsers: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         guard let hexToken = hexToken else {
-            ITBError("Device not registered")
+            ITBError("Device not registered.")
+            onFailure?("Device not registered.", nil)
             return
         }
         guard !(allUsers == false && email == nil && userId == nil) else {
             ITBError("Emal or userId must be set.")
+            onFailure?("Email or userId must be set.", nil)
             return
         }
         
@@ -361,7 +339,7 @@ extension IterableAPIInternal {
         }
 
         ITBInfo("sending disableToken request with args \(args)")
-        if let request = createPostRequest(forAction: ENDPOINT_DISABLE_DEVICE, withArgs:args) {
+        if let request = createPostRequest(forAction: ENDPOINT_DISABLE_DEVICE, withBody:args) {
             sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
         }
     }

@@ -109,7 +109,7 @@ public final class IterableAPI : NSObject {
      - onSuccess:   OnSuccessHandler to invoke if token registration is successful
      - onFailure:   OnFailureHandler to invoke if token registration fails
      */
-    @objc(registerToken:onSuccess:OnFailure:) public static func register(token: Data, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    @objc(registerToken:onSuccess:OnFailure:) public static func register(token: Data, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) {
         internalImplementation?.register(token: token, onSuccess: onSuccess, onFailure: onFailure)
     }
     

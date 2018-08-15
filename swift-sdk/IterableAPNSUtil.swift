@@ -23,7 +23,7 @@ struct IterableAPNSUtil {
 
     private static func readMobileProvision() -> [AnyHashable : Any] {
         guard let provisioningPath = Bundle.main.path(forResource: "embedded", ofType: "mobileprovision") else {
-            print("resource not found")
+            ITBError("resource not found")
             return [:]
         }
         
