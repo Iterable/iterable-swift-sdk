@@ -365,19 +365,16 @@ class IterableAPITests: XCTestCase {
     }
     
     func testCallDisableAndEnable() {
-        let expectation1 = XCTestExpectation(description: "call register device")
+        let expectation1 = XCTestExpectation(description: "call register device API")
         let expectation2 = XCTestExpectation(description: "call disable on user1")
-        let expectation3 = XCTestExpectation(description: "call register device")
+        let expectation3 = XCTestExpectation(description: "call registerForRemoteNotifications")
         
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
         config.pushIntegrationName = "my-push-integration"
         config.autoPushRegistration = true
         
-        let notificationStateProvider = MockNotificationStateProvider(enabled: true) { // Notifications are on.
-            // Third call, this will fulfill the expectation.
-            expectation3.fulfill()
-        }
+        let notificationStateProvider = MockNotificationStateProvider(enabled: true)
         
         IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
         IterableAPI.email = "user1@example.com"
@@ -394,6 +391,9 @@ class IterableAPITests: XCTestCase {
                 TestUtils.validateElementPresent(withName: ITBL_KEY_TOKEN, andValue: (token as NSData).iteHexadecimalString(), inDictionary: body)
                 TestUtils.validateElementPresent(withName: ITBL_KEY_EMAIL, andValue: "user1@example.com", inDictionary: body)
             }
+            notificationStateProvider.callback = {
+                expectation3.fulfill()
+            }
             IterableAPI.email = "user2@example.com"
         }
         IterableAPI.register(token: token)
@@ -409,10 +409,8 @@ class IterableAPITests: XCTestCase {
         let config = IterableConfig()
         config.pushIntegrationName = "my-push-integration"
         config.autoPushRegistration = true
-        let notificationStateProvider = MockNotificationStateProvider(enabled: true) { // Notifications are on.
-            // should not call register for remote notification
-            XCTFail("should not call registerForRemoteNotification")
-        }
+        // notifications are enabled
+        let notificationStateProvider = MockNotificationStateProvider(enabled: true) // Notifications are on.
 
         IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
         let email = "user1@example.com"
@@ -425,11 +423,16 @@ class IterableAPITests: XCTestCase {
                 // Second callback should not happen
                 XCTFail("Should not call disable")
             }
+            notificationStateProvider.callback = {
+                XCTFail("should not call registerForRemoteNotification")
+            }
+            // set same value
+            IterableAPI.email = email
+            
+            // wait for 1 second to make sure that registerForRemoteNotifications is not called
             DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
                 expectation.fulfill()
             })
-            // set same value
-            IterableAPI.email = email
         }
         IterableAPI.register(token: token)
         
@@ -445,10 +448,8 @@ class IterableAPITests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
         config.pushIntegrationName = "my-push-integration"
-        let notificationStateProvider = MockNotificationStateProvider(enabled: false) { // Notifications are disabled
-            // should not call registerForRemoteNotifications
-            XCTFail("should not call registerForRemoteNotifications")
-        }
+        let notificationStateProvider = MockNotificationStateProvider(enabled: false) // Notifications are disabled
+
         IterableAPI.initialize(apiKey: IterableAPITests.apiKey,
                                config: config,
                                networkSession: networkSession,
@@ -466,11 +467,16 @@ class IterableAPITests: XCTestCase {
                 TestUtils.validateElementPresent(withName: ITBL_KEY_TOKEN, andValue: (token as NSData).iteHexadecimalString(), inDictionary: body)
                 TestUtils.validateElementPresent(withName: ITBL_KEY_USER_ID, andValue: "userId1", inDictionary: body)
                 expectation2.fulfill()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
-                    expectation3.fulfill()
-                })
+            }
+            notificationStateProvider.callback = {
+                XCTFail("should not call registerForRemoteNotification")
             }
             IterableAPI.userId = "userId2"
+
+            // wait for 1 second to make sure that registerForRemoteNotifications is not called
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+                expectation3.fulfill()
+            })
         }
         IterableAPI.register(token: token)
         
@@ -485,10 +491,8 @@ class IterableAPITests: XCTestCase {
         let config = IterableConfig()
         config.pushIntegrationName = "my-push-integration"
         config.autoPushRegistration = false
-        let notificationStateProvider = MockNotificationStateProvider(enabled: true) { // Notifications are on.
-            // should not come here.
-            XCTFail("should not call registerForRemoteNotifications")
-        }
+        let notificationStateProvider = MockNotificationStateProvider(enabled: true) // Notifications are on.
+
         IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
         IterableAPI.email = "user1@example.com"
         let token = "zeeToken".data(using: .utf8)!
@@ -499,10 +503,15 @@ class IterableAPITests: XCTestCase {
                 // Second callback should not happen
                 XCTFail("should not call disable")
             }
+            notificationStateProvider.callback = {
+                XCTFail("should not call registerForRemoteNotification")
+            }
+            IterableAPI.email = "user2@example.com"
+
+            // wait for 1 second to make sure that registerForRemoteNotifications is not called
             DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
                 expectation.fulfill()
             })
-            IterableAPI.email = "user2@example.com"
         }
         IterableAPI.register(token: token)
         

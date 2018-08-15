@@ -207,19 +207,19 @@ class MockNotificationStateProvider : NotificationStateProviderProtocol {
         return promise
     }
     
+    var callback: (() -> Void)? = nil
+
     func registerForRemoteNotification() {
-        callback()
+        callback?()
     }
     
-    init(enabled: Bool, callback: @escaping () -> Void) {
+    init(enabled: Bool) {
         self.enabled = enabled
-        self.callback = callback
         queue = DispatchQueue(label: "myQueue", qos: .userInteractive)
     }
     
     private let enabled: Bool
     private let queue: DispatchQueue
-    private var callback: () -> Void
 }
 
 extension IterableAPI {
