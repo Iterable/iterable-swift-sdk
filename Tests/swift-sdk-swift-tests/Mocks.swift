@@ -169,17 +169,15 @@ class MockNetworkSession: NetworkSessionProtocol {
     private let statusCode: Int
     private let json: [AnyHashable : Any]
     private let error: Error?
-    private let queue: DispatchQueue
     
     init(statusCode: Int, json: [AnyHashable : Any] = [:], error: Error? = nil) {
         self.statusCode = statusCode
         self.json = json
         self.error = error
-        queue = DispatchQueue(label: "MockNetworkQueue", qos: .userInteractive)
     }
     
     func makeRequest(_ request: URLRequest, completionHandler: @escaping NetworkSessionProtocol.CompletionHandler) {
-        queue.async {
+        DispatchQueue.main.async {
             self.request = request
             let response = HTTPURLResponse(url: request.url!, statusCode: self.statusCode, httpVersion: "HTTP/1.1", headerFields: [:])
             let data = try! JSONSerialization.data(withJSONObject: self.json, options: [])
