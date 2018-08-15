@@ -41,7 +41,7 @@ import UserNotifications
                 return
             }
 
-            disableDevicePreviousUser()
+            disableDeviceForPreviousUser()
 
             _email = newValue
             _userId = nil
@@ -62,7 +62,7 @@ import UserNotifications
                 return
             }
             
-            disableDevicePreviousUser()
+            disableDeviceForPreviousUser()
             
             _userId = newValue
             _email = nil
@@ -854,7 +854,7 @@ import UserNotifications
         return IterableUtil.isNotNullOrEmpty(string: _email) || IterableUtil.isNotNullOrEmpty(string: _userId)
     }
     
-    private func disableDevicePreviousUser() {
+    private func disableDeviceForPreviousUser() {
         guard config.autoPushRegistration == true else {
             return
         }
