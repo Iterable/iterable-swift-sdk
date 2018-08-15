@@ -52,7 +52,11 @@ class IterableAPITests: XCTestCase {
             expectation.fulfill()
         }) { (reason, data) in
             expectation.fulfill()
-            XCTFail()
+            if let reason = reason {
+                XCTFail("encountered error: \(reason)")
+            } else {
+                XCTFail("encountered error")
+            }
         }
 
         wait(for: [expectation], timeout: testExpectationTimeout)
@@ -71,7 +75,7 @@ class IterableAPITests: XCTestCase {
             onSuccess:{json in
                 // fail on success
                 expectation.fulfill()
-                XCTFail()
+                XCTFail("did not expect success")
             },
             onFailure: {(reason, data) in expectation.fulfill()})
         
@@ -92,8 +96,12 @@ class IterableAPITests: XCTestCase {
             TestUtils.validateElementPresent(withName: ITBL_KEY_MERGE_NESTED, andValue: true, inDictionary: body)
             TestUtils.validateElementPresent(withName: ITBL_KEY_DATA_FIELDS, andValue: dataFields, inDictionary: body)
             expectation.fulfill()
-        }) {(error, data) in
-            XCTFail()
+        }) {(reason, _) in
+            if let reason = reason {
+                XCTFail("encountered error: \(reason)")
+            } else {
+                XCTFail("encountered error")
+            }
             expectation.fulfill()
         }
 
@@ -120,9 +128,13 @@ class IterableAPITests: XCTestCase {
                                     XCTAssertEqual(IterableAPI.email, newEmail)
                                     expectation.fulfill()
                                 },
-                                onFailure: {(reason, data) in
+                                onFailure: {(reason, _) in
                                     expectation.fulfill()
-                                    XCTFail()
+                                    if let reason = reason {
+                                        XCTFail("encountered error: \(reason)")
+                                    } else {
+                                        XCTFail("encountered error")
+                                    }
                                 })
 
         wait(for: [expectation], timeout: testExpectationTimeout)
@@ -135,7 +147,7 @@ class IterableAPITests: XCTestCase {
         IterableAPI.initialize(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
         
         IterableAPI.register(token: "zeeToken".data(using: .utf8)!, onSuccess: { (dict) in
-            XCTFail()
+            XCTFail("did not expect success here")
         }) {(_,_) in
             // failure
             expectation.fulfill()
@@ -156,7 +168,7 @@ class IterableAPITests: XCTestCase {
         IterableAPI.userId = nil
         
         IterableAPI.register(token: "zeeToken".data(using: .utf8)!, onSuccess: { (dict) in
-            XCTFail()
+            XCTFail("did not expect success here")
         }) {(_,_) in
             // failure
             expectation.fulfill()
@@ -183,9 +195,13 @@ class IterableAPITests: XCTestCase {
             TestUtils.validateMatch(keyPath: KeyPath("device.token"), value: (token as NSData).iteHexadecimalString(), inDictionary: body)
 
             expectation.fulfill()
-        }) {(_,_) in
+        }) {(reason, _) in
             // failure
-            XCTFail()
+            if let reason = reason {
+                XCTFail("encountered error: \(reason)")
+            } else {
+                XCTFail("encountered error")
+            }
         }
         
         // only wait for small time, supposed to error out
@@ -202,7 +218,7 @@ class IterableAPITests: XCTestCase {
         IterableAPI.email = "user@example.com"
 
         IterableAPI.disableDeviceForCurrentUser(withOnSuccess: { (json) in
-            XCTFail()
+            XCTFail("did not expect success here")
         }) { (errorMessage, data) in
             expectation.fulfill()
         }
@@ -276,7 +292,7 @@ class IterableAPITests: XCTestCase {
 
         IterableAPI.track(purchase: 10.0, items: [], dataFields: nil, onSuccess: { (json) in
             // no userid or email should fail
-            XCTFail()
+            XCTFail("did not expect success here")
         }) { (errorMessage, data) in
             expectation.fulfill()
         }
@@ -301,8 +317,12 @@ class IterableAPITests: XCTestCase {
             TestUtils.validateElementPresent(withName: ITBL_KEY_TOTAL, andValue: 10.55, inDictionary: body)
 
             expectation.fulfill()
-        }) { (errorMessage, data) in
-            XCTFail()
+        }) { (reason, _) in
+            if let reason = reason {
+                XCTFail("encountered error: \(reason)")
+            } else {
+                XCTFail("encountered error")
+            }
         }
         
         // only wait for small time, supposed to error out
@@ -333,8 +353,12 @@ class IterableAPITests: XCTestCase {
             TestUtils.validateElementPresent(withName: "price", andValue: 5.0, inDictionary: firstElement)
             TestUtils.validateElementPresent(withName: "quantity", andValue: 2, inDictionary: firstElement)
             expectation.fulfill()
-        }) { (errorMessage, data) in
-            XCTFail()
+        }) { (reason, _) in
+            if let reason = reason {
+                XCTFail("encountered error: \(reason)")
+            } else {
+                XCTFail("encountered error")
+            }
         }
         
         wait(for: [expectation], timeout: testExpectationTimeout)
@@ -387,7 +411,7 @@ class IterableAPITests: XCTestCase {
         config.autoPushRegistration = true
         let notificationStateProvider = MockNotificationStateProvider(enabled: true) { // Notifications are on.
             // should not call register for remote notification
-            XCTFail()
+            XCTFail("should not call registerForRemoteNotification")
         }
 
         IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
@@ -399,7 +423,7 @@ class IterableAPITests: XCTestCase {
             TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: ENDPOINT_REGISTER_DEVICE_TOKEN, queryParams: [(name: ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
             networkSession.callback = {(_, _, _)in
                 // Second callback should not happen
-                XCTFail()
+                XCTFail("Should not call disable")
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
                 expectation.fulfill()
@@ -423,7 +447,7 @@ class IterableAPITests: XCTestCase {
         config.pushIntegrationName = "my-push-integration"
         let notificationStateProvider = MockNotificationStateProvider(enabled: false) { // Notifications are disabled
             // should not call registerForRemoteNotifications
-            XCTFail()
+            XCTFail("should not call registerForRemoteNotifications")
         }
         IterableAPI.initialize(apiKey: IterableAPITests.apiKey,
                                config: config,
@@ -463,7 +487,7 @@ class IterableAPITests: XCTestCase {
         config.autoPushRegistration = false
         let notificationStateProvider = MockNotificationStateProvider(enabled: true) { // Notifications are on.
             // should not come here.
-            XCTFail()
+            XCTFail("should not call registerForRemoteNotifications")
         }
         IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
         IterableAPI.email = "user1@example.com"
@@ -473,7 +497,7 @@ class IterableAPITests: XCTestCase {
             TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: ENDPOINT_REGISTER_DEVICE_TOKEN, queryParams: [(name: ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
             networkSession.callback = {(_, _, _)in
                 // Second callback should not happen
-                XCTFail()
+                XCTFail("should not call disable")
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
                 expectation.fulfill()
