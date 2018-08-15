@@ -29,7 +29,7 @@ struct SystemNotificationStateProvider : NotificationStateProviderProtocol {
             }
         } else {
             // Fallback on earlier versions
-            if UIApplication.shared.isRegisteredForRemoteNotifications {
+            if let currentSettings = UIApplication.shared.currentUserNotificationSettings, currentSettings.types != [] {
                 result.resolve(with: true)
             } else {
                 result.resolve(with: false)
