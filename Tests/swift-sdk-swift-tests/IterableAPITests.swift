@@ -518,5 +518,24 @@ class IterableAPITests: XCTestCase {
         // only wait for small time, supposed to error out
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
+    
+    func testAutomaticPushRegistrationOnInit() {
+        let expectation = XCTestExpectation(description: "testAutomaticPushRegistrationOnInit")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let config = IterableConfig()
+        config.pushIntegrationName = "my-push-integration"
+        config.autoPushRegistration = true
+        let notificationStateProvider = MockNotificationStateProvider(enabled: true) // Notifications are on.
+        
+        UserDefaults.standard.set("user1@example.com", forKey:ITBConsts.UserDefaults.emailKey)
+        notificationStateProvider.callback = {
+            expectation.fulfill()
+        }
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+
+        // only wait for small time, supposed to error out
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
 
 }

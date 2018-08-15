@@ -908,6 +908,10 @@ import UserNotifications
         // get email and userId from UserDefaults if present
         retrieveEmailAndUserId()
         
+        if config.autoPushRegistration == true && isEitherUserIdOrEmailSet() {
+            notificationStateProvider.registerForRemoteNotification()
+        }
+        
         IterableAppIntegration.implementation = IterableAppIntegrationInternal(tracker: self,
                                                                        versionInfo: SystemVersionInfo(),
                                                                        urlDelegate: config.urlDelegate,
