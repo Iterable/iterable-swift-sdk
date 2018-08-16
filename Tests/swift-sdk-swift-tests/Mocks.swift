@@ -199,7 +199,7 @@ class MockNetworkSession: NetworkSessionProtocol {
 class MockNotificationStateProvider : NotificationStateProviderProtocol {
     var notificationsEnabled: Promise<Bool, Error> {
         let promise = Promise<Bool, Error>()
-        queue.async {
+        DispatchQueue.main.async {
             promise.resolve(with: self.enabled)
         }
         return promise
@@ -213,11 +213,9 @@ class MockNotificationStateProvider : NotificationStateProviderProtocol {
     
     init(enabled: Bool) {
         self.enabled = enabled
-        queue = DispatchQueue(label: "myQueue", qos: .userInteractive)
     }
     
     private let enabled: Bool
-    private let queue: DispatchQueue
 }
 
 extension IterableAPI {
