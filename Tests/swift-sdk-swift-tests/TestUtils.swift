@@ -40,6 +40,10 @@ struct TestUtils {
         XCTAssertEqual(dict[keyPath: keyPath] as? T, value)
     }
     
+    static func clearUserDefaults() {
+        UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
+    }
+    
     private static func validateQueryParameters(inUrlComponents urlComponents: URLComponents, queryParams: [(name:String, value:String)]) {
         queryParams.forEach { (name, value) in
             validateQueryParameter(inUrlComponents: urlComponents, withName: name, andValue: value)
