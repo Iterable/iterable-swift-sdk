@@ -36,11 +36,9 @@
         // login
         if (self.emailAddressTextField.text != nil && self.emailAddressTextField.text.length > 0) {
             IterableAPI.email = self.emailAddressTextField.text;
-            [[UIApplication sharedApplication] registerForRemoteNotifications];
         }
     } else {
         // logout
-        [IterableAPI disableDeviceForCurrentUser];
         IterableAPI.email = nil;
     }
     [self.presentingViewController dismissViewControllerAnimated:true completion:nil];

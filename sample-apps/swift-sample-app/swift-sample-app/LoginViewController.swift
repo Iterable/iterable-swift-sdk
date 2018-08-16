@@ -32,13 +32,11 @@ class LoginViewController: UIViewController {
     @IBAction func loginInOutButtonTapped(_ sender: UIButton) {
         if let _ = IterableAPI.email {
             // logout
-            IterableAPI.disableDeviceForCurrentUser()
             IterableAPI.email = nil
         } else {
             // login
             if let text = emailAddressTextField.text, !text.isEmpty {
                 IterableAPI.email = text
-                UIApplication.shared.registerForRemoteNotifications() // so that you can get the token and associate it with the email
             }
         }
         presentingViewController?.dismiss(animated: true)
