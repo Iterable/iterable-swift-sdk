@@ -61,7 +61,6 @@ class IterableAutoRegistrationTests: XCTestCase {
     
     func testDoNotCallDisableAndEnableWhenSameValue() {
         let expectation1 = expectation(description: "registerForRemoteNotifications")
-        expectation1.expectedFulfillmentCount = 1
         
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
@@ -156,23 +155,19 @@ class IterableAutoRegistrationTests: XCTestCase {
     }
     
     func testAutomaticPushRegistrationOnInit() {
-        let expectation1 = XCTestExpectation(description: "testAutomaticPushRegistrationOnInit")
-        let expectation2 = XCTestExpectation(description: "call register for remote")
+        let expectation1 = expectation(description: "call register for remote")
         
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
         config.pushIntegrationName = "my-push-integration"
         config.autoPushRegistration = true
-        let notificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: expectation2)
-        notificationStateProvider.callback = {
-            expectation1.fulfill()
-        }
+        let notificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: expectation1)
         
         UserDefaults.standard.set("user1@example.com", forKey:ITBConsts.UserDefaults.emailKey)
         IterableAPI.initialize(apiKey: IterableAutoRegistrationTests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
         
         // only wait for small time, supposed to error out
-        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
 }

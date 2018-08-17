@@ -207,11 +207,8 @@ class MockNotificationStateProvider : NotificationStateProviderProtocol {
         return promise
     }
     
-    var callback: (() -> Void)? = nil
-
     func registerForRemoteNotifications() {
         expectation?.fulfill()
-        callback?()
     }
 
     init(enabled: Bool, expectation: XCTestExpectation? = nil) {
