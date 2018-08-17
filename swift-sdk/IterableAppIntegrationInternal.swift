@@ -40,7 +40,9 @@ struct SystemNotificationStateProvider : NotificationStateProviderProtocol {
     }
 
     func registerForRemoteNotifications() {
-        UIApplication.shared.registerForRemoteNotifications()
+        DispatchQueue.main.async {
+            UIApplication.shared.registerForRemoteNotifications()
+        }
     }
 }
 

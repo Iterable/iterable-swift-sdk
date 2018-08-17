@@ -855,10 +855,7 @@ import UserNotifications
     }
     
     private func disableDeviceForPreviousUser() {
-        guard config.autoPushRegistration == true else {
-            return
-        }
-        guard isEitherUserIdOrEmailSet() else {
+        guard config.autoPushRegistration == true, isEitherUserIdOrEmailSet() else {
             return
         }
 
@@ -866,18 +863,13 @@ import UserNotifications
     }
     
     private func enableDeviceForCurrentUser() {
-        guard config.autoPushRegistration == true else {
-            return
-        }
-        guard isEitherUserIdOrEmailSet() else {
+        guard config.autoPushRegistration == true, isEitherUserIdOrEmailSet() else {
             return
         }
 
         notificationStateProvider.notificationsEnabled.observe { (authResult) in
             if case let Result.value(authorized) = authResult, authorized == true {
-                DispatchQueue.main.async {
-                    self.notificationStateProvider.registerForRemoteNotifications()
-                }
+                self.notificationStateProvider.registerForRemoteNotifications()
             }
         }
     }
@@ -889,7 +881,7 @@ import UserNotifications
          config: IterableConfig = IterableConfig(),
          dateProvider: DateProviderProtocol = SystemDateProvider(),
          networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
-         notificationStateProvider:NotificationStateProviderProtocol = SystemNotificationStateProvider()) {
+         notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider()) {
         self.apiKey = apiKey
         self.config = config
         self.dateProvider = dateProvider
