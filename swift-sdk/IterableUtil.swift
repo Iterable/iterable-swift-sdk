@@ -25,7 +25,7 @@ import os
         return trim(string: string).isEmpty
     }
     
-    static func isNotNullOrEmpty(string: String) -> Bool {
+    static func isNotNullOrEmpty(string: String?) -> Bool {
         return !isNullOrEmpty(string: string)
     }
     

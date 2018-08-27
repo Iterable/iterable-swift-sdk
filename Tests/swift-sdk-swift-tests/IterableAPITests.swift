@@ -7,19 +7,9 @@
 //
 
 import XCTest
+import UserNotifications
 
 @testable import IterableSDK
-
-extension IterableAPI {
-    // Internal Only used in unit tests.
-    static func initialize(apiKey: String,
-                            launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil,
-                            config: IterableConfig = IterableConfig(),
-                            dateProvider: DateProviderProtocol = SystemDateProvider(),
-                            networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default)) {
-        internalImplementation = IterableAPIInternal.init(apiKey: apiKey, launchOptions: launchOptions, config: config, dateProvider: dateProvider, networkSession: networkSession)
-    }
-}
 
 class IterableAPITests: XCTestCase {
     private static let apiKey = "zeeApiKey"
@@ -27,9 +17,7 @@ class IterableAPITests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        IterableAPI.email = nil
-        IterableAPI.userId = nil
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+        TestUtils.clearUserDefaults()
     }
     
     override func tearDown() {
@@ -62,7 +50,11 @@ class IterableAPITests: XCTestCase {
             expectation.fulfill()
         }) { (reason, data) in
             expectation.fulfill()
-            XCTFail()
+            if let reason = reason {
+                XCTFail("encountered error: \(reason)")
+            } else {
+                XCTFail("encountered error")
+            }
         }
 
         wait(for: [expectation], timeout: testExpectationTimeout)
@@ -81,7 +73,7 @@ class IterableAPITests: XCTestCase {
             onSuccess:{json in
                 // fail on success
                 expectation.fulfill()
-                XCTFail()
+                XCTFail("did not expect success")
             },
             onFailure: {(reason, data) in expectation.fulfill()})
         
@@ -102,8 +94,12 @@ class IterableAPITests: XCTestCase {
             TestUtils.validateElementPresent(withName: ITBL_KEY_MERGE_NESTED, andValue: true, inDictionary: body)
             TestUtils.validateElementPresent(withName: ITBL_KEY_DATA_FIELDS, andValue: dataFields, inDictionary: body)
             expectation.fulfill()
-        }) {(error, data) in
-            XCTFail()
+        }) {(reason, _) in
+            if let reason = reason {
+                XCTFail("encountered error: \(reason)")
+            } else {
+                XCTFail("encountered error")
+            }
             expectation.fulfill()
         }
 
@@ -130,9 +126,13 @@ class IterableAPITests: XCTestCase {
                                     XCTAssertEqual(IterableAPI.email, newEmail)
                                     expectation.fulfill()
                                 },
-                                onFailure: {(reason, data) in
+                                onFailure: {(reason, _) in
                                     expectation.fulfill()
-                                    XCTFail()
+                                    if let reason = reason {
+                                        XCTFail("encountered error: \(reason)")
+                                    } else {
+                                        XCTFail("encountered error")
+                                    }
                                 })
 
         wait(for: [expectation], timeout: testExpectationTimeout)
@@ -145,7 +145,7 @@ class IterableAPITests: XCTestCase {
         IterableAPI.initialize(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
         
         IterableAPI.register(token: "zeeToken".data(using: .utf8)!, onSuccess: { (dict) in
-            XCTFail()
+            XCTFail("did not expect success here")
         }) {(_,_) in
             // failure
             expectation.fulfill()
@@ -166,7 +166,7 @@ class IterableAPITests: XCTestCase {
         IterableAPI.userId = nil
         
         IterableAPI.register(token: "zeeToken".data(using: .utf8)!, onSuccess: { (dict) in
-            XCTFail()
+            XCTFail("did not expect success here")
         }) {(_,_) in
             // failure
             expectation.fulfill()
@@ -193,9 +193,13 @@ class IterableAPITests: XCTestCase {
             TestUtils.validateMatch(keyPath: KeyPath("device.token"), value: (token as NSData).iteHexadecimalString(), inDictionary: body)
 
             expectation.fulfill()
-        }) {(_,_) in
+        }) {(reason, _) in
             // failure
-            XCTFail()
+            if let reason = reason {
+                XCTFail("encountered error: \(reason)")
+            } else {
+                XCTFail("encountered error")
+            }
         }
         
         // only wait for small time, supposed to error out
@@ -212,7 +216,7 @@ class IterableAPITests: XCTestCase {
         IterableAPI.email = "user@example.com"
 
         IterableAPI.disableDeviceForCurrentUser(withOnSuccess: { (json) in
-            XCTFail()
+            XCTFail("did not expect success here")
         }) { (errorMessage, data) in
             expectation.fulfill()
         }
@@ -256,9 +260,7 @@ class IterableAPITests: XCTestCase {
         config.pushIntegrationName = "my-push-integration"
         IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
         IterableAPI.email = "user@example.com"
-        IterableAPI.userId = "zeeUserId"
         let token = "zeeToken".data(using: .utf8)!
-        IterableAPI.register(token: token)
         networkSession.callback = {(data, response, error) in
             networkSession.callback = nil
             IterableAPI.disableDeviceForAllUsers(withOnSuccess: { (json) in
@@ -272,6 +274,7 @@ class IterableAPITests: XCTestCase {
                 expectation.fulfill()
             }
         }
+        IterableAPI.register(token: token)
         
         // only wait for small time, supposed to error out
         wait(for: [expectation], timeout: testExpectationTimeout)
@@ -287,7 +290,7 @@ class IterableAPITests: XCTestCase {
 
         IterableAPI.track(purchase: 10.0, items: [], dataFields: nil, onSuccess: { (json) in
             // no userid or email should fail
-            XCTFail()
+            XCTFail("did not expect success here")
         }) { (errorMessage, data) in
             expectation.fulfill()
         }
@@ -312,8 +315,12 @@ class IterableAPITests: XCTestCase {
             TestUtils.validateElementPresent(withName: ITBL_KEY_TOTAL, andValue: 10.55, inDictionary: body)
 
             expectation.fulfill()
-        }) { (errorMessage, data) in
-            XCTFail()
+        }) { (reason, _) in
+            if let reason = reason {
+                XCTFail("encountered error: \(reason)")
+            } else {
+                XCTFail("encountered error")
+            }
         }
         
         // only wait for small time, supposed to error out
@@ -344,11 +351,14 @@ class IterableAPITests: XCTestCase {
             TestUtils.validateElementPresent(withName: "price", andValue: 5.0, inDictionary: firstElement)
             TestUtils.validateElementPresent(withName: "quantity", andValue: 2, inDictionary: firstElement)
             expectation.fulfill()
-        }) { (errorMessage, data) in
-            XCTFail()
+        }) { (reason, _) in
+            if let reason = reason {
+                XCTFail("encountered error: \(reason)")
+            } else {
+                XCTFail("encountered error")
+            }
         }
         
-        // only wait for small time, supposed to error out
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
 }

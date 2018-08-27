@@ -363,14 +363,14 @@ extension IterableAPIInternal {
         _userId = UserDefaults.standard.string(forKey: ITBConsts.UserDefaults.userIdKey)
     }
     
-    // Internal Only used in unit tests.
     @discardableResult static func initialize(apiKey: String,
                                                  launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil,
-                                                 config: IterableConfig = IterableConfig(),
-                                                 dateProvider: DateProviderProtocol = SystemDateProvider(),
-                                                 networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default)) -> IterableAPIInternal {
+                                                 config: IterableConfig = IterableConfig()) -> IterableAPIInternal {
         queue.sync {
-            _sharedInstance = IterableAPIInternal(apiKey: apiKey, config: config, dateProvider: dateProvider, networkSession: networkSession)
+            _sharedInstance = IterableAPIInternal(apiKey: apiKey,
+                                                  config: config,
+                                                  dateProvider: SystemDateProvider(),
+                                                  networkSession: URLSession(configuration: URLSessionConfiguration.default))
         }
         return _sharedInstance!
     }

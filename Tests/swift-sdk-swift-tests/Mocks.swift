@@ -6,6 +6,8 @@
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
+import XCTest
+
 import Foundation
 import UserNotifications
 
@@ -169,17 +171,15 @@ class MockNetworkSession: NetworkSessionProtocol {
     private let statusCode: Int
     private let json: [AnyHashable : Any]
     private let error: Error?
-    private let queue: DispatchQueue
     
     init(statusCode: Int, json: [AnyHashable : Any] = [:], error: Error? = nil) {
         self.statusCode = statusCode
         self.json = json
         self.error = error
-        queue = DispatchQueue(label: "MockNetworkQueue", qos: .userInteractive)
     }
     
     func makeRequest(_ request: URLRequest, completionHandler: @escaping NetworkSessionProtocol.CompletionHandler) {
-        queue.async {
+        DispatchQueue.main.async {
             self.request = request
             let response = HTTPURLResponse(url: request.url!, statusCode: self.statusCode, httpVersion: "HTTP/1.1", headerFields: [:])
             let data = try! JSONSerialization.data(withJSONObject: self.json, options: [])
@@ -197,3 +197,67 @@ class MockNetworkSession: NetworkSessionProtocol {
         return try! JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable : Any]
     }
 }
+
+class MockNotificationStateProvider : NotificationStateProviderProtocol {
+    var notificationsEnabled: Promise<Bool, Error> {
+        let promise = Promise<Bool, Error>()
+        DispatchQueue.main.async {
+            promise.resolve(with: self.enabled)
+        }
+        return promise
+    }
+    
+    func registerForRemoteNotifications() {
+        expectation?.fulfill()
+    }
+
+    init(enabled: Bool, expectation: XCTestExpectation? = nil) {
+        self.enabled = enabled
+        self.expectation = expectation
+    }
+    
+    private let enabled: Bool
+    private let expectation: XCTestExpectation?
+}
+
+extension IterableAPI {
+    // Internal Only used in unit tests.
+    static func initialize(apiKey: String,
+                           launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil,
+                           config: IterableConfig = IterableConfig(),
+                           dateProvider: DateProviderProtocol = SystemDateProvider(),
+                           networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
+                           notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider()) {
+        internalImplementation = IterableAPIInternal.initialize(apiKey: apiKey, launchOptions: launchOptions, config: config, dateProvider: dateProvider, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+    }
+}
+
+
+// used by objc tests, remove after rewriting in Swift
+@objc public extension IterableAPIInternal {
+    @objc @discardableResult public static func initialize(apiKey: String) -> IterableAPIInternal {
+        return initialize(apiKey: apiKey, config:IterableConfig())
+    }
+    
+    // used by objc tests, remove after rewriting them in Swift
+    @objc @discardableResult public static func initialize(apiKey: String,
+                                                           config: IterableConfig) -> IterableAPIInternal {
+        return initialize(apiKey: apiKey, launchOptions: nil, config:config)
+    }
+}
+
+extension IterableAPIInternal {
+    @discardableResult static func initialize(apiKey: String,
+                                              launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil,
+                                              config: IterableConfig = IterableConfig(),
+                                              dateProvider: DateProviderProtocol = SystemDateProvider(),
+                                              networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
+                                              notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider()) -> IterableAPIInternal {
+        queue.sync {
+            _sharedInstance = IterableAPIInternal(apiKey: apiKey, config: config, dateProvider: dateProvider, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+        }
+        return _sharedInstance!
+    }
+}
+
+

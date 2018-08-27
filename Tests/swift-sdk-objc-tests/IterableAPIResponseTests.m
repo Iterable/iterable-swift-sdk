@@ -11,6 +11,8 @@
 #import "OHHTTPStubs.h"
 #import "OHPathHelpers.h"
 
+#import "swift_sdk_objc_tests-Swift.h"
+
 @import IterableSDK;
 
 static CGFloat const IterableResponseExpectationTimeout = 1.0;

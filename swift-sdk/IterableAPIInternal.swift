@@ -5,26 +5,9 @@
 //
 
 import Foundation
+import UserNotifications
 
 @objc public final class IterableAPIInternal : NSObject, PushTrackerProtocol {
-    // MARK: Initialization
-
-    /// You should call this method and not call the init method directly.
-    /// - parameter apiKey: Iterable API Key.
-    /// - returns: an instance of IterableAPIImplementation
-    @objc @discardableResult public static func initialize(apiKey: String) -> IterableAPIInternal {
-        return initialize(apiKey: apiKey, config:IterableConfig())
-    }
-
-    /// You should call this method and not call the init method directly.
-    /// - parameter apiKey: Iterable API Key.
-    /// - parameter config: Iterable config object.
-    /// - returns: an instance of IterableAPIImplementation
-    @objc @discardableResult public static func initialize(apiKey: String,
-                                                           config: IterableConfig) -> IterableAPIInternal {
-        return initialize(apiKey: apiKey, launchOptions: nil, config:config)
-    }
-
     /**
      Get the previously instantiated singleton instance of the API
      
@@ -54,12 +37,20 @@ import Foundation
         get {
             return _email
         } set {
+            guard newValue != _email else {
+                return
+            }
+
+            disableDeviceForPreviousUser()
+
             _email = newValue
             _userId = nil
             storeEmailAndUserId()
+
+            enableDeviceForCurrentUser()
         }
     }
-
+    
     /**
      The userId of the logged in user that this IterableAPIImplementation is using
      */
@@ -67,12 +58,20 @@ import Foundation
         get {
             return _userId
         } set {
+            guard newValue != _userId else {
+                return
+            }
+            
+            disableDeviceForPreviousUser()
+            
             _userId = newValue
             _email = nil
             storeEmailAndUserId()
+            
+            enableDeviceForCurrentUser()
         }
     }
-
+    
     @objc public weak var urlDelegate: IterableURLDelegate? {
         get {
             return config.urlDelegate
@@ -837,7 +836,9 @@ import Foundation
     
     let dateProvider: DateProviderProtocol
     
-    private var networkSessionProvider : () -> NetworkSessionProtocol
+    var networkSessionProvider : () -> NetworkSessionProtocol
+    
+    var notificationStateProvider: NotificationStateProviderProtocol
     
     lazy var networkSession: NetworkSessionProtocol = {
         networkSessionProvider()
@@ -849,16 +850,43 @@ import Foundation
         return characterSet
     } ()
     
+    private func isEitherUserIdOrEmailSet() -> Bool {
+        return IterableUtil.isNotNullOrEmpty(string: _email) || IterableUtil.isNotNullOrEmpty(string: _userId)
+    }
+    
+    private func disableDeviceForPreviousUser() {
+        guard config.autoPushRegistration == true, isEitherUserIdOrEmailSet() else {
+            return
+        }
+
+        disableDeviceForCurrentUser()
+    }
+    
+    private func enableDeviceForCurrentUser() {
+        guard config.autoPushRegistration == true, isEitherUserIdOrEmailSet() else {
+            return
+        }
+
+        notificationStateProvider.notificationsEnabled.observe { (authResult) in
+            if case let Result.value(authorized) = authResult, authorized == true {
+                self.notificationStateProvider.registerForRemoteNotifications()
+            }
+        }
+    }
+    
+    // MARK: Initialization
     // Package private method. Do not call this directly.
     init(apiKey: String,
          launchOptions: [UIApplicationLaunchOptionsKey: Any]? = nil,
          config: IterableConfig = IterableConfig(),
          dateProvider: DateProviderProtocol = SystemDateProvider(),
-         networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default)) {
+         networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
+         notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider()) {
         self.apiKey = apiKey
         self.config = config
         self.dateProvider = dateProvider
         self.networkSessionProvider = networkSession
+        self.notificationStateProvider = notificationStateProvider
         
         // setup
         deeplinkManager = IterableDeeplinkManager()
@@ -871,6 +899,10 @@ import Foundation
 
         // get email and userId from UserDefaults if present
         retrieveEmailAndUserId()
+        
+        if config.autoPushRegistration == true && isEitherUserIdOrEmailSet() {
+            notificationStateProvider.registerForRemoteNotifications()
+        }
         
         IterableAppIntegration.implementation = IterableAppIntegrationInternal(tracker: self,
                                                                        versionInfo: SystemVersionInfo(),
