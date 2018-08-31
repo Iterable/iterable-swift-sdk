@@ -6,55 +6,47 @@
 
 import Foundation
 
-struct LocalStorageKey {
-    let value: String
-    
-    private init(value: String) {
-        self.value = value
-    }
-    
-    static let payload = LocalStorageKey(value: ITBL_USER_DEFAULTS_PAYLOAD_KEY)
-    static let attributionInfo = LocalStorageKey(value: ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_KEY)
-    static let email = LocalStorageKey(value: ITBL_USER_DEFAULTS_EMAIL_KEY)
-    static let userId = LocalStorageKey(value: ITBL_USER_DEFAULTS_USERID_KEY)
-}
-
-protocol LocalStorageProtocolNew {
-    func save(userId: String?)
-    func getUserId() -> String?
-    func save(email: String?)
-    func getEmail() -> String?
-    func save(attributionInfo: IterableAttributionInfo?)
-    func getAttributionInfo() -> IterableAttributionInfo?
-    func save(payload: [AnyHashable : Any]?)
-    func getPayload() -> [AnyHashable : Any]?
-}
-
-protocol LocalStorageProtocol {
-    
-    func dict(withKey key: LocalStorageKey) throws -> [AnyHashable : Any]?
-    func codable<T: Codable>(withKey key: LocalStorageKey) throws -> T?
-    func string(withKey key: LocalStorageKey) throws -> String?
-    func save(dict: [AnyHashable : Any]?, withKey key: LocalStorageKey) throws
-    func save(dict: [AnyHashable : Any]?, withKey key: LocalStorageKey, andExpiration expiration: Date?) throws
-    func save<T:Codable>(codable: T?, withKey key: LocalStorageKey) throws
-    func save<T:Codable>(codable: T?, withKey key: LocalStorageKey, andExpiration expiration: Date?) throws
-    func save(string: String?, withKey key: LocalStorageKey) throws
-}
-
-struct LocalStorage : LocalStorageProtocol {
-    struct Envelope : Codable {
-        let payload: Data
-        let expiration: Date?
-    }
-    
+struct UserDefaultsLocalStorage : LocalStorageProtocol {
     init(dateProvider: DateProviderProtocol) {
         self.dateProvider = dateProvider
     }
     
+    var userId : String? {
+        get {
+            return (try? string(withKey: .userId)) ?? nil
+        } set {
+            try? save(string: newValue, withKey: .userId)
+        }
+    }
+
+    var email: String? {
+        get {
+            return (try? string(withKey: .email)) ?? nil
+        } set {
+            try? save(string: newValue, withKey: .email)
+        }
+    }
+    
+    var attributionInfo: IterableAttributionInfo? {
+        return (try? codable(withKey: .attributionInfo)) ?? nil
+    }
+    
+    func save(attributionInfo: IterableAttributionInfo?, withExpiration expiration: Date?) {
+        try? save(codable: attributionInfo, withKey: .attributionInfo, andExpiration: expiration)
+    }
+    
+    var payload: [AnyHashable : Any]? {
+        return (try? dict(withKey: .payload)) ?? nil
+    }
+    
+    func save(payload: [AnyHashable : Any]?, withExpiration expiration: Date?) {
+        try? save(dict: payload, withKey: .payload, andExpiration: expiration)
+    }
+
+    // MARK: Private implementation
     private let dateProvider: DateProviderProtocol
 
-    func dict(withKey key: LocalStorageKey) throws -> [AnyHashable : Any]? {
+    private func dict(withKey key: LocalStorageKey) throws -> [AnyHashable : Any]? {
         guard let encodedEnvelope = UserDefaults.standard.value(forKey: key.value) as? Data else {
             return nil
         }
@@ -69,7 +61,7 @@ struct LocalStorage : LocalStorageProtocol {
         }
     }
     
-    func codable<T: Codable>(withKey key: LocalStorageKey) throws -> T? {
+    private func codable<T: Codable>(withKey key: LocalStorageKey) throws -> T? {
         guard let encodedEnvelope = UserDefaults.standard.value(forKey: key.value) as? Data else {
             return nil
         }
@@ -84,7 +76,7 @@ struct LocalStorage : LocalStorageProtocol {
         }
     }
     
-    func string(withKey key: LocalStorageKey) throws -> String? {
+    private func string(withKey key: LocalStorageKey) throws -> String? {
         return UserDefaults.standard.string(forKey: key.value)
     }
     
@@ -104,11 +96,7 @@ struct LocalStorage : LocalStorageProtocol {
         }
     }
     
-    func save<T:Codable>(codable: T?, withKey key: LocalStorageKey) throws {
-        try save(codable: codable, withKey: key, andExpiration: nil)
-    }
-
-    func save<T:Codable>(codable: T?, withKey key: LocalStorageKey, andExpiration expiration: Date?) throws {
+    private func save<T:Codable>(codable: T?, withKey key: LocalStorageKey, andExpiration expiration: Date? = nil) throws {
         if let value = codable {
             let data = try JSONEncoder().encode(value)
             try save(data: data, withKey: key, andExpiration: expiration)
@@ -117,7 +105,7 @@ struct LocalStorage : LocalStorageProtocol {
         }
     }
     
-    func save(dict: [AnyHashable : Any]?, withKey key: LocalStorageKey, andExpiration expiration: Date?) throws {
+    private func save(dict: [AnyHashable : Any]?, withKey key: LocalStorageKey, andExpiration expiration: Date? = nil) throws {
         if let value = dict {
             let data = try JSONSerialization.data(withJSONObject: value, options: [])
             try save(data: data, withKey: key, andExpiration: expiration)
@@ -126,11 +114,7 @@ struct LocalStorage : LocalStorageProtocol {
         }
     }
     
-    func save(dict: [AnyHashable : Any]?, withKey key: LocalStorageKey) throws {
-        try save(dict: dict, withKey: key, andExpiration: nil)
-    }
-    
-    func save(string: String?, withKey key: LocalStorageKey) throws {
+    private func save(string: String?, withKey key: LocalStorageKey) throws {
         UserDefaults.standard.set(string, forKey: key.value)
     }
 
@@ -145,4 +129,21 @@ struct LocalStorage : LocalStorageProtocol {
         UserDefaults.standard.set(encodedEnvelope, forKey: key.value)
     }
     
+    private struct LocalStorageKey {
+        let value: String
+        
+        private init(value: String) {
+            self.value = value
+        }
+        
+        static let payload = LocalStorageKey(value: ITBL_USER_DEFAULTS_PAYLOAD_KEY)
+        static let attributionInfo = LocalStorageKey(value: ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_KEY)
+        static let email = LocalStorageKey(value: ITBL_USER_DEFAULTS_EMAIL_KEY)
+        static let userId = LocalStorageKey(value: ITBL_USER_DEFAULTS_USERID_KEY)
+    }
+    
+    private struct Envelope : Codable {
+        let payload: Data
+        let expiration: Date?
+    }
 }

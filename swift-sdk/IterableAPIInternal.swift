@@ -92,7 +92,7 @@ import UserNotifications
      The userInfo dictionary which came with last push.
      */
     @objc public var lastPushPayload: [AnyHashable : Any]? {
-        return (try? localStorage.dict(withKey: .payload)) ?? nil
+        return localStorage.payload
     }
     
     /**
@@ -100,12 +100,12 @@ import UserNotifications
      */
     @objc public var attributionInfo : IterableAttributionInfo? {
         get {
-            return (try? localStorage.codable(withKey: .attributionInfo)) ?? nil
+            return localStorage.attributionInfo
         } set {
             let expiration = Calendar.current.date(byAdding: .hour,
                                                    value: Int(ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_EXPIRATION_HOURS),
                                                    to: dateProvider.currentDate)
-            try? localStorage.save(codable: newValue, withKey: .attributionInfo, andExpiration: expiration)
+            localStorage.save(attributionInfo: newValue, withExpiration: expiration)
         }
     }
 
@@ -887,7 +887,7 @@ import UserNotifications
         self.dateProvider = dateProvider
         self.networkSessionProvider = networkSession
         self.notificationStateProvider = notificationStateProvider
-        self.localStorage = LocalStorage(dateProvider: self.dateProvider)
+        self.localStorage = UserDefaultsLocalStorage(dateProvider: self.dateProvider)
         
         // setup
         deeplinkManager = IterableDeeplinkManager()
@@ -895,9 +895,6 @@ import UserNotifications
         // super init
         super.init()
         
-        // Fix for NSArchiver bug
-        NSKeyedUnarchiver.setClass(IterableAttributionInfo.self, forClassName: "IterableAttributionInfo")
-
         // check for deferred deeplinking
         checkForDeferredDeeplink()
         

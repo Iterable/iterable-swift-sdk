@@ -228,7 +228,7 @@ extension IterableAPIInternal {
         let expiration = Calendar.current.date(byAdding: .hour,
                                                value: Int(ITBL_USER_DEFAULTS_PAYLOAD_EXPIRATION_HOURS),
                                                to: dateProvider.currentDate)
-        try? localStorage.save(dict: payload, withKey: .payload, andExpiration: expiration)
+        localStorage.save(payload: payload, withExpiration: expiration)
 
         if let metadata = IterableNotificationMetadata.metadata(fromLaunchOptions: payload) {
             if let templateId = metadata.templateId, let messageId = metadata.messageId {
@@ -309,13 +309,13 @@ extension IterableAPIInternal {
     }
     
     func storeEmailAndUserId() {
-        try? localStorage.save(string: _email, withKey: .email)
-        try? localStorage.save(string: _userId, withKey: .userId)
+        localStorage.email = _email
+        localStorage.userId = _userId
     }
     
     func retrieveEmailAndUserId() {
-        _email = (try? localStorage.string(withKey: .email)) ?? nil
-        _userId = (try? localStorage.string(withKey: .userId)) ?? nil
+        _email = localStorage.email
+        _userId = localStorage.userId
     }
     
     func checkForDeferredDeeplink() {
