@@ -92,7 +92,7 @@ import UserNotifications
      The userInfo dictionary which came with last push.
      */
     @objc public var lastPushPayload: [AnyHashable : Any]? {
-        return expirableValueFromUserDefaults(withKey: ITBConsts.UserDefaults.payloadKey) as? [AnyHashable : Any]
+        return (try? localStorage.dict(withKey: .payload)) ?? nil
     }
     
     /**
@@ -100,17 +100,12 @@ import UserNotifications
      */
     @objc public var attributionInfo : IterableAttributionInfo? {
         get {
-            return expirableValueFromUserDefaults(withKey: ITBConsts.UserDefaults.attributionInfoKey) as? IterableAttributionInfo
+            return (try? localStorage.codable(withKey: .attributionInfo)) ?? nil
         } set {
-            if let value = newValue {
-                let expiration = Calendar.current.date(byAdding: .hour,
-                                                       value: Int(ITBConsts.UserDefaults.attributionInfoExpirationHours),
-                                                       to: dateProvider.currentDate)
-                saveToUserDefaults(value: value, withKey: ITBConsts.UserDefaults.attributionInfoKey, andExpiration: expiration)
-
-            } else {
-                UserDefaults.standard.removeObject(forKey: ITBConsts.UserDefaults.attributionInfoKey)
-            }
+            let expiration = Calendar.current.date(byAdding: .hour,
+                                                   value: Int(ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_EXPIRATION_HOURS),
+                                                   to: dateProvider.currentDate)
+            try? localStorage.save(codable: newValue, withKey: .attributionInfo, andExpiration: expiration)
         }
     }
 
@@ -817,25 +812,6 @@ import UserNotifications
         return deeplinkManager.handleUniversalLink(url, urlDelegate: config.urlDelegate, urlOpener: AppUrlOpener())
     }
 
-    func sendDeviceInfo() {
-        let args = ["deviceInfo" : DeviceInfo.createJsDeviceInfo()]
-        guard let request = createPostRequest(forAction: ENDPOINT_DDL_MATCH, withBody: args) else {
-            ITBError("Could not create request")
-            return
-        }
-
-        NetworkHelper.sendRequest(request, usingSession: networkSession).observe {(result) in
-            switch result {
-            case .value(let json):
-                break
-            case .error(let failureInfo):
-                if let errorMessage = failureInfo.errorMessage {
-                    ITBError(errorMessage)
-                }
-            }
-        }
-    }
-    
     // MARK: For Private and Internal Use ========================================>
     
     var config: IterableConfig
@@ -859,6 +835,8 @@ import UserNotifications
     
     var notificationStateProvider: NotificationStateProviderProtocol
     
+    var localStorage: LocalStorageProtocol
+    
     lazy var networkSession: NetworkSessionProtocol = {
         networkSessionProvider()
     }()
@@ -870,7 +848,7 @@ import UserNotifications
     } ()
     
     //!!! TQM:CHANGE
-    final let shouldCheckForDeferredDeeplink = false // for unit tests
+    final let shouldCheckForDeferredDeeplink = false
     
     private func isEitherUserIdOrEmailSet() -> Bool {
         return IterableUtil.isNotNullOrEmpty(string: _email) || IterableUtil.isNotNullOrEmpty(string: _userId)
@@ -909,6 +887,7 @@ import UserNotifications
         self.dateProvider = dateProvider
         self.networkSessionProvider = networkSession
         self.notificationStateProvider = notificationStateProvider
+        self.localStorage = LocalStorage(dateProvider: self.dateProvider)
         
         // setup
         deeplinkManager = IterableDeeplinkManager()

@@ -361,30 +361,4 @@ class IterableAPITests: XCTestCase {
         
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
-
-    func testSendDeviceInfoRequest() {
-        let networkSession = MockNetworkSession(statusCode: 200)
-        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
-        IterableAPI.sendDeviceInfo()
-        
-        DispatchQueue.main.async {
-            let body = networkSession.getRequestBody()
-            let deviceInfo = body["deviceInfo"] as! [String : String]
-            let version = UIDevice.current.systemVersion
-            let screen = UIScreen.main
-            let screenInfo = DeviceInfo.ScreenInfo(width: Float(screen.bounds.width), height: Float(screen.bounds.height), scale: Float(screen.scale))
-            TestUtils.validateElementPresent(withName: "iosDeviceType", andValue: "simulator", inDictionary: deviceInfo)
-            TestUtils.validateElementPresent(withName: "isIPhone", andValue: "true", inDictionary: deviceInfo)
-            TestUtils.validateElementPresent(withName: "isIPad", andValue: "false", inDictionary: deviceInfo)
-            TestUtils.validateElementPresent(withName: "version", andValue: version, inDictionary: deviceInfo)
-            TestUtils.validateElementPresent(withName: "screenWidth", andValue: String(screenInfo.width), inDictionary: deviceInfo)
-            TestUtils.validateElementPresent(withName: "screenHeight", andValue: String(screenInfo.height), inDictionary: deviceInfo)
-            TestUtils.validateElementPresent(withName: "screenScale", andValue: String(screenInfo.scale), inDictionary: deviceInfo)
-            let secondsFromGMT = TimeZone.current.secondsFromGMT()
-            let timezoneOffsetMinutes = Float(secondsFromGMT) * -1.0 / 60.0
-            TestUtils.validateElementPresent(withName: "timezoneOffsetMinutes", andValue: String(timezoneOffsetMinutes), inDictionary: deviceInfo)
-            TestUtils.validateElementPresent(withName: "language", andValue: Locale.current.identifier, inDictionary: deviceInfo)
-        }
-
-    }
 }

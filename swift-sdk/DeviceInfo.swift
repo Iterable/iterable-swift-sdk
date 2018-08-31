@@ -8,136 +8,44 @@
 
 import Foundation
 
-struct DeviceInfo {
-    enum JsKeys : String {
-        case iosDeviceType
-        case isIPhone
-        case isIPad
-        case version
-        case screenWidth
-        case screenHeight
-        case screenScale
-        case timezoneOffsetMinutes
-        case language
+struct DeviceInfo : Codable {
+    let mobileDeviceType = MobileDeviceType.iOS
+    let deviceFp: DeviceFp
+    
+    enum MobileDeviceType : String, Codable {
+        case iOS
+        case Android
     }
     
-    static func createJsDeviceInfo() -> [String : String] {
-        return createDeviceInfo().toJsDeviceInfo()
+    struct DeviceFp : Codable {
+        let iosDeviceType: String
+        let screenWidth: String
+        let screenHeight: String
+        let screenScale: String
+        let version: String // systemVersion iOS
+        let timezoneOffsetMinutes: String
+        let language: String // current locale
     }
     
-    func toJsDeviceInfo() -> [String : String] {
-        var dict = [String: String]()
-        dict[JsKeys.iosDeviceType.rawValue] = iosDeviceType.rawValue
-        dict[JsKeys.isIPhone.rawValue] = "" + String(isIPhone)
-        dict[JsKeys.isIPad.rawValue] = "" + String(isIPad)
-        dict[JsKeys.version.rawValue] = version
-        dict[JsKeys.screenWidth.rawValue] = String(screenInfo.width)
-        dict[JsKeys.screenHeight.rawValue] = String(screenInfo.height)
-        dict[JsKeys.screenScale.rawValue] = String(screenInfo.scale)
-        // secondsFromGMT = time - GMT, timeZoneOffset = GMT - time
-        dict[JsKeys.timezoneOffsetMinutes.rawValue] = String(-1.0 * Float(secondsFromGMT) / 60.0)
-        dict[JsKeys.language.rawValue] = language
-
-        return dict
-    }
-    
-    enum IOSDeviceType : String, Codable {
-        case iPodTouch5
-        case iPodTouch6
-        case iPhone4
-        case iPhone4S
-        case iPhone5
-        case iPhone5C
-        case iPhone5S
-        case iPhone6
-        case iPhone6Plus
-        case iPhone6S
-        case iPhone6SPlus
-        case iPhone7
-        case iPhone7Plus
-        case iPhoneSE
-        case iPad2
-        case iPad3
-        case iPad4
-        case iPadAir
-        case iPadAir2
-        case iPadMini
-        case iPadMini2
-        case iPadMini3
-        case iPadMini4
-        case iPadPro
-        case simulator
-        case unknown
-    }
-    
-    struct ScreenInfo {
-        let width: Float
-        let height: Float
-        let scale: Float
-    }
-    
-    let iosDeviceType: IOSDeviceType
-    let screenInfo: ScreenInfo
-    let version: String
-    let userInterfaceIdiom: UIUserInterfaceIdiom
-    let secondsFromGMT: Int
-    let language: String
-
     static func createDeviceInfo() -> DeviceInfo {
+        return DeviceInfo(deviceFp: createDeviceFp())
+    }
+    
+    private static func createDeviceFp() -> DeviceFp {
         let screen = UIScreen.main
         let device = UIDevice.current
-        let screenInfo = ScreenInfo(width: Float(screen.bounds.width), height: Float(screen.bounds.height), scale: Float(screen.scale))
-        return DeviceInfo(iosDeviceType: getIOSDeviceType(),
-                          screenInfo: screenInfo,
+        // secondsFromGMT = time - GMT, timeZoneOffset = GMT - time
+        let secondsFromGMT = TimeZone.current.secondsFromGMT()
+        let timezoneOffsetMinutes = (-1.0 * Float(secondsFromGMT) / 60.0)
+        return DeviceFp(iosDeviceType: getModelName(),
+                          screenWidth: String(Float(screen.bounds.width)),
+                          screenHeight: String(Float(screen.bounds.height)),
+                          screenScale: String(Float(screen.scale)),
                           version: device.systemVersion,
-                          userInterfaceIdiom: device.userInterfaceIdiom,
-                          secondsFromGMT: TimeZone.current.secondsFromGMT(),
+                          timezoneOffsetMinutes: String(timezoneOffsetMinutes),
                           language: Locale.current.identifier)
     }
 
-    var isIPhone: Bool {
-        return userInterfaceIdiom == .phone
-    }
-    
-    var isIPad: Bool {
-        return userInterfaceIdiom == .pad
-    }
-    
-    private static func getIOSDeviceType() -> IOSDeviceType {
-        return iosDeviceType(fromModelName: getModelName())
-    }
-    
-    private static func iosDeviceType(fromModelName modelName: String) -> IOSDeviceType {
-        switch (modelName) {
-        case "iPod Touch 5" : return .iPodTouch5
-        case "iPod Touch 6" : return .iPodTouch6
-        case "iPhone 4" : return .iPhone4
-        case "iPhone 4s" : return .iPhone4S
-        case "iPhone 5" : return .iPhone5
-        case "iPhone 5c" : return .iPhone5C
-        case "iPhone 5s" : return .iPhone5S
-        case "iPhone 6" : return .iPhone6
-        case "iPhone 6 Plus" : return .iPhone6Plus
-        case "iPhone 6s" : return .iPhone6S
-        case "iPhone 6s Plus" : return .iPhone6SPlus
-        case "iPhone 7" : return .iPhone7
-        case "iPhone 7 Plus" : return .iPhone7Plus
-        case "iPhone SE" : return .iPhoneSE
-        case "iPad 2" : return .iPad2
-        case "iPad 3" : return .iPad3
-        case "iPad 4" : return .iPad4
-        case "iPad Air" : return .iPadAir
-        case "iPad Air 2" : return .iPadAir2
-        case "iPad Mini" : return .iPadMini
-        case "iPad Mini 2" : return .iPadMini2
-        case "iPad Mini 3" : return .iPadMini3
-        case "iPad Mini 4" : return .iPadMini4
-        case "iPad Pro" : return .iPadPro
-        case "Simulator" : return .simulator
-        default: return .unknown
-        }
-    }
-    
     private static func getModelName() -> String {
         var systemInfo = utsname()
         uname(&systemInfo)

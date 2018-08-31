@@ -13,7 +13,7 @@ extension IterableAPIInternal {
      * Returns the push integration name for this app depending on the config options
      * @return push integration name to use
      */
-    var pushIntegrationName: String? {
+    var pushIntegrationName: String? {//!!TQM: Take another look.
         if let pushIntegrationName = config.pushIntegrationName, let sandboxPushIntegrationName = config.sandboxPushIntegrationName {
             switch(config.pushPlatform) {
             case .APNS:
@@ -177,16 +177,6 @@ extension IterableAPIInternal {
         return paramValue.addingPercentEncoding(withAllowedCharacters: encodedCharacterSet)
     }
     
-    @objc public static func dictToJson(_ dict: [AnyHashable : Any]) -> String? {
-        do {
-            let jsonData = try JSONSerialization.data(withJSONObject: dict, options: [])
-            return String(data: jsonData, encoding: .utf8)
-        } catch (let error) {
-            ITBError("dictToJson failed: \(error.localizedDescription)")
-            return nil
-        }
-    }
-
     /**
      Executes the given `request`, attaching success and failure handlers.
      
@@ -236,48 +226,14 @@ extension IterableAPIInternal {
     
     func save(pushPayload payload: [AnyHashable : Any]) {
         let expiration = Calendar.current.date(byAdding: .hour,
-                                               value: Int(ITBConsts.UserDefaults.payloadExpirationHours),
+                                               value: Int(ITBL_USER_DEFAULTS_PAYLOAD_EXPIRATION_HOURS),
                                                to: dateProvider.currentDate)
-        saveToUserDefaults(value: payload, withKey: ITBConsts.UserDefaults.payloadKey, andExpiration: expiration)
+        try? localStorage.save(dict: payload, withKey: .payload, andExpiration: expiration)
 
         if let metadata = IterableNotificationMetadata.metadata(fromLaunchOptions: payload) {
             if let templateId = metadata.templateId, let messageId = metadata.messageId {
                 attributionInfo = IterableAttributionInfo(campaignId: metadata.campaignId, templateId: templateId, messageId: messageId)
             }
-        }
-    }
-    
-    func saveToUserDefaults(value: Any, withKey key: String, andExpiration expiration: Date?) {
-        let encodedObject = NSKeyedArchiver.archivedData(withRootObject: value)
-        let toSave: [String: Any]
-        if let expiration = expiration {
-            toSave = [ITBConsts.UserDefaults.objectTag : encodedObject,
-                      ITBConsts.UserDefaults.expirationTag : expiration]
-        } else {
-            toSave = [ITBConsts.UserDefaults.objectTag : encodedObject]
-        }
-        UserDefaults.standard.set(toSave, forKey: key)
-    }
-    
-    func expirableValueFromUserDefaults(withKey key: String) -> Any? {
-        guard let saved = UserDefaults.standard.dictionary(forKey: key) else {
-            return nil
-        }
-        guard let encodedObject = saved[ITBConsts.UserDefaults.objectTag] as? Data else {
-            return nil
-        }
-        guard let value = NSKeyedUnarchiver.unarchiveObject(with: encodedObject) else {
-            return nil
-        }
-        guard let expiration = saved[ITBConsts.UserDefaults.expirationTag] as? Date else {
-            // note if expiration is nil return the value
-            return value
-        }
-
-        if expiration.timeIntervalSinceReferenceDate > dateProvider.currentDate.timeIntervalSinceReferenceDate {
-            return value
-        } else {
-            return nil
         }
     }
     
@@ -353,13 +309,13 @@ extension IterableAPIInternal {
     }
     
     func storeEmailAndUserId() {
-        UserDefaults.standard.set(_email, forKey: ITBConsts.UserDefaults.emailKey)
-        UserDefaults.standard.set(_userId, forKey: ITBConsts.UserDefaults.userIdKey)
+        try? localStorage.save(string: _email, withKey: .email)
+        try? localStorage.save(string: _userId, withKey: .userId)
     }
     
     func retrieveEmailAndUserId() {
-        _email = UserDefaults.standard.string(forKey: ITBConsts.UserDefaults.emailKey)
-        _userId = UserDefaults.standard.string(forKey: ITBConsts.UserDefaults.userIdKey)
+        _email = (try? localStorage.string(withKey: .email)) ?? nil
+        _userId = (try? localStorage.string(withKey: .userId)) ?? nil
     }
     
     func checkForDeferredDeeplink() {
@@ -368,10 +324,7 @@ extension IterableAPIInternal {
             return
         }
         
-        let body = ["deviceInfo" : DeviceInfo.createJsDeviceInfo()]
-        let localTestEndpoint = "http://192.168.9.114:8080/" //!!! TQM:CHANGE
-        let path = "ddl/match"
-        guard let request = IterableRequestUtil.createPostRequest(forApiEndPoint: localTestEndpoint, path: path, args: [ITBL_KEY_API_KEY : apiKey], body: body) else {
+        guard let request = IterableRequestUtil.createPostRequest(forApiEndPoint: ITBConsts.linksEndpoint, path: ENDPOINT_DDL_MATCH, args: [ITBL_KEY_API_KEY : apiKey], body: DeviceInfo.createDeviceInfo()) else {
             ITBError("Could not create request")
             return
         }
@@ -390,9 +343,9 @@ extension IterableAPIInternal {
     }
     
     private func handleDDL(json: [AnyHashable : Any]) {
-        if let fpInfo = try? JSONDecoder().decode(FpInfo.self, from: JSONSerialization.data(withJSONObject: json, options: [])),
-            fpInfo.isMatch,
-            let destinationUrlString = fpInfo.destinationUrl,
+        if let serverResponse = try? JSONDecoder().decode(ServerResponse.self, from: JSONSerialization.data(withJSONObject: json, options: [])),
+            serverResponse.isMatch,
+            let destinationUrlString = serverResponse.destinationUrl,
             let action = IterableAction.actionOpenUrl(fromUrlString: destinationUrlString) {
             let context = IterableActionContext(action: action, source: .universalLink)
             

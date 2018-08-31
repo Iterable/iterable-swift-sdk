@@ -44,39 +44,6 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     XCTAssertEqualObjects(@"APNS_SANDBOX", [IterableAPIInternal pushServicePlatformToString:APNS_SANDBOX]);
 }
 
-- (void)testDictToJson {
-    NSDictionary *args = @{
-                           @"email": @"ilya@iterable.com",
-                           @"device": @{
-                                   @"token": @"foo",
-                                   @"platform": @"bar",
-                                   @"applicationName": @"baz",
-                                   @"dataFields": @{
-                                           @"name": @"green",
-                                           @"localizedModel": @"eggs",
-                                           @"userInterfaceIdiom": @"and",
-                                           @"identifierForVendor": @"ham",
-                                           @"systemName": @"iterable",
-                                           @"systemVersion": @"is",
-                                           @"model": @"awesome"
-                                           }
-                                   }
-                           };
-    NSString *result = [IterableAPIInternal dictToJson:args];
-    NSData *data = [result dataUsingEncoding:NSUTF8StringEncoding];
-    id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-    XCTAssertEqualObjects(args, json);
-    
-    NSString *expected = @"{\"email\":\"ilya@iterable.com\",\"device\":{\"applicationName\":\"baz\",\"dataFields\":{\"systemName\":\"iterable\",\"model\":\"awesome\",\"localizedModel\":\"eggs\",\"userInterfaceIdiom\":\"and\",\"systemVersion\":\"is\",\"name\":\"green\",\"identifierForVendor\":\"ham\"},\"token\":\"foo\",\"platform\":\"bar\"}}";
-    
-    id object = [NSJSONSerialization
-                 JSONObjectWithData:[expected dataUsingEncoding:NSUTF8StringEncoding]
-                 options:0
-                 error:nil];
-    XCTAssertEqualObjects(args, object);
-    XCTAssertEqualObjects(args, json);
-}
-
 - (void)testUserInterfaceIdionEnumToString {
     XCTAssertEqualObjects(@"Phone", [IterableAPIInternal userInterfaceIdiomEnumToString:UIUserInterfaceIdiomPhone]);
     XCTAssertEqualObjects(@"Pad", [IterableAPIInternal userInterfaceIdiomEnumToString:UIUserInterfaceIdiomPad]);
