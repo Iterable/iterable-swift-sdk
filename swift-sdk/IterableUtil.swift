@@ -51,40 +51,58 @@ import os
     }
 }
 
-public func ITBError(_ message: String? = nil, file: String = #file, method: String = #function, line: Int = #line) {
-    let logMessage = formatLogMessage(message: message, file: file, method: method, line: line)
-    if #available(iOS 10.0, *) {
-        os_log("%@", log: OSLog.default, type: .error, logMessage)
-    } else {
-        print(logMessage)
+public class DefaultLogDelegate: IterableLogDelegate {
+    public func log(level: LogLevel = .info, message: String) {
+        guard let configLogLevel = IterableAPIInternal.sharedInstance?.config.logLevel, level.rawValue >= configLogLevel.rawValue else {
+            return
+        }
+        
+        switch level {
+        case .error:
+            // Error goes to os_log, if available
+            if #available(iOS 10.0, *) {
+                os_log("%@", log: OSLog.default, type: .error, message)
+            } else {
+                print(message)
+            }
+        case .info:
+            let markerStr = "💛"
+            print("\(markerStr) \(message)")
+        case .debug:
+            // no logging
+            break
+        }
     }
 }
 
-private func formatLogMessage(message: String?, file: String, method: String, line: Int) -> String {
+public func ITBError(_ message: String? = nil, file: String = #file, method: String = #function, line: Int = #line) {
+    let date = IterableAPIInternal.sharedInstance?.dateProvider.currentDate ?? Date()
+    let logMessage = formatLogMessage(message: message, file: file, method: method, line: line, date: date)
+    IterableAPIInternal.sharedInstance?.config.logDelegate.log(level: .error, message: logMessage)
+}
+
+private func formatLogMessage(message: String?, file: String, method: String, line: Int, date: Date) -> String {
     let fileUrl = NSURL(fileURLWithPath: file)
     let fileToDisplay = fileUrl.deletingPathExtension!.lastPathComponent
+
+    let formattedDate = formatDate(date: date)
     
     if let zeeMessage = message {
-        return "\(fileToDisplay):\(method):\(line): \(zeeMessage)"
+        return "\(formattedDate):\(fileToDisplay):\(method):\(line): \(zeeMessage)"
     } else {
-        return "\(fileToDisplay):\(method):\(line)"
+        return "\(formattedDate):\(fileToDisplay):\(method):\(line)"
     }
+}
+
+private func formatDate(date: Date) -> String {
+    let formatter = DateFormatter()
+    formatter.dateFormat = "HH:mm:ss.SSSS"
+    return formatter.string(from: date)
 }
 
 /// It will print the output only if 'LOG' is defined in the project via -D LOG as 'Other Swift Flags'
 public func ITBInfo(_ message: String? = nil, file: String = #file, method: String = #function, line: Int = #line) {
-    #if LOG
-    let fileUrl = NSURL(fileURLWithPath: file)
-    let fileToDisplay = fileUrl.deletingPathExtension!.lastPathComponent
-    
-    let formatter = DateFormatter()
-    formatter.dateFormat = "HH:mm:ss.SSSS"
-    let time = formatter.string(from: Date())
-    
-    if let zeeMessage = message {
-        print("===> \(time):\(fileToDisplay):\(method):\(line): \(zeeMessage)")
-    } else {
-        print("===> \(time):\(fileToDisplay):\(method):\(line)")
-    }
-    #endif
+    let date = IterableAPIInternal.sharedInstance?.dateProvider.currentDate ?? Date()
+    let logMessage = formatLogMessage(message: message, file: file, method: method, line: line, date: date)
+    IterableAPIInternal.sharedInstance?.config.logDelegate.log(level: .info, message: logMessage)
 }

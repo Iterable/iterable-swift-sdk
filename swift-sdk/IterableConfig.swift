@@ -34,6 +34,26 @@ import Foundation
     @objc(handleIterableCustomAction:context:) func handle(iterableCustomAction action:IterableAction, inContext context: IterableActionContext) -> Bool
 }
 
+/**
+ * Lowest level that will be logged. By default the LogLevel is set to LogLevel.info.
+ */
+@objc public enum LogLevel : Int {
+    case debug = 1
+    case info
+    case error
+}
+
+/**
+ * Logging Delegate.
+ */
+@objc public protocol IterableLogDelegate: class {
+    /**
+     * Log a message.
+     * - parameter level: The log level.
+     * - parameter message: The message to log. The message will include file, method and line of the call.
+     */
+    @objc(log:Message:) func log(level: LogLevel, message: String)
+}
 
 /**
  Iterable Configuration Object. Use this when initializing the API.
@@ -72,4 +92,17 @@ public class IterableConfig : NSObject {
     /// When set to true, it will check for deferred deeplinks on first time app launch
     /// after installation from the App Store.
     public var checkForDeferredDeeplink = false
+    
+    /// The lowest level that will be logged. The levels go from
+    /// debug < (less than) info < (less than) error.
+    /// The default level is `.info`.
+    public var logLevel = LogLevel.info
+    
+    /// Implement the protocol IterableLogDelegate and set it here to change logging.
+    /// Out of the box you have the following
+    /// 1. DefaultLogDelegate. It will use OsLog for .error, cosole for .info and no logging for debug.
+    /// 2. NoneLogDelegate. No logging messages will be output.
+    /// 3. AllLogDelegate. It will log everything to console.
+    /// The default value is `DefaultLogDelegate`.
+    public var logDelegate: IterableLogDelegate = DefaultLogDelegate()
 }
