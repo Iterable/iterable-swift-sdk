@@ -319,8 +319,10 @@ extension IterableAPIInternal {
     }
     
     func checkForDeferredDeeplink() {
-        //!!! TQM:CHANGE
-        guard shouldCheckForDeferredDeeplink else {
+        guard config.checkForDeferredDeeplink else {
+            return
+        }
+        guard localStorage.ddlChecked == false else {
             return
         }
         
@@ -333,7 +335,6 @@ extension IterableAPIInternal {
             switch result {
             case .value(let json):
                 self.handleDDL(json: json)
-                break
             case .error(let failureInfo):
                 if let errorMessage = failureInfo.errorMessage {
                     ITBError(errorMessage)
@@ -356,6 +357,8 @@ extension IterableAPIInternal {
                                              urlOpener: AppUrlOpener())
             }
         }
+        
+        localStorage.ddlChecked = true
     }
     
     // Internal Only used in unit tests.

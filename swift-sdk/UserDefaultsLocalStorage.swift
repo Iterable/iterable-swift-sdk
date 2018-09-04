@@ -13,17 +13,25 @@ struct UserDefaultsLocalStorage : LocalStorageProtocol {
     
     var userId : String? {
         get {
-            return (try? string(withKey: .userId)) ?? nil
+            return string(withKey: .userId)
         } set {
-            try? save(string: newValue, withKey: .userId)
+            save(string: newValue, withKey: .userId)
         }
     }
 
     var email: String? {
         get {
-            return (try? string(withKey: .email)) ?? nil
+            return string(withKey: .email)
         } set {
-            try? save(string: newValue, withKey: .email)
+            save(string: newValue, withKey: .email)
+        }
+    }
+    
+    var ddlChecked: Bool {
+        get {
+            return bool(withKey: .ddlChecked)
+        } set {
+            save(bool: newValue, withKey: .ddlChecked)
         }
     }
     
@@ -76,11 +84,14 @@ struct UserDefaultsLocalStorage : LocalStorageProtocol {
         }
     }
     
-    private func string(withKey key: LocalStorageKey) throws -> String? {
+    private func string(withKey key: LocalStorageKey) -> String? {
         return UserDefaults.standard.string(forKey: key.value)
     }
     
-
+    private func bool(withKey key: LocalStorageKey) -> Bool {
+        return UserDefaults.standard.bool(forKey: key.value)
+    }
+    
     private func isExpired(expiration: Date?) -> Bool {
         if let expiration = expiration {
             if expiration.timeIntervalSinceReferenceDate > dateProvider.currentDate.timeIntervalSinceReferenceDate {
@@ -114,8 +125,12 @@ struct UserDefaultsLocalStorage : LocalStorageProtocol {
         }
     }
     
-    private func save(string: String?, withKey key: LocalStorageKey) throws {
+    private func save(string: String?, withKey key: LocalStorageKey) {
         UserDefaults.standard.set(string, forKey: key.value)
+    }
+    
+    private func save(bool: Bool, withKey key: LocalStorageKey) {
+        UserDefaults.standard.set(bool, forKey: key.value)
     }
 
     private func save(data: Data?, withKey key: LocalStorageKey, andExpiration expiration: Date?) throws {
@@ -140,6 +155,7 @@ struct UserDefaultsLocalStorage : LocalStorageProtocol {
         static let attributionInfo = LocalStorageKey(value: ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_KEY)
         static let email = LocalStorageKey(value: ITBL_USER_DEFAULTS_EMAIL_KEY)
         static let userId = LocalStorageKey(value: ITBL_USER_DEFAULTS_USERID_KEY)
+        static let ddlChecked = LocalStorageKey(value: ITBL_USER_DEFAULTS_DDL_CHECKED)
     }
     
     private struct Envelope : Codable {

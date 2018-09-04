@@ -68,4 +68,8 @@ public class IterableConfig : NSObject {
     /// When set to true, IterableSDK will automatically register and deregister 
     /// notification tokens.
     public var autoPushRegistration = true
+    
+    /// When set to true, it will check for deferred deeplinks on first time app launch
+    /// after installation from the App Store.
+    public var checkForDeferredDeeplink = false
 }

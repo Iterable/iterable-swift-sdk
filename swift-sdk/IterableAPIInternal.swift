@@ -847,9 +847,6 @@ import UserNotifications
         return characterSet
     } ()
     
-    //!!! TQM:CHANGE
-    final let shouldCheckForDeferredDeeplink = false
-    
     private func isEitherUserIdOrEmailSet() -> Bool {
         return IterableUtil.isNotNullOrEmpty(string: _email) || IterableUtil.isNotNullOrEmpty(string: _userId)
     }

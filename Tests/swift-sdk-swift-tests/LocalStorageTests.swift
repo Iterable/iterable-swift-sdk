@@ -32,7 +32,17 @@ class LocalStorageTests: XCTestCase {
         XCTAssertEqual(localStorage.userId, userId)
         XCTAssertEqual(localStorage.email, email)
     }
-    
+
+    func testDDLChecked() throws {
+        let mockDateProvider = MockDateProvider()
+        var localStorage = UserDefaultsLocalStorage(dateProvider: mockDateProvider)
+        localStorage.ddlChecked = true
+        XCTAssertTrue(localStorage.ddlChecked)
+        
+        localStorage.ddlChecked = false
+        XCTAssertFalse(localStorage.ddlChecked)
+    }
+
     func testAttributionInfo() throws {
         let mockDateProvider = MockDateProvider()
         let localStorage = UserDefaultsLocalStorage(dateProvider: mockDateProvider)

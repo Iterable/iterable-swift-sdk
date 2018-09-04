@@ -8,6 +8,7 @@ import Foundation
 protocol LocalStorageProtocol {
     var userId: String? {get set}
     var email: String? {get set}
+    var ddlChecked: Bool {get set}
     var attributionInfo: IterableAttributionInfo? {get}
     func save(attributionInfo: IterableAttributionInfo?, withExpiration expiration: Date?)
     var payload: [AnyHashable : Any]? {get}
