@@ -13,7 +13,7 @@ extension IterableAPIInternal {
      * Returns the push integration name for this app depending on the config options
      * @return push integration name to use
      */
-    var pushIntegrationName: String? {//!!TQM: Take another look.
+    var pushIntegrationName: String? {
         if let pushIntegrationName = config.pushIntegrationName, let sandboxPushIntegrationName = config.sandboxPushIntegrationName {
             switch(config.pushPlatform) {
             case .APNS:
