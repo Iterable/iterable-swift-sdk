@@ -100,7 +100,8 @@ extern NSString *const ITBL_DEVICE_USER_INTERFACE;
 #define ITBL_USER_DEFAULTS_EMAIL_KEY @"itbl_email"
 #define ITBL_USER_DEFAULTS_USERID_KEY @"itbl_userid"
 #define ITBL_USER_DEFAULTS_DDL_CHECKED @"itbl_ddl_checked"
-
+#define ITBL_USER_DEFAULTS_DEVICE_ID @"itbl_device_id"
+#define ITBL_USER_DEFAULTS_SDK_VERSION @"itbl_sdk_version"
 
 //Action Buttons
 #define ITBL_BUTTON_IDENTIFIER @"identifier"
