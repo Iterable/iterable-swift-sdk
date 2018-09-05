@@ -92,7 +92,7 @@ import UserNotifications
      The userInfo dictionary which came with last push.
      */
     @objc public var lastPushPayload: [AnyHashable : Any]? {
-        return expirableValueFromUserDefaults(withKey: ITBConsts.UserDefaults.payloadKey) as? [AnyHashable : Any]
+        return localStorage.payload
     }
     
     /**
@@ -100,17 +100,12 @@ import UserNotifications
      */
     @objc public var attributionInfo : IterableAttributionInfo? {
         get {
-            return expirableValueFromUserDefaults(withKey: ITBConsts.UserDefaults.attributionInfoKey) as? IterableAttributionInfo
+            return localStorage.attributionInfo
         } set {
-            if let value = newValue {
-                let expiration = Calendar.current.date(byAdding: .hour,
-                                                       value: Int(ITBConsts.UserDefaults.attributionInfoExpirationHours),
-                                                       to: dateProvider.currentDate)
-                saveToUserDefaults(value: value, withKey: ITBConsts.UserDefaults.attributionInfoKey, andExpiration: expiration)
-
-            } else {
-                UserDefaults.standard.removeObject(forKey: ITBConsts.UserDefaults.attributionInfoKey)
-            }
+            let expiration = Calendar.current.date(byAdding: .hour,
+                                                   value: Int(ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_EXPIRATION_HOURS),
+                                                   to: dateProvider.currentDate)
+            localStorage.save(attributionInfo: newValue, withExpiration: expiration)
         }
     }
 
@@ -816,7 +811,7 @@ import UserNotifications
     @objc @discardableResult public func handleUniversalLink(_ url: URL) -> Bool {
         return deeplinkManager.handleUniversalLink(url, urlDelegate: config.urlDelegate, urlOpener: AppUrlOpener())
     }
-    
+
     // MARK: For Private and Internal Use ========================================>
     
     var config: IterableConfig
@@ -839,6 +834,8 @@ import UserNotifications
     var networkSessionProvider : () -> NetworkSessionProtocol
     
     var notificationStateProvider: NotificationStateProviderProtocol
+    
+    var localStorage: LocalStorageProtocol
     
     lazy var networkSession: NetworkSessionProtocol = {
         networkSessionProvider()
@@ -887,6 +884,7 @@ import UserNotifications
         self.dateProvider = dateProvider
         self.networkSessionProvider = networkSession
         self.notificationStateProvider = notificationStateProvider
+        self.localStorage = UserDefaultsLocalStorage(dateProvider: self.dateProvider)
         
         // setup
         deeplinkManager = IterableDeeplinkManager()
@@ -894,9 +892,9 @@ import UserNotifications
         // super init
         super.init()
         
-        // Fix for NSArchiver bug
-        NSKeyedUnarchiver.setClass(IterableAttributionInfo.self, forClassName: "IterableAttributionInfo")
-
+        // check for deferred deeplinking
+        checkForDeferredDeeplink()
+        
         // get email and userId from UserDefaults if present
         retrieveEmailAndUserId()
         

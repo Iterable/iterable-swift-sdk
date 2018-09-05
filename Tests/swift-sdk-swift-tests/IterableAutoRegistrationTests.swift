@@ -163,7 +163,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         config.autoPushRegistration = true
         let notificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: expectation1)
         
-        UserDefaults.standard.set("user1@example.com", forKey:ITBConsts.UserDefaults.emailKey)
+        UserDefaults.standard.set("user1@example.com", forKey:ITBL_USER_DEFAULTS_EMAIL_KEY)
         IterableAPI.initialize(apiKey: IterableAutoRegistrationTests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
         
         // only wait for small time, supposed to error out

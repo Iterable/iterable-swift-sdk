@@ -10,20 +10,25 @@ import Foundation
 
 struct IterableRequestUtil {
     static func createPostRequest(forApiEndPoint apiEndPoint:String, path: String, args: [String : String]? = nil, body: [AnyHashable : Any]? = nil) -> URLRequest? {
+        return createPostRequest(forApiEndPoint: apiEndPoint, path: path, args: args, body: dictToJsonData(body))
+    }
+
+    static func createPostRequest<T:Encodable>(forApiEndPoint apiEndPoint:String, path: String, args: [String : String]? = nil, body: T) -> URLRequest? {
+        return createPostRequest(forApiEndPoint: apiEndPoint, path: path, args: args, body: try? JSONEncoder().encode(body))
+    }
+
+    static func createPostRequest(forApiEndPoint apiEndPoint:String, path: String, args: [String : String]? = nil, body: Data? = nil) -> URLRequest? {
         guard let url = getUrlComponents(forApiEndPoint: apiEndPoint, path:path, args: args)?.url else {
             return nil
         }
-
+        
         var request = URLRequest(url: url)
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpMethod = ITBL_KEY_POST
-        if let body = body {
-            if let bodyString = dictToJson(body) {
-                request.httpBody = bodyString.data(using: .utf8)
-            }
-        }
+        request.httpBody = body
         return request
     }
-
+    
     static func createGetRequest(forApiEndPoint apiEndPoint:String, path: String, args: [String : String]? = nil) -> URLRequest? {
         guard let url = getUrlComponents(forApiEndPoint: apiEndPoint, path: path, args: args)?.url else {
             return nil
@@ -46,14 +51,11 @@ struct IterableRequestUtil {
         return components
     }
     
-    static func dictToJson(_ dict: [AnyHashable : Any]) -> String? {
-        do {
-            let jsonData = try JSONSerialization.data(withJSONObject: dict, options: [])
-            return String(data: jsonData, encoding: .utf8)
-        } catch (let error) {
-            ITBError("dictToJson failed: \(error.localizedDescription)")
+    static func dictToJsonData(_ dict: [AnyHashable : Any]?) -> Data? {
+        guard let dict = dict else {
             return nil
         }
+        return try? JSONSerialization.data(withJSONObject: dict, options: [])
     }
     
     static func pathCombine(paths: [String]) -> String {

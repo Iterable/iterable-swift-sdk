@@ -177,16 +177,6 @@ extension IterableAPIInternal {
         return paramValue.addingPercentEncoding(withAllowedCharacters: encodedCharacterSet)
     }
     
-    @objc public static func dictToJson(_ dict: [AnyHashable : Any]) -> String? {
-        do {
-            let jsonData = try JSONSerialization.data(withJSONObject: dict, options: [])
-            return String(data: jsonData, encoding: .utf8)
-        } catch (let error) {
-            ITBError("dictToJson failed: \(error.localizedDescription)")
-            return nil
-        }
-    }
-
     /**
      Executes the given `request`, attaching success and failure handlers.
      
@@ -205,7 +195,6 @@ extension IterableAPIInternal {
             switch result {
             case .value(let json):
                 onSuccess?(json)
-                print()
             case .error(let failureInfo):
                 onFailure?(failureInfo.errorMessage, failureInfo.data)
             }
@@ -237,48 +226,14 @@ extension IterableAPIInternal {
     
     func save(pushPayload payload: [AnyHashable : Any]) {
         let expiration = Calendar.current.date(byAdding: .hour,
-                                               value: Int(ITBConsts.UserDefaults.payloadExpirationHours),
+                                               value: Int(ITBL_USER_DEFAULTS_PAYLOAD_EXPIRATION_HOURS),
                                                to: dateProvider.currentDate)
-        saveToUserDefaults(value: payload, withKey: ITBConsts.UserDefaults.payloadKey, andExpiration: expiration)
+        localStorage.save(payload: payload, withExpiration: expiration)
 
         if let metadata = IterableNotificationMetadata.metadata(fromLaunchOptions: payload) {
             if let templateId = metadata.templateId, let messageId = metadata.messageId {
                 attributionInfo = IterableAttributionInfo(campaignId: metadata.campaignId, templateId: templateId, messageId: messageId)
             }
-        }
-    }
-    
-    func saveToUserDefaults(value: Any, withKey key: String, andExpiration expiration: Date?) {
-        let encodedObject = NSKeyedArchiver.archivedData(withRootObject: value)
-        let toSave: [String: Any]
-        if let expiration = expiration {
-            toSave = [ITBConsts.UserDefaults.objectTag : encodedObject,
-                      ITBConsts.UserDefaults.expirationTag : expiration]
-        } else {
-            toSave = [ITBConsts.UserDefaults.objectTag : encodedObject]
-        }
-        UserDefaults.standard.set(toSave, forKey: key)
-    }
-    
-    func expirableValueFromUserDefaults(withKey key: String) -> Any? {
-        guard let saved = UserDefaults.standard.dictionary(forKey: key) else {
-            return nil
-        }
-        guard let encodedObject = saved[ITBConsts.UserDefaults.objectTag] as? Data else {
-            return nil
-        }
-        guard let value = NSKeyedUnarchiver.unarchiveObject(with: encodedObject) else {
-            return nil
-        }
-        guard let expiration = saved[ITBConsts.UserDefaults.expirationTag] as? Date else {
-            // note if expiration is nil return the value
-            return value
-        }
-
-        if expiration.timeIntervalSinceReferenceDate > dateProvider.currentDate.timeIntervalSinceReferenceDate {
-            return value
-        } else {
-            return nil
         }
     }
     
@@ -354,15 +309,59 @@ extension IterableAPIInternal {
     }
     
     func storeEmailAndUserId() {
-        UserDefaults.standard.set(_email, forKey: ITBConsts.UserDefaults.emailKey)
-        UserDefaults.standard.set(_userId, forKey: ITBConsts.UserDefaults.userIdKey)
+        localStorage.email = _email
+        localStorage.userId = _userId
     }
     
     func retrieveEmailAndUserId() {
-        _email = UserDefaults.standard.string(forKey: ITBConsts.UserDefaults.emailKey)
-        _userId = UserDefaults.standard.string(forKey: ITBConsts.UserDefaults.userIdKey)
+        _email = localStorage.email
+        _userId = localStorage.userId
     }
     
+    func checkForDeferredDeeplink() {
+        guard config.checkForDeferredDeeplink else {
+            return
+        }
+        guard localStorage.ddlChecked == false else {
+            return
+        }
+        
+        guard let request = IterableRequestUtil.createPostRequest(forApiEndPoint: ITBConsts.linksEndpoint, path: ENDPOINT_DDL_MATCH, args: [ITBL_KEY_API_KEY : apiKey], body: DeviceInfo.createDeviceInfo()) else {
+            ITBError("Could not create request")
+            return
+        }
+        
+        NetworkHelper.sendRequest(request, usingSession: networkSession).observe {(result) in
+            switch result {
+            case .value(let json):
+                self.handleDDL(json: json)
+            case .error(let failureInfo):
+                if let errorMessage = failureInfo.errorMessage {
+                    ITBError(errorMessage)
+                }
+            }
+        }
+    }
+    
+    private func handleDDL(json: [AnyHashable : Any]) {
+        if let serverResponse = try? JSONDecoder().decode(ServerResponse.self, from: JSONSerialization.data(withJSONObject: json, options: [])),
+            serverResponse.isMatch,
+            let destinationUrlString = serverResponse.destinationUrl,
+            let action = IterableAction.actionOpenUrl(fromUrlString: destinationUrlString) {
+            let context = IterableActionContext(action: action, source: .universalLink)
+            
+            DispatchQueue.main.async {
+                IterableActionRunner.execute(action: action,
+                                             context: context,
+                                             urlHandler: IterableUtil.urlHandler(fromUrlDelegate: self.urlDelegate, inContext: context),
+                                             urlOpener: AppUrlOpener())
+            }
+        }
+        
+        localStorage.ddlChecked = true
+    }
+    
+    // Internal Only used in unit tests.
     @discardableResult static func initialize(apiKey: String,
                                                  launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil,
                                                  config: IterableConfig = IterableConfig()) -> IterableAPIInternal {

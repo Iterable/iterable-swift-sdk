@@ -20,6 +20,30 @@ class IterableRequestUtilTests: XCTestCase {
         super.tearDown()
     }
     
+    func testDictToJsonData() {
+        let args: [AnyHashable : Any] = [
+            "email": "ilya@iterable.com",
+            "device": [
+                "token": "foo",
+                "platform": "bar",
+                "applicationName": "baz",
+                "dataFields": [
+                    "name": "green",
+                    "localizedModel": "eggs",
+                    "userInterfaceIdiom": "and",
+                    "identifierForVendor": "ham",
+                    "systemName": "iterable",
+                    "systemVersion": "is",
+                    "model": "awesome"
+                ]
+            ]
+        ]
+        
+        let data = IterableRequestUtil.dictToJsonData(args)!
+        let jsonObject = try! JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable : Any]
+        XCTAssertTrue(NSDictionary(dictionary: args).isEqual(to: jsonObject))
+    }
+    
     func testGetRequest() {
         let apiEndPoint = "https://somewhere.com/"
         let path = "path"

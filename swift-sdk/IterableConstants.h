@@ -62,6 +62,7 @@ extern NSString *const ITBL_DEVICE_USER_INTERFACE;
 #define ENDPOINT_UPDATE_USER @"users/update"
 #define ENDPOINT_UPDATE_EMAIL @"users/updateEmail"
 #define ENDPOINT_UPDATE_SUBSCRIPTIONS @"users/updateSubscriptions"
+#define ENDPOINT_DDL_MATCH @"a/matchFp" //DDL = Deferred Deep Linking
 
 //MISC
 #define ITBL_KEY_GET @"GET"
@@ -98,6 +99,8 @@ extern NSString *const ITBL_DEVICE_USER_INTERFACE;
 #define ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_EXPIRATION_HOURS 24
 #define ITBL_USER_DEFAULTS_EMAIL_KEY @"itbl_email"
 #define ITBL_USER_DEFAULTS_USERID_KEY @"itbl_userid"
+#define ITBL_USER_DEFAULTS_DDL_CHECKED @"itbl_ddl_checked"
+
 
 //Action Buttons
 #define ITBL_BUTTON_IDENTIFIER @"identifier"
