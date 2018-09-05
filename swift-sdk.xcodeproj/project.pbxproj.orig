@@ -426,8 +426,11 @@
 				AC2C668320D3370600D46CC9 /* Mocks.swift */,
 				AC89661D2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift */,
 				ACE34AB4213776CB00691224 /* LocalStorageTests.swift */,
+<<<<<<< HEAD
 				007960ED213F8B2300C53A6A /* DeferredDeeplinkTests.swift */,
+=======
 				ACED4C00213F50B30055A497 /* LoggingTests.swift */,
+>>>>>>> Add logging levels, IterableLogDelegate and unit tests.
 			);
 			path = "swift-sdk-swift-tests";
 			sourceTree = "<group>";
@@ -856,8 +859,11 @@
 				00CB31B621096129004ACDEC /* TestUtils.swift in Sources */,
 				AC89661E2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift in Sources */,
 				00B6FACC210E8484007535CF /* APNSUtilTests.swift in Sources */,
+<<<<<<< HEAD
 				007960EE213F8B2300C53A6A /* DeferredDeeplinkTests.swift in Sources */,
+=======
 				ACED4C01213F50B30055A497 /* LoggingTests.swift in Sources */,
+>>>>>>> Add logging levels, IterableLogDelegate and unit tests.
 				AC776DA4211A17C700C27C27 /* IterableRequestUtilTests.swift in Sources */,
 				ACE34AB5213776CB00691224 /* LocalStorageTests.swift in Sources */,
 				AC6FDD8C20F56309005D811E /* IterableInAppNotificationTests.swift in Sources */,
