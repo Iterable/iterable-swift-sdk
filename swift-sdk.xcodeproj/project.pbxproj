@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		007960EE213F8B2300C53A6A /* DeferredDeeplinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 007960ED213F8B2300C53A6A /* DeferredDeeplinkTests.swift */; };
 		00B6FACC210E8484007535CF /* APNSUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B6FACB210E8484007535CF /* APNSUtilTests.swift */; };
 		00B6FACE210E88ED007535CF /* prod-1.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 00B6FACD210E874D007535CF /* prod-1.mobileprovision */; };
 		00B6FAD1210E8D90007535CF /* dev-1.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */; };
@@ -119,6 +120,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		007960ED213F8B2300C53A6A /* DeferredDeeplinkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeferredDeeplinkTests.swift; sourceTree = "<group>"; };
 		00B6FACB210E8484007535CF /* APNSUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APNSUtilTests.swift; sourceTree = "<group>"; };
 		00B6FACD210E874D007535CF /* prod-1.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = "prod-1.mobileprovision"; sourceTree = "<group>"; };
 		00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = "dev-1.mobileprovision"; sourceTree = "<group>"; };
@@ -411,6 +413,7 @@
 				AC2C668320D3370600D46CC9 /* Mocks.swift */,
 				AC89661D2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift */,
 				ACE34AB4213776CB00691224 /* LocalStorageTests.swift */,
+				007960ED213F8B2300C53A6A /* DeferredDeeplinkTests.swift */,
 			);
 			path = "swift-sdk-swift-tests";
 			sourceTree = "<group>";
@@ -838,6 +841,7 @@
 				00CB31B621096129004ACDEC /* TestUtils.swift in Sources */,
 				AC89661E2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift in Sources */,
 				00B6FACC210E8484007535CF /* APNSUtilTests.swift in Sources */,
+				007960EE213F8B2300C53A6A /* DeferredDeeplinkTests.swift in Sources */,
 				AC776DA4211A17C700C27C27 /* IterableRequestUtilTests.swift in Sources */,
 				ACE34AB5213776CB00691224 /* LocalStorageTests.swift in Sources */,
 				AC6FDD8C20F56309005D811E /* IterableInAppNotificationTests.swift in Sources */,
