@@ -841,12 +841,6 @@ import UserNotifications
         networkSessionProvider()
     }()
     
-    var encodedCharacterSet : CharacterSet = {
-        var characterSet = CharacterSet.urlQueryAllowed
-        characterSet.remove(charactersIn: "+")
-        return characterSet
-    } ()
-    
     private func isEitherUserIdOrEmailSet() -> Bool {
         return IterableUtil.isNotNullOrEmpty(string: _email) || IterableUtil.isNotNullOrEmpty(string: _userId)
     }
