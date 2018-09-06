@@ -255,13 +255,13 @@ extension IterableAPI {
 
 
 // used by objc tests, remove after rewriting in Swift
-@objc extension IterableAPIInternal {
-    @objc @discardableResult public static func initialize(apiKey: String) -> IterableAPIInternal {
+extension IterableAPIInternal {
+    @discardableResult public static func initialize(apiKey: String) -> IterableAPIInternal {
         return initialize(apiKey: apiKey, config:IterableConfig())
     }
     
     // used by objc tests, remove after rewriting them in Swift
-    @objc @discardableResult public static func initialize(apiKey: String,
+    @discardableResult public static func initialize(apiKey: String,
                                                            config: IterableConfig) -> IterableAPIInternal {
         return initialize(apiKey: apiKey, launchOptions: nil, config:config)
     }

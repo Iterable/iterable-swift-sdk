@@ -117,7 +117,7 @@ extension IterableAPIInternal {
         }
     }
     
-    @objc public func createPostRequest(forAction action: String, withBody body: [AnyHashable : Any]) -> URLRequest? {
+    func createPostRequest(forAction action: String, withBody body: [AnyHashable : Any]) -> URLRequest? {
         return IterableRequestUtil.createPostRequest(forApiEndPoint: ITBConsts.apiEndpoint, path: action, args: [ITBL_KEY_API_KEY : apiKey], body: body)
     }
     
@@ -137,7 +137,7 @@ extension IterableAPIInternal {
         }
     }
     
-    @objc public func sendPush(toEmail email: String, withCampaignId campaignId: Int, withOnSuccess onSuccess: OnSuccessHandler? = nil, withOnFailure onFailure: OnFailureHandler? = nil) {
+    func sendPush(toEmail email: String, withCampaignId campaignId: Int, withOnSuccess onSuccess: OnSuccessHandler? = nil, withOnFailure onFailure: OnFailureHandler? = nil) {
         let args: [String: Any] = [
             ITBL_KEY_RECIPIENT_EMAIL: email,
             ITBL_KEY_CAMPAIGN_ID: campaignId
@@ -149,7 +149,7 @@ extension IterableAPIInternal {
         }
     }
 
-    @objc public func sendInApp(toEmail email: String, withCampaignId campaignId: Int, withOnSuccess onSuccess: OnSuccessHandler? = nil, withOnFailure onFailure: OnFailureHandler? = nil) {
+    func sendInApp(toEmail email: String, withCampaignId campaignId: Int, withOnSuccess onSuccess: OnSuccessHandler? = nil, withOnFailure onFailure: OnFailureHandler? = nil) {
         let args: [String: Any] = [
             ITBL_KEY_RECIPIENT_EMAIL: email,
             ITBL_KEY_CAMPAIGN_ID: campaignId
@@ -161,7 +161,7 @@ extension IterableAPIInternal {
         }
     }
 
-    @objc public func getCampaigns(withOnSuccess onSuccess: OnSuccessHandler?, withOnFailure onFailure: OnFailureHandler?) {
+    func getCampaigns(withOnSuccess onSuccess: OnSuccessHandler?, withOnFailure onFailure: OnFailureHandler?) {
         guard let request = createGetRequest(forAction: "campaigns", withArgs: [:]) else {
             ITBError("Couldn't create get request for campaigns")
             onFailure?("couldn't create get request", nil)
@@ -183,7 +183,7 @@ extension IterableAPIInternal {
      - parameter onSuccess:   A closure to execute if the request is successful. It should accept one argument, an `Dictionary` of the response.
      - parameter onFailure:   A closure to execute if the request fails. It should accept two arguments: an `String` containing the reason this request failed, and an `Data` containing the raw response.
      */
-    @objc public func sendRequest(_ request: URLRequest, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) {
+    func sendRequest(_ request: URLRequest, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) {
         NetworkHelper.sendRequest(request, usingSession: networkSession).observe { (result) in
             switch result {
             case .value(let json):
@@ -237,7 +237,7 @@ extension IterableAPIInternal {
      
      - returns: an NSString that the Iterable backend can understand
      */
-    @objc public static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform) -> String {
+    static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform) -> String {
         switch pushServicePlatform {
         case .APNS:
             return ITBL_KEY_APNS
@@ -248,7 +248,7 @@ extension IterableAPIInternal {
         }
     }
     
-    @objc public static func userInterfaceIdiomEnumToString(_ idiom: UIUserInterfaceIdiom) -> String {
+    static func userInterfaceIdiomEnumToString(_ idiom: UIUserInterfaceIdiom) -> String {
         switch idiom {
         case .phone:
             return ITBL_KEY_PHONE
@@ -355,7 +355,7 @@ extension IterableAPIInternal {
     }
     
     // Internal Only used in unit tests.
-    @discardableResult static func initialize(apiKey: String,
+    static func initialize(apiKey: String,
                                                  launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil,
                                                  config: IterableConfig = IterableConfig()) -> IterableAPIInternal {
         queue.sync {

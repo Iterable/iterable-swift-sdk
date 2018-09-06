@@ -7,7 +7,7 @@
 import Foundation
 import UserNotifications
 
-@objc public final class IterableAPIInternal : NSObject, PushTrackerProtocol {
+final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     /**
      Get the previously instantiated singleton instance of the API
      
@@ -18,7 +18,7 @@ import UserNotifications
      
      - warning: `instance` will return `nil` if called before calling `initialize`
      */
-    @objc public static var sharedInstance : IterableAPIInternal? {
+    static var sharedInstance : IterableAPIInternal? {
         if _sharedInstance == nil {
             ITBError("instance called before initializing API")
         }
@@ -28,12 +28,12 @@ import UserNotifications
     /**
      The apiKey that this IterableAPIImplementation is using
      */
-    @objc public var apiKey: String
+    var apiKey: String
     
     /**
      The email of the logged in user that this IterableAPIImplementation is using
      */
-    @objc public var email: String? {
+    var email: String? {
         get {
             return _email
         } set {
@@ -54,7 +54,7 @@ import UserNotifications
     /**
      The userId of the logged in user that this IterableAPIImplementation is using
      */
-    @objc public var userId: String? {
+    var userId: String? {
         get {
             return _userId
         } set {
@@ -72,7 +72,7 @@ import UserNotifications
         }
     }
     
-    @objc public weak var urlDelegate: IterableURLDelegate? {
+    weak var urlDelegate: IterableURLDelegate? {
         get {
             return config.urlDelegate
         } set {
@@ -80,7 +80,7 @@ import UserNotifications
         }
     }
     
-    @objc public weak var customActionDelegate: IterableCustomActionDelegate? {
+    weak var customActionDelegate: IterableCustomActionDelegate? {
         get {
             return config.customActionDelegate
         } set {
@@ -91,14 +91,14 @@ import UserNotifications
     /**
      The userInfo dictionary which came with last push.
      */
-    @objc public var lastPushPayload: [AnyHashable : Any]? {
+    var lastPushPayload: [AnyHashable : Any]? {
         return localStorage.payload
     }
     
     /**
      Attribution info (campaignId, messageId etc.) for last push open or app link click from an email.
      */
-    @objc public var attributionInfo : IterableAttributionInfo? {
+    var attributionInfo : IterableAttributionInfo? {
         get {
             return localStorage.attributionInfo
         } set {
@@ -118,7 +118,7 @@ import UserNotifications
      `application:didRegisterForRemoteNotificationsWithDeviceToken`
      after registering for remote notifications
      */
-    @objc(registerToken:) public func register(token: Data) {
+    func register(token: Data) {
         register(token: token, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "registerToken"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "registerToken"))
     }
 
@@ -133,7 +133,7 @@ import UserNotifications
      - onSuccess:   OnSuccessHandler to invoke if token registration is successful
      - onFailure:   OnFailureHandler to invoke if token registration fails
      */
-    @objc(registerToken:onSuccess:OnFailure:) public func register(token: Data, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func register(token: Data, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         guard let appName = pushIntegrationName else {
             ITBError("registerToken: appName is nil")
             onFailure?("Not registering device token - appName must not be nil", nil)
@@ -146,14 +146,14 @@ import UserNotifications
     /**
      Disable this device's token in Iterable, for the current user.
      */
-    @objc public func disableDeviceForCurrentUser() {
+    func disableDeviceForCurrentUser() {
         disableDeviceForCurrentUser(withOnSuccess: IterableAPIInternal.defaultOnSucess(identifier: "disableDevice"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "disableDevice"))
     }
 
     /**
      Disable this device's token in Iterable, for all users with this device.
      */
-    @objc public func disableDeviceForAllUsers() {
+    func disableDeviceForAllUsers() {
         disableDeviceForAllUsers(withOnSuccess: IterableAPIInternal.defaultOnSucess(identifier: "disableDevice"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "disableDevice"))
     }
 
@@ -166,7 +166,7 @@ import UserNotifications
      - seeAlso: OnSuccessHandler
      - seeAlso: OnFailureHandler
      */
-    @objc public func disableDeviceForCurrentUser(withOnSuccess onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func disableDeviceForCurrentUser(withOnSuccess onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         disableDevice(forAllUsers: false, onSuccess: onSuccess, onFailure: onFailure)
     }
 
@@ -179,7 +179,7 @@ import UserNotifications
      - seeAlso: OnSuccessHandler
      - seeAlso: OnFailureHandler
      */
-    @objc public func disableDeviceForAllUsers(withOnSuccess onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func disableDeviceForAllUsers(withOnSuccess onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         disableDevice(forAllUsers: true, onSuccess: onSuccess, onFailure: onFailure)
     }
     
@@ -195,7 +195,7 @@ import UserNotifications
      - seeAlso: OnSuccessHandler
      - seeAlso: OnFailureHandler
      */
-    @objc public func updateUser(_ dataFields: [AnyHashable : Any], mergeNestedObjects: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func updateUser(_ dataFields: [AnyHashable : Any], mergeNestedObjects: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         guard email != nil || userId != nil else {
             ITBError("Both email and userId are nil")
             onFailure?("Both email and userId are nil", nil)
@@ -242,7 +242,7 @@ import UserNotifications
      - seeAlso: OnSuccessHandler
      - seeAlso: OnFailureHandler
      */
-    @objc public func updateEmail(_ newEmail: String, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func updateEmail(_ newEmail: String, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         guard let email = email else {
             onFailure?("updateEmail should not be called with a userId. Init SDK with email instead of userId.", nil)
             return
@@ -273,7 +273,7 @@ import UserNotifications
 
      - seeAlso: CommerceItem
      */
-    @objc public func trackPurchase(_ total: NSNumber, items: [CommerceItem]) {
+    func trackPurchase(_ total: NSNumber, items: [CommerceItem]) {
         trackPurchase(total, items: items, dataFields: nil)
     }
 
@@ -288,7 +288,7 @@ import UserNotifications
 
      - seeAlso: CommerceItem
      */
-    @objc public func trackPurchase(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?) {
+    func trackPurchase(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?) {
         trackPurchase(total, items: items, dataFields: dataFields, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackPurchase"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPurchase"))
     }
 
@@ -305,7 +305,7 @@ import UserNotifications
 
      - seeAlso: CommerceItem, OnSuccessHandler, OnFailureHandler
      */
-    @objc public func trackPurchase(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func trackPurchase(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         guard email != nil || userId != nil else {
             ITBError("Both email and userId are nil")
             onFailure?("Both email and userId are nil", nil)
@@ -361,7 +361,7 @@ import UserNotifications
      
      - parameter userInfo:    the push notification payload
      */
-    @objc public func trackPushOpen(_ userInfo: [AnyHashable : Any]) {
+    func trackPushOpen(_ userInfo: [AnyHashable : Any]) {
         trackPushOpen(userInfo, dataFields: nil)
     }
     
@@ -373,7 +373,7 @@ import UserNotifications
      - parameter userInfo:    the push notification payload
      - parameter dataFields:  a `Dictionary` containing any additional information to save along with the event
      */
-    @objc public func trackPushOpen(_ userInfo: [AnyHashable : Any], dataFields: [AnyHashable : Any]?) {
+    func trackPushOpen(_ userInfo: [AnyHashable : Any], dataFields: [AnyHashable : Any]?) {
         trackPushOpen(userInfo,
                       dataFields: dataFields,
                       onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackPushOpen"),
@@ -393,7 +393,7 @@ import UserNotifications
      - SeeAlso: OnSuccessHandler
      - SeeAlso: OnFailureHandler
      */
-    @objc public func trackPushOpen(_ userInfo: [AnyHashable : Any], dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func trackPushOpen(_ userInfo: [AnyHashable : Any], dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         save(pushPayload: userInfo)
         if let metadata = IterableNotificationMetadata.metadata(fromLaunchOptions: userInfo), metadata.isRealCampaignNotification() {
             trackPushOpen(metadata.campaignId, templateId: metadata.templateId, messageId: metadata.messageId, appAlreadyRunning: false, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
@@ -413,7 +413,7 @@ import UserNotifications
         - appAlreadyRunning:   This will get merged into the dataFields. Whether the app is already running when the notification was received
         - dataFields:          A `Dictionary` containing any additional information to save along with the event
      */
-    @objc public func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?) {
+    func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?) {
         trackPushOpen(campaignId, templateId: templateId, messageId: messageId, appAlreadyRunning: appAlreadyRunning, dataFields: dataFields, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackPushOpen"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPushOpen"))
     }
 
@@ -430,7 +430,7 @@ import UserNotifications
      - seeAlso: OnSuccessHandler
      - seeAlso: OnFailureHandler
      */
-    @objc public func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         var args: [String : Any] = [:]
 
         var reqDataFields: [AnyHashable : Any]
@@ -468,7 +468,7 @@ import UserNotifications
      
      - parameter eventName:   Name of the event
      */
-    @objc public func track(_ eventName: String) {
+    func track(_ eventName: String) {
         track(eventName, dataFields: nil)
     }
 
@@ -480,7 +480,7 @@ import UserNotifications
      - parameter eventName:   Name of the event
      - parameter dataFields:  A `Dictionary` containing any additional information to save along with the event
      */
-    @objc public func track(_ eventName: String, dataFields: [AnyHashable : Any]?) {
+    func track(_ eventName: String, dataFields: [AnyHashable : Any]?) {
         track(eventName, dataFields: dataFields, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "track"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "track"))
     }
 
@@ -494,7 +494,7 @@ import UserNotifications
         - onSuccess:           OnSuccessHandler to invoke if the open is tracked successfully
         - onFailure:           OnFailureHandler to invoke if tracking the open fails
      */
-    @objc public func track(_ eventName: String, dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func track(_ eventName: String, dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         guard email != nil || userId != nil else {
             ITBError("Both email and userId are nil")
             onFailure?("Both email and userId are nil", nil)
@@ -558,7 +558,7 @@ import UserNotifications
      
      - remark: passing in an empty array will clear subscription list, passing in nil will not modify the list
      */
-    @objc public func updateSubscriptions(_ emailListIds: [String]?, unsubscribedChannelIds: [String]?, unsubscribedMessageTypeIds: [String]?) {
+    func updateSubscriptions(_ emailListIds: [String]?, unsubscribedChannelIds: [String]?, unsubscribedMessageTypeIds: [String]?) {
         var dictionary = [String : Any]()
         addEmailOrUserId(toDictionary: &dictionary)
         
@@ -584,7 +584,7 @@ import UserNotifications
      - parameter callbackBlock:  Callback ITEActionBlock
      
      */
-    @objc public func spawn(inAppNotification callbackBlock:ITEActionBlock?) {
+    func spawn(inAppNotification callbackBlock:ITEActionBlock?) {
         let onSuccess: OnSuccessHandler = { payload in
             guard let payload = payload else {
                 return
@@ -630,7 +630,7 @@ import UserNotifications
      
      - parameter count:  the number of messages to fetch
      */
-    @objc public func getInAppMessages(_ count: NSNumber) {
+    func getInAppMessages(_ count: NSNumber) {
         getInAppMessages(count, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "getMessages"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "getMessages"))
     }
 
@@ -645,7 +645,7 @@ import UserNotifications
      - seeAlso: OnSuccessHandler
      - seeAlso: OnFailureHandler
      */
-    @objc public func getInAppMessages(_ count: NSNumber, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func getInAppMessages(_ count: NSNumber, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         guard email != nil || userId != nil else {
             ITBError("Both email and userId are nil")
             onFailure?("Both email and userId are nil", nil)
@@ -685,7 +685,7 @@ import UserNotifications
      Tracks a InAppOpen event with custom completion blocks
      - parameter messageId:       The messageId of the notification
      */
-    @objc public func trackInAppOpen(_ messageId: String) {
+    func trackInAppOpen(_ messageId: String) {
         let args: Dictionary<String, String>
         if let email = email {
             args = [ITBL_KEY_EMAIL : email,
@@ -710,7 +710,7 @@ import UserNotifications
      - parameter messageId:       The messageId of the notification
      - parameter buttonIndex:     The index of the button that was clicked
      */
-    @objc public func trackInAppClick(_ messageId: String, buttonIndex: String) {
+    func trackInAppClick(_ messageId: String, buttonIndex: String) {
         var args: [AnyHashable : Any] = [
             ITBL_KEY_MESSAGE_ID: messageId,
             ITERABLE_IN_APP_BUTTON_INDEX: buttonIndex
@@ -729,7 +729,7 @@ import UserNotifications
      - parameter messageId:       The messageId of the notification
      - parameter buttonURL:     The url of the button that was clicked
      */
-    @objc public func trackInAppClick(_ messageId: String, buttonURL: String) {
+    func trackInAppClick(_ messageId: String, buttonURL: String) {
         var args: [AnyHashable : Any] = [
             ITBL_KEY_MESSAGE_ID: messageId,
             ITERABLE_IN_APP_CLICK_URL: buttonURL
@@ -746,7 +746,7 @@ import UserNotifications
      
      - parameter messageId:       The messageId of the notification
      */
-    @objc public func inAppConsume(_ messageId: String) {
+    func inAppConsume(_ messageId: String) {
         var args: [AnyHashable : Any] = [
             ITBL_KEY_MESSAGE_ID: messageId,
         ]
@@ -768,7 +768,7 @@ import UserNotifications
      
      - remark:            passes the string of the button clicked to the callbackBlock
      */
-    @objc public func showSystemNotification(_ title: String, body: String, button: String?, callbackBlock: ITEActionBlock?) {
+    func showSystemNotification(_ title: String, body: String, button: String?, callbackBlock: ITEActionBlock?) {
         showSystemNotification(title, body: body, buttonLeft: button, buttonRight: nil, callbackBlock: callbackBlock)
     }
 
@@ -784,7 +784,7 @@ import UserNotifications
      
      - remark:            passes the string of the button clicked to the callbackBlock
      */
-    @objc public func showSystemNotification(_ title: String, body: String, buttonLeft: String?, buttonRight:String?, callbackBlock: ITEActionBlock?) {
+    func showSystemNotification(_ title: String, body: String, buttonLeft: String?, buttonRight:String?, callbackBlock: ITEActionBlock?) {
         IterableInAppManager.showSystemNotification(title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
     }
 
@@ -795,7 +795,7 @@ import UserNotifications
      - parameter webpageURL:      the URL that was clicked
      - parameter callbackBlock:   the callback to send after the webpageURL is called
      */
-    @objc public static func getAndTrackDeeplink(_ webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {
+    static func getAndTrackDeeplink(_ webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {
         _sharedInstance?.deeplinkManager.getAndTrackDeeplink(webpageURL: webpageURL, callbackBlock: callbackBlock)
     }
 
@@ -808,7 +808,7 @@ import UserNotifications
      - parameter url: the URL obtained from `UserActivity.webpageURL`
      - returns: true if it is an Iterable link, or the value returned from `IterableURLDelegate` otherwise
      */
-    @objc @discardableResult public func handleUniversalLink(_ url: URL) -> Bool {
+    @discardableResult func handleUniversalLink(_ url: URL) -> Bool {
         return deeplinkManager.handleUniversalLink(url, urlDelegate: config.urlDelegate, urlOpener: AppUrlOpener())
     }
 
