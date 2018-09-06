@@ -169,23 +169,34 @@ class MockNetworkSession: NetworkSessionProtocol {
     var callback: ((Data?, URLResponse?, Error?) -> Void)?
     
     private let statusCode: Int
-    private let json: [AnyHashable : Any]
+    private let data: Data?
     private let error: Error?
     
-    init(statusCode: Int, json: [AnyHashable : Any] = [:], error: Error? = nil) {
+    convenience init(statusCode: Int) {
+        self.init(statusCode: statusCode,
+                  data: try! JSONSerialization.data(withJSONObject: [:], options: []),
+                  error: nil)
+    }
+
+    convenience init(statusCode: Int, json: [AnyHashable : Any], error: Error? = nil) {
+        self.init(statusCode: statusCode,
+                  data: try! JSONSerialization.data(withJSONObject: json, options: []),
+                  error: error)
+    }
+
+    init(statusCode: Int, data: Data?, error: Error? = nil) {
         self.statusCode = statusCode
-        self.json = json
+        self.data = data
         self.error = error
     }
-    
+
     func makeRequest(_ request: URLRequest, completionHandler: @escaping NetworkSessionProtocol.CompletionHandler) {
         DispatchQueue.main.async {
             self.request = request
             let response = HTTPURLResponse(url: request.url!, statusCode: self.statusCode, httpVersion: "HTTP/1.1", headerFields: [:])
-            let data = try! JSONSerialization.data(withJSONObject: self.json, options: [])
-            completionHandler(data, response, self.error)
+            completionHandler(self.data, response, self.error)
 
-            self.callback?(data, response, self.error)
+            self.callback?(self.data, response, self.error)
         }
     }
     
@@ -195,6 +206,16 @@ class MockNetworkSession: NetworkSessionProtocol {
     
     static func json(fromData data: Data) -> [AnyHashable : Any] {
         return try! JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable : Any]
+    }
+}
+
+class NoNetworkNetworkSession: NetworkSessionProtocol {
+    func makeRequest(_ request: URLRequest, completionHandler: @escaping NetworkSessionProtocol.CompletionHandler) {
+        DispatchQueue.main.async {
+            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: [:])
+            let error = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: nil)
+            completionHandler(try! JSONSerialization.data(withJSONObject: [:], options: []), response, error)
+        }
     }
 }
 
@@ -234,7 +255,7 @@ extension IterableAPI {
 
 
 // used by objc tests, remove after rewriting in Swift
-@objc public extension IterableAPIInternal {
+@objc extension IterableAPIInternal {
     @objc @discardableResult public static func initialize(apiKey: String) -> IterableAPIInternal {
         return initialize(apiKey: apiKey, config:IterableConfig())
     }
