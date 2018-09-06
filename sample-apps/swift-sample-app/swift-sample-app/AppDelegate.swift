@@ -16,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     //ITBL: Set your actual api key here.
-    let iterableApiKey = "a415841b631a4c97924bc09660c658fc"
+    let iterableApiKey = ""
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 
