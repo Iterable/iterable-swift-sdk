@@ -408,7 +408,7 @@
 				AC2C668120D32F2800D46CC9 /* IterableAppIntegrationInternal.swift */,
 				ACD6116B2107D004003E7F6B /* NetworkHelper.swift */,
 			);
-			name = Internal;
+			path = Internal;
 			sourceTree = "<group>";
 		};
 		AC7B142C20D02CE200877BFE /* swift-sdk-swift-tests */ = {
