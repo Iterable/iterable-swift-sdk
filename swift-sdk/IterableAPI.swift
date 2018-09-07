@@ -11,8 +11,10 @@ import Foundation
 
 @objcMembers
 public final class IterableAPI : NSObject {
-    // MARK: Initialization
+    // Current SDK Version.
+    static let sdkVersion = "6.0.2"
     
+    // MARK: Initialization
     /// You should call this method and not call the init method directly.
     /// - parameter apiKey: Iterable API Key.
     public static func initialize(apiKey: String) {
@@ -484,4 +486,5 @@ public final class IterableAPI : NSObject {
     
     //MARK: Private and Internal
     static var internalImplementation: IterableAPIInternal?
+    private override init() {super.init()}
 }

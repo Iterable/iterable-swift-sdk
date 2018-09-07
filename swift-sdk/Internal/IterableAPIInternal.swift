@@ -115,15 +115,31 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         let device = UIDevice.current
         let psp = IterableAPIInternal.pushServicePlatformToString(pushServicePlatform)
         
+        typealias deviceKeys = ITBConsts.Device
         var dataFields: [String : Any] = [
-            ITBL_DEVICE_LOCALIZED_MODEL: device.localizedModel,
-            ITBL_DEVICE_USER_INTERFACE: IterableAPIInternal.userInterfaceIdiomEnumToString(device.userInterfaceIdiom),
-            ITBL_DEVICE_SYSTEM_NAME: device.systemName,
-            ITBL_DEVICE_SYSTEM_VERSION: device.systemVersion,
-            ITBL_DEVICE_MODEL: device.model
+            deviceKeys.localizedModel: device.localizedModel,
+            deviceKeys.userInterfaceIdiom: IterableAPIInternal.userInterfaceIdiomEnumToString(device.userInterfaceIdiom),
+            deviceKeys.systemName: device.systemName,
+            deviceKeys.systemVersion: device.systemVersion,
+            deviceKeys.model: device.model
         ]
         if let identifierForVendor = device.identifierForVendor?.uuidString {
-            dataFields[ITBL_DEVICE_ID_VENDOR] = identifierForVendor
+            dataFields[deviceKeys.identifierForVendor] = identifierForVendor
+        }
+        if let deviceId = localStorage.deviceId {
+            dataFields[deviceKeys.deviceId] = deviceId
+        }
+        if let sdkVersion = localStorage.sdkVersion {
+            dataFields[deviceKeys.sdkVersion] = sdkVersion
+        }
+        if let appPackageName = Bundle.main.appPackageName {
+            dataFields[deviceKeys.appPackageName] = appPackageName
+        }
+        if let appVersion = Bundle.main.appVersion {
+            dataFields[deviceKeys.appVersion] = appVersion
+        }
+        if let appBuild = Bundle.main.appBuild {
+            dataFields[deviceKeys.appBuild] = appBuild
         }
         
         let deviceDictionary: [String : Any] = [
@@ -799,6 +815,10 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         // super initlog
         super.init()
         
+        // device id and sdk version
+        updateDeviceId()
+        updateSDKVersion()
+        
         // check for deferred deeplinking
         checkForDeferredDeeplink()
         
@@ -890,4 +910,24 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         localStorage.ddlChecked = true
     }
     
+    private func updateDeviceId() {
+        if localStorage.deviceId == nil {
+            localStorage.deviceId = IterableUtil.generateUUID()
+        }
+    }
+    
+    private func updateSDKVersion() {
+        if let lastVersion = localStorage.sdkVersion, lastVersion != IterableAPI.sdkVersion {
+            performUpgrade(lastVersion: lastVersion, newVersion: IterableAPI.sdkVersion)
+        } else {
+            localStorage.sdkVersion = IterableAPI.sdkVersion
+        }
+    }
+    
+    private func performUpgrade(lastVersion: String, newVersion: String) {
+        // do upgrade things here
+        // ....
+        // then set new version
+        localStorage.sdkVersion = newVersion
+    }
 }

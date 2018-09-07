@@ -29,6 +29,10 @@ import os
         return !isNullOrEmpty(string: string)
     }
     
+    static func generateUUID() -> String {
+        return UUID().uuidString.replacingOccurrences(of: "-", with: "")
+    }
+    
 
     // MARK: Helper Utility Functions
     // converts from IterableURLDelegate to UrlHandler

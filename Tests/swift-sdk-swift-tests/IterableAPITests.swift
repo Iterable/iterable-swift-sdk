@@ -192,6 +192,16 @@ class IterableAPITests: XCTestCase {
             TestUtils.validateMatch(keyPath: KeyPath("device.platform"), value: ITBL_KEY_APNS_SANDBOX, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath("device.token"), value: (token as NSData).iteHexadecimalString(), inDictionary: body)
 
+            // more device fields
+            let appPackageName = "iterable.host-app"
+            let appVersion = "1.0.0"
+            let appBuild = "2"
+            TestUtils.validateExists(keyPath: KeyPath("device.dataFields.deviceId"), type: String.self, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("device.dataFields.appPackageName"), value: appPackageName, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("device.dataFields.appVersion"), value: appVersion, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("device.dataFields.appBuild"), value: appBuild, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("device.dataFields.sdkVersion"), value: IterableAPI.sdkVersion, inDictionary: body)
+
             expectation.fulfill()
         }) {(reason, _) in
             // failure
