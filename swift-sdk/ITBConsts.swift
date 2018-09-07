@@ -34,12 +34,12 @@ import Foundation
     }
     
     public class Device {
-        public static let localizedModel = ITBL_DEVICE_LOCALIZED_MODEL
-        public static let identifierForVendor = ITBL_DEVICE_ID_VENDOR
-        public static let model = ITBL_DEVICE_MODEL
-        public static let systemName = ITBL_DEVICE_SYSTEM_NAME
-        public static let systemVersion = ITBL_DEVICE_SYSTEM_VERSION
-        public static let userInterfaceIdiom = ITBL_DEVICE_USER_INTERFACE
+        public static let localizedModel = "localizedModel"
+        public static let identifierForVendor = "identifierForVendor"
+        public static let model = "model"
+        public static let systemName = "systemName"
+        public static let systemVersion = "systemVersion"
+        public static let userInterfaceIdiom = "userInterfaceIdiom"
         public static let deviceId = "deviceId"
         public static let appPackageName = "appPackageName"
         public static let appVersion = "appVersion"
