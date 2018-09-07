@@ -466,7 +466,7 @@ public final class IterableAPI : NSObject {
      - parameter callbackBlock:   the callback to send after the webpageURL is called
      */
     @objc(getAndTrackDeeplink:callbackBlock:) public static func getAndTrack(deeplink webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {
-        internalImplementation?.deeplinkManager.getAndTrackDeeplink(webpageURL: webpageURL, callbackBlock: callbackBlock)
+        internalImplementation?.getAndTrackDeeplink(webpageURL: webpageURL, callbackBlock: callbackBlock)
     }
     
     /**

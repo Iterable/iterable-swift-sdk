@@ -32,7 +32,6 @@ class LoggingTests: XCTestCase {
         
         let logDelegate = LogDelegate()
         let config = IterableConfig()
-        config.logLevel = .error
         config.logDelegate = logDelegate
         IterableAPI.initialize(apiKey: "apiKey", config: config)
         
@@ -48,5 +47,4 @@ class LoggingTests: XCTestCase {
         XCTAssert(logDelegate.level == .error)
         XCTAssert(logDelegate.message!.contains("error message"))
     }
-    
 }

@@ -7,10 +7,16 @@
 import Foundation
 import os
 
-/// Will log if logLevel is >= IterableConfig.logLevel.
+/// Will log if logLevel is >= minLogLevel
 public class DefaultLogDelegate: IterableLogDelegate {
+    private let minLogLevel: LogLevel // the lowest level that will be logged
+    
+    init(minLogLevel: LogLevel = .info) {
+        self.minLogLevel = minLogLevel
+    }
+    
     public func log(level: LogLevel = .info, message: String) {
-        guard let configLogLevel = IterableAPIInternal.sharedInstance?.config.logLevel, level.rawValue >= configLogLevel.rawValue else {
+        guard level.rawValue >= minLogLevel.rawValue else {
             return
         }
 
@@ -39,22 +45,31 @@ public class NoneLogDelegate: IterableLogDelegate {
 }
 
 public func ITBError(_ message: String? = nil, file: String = #file, method: String = #function, line: Int = #line) {
-    IterableLogUtil.log(level: .error, message: message, file: file, method: method, line: line)
+    IterableLogUtil.sharedInstance?.log(level: .error, message: message, file: file, method: method, line: line)
 }
 
 public func ITBInfo(_ message: String? = nil, file: String = #file, method: String = #function, line: Int = #line) {
-    IterableLogUtil.log(level: .info, message: message, file: file, method: method, line: line)
+    IterableLogUtil.sharedInstance?.log(level: .info, message: message, file: file, method: method, line: line)
 }
 
 public func ITBDebug(_ message: String? = nil, file: String = #file, method: String = #function, line: Int = #line) {
-    IterableLogUtil.log(level: .debug, message: message, file: file, method: method, line: line)
+    IterableLogUtil.sharedInstance?.log(level: .debug, message: message, file: file, method: method, line: line)
 }
 
 struct IterableLogUtil {
-    static func log(level: LogLevel, message: String?, file: String, method: String, line: Int) {
-        let date = IterableAPIInternal.sharedInstance?.dateProvider.currentDate ?? Date()
-        let logMessage = formatLogMessage(message: message, file: file, method: method, line: line, date: date)
-        IterableAPIInternal.sharedInstance?.config.logDelegate.log(level: level, message: logMessage)
+    private let dateProvider: DateProviderProtocol
+    private let logDelegate: IterableLogDelegate
+    
+    init(dateProvider: DateProviderProtocol, logDelegate: IterableLogDelegate) {
+        self.dateProvider = dateProvider
+        self.logDelegate = logDelegate
+    }
+    
+    static var sharedInstance: IterableLogUtil?
+    
+    func log(level: LogLevel, message: String?, file: String, method: String, line: Int) {
+        let logMessage = IterableLogUtil.formatLogMessage(message: message, file: file, method: method, line: line, date: dateProvider.currentDate)
+        logDelegate.log(level: level, message: logMessage)
     }
     
     static func markedMessage(level: LogLevel, message: String) -> String {
