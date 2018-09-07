@@ -44,7 +44,7 @@ import Foundation
         public static let appPackageName = "appPackageName"
         public static let appVersion = "appVersion"
         public static let appBuild = "appBuild"
-        public static let sdkVersion = "sdkVersion"
+        public static let iterableSdkVersion = "iterableSdkVersion"
     }
 
     private static let apiHostname = "https://api.iterable.com"

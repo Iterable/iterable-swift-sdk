@@ -200,7 +200,7 @@ class IterableAPITests: XCTestCase {
             TestUtils.validateMatch(keyPath: KeyPath("device.dataFields.appPackageName"), value: appPackageName, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath("device.dataFields.appVersion"), value: appVersion, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath("device.dataFields.appBuild"), value: appBuild, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("device.dataFields.sdkVersion"), value: IterableAPI.sdkVersion, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("device.dataFields.iterableSdkVersion"), value: IterableAPI.sdkVersion, inDictionary: body)
 
             expectation.fulfill()
         }) {(reason, _) in

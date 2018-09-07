@@ -130,7 +130,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             dataFields[deviceKeys.deviceId] = deviceId
         }
         if let sdkVersion = localStorage.sdkVersion {
-            dataFields[deviceKeys.sdkVersion] = sdkVersion
+            dataFields[deviceKeys.iterableSdkVersion] = sdkVersion
         }
         if let appPackageName = Bundle.main.appPackageName {
             dataFields[deviceKeys.appPackageName] = appPackageName
