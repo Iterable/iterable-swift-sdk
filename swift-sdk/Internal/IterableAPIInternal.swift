@@ -149,23 +149,11 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             ITBL_KEY_DATA_FIELDS: dataFields
         ]
         
-        var args: [String : Any]
+        var args: [String : Any] = [ITBL_KEY_DEVICE: deviceDictionary]
         if let email = email {
-            args = [
-                ITBL_KEY_EMAIL: email,
-                ITBL_KEY_DEVICE: deviceDictionary
-            ]
+            args[ITBL_KEY_EMAIL] = email
         } else if let userId = userId {
-            args = [
-                ITBL_KEY_USER_ID: userId,
-                ITBL_KEY_DEVICE: deviceDictionary
-            ]
-        } else {
-            ITBError("Either email or userId is required.")
-            assertionFailure("either email or userId should be set")
-            args = [
-                ITBL_KEY_DEVICE: deviceDictionary
-            ]
+            args[ITBL_KEY_USER_ID] = userId
         }
         
         ITBInfo("sending registerToken request with args \(args)")

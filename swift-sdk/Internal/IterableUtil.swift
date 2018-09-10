@@ -30,7 +30,7 @@ import os
     }
     
     static func generateUUID() -> String {
-        return UUID().uuidString.replacingOccurrences(of: "-", with: "")
+        return UUID().uuidString
     }
     
 

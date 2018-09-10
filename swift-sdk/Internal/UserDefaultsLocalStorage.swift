@@ -157,7 +157,7 @@ struct UserDefaultsLocalStorage : LocalStorageProtocol {
         
         let envelope = Envelope(payload: data, expiration: expiration)
         let encodedEnvelope = try JSONEncoder().encode(envelope)
-        UserDefaults.standard.set (encodedEnvelope, forKey: key.value)
+        UserDefaults.standard.set(encodedEnvelope, forKey: key.value)
     }
     
     private struct LocalStorageKey {
