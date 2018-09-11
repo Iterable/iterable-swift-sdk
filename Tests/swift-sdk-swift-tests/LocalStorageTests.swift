@@ -96,7 +96,7 @@ class LocalStorageTests: XCTestCase {
     func testDeviceId() {
         let mockDateProvider = MockDateProvider()
         var localStorage: LocalStorageProtocol = UserDefaultsLocalStorage(dateProvider: mockDateProvider)
-        let deviceId = UUID().uuidString.replacingOccurrences(of: "-", with: "")
+        let deviceId = UUID().uuidString
         localStorage.deviceId = deviceId
         XCTAssertEqual(localStorage.deviceId, deviceId)
     }
