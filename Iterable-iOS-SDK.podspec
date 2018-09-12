@@ -72,7 +72,7 @@ Pod::Spec.new do |s|
   #  Not including the public_header_files will make all headers public.
   #
 
-  s.source_files  = "swift-sdk/*.{h,m,swift}"
+  s.source_files  = "swift-sdk/**/*.{h,m,swift}"
 
   s.pod_target_xcconfig = {
     'SWIFT_VERSION' => '4.1'

@@ -92,4 +92,20 @@ class LocalStorageTests: XCTestCase {
         let fromLocalStorage2:[AnyHashable : Any]? = localStorage.payload
         XCTAssertNil(fromLocalStorage2)
     }
+    
+    func testDeviceId() {
+        let mockDateProvider = MockDateProvider()
+        var localStorage: LocalStorageProtocol = UserDefaultsLocalStorage(dateProvider: mockDateProvider)
+        let deviceId = UUID().uuidString
+        localStorage.deviceId = deviceId
+        XCTAssertEqual(localStorage.deviceId, deviceId)
+    }
+
+    func testSdkVersion() {
+        let mockDateProvider = MockDateProvider()
+        var localStorage: LocalStorageProtocol = UserDefaultsLocalStorage(dateProvider: mockDateProvider)
+        let sdkVersion = "6.0.2"
+        localStorage.deviceId = sdkVersion
+        XCTAssertEqual(localStorage.deviceId, sdkVersion)
+    }
 }

@@ -93,16 +93,12 @@ public class IterableConfig : NSObject {
     /// after installation from the App Store.
     public var checkForDeferredDeeplink = false
     
-    /// The lowest level that will be logged. The levels go from
-    /// debug < (less than) info < (less than) error.
-    /// The default level is `.info`.
-    public var logLevel = LogLevel.info
-    
     /// Implement the protocol IterableLogDelegate and set it here to change logging.
     /// Out of the box you have the following
     /// 1. DefaultLogDelegate. It will use OsLog for .error, cosole for .info and no logging for debug.
     /// 2. NoneLogDelegate. No logging messages will be output.
     /// 3. AllLogDelegate. It will log everything to console.
     /// The default value is `DefaultLogDelegate`.
+    /// It will log everything >= minLogLevel
     public var logDelegate: IterableLogDelegate = DefaultLogDelegate()
 }

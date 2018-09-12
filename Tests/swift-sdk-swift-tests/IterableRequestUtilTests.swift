@@ -77,4 +77,11 @@ class IterableRequestUtilTests: XCTestCase {
         TestUtils.validateElementPresent(withName: "var1", andValue: "val1", inDictionary: bodyFromRequest)
         TestUtils.validateElementPresent(withName: "var2", andValue: "val2", inDictionary: bodyFromRequest)
     }
+
+    func testEncodeUrlQueryParam() {
+        let encoded = IterableRequestUtil.encodeURLParam("you+me@iterable.com")
+        XCTAssertEqual(encoded!, "you%2Bme@iterable.com")
+        XCTAssertEqual(IterableRequestUtil.encodeURLParam(""), "")
+        XCTAssertNil(IterableRequestUtil.encodeURLParam(nil))
+    }
 }
