@@ -128,6 +128,10 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
         if let deviceId = localStorage.deviceId {
             dataFields[deviceKeys.deviceId] = deviceId
+        } else {
+            let deviceId = IterableUtil.generateUUID()
+            localStorage.deviceId = deviceId
+            dataFields[deviceKeys.deviceId] = deviceId
         }
         if let sdkVersion = localStorage.sdkVersion {
             dataFields[deviceKeys.iterableSdkVersion] = sdkVersion
@@ -701,8 +705,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         // super initlog
         super.init()
         
-        // device id and sdk version
-        updateDeviceId()
+        // sdk version
         updateSDKVersion()
         
         // check for deferred deeplinking
@@ -794,12 +797,6 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
         
         localStorage.ddlChecked = true
-    }
-    
-    private func updateDeviceId() {
-        if localStorage.deviceId == nil {
-            localStorage.deviceId = IterableUtil.generateUUID()
-        }
     }
     
     private func updateSDKVersion() {
