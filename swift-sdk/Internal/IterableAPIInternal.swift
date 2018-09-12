@@ -58,6 +58,16 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
     }
     
+    var deviceId: String {
+        if let value = localStorage.deviceId {
+            return value
+        } else {
+            let value = IterableUtil.generateUUID()
+            localStorage.deviceId = value
+            return value
+        }
+    }
+    
     weak var urlDelegate: IterableURLDelegate? {
         get {
             return config.urlDelegate
@@ -126,13 +136,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         if let identifierForVendor = device.identifierForVendor?.uuidString {
             dataFields[deviceKeys.identifierForVendor] = identifierForVendor
         }
-        if let deviceId = localStorage.deviceId {
-            dataFields[deviceKeys.deviceId] = deviceId
-        } else {
-            let deviceId = IterableUtil.generateUUID()
-            localStorage.deviceId = deviceId
-            dataFields[deviceKeys.deviceId] = deviceId
-        }
+        dataFields[deviceKeys.deviceId] = deviceId
         if let sdkVersion = localStorage.sdkVersion {
             dataFields[deviceKeys.iterableSdkVersion] = sdkVersion
         }
