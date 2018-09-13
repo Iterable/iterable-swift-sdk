@@ -13,14 +13,6 @@
 
 
 //MISC
-#define ITBL_KEY_GET @"GET"
-#define ITBL_KEY_POST @"POST"
-
-#define ITBL_KEY_APNS @"APNS"
-#define ITBL_KEY_APNS_SANDBOX @"APNS_SANDBOX"
-#define ITBL_KEY_PAD @"Pad"
-#define ITBL_KEY_PHONE @"Phone"
-#define ITBL_KEY_UNSPECIFIED @"Unspecified"
 
 #define ITBL_VALUE_DEFAULT_PUSH_OPEN_ACTION_ID @"default"
 

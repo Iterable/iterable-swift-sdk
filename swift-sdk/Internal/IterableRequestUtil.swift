@@ -24,7 +24,7 @@ struct IterableRequestUtil {
         
         var request = URLRequest(url: url)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpMethod = ITBL_KEY_POST
+        request.httpMethod = .ITBL_KEY_POST
         request.httpBody = body
         return request
     }
@@ -34,7 +34,7 @@ struct IterableRequestUtil {
             return nil
         }
         var request = URLRequest(url: url)
-        request.httpMethod = ITBL_KEY_GET
+        request.httpMethod = .ITBL_KEY_GET
         return request
     }
 

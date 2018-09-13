@@ -37,6 +37,18 @@ public extension AnyHashable {
     public static let ITBL_KEY_USER_TEXT = "userText"
 }
 
+// More Keys
+public extension String {
+    public static let ITBL_KEY_GET = "GET"
+    public static let ITBL_KEY_POST = "POST"
+    
+    public static let ITBL_KEY_APNS = "APNS"
+    public static let ITBL_KEY_APNS_SANDBOX = "APNS_SANDBOX"
+    public static let ITBL_KEY_PAD = "Pad"
+    public static let ITBL_KEY_PHONE = "Phone"
+    public static let ITBL_KEY_UNSPECIFIED = "Unspecified"
+}
+
 // Decvice Dictionary
 public extension String {
     public static let ITBL_DEVICE_LOCALIZED_MODEL = "localizedModel"

@@ -189,7 +189,7 @@ class IterableAPITests: XCTestCase {
             let body = networkSession.getRequestBody() as! [String : Any]
             TestUtils.validateElementPresent(withName: "email", andValue: "user@example.com", inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath("device.applicationName"), value: "my-push-integration", inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("device.platform"), value: ITBL_KEY_APNS_SANDBOX, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("device.platform"), value: String.ITBL_KEY_APNS_SANDBOX, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath("device.token"), value: (token as NSData).iteHexadecimalString(), inDictionary: body)
 
             // more device fields

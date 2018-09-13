@@ -642,22 +642,22 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform) -> String {
         switch pushServicePlatform {
         case .APNS:
-            return ITBL_KEY_APNS
+            return .ITBL_KEY_APNS
         case .APNS_SANDBOX:
-            return ITBL_KEY_APNS_SANDBOX
+            return .ITBL_KEY_APNS_SANDBOX
         case .AUTO:
-            return IterableAPNSUtil.isSandboxAPNS() ? ITBL_KEY_APNS_SANDBOX : ITBL_KEY_APNS
+            return IterableAPNSUtil.isSandboxAPNS() ? .ITBL_KEY_APNS_SANDBOX : .ITBL_KEY_APNS
         }
     }
     
     private static func userInterfaceIdiomEnumToString(_ idiom: UIUserInterfaceIdiom) -> String {
         switch idiom {
         case .phone:
-            return ITBL_KEY_PHONE
+            return .ITBL_KEY_PHONE
         case .pad:
-            return ITBL_KEY_PAD
+            return .ITBL_KEY_PAD
         default:
-            return ITBL_KEY_UNSPECIFIED
+            return .ITBL_KEY_UNSPECIFIED
         }
     }
     
