@@ -11,22 +11,6 @@
 
 @end
 
-//API Endpoint Key Constants
-#define ENDPOINT_COMMERCE_TRACK_PURCHASE @"commerce/trackPurchase"
-#define ENDPOINT_DISABLE_DEVICE @"users/disableDevice"
-#define ENDPOINT_GET_INAPP_MESSAGES @"inApp/getMessages"
-#define ENDPOINT_INAPP_CONSUME @"events/inAppConsume"
-#define ENDPOINT_PUSH_TARGET @"push/target"
-#define ENDPOINT_IN_APP_TARGET @"inApp/target"
-#define ENDPOINT_REGISTER_DEVICE_TOKEN @"users/registerDeviceToken"
-#define ENDPOINT_TRACK @"events/track"
-#define ENDPOINT_TRACK_INAPP_CLICK @"events/trackInAppClick"
-#define ENDPOINT_TRACK_INAPP_OPEN @"events/trackInAppOpen"
-#define ENDPOINT_TRACK_PUSH_OPEN @"events/trackPushOpen"
-#define ENDPOINT_UPDATE_USER @"users/update"
-#define ENDPOINT_UPDATE_EMAIL @"users/updateEmail"
-#define ENDPOINT_UPDATE_SUBSCRIPTIONS @"users/updateSubscriptions"
-#define ENDPOINT_DDL_MATCH @"a/matchFp" //DDL = Deferred Deep Linking
 
 //MISC
 #define ITBL_KEY_GET @"GET"

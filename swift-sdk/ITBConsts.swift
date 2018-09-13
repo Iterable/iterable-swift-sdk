@@ -37,7 +37,7 @@ public extension AnyHashable {
     public static let ITBL_KEY_USER_TEXT = "userText"
 }
 
-//Decvice Dictionary
+// Decvice Dictionary
 public extension String {
     public static let ITBL_DEVICE_LOCALIZED_MODEL = "localizedModel"
     public static let ITBL_DEVICE_ID_VENDOR = "identifierForVendor"
@@ -51,6 +51,23 @@ public extension String {
     public static let ITBL_DEVICE_APP_VERSION = "appVersion"
     public static let ITBL_DEVICE_APP_BUILD = "appBuild"
     public static let ITBL_DEVICE_ITERABLE_SDK_VERSION = "iterableSdkVersion"
+}
+
+// API Endpoint Key Constants
+public extension String {
+    public static let ITBL_ENDPOINT_COMMERCE_TRACK_PURCHASE = "commerce/trackPurchase"
+    public static let ITBL_ENDPOINT_DISABLE_DEVICE = "users/disableDevice"
+    public static let ITBL_ENDPOINT_GET_INAPP_MESSAGES = "inApp/getMessages"
+    public static let ITBL_ENDPOINT_INAPP_CONSUME = "events/inAppConsume"
+    public static let ITBL_ENDPOINT_REGISTER_DEVICE_TOKEN = "users/registerDeviceToken"
+    public static let ITBL_ENDPOINT_TRACK = "events/track"
+    public static let ITBL_ENDPOINT_TRACK_INAPP_CLICK = "events/trackInAppClick"
+    public static let ITBL_ENDPOINT_TRACK_INAPP_OPEN = "events/trackInAppOpen"
+    public static let ITBL_ENDPOINT_TRACK_PUSH_OPEN = "events/trackPushOpen"
+    public static let ITBL_ENDPOINT_UPDATE_USER = "users/update"
+    public static let ITBL_ENDPOINT_UPDATE_EMAIL = "users/updateEmail"
+    public static let ITBL_ENDPOINT_UPDATE_SUBSCRIPTIONS = "users/updateSubscriptions"
+    public static let ITBL_ENDPOINT_DDL_MATCH = "a/matchFp" //DDL = Deferred Deep Linking
 }
 
 @objcMembers public class ITBConsts : NSObject {
