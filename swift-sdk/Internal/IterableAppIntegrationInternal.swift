@@ -228,13 +228,13 @@ struct IterableAppIntegrationInternal {
             return nil
         }
         let foundButton = buttons.first { (button) -> Bool in
-            guard let buttonIdentifier = button[ITBL_BUTTON_IDENTIFIER] as? String else {
+            guard let buttonIdentifier = button[.ITBL_BUTTON_IDENTIFIER] as? String else {
                 return false
             }
             return buttonIdentifier == actionIdentifier
         }
         
-        return foundButton?[ITBL_BUTTON_ACTION] as? [AnyHashable : Any]
+        return foundButton?[.ITBL_BUTTON_ACTION] as? [AnyHashable : Any]
     }
     
     @available(iOS 10.0, *)

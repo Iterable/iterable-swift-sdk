@@ -123,6 +123,7 @@ public extension AnyHashable {
     public static let ITBL_BUTTON_REQUIRES_UNLOCK = "requiresUnlock"
     public static let ITBL_BUTTON_INPUT_TITLE = "inputTitle"
     public static let ITBL_BUTTON_INPUT_PLACEHOLDER = "inputPlaceholder"
+    public static let ITBL_BUTTON_ACTION = "action"
 }
 
 @objcMembers public class ITBConsts : NSObject {
