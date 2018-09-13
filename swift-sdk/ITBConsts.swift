@@ -1,7 +1,5 @@
 //
-//  ITBConsts.swift
-//  new-ios-sdk
-//
+// 
 //  Created by Tapash Majumder on 6/10/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
@@ -97,6 +95,23 @@ public extension AnyHashable {
     public static let ITBL_PAYLOAD_ATTACHMENT_URL = "attachment-url"
     public static let ITBL_PAYLOAD_ACTION_BUTTONS = "actionButtons"
     public static let ITBL_PAYLOAD_DEFAULT_ACTION = "defaultAction"
+}
+
+// UserDefaults String Consts
+public extension String {
+    public static let ITBL_USER_DEFAULTS_PAYLOAD_KEY = "itbl_payload_key"
+    public static let ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_KEY = "itbl_attribution_info_key"
+    public static let ITBL_USER_DEFAULTS_EMAIL_KEY = "itbl_email"
+    public static let ITBL_USER_DEFAULTS_USERID_KEY = "itbl_userid"
+    public static let ITBL_USER_DEFAULTS_DDL_CHECKED = "itbl_ddl_checked"
+    public static let ITBL_USER_DEFAULTS_DEVICE_ID = "itbl_device_id"
+    public static let ITBL_USER_DEFAULTS_SDK_VERSION = "itbl_sdk_version"
+}
+
+// UserDefaults Int Consts
+public extension Int {
+    public static let ITBL_USER_DEFAULTS_PAYLOAD_EXPIRATION_HOURS = 24
+    public static let ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_EXPIRATION_HOURS = 24
 }
 
 @objcMembers public class ITBConsts : NSObject {

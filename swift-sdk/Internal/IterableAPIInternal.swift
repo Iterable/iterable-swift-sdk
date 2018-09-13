@@ -93,7 +93,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             return localStorage.attributionInfo
         } set {
             let expiration = Calendar.current.date(byAdding: .hour,
-                                                   value: Int(ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_EXPIRATION_HOURS),
+                                                   value: .ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_EXPIRATION_HOURS,
                                                    to: dateProvider.currentDate)
             localStorage.save(attributionInfo: newValue, withExpiration: expiration)
         }
@@ -318,7 +318,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     
     private func save(pushPayload payload: [AnyHashable : Any]) {
         let expiration = Calendar.current.date(byAdding: .hour,
-                                               value: Int(ITBL_USER_DEFAULTS_PAYLOAD_EXPIRATION_HOURS),
+                                               value: .ITBL_USER_DEFAULTS_PAYLOAD_EXPIRATION_HOURS,
                                                to: dateProvider.currentDate)
         localStorage.save(payload: payload, withExpiration: expiration)
         

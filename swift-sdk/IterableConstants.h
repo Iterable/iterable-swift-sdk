@@ -8,22 +8,7 @@
 
 @interface IterableConstants : NSObject
 
-
 @end
-
-
-//UserDefaults Keys
-#define ITBL_USER_DEFAULTS_OBJECT_TAG @"itbl_user_defaults_object"
-#define ITBL_USER_DEFAULTS_EXPIRATION_TAG @"itbl_user_defaults_expiration"
-#define ITBL_USER_DEFAULTS_PAYLOAD_KEY @"itbl_payload_key"
-#define ITBL_USER_DEFAULTS_PAYLOAD_EXPIRATION_HOURS 24
-#define ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_KEY @"itbl_attribution_info_key"
-#define ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_EXPIRATION_HOURS 24
-#define ITBL_USER_DEFAULTS_EMAIL_KEY @"itbl_email"
-#define ITBL_USER_DEFAULTS_USERID_KEY @"itbl_userid"
-#define ITBL_USER_DEFAULTS_DDL_CHECKED @"itbl_ddl_checked"
-#define ITBL_USER_DEFAULTS_DEVICE_ID @"itbl_device_id"
-#define ITBL_USER_DEFAULTS_SDK_VERSION @"itbl_sdk_version"
 
 //Action Buttons
 #define ITBL_BUTTON_IDENTIFIER @"identifier"
