@@ -10,19 +10,6 @@
 
 @end
 
-//Action Buttons
-#define ITBL_BUTTON_IDENTIFIER @"identifier"
-#define ITBL_BUTTON_TYPE @"buttonType"
-#define ITBL_BUTTON_TITLE @"title"
-#define ITBL_BUTTON_OPEN_APP @"openApp"
-#define ITBL_BUTTON_REQUIRES_UNLOCK @"requiresUnlock"
-#define ITBL_BUTTON_INPUT_TITLE @"inputTitle"
-#define ITBL_BUTTON_INPUT_PLACEHOLDER @"inputPlaceholder"
-#define ITBL_BUTTON_ACTION @"action"
-
-#define ITBL_ACTION_TYPE @"type"
-#define ITBL_ACTION_DATA @"data"
-
 //In-App Constants
 #define ITERABLE_IN_APP_CLICK_URL @"urlClick"
 

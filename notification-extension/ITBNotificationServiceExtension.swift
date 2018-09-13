@@ -125,19 +125,19 @@ import UserNotifications
     }
     
     private func createNotificationActionButton(buttonDictionary: [AnyHashable : Any]) -> UNNotificationAction? {
-        guard let identifier = buttonDictionary[ITBConsts.Button.identifier] as? String else {
+        guard let identifier = buttonDictionary[.ITBL_BUTTON_IDENTIFIER] as? String else {
             return nil
         }
-        guard let title = buttonDictionary[ITBConsts.Button.title] as? String else {
+        guard let title = buttonDictionary[.ITBL_BUTTON_TITLE] as? String else {
             return nil
         }
         let buttonType = getButtonType(buttonDictionary: buttonDictionary)
         var openApp = true
-        if let openAppFromDict = buttonDictionary[ITBConsts.Button.openApp] as? NSNumber {
+        if let openAppFromDict = buttonDictionary[.ITBL_BUTTON_OPEN_APP] as? NSNumber {
             openApp = openAppFromDict.boolValue
         }
         var requiresUnlock = false
-        if let requiresUnlockFromDict = buttonDictionary[ITBConsts.Button.requiresUnlock] as? NSNumber {
+        if let requiresUnlockFromDict = buttonDictionary[.ITBL_BUTTON_REQUIRES_UNLOCK] as? NSNumber {
             requiresUnlock = requiresUnlockFromDict.boolValue
         }
         
@@ -155,8 +155,8 @@ import UserNotifications
         }
         
         if buttonType == IterableButtonTypeTextInput {
-            let inputTitle = buttonDictionary[ITBConsts.Button.inputTitle] as? String ?? ""
-            let inputPlaceholder = buttonDictionary[ITBConsts.Button.inputPlaceholder] as? String ?? ""
+            let inputTitle = buttonDictionary[.ITBL_BUTTON_INPUT_TITLE] as? String ?? ""
+            let inputPlaceholder = buttonDictionary[.ITBL_BUTTON_INPUT_PLACEHOLDER] as? String ?? ""
             
             return UNTextInputNotificationAction(identifier: identifier,
                                           title: title,
@@ -169,7 +169,7 @@ import UserNotifications
     }
     
     private func getButtonType(buttonDictionary: [AnyHashable : Any]) -> String {
-        guard let buttonType = buttonDictionary[ITBConsts.Button.type] as? String else {
+        guard let buttonType = buttonDictionary[.ITBL_BUTTON_TYPE] as? String else {
             return IterableButtonTypeDefault
         }
         

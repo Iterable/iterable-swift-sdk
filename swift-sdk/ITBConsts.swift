@@ -1,5 +1,5 @@
 //
-// 
+//
 //  Created by Tapash Majumder on 6/10/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
@@ -114,22 +114,24 @@ public extension Int {
     public static let ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_EXPIRATION_HOURS = 24
 }
 
+//Action Buttons
+public extension AnyHashable {
+    public static let ITBL_BUTTON_IDENTIFIER = "identifier"
+    public static let ITBL_BUTTON_TYPE = "buttonType"
+    public static let ITBL_BUTTON_TITLE = "title"
+    public static let ITBL_BUTTON_OPEN_APP = "openApp"
+    public static let ITBL_BUTTON_REQUIRES_UNLOCK = "requiresUnlock"
+    public static let ITBL_BUTTON_INPUT_TITLE = "inputTitle"
+    public static let ITBL_BUTTON_INPUT_PLACEHOLDER = "inputPlaceholder"
+}
+
 @objcMembers public class ITBConsts : NSObject {
     // the API endpoint
     public static let apiEndpoint = apiHostname + "/api/"
     public static let linksEndpoint = linksHostname + "/"
 
-    public class Button {
-        public static let identifier = ITBL_BUTTON_IDENTIFIER
-        public static let type = ITBL_BUTTON_TYPE
-        public static let title = ITBL_BUTTON_TITLE
-        public static let openApp = ITBL_BUTTON_OPEN_APP
-        public static let requiresUnlock = ITBL_BUTTON_REQUIRES_UNLOCK
-        public static let inputTitle = ITBL_BUTTON_INPUT_TITLE
-        public static let inputPlaceholder = ITBL_BUTTON_INPUT_PLACEHOLDER
-        public static let action = ITBL_BUTTON_ACTION
-    }
-    
     private static let apiHostname = "https://api.iterable.com"
     private static let linksHostname = "https://links.iterable.com"
 }
+
+
