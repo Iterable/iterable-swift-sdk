@@ -37,6 +37,22 @@ public extension AnyHashable {
     public static let ITBL_KEY_USER_TEXT = "userText"
 }
 
+//Decvice Dictionary
+public extension String {
+    public static let ITBL_DEVICE_LOCALIZED_MODEL = "localizedModel"
+    public static let ITBL_DEVICE_ID_VENDOR = "identifierForVendor"
+    public static let ITBL_DEVICE_MODEL = "model"
+    public static let ITBL_DEVICE_SYSTEM_NAME = "systemName"
+    public static let ITBL_DEVICE_SYSTEM_VERSION = "systemVersion"
+    public static let ITBL_DEVICE_USER_INTERFACE = "userInterfaceIdiom"
+
+    public static let ITBL_DEVICE_DEVICE_ID = "deviceId"
+    public static let ITBL_DEVICE_APP_PACKAGE_NAME = "appPackageName"
+    public static let ITBL_DEVICE_APP_VERSION = "appVersion"
+    public static let ITBL_DEVICE_APP_BUILD = "appBuild"
+    public static let ITBL_DEVICE_ITERABLE_SDK_VERSION = "iterableSdkVersion"
+}
+
 @objcMembers public class ITBConsts : NSObject {
     // the API endpoint
     public static let apiEndpoint = apiHostname + "/api/"
@@ -62,20 +78,6 @@ public extension AnyHashable {
         public static let action = ITBL_BUTTON_ACTION
     }
     
-    public class Device {
-        public static let localizedModel = "localizedModel"
-        public static let identifierForVendor = "identifierForVendor"
-        public static let model = "model"
-        public static let systemName = "systemName"
-        public static let systemVersion = "systemVersion"
-        public static let userInterfaceIdiom = "userInterfaceIdiom"
-        public static let deviceId = "deviceId"
-        public static let appPackageName = "appPackageName"
-        public static let appVersion = "appVersion"
-        public static let appBuild = "appBuild"
-        public static let iterableSdkVersion = "iterableSdkVersion"
-    }
-
     private static let apiHostname = "https://api.iterable.com"
     private static let linksHostname = "https://links.iterable.com"
 }

@@ -8,13 +8,6 @@
 
 @interface IterableConstants : NSObject
 
-//Decvice Dictionary
-extern NSString *const ITBL_DEVICE_LOCALIZED_MODEL;
-extern NSString *const ITBL_DEVICE_ID_VENDOR;
-extern NSString *const ITBL_DEVICE_MODEL;
-extern NSString *const ITBL_DEVICE_SYSTEM_NAME;
-extern NSString *const ITBL_DEVICE_SYSTEM_VERSION;
-extern NSString *const ITBL_DEVICE_USER_INTERFACE;
 
 @end
 

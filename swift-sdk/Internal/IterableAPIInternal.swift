@@ -125,29 +125,28 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         let device = UIDevice.current
         let psp = IterableAPIInternal.pushServicePlatformToString(pushServicePlatform)
         
-        typealias deviceKeys = ITBConsts.Device
         var dataFields: [String : Any] = [
-            deviceKeys.localizedModel: device.localizedModel,
-            deviceKeys.userInterfaceIdiom: IterableAPIInternal.userInterfaceIdiomEnumToString(device.userInterfaceIdiom),
-            deviceKeys.systemName: device.systemName,
-            deviceKeys.systemVersion: device.systemVersion,
-            deviceKeys.model: device.model
+            .ITBL_DEVICE_LOCALIZED_MODEL: device.localizedModel,
+            .ITBL_DEVICE_USER_INTERFACE: IterableAPIInternal.userInterfaceIdiomEnumToString(device.userInterfaceIdiom),
+            .ITBL_DEVICE_SYSTEM_NAME: device.systemName,
+            .ITBL_DEVICE_SYSTEM_VERSION: device.systemVersion,
+            .ITBL_DEVICE_MODEL: device.model
         ]
         if let identifierForVendor = device.identifierForVendor?.uuidString {
-            dataFields[deviceKeys.identifierForVendor] = identifierForVendor
+            dataFields[.ITBL_DEVICE_ID_VENDOR] = identifierForVendor
         }
-        dataFields[deviceKeys.deviceId] = deviceId
+        dataFields[.ITBL_DEVICE_DEVICE_ID] = deviceId
         if let sdkVersion = localStorage.sdkVersion {
-            dataFields[deviceKeys.iterableSdkVersion] = sdkVersion
+            dataFields[.ITBL_DEVICE_ITERABLE_SDK_VERSION] = sdkVersion
         }
         if let appPackageName = Bundle.main.appPackageName {
-            dataFields[deviceKeys.appPackageName] = appPackageName
+            dataFields[.ITBL_DEVICE_APP_PACKAGE_NAME] = appPackageName
         }
         if let appVersion = Bundle.main.appVersion {
-            dataFields[deviceKeys.appVersion] = appVersion
+            dataFields[.ITBL_DEVICE_APP_VERSION] = appVersion
         }
         if let appBuild = Bundle.main.appBuild {
-            dataFields[deviceKeys.appBuild] = appBuild
+            dataFields[.ITBL_DEVICE_APP_BUILD] = appBuild
         }
         
         let deviceDictionary: [String : Any] = [
