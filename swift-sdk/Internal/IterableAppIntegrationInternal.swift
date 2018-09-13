@@ -202,7 +202,7 @@ struct IterableAppIntegrationInternal {
         
         if actionIdentifier == UNNotificationDefaultActionIdentifier {
             // default
-            if let defaultActionConfig = itbl[ITBL_PAYLOAD_DEFAULT_ACTION] as? [AnyHashable : Any] {
+            if let defaultActionConfig = itbl[.ITBL_PAYLOAD_DEFAULT_ACTION] as? [AnyHashable : Any] {
                 action = IterableAction.action(fromDictionary: defaultActionConfig)
             } else {
                 action = IterableAppIntegrationInternal.legacyDefaultActionFromPayload(userInfo: userInfo)
@@ -224,7 +224,7 @@ struct IterableAppIntegrationInternal {
     }
     
     private static func findButtonActionConfig(actionIdentifier: String, iterableElement itbl: [AnyHashable : Any]) -> [AnyHashable : Any]? {
-        guard let buttons = itbl[ITBL_PAYLOAD_ACTION_BUTTONS] as? [[AnyHashable : Any]] else {
+        guard let buttons = itbl[.ITBL_PAYLOAD_ACTION_BUTTONS] as? [[AnyHashable : Any]] else {
             return nil
         }
         let foundButton = buttons.first { (button) -> Bool in
@@ -273,7 +273,7 @@ struct IterableAppIntegrationInternal {
         //Execute the action
 
         let action: IterableAction?
-        if let actionConfig = itbl[ITBL_PAYLOAD_DEFAULT_ACTION] as? [AnyHashable : Any] {
+        if let actionConfig = itbl[.ITBL_PAYLOAD_DEFAULT_ACTION] as? [AnyHashable : Any] {
             action = IterableAction.action(fromDictionary: actionConfig)
         } else {
             action = IterableAppIntegrationInternal.legacyDefaultActionFromPayload(userInfo: userInfo)
@@ -297,13 +297,13 @@ struct IterableAppIntegrationInternal {
     }
     
     private static func itblValue(fromUserInfo userInfo: [AnyHashable : Any]) -> [AnyHashable : Any]? {
-        let itbl = userInfo[ITBL_PAYLOAD_METADATA] as? [AnyHashable : Any]
+        let itbl = userInfo[.ITBL_PAYLOAD_METADATA] as? [AnyHashable : Any]
         
         #if DEBUG
         guard let value = itbl else {
             return nil
         }
-        if value[ITBL_PAYLOAD_DEFAULT_ACTION] == nil && value[ITBL_PAYLOAD_ACTION_BUTTONS] == nil {
+        if value[.ITBL_PAYLOAD_DEFAULT_ACTION] == nil && value[.ITBL_PAYLOAD_ACTION_BUTTONS] == nil {
             return userInfo
         }
         #endif
@@ -312,7 +312,7 @@ struct IterableAppIntegrationInternal {
     }
 
     private static func legacyDefaultActionFromPayload(userInfo: [AnyHashable : Any]) -> IterableAction? {
-        if let deeplinkUrl = userInfo[ITBConsts.Payload.deeplinkUrl] as? String {
+        if let deeplinkUrl = userInfo[.ITBL_PAYLOAD_DEEP_LINK_URL] as? String {
             return IterableAction.actionOpenUrl(fromUrlString: deeplinkUrl)
         } else {
             return nil

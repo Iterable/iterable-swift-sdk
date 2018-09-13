@@ -89,20 +89,21 @@ public extension String {
     public static let ITBL_ENDPOINT_DDL_MATCH = "a/matchFp" //DDL = Deferred Deep Linking
 }
 
+// Push Payload
+public extension AnyHashable {
+    public static let ITBL_PAYLOAD_METADATA = "itbl"
+    public static let ITBL_PAYLOAD_MESSAGE_ID = "messageId"
+    public static let ITBL_PAYLOAD_DEEP_LINK_URL = "url"
+    public static let ITBL_PAYLOAD_ATTACHMENT_URL = "attachment-url"
+    public static let ITBL_PAYLOAD_ACTION_BUTTONS = "actionButtons"
+    public static let ITBL_PAYLOAD_DEFAULT_ACTION = "defaultAction"
+}
+
 @objcMembers public class ITBConsts : NSObject {
     // the API endpoint
     public static let apiEndpoint = apiHostname + "/api/"
     public static let linksEndpoint = linksHostname + "/"
 
-    public class Payload {
-        public static let metadata = ITBL_PAYLOAD_METADATA
-        public static let messageId = ITBL_PAYLOAD_MESSAGE_ID
-        public static let deeplinkUrl = ITBL_PAYLOAD_DEEP_LINK_URL
-        public static let attachmentUrl = ITBL_PAYLOAD_ATTACHMENT_URL
-        public static let actionButtons = ITBL_PAYLOAD_ACTION_BUTTONS
-        public static let defaultAction = ITBL_PAYLOAD_DEFAULT_ACTION
-    }
-    
     public class Button {
         public static let identifier = ITBL_BUTTON_IDENTIFIER
         public static let type = ITBL_BUTTON_TYPE
