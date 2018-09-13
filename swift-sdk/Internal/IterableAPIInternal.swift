@@ -151,14 +151,14 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
         
         let deviceDictionary: [String : Any] = [
-            ITBL_KEY_TOKEN: hexToken!,
-            ITBL_KEY_PLATFORM: psp,
-            ITBL_KEY_APPLICATION_NAME: appName,
-            ITBL_KEY_DATA_FIELDS: dataFields
+            AnyHashable.ITBL_KEY_TOKEN: hexToken!,
+            AnyHashable.ITBL_KEY_PLATFORM: psp,
+            AnyHashable.ITBL_KEY_APPLICATION_NAME: appName,
+            AnyHashable.ITBL_KEY_DATA_FIELDS: dataFields
         ]
         
         var args = [AnyHashable : Any]()
-        args[ITBL_KEY_DEVICE] = deviceDictionary
+        args[.ITBL_KEY_DEVICE] = deviceDictionary
         addEmailOrUserId(args: &args)
         
         ITBInfo("sending registerToken request with args \(args)")
@@ -192,8 +192,8 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         
         let mergeNested = NSNumber(value: mergeNestedObjects)
         var args = [AnyHashable: Any]()
-        args[ITBL_KEY_DATA_FIELDS] = dataFields
-        args[ITBL_KEY_MERGE_NESTED] = mergeNested
+        args[.ITBL_KEY_DATA_FIELDS] = dataFields
+        args[.ITBL_KEY_MERGE_NESTED] = mergeNested
         addEmailOrUserId(args: &args)
 
         if let request = createPostRequest(forAction: ENDPOINT_UPDATE_USER, withBody: args) {
@@ -208,8 +208,8 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
         
         let args: [String : Any] = [
-            ITBL_KEY_CURRENT_EMAIL: email,
-            ITBL_KEY_NEW_EMAIL: newEmail
+            AnyHashable.ITBL_KEY_CURRENT_EMAIL: email,
+            AnyHashable.ITBL_KEY_NEW_EMAIL: newEmail
         ]
 
         if let request = createPostRequest(forAction: ENDPOINT_UPDATE_EMAIL, withBody: args) {
@@ -248,16 +248,16 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         let args : [String : Any]
         if let dataFields = dataFields {
             args = [
-                ITBL_KEY_USER: apiUserDict,
-                ITBL_KEY_ITEMS: itemsToSerialize,
-                ITBL_KEY_TOTAL: total,
-                ITBL_KEY_DATA_FIELDS: dataFields
+                AnyHashable.ITBL_KEY_USER: apiUserDict,
+                AnyHashable.ITBL_KEY_ITEMS: itemsToSerialize,
+                AnyHashable.ITBL_KEY_TOTAL: total,
+                AnyHashable.ITBL_KEY_DATA_FIELDS: dataFields
             ]
         } else {
             args = [
-                ITBL_KEY_USER: apiUserDict,
-                ITBL_KEY_ITEMS: itemsToSerialize,
-                ITBL_KEY_TOTAL: total,
+                AnyHashable.ITBL_KEY_USER: apiUserDict,
+                AnyHashable.ITBL_KEY_ITEMS: itemsToSerialize,
+                AnyHashable.ITBL_KEY_TOTAL: total,
             ]
         }
         
@@ -300,16 +300,16 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             reqDataFields = [:]
         }
         reqDataFields["appAlreadyRunning"] = appAlreadyRunning
-        args[ITBL_KEY_DATA_FIELDS] = reqDataFields
+        args[.ITBL_KEY_DATA_FIELDS] = reqDataFields
 
         addEmailOrUserId(args: &args, mustExist: false)
         
-        args[ITBL_KEY_CAMPAIGN_ID] = campaignId
+        args[.ITBL_KEY_CAMPAIGN_ID] = campaignId
         if let templateId = templateId {
-            args[ITBL_KEY_TEMPLATE_ID] = templateId
+            args[.ITBL_KEY_TEMPLATE_ID] = templateId
         }
         if let messageId = messageId {
-            args[ITBL_KEY_MESSAGE_ID] = messageId
+            args[.ITBL_KEY_MESSAGE_ID] = messageId
         }
 
         if let request = createPostRequest(forAction: ENDPOINT_TRACK_PUSH_OPEN, withBody: args) {
@@ -347,9 +347,9 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
 
         var args = [AnyHashable : Any]()
         addEmailOrUserId(args: &args)
-        args[ITBL_KEY_EVENT_NAME] = eventName
+        args[.ITBL_KEY_EVENT_NAME] = eventName
         if let dataFields = dataFields {
-            args[ITBL_KEY_DATA_FIELDS] = dataFields
+            args[.ITBL_KEY_DATA_FIELDS] = dataFields
         }
         
         if let request = createPostRequest(forAction: ENDPOINT_TRACK, withBody: args) {
@@ -362,13 +362,13 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         addEmailOrUserId(args: &dictionary)
         
         if let emailListIds = emailListIds {
-            dictionary[ITBL_KEY_EMAIL_LIST_IDS] = emailListIds
+            dictionary[.ITBL_KEY_EMAIL_LIST_IDS] = emailListIds
         }
         if let unsubscribedChannelIds = unsubscribedChannelIds {
-            dictionary[ITBL_KEY_UNSUB_CHANNEL] = unsubscribedChannelIds
+            dictionary[.ITBL_KEY_UNSUB_CHANNEL] = unsubscribedChannelIds
         }
         if let unsubscribedMessageTypeIds = unsubscribedMessageTypeIds {
-            dictionary[ITBL_KEY_UNSUB_MESSAGE] = unsubscribedMessageTypeIds
+            dictionary[.ITBL_KEY_UNSUB_MESSAGE] = unsubscribedMessageTypeIds
         }
         
         if let request = createPostRequest(forAction: ENDPOINT_UPDATE_SUBSCRIPTIONS, withBody: dictionary) {
@@ -388,7 +388,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             guard let message = dialogOptions[ITERABLE_IN_APP_CONTENT] as? [AnyHashable : Any] else {
                 return
             }
-            guard let messageId = dialogOptions[ITBL_KEY_MESSAGE_ID] as? String else {
+            guard let messageId = dialogOptions[.ITBL_KEY_MESSAGE_ID] as? String else {
                 return
             }
             guard let html = message[ITERABLE_IN_APP_HTML] as? String else {
@@ -429,9 +429,9 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
 
         var args : [String : String] = [
-            ITBL_KEY_COUNT: count.description,
-            ITBL_KEY_PLATFORM: ITBL_PLATFORM_IOS,
-            ITBL_KEY_SDK_VERSION: IterableAPI.sdkVersion
+            AnyHashable.ITBL_KEY_COUNT: count.description,
+            AnyHashable.ITBL_KEY_PLATFORM: ITBL_PLATFORM_IOS,
+            AnyHashable.ITBL_KEY_SDK_VERSION: IterableAPI.sdkVersion
         ]
         addEmailOrUserId(args: &args)
         
@@ -443,7 +443,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     func trackInAppOpen(_ messageId: String) {
         var args = [AnyHashable : Any]()
         addEmailOrUserId(args: &args)
-        args[ITBL_KEY_MESSAGE_ID] = messageId
+        args[.ITBL_KEY_MESSAGE_ID] = messageId
         
         if let request = createPostRequest(forAction: ENDPOINT_TRACK_INAPP_OPEN, withBody: args) {
             sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppOpen"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"))
@@ -452,7 +452,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
 
     func trackInAppClick(_ messageId: String, buttonIndex: String) {
         var args: [AnyHashable : Any] = [
-            ITBL_KEY_MESSAGE_ID: messageId,
+            .ITBL_KEY_MESSAGE_ID: messageId,
             ITERABLE_IN_APP_BUTTON_INDEX: buttonIndex
         ]
         addEmailOrUserId(args: &args)
@@ -465,7 +465,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     
     func trackInAppClick(_ messageId: String, buttonURL: String) {
         var args: [AnyHashable : Any] = [
-            ITBL_KEY_MESSAGE_ID: messageId,
+            .ITBL_KEY_MESSAGE_ID: messageId,
             ITERABLE_IN_APP_CLICK_URL: buttonURL
         ]
         addEmailOrUserId(args: &args)
@@ -477,7 +477,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
 
     func inAppConsume(_ messageId: String) {
         var args: [AnyHashable : Any] = [
-            ITBL_KEY_MESSAGE_ID: messageId,
+            .ITBL_KEY_MESSAGE_ID: messageId,
         ]
         addEmailOrUserId(args: &args)
         
@@ -503,7 +503,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
 
     func createPostRequest(forAction action: String, withBody body: [AnyHashable : Any]) -> URLRequest? {
-        return IterableRequestUtil.createPostRequest(forApiEndPoint: ITBConsts.apiEndpoint, path: action, args: [ITBL_KEY_API_KEY : apiKey], body: body)
+        return IterableRequestUtil.createPostRequest(forApiEndPoint: ITBConsts.apiEndpoint, path: action, args: [AnyHashable.ITBL_KEY_API_KEY : apiKey], body: body)
     }
     
     func sendRequest(_ request: URLRequest, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) {
@@ -589,7 +589,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     
     private func createGetRequest(forAction action: String, withArgs args: [String : String]) -> URLRequest? {
         var argsWithApiKey = args
-        argsWithApiKey[ITBL_KEY_API_KEY] = apiKey
+        argsWithApiKey[AnyHashable.ITBL_KEY_API_KEY] = apiKey
         return IterableRequestUtil.createGetRequest(forApiEndPoint: ITBConsts.apiEndpoint, path: action, args: argsWithApiKey)
     }
     
@@ -629,7 +629,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
         
         var args = [AnyHashable : Any]()
-        args[ITBL_KEY_TOKEN] = hexToken
+        args[.ITBL_KEY_TOKEN] = hexToken
         if !allUsers {
             addEmailOrUserId(args: &args, mustExist: false)
         }
@@ -674,9 +674,9 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     
     private func addEmailOrUserId(args: inout [AnyHashable : Any], mustExist: Bool = true) {
         if let email = email {
-            args[ITBL_KEY_EMAIL] = email
+            args[.ITBL_KEY_EMAIL] = email
         } else if let userId = userId {
-            args[ITBL_KEY_USER_ID] = userId
+            args[.ITBL_KEY_USER_ID] = userId
         } else if mustExist {
             assertionFailure("Either email or userId should be set")
         }
@@ -768,7 +768,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             return
         }
         
-        guard let request = IterableRequestUtil.createPostRequest(forApiEndPoint: ITBConsts.linksEndpoint, path: ENDPOINT_DDL_MATCH, args: [ITBL_KEY_API_KEY : apiKey], body: DeviceInfo.createDeviceInfo()) else {
+        guard let request = IterableRequestUtil.createPostRequest(forApiEndPoint: ITBConsts.linksEndpoint, path: ENDPOINT_DDL_MATCH, args: [AnyHashable.ITBL_KEY_API_KEY : apiKey], body: DeviceInfo.createDeviceInfo()) else {
             ITBError("Could not create request")
             return
         }

@@ -8,6 +8,35 @@
 
 import Foundation
 
+// Keys
+public extension AnyHashable {
+    public static let ITBL_KEY_API_KEY = "api_key"
+    public static let ITBL_KEY_APPLICATION_NAME = "applicationName"
+    public static let ITBL_KEY_CAMPAIGN_ID = "campaignId"
+    public static let ITBL_KEY_COUNT = "count"
+    public static let ITBL_KEY_CURRENT_EMAIL = "currentEmail"
+    public static let ITBL_KEY_DATA_FIELDS = "dataFields"
+    public static let ITBL_KEY_DEVICE = "device"
+    public static let ITBL_KEY_EMAIL = "email"
+    public static let ITBL_KEY_EMAIL_LIST_IDS = "emailListIds"
+    public static let ITBL_KEY_EVENT_NAME = "eventName"
+    public static let ITBL_KEY_ITEMS = "items"
+    public static let ITBL_KEY_MERGE_NESTED = "mergeNestedObjects"
+    public static let ITBL_KEY_MESSAGE_ID = "messageId"
+    public static let ITBL_KEY_NEW_EMAIL = "newEmail"
+    public static let ITBL_KEY_PLATFORM = "platform"
+    public static let ITBL_KEY_SDK_VERSION = "SDKVersion"
+    public static let ITBL_KEY_TOKEN = "token"
+    public static let ITBL_KEY_TEMPLATE_ID = "templateId"
+    public static let ITBL_KEY_TOTAL = "total"
+    public static let ITBL_KEY_UNSUB_CHANNEL = "unsubscribedChannelIds"
+    public static let ITBL_KEY_UNSUB_MESSAGE = "unsubscribedMessageTypeIds"
+    public static let ITBL_KEY_USER = "user"
+    public static let ITBL_KEY_USER_ID = "userId"
+    public static let ITBL_KEY_ACTION_IDENTIFIER = "actionIdentifier"
+    public static let ITBL_KEY_USER_TEXT = "userText"
+}
+
 @objcMembers public class ITBConsts : NSObject {
     // the API endpoint
     public static let apiEndpoint = apiHostname + "/api/"

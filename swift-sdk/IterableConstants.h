@@ -8,35 +8,6 @@
 
 @interface IterableConstants : NSObject
 
-//API Fields
-extern NSString *const ITBL_KEY_API_KEY;
-extern NSString *const ITBL_KEY_APPLICATION_NAME;
-extern NSString *const ITBL_KEY_CAMPAIGN_ID;
-extern NSString *const ITBL_KEY_COUNT;
-extern NSString *const ITBL_KEY_CURRENT_EMAIL;
-extern NSString *const ITBL_KEY_DATA_FIELDS;
-extern NSString *const ITBL_KEY_DEVICE;
-extern NSString *const ITBL_KEY_EMAIL;
-extern NSString *const ITBL_KEY_EMAIL_LIST_IDS;
-extern NSString *const ITBL_KEY_EVENT_NAME;
-extern NSString *const ITBL_KEY_ITEMS;
-extern NSString *const ITBL_KEY_MERGE_NESTED;
-extern NSString *const ITBL_KEY_MESSAGE_ID;
-extern NSString *const ITBL_KEY_NEW_EMAIL;
-extern NSString *const ITBL_KEY_PLATFORM;
-extern NSString *const ITBL_KEY_RECIPIENT_EMAIL;
-extern NSString *const ITBL_KEY_SDK_VERSION;
-extern NSString *const ITBL_KEY_SEND_AT;
-extern NSString *const ITBL_KEY_TOKEN;
-extern NSString *const ITBL_KEY_TEMPLATE_ID;
-extern NSString *const ITBL_KEY_TOTAL;
-extern NSString *const ITBL_KEY_UNSUB_CHANNEL;
-extern NSString *const ITBL_KEY_UNSUB_MESSAGE;
-extern NSString *const ITBL_KEY_USER;
-extern NSString *const ITBL_KEY_USER_ID;
-extern NSString *const ITBL_KEY_ACTION_IDENTIFIER;
-extern NSString *const ITBL_KEY_USER_TEXT;
-
 //Decvice Dictionary
 extern NSString *const ITBL_DEVICE_LOCALIZED_MODEL;
 extern NSString *const ITBL_DEVICE_ID_VENDOR;

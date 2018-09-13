@@ -179,7 +179,7 @@ struct IterableAppIntegrationInternal {
         let action = IterableAppIntegrationInternal.createIterableAction(actionIdentifier: response.actionIdentifier, userText: response.textInputResponse?.userText, userInfo: userInfo, iterableElement: itbl)
 
         // Track push open
-        if let _ = dataFields[ITBL_KEY_ACTION_IDENTIFIER] {
+        if let _ = dataFields[.ITBL_KEY_ACTION_IDENTIFIER] {
             tracker.trackPushOpen(userInfo, dataFields: dataFields)
         }
         
@@ -242,15 +242,15 @@ struct IterableAppIntegrationInternal {
         var dataFields = [AnyHashable : Any]()
         
         if actionIdentifier == UNNotificationDefaultActionIdentifier {
-            dataFields[ITBL_KEY_ACTION_IDENTIFIER] = ITBL_VALUE_DEFAULT_PUSH_OPEN_ACTION_ID
+            dataFields[.ITBL_KEY_ACTION_IDENTIFIER] = ITBL_VALUE_DEFAULT_PUSH_OPEN_ACTION_ID
         } else if actionIdentifier == UNNotificationDismissActionIdentifier {
             // We don't track dismiss actions yet
         } else {
-            dataFields[ITBL_KEY_ACTION_IDENTIFIER] = actionIdentifier
+            dataFields[.ITBL_KEY_ACTION_IDENTIFIER] = actionIdentifier
         }
         
         if let userText = userText {
-            dataFields[ITBL_KEY_USER_TEXT] = userText
+            dataFields[.ITBL_KEY_USER_TEXT] = userText
         }
 
         return dataFields
@@ -263,7 +263,7 @@ struct IterableAppIntegrationInternal {
         }
         
         // Track push open
-        let dataFields = [ITBL_KEY_ACTION_IDENTIFIER : ITBL_VALUE_DEFAULT_PUSH_OPEN_ACTION_ID]
+        let dataFields = [AnyHashable.ITBL_KEY_ACTION_IDENTIFIER : ITBL_VALUE_DEFAULT_PUSH_OPEN_ACTION_ID]
         tracker.trackPushOpen(userInfo, dataFields: dataFields)
         
         guard let itbl = IterableAppIntegrationInternal.itblValue(fromUserInfo: userInfo) else {

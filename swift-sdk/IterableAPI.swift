@@ -222,7 +222,7 @@ public final class IterableAPI : NSObject {
      
      - remark: Pass in the total purchase amount and an `NSArray` of `CommerceItem`s
      
-     - parameter total:       total purchase amount
+     - parameter withTotal:   total purchase amount
      - parameter items:       list of purchased items
      - parameter dataFields:  an `Dictionary` containing any additional information to save along with the event
      - parameter onSuccess:   OnSuccessHandler to invoke if the purchase is tracked successfully
