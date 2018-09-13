@@ -20,7 +20,7 @@ import UserNotifications
         //IMPORTANT: need to add this to the documentation
         bestAttemptContent?.categoryIdentifier = getCategory(fromContent: request.content)
 
-        guard let itblDictionary = request.content.userInfo[ITBConsts.Payload.metadata] as? [AnyHashable : Any] else {
+        guard let itblDictionary = request.content.userInfo[.ITBL_PAYLOAD_METADATA] as? [AnyHashable : Any] else {
             if let bestAttemptContent = bestAttemptContent {
                 contentHandler(bestAttemptContent)
             }
@@ -46,7 +46,7 @@ import UserNotifications
     }
 
     private func loadAttachment(itblDictionary: [AnyHashable : Any]) -> Bool {
-        guard let attachmentUrlString = itblDictionary[ITBConsts.Payload.attachmentUrl] as? String else {
+        guard let attachmentUrlString = itblDictionary[.ITBL_PAYLOAD_ATTACHMENT_URL] as? String else {
             return false
         }
         guard let url = URL(string: attachmentUrlString) else {
@@ -85,18 +85,18 @@ import UserNotifications
     
     private func getCategory(fromContent content: UNNotificationContent) -> String {
         if content.categoryIdentifier.count == 0 {
-            guard let itblDictionary = content.userInfo[ITBConsts.Payload.metadata] as? [AnyHashable : Any] else {
+            guard let itblDictionary = content.userInfo[.ITBL_PAYLOAD_METADATA] as? [AnyHashable : Any] else {
                 return ""
             }
-            guard let messageId = itblDictionary[ITBConsts.Payload.messageId] as? String else {
+            guard let messageId = itblDictionary[.ITBL_PAYLOAD_MESSAGE_ID] as? String else {
                 return ""
             }
             var actionButtons: [[AnyHashable : Any]] = []
-            if let actionButtonsFromITBLPayload = itblDictionary[ITBConsts.Payload.actionButtons] as? [[AnyHashable : Any]] {
+            if let actionButtonsFromITBLPayload = itblDictionary[.ITBL_PAYLOAD_ACTION_BUTTONS] as? [[AnyHashable : Any]] {
                 actionButtons = actionButtonsFromITBLPayload
             } else {
                 #if DEBUG
-                if let actionButtonsFromUserInfo = content.userInfo[ITBConsts.Payload.actionButtons] as? [[AnyHashable : Any]] {
+                if let actionButtonsFromUserInfo = content.userInfo[.ITBL_PAYLOAD_ACTION_BUTTONS] as? [[AnyHashable : Any]] {
                     actionButtons = actionButtonsFromUserInfo
                 }
                 #endif
