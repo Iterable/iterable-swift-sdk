@@ -12,16 +12,6 @@
 @end
 
 
-//MISC
-
-#define ITBL_VALUE_DEFAULT_PUSH_OPEN_ACTION_ID @"default"
-
-#define ITBL_PLATFORM_IOS @"iOS"
-
-
-#define ITBL_DEEPLINK_IDENTIFIER @"/a/[a-zA-Z0-9]+"
-
-
 //Push Payload
 #define ITBL_PAYLOAD_METADATA @"itbl"
 #define ITBL_PAYLOAD_MESSAGE_ID @"messageId"

@@ -82,7 +82,7 @@ class IterableNotificationResponseTests: XCTestCase {
         XCTAssertEqual(pushTracker.messageId, messageId)
         XCTAssertFalse(pushTracker.appAlreadyRunnnig)
         
-        XCTAssertEqual(pushTracker.dataFields?[.ITBL_KEY_ACTION_IDENTIFIER] as? String, ITBL_VALUE_DEFAULT_PUSH_OPEN_ACTION_ID)
+        XCTAssertEqual(pushTracker.dataFields?[.ITBL_KEY_ACTION_IDENTIFIER] as? String, .ITBL_VALUE_DEFAULT_PUSH_OPEN_ACTION_ID)
     }
     
     func testActionButtonDismiss() {

@@ -49,6 +49,13 @@ public extension String {
     public static let ITBL_KEY_UNSPECIFIED = "Unspecified"
 }
 
+// Misc Values
+public extension String {
+    public static let ITBL_VALUE_DEFAULT_PUSH_OPEN_ACTION_ID = "default"
+    public static let ITBL_PLATFORM_IOS = "iOS"
+    public static let ITBL_DEEPLINK_IDENTIFIER = "/a/[a-zA-Z0-9]+"
+}
+
 // Decvice Dictionary
 public extension String {
     public static let ITBL_DEVICE_LOCALIZED_MODEL = "localizedModel"
