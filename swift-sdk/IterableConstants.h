@@ -53,14 +53,3 @@ typedef void (^OnSuccessHandler)(NSDictionary *data);
  */
 typedef void (^OnFailureHandler)(NSString *reason, NSData *_Nullable data);
 
-/**
- Enum representing push platform; apple push notification service, production vs sandbox
- */
-typedef NS_ENUM(NSInteger, PushServicePlatform) {
-    /** The sandbox push service */
-    APNS_SANDBOX,
-    /** The production push service */
-    APNS,
-    /** Detect automatically */
-    AUTO
-};

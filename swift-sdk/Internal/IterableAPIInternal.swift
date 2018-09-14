@@ -123,7 +123,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         hexToken = (token as NSData).iteHexadecimalString()
         
         let device = UIDevice.current
-        let psp = IterableAPIInternal.pushServicePlatformToString(pushServicePlatform)
+        let pushServicePlatformString = IterableAPIInternal.pushServicePlatformToString(pushServicePlatform)
         
         var dataFields: [String : Any] = [
             .ITBL_DEVICE_LOCALIZED_MODEL: device.localizedModel,
@@ -151,7 +151,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         
         let deviceDictionary: [String : Any] = [
             AnyHashable.ITBL_KEY_TOKEN: hexToken!,
-            AnyHashable.ITBL_KEY_PLATFORM: psp,
+            AnyHashable.ITBL_KEY_PLATFORM: pushServicePlatformString,
             AnyHashable.ITBL_KEY_APPLICATION_NAME: appName,
             AnyHashable.ITBL_KEY_DATA_FIELDS: dataFields
         ]
@@ -551,11 +551,11 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     private var pushIntegrationName: String? {
         if let pushIntegrationName = config.pushIntegrationName, let sandboxPushIntegrationName = config.sandboxPushIntegrationName {
             switch(config.pushPlatform) {
-            case .APNS:
+            case .production:
                 return pushIntegrationName
-            case .APNS_SANDBOX:
+            case .sandbox:
                 return sandboxPushIntegrationName
-            case .AUTO:
+            case .auto:
                 return IterableAPNSUtil.isSandboxAPNS() ? sandboxPushIntegrationName : pushIntegrationName
             }
         }
@@ -641,11 +641,11 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     
     private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform) -> String {
         switch pushServicePlatform {
-        case .APNS:
+        case .production:
             return .ITBL_KEY_APNS
-        case .APNS_SANDBOX:
+        case .sandbox:
             return .ITBL_KEY_APNS_SANDBOX
-        case .AUTO:
+        case .auto:
             return IterableAPNSUtil.isSandboxAPNS() ? .ITBL_KEY_APNS_SANDBOX : .ITBL_KEY_APNS
         }
     }

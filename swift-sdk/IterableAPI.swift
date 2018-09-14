@@ -89,7 +89,7 @@ public final class IterableAPI : NSObject {
 
     /**
      * Register this device's token with Iterable
-     * Push integration name and platform are read from `IterableConfig`. If platform is set to `AUTO`, it will
+     * Push integration name and platform are read from `IterableConfig`. If platform is set to `auto`, it will
      * read APNS environment from the provisioning profile and use an integration name specified in `IterableConfig`.
      - parameters:
      - token:       The token representing this device/application pair, obtained from
@@ -102,7 +102,7 @@ public final class IterableAPI : NSObject {
     
     /**
      * Register this device's token with Iterable
-     * Push integration name and platform are read from `IterableConfig`. If platform is set to `AUTO`, it will
+     * Push integration name and platform are read from `IterableConfig`. If platform is set to `auto`, it will
      * read APNS environment from the provisioning profile and use an integration name specified in `IterableConfig`.
      - parameters:
      - token:       The token representing this device/application pair, obtained from
