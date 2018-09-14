@@ -126,6 +126,22 @@ public extension AnyHashable {
     public static let ITBL_BUTTON_ACTION = "action"
 }
 
+//In-App Constants
+public extension AnyHashable {
+    public static let ITBL_IN_APP_CLICK_URL = "urlClick"
+    
+    public static let ITBL_IN_APP_BUTTON_INDEX = "buttonIndex"
+    public static let ITBL_IN_APP_MESSAGE = "inAppMessages"
+    
+    public static let ITBL_IN_APP_CONTENT = "content"
+    
+    //In-App HTML Constants
+    public static let ITBL_IN_APP_BACKGROUND_ALPHA = "backgroundAlpha"
+    public static let ITBL_IN_APP_HTML = "html"
+    public static let ITBL_IN_APP_HREF = "href"
+    public static let ITBL_IN_APP_DISPLAY_SETTINGS = "inAppDisplaySettings"
+}
+
 @objcMembers public class ITBConsts : NSObject {
     // the API endpoint
     public static let apiEndpoint = apiHostname + "/api/"

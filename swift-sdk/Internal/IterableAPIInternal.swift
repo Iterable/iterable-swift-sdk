@@ -384,22 +384,22 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
                 ITBError("No notifications found for inApp payload \(payload)")
                 return
             }
-            guard let message = dialogOptions[ITERABLE_IN_APP_CONTENT] as? [AnyHashable : Any] else {
+            guard let message = dialogOptions[.ITBL_IN_APP_CONTENT] as? [AnyHashable : Any] else {
                 return
             }
             guard let messageId = dialogOptions[.ITBL_KEY_MESSAGE_ID] as? String else {
                 return
             }
-            guard let html = message[ITERABLE_IN_APP_HTML] as? String else {
+            guard let html = message[.ITBL_IN_APP_HTML] as? String else {
                 return
             }
-            guard html.range(of: ITERABLE_IN_APP_HREF, options: [.caseInsensitive]) != nil else {
+            guard html.range(of: AnyHashable.ITBL_IN_APP_HREF, options: [.caseInsensitive]) != nil else {
                 ITBError("No href tag found in in-app html payload \(html)")
                 self.inAppConsume(messageId)
                 return
             }
 
-            let inAppDisplaySettings = message[ITERABLE_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
+            let inAppDisplaySettings = message[.ITBL_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
             let backgroundAlpha = IterableInAppManager.getBackgroundAlpha(fromInAppSettings: inAppDisplaySettings)
             let edgeInsets = IterableInAppManager.getPaddingFromPayload(inAppDisplaySettings)
 
@@ -452,7 +452,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     func trackInAppClick(_ messageId: String, buttonIndex: String) {
         var args: [AnyHashable : Any] = [
             .ITBL_KEY_MESSAGE_ID: messageId,
-            ITERABLE_IN_APP_BUTTON_INDEX: buttonIndex
+            .ITBL_IN_APP_BUTTON_INDEX: buttonIndex
         ]
         addEmailOrUserId(args: &args)
         
@@ -465,7 +465,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     func trackInAppClick(_ messageId: String, buttonURL: String) {
         var args: [AnyHashable : Any] = [
             .ITBL_KEY_MESSAGE_ID: messageId,
-            ITERABLE_IN_APP_CLICK_URL: buttonURL
+            .ITBL_IN_APP_CLICK_URL: buttonURL
         ]
         addEmailOrUserId(args: &args)
         
