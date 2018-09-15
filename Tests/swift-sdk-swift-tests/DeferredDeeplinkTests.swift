@@ -33,11 +33,12 @@ class DeferredDeeplinkTests: XCTestCase {
             "messageId" : "1"
         ]
         let networkSession = MockNetworkSession(statusCode: 200, json: json)
-        
+
         let config = IterableConfig()
         config.checkForDeferredDeeplink = true
         let urlDelegate = MockUrlDelegate(returnValue: true)
         urlDelegate.callback = {(url, context) in
+            TestUtils.validate(request: networkSession.request!, apiEndPoint: .ITBL_ENDPOINT_LINKS, path: .ITBL_PATH_DDL_MATCH)
             expectation.fulfill()
             XCTAssertEqual(url.absoluteString, "zeeDestinationUrl")
         }

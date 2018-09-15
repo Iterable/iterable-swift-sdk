@@ -41,11 +41,11 @@ class IterableAutoRegistrationTests: XCTestCase {
         networkSession.callback = {(_, _, _) in
             // First call, API call to register endpoint
             expectation1.fulfill()
-            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: .ITBL_ENDPOINT_REGISTER_DEVICE_TOKEN, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAutoRegistrationTests.apiKey)])
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_REGISTER_DEVICE_TOKEN, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAutoRegistrationTests.apiKey)])
             networkSession.callback = {(_, _, _)in
                 // Second call, API call to disable endpoint
                 expectation3.fulfill()
-                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: .ITBL_ENDPOINT_DISABLE_DEVICE, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAutoRegistrationTests.apiKey)])
+                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_DISABLE_DEVICE, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAutoRegistrationTests.apiKey)])
                 let body = networkSession.getRequestBody() as! [String : Any]
                 TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOKEN, andValue: (token as NSData).iteHexadecimalString(), inDictionary: body)
                 TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_EMAIL, andValue: "user1@example.com", inDictionary: body)
@@ -75,7 +75,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         let token = "zeeToken".data(using: .utf8)!
         networkSession.callback = {(_, _, _) in
             // first call back will be called on register
-            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: .ITBL_ENDPOINT_REGISTER_DEVICE_TOKEN, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAutoRegistrationTests.apiKey)])
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_REGISTER_DEVICE_TOKEN, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAutoRegistrationTests.apiKey)])
             networkSession.callback = {(_, _, _)in
                 // Second callback should not happen
                 XCTFail("Should not call disable")
@@ -109,10 +109,10 @@ class IterableAutoRegistrationTests: XCTestCase {
         networkSession.callback = {(_, _, _) in
             // first call back will be called on register
             expectation1.fulfill()
-            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: .ITBL_ENDPOINT_REGISTER_DEVICE_TOKEN, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAutoRegistrationTests.apiKey)])
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_REGISTER_DEVICE_TOKEN, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAutoRegistrationTests.apiKey)])
             networkSession.callback = {(_, _, _) in
                 // second call back is for disable when we set new user id
-                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: .ITBL_ENDPOINT_DISABLE_DEVICE, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAutoRegistrationTests.apiKey)])
+                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_DISABLE_DEVICE, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAutoRegistrationTests.apiKey)])
                 let body = networkSession.getRequestBody() as! [String : Any]
                 TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOKEN, andValue: (token as NSData).iteHexadecimalString(), inDictionary: body)
                 TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_USER_ID, andValue: "userId1", inDictionary: body)
@@ -141,7 +141,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         let token = "zeeToken".data(using: .utf8)!
         networkSession.callback = {(_, _, _) in
             // first call back will be called on register
-            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: ITBConsts.apiEndpoint, path: .ITBL_ENDPOINT_REGISTER_DEVICE_TOKEN, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAutoRegistrationTests.apiKey)])
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_REGISTER_DEVICE_TOKEN, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAutoRegistrationTests.apiKey)])
             networkSession.callback = {(_, _, _)in
                 // Second callback should not happen
                 XCTFail("should not call disable")

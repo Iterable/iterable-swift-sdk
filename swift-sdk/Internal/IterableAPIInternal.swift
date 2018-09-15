@@ -161,7 +161,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         addEmailOrUserId(args: &args)
         
         ITBInfo("sending registerToken request with args \(args)")
-        if let request = createPostRequest(forAction: .ITBL_ENDPOINT_REGISTER_DEVICE_TOKEN, withBody: args) {
+        if let request = createPostRequest(forPath: .ITBL_PATH_REGISTER_DEVICE_TOKEN, withBody: args) {
             sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
         }
     }
@@ -195,7 +195,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         args[.ITBL_KEY_MERGE_NESTED] = mergeNested
         addEmailOrUserId(args: &args)
 
-        if let request = createPostRequest(forAction: .ITBL_ENDPOINT_UPDATE_USER, withBody: args) {
+        if let request = createPostRequest(forPath: .ITBL_PATH_UPDATE_USER, withBody: args) {
             sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
         }
     }
@@ -211,7 +211,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             AnyHashable.ITBL_KEY_NEW_EMAIL: newEmail
         ]
 
-        if let request = createPostRequest(forAction: .ITBL_ENDPOINT_UPDATE_EMAIL, withBody: args) {
+        if let request = createPostRequest(forPath: .ITBL_PATH_UPDATE_EMAIL, withBody: args) {
             sendRequest(request,
                         onSuccess: { data in
                             self.email = newEmail
@@ -260,7 +260,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             ]
         }
         
-        if let request = createPostRequest(forAction: .ITBL_ENDPOINT_COMMERCE_TRACK_PURCHASE, withBody: args) {
+        if let request = createPostRequest(forPath: .ITBL_PATH_COMMERCE_TRACK_PURCHASE, withBody: args) {
             sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
         }
     }
@@ -311,7 +311,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             args[.ITBL_KEY_MESSAGE_ID] = messageId
         }
 
-        if let request = createPostRequest(forAction: .ITBL_ENDPOINT_TRACK_PUSH_OPEN, withBody: args) {
+        if let request = createPostRequest(forPath: .ITBL_PATH_TRACK_PUSH_OPEN, withBody: args) {
             sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
         }
     }
@@ -351,7 +351,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             args[.ITBL_KEY_DATA_FIELDS] = dataFields
         }
         
-        if let request = createPostRequest(forAction: .ITBL_ENDPOINT_TRACK, withBody: args) {
+        if let request = createPostRequest(forPath: .ITBL_PATH_TRACK, withBody: args) {
             sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
         }
     }
@@ -370,7 +370,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             dictionary[.ITBL_KEY_UNSUB_MESSAGE] = unsubscribedMessageTypeIds
         }
         
-        if let request = createPostRequest(forAction: .ITBL_ENDPOINT_UPDATE_SUBSCRIPTIONS, withBody: dictionary) {
+        if let request = createPostRequest(forPath: .ITBL_PATH_UPDATE_SUBSCRIPTIONS, withBody: dictionary) {
             sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "updateSubscriptions"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "updateSubscriptions"))
         }
     }
@@ -434,7 +434,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         ]
         addEmailOrUserId(args: &args)
         
-        if let request = createGetRequest(forAction: .ITBL_ENDPOINT_GET_INAPP_MESSAGES, withArgs: args) {
+        if let request = createGetRequest(forPath: .ITBL_PATH_GET_INAPP_MESSAGES, withArgs: args) {
             sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
         }
     }
@@ -444,7 +444,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         addEmailOrUserId(args: &args)
         args[.ITBL_KEY_MESSAGE_ID] = messageId
         
-        if let request = createPostRequest(forAction: .ITBL_ENDPOINT_TRACK_INAPP_OPEN, withBody: args) {
+        if let request = createPostRequest(forPath: .ITBL_PATH_TRACK_INAPP_OPEN, withBody: args) {
             sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppOpen"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"))
         }
     }
@@ -456,7 +456,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         ]
         addEmailOrUserId(args: &args)
         
-        if let request = createPostRequest(forAction: .ITBL_ENDPOINT_TRACK_INAPP_CLICK, withBody: args) {
+        if let request = createPostRequest(forPath: .ITBL_PATH_TRACK_INAPP_CLICK, withBody: args) {
             sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"))
         }
     }
@@ -469,7 +469,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         ]
         addEmailOrUserId(args: &args)
         
-        if let request = createPostRequest(forAction: .ITBL_ENDPOINT_TRACK_INAPP_CLICK, withBody: args) {
+        if let request = createPostRequest(forPath: .ITBL_PATH_TRACK_INAPP_CLICK, withBody: args) {
             sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"))
         }
     }
@@ -480,7 +480,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         ]
         addEmailOrUserId(args: &args)
         
-        if let request = createPostRequest(forAction: .ITBL_ENDPOINT_INAPP_CONSUME, withBody: args) {
+        if let request = createPostRequest(forPath: .ITBL_PATH_INAPP_CONSUME, withBody: args) {
             sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "inAppConsume"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "inAppConsume"))
         }
     }
@@ -501,8 +501,8 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         return deeplinkManager.handleUniversalLink(url, urlDelegate: config.urlDelegate, urlOpener: AppUrlOpener())
     }
 
-    func createPostRequest(forAction action: String, withBody body: [AnyHashable : Any]) -> URLRequest? {
-        return IterableRequestUtil.createPostRequest(forApiEndPoint: ITBConsts.apiEndpoint, path: action, args: [AnyHashable.ITBL_KEY_API_KEY : apiKey], body: body)
+    func createPostRequest(forPath path: String, withBody body: [AnyHashable : Any]) -> URLRequest? {
+        return IterableRequestUtil.createPostRequest(forApiEndPoint: .ITBL_ENDPOINT_API, path: path, args: [AnyHashable.ITBL_KEY_API_KEY : apiKey], body: body)
     }
     
     func sendRequest(_ request: URLRequest, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) {
@@ -586,10 +586,10 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
     }
     
-    private func createGetRequest(forAction action: String, withArgs args: [String : String]) -> URLRequest? {
+    private func createGetRequest(forPath path: String, withArgs args: [String : String]) -> URLRequest? {
         var argsWithApiKey = args
         argsWithApiKey[AnyHashable.ITBL_KEY_API_KEY] = apiKey
-        return IterableRequestUtil.createGetRequest(forApiEndPoint: ITBConsts.apiEndpoint, path: action, args: argsWithApiKey)
+        return IterableRequestUtil.createGetRequest(forApiEndPoint: .ITBL_ENDPOINT_API, path: path, args: argsWithApiKey)
     }
     
     private static func defaultOnSucess(identifier: String) -> OnSuccessHandler {
@@ -634,7 +634,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
         
         ITBInfo("sending disableToken request with args \(args)")
-        if let request = createPostRequest(forAction: .ITBL_ENDPOINT_DISABLE_DEVICE, withBody:args) {
+        if let request = createPostRequest(forPath: .ITBL_PATH_DISABLE_DEVICE, withBody:args) {
             sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
         }
     }
@@ -767,7 +767,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             return
         }
         
-        guard let request = IterableRequestUtil.createPostRequest(forApiEndPoint: ITBConsts.linksEndpoint, path: .ITBL_ENDPOINT_DDL_MATCH, args: [AnyHashable.ITBL_KEY_API_KEY : apiKey], body: DeviceInfo.createDeviceInfo()) else {
+        guard let request = IterableRequestUtil.createPostRequest(forApiEndPoint: .ITBL_ENDPOINT_LINKS, path: .ITBL_PATH_DDL_MATCH, args: [AnyHashable.ITBL_KEY_API_KEY : apiKey], body: DeviceInfo.createDeviceInfo()) else {
             ITBError("Could not create request")
             return
         }

@@ -6,6 +6,32 @@
 
 import Foundation
 
+// Iterable API Endpoints
+public extension String {
+    public static let ITBL_ENDPOINT_API = apiHostname + "/api/"
+    public static let ITBL_ENDPOINT_LINKS = linksHostname + "/"
+    
+    private static let apiHostname = "https://api.iterable.com"
+    private static let linksHostname = "https://links.iterable.com"
+}
+
+// API Paths (Offset from base)
+public extension String {
+    public static let ITBL_PATH_COMMERCE_TRACK_PURCHASE = "commerce/trackPurchase"
+    public static let ITBL_PATH_DISABLE_DEVICE = "users/disableDevice"
+    public static let ITBL_PATH_GET_INAPP_MESSAGES = "inApp/getMessages"
+    public static let ITBL_PATH_INAPP_CONSUME = "events/inAppConsume"
+    public static let ITBL_PATH_REGISTER_DEVICE_TOKEN = "users/registerDeviceToken"
+    public static let ITBL_PATH_TRACK = "events/track"
+    public static let ITBL_PATH_TRACK_INAPP_CLICK = "events/trackInAppClick"
+    public static let ITBL_PATH_TRACK_INAPP_OPEN = "events/trackInAppOpen"
+    public static let ITBL_PATH_TRACK_PUSH_OPEN = "events/trackPushOpen"
+    public static let ITBL_PATH_UPDATE_USER = "users/update"
+    public static let ITBL_PATH_UPDATE_EMAIL = "users/updateEmail"
+    public static let ITBL_PATH_UPDATE_SUBSCRIPTIONS = "users/updateSubscriptions"
+    public static let ITBL_PATH_DDL_MATCH = "a/matchFp" //DDL = Deferred Deep Linking
+}
+
 // Keys
 public extension AnyHashable {
     public static let ITBL_KEY_API_KEY = "api_key"
@@ -70,23 +96,6 @@ public extension String {
     public static let ITBL_DEVICE_ITERABLE_SDK_VERSION = "iterableSdkVersion"
 }
 
-// API Endpoint Key Constants
-public extension String {
-    public static let ITBL_ENDPOINT_COMMERCE_TRACK_PURCHASE = "commerce/trackPurchase"
-    public static let ITBL_ENDPOINT_DISABLE_DEVICE = "users/disableDevice"
-    public static let ITBL_ENDPOINT_GET_INAPP_MESSAGES = "inApp/getMessages"
-    public static let ITBL_ENDPOINT_INAPP_CONSUME = "events/inAppConsume"
-    public static let ITBL_ENDPOINT_REGISTER_DEVICE_TOKEN = "users/registerDeviceToken"
-    public static let ITBL_ENDPOINT_TRACK = "events/track"
-    public static let ITBL_ENDPOINT_TRACK_INAPP_CLICK = "events/trackInAppClick"
-    public static let ITBL_ENDPOINT_TRACK_INAPP_OPEN = "events/trackInAppOpen"
-    public static let ITBL_ENDPOINT_TRACK_PUSH_OPEN = "events/trackPushOpen"
-    public static let ITBL_ENDPOINT_UPDATE_USER = "users/update"
-    public static let ITBL_ENDPOINT_UPDATE_EMAIL = "users/updateEmail"
-    public static let ITBL_ENDPOINT_UPDATE_SUBSCRIPTIONS = "users/updateSubscriptions"
-    public static let ITBL_ENDPOINT_DDL_MATCH = "a/matchFp" //DDL = Deferred Deep Linking
-}
-
 // Push Payload
 public extension AnyHashable {
     public static let ITBL_PAYLOAD_METADATA = "itbl"
@@ -141,14 +150,4 @@ public extension AnyHashable {
     public static let ITBL_IN_APP_HREF = "href"
     public static let ITBL_IN_APP_DISPLAY_SETTINGS = "inAppDisplaySettings"
 }
-
-@objcMembers public class ITBConsts : NSObject {
-    // the API endpoint
-    public static let apiEndpoint = apiHostname + "/api/"
-    public static let linksEndpoint = linksHostname + "/"
-
-    private static let apiHostname = "https://api.iterable.com"
-    private static let linksHostname = "https://links.iterable.com"
-}
-
 
