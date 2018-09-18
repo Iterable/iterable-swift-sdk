@@ -56,6 +56,18 @@ import Foundation
 }
 
 /**
+ Enum representing push platform; apple push notification service, production vs sandbox
+ */
+@objc public enum PushServicePlatform : Int {
+    /** The sandbox push service */
+    case sandbox
+    /** The production push service */
+    case production
+    /** Detect automatically */
+    case auto
+}
+
+/**
  Iterable Configuration Object. Use this when initializing the API.
  */
 @objcMembers
@@ -73,11 +85,11 @@ public class IterableConfig : NSObject {
     public var sandboxPushIntegrationName: String?
     
     /**
-     * APNS environment for the current build of the app.
-     * Possible values: `APNS_SANDBOX`, `APNS_SANDBOX`, `AUTO`
-     * Defaults to `AUTO` and detects the APNS environment automatically
+     * APNS (Apple Push Notification Service) environment for the current build of the app.
+     * Possible values: `production`, `sandbox`, `auto`
+     * Defaults to `auto` and detects the APNS environment automatically
      */
-    public var pushPlatform: PushServicePlatform = .AUTO
+    public var pushPlatform: PushServicePlatform = .auto
     
     /// Handles Iterable actions of type 'openUrl'
     public weak var urlDelegate: IterableURLDelegate?

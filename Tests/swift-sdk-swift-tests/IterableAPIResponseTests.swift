@@ -24,7 +24,7 @@ class IterableAPIResponseTests: XCTestCase {
         let xpectation = expectation(description: "response code 200")
         let networkSession = MockNetworkSession(statusCode: 200)
         let apiInternal = IterableAPIInternal.initialize(apiKey: "", networkSession: networkSession)
-        let request = apiInternal.createPostRequest(forAction: "", withBody: [:])!
+        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
         apiInternal.sendRequest(request,
                                 onSuccess: { (result) in
                                     xpectation.fulfill()
@@ -37,7 +37,7 @@ class IterableAPIResponseTests: XCTestCase {
         let xpectation = expectation(description: "no data")
         let networkSession = MockNetworkSession(statusCode: 200, data: nil)
         let apiInternal = IterableAPIInternal.initialize(apiKey: "", networkSession: networkSession)
-        let request = apiInternal.createPostRequest(forAction: "", withBody: [:])!
+        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
         apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
             xpectation.fulfill()
             XCTAssert(reason!.lowercased().contains("no data"))
@@ -50,7 +50,7 @@ class IterableAPIResponseTests: XCTestCase {
         let data = "{'''}}".data(using: .utf8)!
         let networkSession = MockNetworkSession(statusCode: 200, data: data)
         let apiInternal = IterableAPIInternal.initialize(apiKey: "", networkSession: networkSession)
-        let request = apiInternal.createPostRequest(forAction: "", withBody: [:])!
+        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
         apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
             xpectation.fulfill()
             XCTAssert(reason!.lowercased().contains("could not parse json"))
@@ -62,7 +62,7 @@ class IterableAPIResponseTests: XCTestCase {
         let xpectation = expectation(description: "400 without message")
         let networkSession = MockNetworkSession(statusCode: 400)
         let apiInternal = IterableAPIInternal.initialize(apiKey: "", networkSession: networkSession)
-        let request = apiInternal.createPostRequest(forAction: "", withBody: [:])!
+        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
         apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
             xpectation.fulfill()
             XCTAssert(reason!.lowercased().contains("invalid request"))
@@ -74,7 +74,7 @@ class IterableAPIResponseTests: XCTestCase {
         let xpectation = expectation(description: "400 with message")
         let networkSession = MockNetworkSession(statusCode: 400, json: ["msg" : "Test error"])
         let apiInternal = IterableAPIInternal.initialize(apiKey: "", networkSession: networkSession)
-        let request = apiInternal.createPostRequest(forAction: "", withBody: [:])!
+        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
         apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
             xpectation.fulfill()
             XCTAssert(reason!.lowercased().contains("test error"))
@@ -86,7 +86,7 @@ class IterableAPIResponseTests: XCTestCase {
         let xpectation = expectation(description: "401")
         let networkSession = MockNetworkSession(statusCode: 401)
         let apiInternal = IterableAPIInternal.initialize(apiKey: "", networkSession: networkSession)
-        let request = apiInternal.createPostRequest(forAction: "", withBody: [:])!
+        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
         apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
             xpectation.fulfill()
             XCTAssert(reason!.lowercased().contains("invalid api key"))
@@ -98,7 +98,7 @@ class IterableAPIResponseTests: XCTestCase {
         let xpectation = expectation(description: "500")
         let networkSession = MockNetworkSession(statusCode: 500)
         let apiInternal = IterableAPIInternal.initialize(apiKey: "", networkSession: networkSession)
-        let request = apiInternal.createPostRequest(forAction: "", withBody: [:])!
+        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
         apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
             xpectation.fulfill()
             XCTAssert(reason!.lowercased().contains("internal server error"))
@@ -110,7 +110,7 @@ class IterableAPIResponseTests: XCTestCase {
         let xpectation = expectation(description: "non 200")
         let networkSession = MockNetworkSession(statusCode: 302)
         let apiInternal = IterableAPIInternal.initialize(apiKey: "", networkSession: networkSession)
-        let request = apiInternal.createPostRequest(forAction: "", withBody: [:])!
+        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
         apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
             xpectation.fulfill()
             XCTAssert(reason!.lowercased().contains("non-200 response"))
@@ -122,7 +122,7 @@ class IterableAPIResponseTests: XCTestCase {
         let xpectation = expectation(description: "no network response")
         let networkSession = NoNetworkNetworkSession()
         let apiInternal = IterableAPIInternal.initialize(apiKey: "", networkSession: networkSession)
-        let request = apiInternal.createPostRequest(forAction: "", withBody: [:])!
+        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
         apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
             xpectation.fulfill()
             XCTAssert(reason!.lowercased().contains("nsurlerrordomain"))
@@ -143,7 +143,7 @@ class IterableAPIResponseTests: XCTestCase {
         }
         
         let apiInternal = IterableAPIInternal.initialize(apiKey: "")
-        var request = apiInternal.createPostRequest(forAction: "", withBody: [:])!
+        var request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
         request.timeoutInterval = 0.1
         apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
             xpectation.fulfill()

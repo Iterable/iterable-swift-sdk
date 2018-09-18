@@ -97,7 +97,7 @@ class IterableInAppManager: NSObject {
         guard let payload = payload else {
             return nil
         }
-        guard let messageArray = payload[ITERABLE_IN_APP_MESSAGE] as? [[AnyHashable : Any]], messageArray.count > 0 else {
+        guard let messageArray = payload[.ITBL_IN_APP_MESSAGE] as? [[AnyHashable : Any]], messageArray.count > 0 else {
             return nil
         }
         return messageArray[0]
@@ -186,7 +186,7 @@ class IterableInAppManager: NSObject {
             return 0
         }
 
-        if let number = settings[ITERABLE_IN_APP_BACKGROUND_ALPHA] as? NSNumber {
+        if let number = settings[.ITBL_IN_APP_BACKGROUND_ALPHA] as? NSNumber {
             return number.doubleValue
         } else {
             return 0

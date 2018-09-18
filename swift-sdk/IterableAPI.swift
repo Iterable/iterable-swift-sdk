@@ -89,7 +89,7 @@ public final class IterableAPI : NSObject {
 
     /**
      * Register this device's token with Iterable
-     * Push integration name and platform are read from `IterableConfig`. If platform is set to `AUTO`, it will
+     * Push integration name and platform are read from `IterableConfig`. If platform is set to `auto`, it will
      * read APNS environment from the provisioning profile and use an integration name specified in `IterableConfig`.
      - parameters:
      - token:       The token representing this device/application pair, obtained from
@@ -102,7 +102,7 @@ public final class IterableAPI : NSObject {
     
     /**
      * Register this device's token with Iterable
-     * Push integration name and platform are read from `IterableConfig`. If platform is set to `AUTO`, it will
+     * Push integration name and platform are read from `IterableConfig`. If platform is set to `auto`, it will
      * read APNS environment from the provisioning profile and use an integration name specified in `IterableConfig`.
      - parameters:
      - token:       The token representing this device/application pair, obtained from
@@ -222,7 +222,7 @@ public final class IterableAPI : NSObject {
      
      - remark: Pass in the total purchase amount and an `NSArray` of `CommerceItem`s
      
-     - parameter total:       total purchase amount
+     - parameter withTotal:   total purchase amount
      - parameter items:       list of purchased items
      - parameter dataFields:  an `Dictionary` containing any additional information to save along with the event
      - parameter onSuccess:   OnSuccessHandler to invoke if the purchase is tracked successfully
