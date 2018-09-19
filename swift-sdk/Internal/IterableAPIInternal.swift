@@ -427,14 +427,15 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             return
         }
 
-        var args : [String : String] = [
+        var args : [AnyHashable : Any] = [
             AnyHashable.ITBL_KEY_COUNT: count.description,
-            AnyHashable.ITBL_KEY_PLATFORM: .ITBL_PLATFORM_IOS,
+            AnyHashable.ITBL_KEY_PLATFORM: String.ITBL_PLATFORM_IOS,
             AnyHashable.ITBL_KEY_SDK_VERSION: IterableAPI.sdkVersion
         ]
+
         addEmailOrUserId(args: &args)
-        
-        if let request = createGetRequest(forPath: .ITBL_PATH_GET_INAPP_MESSAGES, withArgs: args) {
+
+        if let request = createGetRequest(forPath: .ITBL_PATH_GET_INAPP_MESSAGES, withArgs: args as! [String : String]) {
             sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
         }
     }
@@ -679,10 +680,6 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         } else if mustExist {
             assertionFailure("Either email or userId should be set")
         }
-    }
-
-    private func addEmailOrUserId(args: inout [String : String], mustExist: Bool = true) {
-        addEmailOrUserId(args: &args, mustExist: mustExist)
     }
 
     // MARK: Initialization
