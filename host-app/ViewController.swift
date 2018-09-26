@@ -8,11 +8,13 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+import IterableSDK
 
+class ViewController: UIViewController {
+    @IBOutlet weak var statusLbl: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
     }
 
     override func didReceiveMemoryWarning() {
@@ -20,6 +22,13 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
-
+    @IBAction func showSystemNotificationTap(_ sender: UIButton) {
+        ITBInfo()
+        
+        IterableAPI.showSystemNotification(withTitle: "Zee Title", body: "Zee Body", buttonLeft: "Left Button", buttonRight: "Right Button") { (str) in
+            self.statusLbl.text = str
+        }
+    }
+    
 }
 
