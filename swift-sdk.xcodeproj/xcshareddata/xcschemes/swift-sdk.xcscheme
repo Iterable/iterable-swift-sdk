@@ -23,6 +23,20 @@
          <BuildActionEntry
             buildForTesting = "YES"
             buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AC90C4C320D8632D00EECA5D"
+               BuildableName = "IterableAppExtensions.framework"
+               BlueprintName = "notification-extension"
+               ReferencedContainer = "container:swift-sdk.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
             buildForProfiling = "NO"
             buildForArchiving = "YES"
             buildForAnalyzing = "NO">
@@ -31,6 +45,20 @@
                BlueprintIdentifier = "ACF560D220E443BF000AAC23"
                BuildableName = "host-app.app"
                BlueprintName = "host-app"
+               ReferencedContainer = "container:swift-sdk.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AC90C4CB20D8632E00EECA5D"
+               BuildableName = "notification-extension-tests.xctest"
+               BlueprintName = "notification-extension-tests"
                ReferencedContainer = "container:swift-sdk.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -86,6 +114,16 @@
                BlueprintIdentifier = "ACC87762215C20B50097E29B"
                BuildableName = "ui-tests.xctest"
                BlueprintName = "ui-tests"
+               ReferencedContainer = "container:swift-sdk.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "AC90C4CB20D8632E00EECA5D"
+               BuildableName = "notification-extension-tests.xctest"
+               BlueprintName = "notification-extension-tests"
                ReferencedContainer = "container:swift-sdk.xcodeproj">
             </BuildableReference>
          </TestableReference>
