@@ -155,4 +155,11 @@ class IterableInAppNotificationTests: XCTestCase {
         XCTAssertTrue(shownFirstTime)
         XCTAssertFalse(shownSecondTime)
     }
+    
+    func testGetBackgroundAlpha() {
+        XCTAssert(IterableInAppManager.getBackgroundAlpha(fromInAppSettings: nil) == 0)
+        XCTAssert(IterableInAppManager.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha" : "x"]) == 0)
+        XCTAssert(IterableInAppManager.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha" : 0.5]) == 0.5)
+        XCTAssert(IterableInAppManager.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha" : 1]) == 1.0)
+    }
 }

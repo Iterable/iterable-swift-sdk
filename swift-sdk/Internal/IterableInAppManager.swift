@@ -104,28 +104,6 @@ class IterableInAppManager: NSObject {
     }
     
     /**
-     Gets the int value of the color from the payload
-     
-     - param payload:          the NSDictionary
-     - param keyString:        the key to use to lookup the value in the payload dictionary
-     
-     - returns: the int color
-     */
-    static func getIntColorFromKey(_ payload: [AnyHashable : Any], keyString: String) -> Int {
-        guard let colorString = payload[keyString] as? String, colorString.count > 0 else {
-            return 0
-        }
-        
-        var result: UInt64 = 0
-        
-        let scanner = Scanner(string: colorString)
-        scanner.scanLocation = 1
-        scanner.scanHexInt64(&result)
-        
-        return Int(result)
-    }
-
-    /**
      Parses the padding offsets from the payload
      
      - parameter payload:         the payload NSDictionary
