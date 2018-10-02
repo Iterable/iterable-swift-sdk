@@ -1,4 +1,4 @@
-osx_image: xcode9.4
+osx_image: xcode10
 language: swift
 
 before_install:
@@ -10,6 +10,8 @@ script:
   - xcodebuild test -workspace swift-sdk.xcworkspace -scheme iterable-sdk-tests -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone X' -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES GCC_GENERATE_TEST_COVERAGE_FILES=YES | xcpretty -f `xcpretty-travis-formatter`
   - bash <(curl -s https://codecov.io/bash)
   - xcodebuild test -workspace swift-sdk.xcworkspace -scheme iterable-sdk-tests -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 6s,OS=9.0' -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES GCC_GENERATE_TEST_COVERAGE_FILES=YES | xcpretty -f `xcpretty-travis-formatter`
+  - bash <(curl -s https://codecov.io/bash)
+  - xcodebuild test -workspace swift-sdk.xcworkspace -scheme ui-tests -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone X' -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES GCC_GENERATE_TEST_COVERAGE_FILES=YES | xcpretty -f `xcpretty-travis-formatter`
   - bash <(curl -s https://codecov.io/bash)
   - pod lib lint
 
