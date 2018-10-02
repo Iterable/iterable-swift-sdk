@@ -162,4 +162,55 @@ class IterableInAppNotificationTests: XCTestCase {
         XCTAssert(IterableInAppManager.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha" : 0.5]) == 0.5)
         XCTAssert(IterableInAppManager.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha" : 1]) == 1.0)
     }
+    
+    func testTrackInAppClickWithButtonUrl() {
+        let messageId = "message1"
+        let buttonUrl = "http://somewhere.com"
+        let expectation1 = expectation(description: "track in app messages")
+
+        let networkSession = MockNetworkSession(statusCode: 200)
+        IterableAPI.initialize(apiKey: IterableInAppNotificationTests.apiKey, networkSession: networkSession)
+        IterableAPI.email = IterableInAppNotificationTests.email
+        networkSession.callback = {(_, _, _) in
+            TestUtils.validate(request: networkSession.request!,
+                               requestType: .post,
+                               apiEndPoint: .ITBL_ENDPOINT_API,
+                               path: .ITBL_PATH_TRACK_INAPP_CLICK,
+                               queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableInAppNotificationTests.apiKey),
+                ])
+            let body = networkSession.getRequestBody() as! [String : Any]
+            TestUtils.validateMatch(keyPath: KeyPath("messageId"), value: messageId, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("urlClick"), value: buttonUrl, inDictionary: body)
+            expectation1.fulfill()
+        }
+        IterableAPI.track(inAppClick: messageId, buttonURL: buttonUrl)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+
+    func testTrackInAppClickWithButtonIndex() {
+        let messageId = "message1"
+        let buttonIndex = "1"
+        let expectation1 = expectation(description: "track in app messages")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        IterableAPI.initialize(apiKey: IterableInAppNotificationTests.apiKey, networkSession: networkSession)
+        IterableAPI.email = IterableInAppNotificationTests.email
+        networkSession.callback = {(_, _, _) in
+            TestUtils.validate(request: networkSession.request!,
+                               requestType: .post,
+                               apiEndPoint: .ITBL_ENDPOINT_API,
+                               path: .ITBL_PATH_TRACK_INAPP_CLICK,
+                               queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableInAppNotificationTests.apiKey),
+                                             ])
+            let body = networkSession.getRequestBody() as! [String : Any]
+            TestUtils.validateMatch(keyPath: KeyPath("messageId"), value: messageId, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("buttonIndex"), value: buttonIndex, inDictionary: body)
+            expectation1.fulfill()
+        }
+        IterableAPI.track(inAppClick: messageId, buttonIndex: buttonIndex)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+
+    private static let apiKey = "zeeApiKey"
+    private static let email = "user@example.com"
 }
