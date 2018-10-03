@@ -16,8 +16,6 @@
 		A5DF819C89A29E7F3A88DC7F /* libPods-swift-sdk-swift-tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA3B895070C574A2D2D4FC80 /* libPods-swift-sdk-swift-tests.a */; };
 		AC0674E620D8766600C2806D /* NotificationExtensionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AC0674E520D8766600C2806D /* NotificationExtensionTests.m */; };
 		AC2263F020CF49B8009800EB /* IterableSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = AC2263E220CF49B8009800EB /* IterableSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		AC2A40B6215C644F0046CC71 /* IterableAppExtensions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC90C4C420D8632D00EECA5D /* IterableAppExtensions.framework */; };
-		AC2A40B7215C644F0046CC71 /* IterableAppExtensions.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AC90C4C420D8632D00EECA5D /* IterableAppExtensions.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		AC2C667E20D3111900D46CC9 /* DateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C667D20D3111900D46CC9 /* DateProvider.swift */; };
 		AC2C668020D31B1F00D46CC9 /* IterableNotificationResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */; };
 		AC2C668220D32F2800D46CC9 /* IterableAppIntegrationInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668120D32F2800D46CC9 /* IterableAppIntegrationInternal.swift */; };
@@ -82,13 +80,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		AC2A40B8215C644F0046CC71 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AC2263D620CF49B8009800EB /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = AC90C4C320D8632D00EECA5D;
-			remoteInfo = "notification-extension";
-		};
 		AC347B6820E6B5F4003449CF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AC2263D620CF49B8009800EB /* Project object */;
@@ -154,7 +145,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				AC2A40B7215C644F0046CC71 /* IterableAppExtensions.framework in Embed Frameworks */,
 				ACC8776E215C23CC0097E29B /* IterableSDK.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -301,7 +291,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AC2A40B6215C644F0046CC71 /* IterableAppExtensions.framework in Frameworks */,
 				ACC8776D215C23CC0097E29B /* IterableSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -742,7 +731,6 @@
 			);
 			dependencies = (
 				ACC87770215C23CC0097E29B /* PBXTargetDependency */,
-				AC2A40B9215C644F0046CC71 /* PBXTargetDependency */,
 			);
 			name = "host-app";
 			productName = "host-app";
@@ -1015,11 +1003,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		AC2A40B9215C644F0046CC71 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = AC90C4C320D8632D00EECA5D /* notification-extension */;
-			targetProxy = AC2A40B8215C644F0046CC71 /* PBXContainerItemProxy */;
-		};
 		AC347B6920E6B5F4003449CF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = ACF560D220E443BF000AAC23 /* host-app */;
@@ -1528,7 +1511,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "host-app/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1548,7 +1531,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "host-app/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
