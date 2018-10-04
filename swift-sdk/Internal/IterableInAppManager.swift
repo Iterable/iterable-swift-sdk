@@ -28,9 +28,10 @@ class IterableInAppManager: NSObject {
      */
     @discardableResult static func showIterableNotificationHTML(_ htmlString: String,
                                                           trackParams: IterableNotificationMetadata? = nil,
-                                                          callbackBlock: ITEActionBlock?,
                                                           backgroundAlpha: Double = 0,
-                                                          padding: UIEdgeInsets = .zero) -> Bool {
+                                                          padding: UIEdgeInsets = .zero,
+                                                          callbackBlock: ITEActionBlock?
+                                                          ) -> Bool {
         guard let topViewController = getTopViewController() else {
             return false
         }

@@ -51,4 +51,17 @@ class UITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["Right Button"].exists)
     }
 
+    func testShowInApp1() {
+        // Tap the Left Button
+        app.buttons["Show InApp#1"].tap()
+        
+        app.links["Click Me"].tap()
+
+        let about = self.app.staticTexts["http://website/resource#something"]
+        let exists = NSPredicate(format: "exists == true")
+        let expectation1 = expectation(for: exists, evaluatedWith: about, handler: nil)
+        
+        wait(for: [expectation1], timeout: 5)
+    }
+
 }

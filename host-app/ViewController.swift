@@ -8,7 +8,7 @@
 
 import UIKit
 
-import IterableSDK
+@testable import IterableSDK
 
 class ViewController: UIViewController {
     @IBOutlet weak var statusLbl: UILabel!
@@ -30,5 +30,18 @@ class ViewController: UIViewController {
         }
     }
     
+    @IBAction func showInAppTap(_ sender: UIButton) {
+        ITBInfo()
+        
+        let html = """
+            <a href="http://website/resource#something">Click Me</a>
+        """
+        IterableInAppManager.showIterableNotificationHTML(html) { (str) in
+            ITBInfo("callback: \(str ?? "<nil>")")
+            self.statusLbl.text = str
+        }
+        
+        IterableInAppManager.showIterableNotificationHTML(html, callbackBlock: {str in print("callback: ", str ?? "nil")})
+    }
 }
 

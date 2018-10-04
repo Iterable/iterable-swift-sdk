@@ -4,6 +4,7 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
+        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -30,9 +31,18 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZWv-tr-ec9">
+                                <rect key="frame" x="158" y="109" width="98" height="30"/>
+                                <state key="normal" title="Show InApp#1"/>
+                                <connections>
+                                    <action selector="showInAppTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="pTu-po-2uq"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="ZWv-tr-ec9" firstAttribute="centerX" secondItem="94b-FC-ZDR" secondAttribute="centerX" id="7E7-VT-MHI"/>
+                            <constraint firstItem="ZWv-tr-ec9" firstAttribute="top" secondItem="94b-FC-ZDR" secondAttribute="bottom" constant="10" id="KDv-83-pOY"/>
                             <constraint firstItem="94b-FC-ZDR" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="25" id="TZg-qV-efZ"/>
                             <constraint firstItem="94b-FC-ZDR" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="g3k-lb-b0s"/>
                             <constraint firstItem="v7l-Fc-VhY" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="mtp-ya-bOJ"/>

@@ -139,11 +139,11 @@ class IterableInAppHTMLViewController: UIViewController {
     private var location: InAppNotificationType = .full
     private var loaded = false
     
-    private let customUrlScheme = "applewebdata"
-    private let httpUrlScheme = "http://"
-    private let httpsUrlScheme = "https://"
-    private let itblUrlScheme = "itbl://"
-
+    private enum UrlScheme : String {
+        case custom = "applewebdata"
+        case itbl = "itbl"
+        case other
+    }
 
     required init?(coder aDecoder: NSCoder) {
         self.htmlString = aDecoder.decodeObject(forKey: "htmlString") as? String ?? ""
@@ -203,41 +203,14 @@ extension IterableInAppHTMLViewController : UIWebViewDelegate {
     }
     
     func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebViewNavigationType) -> Bool {
-        guard navigationType == .linkClicked else {
+        guard navigationType == .linkClicked, let url = request.url else {
             return true
-        }
-        guard let url = request.url else {
-            return true
-        }
-
-        var destinationURL = url.absoluteString
-        var callbackURL = url.absoluteString
-
-        if url.scheme == customUrlScheme {
-            // Since we are calling loadHTMLString with a nil baseUrl, any request url without a valid scheme get treated as a local resource.
-            // Removes the extra applewebdata scheme/host data that is appended to the original url.
-            guard let host = url.host else {
-                return true
-            }
-            let urlArray = destinationURL.components(separatedBy: host)
-            guard urlArray.count > 1 else {
-                return true
-            }
-            let urlPath = urlArray[1]
-            if urlPath.count > 0 {
-                //Removes extra "/" from the url path
-                if urlPath.starts(with: "/") {
-                    destinationURL = String(urlPath.dropFirst())
-                }
-            }
-            callbackURL = destinationURL
-
-            //Warn the client that the request url does not contain a valid scheme
-            ITBError("Request url contains an invalid scheme: \(destinationURL)")
-        } else if destinationURL.hasPrefix(itblUrlScheme) == true {
-            callbackURL = destinationURL.replacingOccurrences(of: itblUrlScheme, with: "")
         }
         
+        guard let (destinationURL, callbackURL) = IterableInAppHTMLViewController.getDestinationAndCallbackUrl(url: url) else {
+            return true
+        }
+
         dismiss(animated: false) { [weak self, callbackURL] in
             self?.customBlockCallback?(callbackURL)
             if let trackParams = self?.trackParams, let messageId = trackParams.messageId {
@@ -245,5 +218,51 @@ extension IterableInAppHTMLViewController : UIWebViewDelegate {
             }
         }
         return false
+    }
+    
+    private static func getDestinationAndCallbackUrl(url: URL) -> (callbackUrl: String, destinationUrl: String)? {
+        if url.scheme == UrlScheme.custom.rawValue {
+            // Since we are calling loadHTMLString with a nil baseUrl, any request url without a valid scheme get treated as a local resource.
+            // Url looks like applewebdata://abc-def/something
+            // Removes the extra applewebdata scheme/host data that is appended to the original url.
+            // So in this case (callback = something, destination = something)
+            // Warn the client that the request url does not contain a valid scheme
+            ITBError("Request url contains an invalid scheme: \(url)")
+            
+            guard let urlPath = getUrlPath(url: url) else {
+                return nil
+            }
+            return (callbackUrl: urlPath, destinationUrl: urlPath)
+        } else if url.scheme == UrlScheme.itbl.rawValue {
+            // itbl://something => (callback = something, destination = itbl://something)
+            let callbackUrl = dropScheme(urlString: url.absoluteString, scheme: UrlScheme.itbl.rawValue)
+            return (callbackUrl: callbackUrl, destinationUrl: url.absoluteString)
+        } else {
+            // http, https etc, return unchanged
+            return (url.absoluteString, url.absoluteString)
+        }
+    }
+    
+    // returns everything other than scheme, hostname and leading slashes
+    // so scheme://host/path#something => path#something
+    private static func getUrlPath(url: URL) -> String? {
+        guard let host = url.host else {
+            return nil
+        }
+        let urlArray = url.absoluteString.components(separatedBy: host)
+        guard urlArray.count > 1 else {
+            return nil
+        }
+        let urlPath = urlArray[1]
+        return dropLeadingSlashes(str: urlPath)
+    }
+    
+    private static func dropLeadingSlashes(str: String) -> String {
+        return String(str.drop { $0 == "/"})
+    }
+    
+    private static func dropScheme(urlString: String, scheme: String) -> String {
+        let prefix = scheme + "://"
+        return String(urlString.dropFirst(prefix.count))
     }
 }
