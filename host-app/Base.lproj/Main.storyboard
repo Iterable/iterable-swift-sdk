@@ -25,12 +25,6 @@
                                     <action selector="showSystemNotificationTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="RJq-UE-rZ1"/>
                                 </connections>
                             </button>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="v7l-Fc-VhY">
-                                <rect key="frame" x="0.0" y="862" width="414" height="0.0"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZWv-tr-ec9">
                                 <rect key="frame" x="158" y="109" width="98" height="30"/>
                                 <state key="normal" title="Show InApp#1"/>
@@ -38,9 +32,24 @@
                                     <action selector="showInAppTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="pTu-po-2uq"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="v7l-Fc-VhY">
+                                <rect key="frame" x="0.0" y="862" width="414" height="0.0"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="n7L-ga-JSt">
+                                <rect key="frame" x="157" y="147" width="100" height="30"/>
+                                <state key="normal" title="Show InApp#2"/>
+                                <connections>
+                                    <action selector="showInApp2Tap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="DYt-se-gcN"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
+                            <constraint firstItem="n7L-ga-JSt" firstAttribute="centerX" secondItem="ZWv-tr-ec9" secondAttribute="centerX" id="1s1-64-pVZ"/>
+                            <constraint firstItem="n7L-ga-JSt" firstAttribute="top" secondItem="ZWv-tr-ec9" secondAttribute="bottom" constant="8" symbolic="YES" id="2SC-Cy-jYM"/>
                             <constraint firstItem="ZWv-tr-ec9" firstAttribute="centerX" secondItem="94b-FC-ZDR" secondAttribute="centerX" id="7E7-VT-MHI"/>
                             <constraint firstItem="ZWv-tr-ec9" firstAttribute="top" secondItem="94b-FC-ZDR" secondAttribute="bottom" constant="10" id="KDv-83-pOY"/>
                             <constraint firstItem="94b-FC-ZDR" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="25" id="TZg-qV-efZ"/>

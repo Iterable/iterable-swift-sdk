@@ -9,6 +9,7 @@
 import UIKit
 
 @testable import IterableSDK
+//@testable import swift_sdk_swift_tests
 
 class ViewController: UIViewController {
     @IBOutlet weak var statusLbl: UILabel!
@@ -42,6 +43,23 @@ class ViewController: UIViewController {
         }
         
         IterableInAppManager.showIterableNotificationHTML(html, callbackBlock: {str in print("callback: ", str ?? "nil")})
+    }
+    
+    @IBAction func showInApp2Tap(_ sender: UIButton) {
+        ITBInfo()
+        
+        let networkSession = MockNetworkSession(statusCode: 200, json: ["inAppMessages" : [["content" : ["html" : "<a href='https://www.google.com/q=something'>Click Here</a>"], "messageId" : "messageId", "campaignId" : "campaignId"] ]])
+        IterableAPI.initialize(apiKey: "apiKey",
+                               networkSession: networkSession)
+        
+        networkSession.callback = {(_, _, _) in
+            networkSession.data = [:].toData()
+        }
+
+        IterableAPI.spawnInAppNotification { (str) in
+            ITBInfo("callback: \(str ?? "<nil>")")
+            self.statusLbl.text = str
+        }
     }
 }
 
