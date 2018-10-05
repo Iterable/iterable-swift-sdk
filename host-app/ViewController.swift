@@ -9,7 +9,6 @@
 import UIKit
 
 @testable import IterableSDK
-//@testable import swift_sdk_swift_tests
 
 class ViewController: UIViewController {
     @IBOutlet weak var statusLbl: UILabel!

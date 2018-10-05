@@ -39,50 +39,56 @@ class UITests: XCTestCase {
         app.buttons["Show System Notification"].tap()
 
         let alert = app.alerts.element
-        XCTAssertTrue(alert.exists)
+        waitForElementToAppear(alert)
         
         XCTAssertTrue(alert.staticTexts["Zee Title"].exists)
         XCTAssertTrue(alert.staticTexts["Zee Body"].exists)
 
-        let leftButton = app.buttons["Left Button"]
-        leftButton.tap()
+        app.buttons["Left Button"].tap()
 
-        XCTAssertTrue(app.staticTexts["Left Button"].exists)
+        waitForElementToAppear(app.staticTexts["Left Button"])
+
+        app.buttons["Show System Notification"].tap()
+        waitForElementToAppear(alert)
 
         // Tap the Right Button
-        app.buttons["Show System Notification"].tap()
-        
-        
-        let rightButton = app.buttons["Right Button"]
-        rightButton.tap()
-        
-        XCTAssertTrue(app.staticTexts["Right Button"].exists)
+        app.buttons["Right Button"].tap()
+        waitForElementToAppear(app.staticTexts["Right Button"])
     }
 
     func testShowInApp1() {
         // Tap the Left Button
         app.buttons["Show InApp#1"].tap()
         
-        app.links["Click Me"].tap()
+        let clickMe = app.links["Click Me"]
+        waitForElementToAppear(clickMe)
+        clickMe.tap()
 
-        let about = self.app.staticTexts["http://website/resource#something"]
-        let exists = NSPredicate(format: "exists == true")
-        let expectation1 = expectation(for: exists, evaluatedWith: about, handler: nil)
-        
-        wait(for: [expectation1], timeout: 5)
+        let callbackUrl = self.app.staticTexts["http://website/resource#something"]
+        waitForElementToAppear(callbackUrl)
     }
 
     func testShowInApp2() {
         // Tap the Left Button
         app.buttons["Show InApp#2"].tap()
         
-        app.links["Click Here"].tap()
-        
-        let about = self.app.staticTexts["https://www.google.com/q=something"]
-        let exists = NSPredicate(format: "exists == true")
-        let expectation1 = expectation(for: exists, evaluatedWith: about, handler: nil)
-        
-        wait(for: [expectation1], timeout: 5)
+        let clickHere = app.links["Click Here"]
+        _  = waitForElementToAppear(clickHere)
+        clickHere.tap()
+
+        let callbackLink = app.staticTexts["https://www.google.com/q=something"]
+        waitForElementToAppear(callbackLink)
     }
 
+    private func waitForElementToAppear(_ element: XCUIElement, fail: Bool = true) {
+        let predicate = NSPredicate(format: "exists == true")
+        let expectation1 = expectation(for: predicate, evaluatedWith: element,
+                                      handler: nil)
+        
+        let result = XCTWaiter().wait(for: [expectation1], timeout: 5)
+
+        if fail && result != .completed {
+            XCTFail("expected element")
+        }
+    }
 }
