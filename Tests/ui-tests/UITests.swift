@@ -8,6 +8,7 @@ import XCTest
 
 
 class UITests: XCTestCase {
+    private static var timeout = 60.0
 //!!!
 //    static var application: XCUIApplication = {
 //        let app = XCUIApplication()
@@ -90,7 +91,7 @@ class UITests: XCTestCase {
         let expectation1 = expectation(for: predicate, evaluatedWith: element,
                                       handler: nil)
         
-        let result = XCTWaiter().wait(for: [expectation1], timeout: 15)
+        let result = XCTWaiter().wait(for: [expectation1], timeout: UITests.timeout)
 
         if fail && result != .completed {
             XCTFail("expected element: \(element)")

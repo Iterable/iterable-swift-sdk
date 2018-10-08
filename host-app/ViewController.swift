@@ -47,7 +47,12 @@ class ViewController: UIViewController {
     @IBAction func showInApp2Tap(_ sender: UIButton) {
         ITBInfo()
         
-        let networkSession = MockNetworkSession(statusCode: 200, json: ["inAppMessages" : [["content" : ["html" : "<a href='https://www.google.com/q=something'>Click Here</a>"], "messageId" : "messageId", "campaignId" : "campaignId"] ]])
+        let networkSession = MockNetworkSession(
+            statusCode: 200,
+            json: ["inAppMessages" : [[
+                "content" : ["html" : "<a href='https://www.google.com/q=something'>Click Here</a>"],
+                "messageId" : "messageId",
+                "campaignId" : "campaignId"] ]])
         IterableAPI.initialize(apiKey: "apiKey",
                                networkSession: networkSession)
         
