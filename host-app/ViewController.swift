@@ -44,6 +44,7 @@ class ViewController: UIViewController {
         IterableInAppManager.showIterableNotificationHTML(html, callbackBlock: {str in print("callback: ", str ?? "nil")})
     }
     
+    // Full screen inApp
     @IBAction func showInApp2Tap(_ sender: UIButton) {
         ITBInfo()
         
@@ -60,6 +61,36 @@ class ViewController: UIViewController {
             networkSession.data = [:].toData()
         }
 
+        IterableAPI.spawnInAppNotification { (str) in
+            ITBInfo("callback: \(str ?? "<nil>")")
+            self.statusLbl.text = str
+        }
+    }
+
+    
+    @IBAction func showInApp3Tap(_ sender: UIButton) {
+        ITBInfo()
+        
+        // In app with Center display
+        // with left and right padding > 100
+        let networkSession = MockNetworkSession(
+            statusCode: 200,
+            json: ["inAppMessages" : [[
+                "content" : [
+                    "html" : "<a href='https://www.google.com/q=something'>Click Here</a>",
+                    "inAppDisplaySettings" : ["backgroundAlpha" : 0.5, "left" : ["percentage" : 60], "right" : ["percentage" : 60], "bottom" : ["displayOption" : "AutoExpand"], "top" : ["displayOption" : "AutoExpand"]]
+                ],
+                "messageId" : "messageId",
+                "campaignId" : "campaignId",
+                ]
+            ]])
+        IterableAPI.initialize(apiKey: "apiKey",
+                               networkSession: networkSession)
+        
+        networkSession.callback = {(_, _, _) in
+            networkSession.data = [:].toData()
+        }
+        
         IterableAPI.spawnInAppNotification { (str) in
             ITBInfo("callback: \(str ?? "<nil>")")
             self.statusLbl.text = str

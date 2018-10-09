@@ -57,7 +57,7 @@ class IterableInAppManager: NSObject {
      Displays a iOS system style notification with two buttons
      
      - parameters:
-        - title:           The NSDictionary containing the dialog options
+        - title:           The notification title
         - body:            The notification message body
         - buttonLeft:      The text of the left button
         - buttonRight:     The text of the right button

@@ -20,6 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
+        UserDefaults.standard.set("user1@example.com", forKey: .ITBL_USER_DEFAULTS_EMAIL_KEY)
         IterableAPI.initialize(apiKey: "")
         
         return true

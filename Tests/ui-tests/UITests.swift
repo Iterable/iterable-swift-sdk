@@ -86,6 +86,18 @@ class UITests: XCTestCase {
         waitForElementToAppear(callbackLink)
     }
 
+    func testShowInApp3() {
+        // Tap the Left Button
+        app.buttons["Show InApp#3"].tap()
+        
+        let clickHere = app.links["Click Here"]
+        _  = waitForElementToAppear(clickHere)
+        clickHere.tap()
+        
+        let callbackLink = app.staticTexts["https://www.google.com/q=something"]
+        waitForElementToAppear(callbackLink)
+    }
+
     private func waitForElementToAppear(_ element: XCUIElement, fail: Bool = true) {
         let predicate = NSPredicate(format: "exists == true")
         let expectation1 = expectation(for: predicate, evaluatedWith: element,
