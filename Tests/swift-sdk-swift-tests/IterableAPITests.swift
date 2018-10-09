@@ -395,4 +395,31 @@ class IterableAPITests: XCTestCase {
         IterableAPI.get(inAppMessages: 1)
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
+
+    func testUpdateSubscriptions() {
+        let expectation1 = expectation(description: "update subscriptions")
+        let emailListIds = ["user1@example.com"]
+        let unsubscriptedChannelIds = ["channedl1", "channel2"]
+        let unsubscribedMessageTypeIds = ["messageType1" ,"messageType2"]
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        networkSession.callback = {(_,_,_) in
+            TestUtils.validate(request: networkSession.request!,
+                               requestType: .post,
+                               apiEndPoint: .ITBL_ENDPOINT_API,
+                               path: .ITBL_PATH_UPDATE_SUBSCRIPTIONS,
+                               queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
+            
+            let body = networkSession.getRequestBody() as! [String : Any]
+            TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_EMAIL_LIST_IDS), value: emailListIds, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_UNSUB_CHANNEL), value: unsubscriptedChannelIds, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_UNSUB_MESSAGE), value: unsubscribedMessageTypeIds, inDictionary: body)
+            expectation1.fulfill()
+        }
+        let config = IterableConfig()
+        UserDefaults.standard.set("user1@example.com", forKey: .ITBL_USER_DEFAULTS_EMAIL_KEY)
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
+        IterableAPI.updateSubscriptions(emailListIds, unsubscribedChannelIds: unsubscriptedChannelIds, unsubscribedMessageTypeIds: unsubscribedMessageTypeIds)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
 }
