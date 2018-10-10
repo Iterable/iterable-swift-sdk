@@ -262,6 +262,32 @@ class IterableAPITests: XCTestCase {
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
 
+    // Same test as above but without using success/failure callback
+    func testDisableDeviceForCurrentUserWithoutCallback() {
+        let expectation = XCTestExpectation(description: "testDisableDeviceForCurrentUserWithoutCallback")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let config = IterableConfig()
+        config.pushIntegrationName = "my-push-integration"
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
+        IterableAPI.email = "user@example.com"
+        let token = "zeeToken".data(using: .utf8)!
+        IterableAPI.register(token: token)
+        networkSession.callback = {(_, _, _) in
+            networkSession.callback = {(_, _, _) in
+                let body = networkSession.getRequestBody() as! [String : Any]
+                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_DISABLE_DEVICE, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
+                TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOKEN, andValue: (token as NSData).iteHexadecimalString(), inDictionary: body)
+                TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_EMAIL, andValue: "user@example.com", inDictionary: body)
+                expectation.fulfill()
+            }
+            IterableAPI.disableDeviceForCurrentUser()
+        }
+        
+        // only wait for small time, supposed to error out
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+
     func testDisableDeviceForAllUsers() {
         let expectation = XCTestExpectation(description: "testDisableDeviceForAllUsers")
         
@@ -289,7 +315,34 @@ class IterableAPITests: XCTestCase {
         // only wait for small time, supposed to error out
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
-    
+
+    // Same test as above but without using success/failure callback
+    func testDisableDeviceForAllUsersWithoutCallback() {
+        let expectation = XCTestExpectation(description: "testDisableDeviceForAllUsersWithoutCallback")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let config = IterableConfig()
+        config.pushIntegrationName = "my-push-integration"
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
+        IterableAPI.email = "user@example.com"
+        let token = "zeeToken".data(using: .utf8)!
+        networkSession.callback = {(_, _, _) in
+            networkSession.callback = {(_, _, _) in
+                let body = networkSession.getRequestBody() as! [String : Any]
+                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_DISABLE_DEVICE, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
+                TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOKEN, andValue: (token as NSData).iteHexadecimalString(), inDictionary: body)
+                TestUtils.validateElementNotPresent(withName: AnyHashable.ITBL_KEY_EMAIL, inDictionary: body)
+                TestUtils.validateElementNotPresent(withName: AnyHashable.ITBL_KEY_USER_ID, inDictionary: body)
+                expectation.fulfill()
+            }
+            IterableAPI.disableDeviceForAllUsers()
+        }
+        IterableAPI.register(token: token)
+        
+        // only wait for small time, supposed to error out
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+
     func testTrackPurchaseNoUserIdOrEmail() {
         let expectation = XCTestExpectation(description: "testTrackPurchaseNoUserIdOrEmail")
         
@@ -369,6 +422,36 @@ class IterableAPITests: XCTestCase {
             }
         }
         
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+    
+    // Same test as above but without using success/failure handler
+    func testPurchaseWithoutSuccessAndFailure() {
+        let expectation = XCTestExpectation(description: "testTrackPurchaseWithoutSuccessAndFailure")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let config = IterableConfig()
+        config.pushIntegrationName = "my-push-integration"
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
+        IterableAPI.email = "user@example.com"
+        let total = NSNumber(value: 15.32)
+        let items = [CommerceItem(id: "id1", name: "myCommerceItem", price: 5.0, quantity: 2)]
+        
+        networkSession.callback = {(_, _, _) in
+            let body = networkSession.getRequestBody() as! [String : Any]
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_COMMERCE_TRACK_PURCHASE, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
+            TestUtils.validateMatch(keyPath: KeyPath("\(AnyHashable.ITBL_KEY_USER).\(AnyHashable.ITBL_KEY_EMAIL)"), value: "user@example.com", inDictionary: body)
+            TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOTAL, andValue: total, inDictionary: body)
+            let itemsElement = body[AnyHashable.ITBL_KEY_ITEMS] as! [[AnyHashable : Any]]
+            XCTAssertEqual(itemsElement.count, 1)
+            let firstElement = itemsElement[0]
+            TestUtils.validateElementPresent(withName: "id", andValue: "id1", inDictionary: firstElement)
+            TestUtils.validateElementPresent(withName: "name", andValue: "myCommerceItem", inDictionary: firstElement)
+            TestUtils.validateElementPresent(withName: "price", andValue: 5.0, inDictionary: firstElement)
+            TestUtils.validateElementPresent(withName: "quantity", andValue: 2, inDictionary: firstElement)
+            expectation.fulfill()
+        }
+        IterableAPI.track(purchase: total, items: items)
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
     

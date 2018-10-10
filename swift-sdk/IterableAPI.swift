@@ -18,7 +18,7 @@ public final class IterableAPI : NSObject {
     /// You should call this method and not call the init method directly.
     /// - parameter apiKey: Iterable API Key.
     public static func initialize(apiKey: String) {
-        internalImplementation = IterableAPIInternal.initialize(apiKey: apiKey)
+        initialize(apiKey: apiKey, launchOptions: nil, config: IterableConfig())
     }
     
     /// You should call this method and not call the init method directly.
@@ -26,7 +26,7 @@ public final class IterableAPI : NSObject {
     /// - parameter config: Iterable config object.
     public static func initialize(apiKey: String,
                                   config: IterableConfig) {
-        internalImplementation = IterableAPIInternal.initialize(apiKey: apiKey, config:config)
+        initialize(apiKey: apiKey, launchOptions: nil, config: config)
     }
     
     /// You should call this method and not call the init method directly.
@@ -34,7 +34,7 @@ public final class IterableAPI : NSObject {
     /// - parameter launchOptions: The launchOptions coming from application:didLaunching:withOptions
     public static func initialize(apiKey: String,
                                   launchOptions: [UIApplicationLaunchOptionsKey: Any]?) {
-        internalImplementation = IterableAPIInternal.initialize(apiKey: apiKey, launchOptions: launchOptions)
+        initialize(apiKey: apiKey, launchOptions: launchOptions, config: IterableConfig())
     }
     
     /// The big daddy of initialization. You should call this method and not call the init method directly.
@@ -199,7 +199,7 @@ public final class IterableAPI : NSObject {
      - seeAlso: CommerceItem
      */
     @objc(trackPurchase:items:) public static func track(purchase withTotal: NSNumber, items: [CommerceItem]) {
-        internalImplementation?.trackPurchase(withTotal, items: items)
+        track(purchase: withTotal, items: items, dataFields: nil)
     }
 
     /**
