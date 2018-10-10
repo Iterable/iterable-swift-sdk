@@ -422,4 +422,61 @@ class IterableAPITests: XCTestCase {
         IterableAPI.updateSubscriptions(emailListIds, unsubscribedChannelIds: unsubscriptedChannelIds, unsubscribedMessageTypeIds: unsubscribedMessageTypeIds)
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
+    
+    func testInitializeWithLaunchOptionsAndCustomAction() {
+        let expectation1 = expectation(description: "initializeWithLaunchOptions")
+        let userInfo: [AnyHashable : Any] = [
+            "itbl": [
+                "campaignId": 1234,
+                "templateId": 4321,
+                "isGhostPush": false,
+                "messageId": "messageId",
+                "defaultAction": [
+                    "type": "customAction"
+                ]
+            ]
+        ]
+        let launchOptions: [UIApplicationLaunchOptionsKey : Any] = [UIApplicationLaunchOptionsKey.remoteNotification : userInfo]
+        let customActionDelegate = MockCustomActionDelegate(returnValue: false)
+        customActionDelegate.callback = {(name, _) in
+            XCTAssertEqual(name, "customAction")
+            expectation1.fulfill()
+        }
+        let config = IterableConfig()
+        config.customActionDelegate = customActionDelegate
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey,
+                               launchOptions: launchOptions,
+                               config: config)
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+
+    func testInitializeWithLaunchOptionsAndUrl() {
+        let expectation1 = expectation(description: "initializeWithLaunchOptions")
+        let userInfo: [AnyHashable : Any] = [
+            "itbl": [
+                "campaignId": 1234,
+                "templateId": 4321,
+                "isGhostPush": false,
+                "messageId": "messageId",
+                "defaultAction": [
+                    "type": "openUrl",
+                    "data": "http://somewhere.com"
+                ]
+            ]
+        ]
+        let launchOptions: [UIApplicationLaunchOptionsKey : Any] = [UIApplicationLaunchOptionsKey.remoteNotification : userInfo]
+        let urlDelegate = MockUrlDelegate(returnValue: true)
+        urlDelegate.callback = {(url, _) in
+            XCTAssertEqual(url.absoluteString, "http://somewhere.com")
+            expectation1.fulfill()
+        }
+        let config = IterableConfig()
+        config.urlDelegate = urlDelegate
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey,
+                               launchOptions: launchOptions,
+                               config: config)
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
 }

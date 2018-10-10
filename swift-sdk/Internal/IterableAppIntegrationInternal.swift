@@ -142,9 +142,9 @@ struct IterableAppIntegrationInternal {
         case .background:
             break
         case .inactive:
-            if versionInfo.isAvailableIOS10() {
+            if !versionInfo.isAvailableIOS10() {
                 // iOS 10+ notification actions are handled by userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:
-            } else {
+                // so this should only be executed if iOS 10 is not available.
                 performDefaultNotificationAction(userInfo)
             }
             break
@@ -179,7 +179,7 @@ struct IterableAppIntegrationInternal {
         let action = IterableAppIntegrationInternal.createIterableAction(actionIdentifier: response.actionIdentifier, userText: response.textInputResponse?.userText, userInfo: userInfo, iterableElement: itbl)
 
         // Track push open
-        if let _ = dataFields[.ITBL_KEY_ACTION_IDENTIFIER] {
+        if let _ = dataFields[.ITBL_KEY_ACTION_IDENTIFIER] { // i.e., if action is not dismiss
             tracker.trackPushOpen(userInfo, dataFields: dataFields)
         }
         
@@ -201,12 +201,7 @@ struct IterableAppIntegrationInternal {
         var action: IterableAction? = nil
         
         if actionIdentifier == UNNotificationDefaultActionIdentifier {
-            // default
-            if let defaultActionConfig = itbl[.ITBL_PAYLOAD_DEFAULT_ACTION] as? [AnyHashable : Any] {
-                action = IterableAction.action(fromDictionary: defaultActionConfig)
-            } else {
-                action = IterableAppIntegrationInternal.legacyDefaultActionFromPayload(userInfo: userInfo)
-            }
+            action = createDefaultAction(userInfo: userInfo, iterableElement: itbl)
         } else if actionIdentifier == UNNotificationDismissActionIdentifier {
             // We don't track dismiss actions yet
         } else {
@@ -221,6 +216,14 @@ struct IterableAppIntegrationInternal {
         }
 
         return action
+    }
+    
+    private static func createDefaultAction(userInfo: [AnyHashable: Any], iterableElement itbl: [AnyHashable : Any])  -> IterableAction? {
+        if let defaultActionConfig = itbl[.ITBL_PAYLOAD_DEFAULT_ACTION] as? [AnyHashable : Any] {
+            return IterableAction.action(fromDictionary: defaultActionConfig)
+        } else {
+            return IterableAppIntegrationInternal.legacyDefaultActionFromPayload(userInfo: userInfo)
+        }
     }
     
     private static func findButtonActionConfig(actionIdentifier: String, iterableElement itbl: [AnyHashable : Any]) -> [AnyHashable : Any]? {
@@ -256,7 +259,7 @@ struct IterableAppIntegrationInternal {
         return dataFields
     }
     
-    func performDefaultNotificationAction(_ userInfo:[AnyHashable : Any]) {
+    func performDefaultNotificationAction(_ userInfo: [AnyHashable : Any]) {
         // Ignore the notification if we've already processed it from launchOptions while initializing SDK
         guard !alreadyTracked(userInfo: userInfo) else{
             return
@@ -270,16 +273,8 @@ struct IterableAppIntegrationInternal {
             return
         }
 
-        //Execute the action
-
-        let action: IterableAction?
-        if let actionConfig = itbl[.ITBL_PAYLOAD_DEFAULT_ACTION] as? [AnyHashable : Any] {
-            action = IterableAction.action(fromDictionary: actionConfig)
-        } else {
-            action = IterableAppIntegrationInternal.legacyDefaultActionFromPayload(userInfo: userInfo)
-        }
-
-        if let action = action {
+        // Execute the action
+        if let action = IterableAppIntegrationInternal.createDefaultAction(userInfo: userInfo, iterableElement: itbl) {
             let context = IterableActionContext(action: action, source: .push)
             IterableActionRunner.execute(action: action,
                                          context: context,
@@ -296,6 +291,8 @@ struct IterableAppIntegrationInternal {
         return NSDictionary(dictionary: lastPushPayload).isEqual(to: userInfo)
     }
     
+    // Normally itblValue would be the value stored in "itbl" key inside of userInfo.
+    // But it is possible to save them at root level for debugging purpose.
     private static func itblValue(fromUserInfo userInfo: [AnyHashable : Any]) -> [AnyHashable : Any]? {
         let itbl = userInfo[.ITBL_PAYLOAD_METADATA] as? [AnyHashable : Any]
         
@@ -311,6 +308,8 @@ struct IterableAppIntegrationInternal {
         return itbl
     }
 
+    // Normally default action would be stored in key "itbl/"defaultAction"
+    // In legacy templates it gets saved in the key "url"
     private static func legacyDefaultActionFromPayload(userInfo: [AnyHashable : Any]) -> IterableAction? {
         if let deeplinkUrl = userInfo[.ITBL_PAYLOAD_DEEP_LINK_URL] as? String {
             return IterableAction.actionOpenUrl(fromUrlString: deeplinkUrl)

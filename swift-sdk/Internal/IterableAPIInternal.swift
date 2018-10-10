@@ -732,6 +732,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
                            config: IterableConfig = IterableConfig()) -> IterableAPIInternal {
         queue.sync {
             _sharedInstance = IterableAPIInternal(apiKey: apiKey,
+                                                  launchOptions: launchOptions,
                                                   config: config,
                                                   dateProvider: SystemDateProvider(),
                                                   networkSession: URLSession(configuration: URLSessionConfiguration.default))
