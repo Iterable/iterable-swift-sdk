@@ -38,7 +38,7 @@ class UITests: XCTestCase {
 
     func testShowSystemNotification() {
         // Tap the Left Button
-        app.buttons["Show System Notification"].tap()
+        app.buttons["Show System Notification#1"].tap()
 
         let alert = app.alerts.element
         waitForElementToAppear(alert)
@@ -50,12 +50,27 @@ class UITests: XCTestCase {
 
         waitForElementToAppear(app.staticTexts["Left Button"])
 
-        app.buttons["Show System Notification"].tap()
+        app.buttons["Show System Notification#1"].tap()
         waitForElementToAppear(alert)
 
         // Tap the Right Button
         app.buttons["Right Button"].tap()
         waitForElementToAppear(app.staticTexts["Right Button"])
+    }
+
+    func testShowSystemNotification2() {
+        // Tap the Left Button
+        app.buttons["Show System Notification#2"].tap()
+        
+        let alert = app.alerts.element
+        waitForElementToAppear(alert)
+        
+        XCTAssertTrue(alert.staticTexts["Zee Title"].exists)
+        XCTAssertTrue(alert.staticTexts["Zee Body"].exists)
+        
+        app.buttons["Zee Button"].tap()
+        
+        waitForElementToAppear(app.staticTexts["Zee Button"])
     }
 
     func testShowInApp1() {

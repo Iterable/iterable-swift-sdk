@@ -29,7 +29,15 @@ class ViewController: UIViewController {
             self.statusLbl.text = str
         }
     }
-    
+
+    @IBAction func showSystemNotification2Tap(_ sender: UIButton) {
+        ITBInfo()
+        
+        IterableAPI.showSystemNotification(withTitle: "Zee Title", body: "Zee Body", button: "Zee Button") { (str) in
+            self.statusLbl.text = str
+        }
+    }
+
     @IBAction func showInAppTap(_ sender: UIButton) {
         ITBInfo()
         

@@ -59,7 +59,28 @@ class IterableAPITests: XCTestCase {
 
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
-    
+
+    // without callback
+    func testTrackEventWithEmail2() {
+        let expectation = XCTestExpectation(description: "testTrackEventWithEmail using no callback")
+        let eventName = "MyCustomEvent"
+        let networkSession = MockNetworkSession(statusCode: 200)
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
+        IterableAPI.email = IterableAPITests.email
+        IterableAPI.track(event: eventName, dataFields: ["key1" : "value1", "key2" : "value2"])
+        
+        networkSession.callback = {(_, _, _) in
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_TRACK, queryParams: [(name: "api_key", IterableAPITests.apiKey)])
+            let body = networkSession.getRequestBody()
+            TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_EVENT_NAME, andValue: eventName, inDictionary: body)
+            TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_EMAIL, andValue: IterableAPITests.email, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("dataFields"), value: ["key1" : "value1", "key2" : "value2"], inDictionary: body as! [String : Any], message: "data fields did not match")
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+
     func testTrackEventBadNetwork() {
         let expectation = XCTestExpectation(description: "testTrackEventBadNetwork")
         
@@ -479,6 +500,59 @@ class IterableAPITests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
+    func testGetInAppMessagesWithCallback() {
+        let expectation1 = expectation(description: "get in app messages with callback")
+        let networkSession = MockNetworkSession(statusCode: 200)
+
+        let config = IterableConfig()
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
+        IterableAPI.email = "user@example.com"
+        IterableAPI.get(
+            inAppMessages: 1,
+            onSuccess: {(_) in
+                let expectedQueryParams = [
+                    (name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAPITests.apiKey),
+                    (name: AnyHashable.ITBL_KEY_COUNT, value: 1.description),
+                    (name: AnyHashable.ITBL_KEY_PLATFORM, value: .ITBL_PLATFORM_IOS),
+                    (name: AnyHashable.ITBL_KEY_SDK_VERSION, value: IterableAPI.sdkVersion),
+                    ]
+                TestUtils.validate(request: networkSession.request!,
+                                   requestType: .get,
+                                   apiEndPoint: .ITBL_ENDPOINT_API,
+                                   path: .ITBL_PATH_GET_INAPP_MESSAGES,
+                                   queryParams: expectedQueryParams)
+                expectation1.fulfill()
+        },
+            onFailure:nil
+        )
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+
+    func testInAppConsume() {
+        let expectation1 = expectation(description: "get in app messages")
+        let messageId = UUID().uuidString
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let config = IterableConfig()
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
+        IterableAPI.email = "user@example.com"
+        networkSession.callback = {(_,_,_) in
+            let expectedQueryParams = [
+                (name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAPITests.apiKey),
+                ]
+            TestUtils.validate(request: networkSession.request!,
+                               requestType: .post,
+                               apiEndPoint: .ITBL_ENDPOINT_API,
+                               path: .ITBL_PATH_INAPP_CONSUME,
+                               queryParams: expectedQueryParams)
+            TestUtils.validateElementPresent(withName: "messageId", andValue: messageId, inDictionary: networkSession.getRequestBody())
+            expectation1.fulfill()
+        }
+        IterableAPI.inAppConsume(messageId: messageId)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+    
     func testUpdateSubscriptions() {
         let expectation1 = expectation(description: "update subscriptions")
         let emailListIds = ["user1@example.com"]
@@ -559,6 +633,152 @@ class IterableAPITests: XCTestCase {
         IterableAPI.initialize(apiKey: IterableAPITests.apiKey,
                                launchOptions: launchOptions,
                                config: config)
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+    
+    func testTrackPushOpen() {
+        let expectation1 = expectation(description: "trackPushOpen")
+        let messageId = UUID().uuidString
+        let userInfo: [AnyHashable : Any] = [
+            "itbl": [
+                "campaignId": 1234,
+                "templateId": 4321,
+                "messageId": messageId,
+                "isGhostPush" : false,
+                "defaultAction": [
+                    "type": "openUrl",
+                    "data": "http://somewhere.com"
+                ]
+            ]
+        ]
+
+        let networkSession = MockNetworkSession(statusCode: 200)
+        
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey,
+                               networkSession: networkSession)
+        networkSession.callback = {(_, _, _) in
+            TestUtils.validate(request: networkSession.request!, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_TRACK)
+            let body = networkSession.getRequestBody() as! [String : Any]
+            TestUtils.validateMatch(keyPath: KeyPath("campaignId"), value: 1234, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("templateId"), value: 4321, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("messageId"), value: messageId, inDictionary: body)
+            expectation1.fulfill()
+        }
+        IterableAPI.track(pushOpen: userInfo)
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+
+    func testTrackPushOpenWithDataFields() {
+        let expectation1 = expectation(description: "trackPushOpen with datafields")
+        let messageId = UUID().uuidString
+        let userInfo: [AnyHashable : Any] = [
+            "itbl": [
+                "campaignId": 1234,
+                "templateId": 4321,
+                "messageId": messageId,
+                "isGhostPush" : false
+            ]
+        ]
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey,
+                               networkSession: networkSession)
+        networkSession.callback = {(_, _, _) in
+            TestUtils.validate(request: networkSession.request!, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_TRACK)
+            let body = networkSession.getRequestBody() as! [String : Any]
+            TestUtils.validateMatch(keyPath: KeyPath("campaignId"), value: 1234, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("templateId"), value: 4321, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("messageId"), value: messageId, inDictionary: body)
+            let dataFields: Dictionary<String, AnyHashable> = ["appAlreadyRunning" : false, "key1" : "value1"]
+            TestUtils.validateMatch(keyPath: KeyPath("dataFields"), value: dataFields, inDictionary: body)
+            expectation1.fulfill()
+        }
+        IterableAPI.track(pushOpen: userInfo, dataFields: ["key1" : "value1"])
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+
+    func testTrackPushOpenWithCallback() {
+        let expectation1 = expectation(description: "trackPushOpen with callback")
+        let messageId = UUID().uuidString
+        let userInfo: [AnyHashable : Any] = [
+            "itbl": [
+                "campaignId": 1234,
+                "templateId": 4321,
+                "messageId": messageId,
+                "isGhostPush" : false
+            ]
+        ]
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey,
+                               networkSession: networkSession)
+        IterableAPI.track(pushOpen: userInfo, dataFields: ["key1" : "value1"], onSuccess: {_ in
+            TestUtils.validate(request: networkSession.request!, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_TRACK)
+            let body = networkSession.getRequestBody() as! [String : Any]
+            TestUtils.validateMatch(keyPath: KeyPath("campaignId"), value: 1234, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("templateId"), value: 4321, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("messageId"), value: messageId, inDictionary: body)
+            let dataFields: Dictionary<String, AnyHashable> = ["appAlreadyRunning" : false, "key1" : "value1"]
+            TestUtils.validateMatch(keyPath: KeyPath("dataFields"), value: dataFields, inDictionary: body)
+            expectation1.fulfill()
+        }, onFailure: nil)
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+
+    func testTrackPushOpenWithCampaignIdEtc() {
+        let expectation1 = expectation(description: "trackPushOpen with campaignId etc")
+        let messageId = UUID().uuidString
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey,
+                               networkSession: networkSession)
+        networkSession.callback = {(_, _, _) in
+            TestUtils.validate(request: networkSession.request!, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_TRACK)
+            let body = networkSession.getRequestBody() as! [String : Any]
+            TestUtils.validateMatch(keyPath: KeyPath("campaignId"), value: 1234, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("templateId"), value: 4321, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("messageId"), value: messageId, inDictionary: body)
+            let dataFields: Dictionary<String, AnyHashable> = ["appAlreadyRunning" : true, "key1" : "value1"]
+            TestUtils.validateMatch(keyPath: KeyPath("dataFields"), value: dataFields, inDictionary: body, message: "dataFields did not match")
+            expectation1.fulfill()
+        }
+        IterableAPI.track(pushOpen: 1234, templateId: 4321, messageId: messageId, appAlreadyRunning: true, dataFields: ["key1" : "value1"])
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+
+    func testTrackPushOpenWithCampaignIdEtcWithCallback() {
+        let expectation1 = expectation(description: "trackPushOpen with campaignId etc with callback")
+        let messageId = UUID().uuidString
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey,
+                               networkSession: networkSession)
+        IterableAPI.track(pushOpen: 1234,
+                          templateId: 4321,
+                          messageId: messageId,
+                          appAlreadyRunning: true,
+                          dataFields: ["key1" : "value1"],
+                          onSuccess: {(_) in
+                            TestUtils.validate(request: networkSession.request!, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_TRACK)
+                            let body = networkSession.getRequestBody() as! [String : Any]
+                            TestUtils.validateMatch(keyPath: KeyPath("campaignId"), value: 1234, inDictionary: body)
+                            TestUtils.validateMatch(keyPath: KeyPath("templateId"), value: 4321, inDictionary: body)
+                            TestUtils.validateMatch(keyPath: KeyPath("messageId"), value: messageId, inDictionary: body)
+                            let dataFields: Dictionary<String, AnyHashable> = ["appAlreadyRunning" : true, "key1" : "value1"]
+                            TestUtils.validateMatch(keyPath: KeyPath("dataFields"), value: dataFields, inDictionary: body, message: "dataFields did not match")
+                            expectation1.fulfill()
+        },
+                          onFailure:nil
+        )
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }

@@ -18,7 +18,7 @@ public final class IterableAPI : NSObject {
     /// You should call this method and not call the init method directly.
     /// - parameter apiKey: Iterable API Key.
     public static func initialize(apiKey: String) {
-        initialize(apiKey: apiKey, launchOptions: nil, config: IterableConfig())
+        initialize(apiKey: apiKey, launchOptions: nil)
     }
     
     /// You should call this method and not call the init method directly.
@@ -242,7 +242,7 @@ public final class IterableAPI : NSObject {
      - parameter userInfo:    the push notification payload
      */
     @objc(trackPushOpen:) public static func track(pushOpen userInfo: [AnyHashable : Any]) {
-        internalImplementation?.trackPushOpen(userInfo)
+        track(pushOpen: userInfo, dataFields: nil)
     }
     
     /**
