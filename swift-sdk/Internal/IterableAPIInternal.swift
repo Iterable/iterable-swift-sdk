@@ -719,7 +719,6 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
         
         IterableAppIntegration.implementation = IterableAppIntegrationInternal(tracker: self,
-                                                                       versionInfo: SystemVersionInfo(),
                                                                        urlDelegate: config.urlDelegate,
                                                                        customActionDelegate: config.customActionDelegate,
                                                                        urlOpener: AppUrlOpener())

@@ -92,35 +92,17 @@ struct UserNotificationResponse : NotificationResponseProtocol {
 extension UIApplication : ApplicationStateProviderProtocol {
 }
 
-/// Abstraction of getting the current version
-@objc public protocol VersionInfoProtocol: class {
-    func isAvailableIOS10() -> Bool
-}
-
-class SystemVersionInfo : VersionInfoProtocol {
-    func isAvailableIOS10() -> Bool {
-        if #available(iOS 10, *) {
-            return true
-        } else {
-            return false
-        }
-    }
-}
-
 struct IterableAppIntegrationInternal {
     private let tracker: PushTrackerProtocol
-    private let versionInfo: VersionInfoProtocol
     private let urlDelegate: IterableURLDelegate?
     private let customActionDelegate: IterableCustomActionDelegate?
     private let urlOpener: UrlOpenerProtocol?
 
     init(tracker: PushTrackerProtocol,
-         versionInfo: VersionInfoProtocol,
          urlDelegate: IterableURLDelegate? = nil,
          customActionDelegate: IterableCustomActionDelegate? = nil,
          urlOpener: UrlOpenerProtocol? = nil) {
         self.tracker = tracker
-        self.versionInfo = versionInfo
         self.urlDelegate = urlDelegate
         self.customActionDelegate = customActionDelegate
         self.urlOpener = urlOpener
@@ -142,7 +124,8 @@ struct IterableAppIntegrationInternal {
         case .background:
             break
         case .inactive:
-            if !versionInfo.isAvailableIOS10() {
+            if #available(iOS 10, *) {
+            } else {
                 // iOS 10+ notification actions are handled by userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:
                 // so this should only be executed if iOS 10 is not available.
                 performDefaultNotificationAction(userInfo)

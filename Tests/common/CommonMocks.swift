@@ -145,23 +145,6 @@ public class MockPushTracker : NSObject, PushTrackerProtocol {
     public var applicationState: UIApplication.State
 }
 
-@objc public class MockVersionInfo : NSObject, VersionInfoProtocol {
-    @objc public init(version: Int) {
-        self.version = version
-    }
-    
-    public func isAvailableIOS10() -> Bool {
-        return version >= 10
-    }
-    
-    private override convenience init() {
-        self.init(version: 10)
-    }
-    
-    private let version: Int
-    
-}
-
 class MockNetworkSession: NetworkSessionProtocol {
     var request: URLRequest?
     var callback: ((Data?, URLResponse?, Error?) -> Void)?
