@@ -58,6 +58,13 @@ class UITests: XCTestCase {
 
         // Give some time to open
         sleep(1)
+        
+        // Assert that Safari is Active
+        let safariApp = XCUIApplication(bundleIdentifier: "com.apple.mobilesafari")
+        XCTAssertEqual(safariApp.state, .runningForeground, "Safari is not active")
+        
+        // launch this app again for other tests
+        app.launch()
     }
     
     func testShowSystemNotification() {
