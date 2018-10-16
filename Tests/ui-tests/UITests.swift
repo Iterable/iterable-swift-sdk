@@ -15,11 +15,15 @@ class UITests: XCTestCase {
         app.launch()
         return app
     }()
+    
+    static var monitor: NSObjectProtocol? = nil
 
     // shortcut calculated property
     private var app: XCUIApplication {
         return UITests.application
     }
+    
+    let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
     
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -36,20 +40,24 @@ class UITests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
     
-    func testSetupNotifications() {
-        app.buttons["Setup Notifications"].tap()
-        let expectation1 = expectation(description: "Notification Setup")
-        let monitor = addUIInterruptionMonitor(withDescription: "Getting Notification Permission") { (alert) -> Bool in
-            let okButton = alert.buttons["Allow"]
-            self.waitForElementToAppear(okButton)
-            okButton.tap()
-            expectation1.fulfill()
-            return true
-        }
-        app.swipeUp()
+    func testSendNotificationOpenGoogle() {
+        allowNotificationsIfNeeded()
+        
+        app.buttons["Send Notification"].tap()
+        
+        let notification = springboard.otherElements["NotificationShortLookView"]
+        XCTAssert(notification.waitForExistence(timeout: 10))
+        
+        notification.swipeDown()
+        
+        // Give one second pause before interacting
+        sleep(1)
+        
+        let button = SpringBoardNotification(springboard: springboard).buttonOpenGoogle
+        button.tap()
 
-        wait(for: [expectation1], timeout: UITests.timeout)
-        removeUIInterruptionMonitor(monitor)
+        // Give some time to open
+        sleep(1)
     }
     
     func testShowSystemNotification() {
@@ -132,4 +140,29 @@ class UITests: XCTestCase {
             XCTFail("expected element: \(element)")
         }
     }
+    
+    private func allowNotificationsIfNeeded() {
+        app.buttons["Setup Notifications"].tap()
+        UITests.monitor = addUIInterruptionMonitor(withDescription: "Getting Notification Permission") { (alert) -> Bool in
+            let okButton = alert.buttons["Allow"]
+            self.waitForElementToAppear(okButton)
+            okButton.tap()
+            if let monitor = UITests.monitor {
+                self.removeUIInterruptionMonitor(monitor)
+            }
+            return true
+        }
+        // Xcode bug?, need to make this app active
+        app.swipeUp()
+    }
 }
+
+struct SpringBoardNotification {
+    let springboard: XCUIApplication
+    
+    var buttonOpenGoogle: XCUIElement {
+        return springboard.buttons["Open Google"].firstMatch
+    }
+}
+
+

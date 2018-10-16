@@ -166,7 +166,7 @@ struct IterableAppIntegrationInternal {
             tracker.trackPushOpen(userInfo, dataFields: dataFields)
         }
         
-        //Execute the action
+        // Execute the action
         if let action = action {
             let context = IterableActionContext(action: action, source: .push)
             IterableActionRunner.execute(action: action,

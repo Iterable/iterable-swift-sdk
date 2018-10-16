@@ -173,7 +173,26 @@ class ViewController: UIViewController {
         content.title = "Select"
         content.body = "Select an action"
         content.badge = NSNumber(value: 1)
-        content.userInfo = [:]
+
+        let messageId = UUID().uuidString
+        
+        let userInfo = [
+            "itbl": [
+                "campaignId" : 1234,
+                "templateId" : 4321,
+                "isGhostPush" : false,
+                "messageId" : messageId,
+                "actionButtons" : [[
+                    "identifier" : "Open Google",
+                    "buttonType" : "default",
+                    "action" : [
+                        "type" : "openUrl",
+                        "data" : "https://www.google.com"
+                    ]]
+                ]
+            ]
+        ]
+        content.userInfo = userInfo
 
         
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false) // 10 seconds from now
@@ -184,7 +203,7 @@ class ViewController: UIViewController {
     @available(iOS 10.0, *)
     private func registerCategories() {
         ITBInfo()
-        let tapButton1Action = UNNotificationAction(identifier: "Button1", title: "Tap Button 1", options: .foreground)
+        let tapButton1Action = UNNotificationAction(identifier: "Open Google", title: "Open Google", options: .foreground)
         let tapButton2Action = UNNotificationAction(identifier: "Button2", title: "Tap Button 2", options: .destructive)
 
         let category = UNNotificationCategory(identifier: "addButtonsCategory", actions: [tapButton1Action, tapButton2Action], intentIdentifiers: [])

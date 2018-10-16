@@ -21,8 +21,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
+        let config = IterableConfig()
+        config.customActionDelegate = self
+        config.urlDelegate = self
         UserDefaults.standard.set("user1@example.com", forKey: .ITBL_USER_DEFAULTS_EMAIL_KEY)
-        IterableAPI.initialize(apiKey: "")
+        IterableAPI.initialize(apiKey: "", config: config)
         
         return true
     }
@@ -81,3 +84,22 @@ extension AppDelegate : UNUserNotificationCenterDelegate {
     }
 }
 
+extension AppDelegate : IterableCustomActionDelegate {
+    func handle(iterableCustomAction action: IterableAction, inContext context: IterableActionContext) -> Bool {
+        ITBInfo("handleCustomAction: \(action)")
+        return true
+    }
+}
+
+extension AppDelegate : IterableURLDelegate {
+    func handle(iterableURL url: URL, inContext context: IterableActionContext) -> Bool {
+        ITBInfo("handleUrl: \(url)")
+        if url.absoluteString == "https://www.google.com" {
+            // I am not going to handle this, do default
+            return false
+        } else {
+            // I am handling this
+            return true
+        }
+    }
+}
