@@ -8,7 +8,7 @@ import XCTest
 
 
 class UITests: XCTestCase {
-    private static var timeout = 60.0
+    private static var timeout = 15.0
 
     static var application: XCUIApplication = {
         let app = XCUIApplication()
@@ -35,7 +35,23 @@ class UITests: XCTestCase {
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
+    
+    func testSetupNotifications() {
+        app.buttons["Setup Notifications"].tap()
+        let expectation1 = expectation(description: "Notification Setup")
+        let monitor = addUIInterruptionMonitor(withDescription: "Getting Notification Permission") { (alert) -> Bool in
+            let okButton = alert.buttons["Allow"]
+            self.waitForElementToAppear(okButton)
+            okButton.tap()
+            expectation1.fulfill()
+            return true
+        }
+        app.swipeUp()
 
+        wait(for: [expectation1], timeout: UITests.timeout)
+        removeUIInterruptionMonitor(monitor)
+    }
+    
     func testShowSystemNotification() {
         // Tap the Left Button
         app.buttons["Show System Notification#1"].tap()
@@ -110,13 +126,9 @@ class UITests: XCTestCase {
     }
 
     private func waitForElementToAppear(_ element: XCUIElement, fail: Bool = true) {
-        let predicate = NSPredicate(format: "exists == true")
-        let expectation1 = expectation(for: predicate, evaluatedWith: element,
-                                      handler: nil)
+        let exists = element.waitForExistence(timeout: UITests.timeout)
         
-        let result = XCTWaiter().wait(for: [expectation1], timeout: UITests.timeout)
-
-        if fail && result != .completed {
+        if fail && !exists {
             XCTFail("expected element: \(element)")
         }
     }

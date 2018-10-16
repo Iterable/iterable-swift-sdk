@@ -20,38 +20,52 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="4iW-QJ-TOw">
-                                <rect key="frame" x="110" y="362" width="194" height="182"/>
+                                <rect key="frame" x="110" y="324" width="194" height="258"/>
                                 <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nrZ-Da-kmk">
+                                        <rect key="frame" x="31.5" y="0.0" width="131" height="30"/>
+                                        <state key="normal" title="Setup Notifications"/>
+                                        <connections>
+                                            <action selector="setupNotifications:" destination="BYZ-38-t0r" eventType="touchUpInside" id="bnF-di-K3O"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Os-fr-lOW">
+                                        <rect key="frame" x="37.5" y="38" width="119" height="30"/>
+                                        <state key="normal" title="Send Notification"/>
+                                        <connections>
+                                            <action selector="sendNotification:" destination="BYZ-38-t0r" eventType="touchUpInside" id="hpJ-gl-lXe"/>
+                                        </connections>
+                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="94b-FC-ZDR">
-                                        <rect key="frame" x="1" y="0.0" width="192" height="30"/>
+                                        <rect key="frame" x="1" y="76" width="192" height="30"/>
                                         <state key="normal" title="Show System Notification#1"/>
                                         <connections>
                                             <action selector="showSystemNotificationTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="RJq-UE-rZ1"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ClN-Rv-e5u">
-                                        <rect key="frame" x="0.0" y="38" width="194" height="30"/>
+                                        <rect key="frame" x="0.0" y="114" width="194" height="30"/>
                                         <state key="normal" title="Show System Notification#2"/>
                                         <connections>
                                             <action selector="showSystemNotification2Tap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="fP8-Yd-pIm"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZWv-tr-ec9">
-                                        <rect key="frame" x="48" y="76" width="98" height="30"/>
+                                        <rect key="frame" x="48" y="152" width="98" height="30"/>
                                         <state key="normal" title="Show InApp#1"/>
                                         <connections>
                                             <action selector="showInAppTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="pTu-po-2uq"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="n7L-ga-JSt">
-                                        <rect key="frame" x="47" y="114" width="100" height="30"/>
+                                        <rect key="frame" x="47" y="190" width="100" height="30"/>
                                         <state key="normal" title="Show InApp#2"/>
                                         <connections>
                                             <action selector="showInApp2Tap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="DYt-se-gcN"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Xdv-Oh-2In">
-                                        <rect key="frame" x="46.5" y="152" width="101" height="30"/>
+                                        <rect key="frame" x="46.5" y="228" width="101" height="30"/>
                                         <state key="normal" title="Show InApp#3"/>
                                         <connections>
                                             <action selector="showInApp3Tap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="6Pw-iU-fHU"/>

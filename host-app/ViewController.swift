@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import UserNotifications
 
 @testable import IterableSDK
 
@@ -22,6 +23,21 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
+    @IBAction func setupNotifications(_ sender: UIButton) {
+        ITBInfo()
+        if #available(iOS 10, *) {
+            setupNotifications()
+        }
+    }
+
+    @IBAction func sendNotification(_ sender: UIButton) {
+        ITBInfo()
+        if #available(iOS 10, *) {
+            setupAndSendNotification()
+        }
+    }
+
+    
     @IBAction func showSystemNotificationTap(_ sender: UIButton) {
         ITBInfo()
         
@@ -103,6 +119,90 @@ class ViewController: UIViewController {
             ITBInfo("callback: \(str ?? "<nil>")")
             self.statusLbl.text = str
         }
+    }
+
+    @available(iOS 10.0, *)
+    private func setupNotifications(onCompletion: (() -> Void)? = nil) {
+        UNUserNotificationCenter.current().delegate = self
+        UNUserNotificationCenter.current().getNotificationSettings { (settings) in
+            if settings.authorizationStatus != .authorized {
+                ITBError("Not authorized, asking for permission")
+                // not authorized, ask for permission
+                UNUserNotificationCenter.current().requestAuthorization(options:[.alert, .badge, .sound]) { (success, error) in
+                    if success {
+                        ITBInfo("Permission Granted")
+                        onCompletion?()
+                    } else {
+                        ITBError("Permission Denied")
+                    }
+                }
+            } else {
+                // already authorized
+                ITBInfo("Already authorized")
+                onCompletion?()
+            }
+        }
+    }
+
+    @available(iOS 10.0, *)
+    private func setupAndSendNotification() {
+        setupNotifications {
+            self.registerCategories()
+            self.sendNotification()
+        }
+    }
+    
+    @available(iOS 10.0, *)
+    private func removeAllNotifications() {
+        ITBInfo()
+        let center = UNUserNotificationCenter.current()
+        center.removeAllPendingNotificationRequests()
+        center.removeAllDeliveredNotifications()
+    }
+
+    @available(iOS 10.0, *)
+    private func sendNotification() {
+        ITBInfo()
+        
+        removeAllNotifications()
+        
+        // create a corresponding local notification
+        let content = UNMutableNotificationContent()
+        
+        content.categoryIdentifier = "addButtonsCategory"
+        content.title = "Select"
+        content.body = "Select an action"
+        content.badge = NSNumber(value: 1)
+        content.userInfo = [:]
+
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false) // 10 seconds from now
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(request)
+    }
+    
+    @available(iOS 10.0, *)
+    private func registerCategories() {
+        ITBInfo()
+        let tapButton1Action = UNNotificationAction(identifier: "Button1", title: "Tap Button 1", options: .foreground)
+        let tapButton2Action = UNNotificationAction(identifier: "Button2", title: "Tap Button 2", options: .destructive)
+
+        let category = UNNotificationCategory(identifier: "addButtonsCategory", actions: [tapButton1Action, tapButton2Action], intentIdentifiers: [])
+
+        UNUserNotificationCenter.current().setNotificationCategories([category])
+    }
+    
+}
+
+@available(iOS 10.0, *)
+extension ViewController : UNUserNotificationCenterDelegate {
+    public func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        completionHandler([.alert, .badge, .sound])
+    }
+    
+    // The method will be called on the delegate when the user responded to the notification by opening the application, dismissing the notification or choosing a UNNotificationAction. The delegate must be set before the application returns from applicationDidFinishLaunching:.
+    public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        IterableAppIntegration.userNotificationCenter(center, didReceive: response, withCompletionHandler: completionHandler)
     }
 }
 
