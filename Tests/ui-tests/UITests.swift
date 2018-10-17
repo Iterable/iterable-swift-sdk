@@ -40,7 +40,7 @@ class UITests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
     
-    func testSendNotificationOpenGoogle() {
+    func testSendNotificationOpenSafari() {
         allowNotificationsIfNeeded()
         
         app.buttons["Send Notification"].tap()
@@ -53,7 +53,7 @@ class UITests: XCTestCase {
         // Give one second pause before interacting
         sleep(1)
         
-        let button = SpringBoardNotification(springboard: springboard).buttonOpenGoogle
+        let button = SpringBoardNotification(springboard: springboard).buttonOpenSafari
         button.tap()
 
         // Give some time to open
@@ -66,6 +66,51 @@ class UITests: XCTestCase {
         // launch this app again for other tests
         app.launch()
     }
+
+    func testSendNotificationOpenDeeplink() {
+        allowNotificationsIfNeeded()
+        
+        app.buttons["Send Notification"].tap()
+        
+        let notification = springboard.otherElements["NotificationShortLookView"]
+        XCTAssert(notification.waitForExistence(timeout: 10))
+        
+        notification.swipeDown()
+        
+        // Give one second pause before interacting
+        sleep(1)
+        
+        let button = SpringBoardNotification(springboard: springboard).buttonOpenDeeplink
+        button.tap()
+        
+        // Give some time to open
+        sleep(1)
+        
+        waitForElementToAppear(app.staticTexts["https://www.myuniqueurl.com"])
+    }
+
+    func testSendNotificationCustomAction() {
+        allowNotificationsIfNeeded()
+        
+        app.buttons["Send Notification"].tap()
+        
+        let notification = springboard.otherElements["NotificationShortLookView"]
+        XCTAssert(notification.waitForExistence(timeout: 10))
+        
+        notification.swipeDown()
+        
+        // Give one second pause before interacting
+        sleep(1)
+        
+        let button = SpringBoardNotification(springboard: springboard).buttonCustomAction
+        button.tap()
+        
+        // Give some time to open
+        sleep(1)
+        
+        waitForElementToAppear(app.staticTexts["MyUniqueCustomAction"])
+    }
+
     
     func testShowSystemNotification() {
         // Tap the Left Button
@@ -167,9 +212,16 @@ class UITests: XCTestCase {
 struct SpringBoardNotification {
     let springboard: XCUIApplication
     
-    var buttonOpenGoogle: XCUIElement {
-        return springboard.buttons["Open Google"].firstMatch
+    var buttonOpenSafari: XCUIElement {
+        return springboard.buttons["Open Safari"].firstMatch
+    }
+
+    var buttonOpenDeeplink: XCUIElement {
+        return springboard.buttons["Open Deeplink"].firstMatch
+    }
+
+    var buttonCustomAction: XCUIElement {
+        return springboard.buttons["Custom Action"].firstMatch
     }
 }
-
 

@@ -16,6 +16,9 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(handleNotification(_:)), name: .handleIterableUrl, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleNotification(_:)), name: .handleIterableCustomAction, object: nil)
     }
 
     override func didReceiveMemoryWarning() {
@@ -175,6 +178,8 @@ class ViewController: UIViewController {
         content.badge = NSNumber(value: 1)
 
         let messageId = UUID().uuidString
+        let uniqueUrl = "https://www.myuniqueurl.com"
+        let customActionName = "MyUniqueCustomAction"
         
         let userInfo = [
             "itbl": [
@@ -182,13 +187,30 @@ class ViewController: UIViewController {
                 "templateId" : 4321,
                 "isGhostPush" : false,
                 "messageId" : messageId,
-                "actionButtons" : [[
-                    "identifier" : "Open Google",
-                    "buttonType" : "default",
-                    "action" : [
-                        "type" : "openUrl",
-                        "data" : "https://www.google.com"
-                    ]]
+                "actionButtons" : [
+                    [
+                        "identifier" : "Open Safari",
+                        "buttonType" : "default",
+                        "action" : [
+                            "type" : "openUrl",
+                            "data" : "https://www.google.com"
+                        ],
+                    ],
+                    [
+                        "identifier" : "Open Deeplink",
+                        "buttonType" : "default",
+                        "action" : [
+                            "type" : "openUrl",
+                            "data" : uniqueUrl,
+                        ],
+                    ],
+                    [
+                        "identifier" : "Custom Action",
+                        "buttonType" : "default",
+                        "action" : [
+                            "type" : customActionName,
+                        ],
+                    ],
                 ]
             ]
         ]
@@ -203,14 +225,36 @@ class ViewController: UIViewController {
     @available(iOS 10.0, *)
     private func registerCategories() {
         ITBInfo()
-        let tapButton1Action = UNNotificationAction(identifier: "Open Google", title: "Open Google", options: .foreground)
-        let tapButton2Action = UNNotificationAction(identifier: "Button2", title: "Tap Button 2", options: .destructive)
+        let tapButton1Action = UNNotificationAction(identifier: "Open Safari", title: "Open Safari", options: .foreground)
+        let tapButton2Action = UNNotificationAction(identifier: "Open Deeplink", title: "Open Deeplink", options: .foreground)
+        let tapButton3Action = UNNotificationAction(identifier: "Custom Action", title: "Custom Action", options: .foreground)
 
-        let category = UNNotificationCategory(identifier: "addButtonsCategory", actions: [tapButton1Action, tapButton2Action], intentIdentifiers: [])
+        let category = UNNotificationCategory(identifier: "addButtonsCategory", actions: [tapButton1Action, tapButton2Action, tapButton3Action], intentIdentifiers: [])
 
         UNUserNotificationCenter.current().setNotificationCategories([category])
     }
     
+    @objc private func handleNotification(_ notification: NSNotification) {
+        ITBInfo()
+        switch notification.name {
+        case .handleIterableUrl:
+            if let userInfo = notification.userInfo {
+                if let url = userInfo["url"] as? String {
+                    statusLbl.text = url
+                }
+            }
+            break
+        case .handleIterableCustomAction:
+            if let userInfo = notification.userInfo {
+                if let customActionName = userInfo["name"] as? String {
+                    statusLbl.text = customActionName
+                }
+            }
+            break
+        default:
+            break
+        }
+    }
 }
 
 @available(iOS 10.0, *)
