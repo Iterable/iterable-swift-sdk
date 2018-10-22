@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import UserNotifications
 
 import IterableSDK
 
@@ -16,11 +17,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-        IterableAPI.initialize(apiKey: "")
+        let config = IterableConfig()
+        config.customActionDelegate = self
+        config.urlDelegate = self
+        UserDefaults.standard.set("user1@example.com", forKey: .ITBL_USER_DEFAULTS_EMAIL_KEY)
+        IterableAPI.initialize(apiKey: "", config: config)
         
         return true
     }
@@ -46,7 +50,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-
-
 }
 
+extension AppDelegate : IterableCustomActionDelegate {
+    func handle(iterableCustomAction action: IterableAction, inContext context: IterableActionContext) -> Bool {
+        ITBInfo("handleCustomAction: \(action)")
+        NotificationCenter.default.post(name: .handleIterableCustomAction, object: nil, userInfo: ["name" : action.type])
+        return true
+    }
+}
+
+extension AppDelegate : IterableURLDelegate {
+    func handle(iterableURL url: URL, inContext context: IterableActionContext) -> Bool {
+        ITBInfo("handleUrl: \(url)")
+        if url.absoluteString == "https://www.google.com" {
+            // I am not going to handle this, do default
+            return false
+        } else {
+            // I am handling this
+            NotificationCenter.default.post(name: .handleIterableUrl, object: nil, userInfo: ["url" : url.absoluteString])
+            return true
+        }
+    }
+}
+
+extension Notification.Name {
+    static let handleIterableUrl = Notification.Name("handleIterableUrl")
+    static let handleIterableCustomAction = Notification.Name("handleIterableCustomAction")
+}

@@ -36,14 +36,22 @@ struct TestUtils {
         XCTAssertNil(dict[name])
     }
 
-    static func validateMatch<T:Equatable>(keyPath: KeyPath, value: T, inDictionary dict: [String : Any]) {
-        XCTAssertEqual(dict[keyPath: keyPath] as? T, value)
+    static func validateMatch<T:Equatable>(keyPath: KeyPath, value: T, inDictionary dict: [String : Any], message: String? = nil) {
+        if let message = message {
+            XCTAssertEqual(dict[keyPath: keyPath] as? T, value, message)
+        } else {
+            XCTAssertEqual(dict[keyPath: keyPath] as? T, value)
+        }
     }
 
-    static func validateExists<T:Equatable>(keyPath: KeyPath, type: T.Type, inDictionary dict: [String : Any]) {
-        XCTAssertNotNil(dict[keyPath: keyPath] as? T)
+    static func validateExists<T:Equatable>(keyPath: KeyPath, type: T.Type, inDictionary dict: [String : Any], message: String? = nil) {
+        if let message = message {
+            XCTAssertNotNil(dict[keyPath: keyPath] as? T, message)
+        } else {
+            XCTAssertNotNil(dict[keyPath: keyPath] as? T)
+        }
     }
-
+    
     static func clearUserDefaults() {
         UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
     }

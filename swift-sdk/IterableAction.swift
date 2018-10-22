@@ -32,18 +32,6 @@ import Foundation
     /** The text response typed by the user */
     @objc public var userInput: String?
     
-    /**
-     * Checks whether this action is of a specific type.
-     * - parmeter type: Action type to match against
-     * - returns: Bool indicating whether the action type matches the one passed to this method
-     */
-    @objc public func isOfType(_ type: String) -> Bool {
-        return self.type == type
-    }
-    
-    /**
-     Just a shortcut for `isOfType(IterableAction.actionTypeOpenUrl)`.
-    */
     @objc public func isOpenUrl() -> Bool {
         return self.type == IterableAction.actionTypeOpenUrl
     }

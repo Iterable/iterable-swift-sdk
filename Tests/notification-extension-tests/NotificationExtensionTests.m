@@ -25,6 +25,8 @@ static CGFloat const IterableNotificationCenterExpectationTimeout = 15.0;
 
 - (void)setUp {
     [super setUp];
+    NSSet<UNNotificationCategory *> *categories = [[NSSet alloc] initWithArray:@[]];
+    [[UNUserNotificationCenter currentNotificationCenter] setNotificationCategories:categories];
     self.extension = [[ITBNotificationServiceExtension alloc] init];
 }
 
@@ -297,47 +299,6 @@ static CGFloat const IterableNotificationCenterExpectationTimeout = 15.0;
                 XCTAssertEqual(createdCategory.actions.count, 1, "Number of buttons matches");
                 XCTAssertTrue(createdCategory.actions.firstObject.options & UNNotificationActionOptionForeground, "Action is foreground");
                 XCTAssertTrue([createdCategory.actions.firstObject isKindOfClass:[UNTextInputNotificationAction class]], "Action type is UNTextInputNotificationAction");
-                
-                [expectation fulfill];
-            }];
-        });
-    }];
-    
-    [self waitForExpectations:@[expectation] timeout:IterableNotificationCenterExpectationTimeout];
-}
-
-- (void)testPushButtonWithNoType {
-    UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
-    content.userInfo = @{
-                         @"itbl" : @{
-                                 @"messageId": [[NSUUID UUID] UUIDString],
-                                 @"actionButtons": @[@{
-                                                         @"identifier": @"openAppButton",
-                                                         @"title": @"Open App",
-                                                         @"action": @{
-                                                                 
-                                                                 }
-                                                         }]
-                                 }
-                         };
-    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:@"request" content:content trigger:nil];
-    
-    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"contentHandler is called"];
-    
-    [self.extension didReceiveNotificationRequest:request withContentHandler:^(UNNotificationContent *contentToDeliver) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, IterableNotificationCenterRequestDelay * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
-            [center getNotificationCategoriesWithCompletionHandler:^(NSSet<UNNotificationCategory *> * _Nonnull categories) {
-                UNNotificationCategory *createdCategory = nil;
-                for (UNNotificationCategory *category in categories) {
-                    if ([category.identifier isEqualToString:content.userInfo[@"itbl"][@"messageId"]]) {
-                        createdCategory = category;
-                    }
-                }
-                XCTAssertNotNil(createdCategory, "Category exists");
-                
-                XCTAssertEqual(createdCategory.actions.count, 1, "Number of buttons matches");
-                XCTAssertTrue(createdCategory.actions.firstObject.options & UNNotificationActionOptionForeground, "Action is foreground");
                 
                 [expectation fulfill];
             }];

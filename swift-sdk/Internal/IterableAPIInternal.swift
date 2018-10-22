@@ -406,7 +406,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             let notificationMetadata = IterableNotificationMetadata.metadata(fromInAppOptions: messageId)
             
             DispatchQueue.main.async {
-                let opened = IterableInAppManager.showIterableNotificationHTML(html, trackParams: notificationMetadata, callbackBlock: callbackBlock, backgroundAlpha: backgroundAlpha, padding: edgeInsets)
+                let opened = IterableInAppManager.showIterableNotificationHTML(html, trackParams: notificationMetadata, backgroundAlpha: backgroundAlpha, padding: edgeInsets, callbackBlock: callbackBlock)
                 if opened {
                     self.inAppConsume(messageId)
                 }
@@ -719,7 +719,6 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
         
         IterableAppIntegration.implementation = IterableAppIntegrationInternal(tracker: self,
-                                                                       versionInfo: SystemVersionInfo(),
                                                                        urlDelegate: config.urlDelegate,
                                                                        customActionDelegate: config.customActionDelegate,
                                                                        urlOpener: AppUrlOpener())
@@ -732,6 +731,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
                            config: IterableConfig = IterableConfig()) -> IterableAPIInternal {
         queue.sync {
             _sharedInstance = IterableAPIInternal(apiKey: apiKey,
+                                                  launchOptions: launchOptions,
                                                   config: config,
                                                   dateProvider: SystemDateProvider(),
                                                   networkSession: URLSession(configuration: URLSessionConfiguration.default))

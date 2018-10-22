@@ -55,10 +55,17 @@
 		AC7B144F20D038C400877BFE /* CommerceItemTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AC7B144720D038C400877BFE /* CommerceItemTests.m */; };
 		AC7B145220D038C400877BFE /* IterableNotificationMetadataTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AC7B144A20D038C400877BFE /* IterableNotificationMetadataTests.m */; };
 		AC7B145320D038C400877BFE /* IterableAPIObjCTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AC7B144B20D038C400877BFE /* IterableAPIObjCTests.m */; };
+		AC85A749216D24F4005241AE /* NotificationExtensionSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC85A748216D24F4005241AE /* NotificationExtensionSwiftTests.swift */; };
 		AC89661E2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC89661D2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift */; };
 		AC90C4CD20D8632E00EECA5D /* IterableAppExtensions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC90C4C420D8632D00EECA5D /* IterableAppExtensions.framework */; };
 		AC90C4E220D8639E00EECA5D /* ITBNotificationServiceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC90C4E120D8639E00EECA5D /* ITBNotificationServiceExtension.swift */; };
 		AC90C4E320D863B700EECA5D /* ITBConsts.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0BE20CF4CB8004D7997 /* ITBConsts.swift */; };
+		AC995F992166EE490099A184 /* CommonMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F942166EC880099A184 /* CommonMocks.swift */; };
+		AC995F9A2166EEB50099A184 /* CommonMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F942166EC880099A184 /* CommonMocks.swift */; };
+		AC995F9B2166EEB60099A184 /* CommonMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F942166EC880099A184 /* CommonMocks.swift */; };
+		AC995F9D2167E9FD0099A184 /* CommonExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F9C2167E9FD0099A184 /* CommonExtensions.swift */; };
+		AC995F9E2167E9FD0099A184 /* CommonExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F9C2167E9FD0099A184 /* CommonExtensions.swift */; };
+		AC995F9F2167E9FD0099A184 /* CommonExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F9C2167E9FD0099A184 /* CommonExtensions.swift */; };
 		AC9A49AB20F3C8B80007A5A2 /* TestFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9A49AA20F3C8B80007A5A2 /* TestFile.swift */; };
 		AC9A49AE20F41B520007A5A2 /* TestFileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9A49AC20F419AA0007A5A2 /* TestFileTests.swift */; };
 		ACC87766215C20B50097E29B /* UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC87765215C20B50097E29B /* UITests.swift */; };
@@ -163,6 +170,7 @@
 		789F9E27D756A343F1E4E523 /* libPods-swift-sdk.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-swift-sdk.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC0674E420D8766600C2806D /* notification-extensionTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "notification-extensionTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		AC0674E520D8766600C2806D /* NotificationExtensionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationExtensionTests.m; sourceTree = "<group>"; };
+		AC0A45372179300D0040394F /* host-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "host-app.entitlements"; sourceTree = "<group>"; };
 		AC2263DF20CF49B8009800EB /* IterableSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = IterableSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC2263E220CF49B8009800EB /* IterableSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IterableSDK.h; sourceTree = "<group>"; };
 		AC2263E320CF49B8009800EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -207,6 +215,7 @@
 		AC7B144720D038C400877BFE /* CommerceItemTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CommerceItemTests.m; sourceTree = "<group>"; };
 		AC7B144A20D038C400877BFE /* IterableNotificationMetadataTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IterableNotificationMetadataTests.m; sourceTree = "<group>"; };
 		AC7B144B20D038C400877BFE /* IterableAPIObjCTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IterableAPIObjCTests.m; sourceTree = "<group>"; };
+		AC85A748216D24F4005241AE /* NotificationExtensionSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationExtensionSwiftTests.swift; sourceTree = "<group>"; };
 		AC89661D2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAutoRegistrationTests.swift; sourceTree = "<group>"; };
 		AC90C4C420D8632D00EECA5D /* IterableAppExtensions.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = IterableAppExtensions.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC90C4C720D8632E00EECA5D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -214,6 +223,8 @@
 		AC90C4D520D8632E00EECA5D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AC90C4E120D8639E00EECA5D /* ITBNotificationServiceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ITBNotificationServiceExtension.swift; sourceTree = "<group>"; };
 		AC98294A20D9D65E00796DAA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		AC995F942166EC880099A184 /* CommonMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonMocks.swift; sourceTree = "<group>"; };
+		AC995F9C2167E9FD0099A184 /* CommonExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonExtensions.swift; sourceTree = "<group>"; };
 		AC9A49AA20F3C8B80007A5A2 /* TestFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFile.swift; sourceTree = "<group>"; };
 		AC9A49AC20F419AA0007A5A2 /* TestFileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFileTests.swift; sourceTree = "<group>"; };
 		ACC87763215C20B50097E29B /* ui-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ui-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -503,6 +514,7 @@
 				AC0674E720D87D5B00C2806D /* Helper Files */,
 				AC0674E520D8766600C2806D /* NotificationExtensionTests.m */,
 				AC9A49AC20F419AA0007A5A2 /* TestFileTests.swift */,
+				AC85A748216D24F4005241AE /* NotificationExtensionSwiftTests.swift */,
 			);
 			path = "notification-extension-tests";
 			sourceTree = "<group>";
@@ -514,6 +526,15 @@
 				AC347B6620E699D8003449CF /* IterableAppExtensions.h */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		AC995F932166EC310099A184 /* common */ = {
+			isa = PBXGroup;
+			children = (
+				AC995F9C2167E9FD0099A184 /* CommonExtensions.swift */,
+				AC995F942166EC880099A184 /* CommonMocks.swift */,
+			);
+			path = common;
 			sourceTree = "<group>";
 		};
 		ACC87764215C20B50097E29B /* ui-tests */ = {
@@ -537,6 +558,7 @@
 		ACF560D420E443BF000AAC23 /* host-app */ = {
 			isa = PBXGroup;
 			children = (
+				AC0A45372179300D0040394F /* host-app.entitlements */,
 				ACF560D520E443BF000AAC23 /* AppDelegate.swift */,
 				ACF560D720E443BF000AAC23 /* ViewController.swift */,
 				ACF560D920E443BF000AAC23 /* Main.storyboard */,
@@ -550,6 +572,7 @@
 		ACFCA72920EB02DB00BFB277 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				AC995F932166EC310099A184 /* common */,
 				AC90C4D220D8632E00EECA5D /* notification-extension-tests */,
 				AC7B143B20D02D8700877BFE /* swift-sdk-objc-tests */,
 				AC7B142C20D02CE200877BFE /* swift-sdk-swift-tests */,
@@ -774,6 +797,17 @@
 					};
 					ACF560D220E443BF000AAC23 = {
 						CreatedOnToolsVersion = 9.4;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+							com.apple.Push = {
+								enabled = 1;
+							};
+							com.apple.SafariKeychain = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -941,11 +975,13 @@
 				00CB31B621096129004ACDEC /* TestUtils.swift in Sources */,
 				AC89661E2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift in Sources */,
 				00B6FACC210E8484007535CF /* APNSUtilTests.swift in Sources */,
+				AC995F9A2166EEB50099A184 /* CommonMocks.swift in Sources */,
 				007960EE213F8B2300C53A6A /* DeferredDeeplinkTests.swift in Sources */,
 				ACED4C01213F50B30055A497 /* LoggingTests.swift in Sources */,
 				AC776DA4211A17C700C27C27 /* IterableRequestUtilTests.swift in Sources */,
 				ACE34AB5213776CB00691224 /* LocalStorageTests.swift in Sources */,
 				AC6FDD8C20F56309005D811E /* IterableInAppNotificationTests.swift in Sources */,
+				AC995F9E2167E9FD0099A184 /* CommonExtensions.swift in Sources */,
 				AC2C668020D31B1F00D46CC9 /* IterableNotificationResponseTests.swift in Sources */,
 				AC2C668420D3370600D46CC9 /* Mocks.swift in Sources */,
 				AC64626B2140AACF0046E1BD /* IterableAPIResponseTests.swift in Sources */,
@@ -957,9 +993,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC995F9B2166EEB60099A184 /* CommonMocks.swift in Sources */,
 				AC7B145320D038C400877BFE /* IterableAPIObjCTests.m in Sources */,
 				AC7B145220D038C400877BFE /* IterableNotificationMetadataTests.m in Sources */,
 				ACFCA72720EAEC3200BFB277 /* Mocks.swift in Sources */,
+				AC995F9F2167E9FD0099A184 /* CommonExtensions.swift in Sources */,
 				AC7B144F20D038C400877BFE /* CommerceItemTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -979,6 +1017,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC0674E620D8766600C2806D /* NotificationExtensionTests.m in Sources */,
+				AC85A749216D24F4005241AE /* NotificationExtensionSwiftTests.swift in Sources */,
 				AC9A49AE20F41B520007A5A2 /* TestFileTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -997,6 +1036,8 @@
 			files = (
 				ACF560D820E443BF000AAC23 /* ViewController.swift in Sources */,
 				ACF560D620E443BF000AAC23 /* AppDelegate.swift in Sources */,
+				AC995F9D2167E9FD0099A184 /* CommonExtensions.swift in Sources */,
+				AC995F992166EE490099A184 /* CommonMocks.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1508,6 +1549,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "host-app/host-app.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "host-app/Info.plist";
@@ -1528,6 +1570,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "host-app/host-app.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "host-app/Info.plist";

@@ -28,9 +28,10 @@ class IterableInAppManager: NSObject {
      */
     @discardableResult static func showIterableNotificationHTML(_ htmlString: String,
                                                           trackParams: IterableNotificationMetadata? = nil,
-                                                          callbackBlock: ITEActionBlock?,
                                                           backgroundAlpha: Double = 0,
-                                                          padding: UIEdgeInsets = .zero) -> Bool {
+                                                          padding: UIEdgeInsets = .zero,
+                                                          callbackBlock: ITEActionBlock?
+                                                          ) -> Bool {
         guard let topViewController = getTopViewController() else {
             return false
         }
@@ -56,7 +57,7 @@ class IterableInAppManager: NSObject {
      Displays a iOS system style notification with two buttons
      
      - parameters:
-        - title:           The NSDictionary containing the dialog options
+        - title:           The notification title
         - body:            The notification message body
         - buttonLeft:      The text of the left button
         - buttonRight:     The text of the right button
