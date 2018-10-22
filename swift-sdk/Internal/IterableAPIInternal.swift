@@ -53,7 +53,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             _userId = newValue
             _email = nil
             storeEmailAndUserId()
-            createUserId(onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "createUserId"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "createUserId"))
+            createUserForUserId(onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "createUserForUserId"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "createUserForUserId"))
             
             enableDeviceForCurrentUser()
         }
@@ -222,7 +222,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
     }
     
-    func createUserId(onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func createUserForUserId(onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         guard userId != nil else {
             ITBError("UserId is nil")
             onFailure?("UserId is nil", nil)
