@@ -89,6 +89,39 @@ class IterableAutoRegistrationTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
+    func testDoNotCallRegisterIfCreateUserFails() {
+        let expectation0 = expectation(description: "Call create user")
+        let expectation1 = expectation(description: "Call registerToken API endpoint")
+        expectation1.isInverted = true
+        
+        let networkSession = MockNetworkSession(statusCode: 501)
+        let config = IterableConfig()
+        config.pushIntegrationName = "my-push-integration"
+        let notificationStateProvider = MockNotificationStateProvider(enabled: true)
+        
+        IterableAPI.initialize(apiKey: IterableAutoRegistrationTests.apiKey,
+                               config: config,
+                               networkSession: networkSession,
+                               notificationStateProvider: notificationStateProvider)
+        IterableAPI.userId = "userId1"
+        let token = "zeeToken".data(using: .utf8)!
+        networkSession.callback = {(_, _, _) in
+            expectation0.fulfill()
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_CREATE_USER, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAutoRegistrationTests.apiKey)])
+            let body = networkSession.getRequestBody() as! [String : Any]
+            TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_USER_ID, andValue: "userId1", inDictionary: body)
+            networkSession.callback = {(_, _, _) in
+                // first call back will be called on register
+                expectation1.fulfill()
+                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_REGISTER_DEVICE_TOKEN, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAutoRegistrationTests.apiKey)])
+            }
+        }
+        IterableAPI.register(token: token)
+        
+        // only wait for small time, supposed to error out
+        wait(for: [expectation0, expectation1], timeout: 1.0)
+    }
+    
     func testDoNotCallRegisterForRemoteNotificationsWhenNotificationsAreDisabled() {
         let expectation0 = expectation(description: "Call create user")
         let expectation1 = expectation(description: "Call registerToken API endpoint")
@@ -113,11 +146,11 @@ class IterableAutoRegistrationTests: XCTestCase {
             let body = networkSession.getRequestBody() as! [String : Any]
             TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_USER_ID, andValue: "userId1", inDictionary: body)
             networkSession.callback = {(_, _, _) in
-                // first call back will be called on register
+                // second call back will be called on register
                 expectation1.fulfill()
                 TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_REGISTER_DEVICE_TOKEN, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAutoRegistrationTests.apiKey)])
                 networkSession.callback = {(_, _, _) in
-                    // second call back is for disable when we set new user id
+                    // third call back is for disable when we set new user id
                     TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_DISABLE_DEVICE, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAutoRegistrationTests.apiKey)])
                     let body = networkSession.getRequestBody() as! [String : Any]
                     TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOKEN, andValue: (token as NSData).iteHexadecimalString(), inDictionary: body)

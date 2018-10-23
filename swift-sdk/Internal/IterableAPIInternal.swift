@@ -236,7 +236,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
     }
 
-    func createUser(withUserId userId: String, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    private func createUser(withUserId userId: String, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         var args = [AnyHashable : Any]()
         args[.ITBL_KEY_USER_ID] = userId
         
