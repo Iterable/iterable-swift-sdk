@@ -53,7 +53,6 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             _userId = newValue
             _email = nil
             storeEmailAndUserId()
-            createUserForUserId(onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "createUserForUserId"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "createUserForUserId"))
             
             enableDeviceForCurrentUser()
         }
@@ -111,7 +110,22 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             return
         }
         
-        register(token: token, appName: appName, pushServicePlatform: config.pushPlatform, onSuccess: onSuccess, onFailure: onFailure)
+        if let userId = userId {
+            createUser(
+                withUserId: userId,
+                onSuccess:  { (_) in
+                    self.register(token: token, appName: appName, pushServicePlatform: self.config.pushPlatform, onSuccess: onSuccess, onFailure: onFailure)
+            },
+                onFailure: {(errorMessage, _) in
+                    if let errorMessage = errorMessage {
+                        ITBError("Could not create user: \(errorMessage)")
+                    } else {
+                        ITBError()
+                    }
+            })
+        } else {
+            register(token: token, appName: appName, pushServicePlatform: config.pushPlatform, onSuccess: onSuccess, onFailure: onFailure)
+        }
     }
 
     private func register(token: Data, appName: String, pushServicePlatform: PushServicePlatform, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
@@ -221,14 +235,8 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
                         onFailure: onFailure)
         }
     }
-    
-    func createUserForUserId(onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        guard userId != nil else {
-            ITBError("UserId is nil")
-            onFailure?("UserId is nil", nil)
-            return
-        }
-        
+
+    func createUser(withUserId userId: String, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         var args = [AnyHashable : Any]()
         args[.ITBL_KEY_USER_ID] = userId
         
