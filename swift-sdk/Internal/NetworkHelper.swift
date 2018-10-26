@@ -11,6 +11,15 @@ typealias SendRequestValue = [AnyHashable : Any]
 struct SendRequestError : Error {
     let errorMessage: String?
     let data: Data?
+    
+    init(errorMessage: String? = nil, data: Data? = nil) {
+        self.errorMessage = errorMessage
+        self.data = data
+    }
+    
+    static func createFailedFuture(reason: String? = nil) -> Future<SendRequestValue, SendRequestError> {
+        return Promise<SendRequestValue, SendRequestError>(error: SendRequestError(errorMessage: reason))
+    }
 }
 
 extension SendRequestError : LocalizedError {
@@ -97,6 +106,16 @@ extension Future {
 
 // This class takes the responsibility of setting value for Future
 class Promise<Value, ErrorType> : Future<Value, ErrorType> {
+    init(value: Value? = nil) {
+        super.init()
+        result = value.map(Result.value)
+    }
+    
+    init(error: ErrorType) {
+        super.init()
+        result = Result.error(error)
+    }
+
     func resolve(with value: Value) {
         result = .value(value)
     }
