@@ -24,24 +24,85 @@ enum Result<Value, ErrorType> {
     case error(ErrorType)
 }
 
-
-class Promise<Value, ErrorType> {
-    private lazy var callbacks = [(Result<Value, ErrorType>) -> Void]()
-    
-    func observe(with callback: @escaping (Result<Value, ErrorType>) -> Void) {
-        callbacks.append(callback)
+// This has only two public methods
+// either there is a success with result
+// or there is a failure with error
+// There is no way to set value a result in this class.
+class Future<Value, ErrorType> {
+    var onSuccess: ((Value) -> Void)? = nil {
+        didSet { result.map(report) }
     }
     
-    func resolve(with value: Value) {
-        callbacks.forEach { (callback) in
-            callback(.value(value))
+    var onFailure : ((ErrorType) -> Void)? = nil {
+        didSet { result.map(report) }
+    }
+    
+    fileprivate var result: Result<Value, ErrorType>? {
+        // Observe whenever a result is assigned, and report it
+        didSet { result.map(report) }
+    }
+    
+    // Report success or error based on result
+    private func report(result: Result<Value, ErrorType>) {
+        switch result {
+        case .value(let value):
+            onSuccess?(value)
+            break
+        case .error(let error):
+            onFailure?(error)
+            break
         }
+    }
+}
+
+extension Future {
+    func flatMap<NextValue>(_ closure: @escaping (Value) -> Future<NextValue, ErrorType>) -> Future<NextValue, ErrorType> {
+        let promise = Promise<NextValue, ErrorType>()
+        
+        onSuccess = { value in
+            let future = closure(value)
+            
+            future.onSuccess = { futureValue in
+                promise.resolve(with: futureValue)
+            }
+            
+            future.onFailure = { futureError in
+                promise.reject(with: futureError)
+            }
+        }
+        
+        onFailure = { error in
+            promise.reject(with: error)
+        }
+        
+        return promise
+    }
+    
+    func map<NextValue>(_ closure: @escaping (Value) -> NextValue) -> Future<NextValue, ErrorType> {
+        let promise = Promise<NextValue, ErrorType>()
+        
+        onSuccess = { value in
+            let nextValue = closure(value)
+            promise.resolve(with: nextValue)
+        }
+        
+        onFailure = { error in
+            promise.reject(with: error)
+        }
+        
+        return promise
+    }
+}
+
+
+// This class takes the responsibility of setting value for Future
+class Promise<Value, ErrorType> : Future<Value, ErrorType> {
+    func resolve(with value: Value) {
+        result = .value(value)
     }
     
     func reject(with error: ErrorType) {
-        callbacks.forEach { (callback) in
-            callback(.error(error))
-        }
+        result = .error(error)
     }
 }
 
@@ -60,7 +121,7 @@ extension URLSession : NetworkSessionProtocol {
 }
 
 struct NetworkHelper {
-    static func sendRequest(_ request: URLRequest, usingSession networkSession: NetworkSessionProtocol) -> Promise<SendRequestValue, SendRequestError>  {
+    static func sendRequest(_ request: URLRequest, usingSession networkSession: NetworkSessionProtocol) -> Future<SendRequestValue, SendRequestError>  {
         let promise = Promise<SendRequestValue, SendRequestError>()
         
         networkSession.makeRequest(request) { (data, response, error) in

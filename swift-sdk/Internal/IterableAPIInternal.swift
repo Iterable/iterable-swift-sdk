@@ -531,13 +531,14 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
     
     func sendRequest(_ request: URLRequest, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) {
-        NetworkHelper.sendRequest(request, usingSession: networkSession).observe { (result) in
-            switch result {
-            case .value(let json):
-                onSuccess?(json)
-            case .error(let failureInfo):
-                onFailure?(failureInfo.errorMessage, failureInfo.data)
-            }
+        let future = NetworkHelper.sendRequest(request, usingSession: networkSession)
+        
+        future.onSuccess = { (json) in
+            onSuccess?(json)
+        }
+        
+        future.onFailure = { (failureInfo) in
+            onFailure?(failureInfo.errorMessage, failureInfo.data)
         }
     }
     
@@ -603,9 +604,10 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         guard config.autoPushRegistration == true, isEitherUserIdOrEmailSet() else {
             return
         }
-
-        notificationStateProvider.notificationsEnabled.observe { (authResult) in
-            if case let Result.value(authorized) = authResult, authorized == true {
+        
+        let future = notificationStateProvider.notificationsEnabled
+        future.onSuccess = {(authorized) in
+            if authorized {
                 self.notificationStateProvider.registerForRemoteNotifications()
             }
         }
@@ -793,14 +795,13 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             return
         }
         
-        NetworkHelper.sendRequest(request, usingSession: networkSession).observe {(result) in
-            switch result {
-            case .value(let json):
-                self.handleDDL(json: json)
-            case .error(let failureInfo):
-                if let errorMessage = failureInfo.errorMessage {
-                    ITBError(errorMessage)
-                }
+        let future = NetworkHelper.sendRequest(request, usingSession: networkSession)
+        future.onSuccess = { (json) in
+            self.handleDDL(json: json)
+        }
+        future.onFailure = { (failureInfo) in
+            if let errorMessage = failureInfo.errorMessage {
+                ITBError(errorMessage)
             }
         }
     }
