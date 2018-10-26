@@ -110,7 +110,22 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             return
         }
         
-        register(token: token, appName: appName, pushServicePlatform: config.pushPlatform, onSuccess: onSuccess, onFailure: onFailure)
+        if let userId = userId {
+            createUser(
+                withUserId: userId,
+                onSuccess:  { (_) in
+                    self.register(token: token, appName: appName, pushServicePlatform: self.config.pushPlatform, onSuccess: onSuccess, onFailure: onFailure)
+            },
+                onFailure: {(errorMessage, _) in
+                    if let errorMessage = errorMessage {
+                        ITBError("Could not create user: \(errorMessage)")
+                    } else {
+                        ITBError()
+                    }
+            })
+        } else {
+            register(token: token, appName: appName, pushServicePlatform: config.pushPlatform, onSuccess: onSuccess, onFailure: onFailure)
+        }
     }
 
     private func register(token: Data, appName: String, pushServicePlatform: PushServicePlatform, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
@@ -218,6 +233,15 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
                             onSuccess?(data)
                         },
                         onFailure: onFailure)
+        }
+    }
+
+    private func createUser(withUserId userId: String, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+        var args = [AnyHashable : Any]()
+        args[.ITBL_KEY_USER_ID] = userId
+        
+        if let request = createPostRequest(forPath: .ITBL_PATH_CREATE_USER, withBody: args) {
+            sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
         }
     }
 
