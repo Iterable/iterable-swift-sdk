@@ -10,7 +10,8 @@ import OHHTTPStubs
 
 @testable import IterableSDK
 
-let testExpectationTimeout = 15.0
+let testExpectationTimeout = 15.0 // How long to wait when we expect to succeed
+let testExpectationTimeoutForInverted = 1.0 // How long to wait when we expect to fail
 
 class IterableActionRunnerTests: XCTestCase {
     override func setUp() {
