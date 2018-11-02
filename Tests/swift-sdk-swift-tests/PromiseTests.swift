@@ -28,7 +28,7 @@ class PromiseTests: XCTestCase {
         f2.onSuccess { (value) in
             XCTAssertEqual(value, "zeeString".count)
             expectation1.fulfill()
-        } .onFailure { _ in
+        } .onError { _ in
             expectation2.fulfill()
         }
         
@@ -46,7 +46,7 @@ class PromiseTests: XCTestCase {
         
         f2.onSuccess { (value) in
             expectation1.fulfill()
-        }.onFailure { error in
+        }.onError { error in
             if let myError = error as? MyError {
                 XCTAssertEqual(myError.message, "zeeErrorMessage")
                 expectation2.fulfill()
@@ -72,7 +72,7 @@ class PromiseTests: XCTestCase {
         f2.onSuccess { (secondValue) in
             XCTAssertEqual(secondValue, "zeeStringzeeString")
             expectation1.fulfill()
-        } .onFailure { _ in
+        } .onError { _ in
             expectation2.fulfill()
         }
         
@@ -94,7 +94,7 @@ class PromiseTests: XCTestCase {
         
         f2.onSuccess { (secondValue) in
             expectation1.fulfill()
-        } .onFailure {(error) in
+        } .onError {(error) in
             if let myError = error as? MyError {
                 XCTAssertEqual(myError.message, "zeeErrorMessage")
                 expectation2.fulfill()
@@ -119,7 +119,7 @@ class PromiseTests: XCTestCase {
         
         f2.onSuccess { (secondValue) in
             expectation1.fulfill()
-        }.onFailure {(error) in
+        }.onError {(error) in
             if let myError = error as? MyError {
                 XCTAssertEqual(myError.message, "zeeErrorMessage")
                 expectation2.fulfill()
@@ -140,7 +140,7 @@ class PromiseTests: XCTestCase {
         f1.onSuccess { (value) in
             XCTAssertEqual(value, "zeeValue")
             expectation1.fulfill()
-        }.onFailure { _ in
+        }.onError { _ in
             expectation2.fulfill()
         }
         
@@ -157,7 +157,7 @@ class PromiseTests: XCTestCase {
         
         f1.onSuccess { (value) in
             expectation1.fulfill()
-        }.onFailure { error in
+        }.onError { error in
             if let myError = error as? MyError {
                 XCTAssertEqual(myError.message, "zeeErrorMessage")
                 expectation2.fulfill()

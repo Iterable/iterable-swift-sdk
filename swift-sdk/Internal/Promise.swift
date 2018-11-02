@@ -19,7 +19,7 @@ enum Result<Value> {
 // There is no way to set value a result in this class.
 class Future<Value> {
     fileprivate var successCallback: ((Value) -> Void)? = nil
-    fileprivate var failureCallback: ((Error) -> Void)? = nil
+    fileprivate var errorCallback: ((Error) -> Void)? = nil
 
     @discardableResult func onSuccess(block: ((Value) -> Void)? = nil) -> Future<Value> {
         self.successCallback = block
@@ -32,12 +32,12 @@ class Future<Value> {
         return self
     }
     
-    @discardableResult func onFailure(block: ((Error) -> Void)? = nil) -> Future<Value> {
-        self.failureCallback = block
+    @discardableResult func onError(block: ((Error) -> Void)? = nil) -> Future<Value> {
+        self.errorCallback = block
         
         // if a failed result already exists (from constructor), report it
         if case let Result.error(error)? = result {
-            failureCallback?(error)
+            errorCallback?(error)
         }
 
         return self
@@ -56,7 +56,7 @@ class Future<Value> {
             break
         case .error(let error):
             print("calling onFailure")
-            failureCallback?(error)
+            errorCallback?(error)
             break
         }
     }
@@ -73,12 +73,12 @@ extension Future {
                 promise.resolve(with: futureValue)
             }
             
-            future.onFailure { futureError in
+            future.onError { futureError in
                 promise.reject(with: futureError)
             }
         }
         
-        onFailure  { error in
+        onError  { error in
             promise.reject(with: error)
         }
         
@@ -93,7 +93,7 @@ extension Future {
             promise.resolve(with: nextValue)
         }
         
-        onFailure { error in
+        onError { error in
             promise.reject(with: error)
         }
         

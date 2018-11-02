@@ -116,9 +116,9 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
                 return self.register(token: token, appName: appName, pushServicePlatform: self.config.pushPlatform)
             }).onSuccess { (json) in
                 onSuccess?(json)
-            }.onFailure { (error) in
+            }.onError { (error) in
                 if let sendError = error as? SendRequestError {
-                    onFailure?(sendError.errorMessage, sendError.data)
+                    onFailure?(sendError.reason, sendError.data)
                 } else {
                     onFailure?("failed to create user", nil)
                 }
@@ -132,7 +132,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         guard email != nil || userId != nil else {
             ITBError("Both email and userId are nil")
             onFailure?("Both email and userId are nil", nil)
-            return SendRequestError.createFailedFuture(reason: "Both email and userId are nil")
+            return SendRequestError.createErroredFuture(reason: "Both email and userId are nil")
         }
         
         hexToken = (token as NSData).iteHexadecimalString()
@@ -178,7 +178,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         ITBInfo("sending registerToken request with args \(args)")
         return
             createPostRequest(forPath: .ITBL_PATH_REGISTER_DEVICE_TOKEN, withBody: args)
-                .map {sendRequest($0, onSuccess: onSuccess, onFailure: onFailure)} ?? SendRequestError.createFailedFuture(reason: "Couldn't create register request")
+                .map {sendRequest($0, onSuccess: onSuccess, onFailure: onFailure)} ?? SendRequestError.createErroredFuture(reason: "Couldn't create register request")
     }
     
     func disableDeviceForCurrentUser() {
@@ -242,7 +242,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         
         return createPostRequest(forPath: .ITBL_PATH_CREATE_USER, withBody: args).map {
             sendRequest($0)
-        } ?? SendRequestError.createFailedFuture(reason: "Could not create createUser Reqeust")
+        } ?? SendRequestError.createErroredFuture(reason: "Could not create createUser Reqeust")
     }
 
     func trackPurchase(_ total: NSNumber, items: [CommerceItem]) {
@@ -400,55 +400,30 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
     
     func spawn(inAppNotification callbackBlock:ITEActionBlock?) {
-        let onSuccess: OnSuccessHandler = { payload in
-            guard let payload = payload else {
-                return
-            }
-            guard let dialogOptions = IterableInAppManager.getNextMessageFromPayload(payload) else {
-                ITBError("No notifications found for inApp payload \(payload)")
-                return
-            }
-            guard let message = dialogOptions[.ITBL_IN_APP_CONTENT] as? [AnyHashable : Any] else {
-                return
-            }
-            guard let messageId = dialogOptions[.ITBL_KEY_MESSAGE_ID] as? String else {
-                return
-            }
-            guard let html = message[.ITBL_IN_APP_HTML] as? String else {
-                return
-            }
-            guard html.range(of: AnyHashable.ITBL_IN_APP_HREF, options: [.caseInsensitive]) != nil else {
-                ITBError("No href tag found in in-app html payload \(html)")
-                self.inAppConsume(messageId)
-                return
-            }
-
-            let inAppDisplaySettings = message[.ITBL_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
-            let backgroundAlpha = IterableInAppManager.getBackgroundAlpha(fromInAppSettings: inAppDisplaySettings)
-            let edgeInsets = IterableInAppManager.getPaddingFromPayload(inAppDisplaySettings)
-
-            let notificationMetadata = IterableNotificationMetadata.metadata(fromInAppOptions: messageId)
-            
-            DispatchQueue.main.async {
-                let opened = IterableInAppManager.showIterableNotificationHTML(html, trackParams: notificationMetadata, backgroundAlpha: backgroundAlpha, padding: edgeInsets, callbackBlock: callbackBlock)
+        getInAppMessages(1).flatMap { IterableInAppManager.handleInApp(withPayload: $0, callbackBlock: callbackBlock) }.onSuccess {
+            switch $0 {
+            case .success(opened: let opened, messageId: let messageId):
                 if opened {
                     self.inAppConsume(messageId)
                 }
+            case .failure(reason: let reason, messageId: let messageId):
+                if let messageId = messageId {
+                    self.inAppConsume(messageId)
+                }
+                ITBError(reason)
             }
         }
-        
-        getInAppMessages(1, onSuccess: onSuccess, onFailure: IterableAPIInternal.defaultOnFailure(identifier: "getInAppMessages"))
     }
 
-    func getInAppMessages(_ count: NSNumber) {
-        getInAppMessages(count, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "getMessages"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "getMessages"))
+    func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue> {
+        return getInAppMessages(count, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "getMessages"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "getMessages"))
     }
 
-    func getInAppMessages(_ count: NSNumber, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func getInAppMessages(_ count: NSNumber, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) -> Future<SendRequestValue> {
         guard email != nil || userId != nil else {
             ITBError("Both email and userId are nil")
             onFailure?("Both email and userId are nil", nil)
-            return
+            return SendRequestError.createErroredFuture(reason: "Both email and userId are nil")
         }
 
         var args : [AnyHashable : Any] = [
@@ -459,9 +434,9 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
 
         addEmailOrUserId(args: &args)
 
-        if let request = createGetRequest(forPath: .ITBL_PATH_GET_INAPP_MESSAGES, withArgs: args as! [String : String]) {
-            sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
-        }
+        return createGetRequest(forPath: .ITBL_PATH_GET_INAPP_MESSAGES, withArgs: args as! [String : String]).map {
+            sendRequest($0, onSuccess: onSuccess, onFailure: onFailure)
+        } ?? SendRequestError.createErroredFuture(reason: "Could not create get request for getInApp")
     }
 
     func trackInAppOpen(_ messageId: String) {
@@ -533,9 +508,9 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     @discardableResult func sendRequest(_ request: URLRequest, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue> {
         return NetworkHelper.sendRequest(request, usingSession: networkSession).onSuccess { (json) in
             onSuccess?(json)
-        }.onFailure { (failureInfo) in
-            if let sendError = failureInfo as? SendRequestError {
-                onFailure?(sendError.errorMessage, sendError.data)
+        }.onError { (error) in
+            if let sendError = error as? SendRequestError {
+                onFailure?(sendError.reason, sendError.data)
             } else {
                 onFailure?("send request failed", nil)
             }
@@ -796,9 +771,9 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         
         NetworkHelper.sendRequest(request, usingSession: networkSession).onSuccess { (json) in
             self.handleDDL(json: json)
-        }.onFailure { (failureInfo) in
-            if let sendError = failureInfo as? SendRequestError, let errorMessage = sendError.errorMessage {
-                ITBError(errorMessage)
+        }.onError { (error) in
+            if let sendError = error as? SendRequestError, let reason = sendError.reason {
+                ITBError(reason)
             } else {
                 ITBError("failed to send handleDDl request")
             }
