@@ -11,37 +11,20 @@ typealias SendRequestValue = [AnyHashable : Any]
 struct SendRequestError : Error {
     let errorMessage: String?
     let data: Data?
+    
+    init(errorMessage: String? = nil, data: Data? = nil) {
+        self.errorMessage = errorMessage
+        self.data = data
+    }
+    
+    static func createFailedFuture(reason: String? = nil) -> Future<SendRequestValue> {
+        return Promise<SendRequestValue>(error: SendRequestError(errorMessage: reason))
+    }
 }
 
 extension SendRequestError : LocalizedError {
     var localizedDescription: String {
         return errorMessage ?? ""
-    }
-}
-
-enum Result<Value, ErrorType> {
-    case value(Value)
-    case error(ErrorType)
-}
-
-
-class Promise<Value, ErrorType> {
-    private lazy var callbacks = [(Result<Value, ErrorType>) -> Void]()
-    
-    func observe(with callback: @escaping (Result<Value, ErrorType>) -> Void) {
-        callbacks.append(callback)
-    }
-    
-    func resolve(with value: Value) {
-        callbacks.forEach { (callback) in
-            callback(.value(value))
-        }
-    }
-    
-    func reject(with error: ErrorType) {
-        callbacks.forEach { (callback) in
-            callback(.error(error))
-        }
     }
 }
 
@@ -60,8 +43,8 @@ extension URLSession : NetworkSessionProtocol {
 }
 
 struct NetworkHelper {
-    static func sendRequest(_ request: URLRequest, usingSession networkSession: NetworkSessionProtocol) -> Promise<SendRequestValue, SendRequestError>  {
-        let promise = Promise<SendRequestValue, SendRequestError>()
+    static func sendRequest(_ request: URLRequest, usingSession networkSession: NetworkSessionProtocol) -> Future<SendRequestValue>  {
+        let promise = Promise<SendRequestValue>()
         
         networkSession.makeRequest(request) { (data, response, error) in
             let result = createResultFromNetworkResponse(data: data, response: response, error: error)
@@ -76,7 +59,7 @@ struct NetworkHelper {
         return promise
     }
     
-    static func createResultFromNetworkResponse(data: Data?, response: URLResponse?, error: Error?) -> Result<SendRequestValue, SendRequestError> {
+    static func createResultFromNetworkResponse(data: Data?, response: URLResponse?, error: Error?) -> Result<SendRequestValue> {
         if let error = error {
             return .error(SendRequestError(errorMessage: "\(error.localizedDescription)", data: data))
         }
