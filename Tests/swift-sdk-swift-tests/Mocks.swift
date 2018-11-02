@@ -11,8 +11,8 @@ import UserNotifications
 @testable import IterableSDK
 
 class MockNotificationStateProvider : NotificationStateProviderProtocol {
-    var notificationsEnabled: Promise<Bool, Error> {
-        let promise = Promise<Bool, Error>()
+    var notificationsEnabled: Promise<Bool> {
+        let promise = Promise<Bool>()
         DispatchQueue.main.async {
             promise.resolve(with: self.enabled)
         }

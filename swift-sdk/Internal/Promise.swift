@@ -8,20 +8,20 @@
 
 import Foundation
 
-enum Result<Value, ErrorType> {
+enum Result<Value> {
     case value(Value)
-    case error(ErrorType)
+    case error(Error)
 }
 
 // This has only two public methods
 // either there is a success with result
 // or there is a failure with error
 // There is no way to set value a result in this class.
-class Future<Value, ErrorType> {
+class Future<Value> {
     fileprivate var successCallback: ((Value) -> Void)? = nil
-    fileprivate var failureCallback: ((ErrorType) -> Void)? = nil
+    fileprivate var failureCallback: ((Error) -> Void)? = nil
 
-    @discardableResult func onSuccess(block: ((Value) -> Void)? = nil) -> Future<Value, ErrorType> {
+    @discardableResult func onSuccess(block: ((Value) -> Void)? = nil) -> Future<Value> {
         self.successCallback = block
 
         // if a successful result already exists (from constructor), report it
@@ -32,7 +32,7 @@ class Future<Value, ErrorType> {
         return self
     }
     
-    @discardableResult func onFailure(block: ((ErrorType) -> Void)? = nil) -> Future<Value, ErrorType> {
+    @discardableResult func onFailure(block: ((Error) -> Void)? = nil) -> Future<Value> {
         self.failureCallback = block
         
         // if a failed result already exists (from constructor), report it
@@ -43,13 +43,13 @@ class Future<Value, ErrorType> {
         return self
     }
 
-    fileprivate var result: Result<Value, ErrorType>? {
+    fileprivate var result: Result<Value>? {
         // Observe whenever a result is assigned, and report it
         didSet { result.map(report) }
     }
     
     // Report success or error based on result
-    private func report(result: Result<Value, ErrorType>) {
+    private func report(result: Result<Value>) {
         switch result {
         case .value(let value):
             successCallback?(value)
@@ -63,8 +63,8 @@ class Future<Value, ErrorType> {
 }
 
 extension Future {
-    func flatMap<NextValue>(_ closure: @escaping (Value) -> Future<NextValue, ErrorType>) -> Future<NextValue, ErrorType> {
-        let promise = Promise<NextValue, ErrorType>()
+    func flatMap<NextValue>(_ closure: @escaping (Value) -> Future<NextValue>) -> Future<NextValue> {
+        let promise = Promise<NextValue>()
         
         onSuccess { (value) in
             let future = closure(value)
@@ -85,8 +85,8 @@ extension Future {
         return promise
     }
     
-    func map<NextValue>(_ closure: @escaping (Value) -> NextValue) -> Future<NextValue, ErrorType> {
-        let promise = Promise<NextValue, ErrorType>()
+    func map<NextValue>(_ closure: @escaping (Value) -> NextValue) -> Future<NextValue> {
+        let promise = Promise<NextValue>()
         
         onSuccess { value in
             let nextValue = closure(value)
@@ -103,13 +103,13 @@ extension Future {
 
 
 // This class takes the responsibility of setting value for Future
-class Promise<Value, ErrorType> : Future<Value, ErrorType> {
+class Promise<Value> : Future<Value> {
     init(value: Value? = nil) {
         super.init()
         result = value.map(Result.value)
     }
     
-    init(error: ErrorType) {
+    init(error: Error) {
         super.init()
         result = Result.error(error)
     }
@@ -118,7 +118,7 @@ class Promise<Value, ErrorType> : Future<Value, ErrorType> {
         result = .value(value)
     }
     
-    func reject(with error: ErrorType) {
+    func reject(with error: Error) {
         result = .error(error)
     }
 }
