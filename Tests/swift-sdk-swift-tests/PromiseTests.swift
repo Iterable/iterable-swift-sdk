@@ -25,11 +25,10 @@ class PromiseTests: XCTestCase {
         let f1 = createSucessfulFuture(withValue: "zeeString")
         let f2 = f1.map {$0.count}
         
-        f2.onSuccess = { (value) in
+        f2.onSuccess { (value) in
             XCTAssertEqual(value, "zeeString".count)
             expectation1.fulfill()
-        }
-        f2.onFailure = {_ in
+        } .onFailure { _ in
             expectation2.fulfill()
         }
         
@@ -45,10 +44,9 @@ class PromiseTests: XCTestCase {
         let f1: Future<String, MyError> = createFailureFuture(withError: MyError(message: "zeeErrorMessage"))
         let f2 = f1.map {$0.count}
         
-        f2.onSuccess = { (value) in
+        f2.onSuccess { (value) in
             expectation1.fulfill()
-        }
-        f2.onFailure = {error in
+        }.onFailure { error in
             XCTAssertEqual(error.message, "zeeErrorMessage")
             expectation2.fulfill()
         }
@@ -69,11 +67,10 @@ class PromiseTests: XCTestCase {
             return self.createSucessfulFuture(withValue: firstValue + firstValue)
         }
         
-        f2.onSuccess = { (secondValue) in
+        f2.onSuccess { (secondValue) in
             XCTAssertEqual(secondValue, "zeeStringzeeString")
             expectation1.fulfill()
-        }
-        f2.onFailure = {_ in
+        } .onFailure { _ in
             expectation2.fulfill()
         }
         
@@ -93,10 +90,9 @@ class PromiseTests: XCTestCase {
             return self.createSucessfulFuture(withValue: "zeeString")
         }
         
-        f2.onSuccess = { (secondValue) in
+        f2.onSuccess { (secondValue) in
             expectation1.fulfill()
-        }
-        f2.onFailure = {(error) in
+        } .onFailure {(error) in
             XCTAssertEqual(error.message, "zeeErrorMessage")
             expectation2.fulfill()
         }
@@ -117,10 +113,9 @@ class PromiseTests: XCTestCase {
             return self.createFailureFuture(withError: MyError(message: "zeeErrorMessage"))
         }
         
-        f2.onSuccess = { (secondValue) in
+        f2.onSuccess { (secondValue) in
             expectation1.fulfill()
-        }
-        f2.onFailure = {(error) in
+        }.onFailure {(error) in
             XCTAssertEqual(error.message, "zeeErrorMessage")
             expectation2.fulfill()
         }
@@ -136,11 +131,10 @@ class PromiseTests: XCTestCase {
         
         let f1: Future<String, MyError> = Promise<String, MyError>(value: "zeeValue")
         
-        f1.onSuccess = { (value) in
+        f1.onSuccess { (value) in
             XCTAssertEqual(value, "zeeValue")
             expectation1.fulfill()
-        }
-        f1.onFailure = {_ in
+        }.onFailure { _ in
             expectation2.fulfill()
         }
         
@@ -155,10 +149,9 @@ class PromiseTests: XCTestCase {
         
         let f1: Future<String, MyError> = Promise<String, MyError>(error: MyError(message: "zeeErrorMessage"))
         
-        f1.onSuccess = { (value) in
+        f1.onSuccess { (value) in
             expectation1.fulfill()
-        }
-        f1.onFailure = { error in
+        }.onFailure { error in
             XCTAssertEqual(error.message, "zeeErrorMessage")
             expectation2.fulfill()
         }

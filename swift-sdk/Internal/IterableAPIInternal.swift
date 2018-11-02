@@ -112,15 +112,11 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         
         if let userId = userId {
             // if we are using userId, then create a user first, then register
-            let future = createUser(withUserId: userId).flatMap({ (_)  in
+            createUser(withUserId: userId).flatMap({ (_)  in
                 return self.register(token: token, appName: appName, pushServicePlatform: self.config.pushPlatform)
-            })
-            
-            future.onSuccess = { (json) in
+            }).onSuccess { (json) in
                 onSuccess?(json)
-            }
-            
-            future.onFailure = { (error) in
+            }.onFailure { (error) in
                 onFailure?(error.errorMessage, error.data)
             }
         } else {
@@ -531,17 +527,11 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
     
     @discardableResult func sendRequest(_ request: URLRequest, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        let future = NetworkHelper.sendRequest(request, usingSession: networkSession)
-        
-        future.onSuccess = { (json) in
+        return NetworkHelper.sendRequest(request, usingSession: networkSession).onSuccess { (json) in
             onSuccess?(json)
-        }
-        
-        future.onFailure = { (failureInfo) in
+        }.onFailure { (failureInfo) in
             onFailure?(failureInfo.errorMessage, failureInfo.data)
         }
-        
-        return future
     }
     
     // MARK: For Private and Internal Use ========================================>
@@ -607,8 +597,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             return
         }
         
-        let future = notificationStateProvider.notificationsEnabled
-        future.onSuccess = {(authorized) in
+        notificationStateProvider.notificationsEnabled.onSuccess { (authorized) in
             if authorized {
                 self.notificationStateProvider.registerForRemoteNotifications()
             }
@@ -797,11 +786,9 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             return
         }
         
-        let future = NetworkHelper.sendRequest(request, usingSession: networkSession)
-        future.onSuccess = { (json) in
+        NetworkHelper.sendRequest(request, usingSession: networkSession).onSuccess { (json) in
             self.handleDDL(json: json)
-        }
-        future.onFailure = { (failureInfo) in
+        }.onFailure { (failureInfo) in
             if let errorMessage = failureInfo.errorMessage {
                 ITBError(errorMessage)
             }

@@ -18,24 +18,31 @@ enum Result<Value, ErrorType> {
 // or there is a failure with error
 // There is no way to set value a result in this class.
 class Future<Value, ErrorType> {
-    var onSuccess: ((Value) -> Void)? = nil {
-        didSet {
-            // if a successful result already exists (from constructor), report it
-            if case let Result.value(value)? = result {
-                onSuccess?(value)
-            }
+    fileprivate var successCallback: ((Value) -> Void)? = nil
+    fileprivate var failureCallback: ((ErrorType) -> Void)? = nil
+
+    @discardableResult func onSuccess(block: ((Value) -> Void)? = nil) -> Future<Value, ErrorType> {
+        self.successCallback = block
+
+        // if a successful result already exists (from constructor), report it
+        if case let Result.value(value)? = result {
+            successCallback?(value)
         }
+        
+        return self
     }
     
-    var onFailure : ((ErrorType) -> Void)? = nil {
-        didSet {
-             // if a failed result already exists (from constructor), report it
-            if case let Result.error(error)? = result {
-                onFailure?(error)
-            }
+    @discardableResult func onFailure(block: ((ErrorType) -> Void)? = nil) -> Future<Value, ErrorType> {
+        self.failureCallback = block
+        
+        // if a failed result already exists (from constructor), report it
+        if case let Result.error(error)? = result {
+            failureCallback?(error)
         }
+
+        return self
     }
-    
+
     fileprivate var result: Result<Value, ErrorType>? {
         // Observe whenever a result is assigned, and report it
         didSet { result.map(report) }
@@ -45,11 +52,11 @@ class Future<Value, ErrorType> {
     private func report(result: Result<Value, ErrorType>) {
         switch result {
         case .value(let value):
-            onSuccess?(value)
+            successCallback?(value)
             break
         case .error(let error):
             print("calling onFailure")
-            onFailure?(error)
+            failureCallback?(error)
             break
         }
     }
@@ -59,19 +66,19 @@ extension Future {
     func flatMap<NextValue>(_ closure: @escaping (Value) -> Future<NextValue, ErrorType>) -> Future<NextValue, ErrorType> {
         let promise = Promise<NextValue, ErrorType>()
         
-        onSuccess = { value in
+        onSuccess { (value) in
             let future = closure(value)
             
-            future.onSuccess = { futureValue in
+            future.onSuccess { futureValue in
                 promise.resolve(with: futureValue)
             }
             
-            future.onFailure = { futureError in
+            future.onFailure { futureError in
                 promise.reject(with: futureError)
             }
         }
         
-        onFailure = { error in
+        onFailure  { error in
             promise.reject(with: error)
         }
         
@@ -81,12 +88,12 @@ extension Future {
     func map<NextValue>(_ closure: @escaping (Value) -> NextValue) -> Future<NextValue, ErrorType> {
         let promise = Promise<NextValue, ErrorType>()
         
-        onSuccess = { value in
+        onSuccess { value in
             let nextValue = closure(value)
             promise.resolve(with: nextValue)
         }
         
-        onFailure = { error in
+        onFailure { error in
             promise.reject(with: error)
         }
         
