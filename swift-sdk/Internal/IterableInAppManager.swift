@@ -170,16 +170,15 @@ class IterableInAppManager: NSObject {
         }
     }
     
-    enum HandleInAppResult {
+    enum ShowInAppResult {
         case success(opened: Bool, messageId: String)
         case failure(reason: String, messageId: String?)
     }
     
-    static func handleInApp(withPayload payload: [AnyHashable : Any], callbackBlock:ITEActionBlock?) -> Future<HandleInAppResult> {
-        let parseResult = parseInApp(fromPayload: payload)
+    static func showInApp(parseResult: InAppParseResult, callbackBlock:ITEActionBlock?) -> Future<ShowInAppResult> {
         switch parseResult {
         case .success(let inAppDetails):
-            let result = Promise<HandleInAppResult>()
+            let result = Promise<ShowInAppResult>()
             let notificationMetadata = IterableNotificationMetadata.metadata(fromInAppOptions: inAppDetails.messageId)
             
             DispatchQueue.main.async {
@@ -192,10 +191,11 @@ class IterableInAppManager: NSObject {
             }
             return result
         case .failure(let reason, let messageId):
-            return Promise<HandleInAppResult>(value: .failure(reason: reason, messageId: messageId))
+            return Promise<ShowInAppResult>(value: .failure(reason: reason, messageId: messageId))
         }
     }
 
+    
     private static func getTopViewController() -> UIViewController? {
         guard let rootViewController = IterableUtil.rootViewController else {
             return nil
@@ -207,12 +207,12 @@ class IterableInAppManager: NSObject {
         return topViewController
     }
     
-    private enum InAppParseResult {
+    enum InAppParseResult {
         case success(InAppDetails)
         case failure(reason: String, messageId: String?)
     }
     
-    private struct InAppDetails {
+    struct InAppDetails {
         let edgeInsets: UIEdgeInsets
         let backgroundAlpha: Double
         let messageId: String
@@ -221,7 +221,7 @@ class IterableInAppManager: NSObject {
     
     // Payload is what comes from Api
     // If successful you get InAppDetails
-    private static func parseInApp(fromPayload payload: [AnyHashable : Any]) -> InAppParseResult {
+    static func parseInApp(fromPayload payload: [AnyHashable : Any]) -> InAppParseResult {
         guard let dialogOptions = IterableInAppManager.getNextMessageFromPayload(payload) else {
             return .failure(reason: "No notifications found for inApp payload \(payload)", messageId: nil)
         }

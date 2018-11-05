@@ -399,27 +399,30 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
     }
     
-    func spawn(inAppNotification callbackBlock:ITEActionBlock?) {
-        getInAppMessages(1).flatMap { IterableInAppManager.handleInApp(withPayload: $0, callbackBlock: callbackBlock) }.onSuccess {
-            switch $0 {
-            case .success(opened: let opened, messageId: let messageId):
-                if opened {
-                    self.inAppConsume(messageId)
+    @discardableResult func spawn(inAppNotification callbackBlock:ITEActionBlock?) -> Future<IterableInAppManager.ShowInAppResult> {
+        return getInAppMessages(1)
+            .map { IterableInAppManager.parseInApp(fromPayload: $0)}
+            .flatMap { IterableInAppManager.showInApp(parseResult: $0, callbackBlock: callbackBlock)}
+            .onSuccess {
+                switch $0 {
+                case .success(opened: let opened, messageId: let messageId):
+                    if opened {
+                        self.inAppConsume(messageId)
+                    }
+                case .failure(reason: let reason, messageId: let messageId):
+                    if let messageId = messageId {
+                        self.inAppConsume(messageId)
+                    }
+                    ITBError(reason)
                 }
-            case .failure(reason: let reason, messageId: let messageId):
-                if let messageId = messageId {
-                    self.inAppConsume(messageId)
-                }
-                ITBError(reason)
             }
-        }
     }
 
-    func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue> {
+    @discardableResult func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue> {
         return getInAppMessages(count, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "getMessages"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "getMessages"))
     }
 
-    func getInAppMessages(_ count: NSNumber, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) -> Future<SendRequestValue> {
+    @discardableResult func getInAppMessages(_ count: NSNumber, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) -> Future<SendRequestValue> {
         guard email != nil || userId != nil else {
             ITBError("Both email and userId are nil")
             onFailure?("Both email and userId are nil", nil)
