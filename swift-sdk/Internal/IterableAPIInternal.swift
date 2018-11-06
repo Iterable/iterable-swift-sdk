@@ -399,10 +399,10 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
     }
     
-    @discardableResult func spawn(inAppNotification callbackBlock:ITEActionBlock?) -> Future<IterableInAppManager.ShowInAppResult> {
+    @discardableResult func spawn(inAppNotification callbackBlock:ITEActionBlock?) -> Future<InAppHelper.ShowInAppResult> {
         return getInAppMessages(1)
-            .map { IterableInAppManager.parseInApp(fromPayload: $0)}
-            .flatMap { IterableInAppManager.showInApp(parseResult: $0, callbackBlock: callbackBlock)}
+            .map { InAppHelper.parseInApp(fromPayload: $0)}
+            .flatMap { InAppHelper.showInApp(parseResult: $0, callbackBlock: callbackBlock)}
             .onSuccess {
                 switch $0 {
                 case .success(opened: let opened, messageId: let messageId):
@@ -493,7 +493,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
 
     func showSystemNotification(_ title: String, body: String, buttonLeft: String?, buttonRight:String?, callbackBlock: ITEActionBlock?) {
-        IterableInAppManager.showSystemNotification(title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
+        InAppHelper.showSystemNotification(title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
     }
 
     func getAndTrackDeeplink(webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {

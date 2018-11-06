@@ -63,12 +63,12 @@ class ViewController: UIViewController {
         let html = """
             <a href="http://website/resource#something">Click Me</a>
         """
-        IterableInAppManager.showIterableNotificationHTML(html) { (str) in
+        InAppHelper.showIterableNotificationHTML(html) { (str) in
             ITBInfo("callback: \(str ?? "<nil>")")
             self.statusLbl.text = str
         }
         
-        IterableInAppManager.showIterableNotificationHTML(html, callbackBlock: {str in print("callback: ", str ?? "nil")})
+        InAppHelper.showIterableNotificationHTML(html, callbackBlock: {str in print("callback: ", str ?? "nil")})
     }
     
     // Full screen inApp

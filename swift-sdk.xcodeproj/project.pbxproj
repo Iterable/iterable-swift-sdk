@@ -29,7 +29,7 @@
 		AC426CC4211B5497002EDBE8 /* ServerResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC426CC3211B5497002EDBE8 /* ServerResponse.swift */; };
 		AC64626B2140AACF0046E1BD /* IterableAPIResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC64626A2140AACF0046E1BD /* IterableAPIResponseTests.swift */; };
 		AC6FDD8820F4372E005D811E /* IterableAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC6FDD8720F4372E005D811E /* IterableAPI.swift */; };
-		AC6FDD8C20F56309005D811E /* IterableInAppNotificationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC6FDD8B20F56309005D811E /* IterableInAppNotificationTests.swift */; };
+		AC6FDD8C20F56309005D811E /* InAppHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC6FDD8B20F56309005D811E /* InAppHelperTests.swift */; };
 		AC7125EF20D4579E0043BBC1 /* IterableConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */; };
 		AC72A0B520CF4C49004D7997 /* IterableConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = AC72A0B120CF4C32004D7997 /* IterableConstants.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AC72A0B620CF4C53004D7997 /* IterableConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0B420CF4C32004D7997 /* IterableConstants.m */; };
@@ -44,7 +44,7 @@
 		AC72A0CE20CF4CE2004D7997 /* IterableAttributionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */; };
 		AC72A0CF20CF4CE2004D7997 /* IterableNotificationMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C220CF4CB8004D7997 /* IterableNotificationMetadata.swift */; };
 		AC72A0D020CF4D0B004D7997 /* IterableInAppHTMLViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0AB20CF4BEB004D7997 /* IterableInAppHTMLViewController.swift */; };
-		AC72A0D120CF4D0B004D7997 /* IterableInAppManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0AA20CF4BEB004D7997 /* IterableInAppManager.swift */; };
+		AC72A0D120CF4D0B004D7997 /* InAppHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0AA20CF4BEB004D7997 /* InAppHelper.swift */; };
 		AC72A0D220CF4D12004D7997 /* IterableUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0AD20CF4C16004D7997 /* IterableUtil.swift */; };
 		AC72A0D420CF4D19004D7997 /* IterableDeeplinkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0BD20CF4C98004D7997 /* IterableDeeplinkManager.swift */; };
 		AC776DA22118B86600C27C27 /* DeviceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC776DA12118B86600C27C27 /* DeviceInfo.swift */; };
@@ -190,9 +190,9 @@
 		AC431DF320D18E9000BFAFD1 /* swift-sdk-objc-tests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "swift-sdk-objc-tests-Bridging-Header.h"; sourceTree = "<group>"; };
 		AC64626A2140AACF0046E1BD /* IterableAPIResponseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPIResponseTests.swift; sourceTree = "<group>"; };
 		AC6FDD8720F4372E005D811E /* IterableAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPI.swift; sourceTree = "<group>"; };
-		AC6FDD8B20F56309005D811E /* IterableInAppNotificationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInAppNotificationTests.swift; sourceTree = "<group>"; };
+		AC6FDD8B20F56309005D811E /* InAppHelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppHelperTests.swift; sourceTree = "<group>"; };
 		AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableConfig.swift; sourceTree = "<group>"; };
-		AC72A0AA20CF4BEB004D7997 /* IterableInAppManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInAppManager.swift; sourceTree = "<group>"; };
+		AC72A0AA20CF4BEB004D7997 /* InAppHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppHelper.swift; sourceTree = "<group>"; };
 		AC72A0AB20CF4BEB004D7997 /* IterableInAppHTMLViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInAppHTMLViewController.swift; sourceTree = "<group>"; };
 		AC72A0AD20CF4C16004D7997 /* IterableUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableUtil.swift; sourceTree = "<group>"; };
 		AC72A0AF20CF4C31004D7997 /* NSData+Conversion.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSData+Conversion.m"; sourceTree = "<group>"; };
@@ -389,13 +389,13 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		AC2263FA20CF4B84009800EB /* InApp Notifications */ = {
+		AC2263FA20CF4B84009800EB /* InApp */ = {
 			isa = PBXGroup;
 			children = (
 				AC72A0AB20CF4BEB004D7997 /* IterableInAppHTMLViewController.swift */,
-				AC72A0AA20CF4BEB004D7997 /* IterableInAppManager.swift */,
+				AC72A0AA20CF4BEB004D7997 /* InAppHelper.swift */,
 			);
-			name = "InApp Notifications";
+			name = InApp;
 			sourceTree = "<group>";
 		};
 		AC2C667C20D2FCDF00D46CC9 /* Helper Files */ = {
@@ -460,7 +460,7 @@
 				AC3C10F7213F43AC00A9B839 /* Logging */,
 				ACE34AB121376ACB00691224 /* Local Storage */,
 				AC426CC5211B5527002EDBE8 /* Fp */,
-				AC2263FA20CF4B84009800EB /* InApp Notifications */,
+				AC2263FA20CF4B84009800EB /* InApp */,
 				AC72A0AC20CF4C08004D7997 /* Util */,
 				AC72A0C520CF4CB9004D7997 /* IterableAPIInternal.swift */,
 				AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */,
@@ -481,7 +481,7 @@
 				ACD6116D21080564003E7F6B /* IterableAPITests.swift */,
 				AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */,
 				AC2C668620D3435700D46CC9 /* IterableActionRunnerTests.swift */,
-				AC6FDD8B20F56309005D811E /* IterableInAppNotificationTests.swift */,
+				AC6FDD8B20F56309005D811E /* InAppHelperTests.swift */,
 				00CB31B4210960C4004ACDEC /* TestUtils.swift */,
 				00B6FACB210E8484007535CF /* APNSUtilTests.swift */,
 				AC776DA3211A17C700C27C27 /* IterableRequestUtilTests.swift */,
@@ -968,7 +968,7 @@
 				ACEDF41D2183C2EC000B9BFE /* Promise.swift in Sources */,
 				AC7125EF20D4579E0043BBC1 /* IterableConfig.swift in Sources */,
 				AC72A0B620CF4C53004D7997 /* IterableConstants.m in Sources */,
-				AC72A0D120CF4D0B004D7997 /* IterableInAppManager.swift in Sources */,
+				AC72A0D120CF4D0B004D7997 /* InAppHelper.swift in Sources */,
 				AC776DA22118B86600C27C27 /* DeviceInfo.swift in Sources */,
 				AC72A0CB20CF4CE2004D7997 /* IterableAPIInternal.swift in Sources */,
 				AC72A0C720CF4CE2004D7997 /* CommerceItem.swift in Sources */,
@@ -991,7 +991,7 @@
 				ACED4C01213F50B30055A497 /* LoggingTests.swift in Sources */,
 				AC776DA4211A17C700C27C27 /* IterableRequestUtilTests.swift in Sources */,
 				ACE34AB5213776CB00691224 /* LocalStorageTests.swift in Sources */,
-				AC6FDD8C20F56309005D811E /* IterableInAppNotificationTests.swift in Sources */,
+				AC6FDD8C20F56309005D811E /* InAppHelperTests.swift in Sources */,
 				AC995F9E2167E9FD0099A184 /* CommonExtensions.swift in Sources */,
 				AC2C668020D31B1F00D46CC9 /* IterableNotificationResponseTests.swift in Sources */,
 				AC2C668420D3370600D46CC9 /* Mocks.swift in Sources */,

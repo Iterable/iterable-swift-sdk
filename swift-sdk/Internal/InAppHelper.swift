@@ -1,14 +1,13 @@
 //
-//  IterableInAppManager.swift
-//
 //  Created by David Truong on 9/14/16.
 //  Ported to Swift by Tapash Majumder on 6/7/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
+// Utility Methods for inApp
 
 import UIKit
 
-class IterableInAppManager: NSObject {
+struct InAppHelper {
     /**
      An array of action objects representing the actions that the user can take in response to the alert view
      */
@@ -182,7 +181,7 @@ class IterableInAppManager: NSObject {
             let notificationMetadata = IterableNotificationMetadata.metadata(fromInAppOptions: inAppDetails.messageId)
             
             DispatchQueue.main.async {
-                let opened = IterableInAppManager.showIterableNotificationHTML(inAppDetails.html,
+                let opened = InAppHelper.showIterableNotificationHTML(inAppDetails.html,
                                                                                trackParams: notificationMetadata,
                                                                                backgroundAlpha: inAppDetails.backgroundAlpha,
                                                                                padding: inAppDetails.edgeInsets,
@@ -222,7 +221,7 @@ class IterableInAppManager: NSObject {
     // Payload is what comes from Api
     // If successful you get InAppDetails
     static func parseInApp(fromPayload payload: [AnyHashable : Any]) -> InAppParseResult {
-        guard let dialogOptions = IterableInAppManager.getNextMessageFromPayload(payload) else {
+        guard let dialogOptions = InAppHelper.getNextMessageFromPayload(payload) else {
             return .failure(reason: "No notifications found for inApp payload \(payload)", messageId: nil)
         }
         guard let message = dialogOptions[.ITBL_IN_APP_CONTENT] as? [AnyHashable : Any] else {
@@ -239,8 +238,8 @@ class IterableInAppManager: NSObject {
         }
         
         let inAppDisplaySettings = message[.ITBL_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
-        let backgroundAlpha = IterableInAppManager.getBackgroundAlpha(fromInAppSettings: inAppDisplaySettings)
-        let edgeInsets = IterableInAppManager.getPaddingFromPayload(inAppDisplaySettings)
+        let backgroundAlpha = InAppHelper.getBackgroundAlpha(fromInAppSettings: inAppDisplaySettings)
+        let edgeInsets = InAppHelper.getPaddingFromPayload(inAppDisplaySettings)
         
         return .success(InAppDetails(edgeInsets: edgeInsets, backgroundAlpha: backgroundAlpha, messageId: messageId, html: html))
     }
