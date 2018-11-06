@@ -133,10 +133,8 @@ class IterableInAppManager: NSObject {
         return padding
     }
     
-    /*!
-     @method
-     
-     @abstract Gets the int value of the padding from the payload
+    /**
+     Gets the int value of the padding from the payload
      
      @param value          the value
      
@@ -172,6 +170,32 @@ class IterableInAppManager: NSObject {
         }
     }
     
+    enum ShowInAppResult {
+        case success(opened: Bool, messageId: String)
+        case failure(reason: String, messageId: String?)
+    }
+    
+    static func showInApp(parseResult: InAppParseResult, callbackBlock:ITEActionBlock?) -> Future<ShowInAppResult> {
+        switch parseResult {
+        case .success(let inAppDetails):
+            let result = Promise<ShowInAppResult>()
+            let notificationMetadata = IterableNotificationMetadata.metadata(fromInAppOptions: inAppDetails.messageId)
+            
+            DispatchQueue.main.async {
+                let opened = IterableInAppManager.showIterableNotificationHTML(inAppDetails.html,
+                                                                               trackParams: notificationMetadata,
+                                                                               backgroundAlpha: inAppDetails.backgroundAlpha,
+                                                                               padding: inAppDetails.edgeInsets,
+                                                                               callbackBlock: callbackBlock)
+                result.resolve(with: .success(opened: opened, messageId: inAppDetails.messageId))
+            }
+            return result
+        case .failure(let reason, let messageId):
+            return Promise<ShowInAppResult>(value: .failure(reason: reason, messageId: messageId))
+        }
+    }
+
+    
     private static func getTopViewController() -> UIViewController? {
         guard let rootViewController = IterableUtil.rootViewController else {
             return nil
@@ -183,6 +207,44 @@ class IterableInAppManager: NSObject {
         return topViewController
     }
     
+    enum InAppParseResult {
+        case success(InAppDetails)
+        case failure(reason: String, messageId: String?)
+    }
+    
+    struct InAppDetails {
+        let edgeInsets: UIEdgeInsets
+        let backgroundAlpha: Double
+        let messageId: String
+        let html: String
+    }
+    
+    // Payload is what comes from Api
+    // If successful you get InAppDetails
+    static func parseInApp(fromPayload payload: [AnyHashable : Any]) -> InAppParseResult {
+        guard let dialogOptions = IterableInAppManager.getNextMessageFromPayload(payload) else {
+            return .failure(reason: "No notifications found for inApp payload \(payload)", messageId: nil)
+        }
+        guard let message = dialogOptions[.ITBL_IN_APP_CONTENT] as? [AnyHashable : Any] else {
+            return .failure(reason: "no message", messageId: nil)
+        }
+        guard let messageId = dialogOptions[.ITBL_KEY_MESSAGE_ID] as? String else {
+            return .failure(reason: "no message id", messageId: nil)
+        }
+        guard let html = message[.ITBL_IN_APP_HTML] as? String else {
+            return .failure(reason: "no html", messageId: nil)
+        }
+        guard html.range(of: AnyHashable.ITBL_IN_APP_HREF, options: [.caseInsensitive]) != nil else {
+            return .failure(reason: "No href tag found in in-app html payload \(html)", messageId: messageId)
+        }
+        
+        let inAppDisplaySettings = message[.ITBL_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
+        let backgroundAlpha = IterableInAppManager.getBackgroundAlpha(fromInAppSettings: inAppDisplaySettings)
+        let edgeInsets = IterableInAppManager.getPaddingFromPayload(inAppDisplaySettings)
+        
+        return .success(InAppDetails(edgeInsets: edgeInsets, backgroundAlpha: backgroundAlpha, messageId: messageId, html: html))
+    }
+
     /**
      Creates and adds an alert action button to an alertController
      
