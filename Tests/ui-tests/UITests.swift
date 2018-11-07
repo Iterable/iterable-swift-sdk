@@ -150,50 +150,31 @@ class UITests: XCTestCase {
     }
 
     func testShowInApp1() {
-        // Tap the Left Button
-        app.buttons["Show InApp#1"].tap()
-        
-        let clickMe = app.links["Click Me"]
-        waitForElementToAppear(clickMe)
-        clickMe.tap()
-
-        let callbackUrl = self.app.staticTexts["http://website/resource#something"]
-        waitForElementToAppear(callbackUrl)
+        inAppTest(buttonName: "Show InApp#1", linkName: "Click Me", expectedCallbackUrl: "http://website/resource#something")
     }
 
     func testShowInApp2() {
-        // Tap the Left Button
-        app.buttons["Show InApp#2"].tap()
-        
-        let clickHere = app.links["Click Here"]
-        _  = waitForElementToAppear(clickHere)
-        clickHere.tap()
-
-        let callbackLink = app.staticTexts["https://www.google.com/q=something"]
-        waitForElementToAppear(callbackLink)
+        inAppTest(buttonName: "Show InApp#2", linkName: "Click Here", expectedCallbackUrl: "https://www.google.com/q=something")
     }
 
     func testShowInApp3() {
-        // Tap the Left Button
-        app.buttons["Show InApp#3"].tap()
-        
-        let clickHere = app.links["Click Here"]
-        _  = waitForElementToAppear(clickHere)
-        clickHere.tap()
-        
-        let callbackLink = app.staticTexts["https://www.google.com/q=something"]
-        waitForElementToAppear(callbackLink)
+        inAppTest(buttonName: "Show InApp#3", linkName: "Click Here", expectedCallbackUrl: "https://www.google.com/q=something")
     }
 
     func testShowInApp4() {
-        // Tap the Left Button
-        app.buttons["Show InApp#4"].tap()
+        inAppTest(buttonName: "Show InApp#4", linkName: "Click Me", expectedCallbackUrl: "http://website/resource#something")
+    }
+    
+    private func inAppTest(buttonName: String, linkName: String, expectedCallbackUrl: String) {
+        // tap the inApp button
+        app.buttons[buttonName].tap()
         
-        let clickMe = app.links["Click Me"]
+        // click the link in inApp that shows up
+        let clickMe = app.links[linkName]
         waitForElementToAppear(clickMe)
         clickMe.tap()
         
-        let callbackUrl = self.app.staticTexts["http://website/resource#something"]
+        let callbackUrl = self.app.staticTexts[expectedCallbackUrl]
         waitForElementToAppear(callbackUrl)
     }
 
