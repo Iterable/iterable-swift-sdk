@@ -44,7 +44,7 @@ import Foundation
      * - parameter content: `IterableInAppContent` object containing information regarding inApp to display
      * - returns: Return `show` to show the inApp or `skip` to skip this.
      */
-    func onNew(content: IterableInAppContent) -> ShowInApp
+    @objc(onNewContent:) func onNew(content: IterableInAppContent) -> ShowInApp
     
     /**
      * This is called on more than one inApps are available.
@@ -53,7 +53,7 @@ import Foundation
      * - parameter batch: A list of inApp contents. The default behavior is to show the first item in the list that returns `show`.
      * - returns: An inAppContent that needs to be shown or nil if nothing needs to be shown.
      */
-    func onNew(batch: [IterableInAppContent]) -> IterableInAppContent?
+    @objc(onNewBatch:) func onNew(batch: [IterableInAppContent]) -> IterableInAppContent?
 }
 
 /**

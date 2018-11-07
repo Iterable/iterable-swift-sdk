@@ -12,7 +12,6 @@ import Foundation
     case skip
 }
 
-
 @objc
 public protocol IterableInAppManagerProtocol {
     /// - returns: A list of messages
@@ -28,16 +27,18 @@ public protocol IterableInAppManagerProtocol {
 @objcMembers
 public class DefaultInAppDelegate : IterableInAppDelegate {
     public func onNew(content: IterableInAppContent) -> ShowInApp {
+        ITBInfo()
         return .show
     }
     
     public func onNew(batch: [IterableInAppContent]) -> IterableInAppContent? {
+        ITBInfo()
         for content in batch {
             if onNew(content: content) == .show {
                 return content
             }
         }
-
+        
         return nil
     }
 }

@@ -549,6 +549,8 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         networkSessionProvider()
     }()
     
+    private var inAppSynchronizer: InAppSynchronizerProtocol
+    
     /**
      * Returns the push integration name for this app depending on the config options
      */
@@ -692,7 +694,8 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
          config: IterableConfig = IterableConfig(),
          dateProvider: DateProviderProtocol = SystemDateProvider(),
          networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
-         notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider()) {
+         notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
+         inAppSynchronizer: InAppSynchronizerProtocol) {
         IterableLogUtil.sharedInstance = IterableLogUtil(dateProvider: dateProvider, logDelegate: config.logDelegate)
         ITBInfo()
         self.apiKey = apiKey
@@ -701,13 +704,18 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         self.networkSessionProvider = networkSession
         self.notificationStateProvider = notificationStateProvider
         self.localStorage = UserDefaultsLocalStorage(dateProvider: self.dateProvider)
-
+        self.inAppSynchronizer = inAppSynchronizer
+        
         // setup
         deeplinkManager = IterableDeeplinkManager()
         
         // super initlog
         super.init()
-        
+
+        //
+        self.inAppSynchronizer.networkSession = self.networkSession
+        self.inAppSynchronizer.inAppSyncDelegate = self
+
         // sdk version
         updateSDKVersion()
         
@@ -737,7 +745,8 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
                                                   launchOptions: launchOptions,
                                                   config: config,
                                                   dateProvider: SystemDateProvider(),
-                                                  networkSession: URLSession(configuration: URLSessionConfiguration.default))
+                                                  networkSession: URLSession(configuration: URLSessionConfiguration.default),
+                                                  inAppSynchronizer: DefaultInAppSynchronizer())
         }
         return _sharedInstance!
     }
@@ -814,5 +823,11 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         // ....
         // then set new version
         localStorage.sdkVersion = newVersion
+    }
+}
+
+extension IterableAPIInternal : InAppSynchronizerDelegate {
+    func onInAppContentAvailable(contents: [IterableInAppContent]) {
+        ITBInfo()
     }
 }

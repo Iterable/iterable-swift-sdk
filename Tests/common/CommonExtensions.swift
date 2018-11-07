@@ -21,8 +21,9 @@ extension IterableAPI {
                            config: IterableConfig = IterableConfig(),
                            dateProvider: DateProviderProtocol = SystemDateProvider(),
                            networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
-                           notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider()) {
-        internalImplementation = IterableAPIInternal.initialize(apiKey: apiKey, launchOptions: launchOptions, config: config, dateProvider: dateProvider, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+                           notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
+                           inAppSynchronizer: InAppSynchronizerProtocol = DefaultInAppSynchronizer()) {
+        internalImplementation = IterableAPIInternal.initialize(apiKey: apiKey, launchOptions: launchOptions, config: config, dateProvider: dateProvider, networkSession: networkSession, notificationStateProvider: notificationStateProvider, inAppSynchronizer: inAppSynchronizer)
     }
 }
 
@@ -46,9 +47,11 @@ extension IterableAPIInternal {
                                               config: IterableConfig = IterableConfig(),
                                               dateProvider: DateProviderProtocol = SystemDateProvider(),
                                               networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
-                                              notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider()) -> IterableAPIInternal {
+                                              notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
+                                              inAppSynchronizer: InAppSynchronizerProtocol = DefaultInAppSynchronizer()
+                                              ) -> IterableAPIInternal {
         queue.sync {
-            _sharedInstance = IterableAPIInternal(apiKey: apiKey, config: config, dateProvider: dateProvider, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+            _sharedInstance = IterableAPIInternal(apiKey: apiKey, config: config, dateProvider: dateProvider, networkSession: networkSession, notificationStateProvider: notificationStateProvider, inAppSynchronizer: inAppSynchronizer)
         }
         return _sharedInstance!
     }

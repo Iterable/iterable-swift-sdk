@@ -185,6 +185,18 @@ class UITests: XCTestCase {
         waitForElementToAppear(callbackLink)
     }
 
+    func testShowInApp4() {
+        // Tap the Left Button
+        app.buttons["Show InApp#4"].tap()
+        
+        let clickMe = app.links["Click Me"]
+        waitForElementToAppear(clickMe)
+        clickMe.tap()
+        
+        let callbackUrl = self.app.staticTexts["http://website/resource#something"]
+        waitForElementToAppear(callbackUrl)
+    }
+
     private func waitForElementToAppear(_ element: XCUIElement, fail: Bool = true) {
         let exists = element.waitForExistence(timeout: UITests.timeout)
         

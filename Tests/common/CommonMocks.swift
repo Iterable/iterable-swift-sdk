@@ -200,3 +200,34 @@ class NoNetworkNetworkSession: NetworkSessionProtocol {
     }
 }
 
+struct MockInAppSynchronizer : InAppSynchronizerProtocol {
+    var networkSession: NetworkSessionProtocol?
+    var inAppSyncDelegate: InAppSynchronizerDelegate?
+    
+    func sendContentAvailable(contents: [IterableInAppContent]) {
+        inAppSyncDelegate?.onInAppContentAvailable(contents: contents)
+    }
+    
+}
+
+class MockInAppDelegate : IterableInAppDelegate {
+    var onNewContentCallback: ((IterableInAppContent) -> Void)?
+    var onNewBatchCallback: (([IterableInAppContent]) -> Void)?
+    
+    func onNew(content: IterableInAppContent) -> ShowInApp {
+        onNewContentCallback?(content)
+        return .show
+    }
+    
+    func onNew(batch: [IterableInAppContent]) -> IterableInAppContent? {
+        onNewBatchCallback?(batch)
+        
+        for content in batch {
+            if onNew(content: content) == .show {
+                return content
+            }
+        }
+        
+        return nil
+    }
+}

@@ -67,8 +67,6 @@ class ViewController: UIViewController {
             ITBInfo("callback: \(str ?? "<nil>")")
             self.statusLbl.text = str
         }
-        
-        InAppHelper.showIterableNotificationHTML(html, callbackBlock: {str in print("callback: ", str ?? "nil")})
     }
     
     // Full screen inApp
@@ -122,6 +120,31 @@ class ViewController: UIViewController {
             ITBInfo("callback: \(str ?? "<nil>")")
             self.statusLbl.text = str
         }
+    }
+
+    @IBAction func showInApp4Tap(_ sender: UIButton) {
+        ITBInfo()
+       
+        let messageId = "zeeMessageId"
+        let html = """
+            <a href="http://website/resource#something">Click Me</a>
+        """
+        let content = IterableInAppContent(messageId: messageId, edgeInsets: .zero, backgroundAlpha: 0.0, html: html)
+        
+        let config = IterableConfig()
+        let mockUrlDelegate = MockUrlDelegate(returnValue: true)
+        mockUrlDelegate.callback = {(url, context) in
+            if context.source == .inApp {
+                self.statusLbl.text = url.absoluteString
+            }
+        }
+        
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        IterableAPI.initialize(apiKey: "apiKey",
+                               config: config,
+                               inAppSynchronizer: mockInAppSynchronizer)
+        
+        mockInAppSynchronizer.sendContentAvailable(contents: [content])
     }
 
     @available(iOS 10.0, *)

@@ -7,6 +7,21 @@
 
 import UIKit
 
+protocol InAppSynchronizerDelegate : class {
+    func onInAppContentAvailable(contents: [IterableInAppContent])
+}
+
+protocol InAppSynchronizerProtocol {
+    var networkSession: NetworkSessionProtocol? {get set}
+    var inAppSyncDelegate: InAppSynchronizerDelegate? {get set}
+}
+
+struct DefaultInAppSynchronizer : InAppSynchronizerProtocol {
+    var networkSession: NetworkSessionProtocol?
+    var inAppSyncDelegate: InAppSynchronizerDelegate?
+}
+
+// This is Internal Struct, no public methods
 struct InAppHelper {
     /**
      An array of action objects representing the actions that the user can take in response to the alert view
