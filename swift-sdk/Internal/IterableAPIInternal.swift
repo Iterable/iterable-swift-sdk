@@ -795,19 +795,27 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     private func handleDDL(json: [AnyHashable : Any]) {
         if let serverResponse = try? JSONDecoder().decode(ServerResponse.self, from: JSONSerialization.data(withJSONObject: json, options: [])),
             serverResponse.isMatch,
-            let destinationUrlString = serverResponse.destinationUrl,
-            let action = IterableAction.actionOpenUrl(fromUrlString: destinationUrlString) {
-            let context = IterableActionContext(action: action, source: .universalLink)
+            let destinationUrlString = serverResponse.destinationUrl {
             
-            DispatchQueue.main.async {
-                IterableActionRunner.execute(action: action,
-                                             context: context,
-                                             urlHandler: IterableUtil.urlHandler(fromUrlDelegate: self.urlDelegate, inContext: context),
-                                             urlOpener: AppUrlOpener())
-            }
+            handleUrl(urlString: destinationUrlString, fromSource: .universalLink)
         }
         
         localStorage.ddlChecked = true
+    }
+    
+    private func handleUrl(urlString: String, fromSource source: IterableActionSource) {
+        guard let action = IterableAction.actionOpenUrl(fromUrlString: urlString) else {
+            ITBError("Could not create action from: \(urlString)")
+            return
+        }
+
+        let context = IterableActionContext(action: action, source: source)
+        DispatchQueue.main.async {
+            IterableActionRunner.execute(action: action,
+                                         context: context,
+                                         urlHandler: IterableUtil.urlHandler(fromUrlDelegate: self.urlDelegate, inContext: context),
+                                         urlOpener: AppUrlOpener())
+        }
     }
     
     private func updateSDKVersion() {
@@ -829,5 +837,35 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
 extension IterableAPIInternal : InAppSynchronizerDelegate {
     func onInAppContentAvailable(contents: [IterableInAppContent]) {
         ITBInfo()
+        
+        if contents.count == 1 {
+            if config.inAppDelegate.onNew(content: contents[0]) == .show {
+                DispatchQueue.main.async {
+                    InAppHelper.showInApp(content: contents[0]) { (urlString) in
+                        if let name = urlString {
+                            self.handleUrl(urlString: name, fromSource: .inApp)
+                        } else {
+                          ITBError("No name for clicked button/link in inApp")
+                        }
+                    }
+                }
+            } else {
+                ITBInfo("skipped inApp")
+            }
+        } else if contents.count > 1 {
+            if let content = config.inAppDelegate.onNew(batch: contents) {
+                DispatchQueue.main.async {
+                    InAppHelper.showInApp(content: content) { (urlString) in
+                        if let name = urlString {
+                            self.handleUrl(urlString: name, fromSource: .inApp)
+                        } else {
+                            ITBError("No name for clicked button/link in inApp")
+                        }
+                    }
+                }
+            } else {
+                ITBInfo("skipped inApp batch")
+            }
+        }
     }
 }

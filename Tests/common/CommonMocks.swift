@@ -200,7 +200,7 @@ class NoNetworkNetworkSession: NetworkSessionProtocol {
     }
 }
 
-struct MockInAppSynchronizer : InAppSynchronizerProtocol {
+class MockInAppSynchronizer : InAppSynchronizerProtocol {
     var networkSession: NetworkSessionProtocol?
     var inAppSyncDelegate: InAppSynchronizerDelegate?
     

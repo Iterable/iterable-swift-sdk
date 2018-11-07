@@ -132,12 +132,13 @@ class ViewController: UIViewController {
         let content = IterableInAppContent(messageId: messageId, edgeInsets: .zero, backgroundAlpha: 0.0, html: html)
         
         let config = IterableConfig()
-        let mockUrlDelegate = MockUrlDelegate(returnValue: true)
+        let mockUrlDelegate = MockUrlDelegate(returnValue: false)
         mockUrlDelegate.callback = {(url, context) in
             if context.source == .inApp {
                 self.statusLbl.text = url.absoluteString
             }
         }
+        config.urlDelegate = mockUrlDelegate
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
         IterableAPI.initialize(apiKey: "apiKey",

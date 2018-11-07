@@ -24,9 +24,24 @@ struct DefaultInAppSynchronizer : InAppSynchronizerProtocol {
 // This is Internal Struct, no public methods
 struct InAppHelper {
     /**
-     An array of action objects representing the actions that the user can take in response to the alert view
+     Creates and shows a HTML InApp Notification with trackParameters, backgroundColor with callback handler
+     
+     - parameters:
+     - content:         Details about the inApp such as html, backgroundAlpha etc.
+     - callbackBlock:   The callback to send after a button on the notification is clicked
+     - returns:
+     true if IterableInAppHTMLViewController was shown.
      */
-    var actions: [String] = []
+    @discardableResult static func showInApp(content: IterableInAppContent,
+                                             callbackBlock: ITEActionBlock?
+        ) -> Bool {
+        let notificationMetadata = IterableNotificationMetadata.metadata(fromInAppOptions: content.messageId)
+        return showIterableNotificationHTML(content.html,
+                                            trackParams: notificationMetadata,
+                                            backgroundAlpha: content.backgroundAlpha,
+                                            padding: content.edgeInsets,
+                                            callbackBlock: callbackBlock)
+    }
 
     /**
      Creates and shows a HTML InApp Notification with trackParameters, backgroundColor with callback handler
