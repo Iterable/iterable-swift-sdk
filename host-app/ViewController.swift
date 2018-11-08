@@ -92,7 +92,7 @@ class ViewController: UIViewController {
         }
     }
 
-    
+    // Center
     @IBAction func showInApp3Tap(_ sender: UIButton) {
         ITBInfo()
         
@@ -122,6 +122,7 @@ class ViewController: UIViewController {
         }
     }
 
+    // FullScreen
     @IBAction func showInApp4Tap(_ sender: UIButton) {
         ITBInfo()
        
@@ -132,7 +133,7 @@ class ViewController: UIViewController {
         let content = IterableInAppContent(messageId: messageId, edgeInsets: .zero, backgroundAlpha: 0.0, html: html)
         
         let config = IterableConfig()
-        let mockUrlDelegate = MockUrlDelegate(returnValue: false)
+        let mockUrlDelegate = MockUrlDelegate(returnValue: true)
         mockUrlDelegate.callback = {(url, context) in
             if context.source == .inApp {
                 self.statusLbl.text = url.absoluteString
@@ -148,6 +149,35 @@ class ViewController: UIViewController {
         mockInAppSynchronizer.sendContentAvailable(contents: [content])
     }
 
+    // Center and Open url
+    @IBAction func showInApp5Tap(_ sender: UIButton) {
+        ITBInfo()
+        
+        let messageId = "zeeMessageId"
+        let html = """
+            <a href="http://website/resource#something">Click Me</a>
+        """
+        let content = IterableInAppContent(messageId: messageId, edgeInsets: UIEdgeInsets(top: -1, left: 10, bottom: -1, right: 10), backgroundAlpha: 0.5, html: html)
+        
+        let config = IterableConfig()
+        let mockUrlDelegate = MockUrlDelegate(returnValue: false) // we don't handle, so the url will be opened
+        config.urlDelegate = mockUrlDelegate
+        
+        let mockUrlOpener = MockUrlOpener() { (url) in
+            self.statusLbl.text = url.absoluteString
+        }
+        
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        IterableAPI.initialize(apiKey: "apiKey",
+                               config: config,
+                               networkSession: MockNetworkSession(),
+                               inAppSynchronizer: mockInAppSynchronizer,
+                               urlOpener: mockUrlOpener)
+        
+        mockInAppSynchronizer.sendContentAvailable(contents: [content])
+    }
+
+    
     @available(iOS 10.0, *)
     private func setupNotifications(onCompletion: (() -> Void)? = nil) {
         UNUserNotificationCenter.current().delegate = self

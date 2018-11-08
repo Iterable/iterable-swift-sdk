@@ -123,27 +123,27 @@ class InAppHelperTests: XCTestCase {
     }
     
     func testNotificationPaddingFull() {
-        let notificationType = IterableInAppHTMLViewController.setLocation(UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0))
+        let notificationType = IterableInAppHTMLViewController.location(fromPadding: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0))
         XCTAssertEqual(notificationType, .full)
     }
 
     func testNotificationPaddingTop() {
-        let notificationType = IterableInAppHTMLViewController.setLocation(UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
+        let notificationType = IterableInAppHTMLViewController.location(fromPadding: UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
         XCTAssertEqual(notificationType, .top)
     }
     
     func testNotificationPaddingBottom() {
-        let notificationType = IterableInAppHTMLViewController.setLocation(UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
+        let notificationType = IterableInAppHTMLViewController.location(fromPadding: UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
         XCTAssertEqual(notificationType, .bottom)
     }
 
     func testNotificationPaddingCenter() {
-        let notificationType = IterableInAppHTMLViewController.setLocation(UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
+        let notificationType = IterableInAppHTMLViewController.location(fromPadding: UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
         XCTAssertEqual(notificationType, .center)
     }
 
     func testNotificationPaddingDefault() {
-        let notificationType = IterableInAppHTMLViewController.setLocation(UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0))
+        let notificationType = IterableInAppHTMLViewController.location(fromPadding: UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0))
         XCTAssertEqual(notificationType, .center)
     }
     

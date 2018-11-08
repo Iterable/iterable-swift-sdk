@@ -550,6 +550,8 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }()
     
     private var inAppSynchronizer: InAppSynchronizerProtocol
+
+    private var urlOpener: UrlOpenerProtocol
     
     /**
      * Returns the push integration name for this app depending on the config options
@@ -695,7 +697,8 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
          dateProvider: DateProviderProtocol = SystemDateProvider(),
          networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
          notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
-         inAppSynchronizer: InAppSynchronizerProtocol) {
+         inAppSynchronizer: InAppSynchronizerProtocol = DefaultInAppSynchronizer(),
+         urlOpener: UrlOpenerProtocol = AppUrlOpener()) {
         IterableLogUtil.sharedInstance = IterableLogUtil(dateProvider: dateProvider, logDelegate: config.logDelegate)
         ITBInfo()
         self.apiKey = apiKey
@@ -705,6 +708,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         self.notificationStateProvider = notificationStateProvider
         self.localStorage = UserDefaultsLocalStorage(dateProvider: self.dateProvider)
         self.inAppSynchronizer = inAppSynchronizer
+        self.urlOpener = urlOpener
         
         // setup
         deeplinkManager = IterableDeeplinkManager()
@@ -732,7 +736,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         IterableAppIntegration.implementation = IterableAppIntegrationInternal(tracker: self,
                                                                        urlDelegate: config.urlDelegate,
                                                                        customActionDelegate: config.customActionDelegate,
-                                                                       urlOpener: AppUrlOpener())
+                                                                       urlOpener: self.urlOpener)
         
         handle(launchOptions: launchOptions)
     }
@@ -814,7 +818,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             IterableActionRunner.execute(action: action,
                                          context: context,
                                          urlHandler: IterableUtil.urlHandler(fromUrlDelegate: self.urlDelegate, inContext: context),
-                                         urlOpener: AppUrlOpener())
+                                         urlOpener: self.urlOpener)
         }
     }
     

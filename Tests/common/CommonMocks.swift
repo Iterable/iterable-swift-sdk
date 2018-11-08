@@ -75,11 +75,18 @@ public class MockCustomActionDelegate: NSObject, IterableCustomActionDelegate {
     }
 }
 
-@objc public class MockUrlOpener : NSObject, UrlOpenerProtocol {
+@objcMembers
+public class MockUrlOpener : NSObject, UrlOpenerProtocol {
     @objc var ios10OpenedUrl: URL?
     @objc var preIos10openedUrl: URL?
+    var callback: ((URL) -> Void)? = nil
     
+    public init(callback: ((URL) -> Void)? = nil) {
+        self.callback = callback
+    }
+        
     public func open(url: URL) {
+        callback?(url)
         if #available(iOS 10.0, *) {
             ios10OpenedUrl = url
         } else {
@@ -153,7 +160,7 @@ class MockNetworkSession: NetworkSessionProtocol {
     var data: Data?
     var error: Error?
     
-    convenience init(statusCode: Int) {
+    convenience init(statusCode: Int = 200) {
         self.init(statusCode: statusCode,
                   data: [:].toData(),
                   error: nil)

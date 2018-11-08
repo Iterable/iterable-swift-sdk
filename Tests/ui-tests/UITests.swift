@@ -153,14 +153,17 @@ class UITests: XCTestCase {
         inAppTest(buttonName: "Show InApp#1", linkName: "Click Me", expectedCallbackUrl: "http://website/resource#something")
     }
 
+    // Full Screen
     func testShowInApp2() {
         inAppTest(buttonName: "Show InApp#2", linkName: "Click Here", expectedCallbackUrl: "https://www.google.com/q=something")
     }
 
+    // Center and Padding
     func testShowInApp3() {
         inAppTest(buttonName: "Show InApp#3", linkName: "Click Here", expectedCallbackUrl: "https://www.google.com/q=something")
     }
 
+    // Full Screen
     func testShowInApp4() {
         inAppTest(buttonName: "Show InApp#4", linkName: "Click Me", expectedCallbackUrl: "http://website/resource#something")
     }

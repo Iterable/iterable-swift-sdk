@@ -22,8 +22,9 @@ extension IterableAPI {
                            dateProvider: DateProviderProtocol = SystemDateProvider(),
                            networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
                            notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
-                           inAppSynchronizer: InAppSynchronizerProtocol = DefaultInAppSynchronizer()) {
-        internalImplementation = IterableAPIInternal.initialize(apiKey: apiKey, launchOptions: launchOptions, config: config, dateProvider: dateProvider, networkSession: networkSession, notificationStateProvider: notificationStateProvider, inAppSynchronizer: inAppSynchronizer)
+                           inAppSynchronizer: InAppSynchronizerProtocol = DefaultInAppSynchronizer(),
+                           urlOpener: UrlOpenerProtocol = AppUrlOpener()) {
+        internalImplementation = IterableAPIInternal.initialize(apiKey: apiKey, launchOptions: launchOptions, config: config, dateProvider: dateProvider, networkSession: networkSession, notificationStateProvider: notificationStateProvider, inAppSynchronizer: inAppSynchronizer, urlOpener: urlOpener)
     }
 }
 
@@ -48,10 +49,11 @@ extension IterableAPIInternal {
                                               dateProvider: DateProviderProtocol = SystemDateProvider(),
                                               networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
                                               notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
-                                              inAppSynchronizer: InAppSynchronizerProtocol = DefaultInAppSynchronizer()
+                                              inAppSynchronizer: InAppSynchronizerProtocol = DefaultInAppSynchronizer(),
+                                              urlOpener: UrlOpenerProtocol = AppUrlOpener()
                                               ) -> IterableAPIInternal {
         queue.sync {
-            _sharedInstance = IterableAPIInternal(apiKey: apiKey, config: config, dateProvider: dateProvider, networkSession: networkSession, notificationStateProvider: notificationStateProvider, inAppSynchronizer: inAppSynchronizer)
+            _sharedInstance = IterableAPIInternal(apiKey: apiKey, config: config, dateProvider: dateProvider, networkSession: networkSession, notificationStateProvider: notificationStateProvider, inAppSynchronizer: inAppSynchronizer, urlOpener: urlOpener)
         }
         return _sharedInstance!
     }

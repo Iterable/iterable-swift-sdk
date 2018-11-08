@@ -77,7 +77,7 @@ class IterableInAppHTMLViewController: UIViewController {
      
      - returns: the location as an INAPP_NOTIFICATION_TYPE
      */
-    static func setLocation(_ padding: UIEdgeInsets) -> InAppNotificationType {
+    static func location(fromPadding padding: UIEdgeInsets) -> InAppNotificationType {
         if padding.top == 0 && padding.bottom == 0 {
             return .full
         } else if padding.top == 0 && padding.bottom < 0 {
@@ -95,7 +95,7 @@ class IterableInAppHTMLViewController: UIViewController {
     override func loadView() {
         super.loadView()
         
-        location = IterableInAppHTMLViewController.setLocation(insetPadding)
+        location = IterableInAppHTMLViewController.location(fromPadding: insetPadding)
         view.backgroundColor = UIColor.clear
         
         let webView = UIWebView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
@@ -165,7 +165,7 @@ class IterableInAppHTMLViewController: UIViewController {
             return
         }
         
-        //Resizes the frame to match the HTML content with a max of the screen size.
+        // Resizes the frame to match the HTML content with a max of the screen size.
         var frame = aWebView.frame
         frame.size.height = 1
         aWebView.frame = frame;
@@ -179,7 +179,7 @@ class IterableInAppHTMLViewController: UIViewController {
         
         let resizeCenterX = screenWidth*(insetPadding.left + notificationWidth/2)/100
 
-        //Position webview
+        // Position webview
         var center = self.view.center
         let webViewHeight = aWebView.frame.height/2
         switch location {
