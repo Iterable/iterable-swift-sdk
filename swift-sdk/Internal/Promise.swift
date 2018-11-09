@@ -84,7 +84,7 @@ extension Future {
         
         return promise
     }
-    
+
     func map<NextValue>(_ closure: @escaping (Value) -> NextValue) -> Future<NextValue> {
         let promise = Promise<NextValue>()
         

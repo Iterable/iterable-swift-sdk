@@ -398,24 +398,9 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "updateSubscriptions"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "updateSubscriptions"))
         }
     }
-    
-    @discardableResult func spawn(inAppNotification callbackBlock:ITEActionBlock?) -> Future<InAppHelper.ShowInAppResult> {
-        return getInAppMessages(1)
-            .map { InAppHelper.parseInApp(fromPayload: $0)}
-            .flatMap { InAppHelper.showInApp(parseResult: $0, callbackBlock: callbackBlock)}
-            .onSuccess {
-                switch $0 {
-                case .success(opened: let opened, messageId: let messageId):
-                    if opened {
-                        self.inAppConsume(messageId)
-                    }
-                case .failure(reason: let reason, messageId: let messageId):
-                    if let messageId = messageId {
-                        self.inAppConsume(messageId)
-                    }
-                    ITBError(reason)
-                }
-            }
+
+    @discardableResult func spawn(inAppNotification callbackBlock:ITEActionBlock?) -> Future<Bool> {
+        return InAppHelper.spawn(inAppNotification: callbackBlock, internalApi: self)
     }
 
     @discardableResult func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue> {
@@ -845,7 +830,7 @@ extension IterableAPIInternal : InAppSynchronizerDelegate {
         if contents.count == 1 {
             if config.inAppDelegate.onNew(content: contents[0]) == .show {
                 DispatchQueue.main.async {
-                    InAppHelper.showInApp(content: contents[0]) { (urlString) in
+                    InAppHelper.showInApp(content: contents[0], internalApi: self) { (urlString) in
                         if let name = urlString {
                             self.handleUrl(urlString: name, fromSource: .inApp)
                         } else {
@@ -859,7 +844,7 @@ extension IterableAPIInternal : InAppSynchronizerDelegate {
         } else if contents.count > 1 {
             if let content = config.inAppDelegate.onNew(batch: contents) {
                 DispatchQueue.main.async {
-                    InAppHelper.showInApp(content: content) { (urlString) in
+                    InAppHelper.showInApp(content: content, internalApi: self) { (urlString) in
                         if let name = urlString {
                             self.handleUrl(urlString: name, fromSource: .inApp)
                         } else {

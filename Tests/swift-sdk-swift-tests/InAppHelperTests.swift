@@ -21,16 +21,6 @@ class InAppHelperTests: XCTestCase {
         super.tearDown()
     }
 
-    func testGetNextNotificationNil() {
-        let message = InAppHelper.getNextMessageFromPayload(nil)
-        XCTAssertNil(message)
-    }
-    
-    func testGetNextNotificationEmpty() {
-        let message = InAppHelper.getNextMessageFromPayload([:])
-        XCTAssertNil(message)
-    }
-    
     func testNotificationCreation() {
         //call showIterableNotificationHTML with fake data
         //Check the top level dialog

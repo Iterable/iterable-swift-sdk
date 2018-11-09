@@ -4,45 +4,73 @@
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 // Utility Methods for inApp
+// All classes/structs are internal.
 
 import UIKit
 
+/// Callbacks from the synchronizer
 protocol InAppSynchronizerDelegate : class {
     func onInAppContentAvailable(contents: [IterableInAppContent])
 }
 
+///
 protocol InAppSynchronizerProtocol {
     var networkSession: NetworkSessionProtocol? {get set}
     var inAppSyncDelegate: InAppSynchronizerDelegate? {get set}
 }
 
-struct DefaultInAppSynchronizer : InAppSynchronizerProtocol {
+class DefaultInAppSynchronizer : InAppSynchronizerProtocol {
     var networkSession: NetworkSessionProtocol?
-    var inAppSyncDelegate: InAppSynchronizerDelegate?
+    weak var inAppSyncDelegate: InAppSynchronizerDelegate?
+    
+    init() {
+    }
+    
+    private func sync(timer: Timer) {
+        guard let internalApi = inAppSyncDelegate as? IterableAPIInternal else {
+            ITBError("Invalid state: expected InternalApi")
+            return
+        }
+
+        InAppHelper.getInAppContentsFromServer(internalApi: internalApi, number: numMessages).onSuccess {
+            self.inAppSyncDelegate?.onInAppContentAvailable(contents: $0)
+        }.onError {
+            ITBError($0.localizedDescription)
+        }
+    }
+    
+    
+    // in seconds
+    private let syncInterval = 1.0
+    private let numMessages = 10
 }
 
 // This is Internal Struct, no public methods
 struct InAppHelper {
-    /**
-     Creates and shows a HTML InApp Notification with trackParameters, backgroundColor with callback handler
-     
-     - parameters:
-     - content:         Details about the inApp such as html, backgroundAlpha etc.
-     - callbackBlock:   The callback to send after a button on the notification is clicked
-     - returns:
-     true if IterableInAppHTMLViewController was shown.
-     */
-    @discardableResult static func showInApp(content: IterableInAppContent,
-                                             callbackBlock: ITEActionBlock?
-        ) -> Bool {
+    /// Shows an inApp message and consumes it from server queue if the message is shown.
+    /// - parameter content: The content toshow
+    /// - parameter internalApi: IterableApiInternal used to consume the message from server queue.
+    /// - parameter callbackBlock: the code to execute when user clicks on a link or button on inApp message.
+    /// - returns: A Future indicating whether the inApp was opened.
+    @discardableResult static func showInApp(content: IterableInAppContent, internalApi: IterableAPIInternal, callbackBlock:ITEActionBlock?) -> Future<Bool> {
+        let result = Promise<Bool>()
         let notificationMetadata = IterableNotificationMetadata.metadata(fromInAppOptions: content.messageId)
-        return showIterableNotificationHTML(content.html,
-                                            trackParams: notificationMetadata,
-                                            backgroundAlpha: content.backgroundAlpha,
-                                            padding: content.edgeInsets,
-                                            callbackBlock: callbackBlock)
+        
+        DispatchQueue.main.async {
+            let opened = InAppHelper.showIterableNotificationHTML(content.html,
+                                                                  trackParams: notificationMetadata,
+                                                                  backgroundAlpha: content.backgroundAlpha,
+                                                                  padding: content.edgeInsets,
+                                                                  callbackBlock: callbackBlock)
+            if opened {
+                internalApi.inAppConsume(content.messageId)
+            }
+            result.resolve(with: opened)
+        }
+        
+        return result
     }
-
+    
     /**
      Creates and shows a HTML InApp Notification with trackParameters, backgroundColor with callback handler
      
@@ -114,25 +142,7 @@ struct InAppHelper {
         
         topViewController.show(alertController, sender: self)
     }
-    
-    
-    /**
-     Gets the next message from the payload
-     
-     - parameter payload:         The payload dictionary
-     
-     - returns: a Dictionary containing the InAppMessage parameters
-     */
-    static func getNextMessageFromPayload(_ payload: [AnyHashable : Any]?) -> [AnyHashable : Any]? {
-        guard let payload = payload else {
-            return nil
-        }
-        guard let messageArray = payload[.ITBL_IN_APP_MESSAGE] as? [[AnyHashable : Any]], messageArray.count > 0 else {
-            return nil
-        }
-        return messageArray[0]
-    }
-    
+
     /**
      Parses the padding offsets from the payload
      
@@ -199,31 +209,11 @@ struct InAppHelper {
         }
     }
     
-    enum ShowInAppResult {
-        case success(opened: Bool, messageId: String)
-        case failure(reason: String, messageId: String?)
-    }
-    
-    static func showInApp(parseResult: InAppParseResult, callbackBlock:ITEActionBlock?) -> Future<ShowInAppResult> {
-        switch parseResult {
-        case .success(let inAppDetails):
-            let result = Promise<ShowInAppResult>()
-            let notificationMetadata = IterableNotificationMetadata.metadata(fromInAppOptions: inAppDetails.messageId)
-            
-            DispatchQueue.main.async {
-                let opened = InAppHelper.showIterableNotificationHTML(inAppDetails.html,
-                                                                               trackParams: notificationMetadata,
-                                                                               backgroundAlpha: inAppDetails.backgroundAlpha,
-                                                                               padding: inAppDetails.edgeInsets,
-                                                                               callbackBlock: callbackBlock)
-                result.resolve(with: .success(opened: opened, messageId: inAppDetails.messageId))
-            }
-            return result
-        case .failure(let reason, let messageId):
-            return Promise<ShowInAppResult>(value: .failure(reason: reason, messageId: messageId))
+    static func getInAppContentsFromServer(internalApi: IterableAPIInternal, number: Int) -> Future<[IterableInAppContent]> {
+        return internalApi.getInAppMessages(NSNumber(value: number)).map {
+            parseInApps(fromPayload: $0).map { toContent(fromInAppParseResult: $0, internalApi: internalApi) } .compactMap { $0 }
         }
     }
-
     
     private static func getTopViewController() -> UIViewController? {
         guard let rootViewController = IterableUtil.rootViewController else {
@@ -236,42 +226,81 @@ struct InAppHelper {
         return topViewController
     }
     
-    enum InAppParseResult {
+    private enum InAppParseResult {
         case success(InAppDetails)
         case failure(reason: String, messageId: String?)
     }
     
-    struct InAppDetails {
+    /// This is a struct equivalent of IterableInAppContent class
+    private struct InAppDetails {
         let edgeInsets: UIEdgeInsets
         let backgroundAlpha: Double
         let messageId: String
         let html: String
     }
+
+    /// Returns an array of Dictionaries holding inApp content.
+    private static func getInAppDicts(fromPayload payload: [AnyHashable : Any]) -> [[AnyHashable : Any]] {
+        return payload[.ITBL_IN_APP_MESSAGE] as? [[AnyHashable : Any]] ?? []
+    }
     
-    // Payload is what comes from Api
-    // If successful you get InAppDetails
-    static func parseInApp(fromPayload payload: [AnyHashable : Any]) -> InAppParseResult {
-        guard let dialogOptions = InAppHelper.getNextMessageFromPayload(payload) else {
-            return .failure(reason: "No notifications found for inApp payload \(payload)", messageId: nil)
+    /// Gets the first message from the payload, if one esists or nil if the payload is empty
+    static func spawn(inAppNotification callbackBlock: ITEActionBlock?, internalApi: IterableAPIInternal) -> Future<Bool> {
+        return internalApi.getInAppMessages(1).flatMap {
+            getFirstInAppContent(fromPayload: $0, internalApi: internalApi).map { showInApp(content: $0, internalApi: internalApi, callbackBlock: callbackBlock) }
+            ?? Promise(value: false)
         }
-        guard let message = dialogOptions[.ITBL_IN_APP_CONTENT] as? [AnyHashable : Any] else {
+    }
+    
+    private static func getFirstMessageDict(fromPayload payload: [AnyHashable : Any]) -> [AnyHashable : Any]? {
+        let messages = getInAppDicts(fromPayload: payload)
+        return messages.count > 0 ? messages[0] : nil
+    }
+    
+    private static func getFirstInAppContent(fromPayload payload: [AnyHashable : Any], internalApi: IterableAPIInternal) -> IterableInAppContent? {
+        return getFirstMessageDict(fromPayload: payload)
+            .map { parseInApp(fromDict: $0) }
+            .flatMap { toContent(fromInAppParseResult: $0, internalApi: internalApi) }
+    }
+
+    private static func parseInApps(fromPayload payload: [AnyHashable : Any]) -> [InAppParseResult] {
+        return getInAppDicts(fromPayload: payload).map {
+            parseInApp(fromDict: $0)
+        }
+    }
+
+    private static func parseInApp(fromDict dict: [AnyHashable : Any]) -> InAppParseResult {
+        guard let content = dict[.ITBL_IN_APP_CONTENT] as? [AnyHashable : Any] else {
             return .failure(reason: "no message", messageId: nil)
         }
-        guard let messageId = dialogOptions[.ITBL_KEY_MESSAGE_ID] as? String else {
+        guard let messageId = dict[.ITBL_KEY_MESSAGE_ID] as? String else {
             return .failure(reason: "no message id", messageId: nil)
         }
-        guard let html = message[.ITBL_IN_APP_HTML] as? String else {
+        guard let html = content[.ITBL_IN_APP_HTML] as? String else {
             return .failure(reason: "no html", messageId: nil)
         }
         guard html.range(of: AnyHashable.ITBL_IN_APP_HREF, options: [.caseInsensitive]) != nil else {
             return .failure(reason: "No href tag found in in-app html payload \(html)", messageId: messageId)
         }
         
-        let inAppDisplaySettings = message[.ITBL_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
+        let inAppDisplaySettings = content[.ITBL_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
         let backgroundAlpha = InAppHelper.getBackgroundAlpha(fromInAppSettings: inAppDisplaySettings)
         let edgeInsets = InAppHelper.getPaddingFromPayload(inAppDisplaySettings)
         
         return .success(InAppDetails(edgeInsets: edgeInsets, backgroundAlpha: backgroundAlpha, messageId: messageId, html: html))
+    }
+
+    private static func toContent(fromInAppParseResult inAppParseResult: InAppHelper.InAppParseResult, internalApi: IterableAPIInternal) -> IterableInAppContent? {
+        switch inAppParseResult {
+        case .success(let inAppDetails):
+            return IterableInAppContent(messageId: inAppDetails.messageId, edgeInsets: inAppDetails.edgeInsets, backgroundAlpha: inAppDetails.backgroundAlpha, html: inAppDetails.html)
+        case .failure(reason: let reason, messageId: let messageId):
+            ITBError(reason)
+            if let messageId = messageId {
+                internalApi.inAppConsume(messageId)
+            }
+            return nil
+        }
     }
 
     /**

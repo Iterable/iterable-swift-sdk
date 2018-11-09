@@ -167,7 +167,12 @@ class UITests: XCTestCase {
     func testShowInApp4() {
         inAppTest(buttonName: "Show InApp#4", linkName: "Click Me", expectedCallbackUrl: "http://website/resource#something")
     }
-    
+
+    // Full Screen
+    func testShowInApp5() {
+        inAppTest(buttonName: "Show InApp#5", linkName: "Click Me", expectedCallbackUrl: "http://website/resource#something")
+    }
+
     private func inAppTest(buttonName: String, linkName: String, expectedCallbackUrl: String) {
         // tap the inApp button
         app.buttons[buttonName].tap()
