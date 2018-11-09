@@ -79,7 +79,7 @@ class ViewController: UIViewController {
                 "content" : ["html" : "<a href='https://www.google.com/q=something'>Click Here</a>"],
                 "messageId" : "messageId",
                 "campaignId" : "campaignId"] ]])
-        IterableAPI.initialize(apiKey: "apiKey",
+        TestHelper.initializeApi(apiKey: "apiKey",
                                networkSession: networkSession)
         
         networkSession.callback = {(_, _, _) in
@@ -109,7 +109,7 @@ class ViewController: UIViewController {
                 "campaignId" : "campaignId",
                 ]
             ]])
-        IterableAPI.initialize(apiKey: "apiKey",
+        TestHelper.initializeApi(apiKey: "apiKey",
                                networkSession: networkSession)
         
         networkSession.callback = {(_, _, _) in
@@ -142,7 +142,7 @@ class ViewController: UIViewController {
         config.urlDelegate = mockUrlDelegate
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
-        IterableAPI.initialize(apiKey: "apiKey",
+        TestHelper.initializeApi(apiKey: "apiKey",
                                config: config,
                                inAppSynchronizer: mockInAppSynchronizer)
         
@@ -168,7 +168,7 @@ class ViewController: UIViewController {
         }
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
-        IterableAPI.initialize(apiKey: "apiKey",
+        TestHelper.initializeApi(apiKey: "apiKey",
                                config: config,
                                networkSession: MockNetworkSession(),
                                inAppSynchronizer: mockInAppSynchronizer,
@@ -271,7 +271,7 @@ class ViewController: UIViewController {
         content.userInfo = userInfo
 
         
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false) // 10 seconds from now
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
         UNUserNotificationCenter.current().add(request)
     }

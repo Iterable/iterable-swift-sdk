@@ -821,6 +821,10 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         // then set new version
         localStorage.sdkVersion = newVersion
     }
+    
+    deinit {
+        ITBInfo()
+    }
 }
 
 extension IterableAPIInternal : InAppSynchronizerDelegate {

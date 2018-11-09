@@ -24,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         config.customActionDelegate = self
         config.urlDelegate = self
         UserDefaults.standard.set("user1@example.com", forKey: .ITBL_USER_DEFAULTS_EMAIL_KEY)
-        IterableAPI.initialize(apiKey: "", config: config)
+        TestHelper.initializeApi(config: config, networkSession: MockNetworkSession(), urlOpener: AppUrlOpener())
         
         return true
     }

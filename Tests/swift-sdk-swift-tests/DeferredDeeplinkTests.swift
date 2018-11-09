@@ -43,7 +43,7 @@ class DeferredDeeplinkTests: XCTestCase {
             XCTAssertEqual(url.absoluteString, "zeeDestinationUrl")
         }
         config.urlDelegate = urlDelegate
-        IterableAPI.initialize(apiKey: DeferredDeeplinkTests.apiKey, config: config, networkSession: networkSession)
+        TestHelper.initializeApi(apiKey: DeferredDeeplinkTests.apiKey, config: config, networkSession: networkSession)
         
         wait(for: [expectation], timeout: testExpectationTimeout)
         
@@ -57,7 +57,7 @@ class DeferredDeeplinkTests: XCTestCase {
             expectation2.fulfill()
         }
         config.urlDelegate = urlDelegate2
-        IterableAPI.initialize(apiKey: DeferredDeeplinkTests.apiKey, config: config, networkSession: networkSession)
+        TestHelper.initializeApi(apiKey: DeferredDeeplinkTests.apiKey, config: config, networkSession: networkSession)
 
         wait(for: [expectation2], timeout: 1.0)
     }
@@ -78,7 +78,7 @@ class DeferredDeeplinkTests: XCTestCase {
             expectation.fulfill()
         }
         config.urlDelegate = urlDelegate
-        IterableAPI.initialize(apiKey: DeferredDeeplinkTests.apiKey, config: config, networkSession: networkSession)
+        TestHelper.initializeApi(apiKey: DeferredDeeplinkTests.apiKey, config: config, networkSession: networkSession)
         
         wait(for: [expectation], timeout: 1.0)
     }
@@ -103,7 +103,7 @@ class DeferredDeeplinkTests: XCTestCase {
             expectation.fulfill()
         }
         config.urlDelegate = urlDelegate
-        IterableAPI.initialize(apiKey: DeferredDeeplinkTests.apiKey, config: config, networkSession: networkSession)
+        TestHelper.initializeApi(apiKey: DeferredDeeplinkTests.apiKey, config: config, networkSession: networkSession)
         
         wait(for: [expectation], timeout: 1.0)
     }

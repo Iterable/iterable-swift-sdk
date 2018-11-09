@@ -24,7 +24,14 @@ extension IterableAPI {
                            notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
                            inAppSynchronizer: InAppSynchronizerProtocol = DefaultInAppSynchronizer(),
                            urlOpener: UrlOpenerProtocol = AppUrlOpener()) {
-        internalImplementation = IterableAPIInternal.initialize(apiKey: apiKey, launchOptions: launchOptions, config: config, dateProvider: dateProvider, networkSession: networkSession, notificationStateProvider: notificationStateProvider, inAppSynchronizer: inAppSynchronizer, urlOpener: urlOpener)
+        internalImplementation = IterableAPIInternal.initialize(apiKey: apiKey,
+                                                                launchOptions: launchOptions,
+                                                                config: config,
+                                                                dateProvider: dateProvider,
+                                                                networkSession: networkSession,
+                                                                notificationStateProvider: notificationStateProvider,
+                                                                inAppSynchronizer: inAppSynchronizer,
+                                                                urlOpener: urlOpener)
     }
 }
 
@@ -53,7 +60,14 @@ extension IterableAPIInternal {
                                               urlOpener: UrlOpenerProtocol = AppUrlOpener()
                                               ) -> IterableAPIInternal {
         queue.sync {
-            _sharedInstance = IterableAPIInternal(apiKey: apiKey, config: config, dateProvider: dateProvider, networkSession: networkSession, notificationStateProvider: notificationStateProvider, inAppSynchronizer: inAppSynchronizer, urlOpener: urlOpener)
+            _sharedInstance = IterableAPIInternal(apiKey: apiKey,
+                                                  launchOptions: launchOptions,
+                                                  config: config,
+                                                  dateProvider: dateProvider,
+                                                  networkSession: networkSession,
+                                                  notificationStateProvider: notificationStateProvider,
+                                                  inAppSynchronizer: inAppSynchronizer,
+                                                  urlOpener: urlOpener)
         }
         return _sharedInstance!
     }
