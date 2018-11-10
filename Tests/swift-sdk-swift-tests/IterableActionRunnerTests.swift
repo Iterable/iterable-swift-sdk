@@ -6,8 +6,6 @@
 
 import XCTest
 
-import OHHTTPStubs
-
 @testable import IterableSDK
 
 let testExpectationTimeout = 15.0 // How long to wait when we expect to succeed

@@ -14,12 +14,12 @@ import Foundation
 
 @objc
 public protocol IterableInAppManagerProtocol {
-    /// - returns: A list of messages
-    func getMessages() -> [IterableInAppMessage]
+    /// - returns: A list of all messages
+    @objc(getMessages) func getMessages() -> [IterableInAppMessage]
 
     /// - parameter content: The content to show.
     /// - parameter consume: Set to true to consume the event from the server queue. This should be default.
-    func show(content: IterableInAppContent, consume: Bool)
+    @objc(showContent:consume:) func show(content: IterableInAppContent, consume: Bool)
 }
 
 /// By default, every single inApp will be shown as soon as it is available.

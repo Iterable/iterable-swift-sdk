@@ -209,12 +209,25 @@ class NoNetworkNetworkSession: NetworkSessionProtocol {
 
 class MockInAppSynchronizer : InAppSynchronizerProtocol {
     var networkSession: NetworkSessionProtocol?
-    var inAppSyncDelegate: InAppSynchronizerDelegate?
+    weak var inAppSyncDelegate: InAppSynchronizerDelegate?
     
-    func sendContentAvailable(contents: [IterableInAppContent]) {
+    func mockContentAvailableFromServer(contents: [IterableInAppContent]) {
+        ITBInfo()
         inAppSyncDelegate?.onInAppContentAvailable(contents: contents)
     }
     
+    func mockInAppPayloadFromServer(_ payload: [AnyHashable : Any]) {
+        ITBInfo()
+        guard let internalApi = inAppSyncDelegate as? IterableAPIInternal else {
+            ITBError("Invalid state: expected InternalApi")
+            return
+        }
+        
+        let contents = InAppHelper.inAppContents(fromPayload: payload, internalApi: internalApi)
+        if contents.count > 0 {
+            inAppSyncDelegate?.onInAppContentAvailable(contents: contents)
+        }
+    }
 }
 
 class MockInAppDelegate : IterableInAppDelegate {

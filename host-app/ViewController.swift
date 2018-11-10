@@ -122,7 +122,8 @@ class ViewController: UIViewController {
         }
     }
 
-    // FullScreen
+    // FullScreen, corresponds to UITests.testShowInApp4
+    // Here UrlDelegate returns true, so url should not be opened
     @IBAction func showInApp4Tap(_ sender: UIButton) {
         ITBInfo()
        
@@ -146,10 +147,11 @@ class ViewController: UIViewController {
                                config: config,
                                inAppSynchronizer: mockInAppSynchronizer)
         
-        mockInAppSynchronizer.sendContentAvailable(contents: [content])
+        mockInAppSynchronizer.mockContentAvailableFromServer(contents: [content])
     }
 
-    // Center and Open url
+    // Center and Open url, corresponds to UITests.testShowInApp5
+    // Here UrlDelegate return false, so url should be opened.
     @IBAction func showInApp5Tap(_ sender: UIButton) {
         ITBInfo()
         
@@ -174,7 +176,7 @@ class ViewController: UIViewController {
                                inAppSynchronizer: mockInAppSynchronizer,
                                urlOpener: mockUrlOpener)
         
-        mockInAppSynchronizer.sendContentAvailable(contents: [content])
+        mockInAppSynchronizer.mockContentAvailableFromServer(contents: [content])
     }
 
     

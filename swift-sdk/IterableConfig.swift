@@ -37,7 +37,7 @@ import Foundation
 /**
  * This protocol allows you to override default behavior when new inApps arrive.
  */
-@objc public protocol IterableInAppDelegate {
+@objc public protocol IterableInAppDelegate : class {
     /**
      * This method is called when new inApp content is available.
      * The default behavior is to `show` if you don't override this method.

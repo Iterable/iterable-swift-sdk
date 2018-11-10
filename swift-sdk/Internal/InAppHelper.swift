@@ -39,15 +39,16 @@ class DefaultInAppSynchronizer : InAppSynchronizerProtocol {
         }
 
         InAppHelper.getInAppContentsFromServer(internalApi: internalApi, number: numMessages).onSuccess {
-            self.inAppSyncDelegate?.onInAppContentAvailable(contents: $0)
+            if $0.count > 0 {
+                self.inAppSyncDelegate?.onInAppContentAvailable(contents: $0)
+            }
         }.onError {
             ITBError($0.localizedDescription)
         }
     }
     
-    
     // in seconds
-    private let syncInterval = 0.25
+    private let syncInterval = 1.0
     private let numMessages = 10
 }
 
@@ -217,8 +218,14 @@ struct InAppHelper {
     
     static func getInAppContentsFromServer(internalApi: IterableAPIInternal, number: Int) -> Future<[IterableInAppContent]> {
         return internalApi.getInAppMessages(NSNumber(value: number)).map {
-            parseInApps(fromPayload: $0).map { toContent(fromInAppParseResult: $0, internalApi: internalApi) } .compactMap { $0 }
+            inAppContents(fromPayload: $0, internalApi: internalApi)
         }
+    }
+    
+    /// Given json payload, It will construct array of IterableInAppContent
+    /// This will also make sure to consume any invalid inAppMessage.
+    static func inAppContents(fromPayload payload: [AnyHashable : Any], internalApi: IterableAPIInternal) -> [IterableInAppContent] {
+        return parseInApps(fromPayload: payload).map { toContent(fromInAppParseResult: $0, internalApi: internalApi) }.compactMap { $0 }
     }
     
     private static func getTopViewController() -> UIViewController? {

@@ -833,13 +833,11 @@ extension IterableAPIInternal : InAppSynchronizerDelegate {
         
         if contents.count == 1 {
             if config.inAppDelegate.onNew(content: contents[0]) == .show {
-                DispatchQueue.main.async {
-                    InAppHelper.showInApp(content: contents[0], internalApi: self) { (urlString) in
-                        if let name = urlString {
-                            self.handleUrl(urlString: name, fromSource: .inApp)
-                        } else {
-                          ITBError("No name for clicked button/link in inApp")
-                        }
+                InAppHelper.showInApp(content: contents[0], internalApi: self) { (urlString) in
+                    if let name = urlString {
+                        self.handleUrl(urlString: name, fromSource: .inApp)
+                    } else {
+                        ITBError("No name for clicked button/link in inApp")
                     }
                 }
             } else {
@@ -847,13 +845,11 @@ extension IterableAPIInternal : InAppSynchronizerDelegate {
             }
         } else if contents.count > 1 {
             if let content = config.inAppDelegate.onNew(batch: contents) {
-                DispatchQueue.main.async {
-                    InAppHelper.showInApp(content: content, internalApi: self) { (urlString) in
-                        if let name = urlString {
-                            self.handleUrl(urlString: name, fromSource: .inApp)
-                        } else {
-                            ITBError("No name for clicked button/link in inApp")
-                        }
+                InAppHelper.showInApp(content: content, internalApi: self) { (urlString) in
+                    if let name = urlString {
+                        self.handleUrl(urlString: name, fromSource: .inApp)
+                    } else {
+                        ITBError("No name for clicked button/link in inApp")
                     }
                 }
             } else {
