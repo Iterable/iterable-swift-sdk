@@ -16,15 +16,15 @@ extension Dictionary where Key == AnyHashable {
 
 extension IterableAPI {
     // Internal Only used in unit tests.
-    static func initialize(apiKey: String,
+    static func initializeForTesting(apiKey: String = "zeeApiKey",
                            launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil,
                            config: IterableConfig = IterableConfig(),
                            dateProvider: DateProviderProtocol = SystemDateProvider(),
-                           networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
+                           networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = MockNetworkSession(),
                            notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
-                           inAppSynchronizer: InAppSynchronizerProtocol = DefaultInAppSynchronizer(),
-                           urlOpener: UrlOpenerProtocol = AppUrlOpener()) {
-        internalImplementation = IterableAPIInternal.initialize(apiKey: apiKey,
+                           inAppSynchronizer: InAppSynchronizerProtocol = MockInAppSynchronizer(),
+                           urlOpener: UrlOpenerProtocol = MockUrlOpener()) {
+        internalImplementation = IterableAPIInternal.initializeForTesting(apiKey: apiKey,
                                                                 launchOptions: launchOptions,
                                                                 config: config,
                                                                 dateProvider: dateProvider,
@@ -37,15 +37,14 @@ extension IterableAPI {
 
 
 extension IterableAPIInternal {
-    @discardableResult static func initialize(apiKey: String,
-                                              launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil,
-                                              config: IterableConfig = IterableConfig(),
-                                              dateProvider: DateProviderProtocol = SystemDateProvider(),
-                                              networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
-                                              notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
-                                              inAppSynchronizer: InAppSynchronizerProtocol = DefaultInAppSynchronizer(),
-                                              urlOpener: UrlOpenerProtocol = AppUrlOpener()
-                                              ) -> IterableAPIInternal {
+    @discardableResult static func initializeForTesting(apiKey: String = "zeeApiKey",
+                                                        launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil,
+                                                        config: IterableConfig = IterableConfig(),
+                                                        dateProvider: DateProviderProtocol = SystemDateProvider(),
+                                                        networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = MockNetworkSession(),
+                                                        notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
+                                                        inAppSynchronizer: InAppSynchronizerProtocol = MockInAppSynchronizer(),
+                                                        urlOpener: UrlOpenerProtocol = MockUrlOpener()) -> IterableAPIInternal {
         queue.sync {
             _sharedInstance = IterableAPIInternal(apiKey: apiKey,
                                                   launchOptions: launchOptions,

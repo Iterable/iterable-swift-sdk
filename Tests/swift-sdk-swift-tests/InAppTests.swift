@@ -42,7 +42,7 @@ class InAppTests: XCTestCase {
                 ]])
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
-        TestHelper.initializeApi(
+        IterableAPI.initializeForTesting(
                                  inAppSynchronizer: mockInAppSynchronizer
         )
         

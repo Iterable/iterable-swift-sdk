@@ -79,7 +79,7 @@ class ViewController: UIViewController {
                 "content" : ["html" : "<a href='https://www.google.com/q=something'>Click Here</a>"],
                 "messageId" : "messageId",
                 "campaignId" : "campaignId"] ]])
-        TestHelper.initializeApi(apiKey: "apiKey",
+        IterableAPI.initializeForTesting(apiKey: "apiKey",
                                networkSession: networkSession)
         
         networkSession.callback = {(_, _, _) in
@@ -109,7 +109,7 @@ class ViewController: UIViewController {
                 "campaignId" : "campaignId",
                 ]
             ]])
-        TestHelper.initializeApi(apiKey: "apiKey",
+        IterableAPI.initializeForTesting(apiKey: "apiKey",
                                networkSession: networkSession)
         
         networkSession.callback = {(_, _, _) in
@@ -143,7 +143,7 @@ class ViewController: UIViewController {
         config.urlDelegate = mockUrlDelegate
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
-        TestHelper.initializeApi(apiKey: "apiKey",
+        IterableAPI.initializeForTesting(apiKey: "apiKey",
                                config: config,
                                inAppSynchronizer: mockInAppSynchronizer)
         
@@ -170,7 +170,7 @@ class ViewController: UIViewController {
         }
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
-        TestHelper.initializeApi(apiKey: "apiKey",
+        IterableAPI.initializeForTesting(apiKey: "apiKey",
                                config: config,
                                networkSession: MockNetworkSession(),
                                inAppSynchronizer: mockInAppSynchronizer,

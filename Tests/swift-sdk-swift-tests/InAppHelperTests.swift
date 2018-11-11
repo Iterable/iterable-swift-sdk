@@ -157,7 +157,7 @@ class InAppHelperTests: XCTestCase {
         let expectation1 = expectation(description: "track in app click")
 
         let networkSession = MockNetworkSession(statusCode: 200)
-        TestHelper.initializeApi(apiKey: InAppHelperTests.apiKey, networkSession: networkSession)
+        IterableAPI.initializeForTesting(apiKey: InAppHelperTests.apiKey, networkSession: networkSession)
         IterableAPI.userId = InAppHelperTests.userId
         networkSession.callback = {(_, _, _) in
             TestUtils.validate(request: networkSession.request!,
@@ -182,7 +182,7 @@ class InAppHelperTests: XCTestCase {
         let expectation1 = expectation(description: "track in app click")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        TestHelper.initializeApi(apiKey: InAppHelperTests.apiKey, networkSession: networkSession)
+        IterableAPI.initializeForTesting(apiKey: InAppHelperTests.apiKey, networkSession: networkSession)
         IterableAPI.email = InAppHelperTests.email
         networkSession.callback = {(_, _, _) in
             TestUtils.validate(request: networkSession.request!,
@@ -206,7 +206,7 @@ class InAppHelperTests: XCTestCase {
         let expectation1 = expectation(description: "track in app open")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        TestHelper.initializeApi(apiKey: InAppHelperTests.apiKey, networkSession: networkSession)
+        IterableAPI.initializeForTesting(apiKey: InAppHelperTests.apiKey, networkSession: networkSession)
         IterableAPI.email = InAppHelperTests.email
         networkSession.callback = {(_, _, _) in
             TestUtils.validate(request: networkSession.request!,

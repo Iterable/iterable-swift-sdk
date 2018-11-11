@@ -8,24 +8,7 @@ import Foundation
 
 @testable import IterableSDK
 
+/// Add Utility methods common to multiple targets here.
 struct TestHelper {
-    // Initialize Tests with default mocks etc.
-    static func initializeApi(apiKey: String = "zeeApiKey",
-                           launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil,
-                           config: IterableConfig = IterableConfig(),
-                           dateProvider: DateProviderProtocol = SystemDateProvider(),
-                           networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = MockNetworkSession(),
-                           notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider() ,
-                           inAppSynchronizer: InAppSynchronizerProtocol = MockInAppSynchronizer(),
-                           urlOpener: UrlOpenerProtocol = MockUrlOpener()) {
-        IterableAPI.initialize(apiKey: apiKey,
-                               launchOptions: launchOptions,
-                               config: config,
-                               dateProvider: dateProvider,
-                               networkSession: networkSession,
-                               notificationStateProvider: notificationStateProvider,
-                               inAppSynchronizer: inAppSynchronizer,
-                               urlOpener: urlOpener)
-    }
 }
 

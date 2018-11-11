@@ -35,7 +35,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         
         let notificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: expectation2)
         
-        TestHelper.initializeApi(apiKey: IterableAutoRegistrationTests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+        IterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
         IterableAPI.email = "user1@example.com"
         let token = "zeeToken".data(using: .utf8)!
         networkSession.callback = {(_, _, _) in
@@ -69,7 +69,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         // notifications are enabled
         let notificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: expectation1)
         
-        TestHelper.initializeApi(apiKey: IterableAutoRegistrationTests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+        IterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
         let email = "user1@example.com"
         IterableAPI.email = email
         let token = "zeeToken".data(using: .utf8)!
@@ -99,7 +99,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         config.pushIntegrationName = "my-push-integration"
         let notificationStateProvider = MockNotificationStateProvider(enabled: true)
         
-        TestHelper.initializeApi(apiKey: IterableAutoRegistrationTests.apiKey,
+        IterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey,
                                config: config,
                                networkSession: networkSession,
                                notificationStateProvider: notificationStateProvider)
@@ -134,7 +134,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         config.pushIntegrationName = "my-push-integration"
         let notificationStateProvider = MockNotificationStateProvider(enabled: false, expectation: expectation3) // Notifications are disabled
         
-        TestHelper.initializeApi(apiKey: IterableAutoRegistrationTests.apiKey,
+        IterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey,
                                config: config,
                                networkSession: networkSession,
                                notificationStateProvider: notificationStateProvider)
@@ -176,7 +176,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         config.autoPushRegistration = false
         let notificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: expectation1)
         
-        TestHelper.initializeApi(apiKey: IterableAutoRegistrationTests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+        IterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
         IterableAPI.email = "user1@example.com"
         let token = "zeeToken".data(using: .utf8)!
         networkSession.callback = {(_, _, _) in
@@ -204,7 +204,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         let notificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: expectation1)
         
         UserDefaults.standard.set("user1@example.com", forKey: .ITBL_USER_DEFAULTS_EMAIL_KEY)
-        TestHelper.initializeApi(apiKey: IterableAutoRegistrationTests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+        IterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
         
         // only wait for small time, supposed to error out
         wait(for: [expectation1], timeout: testExpectationTimeout)

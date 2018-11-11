@@ -20,8 +20,8 @@ class IterableNotificationResponseTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
+        IterableAPI.initializeForTesting(dateProvider: dateProvider)
         // Put setup code here. This method is called before the invocation of each test method in the class.
-        IterableAPIInternal.initialize(apiKey:"", config: IterableConfig(), dateProvider: dateProvider)
     }
     
     override func tearDown() {
@@ -170,7 +170,6 @@ class IterableNotificationResponseTests: XCTestCase {
     }
     
     func testSavePushPayload() {
-        let api = IterableAPIInternal.sharedInstance!
         let messageId = UUID().uuidString
         let userInfo: [AnyHashable : Any] = [
             "itbl": [
@@ -185,27 +184,26 @@ class IterableNotificationResponseTests: XCTestCase {
         ]
         
         // call track push open
-        api.trackPushOpen(userInfo)
+        IterableAPI.track(pushOpen: userInfo)
 
         // check the push payload for messageId
-        var pushPayload = api.lastPushPayload
+        var pushPayload = IterableAPI.lastPushPayload
         var itbl = pushPayload?["itbl"] as? [String : Any]
         XCTAssertEqual(itbl?["messageId"] as? String, messageId)
         
         // 23 hours, not expired, still present
         dateProvider.currentDate = Calendar.current.date(byAdding: Calendar.Component.hour, value: 23, to: Date())!
-        pushPayload = api.lastPushPayload
+        pushPayload = IterableAPI.lastPushPayload
         itbl = pushPayload?["itbl"] as? [String : Any]
         XCTAssertEqual(itbl?["messageId"] as? String, messageId)
 
         // 24 hours, expired, nil payload
         dateProvider.currentDate = Calendar.current.date(byAdding: Calendar.Component.hour, value: 24, to: Date())!
-        pushPayload = api.lastPushPayload
+        pushPayload = IterableAPI.lastPushPayload
         XCTAssertNil(pushPayload)
     }
     
     func testSaveAttributionInfo() {
-        let api = IterableAPIInternal.sharedInstance!
         let messageId = UUID().uuidString
         let userInfo: [AnyHashable : Any] = [
             "itbl": [
@@ -220,24 +218,24 @@ class IterableNotificationResponseTests: XCTestCase {
         ]
         
         // call track push open
-        api.trackPushOpen(userInfo)
+        IterableAPI.track(pushOpen: userInfo)
         
         // check attribution info
-        var attributionInfo = api.attributionInfo
+        var attributionInfo = IterableAPI.attributionInfo
         XCTAssertEqual(attributionInfo?.campaignId, 1234)
         XCTAssertEqual(attributionInfo?.templateId, 4321)
         XCTAssertEqual(attributionInfo?.messageId, messageId)
 
         // 23 hours, not expired, still present
         dateProvider.currentDate = Calendar.current.date(byAdding: Calendar.Component.hour, value: 23, to: Date())!
-        attributionInfo = api.attributionInfo
+        attributionInfo = IterableAPI.attributionInfo
         XCTAssertEqual(attributionInfo?.campaignId, 1234)
         XCTAssertEqual(attributionInfo?.templateId, 4321)
         XCTAssertEqual(attributionInfo?.messageId, messageId)
         
         // 24 hours, expired, nil payload
         dateProvider.currentDate = Calendar.current.date(byAdding: Calendar.Component.hour, value: 24, to: Date())!
-        XCTAssertNil(api.attributionInfo)
+        XCTAssertNil(IterableAPI.attributionInfo)
     }
 
     func testLegacyDeeplinkPayload() {
