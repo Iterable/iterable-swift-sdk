@@ -31,7 +31,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
 
 - (void)setUp {
     [super setUp];
-    [IterableAPI initializeWithApiKey:@""];
+    [IterableAPI initializeForObjcTesting];
 }
 
 - (void)tearDown {
@@ -76,7 +76,7 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     
     IterableConfig *config = [[IterableConfig alloc] init];
     config.urlDelegate = urlDelegateMock;
-    [IterableAPI initializeWithApiKey:@"" config:config];
+    [IterableAPI initializeForObjcTestingWithConfig:config];
     NSURL *iterableLink = [NSURL URLWithString:iterableRewriteURL];
     [IterableAPI handleUniversalLink:iterableLink];
    
@@ -141,43 +141,17 @@ NSString *iterableNoRewriteURL = @"http://links.iterable.com/u/60402396fbd5433eb
     [self waitForExpectationsWithTimeout:IterableNetworkResponseExpectationTimeout handler:nil];
 }
 
-- (void)testRegisterToken {
-    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"Request is sent"];
-    [OHHTTPStubs stubRequestsPassingTest:^BOOL(NSURLRequest *request) {
-        return YES;
-    } withStubResponse:^OHHTTPStubsResponse *(NSURLRequest *request) {
-        [expectation fulfill];
-        NSDictionary *json = [NSJSONSerialization
-                              JSONObjectWithData:request.OHHTTPStubs_HTTPBody
-                              options:0 error:nil];
-        XCTAssertEqualObjects(json[@"email"], @"user@example.com");
-        XCTAssertEqualObjects(json[@"device"][@"applicationName"], @"pushIntegration");
-        XCTAssertEqualObjects(json[@"device"][@"platform"], @"APNS_SANDBOX");
-        XCTAssertEqualObjects(json[@"device"][@"token"], [[@"token" dataUsingEncoding:kCFStringEncodingUTF8] ITEHexadecimalString]);
-        return [OHHTTPStubsResponse responseWithData:[@"" dataUsingEncoding:kCFStringEncodingUTF8] statusCode:200 headers:@{@"Content-Type":@"application/json"}];
-    }];
-    
-    IterableConfig *config = [[IterableConfig alloc] init];
-    config.pushIntegrationName = @"pushIntegration";
-    [IterableAPI initializeWithApiKey:@"apiKey" config:config];
-    IterableAPI.email = @"user@example.com";
-    [IterableAPI registerToken:[@"token" dataUsingEncoding:kCFStringEncodingUTF8]];
-    
-    [self waitForExpectations:@[expectation] timeout:5.0];
-    [OHHTTPStubs removeAllStubs];
-}
-
 - (void)testEmailUserIdPersistence {
-    [IterableAPI initializeWithApiKey:@"apiKey"];
+    [IterableAPI initializeForObjcTesting];
     IterableAPI.email = @"test@email.com";
     
-    [IterableAPI initializeWithApiKey:@"apiKey"];
+    [IterableAPI initializeForObjcTesting];
     XCTAssertEqualObjects(IterableAPI.email, @"test@email.com");
     XCTAssertNil(IterableAPI.userId);
     
     IterableAPI.userId = @"testUserId";
 
-    [IterableAPI initializeWithApiKey:@"apiKey"];
+    [IterableAPI initializeForObjcTesting];
     XCTAssertEqualObjects(IterableAPI.userId, @"testUserId");
     XCTAssertNil(IterableAPI.email);
 }

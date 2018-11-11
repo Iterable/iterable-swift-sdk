@@ -14,6 +14,21 @@ extension Dictionary where Key == AnyHashable {
     }
 }
 
+// Used only by ojbc tests. Remove after converting to Swift.
+extension IterableAPI {
+    @objc public static func initializeForObjcTesting() {
+        internalImplementation = IterableAPIInternal.initializeForTesting()
+    }
+
+    @objc public static func initializeForObjcTesting(apiKey: String) {
+        internalImplementation = IterableAPIInternal.initializeForTesting(apiKey: apiKey)
+    }
+
+    @objc public static func initializeForObjcTesting(config: IterableConfig) {
+        internalImplementation = IterableAPIInternal.initializeForTesting(config: config)
+    }
+}
+
 extension IterableAPI {
     // Internal Only used in unit tests.
     static func initializeForTesting(apiKey: String = "zeeApiKey",
