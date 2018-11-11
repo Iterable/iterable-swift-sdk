@@ -208,7 +208,6 @@ class NoNetworkNetworkSession: NetworkSessionProtocol {
 }
 
 class MockInAppSynchronizer : InAppSynchronizerProtocol {
-    var networkSession: NetworkSessionProtocol?
     weak var inAppSyncDelegate: InAppSynchronizerDelegate?
     
     func mockContentAvailableFromServer(contents: [IterableInAppContent]) {

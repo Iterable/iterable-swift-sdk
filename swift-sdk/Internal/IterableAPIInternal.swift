@@ -99,6 +99,8 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
     }
 
+    var inAppManager: IterableInAppManagerProtocol
+    
     func register(token: Data) {
         register(token: token, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "registerToken"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "registerToken"))
     }
@@ -534,8 +536,6 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         networkSessionProvider()
     }()
     
-    private var inAppSynchronizer: InAppSynchronizerProtocol
-
     private var urlOpener: UrlOpenerProtocol
     
     /**
@@ -692,18 +692,18 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         self.networkSessionProvider = networkSession
         self.notificationStateProvider = notificationStateProvider
         self.localStorage = UserDefaultsLocalStorage(dateProvider: self.dateProvider)
-        self.inAppSynchronizer = inAppSynchronizer
+        let inAppManager = InAppManager(synchronizer: inAppSynchronizer, inAppDelegate: config.inAppDelegate, urlDelegate: config.urlDelegate, urlOpener: urlOpener)
+        self.inAppManager = inAppManager
         self.urlOpener = urlOpener
         
         // setup
         deeplinkManager = IterableDeeplinkManager()
         
-        // super initlog
+        // super init
         super.init()
 
-        //
-        self.inAppSynchronizer.networkSession = self.networkSession
-        self.inAppSynchronizer.inAppSyncDelegate = self
+        // after calling super we can set self as a property
+        inAppManager.internalApi = self
 
         // sdk version
         updateSDKVersion()
@@ -732,10 +732,8 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         queue.sync {
             _sharedInstance = IterableAPIInternal(apiKey: apiKey,
                                                   launchOptions: launchOptions,
-                                                  config: config,
-                                                  dateProvider: SystemDateProvider(),
-                                                  networkSession: URLSession(configuration: URLSessionConfiguration.default),
-                                                  inAppSynchronizer: DefaultInAppSynchronizer())
+                                                  config: config
+                                                  )
         }
         return _sharedInstance!
     }
@@ -824,37 +822,5 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     
     deinit {
         ITBInfo()
-    }
-}
-
-extension IterableAPIInternal : InAppSynchronizerDelegate {
-    func onInAppContentAvailable(contents: [IterableInAppContent]) {
-        ITBInfo()
-        
-        if contents.count == 1 {
-            if config.inAppDelegate.onNew(content: contents[0]) == .show {
-                InAppHelper.showInApp(content: contents[0], internalApi: self) { (urlString) in
-                    if let name = urlString {
-                        self.handleUrl(urlString: name, fromSource: .inApp)
-                    } else {
-                        ITBError("No name for clicked button/link in inApp")
-                    }
-                }
-            } else {
-                ITBInfo("skipped inApp")
-            }
-        } else if contents.count > 1 {
-            if let content = config.inAppDelegate.onNew(batch: contents) {
-                InAppHelper.showInApp(content: content, internalApi: self) { (urlString) in
-                    if let name = urlString {
-                        self.handleUrl(urlString: name, fromSource: .inApp)
-                    } else {
-                        ITBError("No name for clicked button/link in inApp")
-                    }
-                }
-            } else {
-                ITBInfo("skipped inApp batch")
-            }
-        }
     }
 }

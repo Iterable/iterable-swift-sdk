@@ -484,7 +484,22 @@ public final class IterableAPI : NSObject {
         return internalImplementation?.handleUniversalLink(url) ?? false
     }
     
-    //MARK: Private and Internal
+    /// Use this property for getting and showing inApp Messages.
+    /// This property has no meaning if IterableAPI has not been initialized using
+    /// IterableAPI.initialize
+    /// ```
+    /// - IterableAPI.inAppManager.getMessages()
+    /// - IterableAPI.inappManager.show(content: content, consume: true)
+    /// ```
+    @objc public static var inAppManager: IterableInAppManagerProtocol {
+        guard let internalImplementation = internalImplementation else {
+            ITBError("IterableAPI is not initialized yet. InApp will not work now.")
+            return EmptyInAppManager()
+        }
+        return internalImplementation.inAppManager
+    }
+    
+    // MARK: Private and Internal
     static var internalImplementation: IterableAPIInternal?
     private override init() {super.init()}
 }

@@ -15,12 +15,10 @@ protocol InAppSynchronizerDelegate : class {
 
 ///
 protocol InAppSynchronizerProtocol {
-    var networkSession: NetworkSessionProtocol? {get set}
     var inAppSyncDelegate: InAppSynchronizerDelegate? {get set}
 }
 
 class DefaultInAppSynchronizer : InAppSynchronizerProtocol {
-    var networkSession: NetworkSessionProtocol?
     weak var inAppSyncDelegate: InAppSynchronizerDelegate?
     
     init() {

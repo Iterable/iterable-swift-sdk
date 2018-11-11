@@ -36,19 +36,6 @@ extension IterableAPI {
 }
 
 
-// used by objc tests, remove after rewriting in Swift
-extension IterableAPIInternal {
-    @discardableResult public static func initialize(apiKey: String) -> IterableAPIInternal {
-        return initialize(apiKey: apiKey, config:IterableConfig())
-    }
-    
-    // used by objc tests, remove after rewriting them in Swift
-    @discardableResult public static func initialize(apiKey: String,
-                                                     config: IterableConfig) -> IterableAPIInternal {
-        return initialize(apiKey: apiKey, launchOptions: nil, config:config)
-    }
-}
-
 extension IterableAPIInternal {
     @discardableResult static func initialize(apiKey: String,
                                               launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil,
