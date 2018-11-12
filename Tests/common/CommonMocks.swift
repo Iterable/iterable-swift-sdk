@@ -251,9 +251,14 @@ class MockInAppDelegate : IterableInAppDelegate {
     var onNewContentCallback: ((IterableInAppContent) -> Void)?
     var onNewBatchCallback: (([IterableInAppContent]) -> Void)?
     
+    
+    init(showInApp: ShowInApp = .show) {
+        self.showInApp = showInApp
+    }
+    
     func onNew(content: IterableInAppContent) -> ShowInApp {
         onNewContentCallback?(content)
-        return .show
+        return showInApp
     }
     
     func onNew(batch: [IterableInAppContent]) -> IterableInAppContent? {
@@ -267,4 +272,6 @@ class MockInAppDelegate : IterableInAppDelegate {
         
         return nil
     }
+    
+    private let showInApp: ShowInApp
 }
