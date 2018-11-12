@@ -208,6 +208,7 @@ class NoNetworkNetworkSession: NetworkSessionProtocol {
 }
 
 class MockInAppSynchronizer : InAppSynchronizerProtocol {
+    weak var internalApi: IterableAPIInternal?
     weak var inAppSyncDelegate: InAppSynchronizerDelegate?
     
     func mockContentAvailableFromServer(contents: [IterableInAppContent]) {
@@ -217,7 +218,7 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
     
     func mockInAppPayloadFromServer(_ payload: [AnyHashable : Any]) {
         ITBInfo()
-        guard let internalApi = inAppSyncDelegate as? IterableAPIInternal else {
+        guard let internalApi = internalApi else {
             ITBError("Invalid state: expected InternalApi")
             return
         }
@@ -226,6 +227,23 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
         if contents.count > 0 {
             inAppSyncDelegate?.onInAppContentAvailable(contents: contents)
         }
+    }
+}
+
+class MockInAppDisplayer : InAppDisplayerProtocol {
+    weak var internalApi: IterableAPIInternal?
+    var onShowCallback:  ((IterableInAppContent, Bool, ITEActionBlock?) -> Void)?
+
+    private var actionCallback: ITEActionBlock?
+    
+    func showInApp(content: IterableInAppContent, consume: Bool, callback: ITEActionBlock?) {
+        actionCallback = callback
+        onShowCallback?(content, consume, callback)
+    }
+
+    // Mimics clicking a url
+    func click(url: String) {
+        actionCallback?(url)
     }
 }
 

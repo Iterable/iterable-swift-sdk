@@ -38,6 +38,7 @@ extension IterableAPI {
                            networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = MockNetworkSession(),
                            notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
                            inAppSynchronizer: InAppSynchronizerProtocol = MockInAppSynchronizer(),
+                           inAppDisplayer: InAppDisplayerProtocol = MockInAppDisplayer(),
                            urlOpener: UrlOpenerProtocol = MockUrlOpener()) {
         internalImplementation = IterableAPIInternal.initializeForTesting(apiKey: apiKey,
                                                                 launchOptions: launchOptions,
@@ -46,6 +47,7 @@ extension IterableAPI {
                                                                 networkSession: networkSession,
                                                                 notificationStateProvider: notificationStateProvider,
                                                                 inAppSynchronizer: inAppSynchronizer,
+                                                                inAppDisplayer: inAppDisplayer,
                                                                 urlOpener: urlOpener)
     }
 }
@@ -59,6 +61,7 @@ extension IterableAPIInternal {
                                                         networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = MockNetworkSession(),
                                                         notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
                                                         inAppSynchronizer: InAppSynchronizerProtocol = MockInAppSynchronizer(),
+                                                        inAppDisplayer: InAppDisplayerProtocol = MockInAppDisplayer(),
                                                         urlOpener: UrlOpenerProtocol = MockUrlOpener()) -> IterableAPIInternal {
         queue.sync {
             _sharedInstance = IterableAPIInternal(apiKey: apiKey,
@@ -68,6 +71,7 @@ extension IterableAPIInternal {
                                                   networkSession: networkSession,
                                                   notificationStateProvider: notificationStateProvider,
                                                   inAppSynchronizer: inAppSynchronizer,
+                                                  inAppDisplayer: inAppDisplayer,
                                                   urlOpener: urlOpener)
         }
         return _sharedInstance!

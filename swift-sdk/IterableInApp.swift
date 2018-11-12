@@ -19,7 +19,8 @@ public protocol IterableInAppManagerProtocol {
 
     /// - parameter content: The content to show.
     /// - parameter consume: Set to true to consume the event from the server queue. This should be default.
-    @objc(showContent:consume:callbackBlock:) func show(content: IterableInAppContent, consume: Bool, callbackBlock:ITEActionBlock?)
+    /// - parameter callback: block of code to execute once the user clicks on a link or button in the inApp notification.
+    @objc(showContent:consume:callbackBlock:) func show(content: IterableInAppContent, consume: Bool, callback:ITEActionBlock?)
 }
 
 /// By default, every single inApp will be shown as soon as it is available.

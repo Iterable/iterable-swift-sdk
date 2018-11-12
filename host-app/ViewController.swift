@@ -145,7 +145,9 @@ class ViewController: UIViewController {
         let mockInAppSynchronizer = MockInAppSynchronizer()
         IterableAPI.initializeForTesting(apiKey: "apiKey",
                                config: config,
-                               inAppSynchronizer: mockInAppSynchronizer)
+                               inAppSynchronizer: mockInAppSynchronizer,
+                               inAppDisplayer: InAppDisplayer()
+                               )
         
         mockInAppSynchronizer.mockContentAvailableFromServer(contents: [content])
     }
@@ -174,6 +176,7 @@ class ViewController: UIViewController {
                                config: config,
                                networkSession: MockNetworkSession(),
                                inAppSynchronizer: mockInAppSynchronizer,
+                               inAppDisplayer: InAppDisplayer(),
                                urlOpener: mockUrlOpener)
         
         mockInAppSynchronizer.mockContentAvailableFromServer(contents: [content])

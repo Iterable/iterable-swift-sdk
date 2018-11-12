@@ -18,40 +18,40 @@ class InAppTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    func notestShowInAppByDefault() {
+    func testShowInAppOpenUrlByDefault() {
         let expectation1 = expectation(description: "testShowInAppByDefault")
+        
+        let payloadUrl = "https://www.google.com/q=something"
         let payload: [AnyHashable : Any] = ["inAppMessages" : [[
             "content" : [
-                "html" : "<a href='https://www.google.com/q=something'>Click Here</a>",
+                "html" : "<a href='\(payloadUrl)'>Click Here</a>",
                 "inAppDisplaySettings" : ["backgroundAlpha" : 0.5, "left" : ["percentage" : 60], "right" : ["percentage" : 60], "bottom" : ["displayOption" : "AutoExpand"], "top" : ["displayOption" : "AutoExpand"]]
             ],
             "messageId" : "messageId",
             "campaignId" : "campaignId",
             ]
             ]]
-        let networkSession = MockNetworkSession(
-            statusCode: 200,
-            json: ["inAppMessages" : [[
-                "content" : [
-                    "html" : "<a href='https://www.google.com/q=something'>Click Here</a>",
-                    "inAppDisplaySettings" : ["backgroundAlpha" : 0.5, "left" : ["percentage" : 60], "right" : ["percentage" : 60], "bottom" : ["displayOption" : "AutoExpand"], "top" : ["displayOption" : "AutoExpand"]]
-                ],
-                "messageId" : "messageId",
-                "campaignId" : "campaignId",
-                ]
-                ]])
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
+        let mockUrlOpener = MockUrlOpener { (url) in
+            XCTAssertEqual(url.absoluteString, payloadUrl)
+            expectation1.fulfill()
+        }
+        
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _, _) in
+            mockInAppDisplayer.click(url: payloadUrl)
+        }
+        
         IterableAPI.initializeForTesting(
-                                 inAppSynchronizer: mockInAppSynchronizer
+                                 inAppSynchronizer: mockInAppSynchronizer,
+                                 inAppDisplayer: mockInAppDisplayer,
+                                 urlOpener: mockUrlOpener
         )
         
-        networkSession.callback = {(_, _, _) in
-            networkSession.data = [:].toData()
-        }
         mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
-        
 
+        wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
 }

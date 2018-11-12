@@ -7,13 +7,20 @@
 import Foundation
 
 class InAppManager : IterableInAppManagerProtocol {
-    weak var internalApi: IterableAPIInternal?
+    weak var internalApi: IterableAPIInternal? {
+        didSet {
+            self.synchronizer.internalApi = internalApi
+            self.displayer.internalApi = internalApi
+        }
+    }
 
     init(synchronizer: InAppSynchronizerProtocol,
+         displayer: InAppDisplayerProtocol,
          inAppDelegate: IterableInAppDelegate,
          urlDelegate: IterableURLDelegate?,
          urlOpener: UrlOpenerProtocol) {
         self.synchronizer = synchronizer
+        self.displayer = displayer
         self.inAppDelegate = inAppDelegate
         self.urlDelegate = urlDelegate
         self.urlOpener = urlOpener
@@ -26,11 +33,13 @@ class InAppManager : IterableInAppManagerProtocol {
         return []
     }
     
-    func show(content: IterableInAppContent, consume: Bool = true, callbackBlock: ITEActionBlock? = nil) {
+    func show(content: IterableInAppContent, consume: Bool = true, callback: ITEActionBlock? = nil) {
         ITBInfo()
+        displayer.showInApp(content: content, consume: consume, callback: callback)
     }
 
     private var synchronizer: InAppSynchronizerProtocol
+    private var displayer: InAppDisplayerProtocol
     private var inAppDelegate: IterableInAppDelegate
     private var urlDelegate: IterableURLDelegate?
     private var urlOpener: UrlOpenerProtocol
@@ -40,14 +49,9 @@ extension InAppManager : InAppSynchronizerDelegate {
     func onInAppContentAvailable(contents: [IterableInAppContent]) {
         ITBInfo()
         
-        guard let internalApi = internalApi else {
-            ITBError("IterableAPI is not initialized")
-            return
-        }
-
         if contents.count == 1 {
             if inAppDelegate.onNew(content: contents[0]) == .show {
-                InAppHelper.showInApp(content: contents[0], internalApi: internalApi) { (urlString) in
+                displayer.showInApp(content: contents[0], consume: true) { (urlString) in
                     if let name = urlString {
                         self.handleUrl(urlString: name, fromSource: .inApp)
                     } else {
@@ -59,7 +63,7 @@ extension InAppManager : InAppSynchronizerDelegate {
             }
         } else if contents.count > 1 {
             if let content = inAppDelegate.onNew(batch: contents) {
-                InAppHelper.showInApp(content: content, internalApi: internalApi) { (urlString) in
+                displayer.showInApp(content: content, consume: true) { (urlString) in
                     if let name = urlString {
                         self.handleUrl(urlString: name, fromSource: .inApp)
                     } else {
@@ -93,7 +97,7 @@ class EmptyInAppManager : IterableInAppManagerProtocol {
         return []
     }
     
-    func show(content: IterableInAppContent, consume: Bool, callbackBlock: ITEActionBlock?) {
+    func show(content: IterableInAppContent, consume: Bool, callback: ITEActionBlock?) {
     }
     
 }

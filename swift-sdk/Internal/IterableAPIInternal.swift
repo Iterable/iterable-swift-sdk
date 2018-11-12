@@ -682,7 +682,8 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
          dateProvider: DateProviderProtocol = SystemDateProvider(),
          networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
          notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
-         inAppSynchronizer: InAppSynchronizerProtocol = DefaultInAppSynchronizer(),
+         inAppSynchronizer: InAppSynchronizerProtocol = InAppSynchronizer(),
+         inAppDisplayer: InAppDisplayerProtocol = InAppDisplayer(),
          urlOpener: UrlOpenerProtocol = AppUrlOpener()) {
         IterableLogUtil.sharedInstance = IterableLogUtil(dateProvider: dateProvider, logDelegate: config.logDelegate)
         ITBInfo()
@@ -692,7 +693,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         self.networkSessionProvider = networkSession
         self.notificationStateProvider = notificationStateProvider
         self.localStorage = UserDefaultsLocalStorage(dateProvider: self.dateProvider)
-        let inAppManager = InAppManager(synchronizer: inAppSynchronizer, inAppDelegate: config.inAppDelegate, urlDelegate: config.urlDelegate, urlOpener: urlOpener)
+        let inAppManager = InAppManager(synchronizer: inAppSynchronizer, displayer: inAppDisplayer, inAppDelegate: config.inAppDelegate, urlDelegate: config.urlDelegate, urlOpener: urlOpener)
         self.inAppManager = inAppManager
         self.urlOpener = urlOpener
         
