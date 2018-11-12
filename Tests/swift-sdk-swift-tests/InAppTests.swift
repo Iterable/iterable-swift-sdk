@@ -21,17 +21,6 @@ class InAppTests: XCTestCase {
     func testShowInAppSingle() {
         let expectation1 = expectation(description: "testShowInAppByDefault")
         
-        let payloadUrl = "https://www.google.com/q=something"
-        let payload: [AnyHashable : Any] = ["inAppMessages" : [[
-            "content" : [
-                "html" : "<a href='\(payloadUrl)'>Click Here</a>",
-                "inAppDisplaySettings" : ["backgroundAlpha" : 0.5, "left" : ["percentage" : 60], "right" : ["percentage" : 60], "bottom" : ["displayOption" : "AutoExpand"], "top" : ["displayOption" : "AutoExpand"]]
-            ],
-            "messageId" : "messageId",
-            "campaignId" : "campaignId",
-            ]
-            ]]
-        
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
         let mockInAppDisplayer = MockInAppDisplayer()
@@ -44,7 +33,7 @@ class InAppTests: XCTestCase {
             inAppDisplayer: mockInAppDisplayer
         )
         
-        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
+        mockInAppSynchronizer.mockInAppPayloadFromServer(createPayload(numMessages: 1))
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
@@ -52,17 +41,6 @@ class InAppTests: XCTestCase {
     func testShowInAppSingleOverride() {
         let expectation1 = expectation(description: "testShowInAppByDefault")
         expectation1.isInverted = true
-        
-        let payloadUrl = "https://www.google.com/q=something"
-        let payload: [AnyHashable : Any] = ["inAppMessages" : [[
-            "content" : [
-                "html" : "<a href='\(payloadUrl)'>Click Here</a>",
-                "inAppDisplaySettings" : ["backgroundAlpha" : 0.5, "left" : ["percentage" : 60], "right" : ["percentage" : 60], "bottom" : ["displayOption" : "AutoExpand"], "top" : ["displayOption" : "AutoExpand"]]
-            ],
-            "messageId" : "messageId",
-            "campaignId" : "campaignId",
-            ]
-            ]]
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
@@ -80,7 +58,7 @@ class InAppTests: XCTestCase {
             inAppDisplayer: mockInAppDisplayer
         )
         
-        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
+        mockInAppSynchronizer.mockInAppPayloadFromServer(createPayload(numMessages: 1))
         
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
     }
@@ -138,26 +116,15 @@ class InAppTests: XCTestCase {
     func testShowInAppOpenUrlByDefault() {
         let expectation1 = expectation(description: "testShowInAppByDefault")
         
-        let payloadUrl = "https://www.google.com/q=something"
-        let payload: [AnyHashable : Any] = ["inAppMessages" : [[
-            "content" : [
-                "html" : "<a href='\(payloadUrl)'>Click Here</a>",
-                "inAppDisplaySettings" : ["backgroundAlpha" : 0.5, "left" : ["percentage" : 60], "right" : ["percentage" : 60], "bottom" : ["displayOption" : "AutoExpand"], "top" : ["displayOption" : "AutoExpand"]]
-            ],
-            "messageId" : "messageId",
-            "campaignId" : "campaignId",
-            ]
-            ]]
-        
         let mockInAppSynchronizer = MockInAppSynchronizer()
         let mockUrlOpener = MockUrlOpener { (url) in
-            XCTAssertEqual(url.absoluteString, payloadUrl)
+            XCTAssertEqual(url.absoluteString, self.getClickUrl(index: 1))
             expectation1.fulfill()
         }
         
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShowCallback = {(_, _, _) in
-            mockInAppDisplayer.click(url: payloadUrl)
+            mockInAppDisplayer.click(url: self.getClickUrl(index: 1))
         }
         
         IterableAPI.initializeForTesting(
@@ -166,7 +133,7 @@ class InAppTests: XCTestCase {
                                  urlOpener: mockUrlOpener
         )
         
-        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
+        mockInAppSynchronizer.mockInAppPayloadFromServer(createPayload(numMessages: 1))
 
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
@@ -175,26 +142,15 @@ class InAppTests: XCTestCase {
         let expectation1 = expectation(description: "testShowInAppByDefault")
         expectation1.isInverted = true
         
-        let payloadUrl = "https://www.google.com/q=something"
-        let payload: [AnyHashable : Any] = ["inAppMessages" : [[
-            "content" : [
-                "html" : "<a href='\(payloadUrl)'>Click Here</a>",
-                "inAppDisplaySettings" : ["backgroundAlpha" : 0.5, "left" : ["percentage" : 60], "right" : ["percentage" : 60], "bottom" : ["displayOption" : "AutoExpand"], "top" : ["displayOption" : "AutoExpand"]]
-            ],
-            "messageId" : "messageId",
-            "campaignId" : "campaignId",
-            ]
-            ]]
-        
         let mockInAppSynchronizer = MockInAppSynchronizer()
         let mockUrlOpener = MockUrlOpener { (url) in
-            XCTAssertEqual(url.absoluteString, payloadUrl)
+            XCTAssertEqual(url.absoluteString, self.getClickUrl(index: 1))
             expectation1.fulfill()
         }
         
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShowCallback = {(_, _, _) in
-            mockInAppDisplayer.click(url: payloadUrl)
+            mockInAppDisplayer.click(url: self.getClickUrl(index: 1))
         }
         
         let mockUrlDelegate = MockUrlDelegate(returnValue: true)
@@ -207,7 +163,7 @@ class InAppTests: XCTestCase {
             urlOpener: mockUrlOpener
         )
         
-        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
+        mockInAppSynchronizer.mockInAppPayloadFromServer(createPayload(numMessages: 1))
         
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
     }
@@ -215,19 +171,31 @@ class InAppTests: XCTestCase {
     private func createPayload(numMessages: Int) -> [AnyHashable : Any] {
         return [
             "inAppMessages" : (1...numMessages).reduce(into: [[AnyHashable : Any]]()) { (result, index) in
-                result.append(createOneInAppDict(messageId: "message\(index)", campaignId: "campaign\(index)", clickUrl: "https://www.site\(index).com"))
+                result.append(createOneInAppDict(index: index))
             }
         ]
     }
 
-    private func createOneInAppDict(messageId: String, campaignId: String, clickUrl: String) -> [AnyHashable : Any] {
+    private func createOneInAppDict(index: Int) -> [AnyHashable : Any] {
         return [
             "content" : [
-                "html" : "<a href='\(clickUrl)'>Click Here</a>",
+                "html" : "<a href='\(getClickUrl(index: index))'>Click Here</a>",
                 "inAppDisplaySettings" : ["backgroundAlpha" : 0.5, "left" : ["percentage" : 60], "right" : ["percentage" : 60], "bottom" : ["displayOption" : "AutoExpand"], "top" : ["displayOption" : "AutoExpand"]]
             ],
-            "messageId" : "\(messageId)",
-            "campaignId" : "\(campaignId)",
+            "messageId" : getMessageId(index: index),
+            "campaignId" : getCampaignId(index: index),
         ]
+    }
+    
+    private func getMessageId(index: Int) -> String {
+        return "message\(index)"
+    }
+
+    private func getCampaignId(index: Int) -> String {
+        return "campaign\(index)"
+    }
+
+    private func getClickUrl(index: Int) -> String {
+        return "https://www.site\(index).com"
     }
 }
