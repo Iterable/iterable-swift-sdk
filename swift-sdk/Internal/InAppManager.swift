@@ -29,14 +29,23 @@ class InAppManager : IterableInAppManagerProtocol {
     
     func getMessages() -> [IterableInAppMessage] {
         ITBInfo()
-        return []
+        return Array(messages.values)
     }
     
     func show(content: IterableInAppContent, consume: Bool = true, callback: ITEActionBlock? = nil) {
         ITBInfo()
+        guard let message = messages[content.messageId] else {
+            ITBError("Message with id: \(content.messageId) is not present.")
+            return
+        }
+        
         displayer.showInApp(content: content, callback: callback).onSuccess { (showed) in // showed boolean value gets set when inApp is showed in UI
             if showed && consume {
                 self.internalApi?.inAppConsume(content.messageId)
+                self.messages.removeValue(forKey: content.messageId)
+            } else {
+                message.skipped = true
+                self.messages.updateValue(message, forKey: content.messageId)
             }
         }
     }

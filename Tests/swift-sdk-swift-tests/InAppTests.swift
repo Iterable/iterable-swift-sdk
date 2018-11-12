@@ -168,7 +168,7 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
     }
     
-    func notestShowInAppWithConsume() {
+    func testShowInAppWithConsume() {
         let expectation1 = expectation(description: "testShowInAppWithConsume")
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
@@ -176,7 +176,6 @@ class InAppTests: XCTestCase {
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShowCallback = {(_, _) in
             mockInAppDisplayer.click(url: self.getClickUrl(index: 1))
-            expectation1.fulfill()
         }
         
         let config = IterableConfig()
@@ -194,9 +193,49 @@ class InAppTests: XCTestCase {
         XCTAssertEqual(messages.count, 1)
         
         IterableAPI.inAppManager.show(content: messages[0].content, consume: true) { (clickedUrl) in
-            print(clickedUrl ?? "nil")
+            XCTAssertEqual(clickedUrl, self.getClickUrl(index: 1))
+            expectation1.fulfill()
         }
         
+        XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+
+    func testShowInAppWithNoConsume() {
+        let expectation1 = expectation(description: "testShowInAppWithConsume")
+        
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _) in
+            mockInAppDisplayer.click(url: self.getClickUrl(index: 1))
+        }
+        
+        let config = IterableConfig()
+        config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
+        
+        IterableAPI.initializeForTesting(
+            config: config,
+            inAppSynchronizer: mockInAppSynchronizer,
+            inAppDisplayer: mockInAppDisplayer
+        )
+        
+        mockInAppSynchronizer.mockInAppPayloadFromServer(createPayload(numMessages: 1))
+        
+        var messages = IterableAPI.inAppManager.getMessages()
+        XCTAssertEqual(messages.count, 1)
+        XCTAssertEqual(messages[0].skipped, false)
+
+        IterableAPI.inAppManager.show(content: messages[0].content, consume: false) { (clickedUrl) in
+            XCTAssertEqual(clickedUrl, self.getClickUrl(index: 1))
+            expectation1.fulfill()
+        }
+        
+        messages = IterableAPI.inAppManager.getMessages()
+        XCTAssertEqual(messages.count, 1)
+        XCTAssertEqual(messages[0].skipped, true)
+
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
