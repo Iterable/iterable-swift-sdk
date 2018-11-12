@@ -18,13 +18,13 @@ class InAppTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    func testShowInAppSingle() {
+    func testAutoShowInAppSingle() {
         let expectation1 = expectation(description: "testShowInAppByDefault")
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _, _) in
+        mockInAppDisplayer.onShowCallback = {(_, _) in
             expectation1.fulfill()
         }
         
@@ -38,14 +38,14 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
-    func testShowInAppSingleOverride() {
+    func testAutoShowInAppSingleOverride() {
         let expectation1 = expectation(description: "testShowInAppByDefault")
         expectation1.isInverted = true
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _, _) in
+        mockInAppDisplayer.onShowCallback = {(_, _) in
             expectation1.fulfill()
         }
         
@@ -63,7 +63,7 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
     }
 
-    func testShowInAppMultiple() {
+    func testAutoShowInAppMultiple() {
         let expectation1 = expectation(description: "testShowInAppMultiple")
 
         let payload = createPayload(numMessages: 3)
@@ -71,7 +71,7 @@ class InAppTests: XCTestCase {
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _, _) in
+        mockInAppDisplayer.onShowCallback = {(_, _) in
             expectation1.fulfill()
         }
         
@@ -85,7 +85,7 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
-    func testShowInAppMultipleOverride() {
+    func testAutoShowInAppMultipleOverride() {
         let expectation1 = expectation(description: "testShowInAppMultipleOverride")
         expectation1.isInverted = true
         
@@ -94,7 +94,7 @@ class InAppTests: XCTestCase {
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _, _) in
+        mockInAppDisplayer.onShowCallback = {(_, _) in
             expectation1.fulfill()
         }
         
@@ -113,7 +113,7 @@ class InAppTests: XCTestCase {
     }
 
     
-    func testShowInAppOpenUrlByDefault() {
+    func testAutoShowInAppOpenUrlByDefault() {
         let expectation1 = expectation(description: "testShowInAppByDefault")
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
@@ -123,7 +123,7 @@ class InAppTests: XCTestCase {
         }
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _, _) in
+        mockInAppDisplayer.onShowCallback = {(_, _) in
             mockInAppDisplayer.click(url: self.getClickUrl(index: 1))
         }
         
@@ -138,7 +138,7 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
-    func testShowInAppUrlDelegateOverride() {
+    func testAutoShowInAppUrlDelegateOverride() {
         let expectation1 = expectation(description: "testShowInAppByDefault")
         expectation1.isInverted = true
         
@@ -149,7 +149,7 @@ class InAppTests: XCTestCase {
         }
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _, _) in
+        mockInAppDisplayer.onShowCallback = {(_, _) in
             mockInAppDisplayer.click(url: self.getClickUrl(index: 1))
         }
         
@@ -167,6 +167,39 @@ class InAppTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
     }
+    
+    func notestShowInAppWithConsume() {
+        let expectation1 = expectation(description: "testShowInAppWithConsume")
+        
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _) in
+            mockInAppDisplayer.click(url: self.getClickUrl(index: 1))
+            expectation1.fulfill()
+        }
+        
+        let config = IterableConfig()
+        config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
+        
+        IterableAPI.initializeForTesting(
+            config: config,
+            inAppSynchronizer: mockInAppSynchronizer,
+            inAppDisplayer: mockInAppDisplayer
+        )
+
+        mockInAppSynchronizer.mockInAppPayloadFromServer(createPayload(numMessages: 1))
+        
+        let messages = IterableAPI.inAppManager.getMessages()
+        XCTAssertEqual(messages.count, 1)
+        
+        IterableAPI.inAppManager.show(content: messages[0].content, consume: true) { (clickedUrl) in
+            print(clickedUrl ?? "nil")
+        }
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+
     
     private func createPayload(numMessages: Int) -> [AnyHashable : Any] {
         return [

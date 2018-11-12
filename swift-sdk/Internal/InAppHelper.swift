@@ -20,20 +20,12 @@ protocol InAppSynchronizerProtocol {
 }
 
 protocol InAppDisplayerProtocol {
-    var internalApi: IterableAPIInternal? {get set}
-    func showInApp(content: IterableInAppContent, consume: Bool, callback: ITEActionBlock?)
+    func showInApp(content: IterableInAppContent, callback: ITEActionBlock?) -> Future<Bool>
 }
 
-class InAppDisplayer : InAppDisplayerProtocol{
-    weak var internalApi: IterableAPIInternal?
-
-    func showInApp(content: IterableInAppContent, consume: Bool, callback: ITEActionBlock?) {
-        guard let internalApi = internalApi else {
-            ITBError("IterableAPI not initialized")
-            return
-        }
-        
-        InAppHelper.showInApp(content: content, internalApi: internalApi, consume: consume, callbackBlock: callback)
+class InAppDisplayer : InAppDisplayerProtocol {
+    func showInApp(content: IterableInAppContent, callback: ITEActionBlock?) -> Future<Bool> {
+        return InAppHelper.showInApp(content: content, callback: callback)
     }
 }
 
@@ -75,10 +67,9 @@ class InAppSynchronizer : InAppSynchronizerProtocol {
 struct InAppHelper {
     /// Shows an inApp message and consumes it from server queue if the message is shown.
     /// - parameter content: The content toshow
-    /// - parameter internalApi: IterableApiInternal used to consume the message from server queue.
-    /// - parameter callbackBlock: the code to execute when user clicks on a link or button on inApp message.
+    /// - parameter callback: the code to execute when user clicks on a link or button on inApp message.
     /// - returns: A Future indicating whether the inApp was opened.
-    @discardableResult fileprivate static func showInApp(content: IterableInAppContent, internalApi: IterableAPIInternal, consume: Bool, callbackBlock:ITEActionBlock?) -> Future<Bool> {
+    @discardableResult fileprivate static func showInApp(content: IterableInAppContent, callback:ITEActionBlock?) -> Future<Bool> {
         let result = Promise<Bool>()
         let notificationMetadata = IterableNotificationMetadata.metadata(fromInAppOptions: content.messageId)
         
@@ -87,10 +78,7 @@ struct InAppHelper {
                                                                   trackParams: notificationMetadata,
                                                                   backgroundAlpha: content.backgroundAlpha,
                                                                   padding: content.edgeInsets,
-                                                                  callbackBlock: callbackBlock)
-            if opened && consume {
-                internalApi.inAppConsume(content.messageId)
-            }
+                                                                  callbackBlock: callback)
             result.resolve(with: opened)
         }
         
@@ -279,7 +267,7 @@ struct InAppHelper {
     /// Gets the first message from the payload, if one esists or nil if the payload is empty
     static func spawn(inAppNotification callbackBlock: ITEActionBlock?, internalApi: IterableAPIInternal) -> Future<Bool> {
         return internalApi.getInAppMessages(1).flatMap {
-            getFirstInAppContent(fromPayload: $0, internalApi: internalApi).map { showInApp(content: $0, internalApi: internalApi, consume: true, callbackBlock: callbackBlock) }
+            getFirstInAppContent(fromPayload: $0, internalApi: internalApi).map { showInApp(content: $0, callback: callbackBlock) }
             ?? Promise(value: false)
         }
     }

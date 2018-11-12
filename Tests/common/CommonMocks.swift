@@ -231,14 +231,14 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
 }
 
 class MockInAppDisplayer : InAppDisplayerProtocol {
-    weak var internalApi: IterableAPIInternal?
-    var onShowCallback:  ((IterableInAppContent, Bool, ITEActionBlock?) -> Void)?
+    var onShowCallback:  ((IterableInAppContent, ITEActionBlock?) -> Void)?
 
     private var actionCallback: ITEActionBlock?
     
-    func showInApp(content: IterableInAppContent, consume: Bool, callback: ITEActionBlock?) {
+    func showInApp(content: IterableInAppContent, callback: ITEActionBlock?) -> Future<Bool> {
         actionCallback = callback
-        onShowCallback?(content, consume, callback)
+        onShowCallback?(content, callback)
+        return Promise<Bool>(value: true)
     }
 
     // Mimics clicking a url

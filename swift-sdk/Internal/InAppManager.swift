@@ -10,7 +10,6 @@ class InAppManager : IterableInAppManagerProtocol {
     weak var internalApi: IterableAPIInternal? {
         didSet {
             self.synchronizer.internalApi = internalApi
-            self.displayer.internalApi = internalApi
         }
     }
 
@@ -35,7 +34,11 @@ class InAppManager : IterableInAppManagerProtocol {
     
     func show(content: IterableInAppContent, consume: Bool = true, callback: ITEActionBlock? = nil) {
         ITBInfo()
-        displayer.showInApp(content: content, consume: consume, callback: callback)
+        displayer.showInApp(content: content, callback: callback).onSuccess { (showed) in // showed boolean value gets set when inApp is showed in UI
+            if showed && consume {
+                self.internalApi?.inAppConsume(content.messageId)
+            }
+        }
     }
 
     private var synchronizer: InAppSynchronizerProtocol
@@ -43,15 +46,19 @@ class InAppManager : IterableInAppManagerProtocol {
     private var inAppDelegate: IterableInAppDelegate
     private var urlDelegate: IterableURLDelegate?
     private var urlOpener: UrlOpenerProtocol
+    
+    private var messages: [String: IterableInAppMessage] = [:]
 }
 
 extension InAppManager : InAppSynchronizerDelegate {
     func onInAppContentAvailable(contents: [IterableInAppContent]) {
         ITBInfo()
         
+        merge(contents: contents)
+        
         if contents.count == 1 {
             if inAppDelegate.onNew(content: contents[0]) == .show {
-                displayer.showInApp(content: contents[0], consume: true) { (urlString) in
+                self.show(content: contents[0], consume: true) { (urlString) in // this gets called when user clicks link in inApp
                     if let name = urlString {
                         self.handleUrl(urlString: name, fromSource: .inApp)
                     } else {
@@ -63,7 +70,7 @@ extension InAppManager : InAppSynchronizerDelegate {
             }
         } else if contents.count > 1 {
             if let content = inAppDelegate.onNew(batch: contents) {
-                displayer.showInApp(content: content, consume: true) { (urlString) in
+                self.show(content: content, consume: true) { (urlString) in // This is what gets called when user clicks link
                     if let name = urlString {
                         self.handleUrl(urlString: name, fromSource: .inApp)
                     } else {
@@ -88,6 +95,14 @@ extension InAppManager : InAppSynchronizerDelegate {
                                          context: context,
                                          urlHandler: IterableUtil.urlHandler(fromUrlDelegate: self.urlDelegate, inContext: context),
                                          urlOpener: self.urlOpener)
+        }
+    }
+    
+    private func merge(contents: [IterableInAppContent]) {
+        contents.forEach { content in
+            if !messages.contains(where: { $0.key == content.messageId}) {
+                messages[content.messageId] = IterableInAppMessage(content: content)
+            }
         }
     }
 }
