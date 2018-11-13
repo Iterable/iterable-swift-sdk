@@ -131,7 +131,8 @@ class ViewController: UIViewController {
         let html = """
             <a href="http://website/resource#something">Click Me</a>
         """
-        let content = IterableInAppContent(messageId: messageId, edgeInsets: .zero, backgroundAlpha: 0.0, html: html)
+        let content = IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: html)
+        let message = IterableInAppMessage(messageId: messageId, campaignId: "zeeCampaignId", contentType: .html, content: content)
         
         let config = IterableConfig()
         let mockUrlDelegate = MockUrlDelegate(returnValue: true)
@@ -149,7 +150,7 @@ class ViewController: UIViewController {
                                inAppDisplayer: InAppDisplayer()
                                )
         
-        mockInAppSynchronizer.mockContentAvailableFromServer(contents: [content])
+        mockInAppSynchronizer.mockMessagesAvailableFromServer(messages: [message])
     }
 
     // Center and Open url, corresponds to UITests.testShowInApp5
@@ -161,7 +162,8 @@ class ViewController: UIViewController {
         let html = """
             <a href="http://website/resource#something">Click Me</a>
         """
-        let content = IterableInAppContent(messageId: messageId, edgeInsets: UIEdgeInsets(top: -1, left: 10, bottom: -1, right: 10), backgroundAlpha: 0.5, html: html)
+        let content = IterableHtmlInAppContent(edgeInsets: UIEdgeInsets(top: -1, left: 10, bottom: -1, right: 10), backgroundAlpha: 0.5, html: html)
+        let message = IterableInAppMessage(messageId: messageId, campaignId: "zeeCampaignId", contentType: .html, content: content)
         
         let config = IterableConfig()
         let mockUrlDelegate = MockUrlDelegate(returnValue: false) // we don't handle, so the url will be opened
@@ -179,7 +181,7 @@ class ViewController: UIViewController {
                                inAppDisplayer: InAppDisplayer(),
                                urlOpener: mockUrlOpener)
         
-        mockInAppSynchronizer.mockContentAvailableFromServer(contents: [content])
+        mockInAppSynchronizer.mockMessagesAvailableFromServer(messages: [message])
     }
 
     

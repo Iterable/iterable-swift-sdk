@@ -211,9 +211,9 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
     weak var internalApi: IterableAPIInternal?
     weak var inAppSyncDelegate: InAppSynchronizerDelegate?
     
-    func mockContentAvailableFromServer(contents: [IterableInAppContent]) {
+    func mockMessagesAvailableFromServer(messages: [IterableInAppMessage]) {
         ITBInfo()
-        inAppSyncDelegate?.onInAppContentAvailable(contents: contents)
+        inAppSyncDelegate?.onInAppMessagesAvailable(messages: messages)
     }
     
     func mockInAppPayloadFromServer(_ payload: [AnyHashable : Any]) {
@@ -223,21 +223,21 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
             return
         }
         
-        let contents = InAppHelper.inAppContents(fromPayload: payload, internalApi: internalApi)
-        if contents.count > 0 {
-            inAppSyncDelegate?.onInAppContentAvailable(contents: contents)
+        let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: internalApi)
+        if messages.count > 0 {
+            inAppSyncDelegate?.onInAppMessagesAvailable(messages: messages)
         }
     }
 }
 
 class MockInAppDisplayer : InAppDisplayerProtocol {
-    var onShowCallback:  ((IterableInAppContent, ITEActionBlock?) -> Void)?
+    var onShowCallback:  ((IterableInAppMessage, ITEActionBlock?) -> Void)?
 
     private var actionCallback: ITEActionBlock?
     
-    func showInApp(content: IterableInAppContent, callback: ITEActionBlock?) -> Future<Bool> {
+    func showInApp(message: IterableInAppMessage, callback: ITEActionBlock?) -> Future<Bool> {
         actionCallback = callback
-        onShowCallback?(content, callback)
+        onShowCallback?(message, callback)
         return Promise<Bool>(value: true)
     }
 
@@ -248,25 +248,25 @@ class MockInAppDisplayer : InAppDisplayerProtocol {
 }
 
 class MockInAppDelegate : IterableInAppDelegate {
-    var onNewContentCallback: ((IterableInAppContent) -> Void)?
-    var onNewBatchCallback: (([IterableInAppContent]) -> Void)?
+    var onNewMessageCallback: ((IterableInAppMessage) -> Void)?
+    var onNewBatchCallback: (([IterableInAppMessage]) -> Void)?
     
     
     init(showInApp: ShowInApp = .show) {
         self.showInApp = showInApp
     }
     
-    func onNew(content: IterableInAppContent) -> ShowInApp {
-        onNewContentCallback?(content)
+    func onNew(message: IterableInAppMessage) -> ShowInApp {
+        onNewMessageCallback?(message)
         return showInApp
     }
     
-    func onNew(batch: [IterableInAppContent]) -> IterableInAppContent? {
+    func onNew(batch: [IterableInAppMessage]) -> IterableInAppMessage? {
         onNewBatchCallback?(batch)
         
-        for content in batch {
-            if onNew(content: content) == .show {
-                return content
+        for message in batch {
+            if onNew(message: message) == .show {
+                return message
             }
         }
         

@@ -29,23 +29,19 @@ class InAppManager : IterableInAppManagerProtocol {
     
     func getMessages() -> [IterableInAppMessage] {
         ITBInfo()
-        return Array(messages.values)
+        return Array(messagesMap.values)
     }
     
-    func show(content: IterableInAppContent, consume: Bool = true, callback: ITEActionBlock? = nil) {
+    func show(message: IterableInAppMessage, consume: Bool = true, callback: ITEActionBlock? = nil) {
         ITBInfo()
-        guard let message = messages[content.messageId] else {
-            ITBError("Message with id: \(content.messageId) is not present.")
-            return
-        }
         
-        displayer.showInApp(content: content, callback: callback).onSuccess { (showed) in // showed boolean value gets set when inApp is showed in UI
+        displayer.showInApp(message: message, callback: callback).onSuccess { (showed) in // showed boolean value gets set when inApp is showed in UI
             if showed && consume {
-                self.internalApi?.inAppConsume(content.messageId)
-                self.messages.removeValue(forKey: content.messageId)
+                self.internalApi?.inAppConsume(message.messageId)
+                self.messagesMap.removeValue(forKey: message.messageId)
             } else {
                 message.skipped = true
-                self.messages.updateValue(message, forKey: content.messageId)
+                self.messagesMap.updateValue(message, forKey: message.messageId)
             }
         }
     }
@@ -56,19 +52,19 @@ class InAppManager : IterableInAppManagerProtocol {
     private var urlDelegate: IterableURLDelegate?
     private var urlOpener: UrlOpenerProtocol
     
-    private var messages: [String: IterableInAppMessage] = [:]
+    private var messagesMap: [String: IterableInAppMessage] = [:]
 }
 
 extension InAppManager : InAppSynchronizerDelegate {
-    func onInAppContentAvailable(contents: [IterableInAppContent]) {
+    func onInAppMessagesAvailable(messages: [IterableInAppMessage]) {
         ITBInfo()
         
-        merge(contents: contents)
+        merge(newMessages: messages)
         
-        if contents.count == 1 {
-            let content = contents[0]
-            if inAppDelegate.onNew(content: content) == .show {
-                self.show(content: content, consume: true) { (urlString) in // this gets called when user clicks link in inApp
+        if messages.count == 1 {
+            let message = messages[0]
+            if inAppDelegate.onNew(message: message) == .show {
+                self.show(message: message, consume: true) { (urlString) in // this gets called when user clicks link in inApp
                     if let name = urlString {
                         self.handleUrl(urlString: name, fromSource: .inApp)
                     } else {
@@ -77,12 +73,12 @@ extension InAppManager : InAppSynchronizerDelegate {
                 }
             } else {
                 ITBInfo("skipping inApp")
-                markAsSkipped(content: content)
+                markAsSkipped(message: message)
             }
-        } else if contents.count > 1 {
-            if let content = inAppDelegate.onNew(batch: contents) {
+        } else if messages.count > 1 {
+            if let message = inAppDelegate.onNew(batch: messages) {
                 // found content to show
-                self.show(content: content, consume: true) { (urlString) in // This is what gets called when user clicks link
+                self.show(message: message, consume: true) { (urlString) in // This is what gets called when user clicks link
                     if let name = urlString {
                         self.handleUrl(urlString: name, fromSource: .inApp)
                     } else {
@@ -90,18 +86,18 @@ extension InAppManager : InAppSynchronizerDelegate {
                     }
                 }
                 
-                contents.filter { $0.messageId != content.messageId }.forEach { markAsSkipped(content: $0) }
+                messages.filter { $0.messageId != message.messageId }.forEach { markAsSkipped(message: $0) }
             } else {
                 ITBInfo("skipping inApp batch")
-                contents.forEach {markAsSkipped(content: $0)}
+                messages.forEach {markAsSkipped(message: $0)}
             }
         }
     }
     
-    private func markAsSkipped(content: IterableInAppContent) {
-        if let message = messages[content.messageId] {
+    private func markAsSkipped(message: IterableInAppMessage) {
+        if let message = messagesMap[message.messageId] {
             message.skipped = true
-            messages.updateValue(message, forKey: content.messageId)
+            messagesMap.updateValue(message, forKey: message.messageId)
         } else {
             // Should never happen
             ITBError("Did not find message")
@@ -123,10 +119,10 @@ extension InAppManager : InAppSynchronizerDelegate {
         }
     }
     
-    private func merge(contents: [IterableInAppContent]) {
-        contents.forEach { content in
-            if !messages.contains(where: { $0.key == content.messageId}) {
-                messages[content.messageId] = IterableInAppMessage(content: content)
+    private func merge(newMessages: [IterableInAppMessage]) {
+        newMessages.forEach { message in
+            if !messagesMap.contains(where: { $0.key == message.messageId}) {
+                messagesMap[message.messageId] = message
             }
         }
     }
@@ -137,7 +133,7 @@ class EmptyInAppManager : IterableInAppManagerProtocol {
         return []
     }
     
-    func show(content: IterableInAppContent, consume: Bool, callback: ITEActionBlock?) {
+    func show(message: IterableInAppMessage, consume: Bool, callback: ITEActionBlock?) {
     }
     
 }

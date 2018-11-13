@@ -217,7 +217,7 @@ class InAppTests: XCTestCase {
         let messages = IterableAPI.inAppManager.getMessages()
         XCTAssertEqual(messages.count, 1)
         
-        IterableAPI.inAppManager.show(content: messages[0].content, consume: true) { (clickedUrl) in
+        IterableAPI.inAppManager.show(message: messages[0], consume: true) { (clickedUrl) in
             XCTAssertEqual(clickedUrl, self.getClickUrl(index: 1))
             expectation1.fulfill()
         }
@@ -253,7 +253,7 @@ class InAppTests: XCTestCase {
         XCTAssertEqual(messages[0].skipped, true)
 
         // Now show the first message, but don't consume
-        IterableAPI.inAppManager.show(content: messages[0].content, consume: false) { (clickedUrl) in
+        IterableAPI.inAppManager.show(message: messages[0], consume: false) { (clickedUrl) in
             XCTAssertEqual(clickedUrl, self.getClickUrl(index: 1))
             expectation1.fulfill()
         }

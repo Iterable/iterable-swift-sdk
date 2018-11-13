@@ -10,7 +10,7 @@ import UIKit
 
 /// Callbacks from the synchronizer
 protocol InAppSynchronizerDelegate : class {
-    func onInAppContentAvailable(contents: [IterableInAppContent])
+    func onInAppMessagesAvailable(messages: [IterableInAppMessage])
 }
 
 ///
@@ -20,12 +20,12 @@ protocol InAppSynchronizerProtocol {
 }
 
 protocol InAppDisplayerProtocol {
-    func showInApp(content: IterableInAppContent, callback: ITEActionBlock?) -> Future<Bool>
+    func showInApp(message: IterableInAppMessage, callback: ITEActionBlock?) -> Future<Bool>
 }
 
 class InAppDisplayer : InAppDisplayerProtocol {
-    func showInApp(content: IterableInAppContent, callback: ITEActionBlock?) -> Future<Bool> {
-        return InAppHelper.showInApp(content: content, callback: callback)
+    func showInApp(message: IterableInAppMessage, callback: ITEActionBlock?) -> Future<Bool> {
+        return InAppHelper.showInApp(message: message, callback: callback)
     }
 }
 
@@ -48,9 +48,9 @@ class InAppSynchronizer : InAppSynchronizerProtocol {
             return
         }
 
-        InAppHelper.getInAppContentsFromServer(internalApi: internalApi, number: numMessages).onSuccess {
+        InAppHelper.getInAppMessagesFromServer(internalApi: internalApi, number: numMessages).onSuccess {
             if $0.count > 0 {
-                self.inAppSyncDelegate?.onInAppContentAvailable(contents: $0)
+                self.inAppSyncDelegate?.onInAppMessagesAvailable(messages: $0)
             }
         }.onError {
             ITBError($0.localizedDescription)
@@ -66,12 +66,17 @@ class InAppSynchronizer : InAppSynchronizerProtocol {
 // This is Internal Struct, no public methods
 struct InAppHelper {
     /// Shows an inApp message and consumes it from server queue if the message is shown.
-    /// - parameter content: The content toshow
+    /// - parameter message: The inApp message to show
     /// - parameter callback: the code to execute when user clicks on a link or button on inApp message.
     /// - returns: A Future indicating whether the inApp was opened.
-    @discardableResult fileprivate static func showInApp(content: IterableInAppContent, callback:ITEActionBlock?) -> Future<Bool> {
+    @discardableResult fileprivate static func showInApp(message: IterableInAppMessage, callback:ITEActionBlock?) -> Future<Bool> {
+        guard let content = message.content as? IterableHtmlInAppContent else {
+            ITBError("Invalid content type")
+            return Promise<Bool>(value: false)
+        }
+        
         let result = Promise<Bool>()
-        let notificationMetadata = IterableNotificationMetadata.metadata(fromInAppOptions: content.messageId)
+        let notificationMetadata = IterableNotificationMetadata.metadata(fromInAppOptions: message.messageId)
         
         DispatchQueue.main.async {
             let opened = InAppHelper.showIterableNotificationHTML(content.html,
@@ -223,16 +228,16 @@ struct InAppHelper {
         }
     }
     
-    static func getInAppContentsFromServer(internalApi: IterableAPIInternal, number: Int) -> Future<[IterableInAppContent]> {
+    static func getInAppMessagesFromServer(internalApi: IterableAPIInternal, number: Int) -> Future<[IterableInAppMessage]> {
         return internalApi.getInAppMessages(NSNumber(value: number)).map {
-            inAppContents(fromPayload: $0, internalApi: internalApi)
+            inAppMessages(fromPayload: $0, internalApi: internalApi)
         }
     }
     
-    /// Given json payload, It will construct array of IterableInAppContent
+    /// Given json payload, It will construct array of IterableInAppMessage
     /// This will also make sure to consume any invalid inAppMessage.
-    static func inAppContents(fromPayload payload: [AnyHashable : Any], internalApi: IterableAPIInternal) -> [IterableInAppContent] {
-        return parseInApps(fromPayload: payload).map { toContent(fromInAppParseResult: $0, internalApi: internalApi) }.compactMap { $0 }
+    static func inAppMessages(fromPayload payload: [AnyHashable : Any], internalApi: IterableAPIInternal) -> [IterableInAppMessage] {
+        return parseInApps(fromPayload: payload).map { toMessage(fromInAppParseResult: $0, internalApi: internalApi) }.compactMap { $0 }
     }
     
     private static func getTopViewController() -> UIViewController? {
@@ -251,15 +256,16 @@ struct InAppHelper {
         case failure(reason: String, messageId: String?)
     }
     
-    /// This is a struct equivalent of IterableInAppContent class
+    /// This is a struct equivalent of IterableHtmlInAppContent class
     private struct InAppDetails {
+        let messageId: String
+        let campaignId: String
         let edgeInsets: UIEdgeInsets
         let backgroundAlpha: Double
-        let messageId: String
         let html: String
     }
 
-    /// Returns an array of Dictionaries holding inApp content.
+    /// Returns an array of Dictionaries holding inApp messages.
     private static func getInAppDicts(fromPayload payload: [AnyHashable : Any]) -> [[AnyHashable : Any]] {
         return payload[.ITBL_IN_APP_MESSAGE] as? [[AnyHashable : Any]] ?? []
     }
@@ -267,7 +273,7 @@ struct InAppHelper {
     /// Gets the first message from the payload, if one esists or nil if the payload is empty
     static func spawn(inAppNotification callbackBlock: ITEActionBlock?, internalApi: IterableAPIInternal) -> Future<Bool> {
         return internalApi.getInAppMessages(1).flatMap {
-            getFirstInAppContent(fromPayload: $0, internalApi: internalApi).map { showInApp(content: $0, callback: callbackBlock) }
+            getFirstInAppMessage(fromPayload: $0, internalApi: internalApi).map { showInApp(message: $0, callback: callbackBlock) }
             ?? Promise(value: false)
         }
     }
@@ -277,10 +283,10 @@ struct InAppHelper {
         return messages.count > 0 ? messages[0] : nil
     }
     
-    private static func getFirstInAppContent(fromPayload payload: [AnyHashable : Any], internalApi: IterableAPIInternal) -> IterableInAppContent? {
+    private static func getFirstInAppMessage(fromPayload payload: [AnyHashable : Any], internalApi: IterableAPIInternal) -> IterableInAppMessage? {
         return getFirstMessageDict(fromPayload: payload)
             .map { parseInApp(fromDict: $0) }
-            .flatMap { toContent(fromInAppParseResult: $0, internalApi: internalApi) }
+            .flatMap { toMessage(fromInAppParseResult: $0, internalApi: internalApi) }
     }
 
     private static func parseInApps(fromPayload payload: [AnyHashable : Any]) -> [InAppParseResult] {
@@ -303,17 +309,26 @@ struct InAppHelper {
             return .failure(reason: "No href tag found in in-app html payload \(html)", messageId: messageId)
         }
         
+        let campaignId: String
+        if let theCampaignId = dict[.ITBL_KEY_CAMPAIGN_ID] as? String {
+            campaignId = theCampaignId
+        } else {
+            ITBError("Could not find campaignId")
+            campaignId = ""
+        }
+        
         let inAppDisplaySettings = content[.ITBL_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
         let backgroundAlpha = InAppHelper.getBackgroundAlpha(fromInAppSettings: inAppDisplaySettings)
         let edgeInsets = InAppHelper.getPaddingFromPayload(inAppDisplaySettings)
         
-        return .success(InAppDetails(edgeInsets: edgeInsets, backgroundAlpha: backgroundAlpha, messageId: messageId, html: html))
+        return .success(InAppDetails(messageId: messageId, campaignId: campaignId, edgeInsets: edgeInsets, backgroundAlpha: backgroundAlpha, html: html))
     }
 
-    private static func toContent(fromInAppParseResult inAppParseResult: InAppHelper.InAppParseResult, internalApi: IterableAPIInternal) -> IterableInAppContent? {
+    private static func toMessage(fromInAppParseResult inAppParseResult: InAppHelper.InAppParseResult, internalApi: IterableAPIInternal) -> IterableInAppMessage? {
         switch inAppParseResult {
         case .success(let inAppDetails):
-            return IterableInAppContent(messageId: inAppDetails.messageId, edgeInsets: inAppDetails.edgeInsets, backgroundAlpha: inAppDetails.backgroundAlpha, html: inAppDetails.html)
+            let content = IterableHtmlInAppContent(edgeInsets: inAppDetails.edgeInsets, backgroundAlpha: inAppDetails.backgroundAlpha, html: inAppDetails.html)
+            return IterableInAppMessage(messageId: inAppDetails.messageId, campaignId: inAppDetails.campaignId, channelName: "reserved", contentType: .html, content: content)
         case .failure(reason: let reason, messageId: let messageId):
             ITBError(reason)
             if let messageId = messageId {
