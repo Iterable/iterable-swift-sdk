@@ -18,7 +18,7 @@ public protocol IterableInAppManagerProtocol {
     @objc(getMessages) func getMessages() -> [IterableInAppMessage]
 
     /// - parameter content: The content to show.
-    /// - parameter consume: Set to true to consume the event from the server queue. This should be default.
+    /// - parameter consume: Set to true to consume the event from the server queue if the message is shown. This should be default.
     /// - parameter callback: block of code to execute once the user clicks on a link or button in the inApp notification.
     @objc(showContent:consume:callbackBlock:) func show(content: IterableInAppContent, consume: Bool, callback:ITEActionBlock?)
 }

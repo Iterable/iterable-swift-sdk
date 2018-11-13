@@ -66,8 +66,9 @@ extension InAppManager : InAppSynchronizerDelegate {
         merge(contents: contents)
         
         if contents.count == 1 {
-            if inAppDelegate.onNew(content: contents[0]) == .show {
-                self.show(content: contents[0], consume: true) { (urlString) in // this gets called when user clicks link in inApp
+            let content = contents[0]
+            if inAppDelegate.onNew(content: content) == .show {
+                self.show(content: content, consume: true) { (urlString) in // this gets called when user clicks link in inApp
                     if let name = urlString {
                         self.handleUrl(urlString: name, fromSource: .inApp)
                     } else {
@@ -75,10 +76,12 @@ extension InAppManager : InAppSynchronizerDelegate {
                     }
                 }
             } else {
-                ITBInfo("skipped inApp")
+                ITBInfo("skipping inApp")
+                markAsSkipped(content: content)
             }
         } else if contents.count > 1 {
             if let content = inAppDelegate.onNew(batch: contents) {
+                // found content to show
                 self.show(content: content, consume: true) { (urlString) in // This is what gets called when user clicks link
                     if let name = urlString {
                         self.handleUrl(urlString: name, fromSource: .inApp)
@@ -86,9 +89,22 @@ extension InAppManager : InAppSynchronizerDelegate {
                         ITBError("No name for clicked button/link in inApp")
                     }
                 }
+                
+                contents.filter { $0.messageId != content.messageId }.forEach { markAsSkipped(content: $0) }
             } else {
-                ITBInfo("skipped inApp batch")
+                ITBInfo("skipping inApp batch")
+                contents.forEach {markAsSkipped(content: $0)}
             }
+        }
+    }
+    
+    private func markAsSkipped(content: IterableInAppContent) {
+        if let message = messages[content.messageId] {
+            message.skipped = true
+            messages.updateValue(message, forKey: content.messageId)
+        } else {
+            // Should never happen
+            ITBError("Did not find message")
         }
     }
 

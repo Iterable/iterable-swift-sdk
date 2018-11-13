@@ -25,6 +25,8 @@ class InAppTests: XCTestCase {
         
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShowCallback = {(_, _) in
+            // 1 message is present when showing
+            XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
             expectation1.fulfill()
         }
         
@@ -34,7 +36,9 @@ class InAppTests: XCTestCase {
         )
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(createPayload(numMessages: 1))
-        
+        // Zero messages should be left after showing
+        XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
+
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
@@ -60,6 +64,9 @@ class InAppTests: XCTestCase {
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(createPayload(numMessages: 1))
         
+        XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
+        XCTAssertEqual(IterableAPI.inAppManager.getMessages()[0].skipped, true)
+
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
     }
 
@@ -72,6 +79,7 @@ class InAppTests: XCTestCase {
         
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShowCallback = {(_, _) in
+            XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 3)
             expectation1.fulfill()
         }
         
@@ -81,7 +89,11 @@ class InAppTests: XCTestCase {
         )
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
-        
+        let messages = IterableAPI.inAppManager.getMessages()
+        XCTAssertEqual(messages.count, 2)
+        XCTAssertEqual(messages[0].skipped, true)
+        XCTAssertEqual(messages[1].skipped, true)
+
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
@@ -108,22 +120,29 @@ class InAppTests: XCTestCase {
         )
 
         mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
-        
+        let messages = IterableAPI.inAppManager.getMessages()
+        XCTAssertEqual(messages.count, 3)
+        XCTAssertEqual(messages[0].skipped, true)
+        XCTAssertEqual(messages[1].skipped, true)
+        XCTAssertEqual(messages[2].skipped, true)
+
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
     }
 
     
     func testAutoShowInAppOpenUrlByDefault() {
-        let expectation1 = expectation(description: "testShowInAppByDefault")
+        let expectation1 = expectation(description: "testShowInAppOpenUrlByDefault")
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
         let mockUrlOpener = MockUrlOpener { (url) in
             XCTAssertEqual(url.absoluteString, self.getClickUrl(index: 1))
+            XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
             expectation1.fulfill()
         }
         
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShowCallback = {(_, _) in
+            XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
             mockInAppDisplayer.click(url: self.getClickUrl(index: 1))
         }
         
@@ -134,12 +153,14 @@ class InAppTests: XCTestCase {
         )
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(createPayload(numMessages: 1))
+        let messages = IterableAPI.inAppManager.getMessages()
+        XCTAssertEqual(messages.count, 0)
 
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
     func testAutoShowInAppUrlDelegateOverride() {
-        let expectation1 = expectation(description: "testShowInAppByDefault")
+        let expectation1 = expectation(description: "testAutoShowInAppUrlDelegateOverride")
         expectation1.isInverted = true
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
@@ -150,6 +171,7 @@ class InAppTests: XCTestCase {
         
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShowCallback = {(_, _) in
+            XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
             mockInAppDisplayer.click(url: self.getClickUrl(index: 1))
         }
         
@@ -164,7 +186,10 @@ class InAppTests: XCTestCase {
         )
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(createPayload(numMessages: 1))
-        
+        let messages = IterableAPI.inAppManager.getMessages()
+        // Message count is 0 because inApp is still being shown. It is just not opening external url on click.
+        XCTAssertEqual(messages.count, 0)
+
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
     }
     
@@ -225,8 +250,9 @@ class InAppTests: XCTestCase {
         
         var messages = IterableAPI.inAppManager.getMessages()
         XCTAssertEqual(messages.count, 1)
-        XCTAssertEqual(messages[0].skipped, false)
+        XCTAssertEqual(messages[0].skipped, true)
 
+        // Now show the first message, but don't consume
         IterableAPI.inAppManager.show(content: messages[0].content, consume: false) { (clickedUrl) in
             XCTAssertEqual(clickedUrl, self.getClickUrl(index: 1))
             expectation1.fulfill()
