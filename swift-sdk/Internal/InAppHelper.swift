@@ -35,7 +35,9 @@ class InAppSynchronizer : InAppSynchronizerProtocol {
     
     init() {
         if #available(iOS 10.0, *) {
-            Timer.scheduledTimer(withTimeInterval: syncInterval, repeats: true, block: self.sync)
+            Timer.scheduledTimer(withTimeInterval: syncInterval, repeats: true) { [weak self] timer in
+                self?.sync(timer: timer)
+            }
         } else {
             // Fallback on earlier versions
             Timer.scheduledTimer(timeInterval: syncInterval, target: self, selector: #selector(sync(timer:)), userInfo: nil, repeats: true)
@@ -43,7 +45,9 @@ class InAppSynchronizer : InAppSynchronizerProtocol {
     }
     
     @objc private func sync(timer: Timer) {
-        guard let internalApi = inAppSyncDelegate as? IterableAPIInternal else {
+        self.timer = timer
+        
+        guard let internalApi = self.internalApi else {
             ITBError("Invalid state: expected InternalApi")
             return
         }
@@ -57,9 +61,15 @@ class InAppSynchronizer : InAppSynchronizerProtocol {
         }
     }
     
+    deinit {
+        ITBInfo()
+        timer?.invalidate()
+    }
+    
     // in seconds
     private let syncInterval = 1.0
     private let numMessages = 10
+    private var timer: Timer?
 }
 
 
