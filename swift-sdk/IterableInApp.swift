@@ -95,6 +95,9 @@ public class IterableInAppMessage : NSObject {
     /// The content of the inApp message
     public let content: IterableInAppContent
 
+    /// Extra Information from the 'payload' section of message.
+    public let extraInfo: [AnyHashable : Any]?
+
     /// Whether this message has been skipped (not shown)
     public var skipped: Bool = false
 
@@ -104,13 +107,15 @@ public class IterableInAppMessage : NSObject {
         campaignId: String,
         channelName: String = "reserved",
         contentType: IterableInAppContentType = .html,
-        content: IterableInAppContent
+        content: IterableInAppContent,
+        extraInfo: [AnyHashable : Any]? = nil
         ) {
         self.messageId = messageId
         self.campaignId = campaignId
         self.channelName = channelName
         self.contentType = contentType
         self.content = content
+        self.extraInfo = extraInfo
     }
 }
 

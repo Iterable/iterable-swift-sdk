@@ -223,8 +223,55 @@ class InAppHelperTests: XCTestCase {
         IterableAPI.track(inAppOpen: messageId)
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-
+    
+    func testExtraInfoParsing() {
+        IterableAPI.initializeForTesting()
+        let payload = TestInAppPayloadGenerator.createPayload(numMessages: 2)
+        let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
+        XCTAssertEqual(messages.count, 2)
+        let first = messages[0]
+        let expectedExtraInfo = ["channelName" : "inBox", "title" : "Product 1 Available", "date" : "2018-11-14T14:00:00:00.32Z"]
+        XCTAssertEqual(first.extraInfo as? [String : String], expectedExtraInfo)
+        XCTAssertEqual(first.channelName, "inBox")
+    }
+    
     private static let apiKey = "zeeApiKey"
     private static let email = "user@example.com"
     private static let userId = "userId1"
 }
+
+
+struct TestInAppPayloadGenerator {
+    static func createPayload(numMessages: Int) -> [AnyHashable : Any] {
+        return [
+            "inAppMessages" : (1...numMessages).reduce(into: [[AnyHashable : Any]]()) { (result, index) in
+                result.append(createOneInAppDict(index: index))
+            }
+        ]
+    }
+
+    private static func createOneInAppDict(index: Int) -> [AnyHashable : Any] {
+        return [
+            "content" : [
+                "html" : "<a href='\(getClickUrl(index: index))'>Click Here</a>",
+                "inAppDisplaySettings" : ["backgroundAlpha" : 0.5, "left" : ["percentage" : 60], "right" : ["percentage" : 60], "bottom" : ["displayOption" : "AutoExpand"], "top" : ["displayOption" : "AutoExpand"]],
+                "payload" : ["channelName" : "inBox", "title" : "Product 1 Available", "date" : "2018-11-14T14:00:00:00.32Z"]
+            ],
+            "messageId" : getMessageId(index: index),
+            "campaignId" : getCampaignId(index: index),
+        ]
+    }
+    
+    private static func getMessageId(index: Int) -> String {
+        return "message\(index)"
+    }
+    
+    private static func getCampaignId(index: Int) -> String {
+        return "campaign\(index)"
+    }
+    
+    private static func getClickUrl(index: Int) -> String {
+        return "https://www.site\(index).com"
+    }
+}
+

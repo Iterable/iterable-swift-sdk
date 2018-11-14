@@ -265,7 +265,6 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
-    
     private func createPayload(numMessages: Int) -> [AnyHashable : Any] {
         return [
             "inAppMessages" : (1...numMessages).reduce(into: [[AnyHashable : Any]]()) { (result, index) in
@@ -279,7 +278,7 @@ class InAppTests: XCTestCase {
             "content" : [
                 "html" : "<a href='\(getClickUrl(index: index))'>Click Here</a>",
                 "inAppDisplaySettings" : ["backgroundAlpha" : 0.5, "left" : ["percentage" : 60], "right" : ["percentage" : 60], "bottom" : ["displayOption" : "AutoExpand"], "top" : ["displayOption" : "AutoExpand"]],
-                "payload" : ["channelName" : "inBox"]
+                "payload" : ["channelName" : "inBox", "title" : "Product 1 Available", "date" : "2018-11-14T14:00:00:00.32Z"]
             ],
             "messageId" : getMessageId(index: index),
             "campaignId" : getCampaignId(index: index),
