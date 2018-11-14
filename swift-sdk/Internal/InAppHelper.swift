@@ -175,26 +175,26 @@ struct InAppHelper {
     /**
      Parses the padding offsets from the payload
      
-     - parameter payload:         the payload NSDictionary
+     - parameter settings:         the settings distionary.
      
      - returns: the UIEdgeInset
      */
-    static func getPaddingFromPayload(_ payload: [AnyHashable : Any]?) -> UIEdgeInsets {
-        guard let payload = payload else {
+    static func getPadding(fromInAppSettings settings: [AnyHashable : Any]?) -> UIEdgeInsets {
+        guard let dict = settings else {
             return UIEdgeInsets.zero
         }
 
         var padding = UIEdgeInsets.zero
-        if let topPadding = payload[PADDING_TOP] {
+        if let topPadding = dict[PADDING_TOP] {
             padding.top = CGFloat(decodePadding(topPadding))
         }
-        if let leftPadding = payload[PADDING_LEFT] {
+        if let leftPadding = dict[PADDING_LEFT] {
             padding.left = CGFloat(decodePadding(leftPadding))
         }
-        if let rightPadding = payload[PADDING_RIGHT] {
+        if let rightPadding = dict[PADDING_RIGHT] {
             padding.right = CGFloat(decodePadding(rightPadding))
         }
-        if let bottomPadding = payload[PADDING_BOTTOM] {
+        if let bottomPadding = dict[PADDING_BOTTOM] {
             padding.bottom = CGFloat(decodePadding(bottomPadding))
         }
         
@@ -332,7 +332,7 @@ struct InAppHelper {
         
         let inAppDisplaySettings = content[.ITBL_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
         let backgroundAlpha = InAppHelper.getBackgroundAlpha(fromInAppSettings: inAppDisplaySettings)
-        let edgeInsets = InAppHelper.getPaddingFromPayload(inAppDisplaySettings)
+        let edgeInsets = InAppHelper.getPadding(fromInAppSettings: inAppDisplaySettings)
         
         return .success(InAppDetails(
             channelName: channelName,
