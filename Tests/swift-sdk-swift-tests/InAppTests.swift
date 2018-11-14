@@ -278,7 +278,8 @@ class InAppTests: XCTestCase {
         return [
             "content" : [
                 "html" : "<a href='\(getClickUrl(index: index))'>Click Here</a>",
-                "inAppDisplaySettings" : ["backgroundAlpha" : 0.5, "left" : ["percentage" : 60], "right" : ["percentage" : 60], "bottom" : ["displayOption" : "AutoExpand"], "top" : ["displayOption" : "AutoExpand"]]
+                "inAppDisplaySettings" : ["backgroundAlpha" : 0.5, "left" : ["percentage" : 60], "right" : ["percentage" : 60], "bottom" : ["displayOption" : "AutoExpand"], "top" : ["displayOption" : "AutoExpand"]],
+                "payload" : ["channelName" : "inBox"]
             ],
             "messageId" : getMessageId(index: index),
             "campaignId" : getCampaignId(index: index),

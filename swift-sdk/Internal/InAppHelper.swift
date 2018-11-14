@@ -268,6 +268,7 @@ struct InAppHelper {
     
     /// This is a struct equivalent of IterableHtmlInAppContent class
     private struct InAppDetails {
+        let channelName: String
         let messageId: String
         let campaignId: String
         let edgeInsets: UIEdgeInsets
@@ -318,7 +319,7 @@ struct InAppHelper {
         guard html.range(of: AnyHashable.ITBL_IN_APP_HREF, options: [.caseInsensitive]) != nil else {
             return .failure(reason: "No href tag found in in-app html payload \(html)", messageId: messageId)
         }
-        
+
         let campaignId: String
         if let theCampaignId = dict[.ITBL_KEY_CAMPAIGN_ID] as? String {
             campaignId = theCampaignId
@@ -326,19 +327,35 @@ struct InAppHelper {
             ITBError("Could not find campaignId")
             campaignId = ""
         }
+
+        let channelName = parseChannelName(fromContent: content)
         
         let inAppDisplaySettings = content[.ITBL_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
         let backgroundAlpha = InAppHelper.getBackgroundAlpha(fromInAppSettings: inAppDisplaySettings)
         let edgeInsets = InAppHelper.getPaddingFromPayload(inAppDisplaySettings)
         
-        return .success(InAppDetails(messageId: messageId, campaignId: campaignId, edgeInsets: edgeInsets, backgroundAlpha: backgroundAlpha, html: html))
+        return .success(InAppDetails(
+            channelName: channelName,
+            messageId: messageId,
+            campaignId: campaignId,
+            edgeInsets: edgeInsets,
+            backgroundAlpha: backgroundAlpha,
+            html: html))
     }
-
+    
+    // this is temporary until we fix backend
+    private static func parseChannelName(fromContent content: [AnyHashable : Any]) -> String {
+        guard let payload = content[.ITBL_IN_APP_PAYLOAD] as? [AnyHashable : Any] else {
+            return ""
+        }
+        return payload["channelName"] as? String ?? ""
+    }
+    
     private static func toMessage(fromInAppParseResult inAppParseResult: InAppHelper.InAppParseResult, internalApi: IterableAPIInternal) -> IterableInAppMessage? {
         switch inAppParseResult {
         case .success(let inAppDetails):
             let content = IterableHtmlInAppContent(edgeInsets: inAppDetails.edgeInsets, backgroundAlpha: inAppDetails.backgroundAlpha, html: inAppDetails.html)
-            return IterableInAppMessage(messageId: inAppDetails.messageId, campaignId: inAppDetails.campaignId, channelName: "reserved", contentType: .html, content: content)
+            return IterableInAppMessage(messageId: inAppDetails.messageId, campaignId: inAppDetails.campaignId, channelName: inAppDetails.channelName, contentType: .html, content: content)
         case .failure(reason: let reason, messageId: let messageId):
             ITBError(reason)
             if let messageId = messageId {
