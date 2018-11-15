@@ -59,10 +59,10 @@ extension InAppManager : InAppSynchronizerDelegate {
     func onInAppMessagesAvailable(messages: [IterableInAppMessage]) {
         ITBInfo()
         
-        merge(newMessages: messages)
+        let newMessages = mergeAndGetNewMessages(messages: messages)
         
-        if messages.count == 1 {
-            let message = messages[0]
+        if newMessages.count == 1 {
+            let message = newMessages[0]
             if inAppDelegate.onNew(message: message) == .show {
                 self.show(message: message, consume: true) { (urlString) in // this gets called when user clicks link in inApp
                     if let name = urlString {
@@ -75,8 +75,8 @@ extension InAppManager : InAppSynchronizerDelegate {
                 ITBInfo("skipping inApp")
                 markAsSkipped(message: message)
             }
-        } else if messages.count > 1 {
-            if let message = inAppDelegate.onNew(batch: messages) {
+        } else if newMessages.count > 1 {
+            if let message = inAppDelegate.onNew(batch: newMessages) {
                 // found content to show
                 self.show(message: message, consume: true) { (urlString) in // This is what gets called when user clicks link
                     if let name = urlString {
@@ -86,10 +86,10 @@ extension InAppManager : InAppSynchronizerDelegate {
                     }
                 }
                 
-                messages.filter { $0.messageId != message.messageId }.forEach { markAsSkipped(message: $0) }
+                newMessages.filter { $0.messageId != message.messageId }.forEach { markAsSkipped(message: $0) }
             } else {
                 ITBInfo("skipping inApp batch")
-                messages.forEach {markAsSkipped(message: $0)}
+                newMessages.forEach {markAsSkipped(message: $0)}
             }
         }
     }
@@ -119,10 +119,12 @@ extension InAppManager : InAppSynchronizerDelegate {
         }
     }
     
-    private func merge(newMessages: [IterableInAppMessage]) {
-        newMessages.forEach { message in
+    // Adds new messages to map and returns the new messages
+    private func mergeAndGetNewMessages(messages: [IterableInAppMessage]) -> [IterableInAppMessage] {
+        return messages.reduce(into: [IterableInAppMessage]()) { (result, message) in
             if !messagesMap.contains(where: { $0.key == message.messageId}) {
                 messagesMap[message.messageId] = message
+                result.append(message)
             }
         }
     }

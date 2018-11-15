@@ -228,7 +228,7 @@ class InAppTests: XCTestCase {
     }
 
     func testShowInAppWithNoConsume() {
-        let expectation1 = expectation(description: "testShowInAppWithConsume")
+        let expectation1 = expectation(description: "testShowInAppWithNoConsume")
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
@@ -261,6 +261,34 @@ class InAppTests: XCTestCase {
         messages = IterableAPI.inAppManager.getMessages()
         XCTAssertEqual(messages.count, 1)
         XCTAssertEqual(messages[0].skipped, true)
+
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+
+    // Check that onNew is called just once if the messageId is same.
+    func testOnNewNotCalledMultipleTimes() {
+        let expectation1 = expectation(description: "testOnNewNotCalledMultipleTimes")
+        
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        
+        let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
+        mockInAppDelegate.onNewMessageCallback = {_ in
+            // should only be called once
+            expectation1.fulfill()
+        }
+        
+        let config = IterableConfig()
+        config.inAppDelegate = mockInAppDelegate
+        
+        IterableAPI.initializeForTesting(
+            config: config,
+            inAppSynchronizer: mockInAppSynchronizer
+        )
+        
+        mockInAppSynchronizer.mockInAppPayloadFromServer(createPayload(numMessages: 1))
+        
+        // Send second message with same id.
+        mockInAppSynchronizer.mockInAppPayloadFromServer(createPayload(numMessages: 1))
 
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }

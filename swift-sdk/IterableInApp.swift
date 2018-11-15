@@ -26,13 +26,15 @@ public protocol IterableInAppManagerProtocol {
 /// By default, every single inApp will be shown as soon as it is available.
 /// If more than 1 inApp is available, we show the first showable one.
 @objcMembers
-public class DefaultInAppDelegate : IterableInAppDelegate {
-    public func onNew(message: IterableInAppMessage) -> ShowInApp {
+open class DefaultInAppDelegate : IterableInAppDelegate {
+    public init() {}
+    
+    open func onNew(message: IterableInAppMessage) -> ShowInApp {
         ITBInfo()
         return .show
     }
     
-    public func onNew(batch: [IterableInAppMessage]) -> IterableInAppMessage? {
+    open func onNew(batch: [IterableInAppMessage]) -> IterableInAppMessage? {
         ITBInfo()
         for message in batch {
             if onNew(message: message) == .show {
