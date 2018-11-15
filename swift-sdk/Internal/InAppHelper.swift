@@ -325,7 +325,7 @@ struct InAppHelper {
         if let theCampaignId = dict[.ITBL_KEY_CAMPAIGN_ID] as? String {
             campaignId = theCampaignId
         } else {
-            ITBError("Could not find campaignId")
+            ITBDebug("Could not find campaignId") // This is debug level because this happens a lot with proof inApps
             campaignId = ""
         }
 

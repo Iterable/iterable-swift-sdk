@@ -57,10 +57,11 @@ class InAppManager : IterableInAppManagerProtocol {
 
 extension InAppManager : InAppSynchronizerDelegate {
     func onInAppMessagesAvailable(messages: [IterableInAppMessage]) {
-        ITBInfo()
+        ITBDebug()
         
         let newMessages = mergeAndGetNewMessages(messages: messages)
-        
+
+        ITBDebug("\(newMessages.count) new messages arrived.")
         if newMessages.count == 1 {
             let message = newMessages[0]
             if inAppDelegate.onNew(message: message) == .show {
