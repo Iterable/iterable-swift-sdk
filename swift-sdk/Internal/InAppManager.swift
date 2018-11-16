@@ -35,7 +35,17 @@ class InAppManager : IterableInAppManagerProtocol {
     func show(message: IterableInAppMessage, consume: Bool = true, callback: ITEActionBlock? = nil) {
         ITBInfo()
         
-        displayer.showInApp(message: message, callback: callback).onSuccess { (showed) in // showed boolean value gets set when inApp is showed in UI
+        // Handle url and call the client with callback provided
+        let clickCallback = {(urlString: String?) in
+            callback?(urlString)
+            if let urlString = urlString {
+                self.handleUrl(urlString: urlString, fromSource: .inApp)
+            } else {
+                ITBError("No name for clicked button/link in inApp")
+            }
+        }
+        
+        displayer.showInApp(message: message, callback: clickCallback).onSuccess { (showed) in // showed boolean value gets set when inApp is showed in UI
             if showed && consume {
                 self.internalApi?.inAppConsume(message.messageId)
                 self.messagesMap.removeValue(forKey: message.messageId)
@@ -65,13 +75,7 @@ extension InAppManager : InAppSynchronizerDelegate {
         if newMessages.count == 1 {
             let message = newMessages[0]
             if inAppDelegate.onNew(message: message) == .show {
-                self.show(message: message, consume: true) { (urlString) in // this gets called when user clicks link in inApp
-                    if let name = urlString {
-                        self.handleUrl(urlString: name, fromSource: .inApp)
-                    } else {
-                        ITBError("No name for clicked button/link in inApp")
-                    }
-                }
+                self.show(message: message, consume: true)
             } else {
                 ITBInfo("skipping inApp")
                 markAsSkipped(message: message)
@@ -79,13 +83,7 @@ extension InAppManager : InAppSynchronizerDelegate {
         } else if newMessages.count > 1 {
             if let message = inAppDelegate.onNew(batch: newMessages) {
                 // found content to show
-                self.show(message: message, consume: true) { (urlString) in // This is what gets called when user clicks link
-                    if let name = urlString {
-                        self.handleUrl(urlString: name, fromSource: .inApp)
-                    } else {
-                        ITBError("No name for clicked button/link in inApp")
-                    }
-                }
+                self.show(message: message, consume: true)
                 
                 newMessages.filter { $0.messageId != message.messageId }.forEach { markAsSkipped(message: $0) }
             } else {

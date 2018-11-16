@@ -195,6 +195,7 @@ class InAppTests: XCTestCase {
     
     func testShowInAppWithConsume() {
         let expectation1 = expectation(description: "testShowInAppWithConsume")
+        let expectation2 = expectation(description: "url opened")
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
@@ -203,13 +204,19 @@ class InAppTests: XCTestCase {
             mockInAppDisplayer.click(url: self.getClickUrl(index: 1))
         }
         
+        let mockUrlOpener = MockUrlOpener { (url) in
+            XCTAssertEqual(url.absoluteString, self.getClickUrl(index: 1))
+            expectation2.fulfill()
+        }
+        
         let config = IterableConfig()
         config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
         
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            inAppDisplayer: mockInAppDisplayer
+            inAppDisplayer: mockInAppDisplayer,
+            urlOpener: mockUrlOpener
         )
 
         mockInAppSynchronizer.mockInAppPayloadFromServer(createPayload(numMessages: 1))
@@ -224,17 +231,23 @@ class InAppTests: XCTestCase {
         
         XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
         
-        wait(for: [expectation1], timeout: testExpectationTimeout)
+        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
     }
 
     func testShowInAppWithNoConsume() {
         let expectation1 = expectation(description: "testShowInAppWithNoConsume")
-        
+        let expectation2 = expectation(description: "url opened")
+
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShowCallback = {(_, _) in
             mockInAppDisplayer.click(url: self.getClickUrl(index: 1))
+        }
+        
+        let mockUrlOpener = MockUrlOpener { (url) in
+            XCTAssertEqual(url.absoluteString, self.getClickUrl(index: 1))
+            expectation2.fulfill()
         }
         
         let config = IterableConfig()
@@ -243,7 +256,8 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            inAppDisplayer: mockInAppDisplayer
+            inAppDisplayer: mockInAppDisplayer,
+            urlOpener: mockUrlOpener
         )
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(createPayload(numMessages: 1))
@@ -262,7 +276,7 @@ class InAppTests: XCTestCase {
         XCTAssertEqual(messages.count, 1)
         XCTAssertEqual(messages[0].skipped, true)
 
-        wait(for: [expectation1], timeout: testExpectationTimeout)
+        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
     }
 
     // Check that onNew is called just once if the messageId is same.
