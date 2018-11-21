@@ -56,6 +56,7 @@
 		AC7B145220D038C400877BFE /* IterableNotificationMetadataTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AC7B144A20D038C400877BFE /* IterableNotificationMetadataTests.m */; };
 		AC7B145320D038C400877BFE /* IterableAPIObjCTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AC7B144B20D038C400877BFE /* IterableAPIObjCTests.m */; };
 		AC85A749216D24F4005241AE /* NotificationExtensionSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC85A748216D24F4005241AE /* NotificationExtensionSwiftTests.swift */; };
+		AC87172621A4E47E00FEA369 /* TestInAppPayloadGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */; };
 		AC89661E2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC89661D2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift */; };
 		AC90C4CD20D8632E00EECA5D /* IterableAppExtensions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC90C4C420D8632D00EECA5D /* IterableAppExtensions.framework */; };
 		AC90C4E220D8639E00EECA5D /* ITBNotificationServiceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC90C4E120D8639E00EECA5D /* ITBNotificationServiceExtension.swift */; };
@@ -224,6 +225,7 @@
 		AC7B144A20D038C400877BFE /* IterableNotificationMetadataTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IterableNotificationMetadataTests.m; sourceTree = "<group>"; };
 		AC7B144B20D038C400877BFE /* IterableAPIObjCTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IterableAPIObjCTests.m; sourceTree = "<group>"; };
 		AC85A748216D24F4005241AE /* NotificationExtensionSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationExtensionSwiftTests.swift; sourceTree = "<group>"; };
+		AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestInAppPayloadGenerator.swift; sourceTree = "<group>"; };
 		AC89661D2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAutoRegistrationTests.swift; sourceTree = "<group>"; };
 		AC90C4C420D8632D00EECA5D /* IterableAppExtensions.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = IterableAppExtensions.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC90C4C720D8632E00EECA5D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -485,6 +487,7 @@
 		AC7B142C20D02CE200877BFE /* swift-sdk-swift-tests */ = {
 			isa = PBXGroup;
 			children = (
+				AC87172421A4E3FF00FEA369 /* Helper Classes */,
 				00B6FACF210E8B10007535CF /* Test Files */,
 				AC2C668520D3370D00D46CC9 /* Helper Files */,
 				ACD6116D21080564003E7F6B /* IterableAPITests.swift */,
@@ -492,7 +495,6 @@
 				AC2C668620D3435700D46CC9 /* IterableActionRunnerTests.swift */,
 				AC6FDD8B20F56309005D811E /* InAppHelperTests.swift */,
 				ACA8D1A821965B7D001B1332 /* InAppTests.swift */,
-				00CB31B4210960C4004ACDEC /* TestUtils.swift */,
 				00B6FACB210E8484007535CF /* APNSUtilTests.swift */,
 				AC776DA3211A17C700C27C27 /* IterableRequestUtilTests.swift */,
 				AC2C668320D3370600D46CC9 /* Mocks.swift */,
@@ -515,6 +517,15 @@
 				AC7B144A20D038C400877BFE /* IterableNotificationMetadataTests.m */,
 			);
 			path = "swift-sdk-objc-tests";
+			sourceTree = "<group>";
+		};
+		AC87172421A4E3FF00FEA369 /* Helper Classes */ = {
+			isa = PBXGroup;
+			children = (
+				00CB31B4210960C4004ACDEC /* TestUtils.swift */,
+				AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */,
+			);
+			name = "Helper Classes";
 			sourceTree = "<group>";
 		};
 		AC90C4C520D8632E00EECA5D /* notification-extension */ = {
@@ -1008,6 +1019,7 @@
 				AC6FDD8C20F56309005D811E /* InAppHelperTests.swift in Sources */,
 				AC995F9E2167E9FD0099A184 /* CommonExtensions.swift in Sources */,
 				AC2C668020D31B1F00D46CC9 /* IterableNotificationResponseTests.swift in Sources */,
+				AC87172621A4E47E00FEA369 /* TestInAppPayloadGenerator.swift in Sources */,
 				AC2C668420D3370600D46CC9 /* Mocks.swift in Sources */,
 				AC64626B2140AACF0046E1BD /* IterableAPIResponseTests.swift in Sources */,
 				ACD6116E21080564003E7F6B /* IterableAPITests.swift in Sources */,

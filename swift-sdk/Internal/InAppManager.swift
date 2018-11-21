@@ -17,11 +17,13 @@ class InAppManager : IterableInAppManagerProtocol {
          displayer: InAppDisplayerProtocol,
          inAppDelegate: IterableInAppDelegate,
          urlDelegate: IterableURLDelegate?,
+         customActionDelegate: IterableCustomActionDelegate?,
          urlOpener: UrlOpenerProtocol) {
         self.synchronizer = synchronizer
         self.displayer = displayer
         self.inAppDelegate = inAppDelegate
         self.urlDelegate = urlDelegate
+        self.customActionDelegate = customActionDelegate
         self.urlOpener = urlOpener
         
         self.synchronizer.inAppSyncDelegate = self
@@ -36,10 +38,12 @@ class InAppManager : IterableInAppManagerProtocol {
         ITBInfo()
         
         // Handle url and call the client with callback provided
-        let clickCallback = {(urlString: String?) in
-            callback?(urlString)
-            if let urlString = urlString {
-                self.handleUrl(urlString: urlString, fromSource: .inApp)
+        let clickCallback = {(urlOrAction: String?) in
+            // call the client callback, if present
+            callback?(urlOrAction)
+            // in addition perform action or url delegate task
+            if let urlOrAction = urlOrAction {
+                self.handleUrlOrAction(urlOrAction: urlOrAction)
             } else {
                 ITBError("No name for clicked button/link in inApp")
             }
@@ -56,10 +60,35 @@ class InAppManager : IterableInAppManagerProtocol {
         }
     }
 
+    private func handleUrlOrAction(urlOrAction: String) {
+        guard let action = createAction(fromUrlOrAction: urlOrAction) else {
+            ITBError("Could not create action from: \(urlOrAction)")
+            return
+        }
+        
+        let context = IterableActionContext(action: action, source: .inApp)
+        DispatchQueue.main.async {
+            IterableActionRunner.execute(action: action,
+                                         context: context,
+                                         urlHandler: IterableUtil.urlHandler(fromUrlDelegate: self.urlDelegate, inContext: context),
+                                         customActionHandler: IterableUtil.customActionHandler(fromCustomActionDelegate: self.customActionDelegate, inContext: context),
+                                         urlOpener: self.urlOpener)
+        }
+    }
+    
+    private func createAction(fromUrlOrAction urlOrAction: String) -> IterableAction? {
+        if let parsedUrl = URL(string: urlOrAction), let _ = parsedUrl.scheme {
+            return IterableAction.actionOpenUrl(fromUrlString: urlOrAction)
+        } else {
+            return IterableAction.action(fromDictionary: ["type" : urlOrAction])
+        }
+    }
+    
     private var synchronizer: InAppSynchronizerProtocol
     private var displayer: InAppDisplayerProtocol
     private var inAppDelegate: IterableInAppDelegate
     private var urlDelegate: IterableURLDelegate?
+    private var customActionDelegate: IterableCustomActionDelegate?
     private var urlOpener: UrlOpenerProtocol
     
     private var messagesMap: [String: IterableInAppMessage] = [:]
@@ -103,21 +132,6 @@ extension InAppManager : InAppSynchronizerDelegate {
         }
     }
 
-    private func handleUrl(urlString: String, fromSource source: IterableActionSource) {
-        guard let action = IterableAction.actionOpenUrl(fromUrlString: urlString) else {
-            ITBError("Could not create action from: \(urlString)")
-            return
-        }
-        
-        let context = IterableActionContext(action: action, source: source)
-        DispatchQueue.main.async {
-            IterableActionRunner.execute(action: action,
-                                         context: context,
-                                         urlHandler: IterableUtil.urlHandler(fromUrlDelegate: self.urlDelegate, inContext: context),
-                                         urlOpener: self.urlOpener)
-        }
-    }
-    
     // Adds new messages to map and returns the new messages
     private func mergeAndGetNewMessages(messages: [IterableInAppMessage]) -> [IterableInAppMessage] {
         return messages.reduce(into: [IterableInAppMessage]()) { (result, message) in

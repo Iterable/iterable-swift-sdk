@@ -226,7 +226,7 @@ class InAppHelperTests: XCTestCase {
     
     func testExtraInfoParsing() {
         IterableAPI.initializeForTesting()
-        let payload = TestInAppPayloadGenerator.createPayload(numMessages: 2)
+        let payload = TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 2)
         let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
         XCTAssertEqual(messages.count, 2)
         let first = messages[0]
@@ -238,27 +238,27 @@ class InAppHelperTests: XCTestCase {
     // nil host
     func testCallbackUrlParsingCustomScheme1() {
         let url = URL(string: "applewebdata://")!
-        XCTAssertNil(IterableInAppHTMLViewController.getCallbackAndDestinationUrl(url: url))
+        XCTAssertNil(InAppHelper.getCallbackAndDestinationUrl(url: url))
     }
 
     
     func testCallbackUrlParsingCustomScheme2() {
         let url = URL(string: "applewebdata://this-is-uuid/the-real-url")!
-        let (callbackUrl, destinationUrl) = IterableInAppHTMLViewController.getCallbackAndDestinationUrl(url: url)!
+        let (callbackUrl, destinationUrl) = InAppHelper.getCallbackAndDestinationUrl(url: url)!
         XCTAssertEqual(callbackUrl, "the-real-url")
         XCTAssertEqual(destinationUrl, "the-real-url")
     }
 
     func testCallbackUrlParsingIterableScheme() {
         let url = URL(string: "itbl://buyProduct")!
-        let (callbackUrl, destinationUrl) = IterableInAppHTMLViewController.getCallbackAndDestinationUrl(url: url)!
+        let (callbackUrl, destinationUrl) = InAppHelper.getCallbackAndDestinationUrl(url: url)!
         XCTAssertEqual(callbackUrl, "buyProduct")
         XCTAssertEqual(destinationUrl, "itbl://buyProduct")
     }
 
     func testCallbackUrlParsingRegularScheme() {
         let url = URL(string: "https://host/path")!
-        let (callbackUrl, destinationUrl) = IterableInAppHTMLViewController.getCallbackAndDestinationUrl(url: url)!
+        let (callbackUrl, destinationUrl) = InAppHelper.getCallbackAndDestinationUrl(url: url)!
         XCTAssertEqual(callbackUrl, "https://host/path")
         XCTAssertEqual(destinationUrl, "https://host/path")
     }
@@ -267,39 +267,3 @@ class InAppHelperTests: XCTestCase {
     private static let email = "user@example.com"
     private static let userId = "userId1"
 }
-
-
-struct TestInAppPayloadGenerator {
-    static func createPayload(numMessages: Int) -> [AnyHashable : Any] {
-        return [
-            "inAppMessages" : (1...numMessages).reduce(into: [[AnyHashable : Any]]()) { (result, index) in
-                result.append(createOneInAppDict(index: index))
-            }
-        ]
-    }
-
-    private static func createOneInAppDict(index: Int) -> [AnyHashable : Any] {
-        return [
-            "content" : [
-                "html" : "<a href='\(getClickUrl(index: index))'>Click Here</a>",
-                "inAppDisplaySettings" : ["backgroundAlpha" : 0.5, "left" : ["percentage" : 60], "right" : ["percentage" : 60], "bottom" : ["displayOption" : "AutoExpand"], "top" : ["displayOption" : "AutoExpand"]],
-                "payload" : ["channelName" : "inBox", "title" : "Product 1 Available", "date" : "2018-11-14T14:00:00:00.32Z"]
-            ],
-            "messageId" : getMessageId(index: index),
-            "campaignId" : getCampaignId(index: index),
-        ]
-    }
-    
-    private static func getMessageId(index: Int) -> String {
-        return "message\(index)"
-    }
-    
-    private static func getCampaignId(index: Int) -> String {
-        return "campaign\(index)"
-    }
-    
-    private static func getClickUrl(index: Int) -> String {
-        return "https://www.site\(index).com"
-    }
-}
-

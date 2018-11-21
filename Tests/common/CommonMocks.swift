@@ -243,7 +243,11 @@ class MockInAppDisplayer : InAppDisplayerProtocol {
 
     // Mimics clicking a url
     func click(url: String) {
-        actionCallback?(url)
+        if let (callbackUrl, _) = InAppHelper.getCallbackAndDestinationUrl(url: URL(string: url)!) {
+            actionCallback?(callbackUrl)
+        } else {
+            actionCallback?(nil)
+        }
     }
 }
 

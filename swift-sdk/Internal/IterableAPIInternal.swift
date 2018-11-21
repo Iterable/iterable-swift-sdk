@@ -693,7 +693,12 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         self.networkSessionProvider = networkSession
         self.notificationStateProvider = notificationStateProvider
         self.localStorage = UserDefaultsLocalStorage(dateProvider: self.dateProvider)
-        let inAppManager = InAppManager(synchronizer: inAppSynchronizer, displayer: inAppDisplayer, inAppDelegate: config.inAppDelegate, urlDelegate: config.urlDelegate, urlOpener: urlOpener)
+        let inAppManager = InAppManager(synchronizer: inAppSynchronizer,
+                                        displayer: inAppDisplayer,
+                                        inAppDelegate: config.inAppDelegate,
+                                        urlDelegate: config.urlDelegate,
+                                        customActionDelegate: config.customActionDelegate,
+                                        urlOpener: urlOpener)
         self.inAppManager = inAppManager
         self.urlOpener = urlOpener
         
