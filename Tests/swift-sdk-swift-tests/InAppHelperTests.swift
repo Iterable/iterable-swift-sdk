@@ -234,7 +234,35 @@ class InAppHelperTests: XCTestCase {
         XCTAssertEqual(first.extraInfo as? [String : String], expectedExtraInfo)
         XCTAssertEqual(first.channelName, "inBox")
     }
+
+    // nil host
+    func testCallbackUrlParsingCustomScheme1() {
+        let url = URL(string: "applewebdata://")!
+        XCTAssertNil(IterableInAppHTMLViewController.getCallbackAndDestinationUrl(url: url))
+    }
+
     
+    func testCallbackUrlParsingCustomScheme2() {
+        let url = URL(string: "applewebdata://this-is-uuid/the-real-url")!
+        let (callbackUrl, destinationUrl) = IterableInAppHTMLViewController.getCallbackAndDestinationUrl(url: url)!
+        XCTAssertEqual(callbackUrl, "the-real-url")
+        XCTAssertEqual(destinationUrl, "the-real-url")
+    }
+
+    func testCallbackUrlParsingIterableScheme() {
+        let url = URL(string: "itbl://buyProduct")!
+        let (callbackUrl, destinationUrl) = IterableInAppHTMLViewController.getCallbackAndDestinationUrl(url: url)!
+        XCTAssertEqual(callbackUrl, "buyProduct")
+        XCTAssertEqual(destinationUrl, "itbl://buyProduct")
+    }
+
+    func testCallbackUrlParsingRegularScheme() {
+        let url = URL(string: "https://host/path")!
+        let (callbackUrl, destinationUrl) = IterableInAppHTMLViewController.getCallbackAndDestinationUrl(url: url)!
+        XCTAssertEqual(callbackUrl, "https://host/path")
+        XCTAssertEqual(destinationUrl, "https://host/path")
+    }
+
     private static let apiKey = "zeeApiKey"
     private static let email = "user@example.com"
     private static let userId = "userId1"
