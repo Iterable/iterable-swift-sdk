@@ -503,7 +503,7 @@ public final class IterableAPI : NSObject {
     /// IterableAPI.initialize
     /// ```
     /// - IterableAPI.inAppManager.getMessages()
-    /// - IterableAPI.inappManager.show(content: content, consume: true)
+    /// - IterableAPI.inappManager.show(message: message, consume: true)
     /// ```
     @objc public static var inAppManager: IterableInAppManagerProtocol {
         guard let internalImplementation = internalImplementation else {
