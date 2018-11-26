@@ -207,7 +207,7 @@ extension IterableInAppHTMLViewController : UIWebViewDelegate {
             return true
         }
         
-        guard let (destinationURL, callbackURL) = IterableInAppHTMLViewController.getDestinationAndCallbackUrl(url: url) else {
+        guard let (callbackURL, destinationURL) = IterableInAppHTMLViewController.getCallbackAndDestinationUrl(url: url) else {
             return true
         }
 
@@ -220,7 +220,7 @@ extension IterableInAppHTMLViewController : UIWebViewDelegate {
         return false
     }
     
-    private static func getDestinationAndCallbackUrl(url: URL) -> (callbackUrl: String, destinationUrl: String)? {
+    private static func getCallbackAndDestinationUrl(url: URL) -> (callbackUrl: String, destinationUrl: String)? {
         if url.scheme == UrlScheme.custom.rawValue {
             // Since we are calling loadHTMLString with a nil baseUrl, any request url without a valid scheme get treated as a local resource.
             // Url looks like applewebdata://abc-def/something
