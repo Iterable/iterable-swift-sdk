@@ -112,22 +112,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             return
         }
         
-        if let userId = userId {
-            // if we are using userId, then create a user first, then register
-            createUser(withUserId: userId).flatMap({ (_)  in
-                return self.register(token: token, appName: appName, pushServicePlatform: self.config.pushPlatform)
-            }).onSuccess { (json) in
-                onSuccess?(json)
-            }.onError { (error) in
-                if let sendError = error as? SendRequestError {
-                    onFailure?(sendError.reason, sendError.data)
-                } else {
-                    onFailure?("failed to create user", nil)
-                }
-            }
-        } else {
-            register(token: token, appName: appName, pushServicePlatform: config.pushPlatform, onSuccess: onSuccess, onFailure: onFailure)
-        }
+        register(token: token, appName: appName, pushServicePlatform: config.pushPlatform, onSuccess: onSuccess, onFailure: onFailure)
     }
 
     @discardableResult private func register(token: Data, appName: String, pushServicePlatform: PushServicePlatform, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue> {
@@ -176,6 +161,10 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         var args = [AnyHashable : Any]()
         args[.ITBL_KEY_DEVICE] = deviceDictionary
         addEmailOrUserId(args: &args)
+        
+        if email == nil && userId != nil {
+            args[.ITBL_KEY_PREFER_USER_ID] = true
+        }
         
         ITBInfo("sending registerToken request with args \(args)")
         return
@@ -236,15 +225,6 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
                         },
                         onFailure: onFailure)
         }
-    }
-
-    private func createUser(withUserId userId: String) -> Future<SendRequestValue> {
-        var args = [AnyHashable : Any]()
-        args[.ITBL_KEY_USER_ID] = userId
-        
-        return createPostRequest(forPath: .ITBL_PATH_CREATE_USER, withBody: args).map {
-            sendRequest($0)
-        } ?? SendRequestError.createErroredFuture(reason: "Could not create createUser Reqeust")
     }
 
     func trackPurchase(_ total: NSNumber, items: [CommerceItem]) {
