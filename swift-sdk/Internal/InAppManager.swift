@@ -97,6 +97,9 @@ class InAppManager : IterableInAppManagerProtocol {
 extension InAppManager : InAppSynchronizerDelegate {
     func onInAppMessagesAvailable(messages: [IterableInAppMessage]) {
         ITBDebug()
+
+        // Remove messages that are no present in server
+        removeDeletedMessages(messages: messages)
         
         let newMessages = mergeAndGetNewMessages(messages: messages)
 
@@ -137,6 +140,21 @@ extension InAppManager : InAppSynchronizerDelegate {
         return messages.reduce(into: [IterableInAppMessage]()) { (result, message) in
             if !messagesMap.contains(where: { $0.key == message.messageId}) {
                 messagesMap[message.messageId] = message
+                result.append(message)
+            }
+        }
+    }
+
+    private func removeDeletedMessages(messages: [IterableInAppMessage]) {
+        getRemovedMessags(messages: messages).forEach {
+            messagesMap.removeValue(forKey: $0.messageId)
+        }
+    }
+    
+    // given `messages` coming for server, find messages that need to be removed
+    private func getRemovedMessags(messages: [IterableInAppMessage]) -> [IterableInAppMessage] {
+        return messagesMap.values.reduce(into: [IterableInAppMessage]()) { (result, message) in
+            if !messages.contains(where: { $0.messageId == message.messageId }) {
                 result.append(message)
             }
         }

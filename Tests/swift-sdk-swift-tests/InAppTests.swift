@@ -19,7 +19,7 @@ class InAppTests: XCTestCase {
     }
 
     func testAutoShowInAppSingle() {
-        let expectation1 = expectation(description: "testShowInAppByDefault")
+        let expectation1 = expectation(description: "testAutoShowInAppSingle")
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
@@ -42,8 +42,9 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
+    // skip the inApp in inAppDelegate
     func testAutoShowInAppSingleOverride() {
-        let expectation1 = expectation(description: "testShowInAppByDefault")
+        let expectation1 = expectation(description: "testAutoShowInAppSingleOverride")
         expectation1.isInverted = true
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
@@ -71,7 +72,7 @@ class InAppTests: XCTestCase {
     }
 
     func testAutoShowInAppMultiple() {
-        let expectation1 = expectation(description: "testShowInAppMultiple")
+        let expectation1 = expectation(description: "testAutoShowInAppMultiple")
 
         let payload = TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 3)
         
@@ -98,7 +99,7 @@ class InAppTests: XCTestCase {
     }
 
     func testAutoShowInAppMultipleOverride() {
-        let expectation1 = expectation(description: "testShowInAppMultipleOverride")
+        let expectation1 = expectation(description: "testAutoShowInAppMultipleOverride")
         expectation1.isInverted = true
         
         let payload = TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 3)
@@ -129,9 +130,9 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
     }
 
-    
+    // inApp is shown and url is opened when link is clicked
     func testAutoShowInAppOpenUrlByDefault() {
-        let expectation1 = expectation(description: "testShowInAppOpenUrlByDefault")
+        let expectation1 = expectation(description: "testAutoShowInAppOpenUrlByDefault")
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
         let mockUrlOpener = MockUrlOpener { (url) in
@@ -159,6 +160,8 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
+    // override in url delegate
+    // inApp is shown but does not open external url
     func testAutoShowInAppUrlDelegateOverride() {
         let expectation1 = expectation(description: "testAutoShowInAppUrlDelegateOverride")
         expectation1.isInverted = true
@@ -348,5 +351,26 @@ class InAppTests: XCTestCase {
         mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1))
 
         wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+    
+    func testDeleteInServerDeletesInClient() {
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
+        
+        let config = IterableConfig()
+        config.inAppDelegate = mockInAppDelegate
+
+        IterableAPI.initializeForTesting(
+            config: config,
+            inAppSynchronizer: mockInAppSynchronizer
+        )
+        
+        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 3))
+        
+        XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 3)
+
+        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 2))
+
+        XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 2)
     }
 }
