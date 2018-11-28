@@ -264,18 +264,6 @@ class MockInAppDelegate : IterableInAppDelegate {
         onNewMessageCallback?(message)
         return showInApp
     }
-    
-    func onNew(batch: [IterableInAppMessage]) -> IterableInAppMessage? {
-        onNewBatchCallback?(batch)
-        
-        for message in batch {
-            if onNew(message: message) == .show {
-                return message
-            }
-        }
-        
-        return nil
-    }
-    
+
     private let showInApp: ShowInApp
 }

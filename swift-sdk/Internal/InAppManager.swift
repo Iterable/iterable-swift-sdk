@@ -31,7 +31,12 @@ class InAppManager : IterableInAppManagerProtocol {
     
     func getMessages() -> [IterableInAppMessage] {
         ITBInfo()
-        return Array(messagesMap.values)
+        return Array(messagesMap.values.filter { $0.consumed == false })
+    }
+
+    func show(message: IterableInAppMessage) {
+        ITBInfo()
+        show(message: message, consume: true, callback: nil)
     }
     
     func show(message: IterableInAppMessage, consume: Bool = true, callback: ITEActionBlock? = nil) {
@@ -41,6 +46,7 @@ class InAppManager : IterableInAppManagerProtocol {
         let clickCallback = {(urlOrAction: String?) in
             // call the client callback, if present
             callback?(urlOrAction)
+            
             // in addition perform action or url delegate task
             if let urlOrAction = urlOrAction {
                 self.handleUrlOrAction(urlOrAction: urlOrAction)
@@ -51,8 +57,8 @@ class InAppManager : IterableInAppManagerProtocol {
         
         displayer.showInApp(message: message, callback: clickCallback).onSuccess { (showed) in // showed boolean value gets set when inApp is showed in UI
             if showed && consume {
+                message.consumed = true // mark for removal
                 self.internalApi?.inAppConsume(message.messageId)
-                self.messagesMap.removeValue(forKey: message.messageId)
             } else {
                 message.processed = true // set it if not already set
                 self.messagesMap.updateValue(message, forKey: message.messageId)
@@ -149,8 +155,10 @@ class EmptyInAppManager : IterableInAppManagerProtocol {
         return []
     }
     
-    func show(message: IterableInAppMessage, consume: Bool, callback: ITEActionBlock?) {
+    func show(message: IterableInAppMessage) {
     }
     
+    func show(message: IterableInAppMessage, consume: Bool, callback: ITEActionBlock?) {
+    }
 }
 
