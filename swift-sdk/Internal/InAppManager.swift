@@ -54,7 +54,7 @@ class InAppManager : IterableInAppManagerProtocol {
                 self.internalApi?.inAppConsume(message.messageId)
                 self.messagesMap.removeValue(forKey: message.messageId)
             } else {
-                message.skipped = true
+                message.processed = true // set it if not already set
                 self.messagesMap.updateValue(message, forKey: message.messageId)
             }
         }
@@ -99,60 +99,43 @@ extension InAppManager : InAppSynchronizerDelegate {
         ITBDebug()
 
         // Remove messages that are no present in server
-        removeDeletedMessages(messages: messages)
-        
-        let newMessages = mergeAndGetNewMessages(messages: messages)
+        removeDeletedMessages(messagesFromServer: messages)
 
-        ITBDebug("\(newMessages.count) new messages arrived.")
-        if newMessages.count == 1 {
-            let message = newMessages[0]
+        // add new ones
+        addNewMessages(messagesFromServer: messages)
+
+        // now process
+        process()
+    }
+    
+    // go through one loop of client side messages, and show the first that is not processed
+    private func process() {
+        ITBDebug()
+        for message in messagesMap.values.prefix(while: { $0.processed == false }) {
+            message.processed = true
             if inAppDelegate.onNew(message: message) == .show {
-                self.show(message: message, consume: true)
-            } else {
-                ITBInfo("skipping inApp")
-                markAsSkipped(message: message)
+                show(message: message)
             }
-        } else if newMessages.count > 1 {
-            if let message = inAppDelegate.onNew(batch: newMessages) {
-                // found content to show
-                self.show(message: message, consume: true)
-                
-                newMessages.filter { $0.messageId != message.messageId }.forEach { markAsSkipped(message: $0) }
-            } else {
-                ITBInfo("skipping inApp batch")
-                newMessages.forEach {markAsSkipped(message: $0)}
+            break
+        }
+    }
+
+    private func addNewMessages(messagesFromServer messages: [IterableInAppMessage]) {
+        messages.forEach { message in
+            if !messagesMap.contains(where: { $0.key == message.messageId }) {
+                messagesMap[message.messageId] = message
             }
         }
     }
     
-    private func markAsSkipped(message: IterableInAppMessage) {
-        if let message = messagesMap[message.messageId] {
-            message.skipped = true
-            messagesMap.updateValue(message, forKey: message.messageId)
-        } else {
-            // Should never happen
-            ITBError("Did not find message")
-        }
-    }
-
-    // Adds new messages to map and returns the new messages
-    private func mergeAndGetNewMessages(messages: [IterableInAppMessage]) -> [IterableInAppMessage] {
-        return messages.reduce(into: [IterableInAppMessage]()) { (result, message) in
-            if !messagesMap.contains(where: { $0.key == message.messageId}) {
-                messagesMap[message.messageId] = message
-                result.append(message)
-            }
-        }
-    }
-
-    private func removeDeletedMessages(messages: [IterableInAppMessage]) {
-        getRemovedMessags(messages: messages).forEach {
+    private func removeDeletedMessages(messagesFromServer messages: [IterableInAppMessage]) {
+        getRemovedMessags(messagesFromServer: messages).forEach {
             messagesMap.removeValue(forKey: $0.messageId)
         }
     }
     
     // given `messages` coming for server, find messages that need to be removed
-    private func getRemovedMessags(messages: [IterableInAppMessage]) -> [IterableInAppMessage] {
+    private func getRemovedMessags(messagesFromServer messages: [IterableInAppMessage]) -> [IterableInAppMessage] {
         return messagesMap.values.reduce(into: [IterableInAppMessage]()) { (result, message) in
             if !messages.contains(where: { $0.messageId == message.messageId }) {
                 result.append(message)

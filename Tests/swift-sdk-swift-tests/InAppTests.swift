@@ -66,7 +66,7 @@ class InAppTests: XCTestCase {
         mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1))
         
         XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
-        XCTAssertEqual(IterableAPI.inAppManager.getMessages()[0].skipped, true)
+        XCTAssertEqual(IterableAPI.inAppManager.getMessages()[0].processed, true)
 
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
     }
@@ -92,8 +92,8 @@ class InAppTests: XCTestCase {
         mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
         let messages = IterableAPI.inAppManager.getMessages()
         XCTAssertEqual(messages.count, 2)
-        XCTAssertEqual(messages[0].skipped, true)
-        XCTAssertEqual(messages[1].skipped, true)
+        XCTAssertEqual(messages[0].processed, false)
+        XCTAssertEqual(messages[1].processed, false)
 
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
@@ -123,9 +123,7 @@ class InAppTests: XCTestCase {
         mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
         let messages = IterableAPI.inAppManager.getMessages()
         XCTAssertEqual(messages.count, 3)
-        XCTAssertEqual(messages[0].skipped, true)
-        XCTAssertEqual(messages[1].skipped, true)
-        XCTAssertEqual(messages[2].skipped, true)
+        XCTAssertEqual(Set(messages.map { $0.processed }), Set([false, true, false]))
 
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
     }
@@ -267,7 +265,7 @@ class InAppTests: XCTestCase {
         
         var messages = IterableAPI.inAppManager.getMessages()
         XCTAssertEqual(messages.count, 1)
-        XCTAssertEqual(messages[0].skipped, true)
+        XCTAssertEqual(messages[0].processed, true)
 
         // Now show the first message, but don't consume
         IterableAPI.inAppManager.show(message: messages[0], consume: false) { (clickedUrl) in
@@ -277,7 +275,7 @@ class InAppTests: XCTestCase {
         
         messages = IterableAPI.inAppManager.getMessages()
         XCTAssertEqual(messages.count, 1)
-        XCTAssertEqual(messages[0].skipped, true)
+        XCTAssertEqual(messages[0].processed, true)
 
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
     }

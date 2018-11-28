@@ -101,8 +101,9 @@ public class IterableInAppMessage : NSObject {
     /// Extra Information from the 'payload' section of message.
     public let extraInfo: [AnyHashable : Any]?
 
-    /// Whether this message has been skipped (not shown)
-    public var skipped: Bool = false
+    /// Whether we have processed this message.
+    /// Note: This is internal and not public
+    var processed: Bool = false
 
     // Internal, don't let others create
     init(
