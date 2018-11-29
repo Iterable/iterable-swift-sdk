@@ -129,7 +129,7 @@ class InAppManager : IterableInAppManagerProtocol {
 
 extension InAppManager : InAppSynchronizerDelegate {
     func onInAppMessagesAvailable(messages: [IterableInAppMessage]) {
-        ITBInfo()
+        ITBDebug()
 
         // Remove messages that are no present in server
         removeDeletedMessages(messagesFromServer: messages)
@@ -145,7 +145,7 @@ extension InAppManager : InAppSynchronizerDelegate {
     
     // go through one loop of client side messages, and show the first that is not processed
     private func process() {
-        ITBInfo()
+        ITBDebug()
 
         for message in messagesMap.values.filter({ $0.processed == false }) {
             message.processed = true
