@@ -15,7 +15,24 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Fixed
 - nothing yet
 
-## [6.0.2](https://github.com/Iterable/swift-sdk/releases/tag/6.0.1)
+## [6.0.4](https://github.com/Iterable/swift-sdk/releases/tag/6.0.4)
+#### Added
+- More refactoring and tests.
+
+#### Changed
+- Now we do not call createUserForUserId when registering device. This is handled on the server side.
+
+#### Fixed
+- `destinationUrl` was not being returned correctly from the SDK when using custom schemes for inApp messages.
+
+
+## [6.0.3](https://github.com/Iterable/swift-sdk/releases/tag/6.0.3)
+#### Added
+- Call createUserForUserId when registering a device with userId
+- Refactoring and tests.
+
+
+## [6.0.2](https://github.com/Iterable/swift-sdk/releases/tag/6.0.2)
 #### Added
 - You can now set `logHandler` in IterableConfig.
 - Now you don't have to call `IterableAPI.registerToken` on login/logout.
