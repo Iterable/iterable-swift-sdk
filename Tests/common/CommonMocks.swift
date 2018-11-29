@@ -233,22 +233,31 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
 class MockInAppDisplayer : InAppDisplayerProtocol {
     var onShowCallback:  ((IterableInAppMessage, ITEActionBlock?) -> Void)?
 
-    private var actionCallback: ITEActionBlock?
-    
-    func showInApp(message: IterableInAppMessage, callback: ITEActionBlock?) -> Future<Bool> {
+    func showInApp(message: IterableInAppMessage, callback: ITEActionBlock?) -> Bool {
+        if showing {
+            return false
+        }
+        
+        showing = true
         actionCallback = callback
         onShowCallback?(message, callback)
-        return Promise<Bool>(value: true)
+        return true
     }
 
     // Mimics clicking a url
     func click(url: String) {
+        showing = false
         if let (callbackUrl, _) = InAppHelper.getCallbackAndDestinationUrl(url: URL(string: url)!) {
             actionCallback?(callbackUrl)
         } else {
             actionCallback?(nil)
         }
     }
+
+    private var actionCallback: ITEActionBlock?
+    
+    private var showing = false
+    
 }
 
 class MockInAppDelegate : IterableInAppDelegate {

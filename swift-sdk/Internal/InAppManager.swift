@@ -18,13 +18,15 @@ class InAppManager : IterableInAppManagerProtocol {
          inAppDelegate: IterableInAppDelegate,
          urlDelegate: IterableURLDelegate?,
          customActionDelegate: IterableCustomActionDelegate?,
-         urlOpener: UrlOpenerProtocol) {
+         urlOpener: UrlOpenerProtocol,
+         retryInterval: Double) {
         self.synchronizer = synchronizer
         self.displayer = displayer
         self.inAppDelegate = inAppDelegate
         self.urlDelegate = urlDelegate
         self.customActionDelegate = customActionDelegate
         self.urlOpener = urlOpener
+        self.retryInterval = retryInterval
         
         self.synchronizer.inAppSyncDelegate = self
     }
@@ -42,6 +44,18 @@ class InAppManager : IterableInAppManagerProtocol {
     func show(message: IterableInAppMessage, consume: Bool = true, callback: ITEActionBlock? = nil) {
         ITBInfo()
         
+        // This is public, so make sure we call from Main Thread
+        DispatchQueue.main.async {
+            _ = self.showInternal(message: message, consume: consume, checkNext: false, callback: callback)
+        }
+    }
+    
+    // This must be called from MainThread
+    private func showInternal(message: IterableInAppMessage,
+                              consume: Bool,
+                              checkNext: Bool,
+                              callback: ITEActionBlock? = nil) -> Bool {
+        ITBInfo()
         // Handle url and call the client with callback provided
         let clickCallback = {(urlOrAction: String?) in
             // call the client callback, if present
@@ -53,17 +67,28 @@ class InAppManager : IterableInAppManagerProtocol {
             } else {
                 ITBError("No name for clicked button/link in inApp")
             }
-        }
-        
-        displayer.showInApp(message: message, callback: clickCallback).onSuccess { (showed) in // showed boolean value gets set when inApp is showed in UI
-            if showed && consume {
-                message.consumed = true // mark for removal
-                self.internalApi?.inAppConsume(message.messageId)
-            } else {
-                message.processed = true // set it if not already set
-                self.messagesMap.updateValue(message, forKey: message.messageId)
+            
+            // check if we need to check for more inApps after showing this
+            if checkNext == true {
+                self.queue.asyncAfter(deadline: .now() + self.retryInterval) {
+                    self.process()
+                }
             }
         }
+        
+        // set processed, if not already set
+        message.processed = true
+
+        let showed = displayer.showInApp(message: message, callback: clickCallback)
+
+        if showed && consume {
+            message.consumed = true // mark for removal
+            self.internalApi?.inAppConsume(message.messageId)
+        }
+
+        self.messagesMap.updateValue(message, forKey: message.messageId)
+        
+        return showed
     }
 
     private func handleUrlOrAction(urlOrAction: String) {
@@ -98,11 +123,13 @@ class InAppManager : IterableInAppManagerProtocol {
     private var urlOpener: UrlOpenerProtocol
     
     private var messagesMap: [String: IterableInAppMessage] = [:]
+    private var queue = DispatchQueue(label: "InAppQueue")
+    private var retryInterval: Double // in seconds, if a message is already showing how long to wait?
 }
 
 extension InAppManager : InAppSynchronizerDelegate {
     func onInAppMessagesAvailable(messages: [IterableInAppMessage]) {
-        ITBDebug()
+        ITBInfo()
 
         // Remove messages that are no present in server
         removeDeletedMessages(messagesFromServer: messages)
@@ -111,18 +138,36 @@ extension InAppManager : InAppSynchronizerDelegate {
         addNewMessages(messagesFromServer: messages)
 
         // now process
-        process()
+        queue.async {
+            self.process()
+        }
     }
     
     // go through one loop of client side messages, and show the first that is not processed
     private func process() {
-        ITBDebug()
-        for message in messagesMap.values.prefix(while: { $0.processed == false }) {
+        ITBInfo()
+
+        for message in messagesMap.values.filter({ $0.processed == false }) {
             message.processed = true
             if inAppDelegate.onNew(message: message) == .show {
-                show(message: message)
+                showOneMessage(message: message)
+                break
             }
-            break
+        }
+    }
+    
+    // Display one message in the queue, if one is already showing
+    // it will retry
+    private func showOneMessage(message: IterableInAppMessage) {
+        ITBInfo()
+        
+        DispatchQueue.main.async {
+            if !self.showInternal(message: message, consume: true, checkNext: true, callback: nil) {
+                // If we failed to show, wait and try again
+                self.queue.asyncAfter(deadline: .now() + self.retryInterval) {
+                    self.showOneMessage(message: message)
+                }
+            }
         }
     }
 

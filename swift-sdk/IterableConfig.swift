@@ -132,6 +132,6 @@ public class IterableConfig : NSObject {
     /// If more than 1 inApp is available, we show the first.
     public var inAppDelegate: IterableInAppDelegate = DefaultInAppDelegate()
 
-    /// How many seconds to wait before showing the next inApp.
-    public var newInAppMessageCallbackIntervalInSeconds: Int = 30
+    /// How many seconds to wait before showing the next inApp, if there are more than one present
+    public var newInAppMessageCallbackIntervalInSeconds: Double = 30.0
 }

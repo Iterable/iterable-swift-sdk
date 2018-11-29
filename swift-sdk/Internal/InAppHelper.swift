@@ -20,11 +20,11 @@ protocol InAppSynchronizerProtocol {
 }
 
 protocol InAppDisplayerProtocol {
-    func showInApp(message: IterableInAppMessage, callback: ITEActionBlock?) -> Future<Bool>
+    func showInApp(message: IterableInAppMessage, callback: ITEActionBlock?) -> Bool
 }
 
 class InAppDisplayer : InAppDisplayerProtocol {
-    func showInApp(message: IterableInAppMessage, callback: ITEActionBlock?) -> Future<Bool> {
+    func showInApp(message: IterableInAppMessage, callback: ITEActionBlock?) -> Bool {
         return InAppHelper.showInApp(message: message, callback: callback)
     }
 }
@@ -78,26 +78,20 @@ struct InAppHelper {
     /// Shows an inApp message and consumes it from server queue if the message is shown.
     /// - parameter message: The inApp message to show
     /// - parameter callback: the code to execute when user clicks on a link or button on inApp message.
-    /// - returns: A Future indicating whether the inApp was opened.
-    @discardableResult fileprivate static func showInApp(message: IterableInAppMessage, callback:ITEActionBlock?) -> Future<Bool> {
+    /// - returns: A Bool indicating whether the inApp was opened.
+    @discardableResult fileprivate static func showInApp(message: IterableInAppMessage, callback:ITEActionBlock?) -> Bool {
         guard let content = message.content as? IterableHtmlInAppContent else {
             ITBError("Invalid content type")
-            return Promise<Bool>(value: false)
+            return false
         }
         
-        let result = Promise<Bool>()
         let notificationMetadata = IterableNotificationMetadata.metadata(fromInAppOptions: message.messageId)
         
-        DispatchQueue.main.async {
-            let opened = InAppHelper.showIterableNotificationHTML(content.html,
+        return InAppHelper.showIterableNotificationHTML(content.html,
                                                                   trackParams: notificationMetadata,
                                                                   backgroundAlpha: content.backgroundAlpha,
                                                                   padding: content.edgeInsets,
                                                                   callbackBlock: callback)
-            result.resolve(with: opened)
-        }
-        
-        return result
     }
     
     /**
@@ -308,9 +302,9 @@ struct InAppHelper {
     
     /// Gets the first message from the payload, if one esists or nil if the payload is empty
     static func spawn(inAppNotification callbackBlock: ITEActionBlock?, internalApi: IterableAPIInternal) -> Future<Bool> {
-        return internalApi.getInAppMessages(1).flatMap {
+        return internalApi.getInAppMessages(1).map {
             getFirstInAppMessage(fromPayload: $0, internalApi: internalApi).map { showInApp(message: $0, callback: callbackBlock) }
-            ?? Promise(value: false)
+            ?? false
         }
     }
     
