@@ -672,7 +672,9 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
          notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
          inAppSynchronizer: InAppSynchronizerProtocol = InAppSynchronizer(),
          inAppDisplayer: InAppDisplayerProtocol = InAppDisplayer(),
-         urlOpener: UrlOpenerProtocol = AppUrlOpener()) {
+         urlOpener: UrlOpenerProtocol = AppUrlOpener(),
+         applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
+         notificationCenter: NotificationCenterProtocol = NotificationCenter.default) {
         IterableLogUtil.sharedInstance = IterableLogUtil(dateProvider: dateProvider, logDelegate: config.logDelegate)
         ITBInfo()
         self.apiKey = apiKey
@@ -687,6 +689,8 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
                                         urlDelegate: config.urlDelegate,
                                         customActionDelegate: config.customActionDelegate,
                                         urlOpener: urlOpener,
+                                        applicationStateProvider: applicationStateProvider,
+                                        notificationCenter: notificationCenter,
                                         retryInterval: config.newInAppMessageCallbackIntervalInSeconds)
         self.inAppManager = inAppManager
         self.urlOpener = urlOpener

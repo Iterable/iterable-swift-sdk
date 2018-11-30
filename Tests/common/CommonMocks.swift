@@ -276,3 +276,33 @@ class MockInAppDelegate : IterableInAppDelegate {
 
     private let showInApp: ShowInApp
 }
+
+class MockNotificationCenter: NotificationCenterProtocol {
+    func addObserver(_ observer: Any, selector: Selector, name: Notification.Name?, object: Any?) {
+        observers.append(Observer(observer: observer as! NSObject, notificationName: name!, selector: selector))
+    }
+    
+    func removeObserver(_ observer: Any) {
+    }
+    
+    func fire(notification: Notification.Name) {
+        _ = observers.filter( { $0.notificationName == notification } ).map {
+            _ = $0.observer.perform($0.selector, with: Notification(name: notification))
+        }
+    }
+
+    private class Observer : NSObject {
+        let observer: NSObject
+        let notificationName: Notification.Name
+        let selector: Selector
+        
+        init(observer: NSObject, notificationName: Notification.Name, selector: Selector) {
+            self.observer = observer
+            self.notificationName = notificationName
+            self.selector = selector
+        }
+    }
+    
+    private var observers = [Observer]()
+    
+}

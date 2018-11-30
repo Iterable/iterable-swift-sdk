@@ -402,4 +402,76 @@ class InAppTests: XCTestCase {
 
         XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 2)
     }
+    
+    func testInAppDoNotShowInBackground() {
+        let expectation1 = expectation(description: "testInAppDoNotShowInBackground")
+        expectation1.isInverted = true
+        
+        let payload = TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1)
+        
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _) in
+            expectation1.fulfill()
+        }
+        
+        let config = IterableConfig()
+        config.newInAppMessageCallbackIntervalInSeconds = 1.0
+        
+        let mockApplicationStateProvider = MockApplicationStateProvider(applicationState: .background)
+        let mockNotificationCenter = MockNotificationCenter()
+        
+        IterableAPI.initializeForTesting(
+            config: config,
+            inAppSynchronizer: mockInAppSynchronizer,
+            inAppDisplayer: mockInAppDisplayer,
+            applicationStateProvider: mockApplicationStateProvider,
+            notificationCenter: mockNotificationCenter
+        )
+        
+        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
+        
+        wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
+
+    }
+
+    func testInAppShowWhenMovesToForeground() {
+        let expectation1 = expectation(description: "testInAppShowWhenMovesToForeground")
+        expectation1.isInverted = true
+        let expectation2 = expectation(description: "testInAppShowWhenMovesToForeground")
+
+        let payload = TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1)
+        
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _) in
+            expectation1.fulfill()
+            expectation2.fulfill()
+        }
+        
+        let config = IterableConfig()
+        config.newInAppMessageCallbackIntervalInSeconds = 1.0
+        
+        let mockApplicationStateProvider = MockApplicationStateProvider(applicationState: .background)
+        let mockNotificationCenter = MockNotificationCenter()
+        
+        IterableAPI.initializeForTesting(
+            config: config,
+            inAppSynchronizer: mockInAppSynchronizer,
+            inAppDisplayer: mockInAppDisplayer,
+            applicationStateProvider: mockApplicationStateProvider,
+            notificationCenter: mockNotificationCenter
+        )
+        
+        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
+        
+        wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
+        
+        mockApplicationStateProvider.applicationState = .active
+        mockNotificationCenter.fire(notification: .UIApplicationDidBecomeActive)
+        
+        wait(for: [expectation2], timeout: testExpectationTimeout)
+    }
 }

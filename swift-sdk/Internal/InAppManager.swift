@@ -6,7 +6,15 @@
 
 import Foundation
 
-class InAppManager : IterableInAppManagerProtocol {
+protocol NotificationCenterProtocol {
+    func addObserver(_ observer: Any, selector: Selector, name: Notification.Name?, object: Any?)
+    func removeObserver(_ observer: Any)
+}
+
+extension NotificationCenter : NotificationCenterProtocol {
+}
+
+class InAppManager : NSObject, IterableInAppManagerProtocol {
     weak var internalApi: IterableAPIInternal? {
         didSet {
             self.synchronizer.internalApi = internalApi
@@ -19,16 +27,33 @@ class InAppManager : IterableInAppManagerProtocol {
          urlDelegate: IterableURLDelegate?,
          customActionDelegate: IterableCustomActionDelegate?,
          urlOpener: UrlOpenerProtocol,
+         applicationStateProvider: ApplicationStateProviderProtocol,
+         notificationCenter: NotificationCenterProtocol,
          retryInterval: Double) {
+        ITBInfo()
         self.synchronizer = synchronizer
         self.displayer = displayer
         self.inAppDelegate = inAppDelegate
         self.urlDelegate = urlDelegate
         self.customActionDelegate = customActionDelegate
         self.urlOpener = urlOpener
+        self.applicationStateProvider = applicationStateProvider
+        self.notificationCenter = notificationCenter
         self.retryInterval = retryInterval
         
+        super.init()
+        
         self.synchronizer.inAppSyncDelegate = self
+
+        self.notificationCenter.addObserver(self,
+                                       selector: #selector(onAppEnteredForeground(notification:)),
+                                       name: Notification.Name.UIApplicationDidBecomeActive,
+                                       object: nil)
+    }
+    
+    deinit {
+        ITBInfo()
+        notificationCenter.removeObserver(self)
     }
     
     func getMessages() -> [IterableInAppMessage] {
@@ -49,6 +74,11 @@ class InAppManager : IterableInAppManagerProtocol {
             _ = self.showInternal(message: message, consume: consume, checkNext: false, callback: callback)
         }
     }
+
+    @objc func onAppEnteredForeground(notification: Notification) {
+        ITBInfo()
+        startProcessing()
+    }
     
     // This must be called from MainThread
     private func showInternal(message: IterableInAppMessage,
@@ -56,7 +86,8 @@ class InAppManager : IterableInAppManagerProtocol {
                               checkNext: Bool,
                               callback: ITEActionBlock? = nil) -> Bool {
         ITBInfo()
-        // Handle url and call the client with callback provided
+
+        // This is called when the user clicks on a link in the inAPP
         let clickCallback = {(urlOrAction: String?) in
             // call the client callback, if present
             callback?(urlOrAction)
@@ -69,9 +100,11 @@ class InAppManager : IterableInAppManagerProtocol {
             }
             
             // check if we need to check for more inApps after showing this
+            // This will be true when we are processing messagers from server and false
+            // when called by clients directdly
             if checkNext == true {
                 self.queue.asyncAfter(deadline: .now() + self.retryInterval) {
-                    self.process()
+                    self.startProcessing()
                 }
             }
         }
@@ -121,6 +154,8 @@ class InAppManager : IterableInAppManagerProtocol {
     private var urlDelegate: IterableURLDelegate?
     private var customActionDelegate: IterableCustomActionDelegate?
     private var urlOpener: UrlOpenerProtocol
+    private var applicationStateProvider: ApplicationStateProviderProtocol
+    private var notificationCenter: NotificationCenterProtocol
     
     private var messagesMap: [String: IterableInAppMessage] = [:]
     private var queue = DispatchQueue(label: "InAppQueue")
@@ -138,8 +173,19 @@ extension InAppManager : InAppSynchronizerDelegate {
         addNewMessages(messagesFromServer: messages)
 
         // now process
-        queue.async {
-            self.process()
+        startProcessing()
+    }
+    
+    private func startProcessing() {
+        DispatchQueue.main.async {
+            // We can only check applicationState from main queue
+            if self.applicationStateProvider.applicationState == .active {
+                self.queue.async {
+                    self.process()
+                }
+            } else {
+                ITBInfo("Application is not active")
+            }
         }
     }
     
