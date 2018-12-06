@@ -278,7 +278,7 @@ Iterable SDK provides an implementation that handles media attachments and actio
 ```
 // If the target name for the notification extension is 'MyAppNotificationExtension'
 target 'MyAppNotificationExtension' do
-	pod 'IterableAppExtensions'
+	pod 'Iterable-iOS-AppExtensions'
 end
 ```
 
