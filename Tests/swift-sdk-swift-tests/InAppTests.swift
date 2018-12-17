@@ -523,4 +523,33 @@ class InAppTests: XCTestCase {
         messageNumber = 3
         wait(for: [expectation3], timeout: testExpectationTimeout)
     }
+    
+    func testRemoveMessages() {
+        let expectation1 = expectation(description: "show first message")
+        
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _) in
+            expectation1.fulfill()
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: 1))
+        }
+
+        IterableAPI.initializeForTesting(
+            inAppSynchronizer: mockInAppSynchronizer,
+            inAppDisplayer: mockInAppDisplayer
+        )
+        
+        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 3))
+        
+        XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 3)
+
+        // First one will be shown automatically, so we have two left now
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+        XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 2)
+
+        // now remove 1, there should be 1 left
+        IterableAPI.inAppManager.remove(message: IterableAPI.inAppManager.getMessages()[0])
+        XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
+    }
 }

@@ -25,6 +25,9 @@ public protocol IterableInAppManagerProtocol {
     /// - parameter callback: block of code to execute once the user clicks on a link or button in the inApp notification.
     ///   Note that this callback is called in addition to calling `IterableCustomActionDelegate` or `IterableUrlDelegate` on the button action.
     @objc(showMessage:consume:callbackBlock:) func show(message: IterableInAppMessage, consume: Bool, callback:ITEActionBlock?)
+    
+    /// - parameter message: The message to remove.
+    @objc(removeMessage:) func remove(message: IterableInAppMessage)
 }
 
 /// By default, every single inApp will be shown as soon as it is available.

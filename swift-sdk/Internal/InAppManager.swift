@@ -77,6 +77,15 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
         }
     }
 
+    func remove(message: IterableInAppMessage) {
+        ITBInfo()
+
+        message.consumed = true
+        internalApi?.inAppConsume(message.messageId)
+        
+        messagesMap.updateValue(message, forKey: message.messageId)
+    }
+
     @objc func onAppEnteredForeground(notification: Notification) {
         ITBInfo()
         processMessages()
@@ -287,6 +296,9 @@ class EmptyInAppManager : IterableInAppManagerProtocol {
     }
     
     func show(message: IterableInAppMessage, consume: Bool, callback: ITEActionBlock?) {
+    }
+
+    func remove(message: IterableInAppMessage) {
     }
 }
 
