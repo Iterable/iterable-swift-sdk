@@ -77,7 +77,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
 
     @objc func onAppEnteredForeground(notification: Notification) {
         ITBInfo()
-        startProcessing()
+        processMessages()
     }
     
     // This must be called from MainThread
@@ -87,6 +87,11 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
                               callback: ITEActionBlock? = nil) -> Bool {
         ITBInfo()
 
+        guard Thread.isMainThread else {
+            ITBError("This must be called from the main thread")
+            return false
+        }
+        
         // This is called when the user clicks on a link in the inAPP
         let clickCallback = {(urlOrAction: String?) in
             // call the client callback, if present
@@ -101,10 +106,10 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
             
             // check if we need to check for more inApps after showing this
             // This will be true when we are processing messagers from server and false
-            // when called by clients directdly
+            // when called by clients directly
             if checkNext == true {
                 self.queue.asyncAfter(deadline: .now() + self.retryInterval) {
-                    self.startProcessing()
+                    self.processMessages()
                 }
             }
         }
@@ -173,15 +178,15 @@ extension InAppManager : InAppSynchronizerDelegate {
         addNewMessages(messagesFromServer: messages)
 
         // now process
-        startProcessing()
+        processMessages()
     }
     
-    private func startProcessing() {
+    private func processMessages() {
+        // We can only check applicationState from main queue so need to do the following
         DispatchQueue.main.async {
-            // We can only check applicationState from main queue
             if self.applicationStateProvider.applicationState == .active {
                 self.queue.async {
-                    self.process()
+                    self.processOneMessage()
                 }
             } else {
                 ITBInfo("Application is not active")
@@ -190,7 +195,7 @@ extension InAppManager : InAppSynchronizerDelegate {
     }
     
     // go through one loop of client side messages, and show the first that is not processed
-    private func process() {
+    private func processOneMessage() {
         ITBDebug()
 
         for message in messagesMap.values.filter({ $0.processed == false }) {
