@@ -691,6 +691,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
                                         urlOpener: urlOpener,
                                         applicationStateProvider: applicationStateProvider,
                                         notificationCenter: notificationCenter,
+                                        dateProvider: dateProvider,
                                         retryInterval: config.newInAppMessageCallbackIntervalInSeconds)
         self.inAppManager = inAppManager
         self.urlOpener = urlOpener

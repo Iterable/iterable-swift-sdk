@@ -447,7 +447,7 @@ class InAppTests: XCTestCase {
         
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShowCallback = {(_, _) in
-            expectation1.fulfill()
+            expectation1.fulfill() // expectation1 should not be fulfilled (inverted)
             expectation2.fulfill()
         }
         
@@ -473,5 +473,54 @@ class InAppTests: XCTestCase {
         mockNotificationCenter.fire(notification: .UIApplicationDidBecomeActive)
         
         wait(for: [expectation2], timeout: testExpectationTimeout)
+    }
+    
+    func testDontShowMessageWithinRetryInterval() {
+        let expectation1 = expectation(description: "show first message")
+        let expectation2 = expectation(description: "don't show second message within interval")
+        expectation2.isInverted = true
+        let expectation3 = expectation(description: "show second message after retry interval")
+
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        
+        let mockInAppDisplayer = MockInAppDisplayer()
+        var messageNumber = -1
+        mockInAppDisplayer.onShowCallback = {(_, _) in
+            if messageNumber == 1 {
+                expectation1.fulfill()
+            } else if messageNumber == 2 {
+                expectation2.fulfill()
+            } else if messageNumber == 3 {
+                expectation3.fulfill()
+            } else {
+                // unexpected message number
+                XCTFail()
+            }
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: messageNumber))
+        }
+        
+        let config = IterableConfig()
+        let retryInterval = 2.0
+        config.newInAppMessageCallbackIntervalInSeconds = retryInterval
+        
+        IterableAPI.initializeForTesting(
+            config: config,
+            inAppSynchronizer: mockInAppSynchronizer,
+            inAppDisplayer: mockInAppDisplayer
+        )
+        
+        // send first message payload
+        messageNumber = 1
+        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrlWithOneMessage(messageNumber: messageNumber))
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+
+        // second message payload, should not be shown
+        messageNumber = 2
+        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrlWithOneMessage(messageNumber: messageNumber))
+        wait(for: [expectation2], timeout: retryInterval - 1.0) // 1.0 for margin
+
+        // After retryInternval, the third should show
+        messageNumber = 3
+        wait(for: [expectation3], timeout: testExpectationTimeout)
     }
 }

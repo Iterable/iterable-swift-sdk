@@ -23,6 +23,18 @@ struct TestInAppPayloadGenerator {
         ]
     }
 
+    static func createPayloadWithUrlWithOneMessage(messageNumber: Int) -> [AnyHashable : Any] {
+        return [
+            "inAppMessages" : [createOneInAppDictWithUrl(index: messageNumber)]
+        ]
+    }
+
+    static func createPayloadWithCustomActionWithOneMessage(messageNumber: Int) -> [AnyHashable : Any] {
+        return [
+            "inAppMessages" : [createOneInAppDictWithCustomAction(index: messageNumber)]
+        ]
+    }
+    
     static func getMessageId(index: Int) -> String {
         return "message\(index)"
     }

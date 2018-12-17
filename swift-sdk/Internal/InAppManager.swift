@@ -29,6 +29,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
          urlOpener: UrlOpenerProtocol,
          applicationStateProvider: ApplicationStateProviderProtocol,
          notificationCenter: NotificationCenterProtocol,
+         dateProvider: DateProviderProtocol,
          retryInterval: Double) {
         ITBInfo()
         self.synchronizer = synchronizer
@@ -39,6 +40,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
         self.urlOpener = urlOpener
         self.applicationStateProvider = applicationStateProvider
         self.notificationCenter = notificationCenter
+        self.dateProvider = dateProvider
         self.retryInterval = retryInterval
         
         super.init()
@@ -69,7 +71,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
     func show(message: IterableInAppMessage, consume: Bool = true, callback: ITEActionBlock? = nil) {
         ITBInfo()
         
-        // This is public, so make sure we call from Main Thread
+        // This is public (via public protocol implementation), so make sure we call from Main Thread
         DispatchQueue.main.async {
             _ = self.showInternal(message: message, consume: consume, checkNext: false, callback: callback)
         }
@@ -118,6 +120,9 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
         message.processed = true
 
         let showed = displayer.showInApp(message: message, callback: clickCallback)
+        if showed {
+            lastShowedTime = dateProvider.currentDate
+        }
 
         if showed && consume {
             message.consumed = true // mark for removal
@@ -153,18 +158,20 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
         }
     }
     
-    private var synchronizer: InAppSynchronizerProtocol
-    private var displayer: InAppDisplayerProtocol
-    private var inAppDelegate: IterableInAppDelegate
-    private var urlDelegate: IterableURLDelegate?
-    private var customActionDelegate: IterableCustomActionDelegate?
-    private var urlOpener: UrlOpenerProtocol
-    private var applicationStateProvider: ApplicationStateProviderProtocol
-    private var notificationCenter: NotificationCenterProtocol
+    private var synchronizer: InAppSynchronizerProtocol // this is mutable because we need to set internalApi
+    private let displayer: InAppDisplayerProtocol
+    private let inAppDelegate: IterableInAppDelegate
+    private let urlDelegate: IterableURLDelegate?
+    private let customActionDelegate: IterableCustomActionDelegate?
+    private let urlOpener: UrlOpenerProtocol
+    private let applicationStateProvider: ApplicationStateProviderProtocol
+    private let notificationCenter: NotificationCenterProtocol
     
-    private var messagesMap: [String: IterableInAppMessage] = [:]
-    private var queue = DispatchQueue(label: "InAppQueue")
-    private var retryInterval: Double // in seconds, if a message is already showing how long to wait?
+    private var messagesMap = [String: IterableInAppMessage]() // this is mutable
+    private let queue = DispatchQueue(label: "InAppQueue")
+    private let dateProvider: DateProviderProtocol
+    private let retryInterval: Double // in seconds, if a message is already showing how long to wait?
+    private var lastShowedTime: Date? = nil
 }
 
 extension InAppManager : InAppSynchronizerDelegate {
@@ -182,6 +189,15 @@ extension InAppManager : InAppSynchronizerDelegate {
     }
     
     private func processMessages() {
+        let waitTimeInterval = getWaitTimeInterval()
+        guard waitTimeInterval <= 0 else {
+            ITBInfo("Need to wait for: \(waitTimeInterval)")
+            queue.asyncAfter(deadline: .now() + waitTimeInterval) {
+                self.processMessages()
+            }
+            return
+        }
+        
         // We can only check applicationState from main queue so need to do the following
         DispatchQueue.main.async {
             if self.applicationStateProvider.applicationState == .active {
@@ -191,6 +207,22 @@ extension InAppManager : InAppSynchronizerDelegate {
             } else {
                 ITBInfo("Application is not active")
             }
+        }
+    }
+    
+    // How long do we have to wait before showing the message
+    // > 0 means wait, otherwise we are good to show
+    private func getWaitTimeInterval() -> Double {
+        if let lastShowedTime = lastShowedTime {
+            let nextShowingTime = Date(timeInterval: retryInterval, since: lastShowedTime)
+            if dateProvider.currentDate >= nextShowingTime {
+                return 0.0
+            } else {
+                return nextShowingTime.timeIntervalSinceReferenceDate - self.dateProvider.currentDate.timeIntervalSinceReferenceDate
+            }
+        } else {
+            // we have not shown any messages
+            return 0.0
         }
     }
     
