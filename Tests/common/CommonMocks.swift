@@ -75,11 +75,18 @@ public class MockCustomActionDelegate: NSObject, IterableCustomActionDelegate {
     }
 }
 
-@objc public class MockUrlOpener : NSObject, UrlOpenerProtocol {
+@objcMembers
+public class MockUrlOpener : NSObject, UrlOpenerProtocol {
     @objc var ios10OpenedUrl: URL?
     @objc var preIos10openedUrl: URL?
+    var callback: ((URL) -> Void)? = nil
     
+    public init(callback: ((URL) -> Void)? = nil) {
+        self.callback = callback
+    }
+        
     public func open(url: URL) {
+        callback?(url)
         if #available(iOS 10.0, *) {
             ios10OpenedUrl = url
         } else {
@@ -153,7 +160,7 @@ class MockNetworkSession: NetworkSessionProtocol {
     var data: Data?
     var error: Error?
     
-    convenience init(statusCode: Int) {
+    convenience init(statusCode: Int = 200) {
         self.init(statusCode: statusCode,
                   data: [:].toData(),
                   error: nil)
@@ -200,3 +207,75 @@ class NoNetworkNetworkSession: NetworkSessionProtocol {
     }
 }
 
+class MockInAppSynchronizer : InAppSynchronizerProtocol {
+    weak var internalApi: IterableAPIInternal?
+    weak var inAppSyncDelegate: InAppSynchronizerDelegate?
+    
+    func mockMessagesAvailableFromServer(messages: [IterableInAppMessage]) {
+        ITBInfo()
+        inAppSyncDelegate?.onInAppMessagesAvailable(messages: messages)
+    }
+    
+    func mockInAppPayloadFromServer(_ payload: [AnyHashable : Any]) {
+        ITBInfo()
+        guard let internalApi = internalApi else {
+            ITBError("Invalid state: expected InternalApi")
+            return
+        }
+        
+        let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: internalApi)
+        if messages.count > 0 {
+            inAppSyncDelegate?.onInAppMessagesAvailable(messages: messages)
+        }
+    }
+}
+
+class MockInAppDisplayer : InAppDisplayerProtocol {
+    var onShowCallback:  ((IterableInAppMessage, ITEActionBlock?) -> Void)?
+
+    private var actionCallback: ITEActionBlock?
+    
+    func showInApp(message: IterableInAppMessage, callback: ITEActionBlock?) -> Future<Bool> {
+        actionCallback = callback
+        onShowCallback?(message, callback)
+        return Promise<Bool>(value: true)
+    }
+
+    // Mimics clicking a url
+    func click(url: String) {
+        if let (callbackUrl, _) = InAppHelper.getCallbackAndDestinationUrl(url: URL(string: url)!) {
+            actionCallback?(callbackUrl)
+        } else {
+            actionCallback?(nil)
+        }
+    }
+}
+
+class MockInAppDelegate : IterableInAppDelegate {
+    var onNewMessageCallback: ((IterableInAppMessage) -> Void)?
+    var onNewBatchCallback: (([IterableInAppMessage]) -> Void)?
+    
+    
+    init(showInApp: ShowInApp = .show) {
+        self.showInApp = showInApp
+    }
+    
+    func onNew(message: IterableInAppMessage) -> ShowInApp {
+        onNewMessageCallback?(message)
+        return showInApp
+    }
+    
+    func onNew(batch: [IterableInAppMessage]) -> IterableInAppMessage? {
+        onNewBatchCallback?(batch)
+        
+        for message in batch {
+            if onNew(message: message) == .show {
+                return message
+            }
+        }
+        
+        return nil
+    }
+    
+    private let showInApp: ShowInApp
+}

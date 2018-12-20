@@ -15,8 +15,10 @@ public typealias CustomActionHandler = (String) -> Bool
 }
 
 /// Default app opener. Defers to UIApplication open
-class AppUrlOpener : UrlOpenerProtocol {
-    func open(url: URL) {
+public class AppUrlOpener : UrlOpenerProtocol {
+    public init() {}
+    
+    public func open(url: URL) {
         if #available(iOS 10.0, *) {
             UIApplication.shared.open(url, options: [:]) { (success) in
                 if !success {
@@ -80,7 +82,7 @@ struct IterableActionRunner {
 
     // MARK: Private
     private static func shouldOpenUrl(url: URL, from source: IterableActionSource) -> Bool {
-        if source == .push, let scheme = url.scheme, (scheme == "http" || scheme == "https") {
+        if source == .push || source == .inApp, let scheme = url.scheme, (scheme == "http" || scheme == "https") {
             return true
         } else {
             return false

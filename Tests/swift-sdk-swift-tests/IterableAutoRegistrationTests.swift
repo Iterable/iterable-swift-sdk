@@ -10,10 +10,10 @@ import XCTest
 
 class IterableAutoRegistrationTests: XCTestCase {
     private static let apiKey = "zeeApiKey"
-
+    
     override func setUp() {
         super.setUp()
-
+        
         TestUtils.clearUserDefaults()
     }
     
@@ -35,7 +35,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         
         let notificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: expectation2)
         
-        IterableAPI.initialize(apiKey: IterableAutoRegistrationTests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+        IterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
         IterableAPI.email = "user1@example.com"
         let token = "zeeToken".data(using: .utf8)!
         networkSession.callback = {(_, _, _) in
@@ -69,7 +69,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         // notifications are enabled
         let notificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: expectation1)
         
-        IterableAPI.initialize(apiKey: IterableAutoRegistrationTests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+        IterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
         let email = "user1@example.com"
         IterableAPI.email = email
         let token = "zeeToken".data(using: .utf8)!
@@ -100,7 +100,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         config.pushIntegrationName = "my-push-integration"
         let notificationStateProvider = MockNotificationStateProvider(enabled: false, expectation: expectation3) // Notifications are disabled
         
-        IterableAPI.initialize(apiKey: IterableAutoRegistrationTests.apiKey,
+        IterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey,
                                config: config,
                                networkSession: networkSession,
                                notificationStateProvider: notificationStateProvider)
@@ -126,18 +126,18 @@ class IterableAutoRegistrationTests: XCTestCase {
         // only wait for small time, supposed to error out
         wait(for: [expectation1, expectation2, expectation3], timeout: 1.0)
     }
-
+    
     func testDoNotCallDisableOrEnableWhenAutoPushIsOff() {
         let expectation1 = expectation(description: "do not call register for remote")
         expectation1.isInverted = true
-
+        
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
         config.pushIntegrationName = "my-push-integration"
         config.autoPushRegistration = false
         let notificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: expectation1)
         
-        IterableAPI.initialize(apiKey: IterableAutoRegistrationTests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+        IterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
         IterableAPI.email = "user1@example.com"
         let token = "zeeToken".data(using: .utf8)!
         networkSession.callback = {(_, _, _) in
@@ -165,7 +165,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         let notificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: expectation1)
         
         UserDefaults.standard.set("user1@example.com", forKey: .ITBL_USER_DEFAULTS_EMAIL_KEY)
-        IterableAPI.initialize(apiKey: IterableAutoRegistrationTests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+        IterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
         
         // only wait for small time, supposed to error out
         wait(for: [expectation1], timeout: testExpectationTimeout)

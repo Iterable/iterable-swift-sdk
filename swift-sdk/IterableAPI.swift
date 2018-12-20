@@ -12,7 +12,7 @@ import Foundation
 @objcMembers
 public final class IterableAPI : NSObject {
     // Current SDK Version.
-    static let sdkVersion = "6.0.2"
+    static let sdkVersion = "6.0.4"
     
     // MARK: Initialization
     /// You should call this method and not call the init method directly.
@@ -360,27 +360,40 @@ public final class IterableAPI : NSObject {
     //MARK: In-App Notifications
     
     /**
-     Gets the list of InAppNotification and displays the next notification
+     Deprecated. Gets the list of InAppNotification and displays the next notification.
+     
+     This is deprecated in SDK version 6.0.4.
+     InApp notifications are automatically shown via `IterableInAppDelegate` methods.
      
      - parameter callbackBlock:  Callback ITEActionBlock
      
      */
+    @available(*, deprecated: 6.0.4, message: "InApp messages are automatically shown via IterableInAppDelegate methods.")
     public static func spawnInAppNotification(_ callbackBlock:ITEActionBlock?) {
         internalImplementation?.spawn(inAppNotification: callbackBlock)
     }
     
     /**
-     Gets the list of InAppMessages
+     Deprecated. Gets the list of InAppMessages from the server.
      
+     This is deprecated in SDK version 6.0.4.
+     InApp notifications are automatically shown via `IterableInAppDelegate` methods. The SDK takes care of getting messages automatically.
+     See `IterableAPI.inAppManager.getMessages()` method to get messages already fetched from the server.
+
      - parameter count:  the number of messages to fetch
      */
+    @available(*, deprecated: 6.0.4, message: "Use IterableAPI.inAppManager.getMessages() method instead.")
     @objc(getInAppMessages:) public static func get(inAppMessages count: NSNumber) {
         internalImplementation?.getInAppMessages(count)
     }
     
     /**
-     Gets the list of InAppMessages with optional additional fields and custom completion blocks
+     Deprecated. Gets the list of InAppMessages with optional additional fields and custom completion blocks
      
+     This is deprecated in SDK version 6.0.4.
+     InApp notifications are automatically shown via `IterableInAppDelegate` methods. The SDK takes care of getting messages automatically.
+     See `IterableAPI.inAppManager.getMessages()` method to get messages already fetched from the server.
+
      - Parameters:
      - count:  the number of messages to fetch
      - onSuccess:   OnSuccessHandler to invoke if the get call succeeds
@@ -389,6 +402,7 @@ public final class IterableAPI : NSObject {
      - seeAlso: OnSuccessHandler
      - seeAlso: OnFailureHandler
      */
+    @available(*, deprecated: 6.0.4, message: "Use IterableAPI.inAppManager.getMessages() method instead.")
     @objc(getInAppMessages:onSucess:onFailure:) public static func get(inAppMessages count: NSNumber, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         internalImplementation?.getInAppMessages(count, onSuccess: onSuccess, onFailure: onFailure)
     }
@@ -484,7 +498,22 @@ public final class IterableAPI : NSObject {
         return internalImplementation?.handleUniversalLink(url) ?? false
     }
     
-    //MARK: Private and Internal
+    /// Use this property for getting and showing inApp Messages.
+    /// This property has no meaning if IterableAPI has not been initialized using
+    /// IterableAPI.initialize
+    /// ```
+    /// - IterableAPI.inAppManager.getMessages()
+    /// - IterableAPI.inappManager.show(message: message, consume: true)
+    /// ```
+    @objc public static var inAppManager: IterableInAppManagerProtocol {
+        guard let internalImplementation = internalImplementation else {
+            ITBError("IterableAPI is not initialized yet. InApp will not work now.")
+            return EmptyInAppManager()
+        }
+        return internalImplementation.inAppManager
+    }
+    
+    // MARK: Private and Internal
     static var internalImplementation: IterableAPIInternal?
     private override init() {super.init()}
 }

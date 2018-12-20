@@ -63,12 +63,10 @@ class ViewController: UIViewController {
         let html = """
             <a href="http://website/resource#something">Click Me</a>
         """
-        IterableInAppManager.showIterableNotificationHTML(html) { (str) in
+        InAppHelper.showIterableNotificationHTML(html) { (str) in
             ITBInfo("callback: \(str ?? "<nil>")")
             self.statusLbl.text = str
         }
-        
-        IterableInAppManager.showIterableNotificationHTML(html, callbackBlock: {str in print("callback: ", str ?? "nil")})
     }
     
     // Full screen inApp
@@ -81,7 +79,7 @@ class ViewController: UIViewController {
                 "content" : ["html" : "<a href='https://www.google.com/q=something'>Click Here</a>"],
                 "messageId" : "messageId",
                 "campaignId" : "campaignId"] ]])
-        IterableAPI.initialize(apiKey: "apiKey",
+        IterableAPI.initializeForTesting(apiKey: "apiKey",
                                networkSession: networkSession)
         
         networkSession.callback = {(_, _, _) in
@@ -94,7 +92,7 @@ class ViewController: UIViewController {
         }
     }
 
-    
+    // Center
     @IBAction func showInApp3Tap(_ sender: UIButton) {
         ITBInfo()
         
@@ -111,7 +109,7 @@ class ViewController: UIViewController {
                 "campaignId" : "campaignId",
                 ]
             ]])
-        IterableAPI.initialize(apiKey: "apiKey",
+        IterableAPI.initializeForTesting(apiKey: "apiKey",
                                networkSession: networkSession)
         
         networkSession.callback = {(_, _, _) in
@@ -124,6 +122,69 @@ class ViewController: UIViewController {
         }
     }
 
+    // FullScreen, corresponds to UITests.testShowInApp4
+    // Here UrlDelegate returns true, so url should not be opened
+    @IBAction func showInApp4Tap(_ sender: UIButton) {
+        ITBInfo()
+       
+        let messageId = "zeeMessageId"
+        let html = """
+            <a href="http://website/resource#something">Click Me</a>
+        """
+        let content = IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: html)
+        let message = IterableInAppMessage(messageId: messageId, campaignId: "zeeCampaignId", contentType: .html, content: content)
+        
+        let config = IterableConfig()
+        let mockUrlDelegate = MockUrlDelegate(returnValue: true)
+        mockUrlDelegate.callback = {(url, context) in
+            if context.source == .inApp {
+                self.statusLbl.text = url.absoluteString
+            }
+        }
+        config.urlDelegate = mockUrlDelegate
+        
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        IterableAPI.initializeForTesting(apiKey: "apiKey",
+                               config: config,
+                               inAppSynchronizer: mockInAppSynchronizer,
+                               inAppDisplayer: InAppDisplayer()
+                               )
+        
+        mockInAppSynchronizer.mockMessagesAvailableFromServer(messages: [message])
+    }
+
+    // Center and Open url, corresponds to UITests.testShowInApp5
+    // Here UrlDelegate return false, so url should be opened.
+    @IBAction func showInApp5Tap(_ sender: UIButton) {
+        ITBInfo()
+        
+        let messageId = "zeeMessageId"
+        let html = """
+            <a href="http://website/resource#something">Click Me</a>
+        """
+        let content = IterableHtmlInAppContent(edgeInsets: UIEdgeInsets(top: -1, left: 10, bottom: -1, right: 10), backgroundAlpha: 0.5, html: html)
+        let message = IterableInAppMessage(messageId: messageId, campaignId: "zeeCampaignId", contentType: .html, content: content)
+        
+        let config = IterableConfig()
+        let mockUrlDelegate = MockUrlDelegate(returnValue: false) // we don't handle, so the url will be opened
+        config.urlDelegate = mockUrlDelegate
+        
+        let mockUrlOpener = MockUrlOpener() { (url) in
+            self.statusLbl.text = url.absoluteString
+        }
+        
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        IterableAPI.initializeForTesting(apiKey: "apiKey",
+                               config: config,
+                               networkSession: MockNetworkSession(),
+                               inAppSynchronizer: mockInAppSynchronizer,
+                               inAppDisplayer: InAppDisplayer(),
+                               urlOpener: mockUrlOpener)
+        
+        mockInAppSynchronizer.mockMessagesAvailableFromServer(messages: [message])
+    }
+
+    
     @available(iOS 10.0, *)
     private func setupNotifications(onCompletion: (() -> Void)? = nil) {
         UNUserNotificationCenter.current().delegate = self
@@ -217,7 +278,7 @@ class ViewController: UIViewController {
         content.userInfo = userInfo
 
         
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false) // 10 seconds from now
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 0.1, repeats: false)
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
         UNUserNotificationCenter.current().add(request)
     }

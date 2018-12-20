@@ -6,8 +6,6 @@
 
 import XCTest
 
-import OHHTTPStubs
-
 @testable import IterableSDK
 
 let testExpectationTimeout = 15.0 // How long to wait when we expect to succeed
@@ -17,7 +15,6 @@ class IterableActionRunnerTests: XCTestCase {
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
-        IterableAPIInternal.initialize(apiKey:"", config: IterableConfig())
     }
     
     override func tearDown() {

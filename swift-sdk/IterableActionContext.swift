@@ -11,6 +11,7 @@ import Foundation
 @objc public enum IterableActionSource : Int {
     case push
     case universalLink
+    case inApp
 }
 
 @objc
