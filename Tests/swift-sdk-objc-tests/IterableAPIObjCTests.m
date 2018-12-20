@@ -14,7 +14,7 @@
 
 @import IterableSDK;
 
-static CGFloat const IterableNetworkResponseExpectationTimeout = 5.0;
+static CGFloat const IterableNetworkResponseExpectationTimeout = 15.0;
 
 @interface IterableAPIObjCTests : XCTestCase
 @end
