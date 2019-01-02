@@ -21,6 +21,7 @@
 		AC2C668220D32F2800D46CC9 /* IterableAppIntegrationInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668120D32F2800D46CC9 /* IterableAppIntegrationInternal.swift */; };
 		AC2C668420D3370600D46CC9 /* Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668320D3370600D46CC9 /* Mocks.swift */; };
 		AC2C668720D3435700D46CC9 /* IterableActionRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668620D3435700D46CC9 /* IterableActionRunnerTests.swift */; };
+		AC32E16821DD55B900BD4F83 /* OrderedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC32E16721DD55B900BD4F83 /* OrderedDictionary.swift */; };
 		AC347B5C20E5A7E1003449CF /* IterableAPNSUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC347B5B20E5A7E1003449CF /* IterableAPNSUtil.swift */; };
 		AC347B5D20E5C7C6003449CF /* IterableConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = AC72A0B120CF4C32004D7997 /* IterableConstants.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AC347B6720E699FA003449CF /* IterableAppExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = AC347B6620E699D8003449CF /* IterableAppExtensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -189,6 +190,7 @@
 		AC2C668120D32F2800D46CC9 /* IterableAppIntegrationInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAppIntegrationInternal.swift; sourceTree = "<group>"; };
 		AC2C668320D3370600D46CC9 /* Mocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mocks.swift; sourceTree = "<group>"; };
 		AC2C668620D3435700D46CC9 /* IterableActionRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableActionRunnerTests.swift; sourceTree = "<group>"; };
+		AC32E16721DD55B900BD4F83 /* OrderedDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderedDictionary.swift; sourceTree = "<group>"; };
 		AC347B5B20E5A7E1003449CF /* IterableAPNSUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPNSUtil.swift; sourceTree = "<group>"; };
 		AC347B6620E699D8003449CF /* IterableAppExtensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IterableAppExtensions.h; sourceTree = "<group>"; };
 		AC3C10F8213F46A900A9B839 /* IterableLogging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableLogging.swift; sourceTree = "<group>"; };
@@ -452,6 +454,7 @@
 				AC347B5B20E5A7E1003449CF /* IterableAPNSUtil.swift */,
 				AC776DA5211A1B8A00C27C27 /* IterableRequestUtil.swift */,
 				AC3DD9C72142F3650046F886 /* ClassExtensions.swift */,
+				AC32E16721DD55B900BD4F83 /* OrderedDictionary.swift */,
 			);
 			name = Util;
 			sourceTree = "<group>";
@@ -983,6 +986,7 @@
 				AC72A0CF20CF4CE2004D7997 /* IterableNotificationMetadata.swift in Sources */,
 				ACD6116C2107D004003E7F6B /* NetworkHelper.swift in Sources */,
 				AC72A0D220CF4D12004D7997 /* IterableUtil.swift in Sources */,
+				AC32E16821DD55B900BD4F83 /* OrderedDictionary.swift in Sources */,
 				AC3C10F9213F46A900A9B839 /* IterableLogging.swift in Sources */,
 				ACE34AB72139D70B00691224 /* LocalStorageProtocol.swift in Sources */,
 				AC6FDD8820F4372E005D811E /* IterableAPI.swift in Sources */,

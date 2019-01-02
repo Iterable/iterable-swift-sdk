@@ -84,7 +84,7 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
     }
 
-    func testAutoShowInAppMultiple() {
+    func testAutoShowInAppMultipleWithOrdering() {
         let expectation0 = expectation(description: "testAutoShowInAppMultiple")
         expectation0.expectedFulfillmentCount = 3 // three times
         let expectation1 = expectation(description: "testAutoShowInAppMultiple, first")
@@ -99,15 +99,19 @@ class InAppTests: XCTestCase {
             expectation0.fulfill()
         }
         
+        var callOrder = [Int]()
         let urlDelegate = MockUrlDelegate(returnValue: true)
         urlDelegate.callback = {(url, _) in
             if url.absoluteString == TestInAppPayloadGenerator.getClickUrl(index: 1) {
+                callOrder.append(1)
                 expectation1.fulfill()
             }
             if url.absoluteString == TestInAppPayloadGenerator.getClickUrl(index: 2) {
+                callOrder.append(2)
                 expectation2.fulfill()
             }
             if url.absoluteString == TestInAppPayloadGenerator.getClickUrl(index: 3) {
+                callOrder.append(3)
                 expectation3.fulfill()
             }
         }
@@ -122,11 +126,14 @@ class InAppTests: XCTestCase {
             inAppDisplayer: mockInAppDisplayer
         )
         
-        let payload = TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 3, 2])
+        let indices = [1, 3, 2]
+        let payload = TestInAppPayloadGenerator.createPayloadWithUrl(indices: indices)
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
 
         wait(for: [expectation0, expectation1, expectation2, expectation3], timeout: testExpectationTimeout)
+
+        XCTAssertEqual(callOrder, indices)
     }
 
     func testAutoShowInAppMultipleOverride() {

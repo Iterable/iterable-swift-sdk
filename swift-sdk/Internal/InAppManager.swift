@@ -176,7 +176,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
     private let applicationStateProvider: ApplicationStateProviderProtocol
     private let notificationCenter: NotificationCenterProtocol
     
-    private var messagesMap = [String: IterableInAppMessage]() // this is mutable
+    private var messagesMap = OrderedDictionary<String, IterableInAppMessage>() // This is mutable
     private let queue = DispatchQueue(label: "InAppQueue")
     private let dateProvider: DateProviderProtocol
     private let retryInterval: Double // in seconds, if a message is already showing how long to wait?
