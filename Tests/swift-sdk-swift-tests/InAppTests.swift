@@ -118,7 +118,7 @@ class InAppTests: XCTestCase {
         
         let config = IterableConfig()
         config.urlDelegate = urlDelegate
-        config.newInAppMessageCallbackIntervalInSeconds = 1.0
+        config.inAppDisplayInterval = 1.0
 
         IterableAPI.initializeForTesting(
             config: config,
@@ -151,7 +151,7 @@ class InAppTests: XCTestCase {
         
         let config = IterableConfig()
         config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
-        config.newInAppMessageCallbackIntervalInSeconds = 0.5
+        config.inAppDisplayInterval = 0.5
         
         IterableAPI.initializeForTesting(
             config: config,
@@ -422,7 +422,7 @@ class InAppTests: XCTestCase {
         }
         
         let config = IterableConfig()
-        config.newInAppMessageCallbackIntervalInSeconds = 1.0
+        config.inAppDisplayInterval = 1.0
         
         let mockApplicationStateProvider = MockApplicationStateProvider(applicationState: .background)
         let mockNotificationCenter = MockNotificationCenter()
@@ -457,7 +457,7 @@ class InAppTests: XCTestCase {
         }
         
         let config = IterableConfig()
-        config.newInAppMessageCallbackIntervalInSeconds = 1.0
+        config.inAppDisplayInterval = 1.0
         
         let mockApplicationStateProvider = MockApplicationStateProvider(applicationState: .background)
         let mockNotificationCenter = MockNotificationCenter()
@@ -486,6 +486,8 @@ class InAppTests: XCTestCase {
         expectation2.isInverted = true
         let expectation3 = expectation(description: "show second message after retry interval")
 
+        let retryInterval = 2.0
+
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
         let mockInAppDisplayer = MockInAppDisplayer()
@@ -493,20 +495,21 @@ class InAppTests: XCTestCase {
         mockInAppDisplayer.onShowCallback = {(_, _) in
             if messageNumber == 1 {
                 expectation1.fulfill()
+                mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: messageNumber))
             } else if messageNumber == 2 {
                 expectation2.fulfill()
+                mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: messageNumber))
             } else if messageNumber == 3 {
                 expectation3.fulfill()
+                mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: messageNumber))
             } else {
                 // unexpected message number
                 XCTFail()
             }
-            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: messageNumber))
         }
         
         let config = IterableConfig()
-        let retryInterval = 2.0
-        config.newInAppMessageCallbackIntervalInSeconds = retryInterval
+        config.inAppDisplayInterval = retryInterval
         
         IterableAPI.initializeForTesting(
             config: config,
@@ -521,8 +524,9 @@ class InAppTests: XCTestCase {
 
         // second message payload, should not be shown
         messageNumber = 2
+        let margin = 0.1 // give some time for execution
         mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrlWithOneMessage(messageNumber: messageNumber))
-        wait(for: [expectation2], timeout: retryInterval - 1.0) // 1.0 for margin
+        wait(for: [expectation2], timeout: retryInterval - margin)
 
         // After retryInternval, the third should show
         messageNumber = 3

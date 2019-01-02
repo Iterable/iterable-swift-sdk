@@ -105,6 +105,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
         
         // This is called when the user clicks on a link in the inAPP
         let clickCallback = {(urlOrAction: String?) in
+            ITBInfo()
             // call the client callback, if present
             callback?(urlOrAction)
             
@@ -114,6 +115,9 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
             } else {
                 ITBError("No name for clicked button/link in inApp")
             }
+            
+            // set the dismiss time
+            self.lastDismissedTime = self.dateProvider.currentDate
             
             // check if we need to check for more inApps after showing this
             // This will be true when we are processing messagers from server and false
@@ -129,9 +133,6 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
         message.processed = true
 
         let showed = displayer.showInApp(message: message, callback: clickCallback)
-        if showed {
-            lastShowedTime = dateProvider.currentDate
-        }
 
         if showed && consume {
             message.consumed = true // mark for removal
@@ -180,7 +181,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
     private let queue = DispatchQueue(label: "InAppQueue")
     private let dateProvider: DateProviderProtocol
     private let retryInterval: Double // in seconds, if a message is already showing how long to wait?
-    private var lastShowedTime: Date? = nil
+    private var lastDismissedTime: Date? = nil
 }
 
 extension InAppManager : InAppSynchronizerDelegate {
@@ -222,8 +223,8 @@ extension InAppManager : InAppSynchronizerDelegate {
     // How long do we have to wait before showing the message
     // > 0 means wait, otherwise we are good to show
     private func getWaitTimeInterval() -> Double {
-        if let lastShowedTime = lastShowedTime {
-            let nextShowingTime = Date(timeInterval: retryInterval, since: lastShowedTime)
+        if let lastDismissedTime = lastDismissedTime {
+            let nextShowingTime = Date(timeInterval: retryInterval, since: lastDismissedTime)
             if dateProvider.currentDate >= nextShowingTime {
                 return 0.0
             } else {
