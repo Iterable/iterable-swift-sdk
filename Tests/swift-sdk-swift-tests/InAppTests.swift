@@ -91,15 +91,11 @@ class InAppTests: XCTestCase {
         let expectation2 = expectation(description: "testAutoShowInAppMultiple, second")
         let expectation3 = expectation(description: "testAutoShowInAppMultiple, third")
 
-        let payload = TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 3)
-        
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        var currentIndex = 1
-        mockInAppDisplayer.onShowCallback = {(_, _) in
-            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: currentIndex))
-            currentIndex += 1
+        mockInAppDisplayer.onShowCallback = {(message, _) in
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: TestInAppPayloadGenerator.index(fromCampaignId: message.campaignId)))
             expectation0.fulfill()
         }
         
@@ -125,6 +121,8 @@ class InAppTests: XCTestCase {
             inAppSynchronizer: mockInAppSynchronizer,
             inAppDisplayer: mockInAppDisplayer
         )
+        
+        let payload = TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 3, 2])
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
 

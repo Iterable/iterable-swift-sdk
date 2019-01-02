@@ -240,6 +240,7 @@ extension InAppManager : InAppSynchronizerDelegate {
         ITBDebug()
 
         for message in messagesMap.values.filter({ $0.processed == false }) {
+            ITBDebug("campaignId: \(message.campaignId)")
             message.processed = true
             if inAppDelegate.onNew(message: message) == .show {
                 showOneMessage(message: message)

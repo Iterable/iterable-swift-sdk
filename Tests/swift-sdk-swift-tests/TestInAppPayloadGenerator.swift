@@ -8,8 +8,12 @@ import Foundation
 
 struct TestInAppPayloadGenerator {
     static func createPayloadWithUrl(numMessages: Int) -> [AnyHashable : Any] {
+        return createPayloadWithUrl(indices: 1...numMessages)
+    }
+    
+    static func createPayloadWithUrl<T: Sequence>(indices: T) -> [AnyHashable : Any] where T.Element == Int {
         return [
-            "inAppMessages" : (1...numMessages).reduce(into: [[AnyHashable : Any]]()) { (result, index) in
+            "inAppMessages" : indices.reduce(into: [[AnyHashable : Any]]()) { (result, index) in
                 result.append(createOneInAppDictWithUrl(index: index))
             }
         ]
@@ -53,6 +57,10 @@ struct TestInAppPayloadGenerator {
     
     static func getCustomActionName(index: Int) -> String {
         return "action\(index)"
+    }
+    
+    static func index(fromCampaignId campaignId: String) -> Int {
+        return Int(String(campaignId.suffix(1)))!
     }
 
     private static func createOneInAppDictWithUrl(index: Int) -> [AnyHashable : Any] {
