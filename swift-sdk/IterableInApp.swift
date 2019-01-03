@@ -7,7 +7,7 @@
 import Foundation
 
 /// `show` to show the inApp otherwise `skip` to skip.
-@objc public enum ShowInApp : Int {
+@objc public enum InAppShowResponse : Int {
     case show
     case skip
 }
@@ -36,7 +36,7 @@ public protocol IterableInAppManagerProtocol {
 open class DefaultInAppDelegate : IterableInAppDelegate {
     public init() {}
     
-    open func onNew(message: IterableInAppMessage) -> ShowInApp {
+    open func onNew(message: IterableInAppMessage) -> InAppShowResponse {
         ITBInfo()
         return .show
     }

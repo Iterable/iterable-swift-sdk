@@ -266,16 +266,16 @@ class MockInAppDelegate : IterableInAppDelegate {
     var onNewBatchCallback: (([IterableInAppMessage]) -> Void)?
     
     
-    init(showInApp: ShowInApp = .show) {
+    init(showInApp: InAppShowResponse = .show) {
         self.showInApp = showInApp
     }
     
-    func onNew(message: IterableInAppMessage) -> ShowInApp {
+    func onNew(message: IterableInAppMessage) -> InAppShowResponse {
         onNewMessageCallback?(message)
         return showInApp
     }
 
-    private let showInApp: ShowInApp
+    private let showInApp: InAppShowResponse
 }
 
 class MockNotificationCenter: NotificationCenterProtocol {

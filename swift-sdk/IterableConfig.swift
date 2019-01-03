@@ -44,7 +44,7 @@ import Foundation
      * - parameter message: `IterableInAppMessage` object containing information regarding inApp to display
      * - returns: Return `show` to show the inApp or `skip` to skip this.
      */
-    @objc(onNewContent:) func onNew(message: IterableInAppMessage) -> ShowInApp
+    @objc(onNewContent:) func onNew(message: IterableInAppMessage) -> InAppShowResponse
 }
 
 /**
