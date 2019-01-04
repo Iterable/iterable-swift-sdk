@@ -20,10 +20,15 @@ protocol InAppSynchronizerProtocol {
 }
 
 protocol InAppDisplayerProtocol {
+    func isShowingInApp() -> Bool
     func showInApp(message: IterableInAppMessage, callback: ITEActionBlock?) -> Bool
 }
 
 class InAppDisplayer : InAppDisplayerProtocol {
+    func isShowingInApp() -> Bool {
+        return InAppHelper.isShowingInApp()
+    }
+    
     func showInApp(message: IterableInAppMessage, callback: ITEActionBlock?) -> Bool {
         return InAppHelper.showInApp(message: message, callback: callback)
     }
@@ -75,6 +80,18 @@ class InAppSynchronizer : InAppSynchronizerProtocol {
 
 // This is Internal Struct, no public methods
 struct InAppHelper {
+    fileprivate static func isShowingInApp() -> Bool {
+        guard Thread.isMainThread else {
+            ITBError("Must be called from main thread")
+            return false
+        }
+        guard let topViewController = getTopViewController() else {
+            return false
+        }
+
+        return topViewController is IterableInAppHTMLViewController
+    }
+    
     /// Shows an inApp message and consumes it from server queue if the message is shown.
     /// - parameter message: The inApp message to show
     /// - parameter callback: the code to execute when user clicks on a link or button on inApp message.

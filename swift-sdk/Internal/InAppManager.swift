@@ -73,34 +73,37 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
         
         // This is public (via public protocol implementation), so make sure we call from Main Thread
         DispatchQueue.main.async {
-            _ = self.showInternal(message: message, consume: consume, checkNext: false, callback: callback)
+            _ = self.showInternal(message: message, consume: consume, callback: callback)
         }
     }
 
     func remove(message: IterableInAppMessage) {
         ITBInfo()
 
-        message.consumed = true
-        internalApi?.inAppConsume(message.messageId)
-        
-        messagesMap.updateValue(message, forKey: message.messageId)
+        queue.async {
+            message.consumed = true
+            self.internalApi?.inAppConsume(message.messageId)
+            
+            self.messagesMap.updateValue(message, forKey: message.messageId)
+        }
     }
 
     @objc func onAppEnteredForeground(notification: Notification) {
         ITBInfo()
-        processMessages()
+        queue.async {
+            self.processMessages()
+        }
     }
     
     // This must be called from MainThread
     private func showInternal(message: IterableInAppMessage,
                               consume: Bool,
-                              checkNext: Bool,
-                              callback: ITEActionBlock? = nil) -> Bool {
+                              callback: ITEActionBlock? = nil) {
         ITBInfo()
 
         guard Thread.isMainThread else {
             ITBError("This must be called from the main thread")
-            return false
+            return
         }
         
         // This is called when the user clicks on a link in the inAPP
@@ -119,13 +122,9 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
             // set the dismiss time
             self.lastDismissedTime = self.dateProvider.currentDate
             
-            // check if we need to check for more inApps after showing this
-            // This will be true when we are processing messagers from server and false
-            // when called by clients directly
-            if checkNext == true {
-                self.queue.asyncAfter(deadline: .now() + self.retryInterval) {
-                    self.processMessages()
-                }
+            // check if we need to process more inApps
+            self.queue.asyncAfter(deadline: .now() + self.retryInterval) {
+                self.processMessages()
             }
         }
         
@@ -136,12 +135,12 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
 
         if showed && consume {
             message.consumed = true // mark for removal
-            self.internalApi?.inAppConsume(message.messageId)
+            internalApi?.inAppConsume(message.messageId)
         }
 
-        self.messagesMap.updateValue(message, forKey: message.messageId)
-        
-        return showed
+        queue.async {
+            self.messagesMap.updateValue(message, forKey: message.messageId)
+        }
     }
 
     private func handleUrlOrAction(urlOrAction: String) {
@@ -188,14 +187,16 @@ extension InAppManager : InAppSynchronizerDelegate {
     func onInAppMessagesAvailable(messages: [IterableInAppMessage]) {
         ITBDebug()
 
-        // Remove messages that are no present in server
-        removeDeletedMessages(messagesFromServer: messages)
-
-        // add new ones
-        addNewMessages(messagesFromServer: messages)
-
-        // now process
-        processMessages()
+        queue.async {
+            // Remove messages that are no present in server
+            self.removeDeletedMessages(messagesFromServer: messages)
+            
+            // add new ones
+            self.addNewMessages(messagesFromServer: messages)
+            
+            // now process
+            self.processMessages()
+        }
     }
     
     private func processMessages() {
@@ -210,12 +211,10 @@ extension InAppManager : InAppSynchronizerDelegate {
         
         // We can only check applicationState from main queue so need to do the following
         DispatchQueue.main.async {
-            if self.applicationStateProvider.applicationState == .active {
-                self.queue.async {
-                    self.processOneMessage()
-                }
+            if self.applicationStateProvider.applicationState == .active && !self.displayer.isShowingInApp() {
+                self.processOneMessage()
             } else {
-                ITBInfo("Application is not active")
+                ITBInfo("Cannot show inApp, application is not active or showing another inApp.")
             }
         }
     }
@@ -240,28 +239,24 @@ extension InAppManager : InAppSynchronizerDelegate {
     private func processOneMessage() {
         ITBDebug()
 
-        for message in messagesMap.values.filter({ $0.processed == false }) {
-            ITBDebug("campaignId: \(message.campaignId)")
-            message.processed = true
-            if inAppDelegate.onNew(message: message) == .show {
-                showOneMessage(message: message)
-                break
+        queue.async {
+            for message in self.messagesMap.values.filter({ $0.processed == false }) {
+                ITBDebug("campaignId: \(message.campaignId)")
+                message.processed = true
+                if self.inAppDelegate.onNew(message: message) == .show {
+                    self.showOneMessage(message: message)
+                    break
+                }
             }
         }
     }
     
     // Display one message in the queue, if one is already showing
-    // it will retry
     private func showOneMessage(message: IterableInAppMessage) {
         ITBInfo()
         
         DispatchQueue.main.async {
-            if !self.showInternal(message: message, consume: true, checkNext: true, callback: nil) {
-                // If we failed to show, wait and try again
-                self.queue.asyncAfter(deadline: .now() + self.retryInterval) {
-                    self.showOneMessage(message: message)
-                }
-            }
+            self.showInternal(message: message, consume: true, callback: nil)
         }
     }
 
