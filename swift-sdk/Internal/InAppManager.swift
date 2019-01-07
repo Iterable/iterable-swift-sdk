@@ -60,7 +60,12 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
     
     func getMessages() -> [IterableInAppMessage] {
         ITBInfo()
-        return Array(messagesMap.values.filter { $0.consumed == false })
+        
+        var messages = [IterableInAppMessage] ()
+        updateQueue.sync {
+            messages = Array(self.messagesMap.values.filter { $0.consumed == false })
+        }
+        return messages
     }
 
     func show(message: IterableInAppMessage) {
@@ -80,19 +85,13 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
     func remove(message: IterableInAppMessage) {
         ITBInfo()
 
-        queue.async {
-            message.consumed = true
-            self.internalApi?.inAppConsume(message.messageId)
-            
-            self.messagesMap.updateValue(message, forKey: message.messageId)
-        }
+        updateMessage(message, processed: true, consumed: true)
+        self.internalApi?.inAppConsume(message.messageId)
     }
 
     @objc func onAppEnteredForeground(notification: Notification) {
         ITBInfo()
-        queue.async {
-            self.processMessages()
-        }
+        scheduleMessages()
     }
     
     // This must be called from MainThread
@@ -107,8 +106,9 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
         }
         
         // This is called when the user clicks on a link in the inAPP
-        let clickCallback = {(urlOrAction: String?) in
+        let clickCallback = { (urlOrAction: String?) in
             ITBInfo()
+            
             // call the client callback, if present
             callback?(urlOrAction)
             
@@ -123,24 +123,16 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
             self.lastDismissedTime = self.dateProvider.currentDate
             
             // check if we need to process more inApps
-            self.queue.asyncAfter(deadline: .now() + self.retryInterval) {
-                self.processMessages()
-            }
+            self.scheduleMessages()
         }
         
-        // set processed, if not already set
-        message.processed = true
-
         let showed = displayer.showInApp(message: message, callback: clickCallback)
-
-        if showed && consume {
-            message.consumed = true // mark for removal
+        let shouldConsume = showed && consume
+        if shouldConsume {
             internalApi?.inAppConsume(message.messageId)
         }
 
-        queue.async {
-            self.messagesMap.updateValue(message, forKey: message.messageId)
-        }
+        updateMessage(message, processed: true, consumed: shouldConsume)
     }
 
     private func handleUrlOrAction(urlOrAction: String) {
@@ -177,17 +169,18 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
     private let notificationCenter: NotificationCenterProtocol
     
     private var messagesMap = OrderedDictionary<String, IterableInAppMessage>() // This is mutable
-    private let queue = DispatchQueue(label: "InAppQueue")
     private let dateProvider: DateProviderProtocol
     private let retryInterval: Double // in seconds, if a message is already showing how long to wait?
     private var lastDismissedTime: Date? = nil
+    private let updateQueue = DispatchQueue(label: "InAppQueue")
+    private let scheduleQueue = DispatchQueue(label: "Scheduler")
 }
 
 extension InAppManager : InAppSynchronizerDelegate {
     func onInAppMessagesAvailable(messages: [IterableInAppMessage]) {
         ITBDebug()
 
-        queue.async {
+        updateQueue.async {
             // Remove messages that are no present in server
             self.removeDeletedMessages(messagesFromServer: messages)
             
@@ -195,27 +188,62 @@ extension InAppManager : InAppSynchronizerDelegate {
             self.addNewMessages(messagesFromServer: messages)
             
             // now process
-            self.processMessages()
+            self.scheduleMessages()
+        }
+    }
+    
+    private func scheduleMessages() {
+        ITBDebug()
+        
+        scheduleQueue.async {
+            let waitTimeInterval = self.getWaitTimeInterval()
+            if waitTimeInterval > 0 {
+                ITBDebug("Need to wait for: \(waitTimeInterval)")
+                self.scheduleQueue.asyncAfter(deadline: .now() + waitTimeInterval) {
+                    self.processMessages()
+                }
+            } else {
+                self.processMessages()
+            }
         }
     }
     
     private func processMessages() {
-        let waitTimeInterval = getWaitTimeInterval()
-        guard waitTimeInterval <= 0 else {
-            ITBInfo("Need to wait for: \(waitTimeInterval)")
-            queue.asyncAfter(deadline: .now() + waitTimeInterval) {
-                self.processMessages()
-            }
+        ITBDebug()
+
+        guard let message = getFirstProcessableMessage() else {
+            ITBDebug("No message to process")
             return
         }
         
+        ITBDebug("processing message with id: \(message.messageId)")
+        
         // We can only check applicationState from main queue so need to do the following
         DispatchQueue.main.async {
-            if self.applicationStateProvider.applicationState == .active && !self.displayer.isShowingInApp() {
-                self.processOneMessage()
+            if self.applicationStateProvider.applicationState == .active && !self.displayer.isShowingInApp() && message.processed == false && self.getWaitTimeInterval() <= 0 {
+                self.updateMessage(message, processed: true)
+
+                if self.inAppDelegate.onNew(message: message) == .show {
+                    ITBDebug("delegate returned show")
+                    self.showInternal(message: message, consume: true, callback: nil)
+                } else {
+                    ITBDebug("delegate returned skip, continue processing")
+                    self.scheduleQueue.async {
+                        self.processMessages()
+                    }
+                }
             } else {
-                ITBInfo("Cannot show inApp, application is not active or showing another inApp.")
+                ITBInfo("Cannot show inApp with id: \(message.messageId) now.")
             }
+        }
+    }
+    
+    private func updateMessage(_ message: IterableInAppMessage, processed: Bool, consumed: Bool = false) {
+        ITBDebug()
+        updateQueue.sync {
+            message.processed = processed
+            message.consumed = consumed
+            self.messagesMap.updateValue(message, forKey: message.messageId)
         }
     }
     
@@ -223,7 +251,7 @@ extension InAppManager : InAppSynchronizerDelegate {
     // > 0 means wait, otherwise we are good to show
     private func getWaitTimeInterval() -> Double {
         if let lastDismissedTime = lastDismissedTime {
-            let nextShowingTime = Date(timeInterval: retryInterval, since: lastDismissedTime)
+            let nextShowingTime = Date(timeInterval: retryInterval + 0.1, since: lastDismissedTime)
             if dateProvider.currentDate >= nextShowingTime {
                 return 0.0
             } else {
@@ -235,31 +263,10 @@ extension InAppManager : InAppSynchronizerDelegate {
         }
     }
     
-    // go through one loop of client side messages, and show the first that is not processed
-    private func processOneMessage() {
-        ITBDebug()
-
-        queue.async {
-            for message in self.messagesMap.values.filter({ $0.processed == false }) {
-                ITBDebug("campaignId: \(message.campaignId)")
-                message.processed = true
-                if self.inAppDelegate.onNew(message: message) == .show {
-                    self.showOneMessage(message: message)
-                    break
-                }
-            }
-        }
+    private func getFirstProcessableMessage() -> IterableInAppMessage? {
+        return messagesMap.values.filter({ $0.processed == false }).first
     }
     
-    // Display one message in the queue, if one is already showing
-    private func showOneMessage(message: IterableInAppMessage) {
-        ITBInfo()
-        
-        DispatchQueue.main.async {
-            self.showInternal(message: message, consume: true, callback: nil)
-        }
-    }
-
     private func addNewMessages(messagesFromServer messages: [IterableInAppMessage]) {
         messages.forEach { message in
             if !messagesMap.contains(where: { $0.key == message.messageId }) {

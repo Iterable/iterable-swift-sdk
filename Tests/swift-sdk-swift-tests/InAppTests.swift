@@ -139,6 +139,7 @@ class InAppTests: XCTestCase {
     func testAutoShowInAppMultipleOverride() {
         let expectation1 = expectation(description: "testAutoShowInAppMultipleOverride")
         expectation1.isInverted = true
+        let expectation2 = expectation(description: "all messages processed")
         
         let payload = TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 3)
         
@@ -165,9 +166,12 @@ class InAppTests: XCTestCase {
             let messages = IterableAPI.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 3)
             XCTAssertEqual(Set(messages.map { $0.processed }), Set([true, true, true]))
+            expectation2.fulfill()
         }
 
-        wait(for: [expectation1], timeout: 2.0)
+        wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
+
+        wait(for: [expectation2], timeout: testExpectationTimeout)
     }
 
     // inApp is shown and url is opened when link is clicked
@@ -561,4 +565,72 @@ class InAppTests: XCTestCase {
         IterableAPI.inAppManager.remove(message: IterableAPI.inAppManager.getMessages()[0])
         XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
     }
+    
+    func testMultipleMesssagesInShortTime() {
+        let expectation0 = expectation(description: "testMultipleMesssagesInShortTime")
+        expectation0.expectedFulfillmentCount = 3 // three times
+        let expectation1 = expectation(description: "testAutoShowInAppMultiple, first")
+        let expectation2 = expectation(description: "testAutoShowInAppMultiple, second")
+        let expectation3 = expectation(description: "testAutoShowInAppMultiple, third")
+        
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(message, _) in
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: TestInAppPayloadGenerator.index(fromCampaignId: message.campaignId)))
+            expectation0.fulfill()
+        }
+        
+        var callOrder = [Int]()
+        var callTimes = [Date]()
+        let urlDelegate = MockUrlDelegate(returnValue: true)
+        urlDelegate.callback = {(url, _) in
+            if url.absoluteString == TestInAppPayloadGenerator.getClickUrl(index: 1) {
+                callTimes.append(Date())
+                callOrder.append(1)
+                expectation1.fulfill()
+            }
+            if url.absoluteString == TestInAppPayloadGenerator.getClickUrl(index: 2) {
+                callTimes.append(Date())
+                callOrder.append(2)
+                expectation2.fulfill()
+            }
+            if url.absoluteString == TestInAppPayloadGenerator.getClickUrl(index: 3) {
+                callTimes.append(Date())
+                callOrder.append(3)
+                expectation3.fulfill()
+            }
+        }
+        
+        let config = IterableConfig()
+        let interval = 0.5
+        config.urlDelegate = urlDelegate
+        config.inAppDisplayInterval = interval
+        
+        IterableAPI.initializeForTesting(
+            config: config,
+            inAppSynchronizer: mockInAppSynchronizer,
+            inAppDisplayer: mockInAppDisplayer
+        )
+        
+        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1]))
+        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 3]))
+        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 3, 2]))
+
+        wait(for: [expectation0, expectation1, expectation2, expectation3], timeout: testExpectationTimeout)
+        
+        XCTAssertEqual(callOrder, [1, 3, 2])
+        let t1 = callTimes[0].timeIntervalSince1970
+        let t2 = callTimes[1].timeIntervalSince1970
+        let t3 = callTimes[2].timeIntervalSince1970
+        
+        let g1 = abs(t1 - t2)
+        let g2 = abs(t2 - t3)
+        let g3 = abs(t1 - t3)
+        
+        XCTAssertGreaterThan(g1, interval)
+        XCTAssertGreaterThan(g2, interval)
+        XCTAssertGreaterThan(g3, interval)
+    }
+
 }
