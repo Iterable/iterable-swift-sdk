@@ -633,4 +633,65 @@ class InAppTests: XCTestCase {
         XCTAssertGreaterThan(g3, interval)
     }
 
+    
+    func testFilePersistence() {
+        let payload = TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 3, 2])
+        let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
+        let persister = FilePersister()
+        persister.persist(messages)
+        let obtained = persister.getMessages()
+        XCTAssertEqual(messages.description, obtained.description)
+        persister.clear()
+    }
+    
+    func testFilePersisterInitial() {
+        let persister = FilePersister()
+        persister.clear()
+
+        let read = persister.getMessages()
+        XCTAssertEqual(read.count, 0)
+    }
+    
+    func testCorruptedData() {
+        let persister = FilePersister(filename: "test", ext: "json")
+        
+        let badData = "some junk data".data(using: .utf8)!
+        
+        FileHelper.write(filename: "test", ext: "json", data: badData)
+        
+        let badMessages = persister.getMessages()
+        XCTAssertEqual(badMessages.count, 0)
+        
+        let payload = TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 3, 2])
+        let goodMessages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
+        let goodData = try! JSONEncoder().encode(goodMessages)
+        FileHelper.write(filename: "test", ext: "json", data: goodData)
+        
+        let obtainedMessages = persister.getMessages()
+        XCTAssertEqual(obtainedMessages.count, 3)
+        
+        persister.clear()
+    }
+}
+
+extension IterableHtmlInAppContent {
+    open override var description: String {
+        return IterableUtil.describe("contentType", contentType,
+                        "edgeInsets", edgeInsets,
+                        "backgroundAlpha", backgroundAlpha,
+                        "html", html, pairSeparator: " = ", separator: ", ")
+    }
+}
+
+extension IterableInAppMessage {
+    public override var description: String {
+        return IterableUtil.describe("messageId", messageId,
+                        "campaignId", campaignId,
+                        "channelName", channelName,
+                        "contentType", contentType,
+                        "content", content,
+                        "extraInfo", String(describing: extraInfo),
+                        "processed", processed,
+                        "consumed", consumed, pairSeparator: " = ", separator: "\n")
+    }
 }

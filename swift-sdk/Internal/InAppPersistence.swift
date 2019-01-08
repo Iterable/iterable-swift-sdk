@@ -101,16 +101,75 @@ extension IterableInAppMessage : Codable {
 }
 
 protocol InAppPersistenceProtocol {
-    associatedtype Sequence : Swift.Sequence where Sequence.Element == IterableInAppMessage
-    var messages : Sequence { get }
-    func persist(_ messages: Sequence)
+    func getMessages() -> [IterableInAppMessage]
+    func persist(_ messages: [IterableInAppMessage])
+    func clear()
 }
 
 
-class MemoryPersister : InAppPersistenceProtocol {
-    var messages = [IterableInAppMessage]()
-
-    func persist(_ messages: [IterableInAppMessage]) {
-        self.messages = messages
+class FilePersister : InAppPersistenceProtocol {
+    init(filename: String = "itbl", ext: String = "json") {
+        self.filename = filename
+        self.ext = ext
     }
+    
+    func getMessages() -> [IterableInAppMessage] {
+        guard let data = FileHelper.read(filename: filename, ext: ext) else {
+            return []
+        }
+        
+        guard let messages = try? JSONDecoder().decode([IterableInAppMessage].self, from: data) else {
+            return []
+        }
+        return messages
+    }
+    
+    func persist(_ messages: [IterableInAppMessage]) {
+        guard let encoded = try? JSONEncoder().encode(messages) else {
+            return
+        }
+        
+        FileHelper.write(filename: filename, ext: ext, data: encoded)
+    }
+    
+    func clear() {
+        FileHelper.delete(filename: filename, ext: ext)
+    }
+    
+    private let filename: String
+    private let ext: String
+}
+
+// Files Utility class
+struct FileHelper {
+    static func getUrl(filename: String, ext: String) -> URL? {
+        guard let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return nil
+        }
+        
+        return dir.appendingPathComponent(filename).appendingPathExtension(ext)
+    }
+    
+    static func write(filename: String, ext: String, data: Data) {
+        guard let url = getUrl(filename: filename, ext: ext) else {
+            return
+        }
+        
+        try? data.write(to: url)
+    }
+    
+    static func read(filename: String, ext: String) -> Data? {
+        guard let url = getUrl(filename: filename, ext: ext) else {
+            return nil
+        }
+        return try? Data(contentsOf: url)
+    }
+    
+    static func delete(filename: String, ext: String) {
+        guard let url = getUrl(filename: filename, ext: ext) else {
+            return
+        }
+        try? FileManager.default.removeItem(at: url)
+    }
+
 }
