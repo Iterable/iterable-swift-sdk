@@ -231,24 +231,38 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
 }
 
 class MockInAppDisplayer : InAppDisplayerProtocol {
-    var onShowCallback:  ((IterableInAppMessage, ITEActionBlock?) -> Void)?
-
-    private var actionCallback: ITEActionBlock?
+    func isShowingInApp() -> Bool {
+        return showing
+    }
     
-    func showInApp(message: IterableInAppMessage, callback: ITEActionBlock?) -> Future<Bool> {
+    func showInApp(message: IterableInAppMessage, callback: ITEActionBlock?) -> Bool {
+        if showing {
+            return false
+        }
+        
+        showing = true
         actionCallback = callback
         onShowCallback?(message, callback)
-        return Promise<Bool>(value: true)
+        return true
     }
 
+    var onShowCallback:  ((IterableInAppMessage, ITEActionBlock?) -> Void)?
+    
     // Mimics clicking a url
     func click(url: String) {
+        ITBInfo()
+        showing = false
         if let (callbackUrl, _) = InAppHelper.getCallbackAndDestinationUrl(url: URL(string: url)!) {
             actionCallback?(callbackUrl)
         } else {
             actionCallback?(nil)
         }
     }
+
+    private var actionCallback: ITEActionBlock?
+    
+    private var showing = false
+    
 }
 
 class MockInAppDelegate : IterableInAppDelegate {
@@ -256,26 +270,44 @@ class MockInAppDelegate : IterableInAppDelegate {
     var onNewBatchCallback: (([IterableInAppMessage]) -> Void)?
     
     
-    init(showInApp: ShowInApp = .show) {
+    init(showInApp: InAppShowResponse = .show) {
         self.showInApp = showInApp
     }
     
-    func onNew(message: IterableInAppMessage) -> ShowInApp {
+    func onNew(message: IterableInAppMessage) -> InAppShowResponse {
         onNewMessageCallback?(message)
         return showInApp
     }
-    
-    func onNew(batch: [IterableInAppMessage]) -> IterableInAppMessage? {
-        onNewBatchCallback?(batch)
-        
-        for message in batch {
-            if onNew(message: message) == .show {
-                return message
-            }
-        }
-        
-        return nil
+
+    private let showInApp: InAppShowResponse
+}
+
+class MockNotificationCenter: NotificationCenterProtocol {
+    func addObserver(_ observer: Any, selector: Selector, name: Notification.Name?, object: Any?) {
+        observers.append(Observer(observer: observer as! NSObject, notificationName: name!, selector: selector))
     }
     
-    private let showInApp: ShowInApp
+    func removeObserver(_ observer: Any) {
+    }
+    
+    func fire(notification: Notification.Name) {
+        _ = observers.filter( { $0.notificationName == notification } ).map {
+            _ = $0.observer.perform($0.selector, with: Notification(name: notification))
+        }
+    }
+
+    private class Observer : NSObject {
+        let observer: NSObject
+        let notificationName: Notification.Name
+        let selector: Selector
+        
+        init(observer: NSObject, notificationName: Notification.Name, selector: Selector) {
+            self.observer = observer
+            self.notificationName = notificationName
+            self.selector = selector
+        }
+    }
+    
+    private var observers = [Observer]()
+    
 }

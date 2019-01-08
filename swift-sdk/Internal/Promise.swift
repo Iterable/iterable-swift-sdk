@@ -55,7 +55,6 @@ public class Future<Value> {
             successCallback?(value)
             break
         case .error(let error):
-            print("calling onFailure")
             errorCallback?(error)
             break
         }

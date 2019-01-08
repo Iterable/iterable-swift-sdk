@@ -39,7 +39,9 @@ extension IterableAPI {
                            notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
                            inAppSynchronizer: InAppSynchronizerProtocol = MockInAppSynchronizer(),
                            inAppDisplayer: InAppDisplayerProtocol = MockInAppDisplayer(),
-                           urlOpener: UrlOpenerProtocol = MockUrlOpener()) {
+                           urlOpener: UrlOpenerProtocol = MockUrlOpener(),
+                           applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
+                           notificationCenter: NotificationCenterProtocol = NotificationCenter.default) {
         internalImplementation = IterableAPIInternal.initializeForTesting(apiKey: apiKey,
                                                                 launchOptions: launchOptions,
                                                                 config: config,
@@ -48,7 +50,9 @@ extension IterableAPI {
                                                                 notificationStateProvider: notificationStateProvider,
                                                                 inAppSynchronizer: inAppSynchronizer,
                                                                 inAppDisplayer: inAppDisplayer,
-                                                                urlOpener: urlOpener)
+                                                                urlOpener: urlOpener,
+                                                                applicationStateProvider: applicationStateProvider,
+                                                                notificationCenter: notificationCenter)
     }
 }
 
@@ -62,7 +66,9 @@ extension IterableAPIInternal {
                                                         notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
                                                         inAppSynchronizer: InAppSynchronizerProtocol = MockInAppSynchronizer(),
                                                         inAppDisplayer: InAppDisplayerProtocol = MockInAppDisplayer(),
-                                                        urlOpener: UrlOpenerProtocol = MockUrlOpener()) -> IterableAPIInternal {
+                                                        urlOpener: UrlOpenerProtocol = MockUrlOpener(),
+                                                        applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
+                                                        notificationCenter: NotificationCenterProtocol = NotificationCenter.default) -> IterableAPIInternal {
         queue.sync {
             _sharedInstance = IterableAPIInternal(apiKey: apiKey,
                                                   launchOptions: launchOptions,
@@ -72,7 +78,9 @@ extension IterableAPIInternal {
                                                   notificationStateProvider: notificationStateProvider,
                                                   inAppSynchronizer: inAppSynchronizer,
                                                   inAppDisplayer: inAppDisplayer,
-                                                  urlOpener: urlOpener)
+                                                  urlOpener: urlOpener,
+                                                  applicationStateProvider: applicationStateProvider,
+                                                  notificationCenter: notificationCenter)
         }
         return _sharedInstance!
     }

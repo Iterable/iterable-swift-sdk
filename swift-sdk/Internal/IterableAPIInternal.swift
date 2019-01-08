@@ -382,7 +382,15 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
 
     @discardableResult func spawn(inAppNotification callbackBlock:ITEActionBlock?) -> Future<Bool> {
-        return InAppHelper.spawn(inAppNotification: callbackBlock, internalApi: self)
+        let promise = Promise<Bool>()
+
+        DispatchQueue.main.async {
+            InAppHelper.spawn(inAppNotification: callbackBlock, internalApi: self).onSuccess {
+                promise.resolve(with: $0)
+            }
+        }
+        
+        return promise
     }
 
     @discardableResult func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue> {
@@ -664,7 +672,9 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
          notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
          inAppSynchronizer: InAppSynchronizerProtocol = InAppSynchronizer(),
          inAppDisplayer: InAppDisplayerProtocol = InAppDisplayer(),
-         urlOpener: UrlOpenerProtocol = AppUrlOpener()) {
+         urlOpener: UrlOpenerProtocol = AppUrlOpener(),
+         applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
+         notificationCenter: NotificationCenterProtocol = NotificationCenter.default) {
         IterableLogUtil.sharedInstance = IterableLogUtil(dateProvider: dateProvider, logDelegate: config.logDelegate)
         ITBInfo()
         self.apiKey = apiKey
@@ -678,7 +688,11 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
                                         inAppDelegate: config.inAppDelegate,
                                         urlDelegate: config.urlDelegate,
                                         customActionDelegate: config.customActionDelegate,
-                                        urlOpener: urlOpener)
+                                        urlOpener: urlOpener,
+                                        applicationStateProvider: applicationStateProvider,
+                                        notificationCenter: notificationCenter,
+                                        dateProvider: dateProvider,
+                                        retryInterval: config.inAppDisplayInterval)
         self.inAppManager = inAppManager
         self.urlOpener = urlOpener
         

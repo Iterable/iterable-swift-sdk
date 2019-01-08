@@ -7,7 +7,7 @@
 import Foundation
 
 /// `show` to show the inApp otherwise `skip` to skip.
-@objc public enum ShowInApp : Int {
+@objc public enum InAppShowResponse : Int {
     case show
     case skip
 }
@@ -18,10 +18,16 @@ public protocol IterableInAppManagerProtocol {
     @objc(getMessages) func getMessages() -> [IterableInAppMessage]
 
     /// - parameter message: The message to show.
+    @objc(showMessage:) func show(message: IterableInAppMessage)
+
+    /// - parameter message: The message to show.
     /// - parameter consume: Set to true to consume the event from the server queue if the message is shown. This should be default.
     /// - parameter callback: block of code to execute once the user clicks on a link or button in the inApp notification.
     ///   Note that this callback is called in addition to calling `IterableCustomActionDelegate` or `IterableUrlDelegate` on the button action.
     @objc(showMessage:consume:callbackBlock:) func show(message: IterableInAppMessage, consume: Bool, callback:ITEActionBlock?)
+    
+    /// - parameter message: The message to remove.
+    @objc(removeMessage:) func remove(message: IterableInAppMessage)
 }
 
 /// By default, every single inApp will be shown as soon as it is available.
@@ -30,20 +36,9 @@ public protocol IterableInAppManagerProtocol {
 open class DefaultInAppDelegate : IterableInAppDelegate {
     public init() {}
     
-    open func onNew(message: IterableInAppMessage) -> ShowInApp {
+    open func onNew(message: IterableInAppMessage) -> InAppShowResponse {
         ITBInfo()
         return .show
-    }
-    
-    open func onNew(batch: [IterableInAppMessage]) -> IterableInAppMessage? {
-        ITBInfo()
-        for message in batch {
-            if onNew(message: message) == .show {
-                return message
-            }
-        }
-        
-        return nil
     }
 }
 
@@ -101,8 +96,13 @@ public class IterableInAppMessage : NSObject {
     /// Extra Information from the 'payload' section of message.
     public let extraInfo: [AnyHashable : Any]?
 
-    /// Whether this message has been skipped (not shown)
-    public var skipped: Bool = false
+    /// Whether we have processed this message.
+    /// Note: This is internal and not public
+    var processed: Bool = false
+    
+    /// Mark this message to be removed from server queue.
+    /// Note: This is internal and not public
+    var consumed: Bool = false
 
     // Internal, don't let others create
     init(
