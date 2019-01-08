@@ -43,7 +43,7 @@ open class DefaultInAppDelegate : IterableInAppDelegate {
 }
 
 @objc
-public enum IterableInAppContentType : Int {
+public enum IterableInAppContentType : Int, Codable {
     case html
     case unknown
 }
@@ -54,7 +54,7 @@ public protocol IterableInAppContent {
 }
 
 @objcMembers
-public class IterableHtmlInAppContent : NSObject, IterableInAppContent {
+public class IterableHtmlInAppContent : NSObject, IterableInAppContent, Codable {
     public let contentType = IterableInAppContentType.html
     
     /// Edge insets
@@ -77,7 +77,7 @@ public class IterableHtmlInAppContent : NSObject, IterableInAppContent {
 
 /// A message is comprised of content and whether this message was skipped.
 @objcMembers
-public class IterableInAppMessage : NSObject {
+public final class IterableInAppMessage : NSObject {
     /// the id for the inApp message
     public let messageId: String
 
@@ -94,7 +94,7 @@ public class IterableInAppMessage : NSObject {
     public let content: IterableInAppContent
 
     /// Extra Information from the 'payload' section of message.
-    public let extraInfo: [AnyHashable : Any]?
+    public let extraInfo: [String : String]?
 
     /// Whether we have processed this message.
     /// Note: This is internal and not public
@@ -111,7 +111,7 @@ public class IterableInAppMessage : NSObject {
         channelName: String = "reserved",
         contentType: IterableInAppContentType = .html,
         content: IterableInAppContent,
-        extraInfo: [AnyHashable : Any]? = nil
+        extraInfo: [String : String]? = nil
         ) {
         self.messageId = messageId
         self.campaignId = campaignId

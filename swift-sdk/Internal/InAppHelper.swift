@@ -301,7 +301,7 @@ struct InAppHelper {
         case failure(reason: String, messageId: String?)
     }
     
-    /// This is a struct equivalent of IterableHtmlInAppContent class
+    /// This is a struct equivalent of IterableInAppMessage class
     private struct InAppDetails {
         let channelName: String
         let messageId: String
@@ -309,7 +309,7 @@ struct InAppHelper {
         let edgeInsets: UIEdgeInsets
         let backgroundAlpha: Double
         let html: String
-        let extraInfo: [AnyHashable : Any]?
+        let extraInfo: [String : String]?
     }
 
     /// Returns an array of Dictionaries holding inApp messages.
@@ -367,7 +367,7 @@ struct InAppHelper {
         let extraInfo = parseExtraInfo(fromContent: content)
         
         // this is temporary until we fix backend
-        let channelName = extraInfo?["channelName"] as? String ?? ""
+        let channelName = extraInfo?["channelName"] ?? ""
         
         let inAppDisplaySettings = content[.ITBL_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
         let backgroundAlpha = InAppHelper.getBackgroundAlpha(fromInAppSettings: inAppDisplaySettings)
@@ -383,8 +383,8 @@ struct InAppHelper {
             extraInfo: extraInfo))
     }
     
-    private static func parseExtraInfo(fromContent content: [AnyHashable : Any]) -> [AnyHashable : Any]? {
-        return content[.ITBL_IN_APP_PAYLOAD] as? [AnyHashable : Any]
+    private static func parseExtraInfo(fromContent content: [AnyHashable : Any]) -> [String : String]? {
+        return content[.ITBL_IN_APP_PAYLOAD] as? [String : String]
     }
     
     private static func toMessage(fromInAppParseResult inAppParseResult: InAppHelper.InAppParseResult, internalApi: IterableAPIInternal) -> IterableInAppMessage? {
