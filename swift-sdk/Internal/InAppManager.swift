@@ -276,13 +276,13 @@ extension InAppManager : InAppSynchronizerDelegate {
     }
     
     private func removeDeletedMessages(messagesFromServer messages: [IterableInAppMessage]) {
-        getRemovedMessags(messagesFromServer: messages).forEach {
+        getRemovedMessages(messagesFromServer: messages).forEach {
             messagesMap.removeValue(forKey: $0.messageId)
         }
     }
     
     // given `messages` coming for server, find messages that need to be removed
-    private func getRemovedMessags(messagesFromServer messages: [IterableInAppMessage]) -> [IterableInAppMessage] {
+    private func getRemovedMessages(messagesFromServer messages: [IterableInAppMessage]) -> [IterableInAppMessage] {
         return messagesMap.values.reduce(into: [IterableInAppMessage]()) { (result, message) in
             if !messages.contains(where: { $0.messageId == message.messageId }) {
                 result.append(message)
