@@ -16,6 +16,8 @@ class InAppTests: XCTestCase {
 
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
+        let persister = FilePersister()
+        persister.clear()
     }
 
     func testAutoShowInAppSingle() {
@@ -672,6 +674,30 @@ class InAppTests: XCTestCase {
         
         persister.clear()
     }
+    
+    func testPersistBetweenSessions() {
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        
+        let config = IterableConfig()
+        config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
+        
+        IterableAPI.initializeForTesting(
+            config: config,
+            inAppSynchronizer: mockInAppSynchronizer
+        )
+        
+        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 3, 2]))
+
+        XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 3)
+        
+
+        IterableAPI.initializeForTesting(
+            config: config,
+            inAppSynchronizer: mockInAppSynchronizer
+        )
+
+        XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 3)
+    }
 }
 
 extension IterableHtmlInAppContent {
@@ -690,7 +716,6 @@ extension IterableInAppMessage {
                         "channelName", channelName,
                         "contentType", contentType,
                         "content", content,
-                        "extraInfo", String(describing: extraInfo),
                         "processed", processed,
                         "consumed", consumed, pairSeparator: " = ", separator: "\n")
     }

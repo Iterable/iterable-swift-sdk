@@ -45,6 +45,8 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
         
         super.init()
         
+        self.initializeMessagesMap()
+        
         self.synchronizer.inAppSyncDelegate = self
 
         self.notificationCenter.addObserver(self,
@@ -159,6 +161,13 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
         }
     }
     
+    private func initializeMessagesMap() {
+        let messages = persister.getMessages()
+        for message in messages {
+            messagesMap[message.messageId] = message
+        }
+    }
+    
     private var synchronizer: InAppSynchronizerProtocol // this is mutable because we need to set internalApi
     private let displayer: InAppDisplayerProtocol
     private let inAppDelegate: IterableInAppDelegate
@@ -168,6 +177,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
     private let applicationStateProvider: ApplicationStateProviderProtocol
     private let notificationCenter: NotificationCenterProtocol
     
+    private let persister: InAppPersistenceProtocol = FilePersister()
     private var messagesMap = OrderedDictionary<String, IterableInAppMessage>() // This is mutable
     private let dateProvider: DateProviderProtocol
     private let retryInterval: Double // in seconds, if a message is already showing how long to wait?
@@ -186,6 +196,8 @@ extension InAppManager : InAppSynchronizerDelegate {
             
             // add new ones
             self.addNewMessages(messagesFromServer: messages)
+            
+            self.persister.persist(self.messagesMap.values)
             
             // now process
             self.scheduleMessages()
@@ -244,6 +256,7 @@ extension InAppManager : InAppSynchronizerDelegate {
             message.processed = processed
             message.consumed = consumed
             self.messagesMap.updateValue(message, forKey: message.messageId)
+            persister.persist(self.messagesMap.values)
         }
     }
     
