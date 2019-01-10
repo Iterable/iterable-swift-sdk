@@ -109,7 +109,8 @@ struct IterableAppIntegrationInternal {
     }
     
     /**
-     * This method handles incoming Iterable notifications and actions for iOS < 10
+     * This method handles incoming Iterable notifications and actions for iOS < 10. This also handles
+     * 'silent push' notifications for all iOS versions.
      *
      * - parameter application: UIApplication singleton object
      * - parameter userInfo: Dictionary containing the notification data
