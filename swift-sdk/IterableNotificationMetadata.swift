@@ -12,14 +12,6 @@ import Foundation
  `IterableNotificationMetadata` represents the metadata in an Iterable push notification
  */
 @objc public class IterableNotificationMetadata : NSObject {
-    private enum Keys : String {
-        case metaData = "itbl"
-        case campaignId = "campaignId"
-        case templateId = "templateId"
-        case messageId = "messageId"
-        case ghostPush = "isGhostPush"
-    }
-    
     /**
      The campaignId of this notification
      */
@@ -47,7 +39,7 @@ import Foundation
      - warning:   `metadataFromLaunchOptions` will return `nil` if `userInfo` isn't an Iterable notification
      */
     @objc public static func metadata(fromLaunchOptions userInfo: [AnyHashable : Any]) -> IterableNotificationMetadata? {
-        guard isIterableNotification(userInfo: userInfo) else {
+        guard NotificationHelper.isValidIterableNotification(userInfo: userInfo) else {
             return nil
         }
         
@@ -88,52 +80,26 @@ import Foundation
         return !(isGhostPush || isProof() || isTestPush())
     }
 
-    //MARK: Internal and Private
-    static func isIterableNotification(userInfo: [AnyHashable : Any]) -> Bool {
-        guard let pushData = userInfo[Keys.metaData.rawValue] as? [AnyHashable : Any] else {
-            return false
-        }
-        guard isValidCampaignId(pushData[Keys.campaignId.rawValue]) else {
-            return false
-        }
-        guard let _ = pushData[Keys.templateId.rawValue] as? NSNumber else {
-            return false
-        }
-        guard let _ = pushData[Keys.messageId.rawValue] as? NSString else {
-            return false
-        }
-        guard let _ = pushData[Keys.ghostPush.rawValue] as? NSNumber else {
-            return false
-        }
-        
-        return true
-    }
+    // MARK: Internal and Private
     
     private init(fromLaunchOptions userInfo: [AnyHashable : Any]) {
-        guard let pushData = userInfo[Keys.metaData.rawValue] as? [AnyHashable : Any] else {
-            return
-        }
-        campaignId = pushData[Keys.campaignId.rawValue] as? NSNumber ?? NSNumber(value: 0)
-        templateId = pushData[Keys.templateId.rawValue] as? NSNumber
-        messageId = pushData[Keys.messageId.rawValue] as? String
-        if let numberValue = pushData[Keys.ghostPush.rawValue] as? NSNumber {
-            isGhostPush = numberValue.boolValue
+        let notificationInfo = NotificationHelper.inspect(notification: userInfo)
+        switch notificationInfo {
+        case .iterable(let iterableNotification):
+            self.campaignId = iterableNotification.campaignId
+            self.templateId = iterableNotification.templateId
+            self.messageId = iterableNotification.messageId
+            self.isGhostPush = iterableNotification.isGhostPush
+            break
+        case .nonIterable:
+            break
+        case .silentPush:
+            self.isGhostPush = true
+            break
         }
     }
     
     private init(fromInAppOptions messageId: String) {
         self.messageId = messageId
-    }
-    
-    private static func isValidCampaignId(_ campaignId: Any?) -> Bool {
-        // campaignId doesn't have to be there (because of proofs)
-        guard let campaignId = campaignId else {
-            return true
-        }
-        if let _ = campaignId as? NSNumber {
-            return true
-        } else {
-            return false
-        }
     }
 }

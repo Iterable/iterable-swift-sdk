@@ -164,7 +164,7 @@ class InAppTests: XCTestCase {
 
         mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
             let messages = IterableAPI.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 3)
             XCTAssertEqual(Set(messages.map { $0.processed }), Set([true, true, true]))
@@ -697,6 +697,50 @@ class InAppTests: XCTestCase {
         )
 
         XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 3)
+    }
+    
+    func testParseSilentPushNotificationParsing() {
+        let json = """
+        {
+            "itbl" : {
+                "messageId" : "background_notification",
+                "isGhostPush" : true
+            },
+            "notificationType" : "InAppUpdate",
+            "messageId" : "messageId"
+        }
+        """
+
+        let notification = try! JSONSerialization.jsonObject(with: json.data(using: .utf8)!, options: []) as! [AnyHashable : Any]
+        
+        if case let NotificationInfo.silentPush(silentPush) = NotificationHelper.inspect(notification: notification) {
+            XCTAssertEqual(silentPush.notificationType, .update)
+            XCTAssertEqual(silentPush.messageId, "messageId")
+        } else {
+            XCTFail()
+        }
+    }
+
+    func testParseSilentPushNotificationParsing2() {
+        let json = """
+        {
+            "itbl" : {
+                "messageId" : "background_notification",
+                "isGhostPush" : true
+            },
+            "notificationType" : "InAppRemove",
+            "messageId" : "messageId"
+        }
+        """
+        
+        let notification = try! JSONSerialization.jsonObject(with: json.data(using: .utf8)!, options: []) as! [AnyHashable : Any]
+        
+        if case let NotificationInfo.silentPush(silentPush) = NotificationHelper.inspect(notification: notification) {
+            XCTAssertEqual(silentPush.notificationType, .remove)
+            XCTAssertEqual(silentPush.messageId, "messageId")
+        } else {
+            XCTFail()
+        }
     }
 }
 
