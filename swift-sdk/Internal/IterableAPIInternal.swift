@@ -670,7 +670,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
          dateProvider: DateProviderProtocol = SystemDateProvider(),
          networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
          notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
-         inAppSynchronizer: InAppSynchronizerProtocol = InAppSynchronizer(),
+         inAppSynchronizer: InAppSynchronizerProtocol = InAppSilentPushSynchronizer(),
          inAppDisplayer: InAppDisplayerProtocol = InAppDisplayer(),
          urlOpener: UrlOpenerProtocol = AppUrlOpener(),
          applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,

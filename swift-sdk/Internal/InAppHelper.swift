@@ -10,6 +10,7 @@ import UIKit
 
 /// Callbacks from the synchronizer
 protocol InAppSynchronizerDelegate : class {
+    func onInAppRemoved(messageId: String)
     func onInAppMessagesAvailable(messages: [IterableInAppMessage])
 }
 
@@ -17,6 +18,9 @@ protocol InAppSynchronizerDelegate : class {
 protocol InAppSynchronizerProtocol {
     var internalApi: IterableAPIInternal? {get set}
     var inAppSyncDelegate: InAppSynchronizerDelegate? {get set}
+    
+    func sync()
+    func remove(messageId: String)
 }
 
 protocol InAppDisplayerProtocol {
@@ -34,47 +38,41 @@ class InAppDisplayer : InAppDisplayerProtocol {
     }
 }
 
-class InAppSynchronizer : InAppSynchronizerProtocol {
+class InAppSilentPushSynchronizer : InAppSynchronizerProtocol {
     weak var internalApi: IterableAPIInternal?
     weak var inAppSyncDelegate: InAppSynchronizerDelegate?
     
     init() {
-        if #available(iOS 10.0, *) {
-            Timer.scheduledTimer(withTimeInterval: syncInterval, repeats: true) { [weak self] timer in
-                self?.sync(timer: timer)
-            }
-        } else {
-            // Fallback on earlier versions
-            Timer.scheduledTimer(timeInterval: syncInterval, target: self, selector: #selector(sync(timer:)), userInfo: nil, repeats: true)
-        }
+        ITBInfo()
     }
     
-    @objc private func sync(timer: Timer) {
-        self.timer = timer
-        
+    func sync() {
+        ITBInfo()
         guard let internalApi = self.internalApi else {
             ITBError("Invalid state: expected InternalApi")
             return
         }
-
+        
         InAppHelper.getInAppMessagesFromServer(internalApi: internalApi, number: numMessages).onSuccess {
             if $0.count > 0 {
                 self.inAppSyncDelegate?.onInAppMessagesAvailable(messages: $0)
             }
-        }.onError {
-            ITBError($0.localizedDescription)
+            }.onError {
+                ITBError($0.localizedDescription)
         }
+    }
+    
+    func remove(messageId: String) {
+        ITBInfo()
+        inAppSyncDelegate?.onInAppRemoved(messageId: messageId)
     }
     
     deinit {
         ITBInfo()
-        timer?.invalidate()
     }
     
-    // in seconds
-    private let syncInterval = 1.0
+    // how many messages to fetch
     private let numMessages = 10
-    private var timer: Timer?
 }
 
 

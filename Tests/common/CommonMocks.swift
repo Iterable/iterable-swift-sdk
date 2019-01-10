@@ -211,6 +211,12 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
     weak var internalApi: IterableAPIInternal?
     weak var inAppSyncDelegate: InAppSynchronizerDelegate?
     
+    func sync() {
+    }
+    
+    func remove(messageId: String) {
+    }
+    
     func mockMessagesAvailableFromServer(messages: [IterableInAppMessage]) {
         ITBInfo()
         inAppSyncDelegate?.onInAppMessagesAvailable(messages: messages)
