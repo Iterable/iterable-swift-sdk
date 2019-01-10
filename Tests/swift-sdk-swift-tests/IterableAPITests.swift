@@ -593,7 +593,7 @@ class IterableAPITests: XCTestCase {
                 ]
             ]
         ]
-        let launchOptions: [UIApplicationLaunchOptionsKey : Any] = [UIApplicationLaunchOptionsKey.remoteNotification : userInfo]
+        let launchOptions: [UIApplication.LaunchOptionsKey : Any] = [UIApplication.LaunchOptionsKey.remoteNotification : userInfo]
         let customActionDelegate = MockCustomActionDelegate(returnValue: false)
         customActionDelegate.callback = {(name, _) in
             XCTAssertEqual(name, "customAction")
@@ -622,7 +622,7 @@ class IterableAPITests: XCTestCase {
                 ]
             ]
         ]
-        let launchOptions: [UIApplicationLaunchOptionsKey : Any] = [UIApplicationLaunchOptionsKey.remoteNotification : userInfo]
+        let launchOptions: [UIApplication.LaunchOptionsKey : Any] = [UIApplication.LaunchOptionsKey.remoteNotification : userInfo]
         let urlDelegate = MockUrlDelegate(returnValue: true)
         urlDelegate.callback = {(url, _) in
             XCTAssertEqual(url.absoluteString, "http://somewhere.com")

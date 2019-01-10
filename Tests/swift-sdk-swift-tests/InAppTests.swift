@@ -479,7 +479,7 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
         
         mockApplicationStateProvider.applicationState = .active
-        mockNotificationCenter.fire(notification: .UIApplicationDidBecomeActive)
+        mockNotificationCenter.fire(notification: UIApplication.didBecomeActiveNotification)
         
         wait(for: [expectation2], timeout: testExpectationTimeout)
     }

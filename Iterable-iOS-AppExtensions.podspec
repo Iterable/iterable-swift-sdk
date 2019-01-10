@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
 
   s.name         = "Iterable-iOS-AppExtensions"
   s.module_name  = "IterableAppExtensions"
-  s.version      = "6.0.4"
+  s.version      = "7.0.0"
   s.summary      = "App Extensions for Iterable SDK"
 
   s.description  = <<-DESC
@@ -80,8 +80,8 @@ Pod::Spec.new do |s|
   # s.public_header_files = "Classes/**/*.h"
 
   s.pod_target_xcconfig = {
-    'SWIFT_VERSION' => '4.1'
+    'SWIFT_VERSION' => '4.2'
   }
 
-  s.swift_version = '4.1'
+  s.swift_version = '4.2'
 end

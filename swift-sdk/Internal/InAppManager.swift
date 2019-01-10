@@ -49,7 +49,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
 
         self.notificationCenter.addObserver(self,
                                        selector: #selector(onAppEnteredForeground(notification:)),
-                                       name: Notification.Name.UIApplicationDidBecomeActive,
+                                       name: UIApplication.didBecomeActiveNotification,
                                        object: nil)
     }
     

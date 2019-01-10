@@ -665,7 +665,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     // MARK: Initialization
     // Package private method. Do not call this directly.
     init(apiKey: String,
-         launchOptions: [UIApplicationLaunchOptionsKey: Any]? = nil,
+         launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
          config: IterableConfig = IterableConfig(),
          dateProvider: DateProviderProtocol = SystemDateProvider(),
          networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
@@ -727,7 +727,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
 
     static func initialize(apiKey: String,
-                           launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil,
+                           launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil,
                            config: IterableConfig = IterableConfig()) -> IterableAPIInternal {
         queue.sync {
             _sharedInstance = IterableAPIInternal(apiKey: apiKey,
@@ -738,11 +738,11 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         return _sharedInstance!
     }
 
-    private func handle(launchOptions: [UIApplicationLaunchOptionsKey: Any]?) {
+    private func handle(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
         guard let launchOptions = launchOptions else {
             return
         }
-        if let remoteNotificationPayload = launchOptions[UIApplicationLaunchOptionsKey.remoteNotification] as? [AnyHashable : Any] {
+        if let remoteNotificationPayload = launchOptions[UIApplication.LaunchOptionsKey.remoteNotification] as? [AnyHashable : Any] {
             if let _ = IterableUtil.rootViewController {
                 // we are ready
                 IterableAppIntegration.implementation?.performDefaultNotificationAction(remoteNotificationPayload)
