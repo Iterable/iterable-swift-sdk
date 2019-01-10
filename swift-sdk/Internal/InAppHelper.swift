@@ -384,7 +384,7 @@ struct InAppHelper {
     }
     
     private static func parseExtraInfo(fromContent content: [AnyHashable : Any]) -> [AnyHashable : Any]? {
-        return content[.ITBL_IN_APP_PAYLOAD] as? [String : String]
+        return content[.ITBL_IN_APP_PAYLOAD] as? [AnyHashable : Any]
     }
     
     private static func toMessage(fromInAppParseResult inAppParseResult: InAppHelper.InAppParseResult, internalApi: IterableAPIInternal) -> IterableInAppMessage? {
