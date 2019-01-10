@@ -94,7 +94,7 @@ public final class IterableInAppMessage : NSObject {
     public let content: IterableInAppContent
 
     /// Extra Information from the 'payload' section of message.
-    public let extraInfo: [String : String]?
+    public let extraInfo: [AnyHashable : Any]?
 
     /// Whether we have processed this message.
     /// Note: This is internal and not public
@@ -111,7 +111,7 @@ public final class IterableInAppMessage : NSObject {
         channelName: String = "reserved",
         contentType: IterableInAppContentType = .html,
         content: IterableInAppContent,
-        extraInfo: [String : String]? = nil
+        extraInfo: [AnyHashable : Any]? = nil
         ) {
         self.messageId = messageId
         self.campaignId = campaignId

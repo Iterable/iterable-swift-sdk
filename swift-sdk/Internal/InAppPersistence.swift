@@ -70,7 +70,8 @@ extension IterableInAppMessage : Codable {
         let campaignId = (try? container.decode(String.self, forKey: .campaignId)) ?? ""
         let channelName = (try? container.decode(String.self, forKey: .channelName)) ?? ""
         let content = (try? container.decode(IterableHtmlInAppContent.self, forKey: .content)) ?? IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
-        let extraInfo = (try? container.decode([String : String].self, forKey: .extraInfo)) ?? nil
+        let extraInfoData = try? container.decode(Data.self, forKey: .extraInfo)
+        let extraInfo = IterableInAppMessage.deserializeExtraInfo(withData: extraInfoData)
         
         self.init(messageId: messageId,
                   campaignId: campaignId,
@@ -94,9 +95,27 @@ extension IterableInAppMessage : Codable {
         try? container.encode(channelName, forKey: .channelName)
         try? container.encode(contentType, forKey: .contentType)
         try? container.encode(content, forKey: .content)
-        try? container.encode(extraInfo, forKey: .extraInfo)
+        try? container.encode(IterableInAppMessage.serialize(extraInfo: extraInfo), forKey: .extraInfo)
         try? container.encode(processed, forKey: .processed)
         try? container.encode(consumed, forKey: .consumed)
+        
+    }
+    
+    private static func serialize(extraInfo: [AnyHashable : Any]?) -> Data? {
+        guard let extraInfo = extraInfo else {
+            return nil
+        }
+
+        return try? JSONSerialization.data(withJSONObject: extraInfo, options: [])
+    }
+    
+    private static func deserializeExtraInfo(withData data: Data?) -> [AnyHashable : Any]? {
+        guard let data = data else {
+            return nil
+        }
+        
+        let deserialized = try? JSONSerialization.jsonObject(with: data, options: [])
+        return (deserialized as? [AnyHashable : Any])
     }
 }
 
