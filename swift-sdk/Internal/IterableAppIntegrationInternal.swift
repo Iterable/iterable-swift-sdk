@@ -97,18 +97,18 @@ struct IterableAppIntegrationInternal {
     private let urlDelegate: IterableURLDelegate?
     private let customActionDelegate: IterableCustomActionDelegate?
     private let urlOpener: UrlOpenerProtocol?
-    private let synchronizer: InAppSynchronizerProtocol
+    private let inAppSynchronizer: InAppSynchronizerProtocol
 
     init(tracker: PushTrackerProtocol,
          urlDelegate: IterableURLDelegate? = nil,
          customActionDelegate: IterableCustomActionDelegate? = nil,
          urlOpener: UrlOpenerProtocol? = nil,
-         synchronizer: InAppSynchronizerProtocol = InAppSilentPushSynchronizer()) {
+         inAppSynchronizer: InAppSynchronizerProtocol = InAppSilentPushSynchronizer()) {
         self.tracker = tracker
         self.urlDelegate = urlDelegate
         self.customActionDelegate = customActionDelegate
         self.urlOpener = urlOpener
-        self.synchronizer = synchronizer
+        self.inAppSynchronizer = inAppSynchronizer
     }
     
     /**
@@ -125,10 +125,10 @@ struct IterableAppIntegrationInternal {
         if case let NotificationInfo.silentPush(silentPush) = NotificationHelper.inspect(notification: userInfo) {
             switch silentPush.notificationType {
             case .update:
-                synchronizer.sync()
+                inAppSynchronizer.sync()
             case .remove:
                 if let messageId = silentPush.messageId {
-                    synchronizer.remove(messageId: messageId)
+                    inAppSynchronizer.remove(messageId: messageId)
                 } else {
                     ITBError("messageId not found in 'remove' silent push")
                 }

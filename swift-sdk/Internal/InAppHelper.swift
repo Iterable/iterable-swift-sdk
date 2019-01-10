@@ -57,7 +57,7 @@ class InAppSilentPushSynchronizer : InAppSynchronizerProtocol {
             if $0.count > 0 {
                 self.inAppSyncDelegate?.onInAppMessagesAvailable(messages: $0)
             }
-            }.onError {
+        }.onError {
                 ITBError($0.localizedDescription)
         }
     }
