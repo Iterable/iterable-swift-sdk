@@ -43,7 +43,7 @@ struct ITBLNotificationInfo {
 
 struct ITBLSilentPushNotificationInfo {
     let notificationType: ITBLSilentPushNotificationType
-    let messageId: String
+    let messageId: String?
 
     enum ITBLSilentPushNotificationType : String, Codable {
         case remove = "InAppRemove"
@@ -51,13 +51,11 @@ struct ITBLSilentPushNotificationInfo {
     }
     
     static func parse(notification: [AnyHashable : Any]) -> ITBLSilentPushNotificationInfo? {
-        guard let notificationType = notification[Keys.notificationType.rawValue] as? String,
-            let silentPushNotificationType = ITBLSilentPushNotificationType(rawValue: notificationType),
-            let messageId = notification[Keys.messageId.rawValue] as? String else {
+        guard let notificationType = notification[Keys.notificationType.rawValue] as? String, let silentPushNotificationType = ITBLSilentPushNotificationType(rawValue: notificationType) else {
             return nil
         }
         
-        let silentPushNotificationInfo = ITBLSilentPushNotificationInfo(notificationType: silentPushNotificationType, messageId: messageId)
+        let silentPushNotificationInfo = ITBLSilentPushNotificationInfo(notificationType: silentPushNotificationType, messageId: notification[Keys.messageId.rawValue] as? String)
         return silentPushNotificationInfo
     }
 

@@ -204,6 +204,17 @@ extension InAppManager : InAppSynchronizerDelegate {
         }
     }
     
+    func onInAppRemoved(messageId: String) {
+        ITBInfo()
+        
+        updateQueue.async {
+            if let _ = self.messagesMap.filter({$0.key == messageId}).first {
+                self.messagesMap.removeValue(forKey: messageId)
+                self.persister.persist(self.messagesMap.values)
+            }
+        }
+    }
+    
     private func scheduleMessages() {
         ITBDebug()
         

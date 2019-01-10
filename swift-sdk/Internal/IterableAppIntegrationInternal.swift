@@ -97,20 +97,23 @@ struct IterableAppIntegrationInternal {
     private let urlDelegate: IterableURLDelegate?
     private let customActionDelegate: IterableCustomActionDelegate?
     private let urlOpener: UrlOpenerProtocol?
+    private let synchronizer: InAppSynchronizerProtocol
 
     init(tracker: PushTrackerProtocol,
          urlDelegate: IterableURLDelegate? = nil,
          customActionDelegate: IterableCustomActionDelegate? = nil,
-         urlOpener: UrlOpenerProtocol? = nil) {
+         urlOpener: UrlOpenerProtocol? = nil,
+         synchronizer: InAppSynchronizerProtocol = InAppSilentPushSynchronizer()) {
         self.tracker = tracker
         self.urlDelegate = urlDelegate
         self.customActionDelegate = customActionDelegate
         self.urlOpener = urlOpener
+        self.synchronizer = synchronizer
     }
     
     /**
-     * This method handles incoming Iterable notifications and actions for iOS < 10. This also handles
-     * 'silent push' notifications for all iOS versions.
+     * This method handles incoming Iterable notifications and actions for iOS < 10.
+     * This also handles 'silent push' notifications for all iOS versions.
      *
      * - parameter application: UIApplication singleton object
      * - parameter userInfo: Dictionary containing the notification data
@@ -119,19 +122,32 @@ struct IterableAppIntegrationInternal {
      */
     func application(_ application: ApplicationStateProviderProtocol, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: ((UIBackgroundFetchResult)->Void)?) {
         ITBInfo()
-        switch application.applicationState {
-        case .active:
-            break
-        case .background:
-            break
-        case .inactive:
-            if #available(iOS 10, *) {
-            } else {
-                // iOS 10+ notification actions are handled by userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:
-                // so this should only be executed if iOS 10 is not available.
-                performDefaultNotificationAction(userInfo)
+        if case let NotificationInfo.silentPush(silentPush) = NotificationHelper.inspect(notification: userInfo) {
+            switch silentPush.notificationType {
+            case .update:
+                synchronizer.sync()
+            case .remove:
+                if let messageId = silentPush.messageId {
+                    synchronizer.remove(messageId: messageId)
+                } else {
+                    ITBError("messageId not found in 'remove' silent push")
+                }
             }
-            break
+        } else {
+            switch application.applicationState {
+            case .active:
+                break
+            case .background:
+                break
+            case .inactive:
+                if #available(iOS 10, *) {
+                } else {
+                    // iOS 10+ notification actions are handled by userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:
+                    // so this should only be executed if iOS 10 is not available.
+                    performDefaultNotificationAction(userInfo)
+                }
+                break
+            }
         }
         
         completionHandler?(.noData)
