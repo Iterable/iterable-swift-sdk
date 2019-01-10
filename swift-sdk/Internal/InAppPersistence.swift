@@ -127,7 +127,7 @@ protocol InAppPersistenceProtocol {
 
 
 class FilePersister : InAppPersistenceProtocol {
-    init(filename: String = "itbl", ext: String = "json") {
+    init(filename: String = "itbl_inapp", ext: String = "json") {
         self.filename = filename
         self.ext = ext
     }
