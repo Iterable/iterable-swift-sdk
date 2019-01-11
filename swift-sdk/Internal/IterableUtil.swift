@@ -33,6 +33,20 @@ import os
         return UUID().uuidString
     }
     
+    // given "var1", "val1", "var2", "val2" as input
+    // this will return "var1: val1, var2: val2"
+    // this is useful for description of an object or struct
+    static func describe(_ values: Any..., pairSeparator: String = ": ", separator: String = ", ") -> String {
+        return values.take(2).map { pair in
+            if pair.count == 0 {
+                return ""
+            } else if pair.count == 1 {
+                return "\(pair[0])\(pairSeparator)nil"
+            } else {
+                return "\(pair[0])\(pairSeparator)\(pair[1])"
+            }
+        }.joined(separator: separator)
+    }
 
     // MARK: Helper Utility Functions
     // converts from IterableURLDelegate to UrlHandler

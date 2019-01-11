@@ -16,6 +16,8 @@ class InAppTests: XCTestCase {
 
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
+        let persister = FilePersister()
+        persister.clear()
     }
 
     func testAutoShowInAppSingle() {
@@ -633,4 +635,88 @@ class InAppTests: XCTestCase {
         XCTAssertGreaterThan(g3, interval)
     }
 
+    
+    func testFilePersistence() {
+        let payload = TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 3, 2])
+        let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
+        let persister = FilePersister()
+        persister.persist(messages)
+        let obtained = persister.getMessages()
+        XCTAssertEqual(messages.description, obtained.description)
+        persister.clear()
+    }
+    
+    func testFilePersisterInitial() {
+        let persister = FilePersister()
+        persister.clear()
+
+        let read = persister.getMessages()
+        XCTAssertEqual(read.count, 0)
+    }
+    
+    func testCorruptedData() {
+        let persister = FilePersister(filename: "test", ext: "json")
+        
+        let badData = "some junk data".data(using: .utf8)!
+        
+        FileHelper.write(filename: "test", ext: "json", data: badData)
+        
+        let badMessages = persister.getMessages()
+        XCTAssertEqual(badMessages.count, 0)
+        
+        let payload = TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 3, 2])
+        let goodMessages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
+        let goodData = try! JSONEncoder().encode(goodMessages)
+        FileHelper.write(filename: "test", ext: "json", data: goodData)
+        
+        let obtainedMessages = persister.getMessages()
+        XCTAssertEqual(obtainedMessages.count, 3)
+        
+        persister.clear()
+    }
+    
+    func testPersistBetweenSessions() {
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        
+        let config = IterableConfig()
+        config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
+        
+        IterableAPI.initializeForTesting(
+            config: config,
+            inAppSynchronizer: mockInAppSynchronizer
+        )
+        
+        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 3, 2]))
+
+        XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 3)
+        
+
+        IterableAPI.initializeForTesting(
+            config: config,
+            inAppSynchronizer: mockInAppSynchronizer
+        )
+
+        XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 3)
+    }
+}
+
+extension IterableHtmlInAppContent {
+    open override var description: String {
+        return IterableUtil.describe("contentType", contentType,
+                        "edgeInsets", edgeInsets,
+                        "backgroundAlpha", backgroundAlpha,
+                        "html", html, pairSeparator: " = ", separator: ", ")
+    }
+}
+
+extension IterableInAppMessage {
+    public override var description: String {
+        return IterableUtil.describe("messageId", messageId,
+                        "campaignId", campaignId,
+                        "channelName", channelName,
+                        "contentType", contentType,
+                        "content", content,
+                        "processed", processed,
+                        "consumed", consumed, pairSeparator: " = ", separator: "\n")
+    }
 }

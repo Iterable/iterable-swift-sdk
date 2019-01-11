@@ -43,7 +43,7 @@ open class DefaultInAppDelegate : IterableInAppDelegate {
 }
 
 @objc
-public enum IterableInAppContentType : Int {
+public enum IterableInAppContentType : Int, Codable {
     case html
     case unknown
 }
@@ -54,7 +54,7 @@ public protocol IterableInAppContent {
 }
 
 @objcMembers
-public class IterableHtmlInAppContent : NSObject, IterableInAppContent {
+public class IterableHtmlInAppContent : NSObject, IterableInAppContent, Codable {
     public let contentType = IterableInAppContentType.html
     
     /// Edge insets
@@ -77,7 +77,7 @@ public class IterableHtmlInAppContent : NSObject, IterableInAppContent {
 
 /// A message is comprised of content and whether this message was skipped.
 @objcMembers
-public class IterableInAppMessage : NSObject {
+public final class IterableInAppMessage : NSObject {
     /// the id for the inApp message
     public let messageId: String
 

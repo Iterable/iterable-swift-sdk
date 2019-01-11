@@ -301,7 +301,7 @@ struct InAppHelper {
         case failure(reason: String, messageId: String?)
     }
     
-    /// This is a struct equivalent of IterableHtmlInAppContent class
+    /// This is a struct equivalent of IterableInAppMessage class
     private struct InAppDetails {
         let channelName: String
         let messageId: String
