@@ -46,9 +46,9 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
         super.init()
         
         self.initializeMessagesMap()
-        
-        self.synchronizer.inAppSyncDelegate = self
 
+        self.setupSynchronizer()
+        
         self.notificationCenter.addObserver(self,
                                        selector: #selector(onAppEnteredForeground(notification:)),
                                        name: Notification.Name.UIApplicationDidBecomeActive,
@@ -166,6 +166,12 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
         for message in messages {
             messagesMap[message.messageId] = message
         }
+    }
+    
+    private func setupSynchronizer() {
+        self.synchronizer.inAppSyncDelegate = self
+        
+        self.synchronizer.sync()
     }
     
     private var synchronizer: InAppSynchronizerProtocol // this is mutable because we need to set internalApi
