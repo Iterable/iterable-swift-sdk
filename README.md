@@ -251,9 +251,98 @@ Congratulations! You can now send remote push notifications to your device from 
 		```
 		
 3. ##### InApp Notifications
-	To display the user's InApp notifications call `spawnInAppNotification` with a defined `ITEActionBlock` callback handler. When a user clicks a button on the notification, the defined handler is called and passed the action name defined in the InApp template.
+	###### Default Behavior
+	By default, when an inApp message arrives from the server it is automatically shown by the SDK provided the app is in foreground. If an inApp message is already showing when the message arrives, the new inApp will be shown 30 seconds (see how to change this default value below) after the currently displaying inApp is closed. Once an inApp message is shown, it will be "consumed" from the server queue and removed from the local queue as well. There is no need to write any code to get this default behavior. 
 	
-	InApp opens and button clicks are automatically tracked when the notification is called via `spawnInAppNotification`. Using `spawnInAppNotification`, the notification is consumed and removed from the user's in-app messages queue. If you want to retain the messages on the queue, look at using `getInAppMessages` directly. If you use `getInAppMessages` you will need to manage the in-app opens manually in the callback handler.		
+	###### Overriding Whether to Show or Skip a Particular InApp Message
+	When an inApp message arrives from the server, the `onNew` method of `IterableInAppDelegate` is called. This delegate is set via the `inAppDelegate` property of `IterableConfig`. You can set `IterableConfig.inAppDelegate` to a custom class to override the default behavior. This class just needs to implement the `onNew` method. The `onNew` method should return `.show` to show the message or `.skip` to not show the message at this time.
+	
+	Swift:
+
+	```
+	class YourCustomInAppDelegate : IterableInAppDelegate {
+		func onNew(message: IterableInAppMessage) -> InAppShowResponse {
+			// perform custom processing
+
+			// ...
+			
+			return .show // or .skip
+		}
+	}
+	
+	// ...
+	
+	let config = IterableConfig()
+	config.inAppDelegate = YourCustomInAppDelegate()
+	IterableAPI.initialize(apiKey: "YOUR API KEY",  launchOptions: nil, config: config)
+	```
+
+	Objective-C:
+
+	```
+	// Implement this method in your custom class that implements IterableInAppDelegate
+	// This will most likely be the global AppDelegate class.
+	- (enum InAppShowResponse)onNewMessage:(IterableInAppMessage * _Nonnull)message {
+   		// perform custom processing
+   		
+   		// ...
+   		
+    	return InAppShowResponseShow; // or InAppShowResponseSkip
+	}
+
+	// ...
+	
+	// Now set this custom class in IterableConfig
+	IterableConfig *config = [[IterableConfig alloc] init];
+	config.inAppDelegate = self; // or other class implementing the protocol
+	[IterableAPI initializeWithApiKey:@"YOUR API KEY" launchOptions:launchOptions config:config];
+	```
+
+	###### Getting the Local Queue of InApp Messages
+	All inApp messages that arrive from the server are stored in a local queue until they are consumed. IterableSDK exposes `InAppManager` protocol via the `IterableAPI.inAppManager` read-only property to get to locally stored inApp messages. Please be aware that all inApp messages that are shown will be consumed and removed from this queue by default. So you will have to override the default behavior as mentioned above to keep inApp messages around even after they are shown.
+	
+	Swift:
+	
+	```
+	// Get the inApp messages list
+	let messages = IterableAPI.inAppManager.getMessages()
+	
+	// Show an inApp message 
+	IterableAPI.inAppManager.show(message: message)
+	
+	// Show an inApp message without consuming, i.e., not removing it from the queue
+	IterableAPI.inAppManager.show(message: message, consume: false)
+	
+	```	
+	
+	Objective-C:
+	
+	```
+	// Get the inApp messages list
+    NSArray *messages = [IterableAPI.inAppManager getMessages];
+	
+	// Show an inApp message 
+	[IterableAPI.inAppManager showMessage:message];
+	
+	// Show an inApp message without consuming, i.e., not removing it from the queue
+	[IterableAPI.inAppManager showMessage:message consume:NO callbackBlock:nil];
+	
+	```	
+
+	###### When User Clicks a Button in the InApp Message
+	If the clicked `href` in the inApp message is a url (which is the case most of the time), `IterableURLDelegate` is called. If you don't set a custom class for `IterableConfig.urlDelegate` then mobile Safari will be opened with the clicked href url.
+	
+	If the clicked `href` is not a url but a custom action name,  `IterableCustomActionDelegate` is called. Please see example in sample code [here](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app/swift-sample-app/AppDelegate.swift) to see how to implement `IterableURLDelegate` and `IterableCustomActionDelegate` and handle clicked urls.
+	
+	```
+	let config = IterableConfig()
+	config.urlDelegate = YourCustomUrlDelegate()
+	config.customActionDelegate = YourCustomActionDelegate()
+	```
+	
+	###### Changing the Display Interval Between InApp Messages
+	If you want to change the display interval, i.e., the time delay to show two successive inApp messages, to some value other than 30 seconds, change `IterableConfig.inAppDisplayInterval` to the appropriate value.
+
 4. ##### Tracking Custom Events
 	Custom events can be tracked using `IterableAPI.track(event:...)` calls.
 	
