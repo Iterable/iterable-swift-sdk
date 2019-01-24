@@ -16,8 +16,6 @@ class InAppTests: XCTestCase {
 
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
-        let persister = FilePersister()
-        persister.clear()
     }
 
     func testAutoShowInAppSingle() {
@@ -566,6 +564,10 @@ class InAppTests: XCTestCase {
         // now remove 1, there should be 1 left
         IterableAPI.inAppManager.remove(message: IterableAPI.inAppManager.getMessages()[0])
         XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
+        
+        // now remove 1, there should be 0 left
+        IterableAPI.inAppManager.remove(message: IterableAPI.inAppManager.getMessages()[0])
+        XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
     }
     
     func testMultipleMesssagesInShortTime() {
@@ -639,7 +641,7 @@ class InAppTests: XCTestCase {
     func testFilePersistence() {
         let payload = TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 3, 2])
         let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
-        let persister = FilePersister()
+        let persister = InAppFilePersister()
         persister.persist(messages)
         let obtained = persister.getMessages()
         XCTAssertEqual(messages.description, obtained.description)
@@ -647,7 +649,7 @@ class InAppTests: XCTestCase {
     }
     
     func testFilePersisterInitial() {
-        let persister = FilePersister()
+        let persister = InAppFilePersister()
         persister.clear()
 
         let read = persister.getMessages()
@@ -655,7 +657,7 @@ class InAppTests: XCTestCase {
     }
     
     func testCorruptedData() {
-        let persister = FilePersister(filename: "test", ext: "json")
+        let persister = InAppFilePersister(filename: "test", ext: "json")
         
         let badData = "some junk data".data(using: .utf8)!
         
@@ -683,7 +685,8 @@ class InAppTests: XCTestCase {
         
         IterableAPI.initializeForTesting(
             config: config,
-            inAppSynchronizer: mockInAppSynchronizer
+            inAppSynchronizer: mockInAppSynchronizer,
+            inAppPersister: InAppFilePersister()
         )
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 3, 2]))
@@ -693,7 +696,8 @@ class InAppTests: XCTestCase {
 
         IterableAPI.initializeForTesting(
             config: config,
-            inAppSynchronizer: mockInAppSynchronizer
+            inAppSynchronizer: mockInAppSynchronizer,
+            inAppPersister: InAppFilePersister()
         )
 
         XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 3)
@@ -824,6 +828,7 @@ class InAppTests: XCTestCase {
             inAppSynchronizer: mockInAppSynchronizer
         )
         
+        TestUtils.clearTestUserDefaults()
         IterableAPI.userId = "newUserId"
         
         wait(for: [expectation1], timeout: testExpectationTimeout)

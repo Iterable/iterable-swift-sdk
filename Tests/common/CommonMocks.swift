@@ -324,3 +324,19 @@ class MockNotificationCenter: NotificationCenterProtocol {
     private var observers = [Observer]()
     
 }
+
+class MockInAppPesister : InAppPersistenceProtocol {
+    private var messages = [IterableInAppMessage]()
+    
+    func getMessages() -> [IterableInAppMessage] {
+        return messages
+    }
+    
+    func persist(_ messages: [IterableInAppMessage]) {
+        self.messages = messages
+    }
+    
+    func clear() {
+        messages.removeAll()
+    }
+}

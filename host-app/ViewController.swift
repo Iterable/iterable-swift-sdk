@@ -60,9 +60,6 @@ class ViewController: UIViewController {
     @IBAction func showInAppTap(_ sender: UIButton) {
         ITBInfo()
         
-        let persister = FilePersister()
-        persister.clear()
-        
         let html = """
             <a href="http://website/resource#something">Click Me</a>
         """
@@ -75,9 +72,6 @@ class ViewController: UIViewController {
     // Full screen inApp
     @IBAction func showInApp2Tap(_ sender: UIButton) {
         ITBInfo()
-        
-        let persister = FilePersister()
-        persister.clear()
         
         let networkSession = MockNetworkSession(
             statusCode: 200,
@@ -101,9 +95,6 @@ class ViewController: UIViewController {
     // Center
     @IBAction func showInApp3Tap(_ sender: UIButton) {
         ITBInfo()
-        
-        let persister = FilePersister()
-        persister.clear()
         
         // In app with Center display
         // with left and right padding > 100
@@ -136,9 +127,6 @@ class ViewController: UIViewController {
     @IBAction func showInApp4Tap(_ sender: UIButton) {
         ITBInfo()
        
-        let persister = FilePersister()
-        persister.clear()
-
         let messageId = "zeeMessageId"
         let html = """
             <a href="http://website/resource#something">Click Me</a>
@@ -169,9 +157,6 @@ class ViewController: UIViewController {
     // Here UrlDelegate return false, so url should be opened.
     @IBAction func showInApp5Tap(_ sender: UIButton) {
         ITBInfo()
-        
-        let persister = FilePersister()
-        persister.clear()
         
         let messageId = "zeeMessageId"
         let html = """

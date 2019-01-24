@@ -27,6 +27,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
 
     init(synchronizer: InAppSynchronizerProtocol,
          displayer: InAppDisplayerProtocol,
+         persister: InAppPersistenceProtocol,
          inAppDelegate: IterableInAppDelegate,
          urlDelegate: IterableURLDelegate?,
          customActionDelegate: IterableCustomActionDelegate?,
@@ -38,6 +39,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         ITBInfo()
         self.synchronizer = synchronizer
         self.displayer = displayer
+        self.persister = persister
         self.inAppDelegate = inAppDelegate
         self.urlDelegate = urlDelegate
         self.customActionDelegate = customActionDelegate
@@ -192,7 +194,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     private let applicationStateProvider: ApplicationStateProviderProtocol
     private let notificationCenter: NotificationCenterProtocol
     
-    private let persister: InAppPersistenceProtocol = FilePersister()
+    private let persister: InAppPersistenceProtocol
     private var messagesMap = OrderedDictionary<String, IterableInAppMessage>() // This is mutable
     private let dateProvider: DateProviderProtocol
     private let retryInterval: Double // in seconds, if a message is already showing how long to wait?

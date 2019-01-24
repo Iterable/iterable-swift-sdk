@@ -681,6 +681,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
          localStorage: LocalStorageProtocol = UserDefaultsLocalStorage(),
          inAppSynchronizer: InAppSynchronizerProtocol = InAppSilentPushSynchronizer(),
          inAppDisplayer: InAppDisplayerProtocol = InAppDisplayer(),
+         inAppPersister: InAppPersistenceProtocol = InAppFilePersister(),
          urlOpener: UrlOpenerProtocol = AppUrlOpener(),
          applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
          notificationCenter: NotificationCenterProtocol = NotificationCenter.default) {
@@ -694,6 +695,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         self.localStorage = localStorage
         let inAppManager = InAppManager(synchronizer: inAppSynchronizer,
                                         displayer: inAppDisplayer,
+                                        persister: inAppPersister,
                                         inAppDelegate: config.inAppDelegate,
                                         urlDelegate: config.urlDelegate,
                                         customActionDelegate: config.customActionDelegate,
