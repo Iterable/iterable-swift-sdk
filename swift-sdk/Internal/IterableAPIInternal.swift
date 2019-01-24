@@ -85,12 +85,12 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
     
     var lastPushPayload: [AnyHashable : Any]? {
-        return localStorage.payload
+        return localStorage.getPayload(currentDate: dateProvider.currentDate)
     }
     
     var attributionInfo : IterableAttributionInfo? {
         get {
-            return localStorage.attributionInfo
+            return localStorage.getAttributionInfo(currentDate: dateProvider.currentDate)
         } set {
             let expiration = Calendar.current.date(byAdding: .hour,
                                                    value: .ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_EXPIRATION_HOURS,
@@ -678,6 +678,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
          dateProvider: DateProviderProtocol = SystemDateProvider(),
          networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
          notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
+         localStorage: LocalStorageProtocol = UserDefaultsLocalStorage(),
          inAppSynchronizer: InAppSynchronizerProtocol = InAppSilentPushSynchronizer(),
          inAppDisplayer: InAppDisplayerProtocol = InAppDisplayer(),
          urlOpener: UrlOpenerProtocol = AppUrlOpener(),
@@ -690,7 +691,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         self.dateProvider = dateProvider
         self.networkSessionProvider = networkSession
         self.notificationStateProvider = notificationStateProvider
-        self.localStorage = UserDefaultsLocalStorage(dateProvider: self.dateProvider)
+        self.localStorage = localStorage
         let inAppManager = InAppManager(synchronizer: inAppSynchronizer,
                                         displayer: inAppDisplayer,
                                         inAppDelegate: config.inAppDelegate,

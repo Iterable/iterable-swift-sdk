@@ -14,7 +14,7 @@ class DeferredDeeplinkTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        TestUtils.clearUserDefaults()
+        TestUtils.clearTestUserDefaults()
     }
     
     override func tearDown() {

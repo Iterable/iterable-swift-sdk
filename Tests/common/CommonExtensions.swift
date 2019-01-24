@@ -76,6 +76,7 @@ extension IterableAPIInternal {
                                                   dateProvider: dateProvider,
                                                   networkSession: networkSession,
                                                   notificationStateProvider: notificationStateProvider,
+                                                  localStorage: UserDefaultsLocalStorage(userDefaults: TestHelper.getTestUserDefaults()),
                                                   inAppSynchronizer: inAppSynchronizer,
                                                   inAppDisplayer: inAppDisplayer,
                                                   urlOpener: urlOpener,

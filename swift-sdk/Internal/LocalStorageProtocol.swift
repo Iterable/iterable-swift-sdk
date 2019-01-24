@@ -11,8 +11,8 @@ protocol LocalStorageProtocol {
     var ddlChecked: Bool {get set}
     var deviceId: String? {get set}
     var sdkVersion: String? {get set}
-    var attributionInfo: IterableAttributionInfo? {get}
+    func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo?
     func save(attributionInfo: IterableAttributionInfo?, withExpiration expiration: Date?)
-    var payload: [AnyHashable : Any]? {get}
+    func getPayload(currentDate: Date) -> [AnyHashable : Any]?
     func save(payload: [AnyHashable : Any]?, withExpiration: Date?)
 }
