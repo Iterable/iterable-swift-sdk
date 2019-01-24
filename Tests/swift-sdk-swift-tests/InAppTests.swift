@@ -540,7 +540,7 @@ class InAppTests: XCTestCase {
     }
     
     func testRemoveMessages() {
-        let expectation1 = expectation(description: "show first message")
+        let expectation1 = expectation(description: "testRemoveMessages")
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
@@ -722,7 +722,7 @@ class InAppTests: XCTestCase {
     }
 
     func testParseSilentPushNotificationParsing2() {
-        let json = """
+        let notification = """
         {
             "itbl" : {
                 "messageId" : "background_notification",
@@ -731,9 +731,7 @@ class InAppTests: XCTestCase {
             "notificationType" : "InAppRemove",
             "messageId" : "messageId"
         }
-        """
-        
-        let notification = try! JSONSerialization.jsonObject(with: json.data(using: .utf8)!, options: []) as! [AnyHashable : Any]
+        """.toJsonDict()
         
         if case let NotificationInfo.silentPush(silentPush) = NotificationHelper.inspect(notification: notification) {
             XCTAssertEqual(silentPush.notificationType, .remove)
@@ -741,6 +739,94 @@ class InAppTests: XCTestCase {
         } else {
             XCTFail()
         }
+    }
+    
+    func testSyncIsCalled() {
+        let expectation1 = expectation(description: "testSyncIsCalled")
+        expectation1.expectedFulfillmentCount = 2 // once on initialization
+        
+        let notification = """
+        {
+            "itbl" : {
+                "messageId" : "background_notification",
+                "isGhostPush" : true
+            },
+            "notificationType" : "InAppUpdate",
+            "messageId" : "messageId"
+        }
+        """.toJsonDict()
+
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        mockInAppSynchronizer.syncCallback = {
+            expectation1.fulfill()
+        }
+        
+        let config = IterableConfig()
+        config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
+        
+        IterableAPI.initializeForTesting(
+            config: config,
+            inAppSynchronizer: mockInAppSynchronizer
+        )
+        
+        IterableAppIntegration.application(UIApplication.shared, didReceiveRemoteNotification: notification, fetchCompletionHandler: nil)
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+
+    func testRemoveIsCalled() {
+        let expectation1 = expectation(description: "testRemoveIsCalled")
+        
+        let notification = """
+        {
+            "itbl" : {
+                "messageId" : "background_notification",
+                "isGhostPush" : true
+            },
+            "notificationType" : "InAppRemove",
+            "messageId" : "messageId"
+        }
+        """.toJsonDict()
+        
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        mockInAppSynchronizer.removeCallback = {(messageId) in
+            XCTAssertEqual(messageId, "messageId")
+            expectation1.fulfill()
+        }
+        
+        let config = IterableConfig()
+        config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
+        
+        IterableAPI.initializeForTesting(
+            config: config,
+            inAppSynchronizer: mockInAppSynchronizer
+        )
+        
+        IterableAppIntegration.application(UIApplication.shared, didReceiveRemoteNotification: notification, fetchCompletionHandler: nil)
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+    
+    func testSyncIsCalledOnLogin() {
+        let expectation1 = expectation(description: "testSyncIsCalledOnLogin")
+        expectation1.expectedFulfillmentCount = 2 // once on initialization
+        
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        mockInAppSynchronizer.syncCallback = {
+            expectation1.fulfill()
+        }
+        
+        let config = IterableConfig()
+        config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
+        
+        IterableAPI.initializeForTesting(
+            config: config,
+            inAppSynchronizer: mockInAppSynchronizer
+        )
+        
+        IterableAPI.userId = "newUserId"
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 }
 

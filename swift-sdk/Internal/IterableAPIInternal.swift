@@ -30,13 +30,13 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
                 return
             }
 
-            disableDeviceForPreviousUser()
+            logoutPreviousUser()
 
             _email = newValue
             _userId = nil
             storeEmailAndUserId()
 
-            enableDeviceForCurrentUser()
+            loginNewUser()
         }
     }
 
@@ -47,14 +47,14 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             guard newValue != _userId else {
                 return
             }
-            
-            disableDeviceForPreviousUser()
+
+            logoutPreviousUser()
             
             _userId = newValue
             _email = nil
             storeEmailAndUserId()
             
-            enableDeviceForCurrentUser()
+            loginNewUser()
         }
     }
     
@@ -99,7 +99,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
     }
 
-    var inAppManager: IterableInAppManagerProtocol
+    var inAppManager: IterableInAppManagerProtocolInternal
     
     func register(token: Data) {
         register(token: token, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "registerToken"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "registerToken"))
@@ -547,24 +547,32 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         return IterableUtil.isNotNullOrEmpty(string: _email) || IterableUtil.isNotNullOrEmpty(string: _userId)
     }
     
-    private func disableDeviceForPreviousUser() {
-        guard config.autoPushRegistration == true, isEitherUserIdOrEmailSet() else {
+    private func logoutPreviousUser() {
+        ITBInfo()
+        guard isEitherUserIdOrEmailSet() else {
             return
         }
 
-        disableDeviceForCurrentUser()
+        if config.autoPushRegistration == true {
+            disableDeviceForCurrentUser()
+        }
     }
     
-    private func enableDeviceForCurrentUser() {
-        guard config.autoPushRegistration == true, isEitherUserIdOrEmailSet() else {
+    private func loginNewUser() {
+        ITBInfo()
+        guard isEitherUserIdOrEmailSet() else {
             return
         }
-        
-        notificationStateProvider.notificationsEnabled.onSuccess { (authorized) in
-            if authorized {
-                self.notificationStateProvider.registerForRemoteNotifications()
+
+        if config.autoPushRegistration == true {
+            notificationStateProvider.notificationsEnabled.onSuccess { (authorized) in
+                if authorized {
+                    self.notificationStateProvider.registerForRemoteNotifications()
+                }
             }
         }
+        
+        inAppManager.synchronize()
     }
     
     private func createGetRequest(forPath path: String, withArgs args: [String : String]) -> URLRequest? {

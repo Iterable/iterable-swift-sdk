@@ -14,7 +14,11 @@ protocol NotificationCenterProtocol {
 extension NotificationCenter : NotificationCenterProtocol {
 }
 
-class InAppManager : NSObject, IterableInAppManagerProtocol {
+protocol IterableInAppManagerProtocolInternal : IterableInAppManagerProtocol {
+    func synchronize()
+}
+
+class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     weak var internalApi: IterableAPIInternal? {
         didSet {
             self.synchronizer.internalApi = internalApi
@@ -90,8 +94,13 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
         updateMessage(message, processed: true, consumed: true)
         self.internalApi?.inAppConsume(message.messageId)
     }
+    
+    func synchronize() {
+        ITBInfo()
+        synchronizer.sync()
+    }
 
-    @objc func onAppEnteredForeground(notification: Notification) {
+    @objc private func onAppEnteredForeground(notification: Notification) {
         ITBInfo()
         scheduleMessages()
     }
