@@ -70,7 +70,7 @@ struct TestInAppPayloadGenerator {
             ],
             "messageId" : getMessageId(index: index),
             "campaignId" : getCampaignId(index: index),
-            "trigger" : String(describing: trigger)
+            "trigger" : ["type" : String(describing: trigger)]
         ]
     }
     

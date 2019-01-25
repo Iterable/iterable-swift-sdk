@@ -368,7 +368,7 @@ struct InAppHelper {
         // this is temporary until we fix backend
         let channelName = extraInfo?["channelName"] as? String ?? ""
 
-        let trigger = parseTrigger(fromTrigger: dict[.ITBL_IN_APP_TRIGGER] as? String)
+        let trigger = parseTrigger(fromTriggerElement: dict[.ITBL_IN_APP_TRIGGER] as? [AnyHashable : Any])
         let inAppDisplaySettings = content[.ITBL_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
         let backgroundAlpha = InAppHelper.getBackgroundAlpha(fromInAppSettings: inAppDisplaySettings)
         let edgeInsets = InAppHelper.getPadding(fromInAppSettings: inAppDisplaySettings)
@@ -384,19 +384,22 @@ struct InAppHelper {
             extraInfo: extraInfo))
     }
     
-    private static func parseTrigger(fromTrigger trigger: String?) -> IterableInAppTriggerType {
-        if let str = trigger {
-            switch str.lowercased() {
-            case String(describing: IterableInAppTriggerType.immediate).lowercased():
-                return .immediate
-            case String(describing: IterableInAppTriggerType.event).lowercased():
-                return .event
-            case String(describing: IterableInAppTriggerType.never).lowercased():
-                return .never
-            default:
-                return .immediate
-            }
-        } else {
+    private static func parseTrigger(fromTriggerElement element: [AnyHashable : Any]?) -> IterableInAppTriggerType {
+        guard let element = element else {
+            return .immediate
+        }
+        guard let triggerTypeString = element[.ITBL_IN_APP_TRIGGER_TYPE] as? String else {
+            return .immediate
+        }
+        
+        switch triggerTypeString.lowercased() {
+        case String(describing: IterableInAppTriggerType.immediate).lowercased():
+            return .immediate
+        case String(describing: IterableInAppTriggerType.event).lowercased():
+            return .event
+        case String(describing: IterableInAppTriggerType.never).lowercased():
+            return .never
+        default:
             return .immediate
         }
     }
