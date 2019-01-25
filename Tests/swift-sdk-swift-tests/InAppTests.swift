@@ -587,13 +587,13 @@ class InAppTests: XCTestCase {
         
         // send first message payload
         messageNumber = 1
-        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrlWithOneMessage(messageNumber: messageNumber))
+        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: messageNumber...messageNumber))
         wait(for: [expectation1], timeout: testExpectationTimeout)
 
         // second message payload, should not be shown
         messageNumber = 2
         let margin = 0.1 // give some time for execution
-        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrlWithOneMessage(messageNumber: messageNumber))
+        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: messageNumber...messageNumber))
         wait(for: [expectation2], timeout: retryInterval - margin)
 
         // After retryInternval, the third should show
@@ -703,7 +703,13 @@ class InAppTests: XCTestCase {
 
     
     func testFilePersistence() {
-        let payload = TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 3, 2])
+        let payload = ["inAppMessages" : [
+            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 1, trigger: .event),
+            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 2, trigger: .immediate),
+            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 3, trigger: .never),
+            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 4, trigger: .immediate),
+            ]]
+        
         let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
         let persister = InAppFilePersister()
         persister.persist(messages)
@@ -897,6 +903,50 @@ class InAppTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
+    
+    func testDoNoProcessNonImmediateTriggerTypes() {
+        let expectation1 = expectation(description: "do not call event trigger")
+        expectation1.isInverted = true
+        let expectation2 = expectation(description: "call immediate trigger 1")
+        let expectation3 = expectation(description: "do not call never trigger")
+        expectation3.isInverted = true
+        let expectation4 = expectation(description: "call immediate trigger 2")
+        
+        let payload = ["inAppMessages" : [
+            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 1, trigger: .event),
+            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 2, trigger: .immediate),
+            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 3, trigger: .never),
+            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 4, trigger: .immediate),
+        ]]
+        
+        print(payload)
+        
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
+        mockInAppDelegate.onNewMessageCallback = {(message) in
+            if message.messageId == TestInAppPayloadGenerator.getMessageId(index: 1) {
+                expectation1.fulfill()
+            } else if message.messageId == TestInAppPayloadGenerator.getMessageId(index: 2) {
+                expectation2.fulfill()
+            } else if message.messageId == TestInAppPayloadGenerator.getMessageId(index: 3) {
+                expectation3.fulfill()
+            } else if message.messageId == TestInAppPayloadGenerator.getMessageId(index: 4) {
+                expectation4.fulfill()
+            }
+        }
+        
+        let config = IterableConfig()
+        config.inAppDelegate = mockInAppDelegate
+        config.logDelegate = AllLogDelegate()
+        
+        IterableAPI.initializeForTesting(config: config,
+                                         inAppSynchronizer: mockInAppSynchronizer)
+        
+        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
+        
+        wait(for: [expectation1, expectation3], timeout: testExpectationTimeoutForInverted)
+        wait(for: [expectation2, expectation4], timeout: testExpectationTimeout)
+    }
 }
 
 extension IterableHtmlInAppContent {
@@ -914,6 +964,7 @@ extension IterableInAppMessage {
                         "campaignId", campaignId,
                         "channelName", channelName,
                         "contentType", contentType,
+                        "trigger", trigger,
                         "content", content,
                         "processed", processed,
                         "consumed", consumed, pairSeparator: " = ", separator: "\n")

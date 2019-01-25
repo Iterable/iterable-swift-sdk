@@ -75,6 +75,15 @@ public class IterableHtmlInAppContent : NSObject, IterableInAppContent, Codable 
     }
 }
 
+/// `immediate` will try to display the inApp automatically immediately
+/// `event` is used for Push to InApp
+/// `never` will not display the inApp automatically via the SDK
+@objc public enum IterableInAppTriggerType: Int, Codable {
+    case immediate
+    case event
+    case never
+}
+
 /// A message is comprised of content and whether this message was skipped.
 @objcMembers
 public final class IterableInAppMessage : NSObject {
@@ -90,9 +99,12 @@ public final class IterableInAppMessage : NSObject {
     /// The type of content
     public let contentType: IterableInAppContentType
 
+    /// when to trigger this inApp
+    public let trigger: IterableInAppTriggerType
+    
     /// The content of the inApp message
     public let content: IterableInAppContent
-
+    
     /// Extra Information from the 'payload' section of message.
     public let extraInfo: [AnyHashable : Any]?
 
@@ -110,6 +122,7 @@ public final class IterableInAppMessage : NSObject {
         campaignId: String,
         channelName: String = "reserved",
         contentType: IterableInAppContentType = .html,
+        trigger: IterableInAppTriggerType = .immediate,
         content: IterableInAppContent,
         extraInfo: [AnyHashable : Any]? = nil
         ) {
@@ -117,6 +130,7 @@ public final class IterableInAppMessage : NSObject {
         self.campaignId = campaignId
         self.channelName = channelName
         self.contentType = contentType
+        self.trigger = trigger
         self.content = content
         self.extraInfo = extraInfo
     }

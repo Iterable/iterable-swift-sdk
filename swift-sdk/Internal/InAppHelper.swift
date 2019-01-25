@@ -304,6 +304,7 @@ struct InAppHelper {
         let channelName: String
         let messageId: String
         let campaignId: String
+        let trigger: IterableInAppTriggerType
         let edgeInsets: UIEdgeInsets
         let backgroundAlpha: Double
         let html: String
@@ -366,7 +367,8 @@ struct InAppHelper {
         
         // this is temporary until we fix backend
         let channelName = extraInfo?["channelName"] as? String ?? ""
-        
+
+        let trigger = parseTrigger(fromTrigger: dict[.ITBL_IN_APP_TRIGGER] as? String)
         let inAppDisplaySettings = content[.ITBL_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
         let backgroundAlpha = InAppHelper.getBackgroundAlpha(fromInAppSettings: inAppDisplaySettings)
         let edgeInsets = InAppHelper.getPadding(fromInAppSettings: inAppDisplaySettings)
@@ -375,10 +377,28 @@ struct InAppHelper {
             channelName: channelName,
             messageId: messageId,
             campaignId: campaignId,
+            trigger: trigger,
             edgeInsets: edgeInsets,
             backgroundAlpha: backgroundAlpha,
             html: html,
             extraInfo: extraInfo))
+    }
+    
+    private static func parseTrigger(fromTrigger trigger: String?) -> IterableInAppTriggerType {
+        if let str = trigger {
+            switch str.lowercased() {
+            case String(describing: IterableInAppTriggerType.immediate).lowercased():
+                return .immediate
+            case String(describing: IterableInAppTriggerType.event).lowercased():
+                return .event
+            case String(describing: IterableInAppTriggerType.never).lowercased():
+                return .never
+            default:
+                return .immediate
+            }
+        } else {
+            return .immediate
+        }
     }
     
     private static func parseExtraInfo(fromContent content: [AnyHashable : Any]) -> [AnyHashable : Any]? {
@@ -395,6 +415,7 @@ struct InAppHelper {
                                         campaignId: inAppDetails.campaignId,
                                         channelName: inAppDetails.channelName,
                                         contentType: .html,
+                                        trigger: inAppDetails.trigger,
                                         content: content,
                                         extraInfo: inAppDetails.extraInfo)
         case .failure(reason: let reason, messageId: let messageId):
