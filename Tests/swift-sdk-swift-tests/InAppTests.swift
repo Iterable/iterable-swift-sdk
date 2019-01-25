@@ -446,17 +446,18 @@ class InAppTests: XCTestCase {
     }
 
     func testInAppShowWhenMovesToForeground() {
-        let expectation1 = expectation(description: "testInAppShowWhenMovesToForeground")
+        let expectation1 = expectation(description: "do not show when in background")
         expectation1.isInverted = true
-        let expectation2 = expectation(description: "testInAppShowWhenMovesToForeground")
+        let expectation2 = expectation(description: "show when moves to foreground")
 
         let payload = TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1)
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
+        let mockDateProvider = MockDateProvider()
         
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShowCallback = {(_, _) in
-            expectation1.fulfill() // expectation1 should not be fulfilled (inverted)
+            expectation1.fulfill() // expectation1 should not be fulfilled within timeout (inverted)
             expectation2.fulfill()
         }
         
@@ -468,6 +469,7 @@ class InAppTests: XCTestCase {
         
         IterableAPI.initializeForTesting(
             config: config,
+            dateProvider: mockDateProvider,
             inAppSynchronizer: mockInAppSynchronizer,
             inAppDisplayer: mockInAppDisplayer,
             applicationStateProvider: mockApplicationStateProvider,
@@ -478,11 +480,73 @@ class InAppTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
         
+        mockDateProvider.currentDate = mockDateProvider.currentDate.addingTimeInterval(1000.0)
         mockApplicationStateProvider.applicationState = .active
         mockNotificationCenter.fire(notification: .UIApplicationDidBecomeActive)
         
         wait(for: [expectation2], timeout: testExpectationTimeout)
     }
+
+    func testMoveToForegroundSyncInterval() {
+        let expectation1 = expectation(description: "do not sync because app is not in foreground")
+        expectation1.isInverted = true
+        let expectation2 = expectation(description: "sync first time when moving to foreground")
+        let expectation3 = expectation(description: "do not sync second time")
+        expectation3.isInverted = true
+        let expectation4 = expectation(description: "sync third time after time has passed")
+        
+        let payload = TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1)
+        
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        let mockDateProvider = MockDateProvider()
+        
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _) in
+            expectation1.fulfill() // expectation1 should not be fulfilled within timeout (inverted)
+            expectation2.fulfill()
+        }
+        
+        let config = IterableConfig()
+        config.inAppDisplayInterval = 1.0
+        
+        let mockApplicationStateProvider = MockApplicationStateProvider(applicationState: .background)
+        let mockNotificationCenter = MockNotificationCenter()
+        
+        IterableAPI.initializeForTesting(
+            config: config,
+            dateProvider: mockDateProvider,
+            inAppSynchronizer: mockInAppSynchronizer,
+            inAppDisplayer: mockInAppDisplayer,
+            applicationStateProvider: mockApplicationStateProvider,
+            notificationCenter: mockNotificationCenter
+        )
+        
+        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
+        
+        wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
+        
+        mockDateProvider.currentDate = mockDateProvider.currentDate.addingTimeInterval(1000.0)
+        mockApplicationStateProvider.applicationState = .active
+        mockNotificationCenter.fire(notification: .UIApplicationDidBecomeActive)
+        
+        wait(for: [expectation2], timeout: testExpectationTimeout)
+
+        // now move to foreground within interval
+        mockInAppSynchronizer.syncCallback = {
+            expectation3.fulfill()
+        }
+        mockNotificationCenter.fire(notification: .UIApplicationDidBecomeActive)
+        wait(for: [expectation3], timeout: testExpectationTimeoutForInverted)
+        
+        // now move to foreground outside of interval
+        mockDateProvider.currentDate = mockDateProvider.currentDate.addingTimeInterval(1000.0)
+        mockInAppSynchronizer.syncCallback = {
+            expectation4.fulfill()
+        }
+        mockNotificationCenter.fire(notification: .UIApplicationDidBecomeActive)
+        wait(for: [expectation4], timeout: testExpectationTimeout)
+    }
+
     
     func testDontShowMessageWithinRetryInterval() {
         let expectation1 = expectation(description: "show first message")
@@ -823,12 +887,12 @@ class InAppTests: XCTestCase {
         let config = IterableConfig()
         config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
         
+        TestUtils.clearTestUserDefaults()
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer
         )
         
-        TestUtils.clearTestUserDefaults()
         IterableAPI.userId = "newUserId"
         
         wait(for: [expectation1], timeout: testExpectationTimeout)

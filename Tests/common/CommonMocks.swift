@@ -214,19 +214,36 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
     var syncCallback: (() -> Void)?
     var removeCallback: ((String) -> Void)?
     
+    private var messagesMap = OrderedDictionary<String, IterableInAppMessage>()
+    
     func sync() {
         ITBInfo()
+
+        inAppSyncDelegate?.onInAppMessagesAvailable(messages: messagesMap.values)
+
         syncCallback?()
     }
     
     func remove(messageId: String) {
         ITBInfo()
+        
+        messagesMap.removeValue(forKey: messageId)
+        
+        inAppSyncDelegate?.onInAppRemoved(messageId: messageId)
+        
         removeCallback?(messageId)
     }
     
     func mockMessagesAvailableFromServer(messages: [IterableInAppMessage]) {
         ITBInfo()
-        inAppSyncDelegate?.onInAppMessagesAvailable(messages: messages)
+        
+        messagesMap = OrderedDictionary<String, IterableInAppMessage>()
+        
+        messages.forEach {
+            messagesMap[$0.messageId] = $0
+        }
+
+        sync()
     }
     
     func mockInAppPayloadFromServer(_ payload: [AnyHashable : Any]) {
@@ -236,10 +253,7 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
             return
         }
         
-        let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: internalApi)
-        if messages.count > 0 {
-            inAppSyncDelegate?.onInAppMessagesAvailable(messages: messages)
-        }
+        mockMessagesAvailableFromServer(messages: InAppHelper.inAppMessages(fromPayload: payload, internalApi: internalApi))
     }
 }
 
