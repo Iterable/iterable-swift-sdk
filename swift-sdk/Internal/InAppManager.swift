@@ -14,7 +14,11 @@ protocol NotificationCenterProtocol {
 extension NotificationCenter : NotificationCenterProtocol {
 }
 
-class InAppManager : NSObject, IterableInAppManagerProtocol {
+protocol IterableInAppManagerProtocolInternal : IterableInAppManagerProtocol {
+    func synchronize()
+}
+
+class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     weak var internalApi: IterableAPIInternal? {
         didSet {
             self.synchronizer.internalApi = internalApi
@@ -23,6 +27,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
 
     init(synchronizer: InAppSynchronizerProtocol,
          displayer: InAppDisplayerProtocol,
+         persister: InAppPersistenceProtocol,
          inAppDelegate: IterableInAppDelegate,
          urlDelegate: IterableURLDelegate?,
          customActionDelegate: IterableCustomActionDelegate?,
@@ -34,6 +39,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
         ITBInfo()
         self.synchronizer = synchronizer
         self.displayer = displayer
+        self.persister = persister
         self.inAppDelegate = inAppDelegate
         self.urlDelegate = urlDelegate
         self.customActionDelegate = customActionDelegate
@@ -46,9 +52,9 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
         super.init()
         
         self.initializeMessagesMap()
-        
-        self.synchronizer.inAppSyncDelegate = self
 
+        self.setupSynchronizer()
+        
         self.notificationCenter.addObserver(self,
                                        selector: #selector(onAppEnteredForeground(notification:)),
                                        name: Notification.Name.UIApplicationDidBecomeActive,
@@ -90,10 +96,23 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
         updateMessage(message, processed: true, consumed: true)
         self.internalApi?.inAppConsume(message.messageId)
     }
-
-    @objc func onAppEnteredForeground(notification: Notification) {
+    
+    func synchronize() {
         ITBInfo()
-        scheduleMessages()
+        syncQueue.async {
+            self.synchronizer.sync()
+            self.lastSyncTime = self.dateProvider.currentDate
+        }
+    }
+
+    @objc private func onAppEnteredForeground(notification: Notification) {
+        ITBInfo()
+        let waitTime = InAppManager.getWaitTimeInterval(fromLastTime: lastSyncTime, currentTime: dateProvider.currentDate, gap: moveToForegroundSyncInterval)
+        if waitTime <= 0 {
+            synchronize()
+        } else {
+            ITBInfo("can't sync now, need to wait: \(waitTime)")
+        }
     }
     
     // This must be called from MainThread
@@ -125,7 +144,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
             self.lastDismissedTime = self.dateProvider.currentDate
             
             // check if we need to process more inApps
-            self.scheduleMessages()
+            self.scheduleNextMessage()
         }
         
         let showed = displayer.showInApp(message: message, callback: clickCallback)
@@ -168,6 +187,12 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
         }
     }
     
+    private func setupSynchronizer() {
+        synchronizer.inAppSyncDelegate = self
+        
+        synchronize()
+    }
+    
     private var synchronizer: InAppSynchronizerProtocol // this is mutable because we need to set internalApi
     private let displayer: InAppDisplayerProtocol
     private let inAppDelegate: IterableInAppDelegate
@@ -177,13 +202,16 @@ class InAppManager : NSObject, IterableInAppManagerProtocol {
     private let applicationStateProvider: ApplicationStateProviderProtocol
     private let notificationCenter: NotificationCenterProtocol
     
-    private let persister: InAppPersistenceProtocol = FilePersister()
+    private let persister: InAppPersistenceProtocol
     private var messagesMap = OrderedDictionary<String, IterableInAppMessage>() // This is mutable
     private let dateProvider: DateProviderProtocol
-    private let retryInterval: Double // in seconds, if a message is already showing how long to wait?
+    private let retryInterval: TimeInterval // in seconds, if a message is already showing how long to wait?
     private var lastDismissedTime: Date? = nil
     private let updateQueue = DispatchQueue(label: "InAppQueue")
     private let scheduleQueue = DispatchQueue(label: "Scheduler")
+    private let syncQueue = DispatchQueue(label: "Sync")
+    private var lastSyncTime: Date? = nil
+    private let moveToForegroundSyncInterval: Double = 1.0 * 60.0 // don't sync within sixty seconds
 }
 
 extension InAppManager : InAppSynchronizerDelegate {
@@ -200,7 +228,7 @@ extension InAppManager : InAppSynchronizerDelegate {
             self.persister.persist(self.messagesMap.values)
             
             // now process
-            self.scheduleMessages()
+            self.processNextMessage()
         }
     }
     
@@ -215,23 +243,23 @@ extension InAppManager : InAppSynchronizerDelegate {
         }
     }
     
-    private func scheduleMessages() {
+    private func scheduleNextMessage() {
         ITBDebug()
         
         scheduleQueue.async {
-            let waitTimeInterval = self.getWaitTimeInterval()
+            let waitTimeInterval = self.getInAppShowingWaitTimeInterval()
             if waitTimeInterval > 0 {
                 ITBDebug("Need to wait for: \(waitTimeInterval)")
                 self.scheduleQueue.asyncAfter(deadline: .now() + waitTimeInterval) {
-                    self.processMessages()
+                    self.processNextMessage()
                 }
             } else {
-                self.processMessages()
+                self.processNextMessage()
             }
         }
     }
     
-    private func processMessages() {
+    private func processNextMessage() {
         ITBDebug()
 
         guard let message = getFirstProcessableMessage() else {
@@ -243,7 +271,7 @@ extension InAppManager : InAppSynchronizerDelegate {
         
         // We can only check applicationState from main queue so need to do the following
         DispatchQueue.main.async {
-            if self.applicationStateProvider.applicationState == .active && !self.displayer.isShowingInApp() && message.processed == false && self.getWaitTimeInterval() <= 0 {
+            if self.isOkToShowNow(message: message) {
                 self.updateMessage(message, processed: true)
 
                 if self.inAppDelegate.onNew(message: message) == .show {
@@ -252,13 +280,17 @@ extension InAppManager : InAppSynchronizerDelegate {
                 } else {
                     ITBDebug("delegate returned skip, continue processing")
                     self.scheduleQueue.async {
-                        self.processMessages()
+                        self.processNextMessage()
                     }
                 }
             } else {
                 ITBInfo("Cannot show inApp with id: \(message.messageId) now.")
             }
         }
+    }
+    
+    private func getFirstProcessableMessage() -> IterableInAppMessage? {
+        return messagesMap.values.filter({ $0.processed == false && $0.trigger == .immediate }).first
     }
     
     private func updateMessage(_ message: IterableInAppMessage, processed: Bool, consumed: Bool = false) {
@@ -271,24 +303,48 @@ extension InAppManager : InAppSynchronizerDelegate {
         }
     }
     
+    private func isOkToShowNow(message: IterableInAppMessage) -> Bool {
+        guard applicationStateProvider.applicationState == .active else {
+            ITBInfo("not active")
+            return false
+        }
+        guard displayer.isShowingInApp() == false else {
+            ITBInfo("showing another")
+            return false
+        }
+        guard message.processed == false else {
+            ITBInfo("message with id: \(message.messageId) is already processed")
+            return false
+        }
+        guard getInAppShowingWaitTimeInterval() <= 0 else {
+            ITBInfo("can't display within retryInterval window")
+            return false
+        }
+        
+        return true
+    }
+    
     // How long do we have to wait before showing the message
     // > 0 means wait, otherwise we are good to show
-    private func getWaitTimeInterval() -> Double {
-        if let lastDismissedTime = lastDismissedTime {
-            let nextShowingTime = Date(timeInterval: retryInterval + 0.1, since: lastDismissedTime)
-            if dateProvider.currentDate >= nextShowingTime {
+    private func getInAppShowingWaitTimeInterval() -> TimeInterval {
+        return InAppManager.getWaitTimeInterval(fromLastTime: lastDismissedTime, currentTime: dateProvider.currentDate, gap: retryInterval)
+    }
+    
+    // How long do we have to wait?
+    // > 0 means wait, otherwise we are good to show
+    private static func getWaitTimeInterval(fromLastTime lastTime: Date?, currentTime: Date, gap: TimeInterval) -> TimeInterval {
+        if let lastTime = lastTime {
+            // if it has been shown once
+            let nextShowingTime = Date(timeInterval: gap + 0.1, since: lastTime)
+            if currentTime >= nextShowingTime {
                 return 0.0
             } else {
-                return nextShowingTime.timeIntervalSinceReferenceDate - self.dateProvider.currentDate.timeIntervalSinceReferenceDate
+                return nextShowingTime.timeIntervalSinceReferenceDate - currentTime.timeIntervalSinceReferenceDate
             }
         } else {
             // we have not shown any messages
             return 0.0
         }
-    }
-    
-    private func getFirstProcessableMessage() -> IterableInAppMessage? {
-        return messagesMap.values.filter({ $0.processed == false }).first
     }
     
     private func addNewMessages(messagesFromServer messages: [IterableInAppMessage]) {

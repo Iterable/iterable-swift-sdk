@@ -17,7 +17,7 @@ class IterableAPITests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        TestUtils.clearUserDefaults()
+        TestUtils.clearTestUserDefaults()
     }
     
     override func tearDown() {
@@ -574,7 +574,7 @@ class IterableAPITests: XCTestCase {
             expectation1.fulfill()
         }
         let config = IterableConfig()
-        UserDefaults.standard.set("user1@example.com", forKey: .ITBL_USER_DEFAULTS_EMAIL_KEY)
+        TestUtils.getTestUserDefaults().set("user1@example.com", forKey: .ITBL_USER_DEFAULTS_EMAIL_KEY)
         IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
         IterableAPI.updateSubscriptions(emailListIds, unsubscribedChannelIds: unsubscriptedChannelIds, unsubscribedMessageTypeIds: unsubscribedMessageTypeIds)
         wait(for: [expectation1], timeout: testExpectationTimeout)

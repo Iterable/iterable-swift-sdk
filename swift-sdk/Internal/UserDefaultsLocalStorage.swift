@@ -7,8 +7,8 @@
 import Foundation
 
 struct UserDefaultsLocalStorage : LocalStorageProtocol {
-    init(dateProvider: DateProviderProtocol) {
-        self.dateProvider = dateProvider
+    init(userDefaults: UserDefaults = UserDefaults.standard) {
+        self.userDefaults = userDefaults
     }
     
     var userId : String? {
@@ -51,16 +51,16 @@ struct UserDefaultsLocalStorage : LocalStorageProtocol {
         }
     }
     
-    var attributionInfo: IterableAttributionInfo? {
-        return (try? codable(withKey: .attributionInfo)) ?? nil
+    func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
+        return (try? codable(withKey: .attributionInfo, currentDate: currentDate)) ?? nil
     }
     
     func save(attributionInfo: IterableAttributionInfo?, withExpiration expiration: Date?) {
         try? save(codable: attributionInfo, withKey: .attributionInfo, andExpiration: expiration)
     }
     
-    var payload: [AnyHashable : Any]? {
-        return (try? dict(withKey: .payload)) ?? nil
+    func getPayload(currentDate: Date) -> [AnyHashable : Any]? {
+        return (try? dict(withKey: .payload, currentDate: currentDate)) ?? nil
     }
     
     func save(payload: [AnyHashable : Any]?, withExpiration expiration: Date?) {
@@ -68,32 +68,32 @@ struct UserDefaultsLocalStorage : LocalStorageProtocol {
     }
 
     // MARK: Private implementation
-    private let dateProvider: DateProviderProtocol
+    private let userDefaults: UserDefaults
 
-    private func dict(withKey key: LocalStorageKey) throws -> [AnyHashable : Any]? {
-        guard let encodedEnvelope = UserDefaults.standard.value(forKey: key.value) as? Data else {
+    private func dict(withKey key: LocalStorageKey, currentDate: Date) throws -> [AnyHashable : Any]? {
+        guard let encodedEnvelope = userDefaults.value(forKey: key.value) as? Data else {
             return nil
         }
         let envelope = try JSONDecoder().decode(Envelope.self, from: encodedEnvelope)
         
         let decoded = try JSONSerialization.jsonObject(with: envelope.payload, options: []) as? [AnyHashable : Any]
         
-        if isExpired(expiration: envelope.expiration) {
+        if UserDefaultsLocalStorage.isExpired(expiration: envelope.expiration, currentDate: currentDate) {
             return nil
         } else {
             return decoded
         }
     }
     
-    private func codable<T: Codable>(withKey key: LocalStorageKey) throws -> T? {
-        guard let encodedEnvelope = UserDefaults.standard.value(forKey: key.value) as? Data else {
+    private func codable<T: Codable>(withKey key: LocalStorageKey, currentDate: Date) throws -> T? {
+        guard let encodedEnvelope = userDefaults.value(forKey: key.value) as? Data else {
             return nil
         }
         let envelope = try JSONDecoder().decode(Envelope.self, from: encodedEnvelope)
 
         let decoded = try JSONDecoder().decode(T.self, from: envelope.payload)
         
-        if isExpired(expiration: envelope.expiration) {
+        if UserDefaultsLocalStorage.isExpired(expiration: envelope.expiration, currentDate: currentDate) {
             return nil
         } else {
             return decoded
@@ -101,16 +101,16 @@ struct UserDefaultsLocalStorage : LocalStorageProtocol {
     }
     
     private func string(withKey key: LocalStorageKey) -> String? {
-        return UserDefaults.standard.string(forKey: key.value)
+        return userDefaults.string(forKey: key.value)
     }
     
     private func bool(withKey key: LocalStorageKey) -> Bool {
-        return UserDefaults.standard.bool(forKey: key.value)
+        return userDefaults.bool(forKey: key.value)
     }
     
-    private func isExpired(expiration: Date?) -> Bool {
+    private static func isExpired(expiration: Date?, currentDate: Date) -> Bool {
         if let expiration = expiration {
-            if expiration.timeIntervalSinceReferenceDate > dateProvider.currentDate.timeIntervalSinceReferenceDate {
+            if expiration.timeIntervalSinceReferenceDate > currentDate.timeIntervalSinceReferenceDate {
                 // expiration is later
                 return false
             } else {
@@ -142,22 +142,22 @@ struct UserDefaultsLocalStorage : LocalStorageProtocol {
     }
     
     private func save(string: String?, withKey key: LocalStorageKey) {
-        UserDefaults.standard.set(string, forKey: key.value)
+        userDefaults.set(string, forKey: key.value)
     }
     
     private func save(bool: Bool, withKey key: LocalStorageKey) {
-        UserDefaults.standard.set(bool, forKey: key.value)
+        userDefaults.set(bool, forKey: key.value)
     }
 
     private func save(data: Data?, withKey key: LocalStorageKey, andExpiration expiration: Date?) throws {
         guard let data = data else {
-            UserDefaults.standard.removeObject(forKey: key.value)
+            userDefaults.removeObject(forKey: key.value)
             return
         }
         
         let envelope = Envelope(payload: data, expiration: expiration)
         let encodedEnvelope = try JSONEncoder().encode(envelope)
-        UserDefaults.standard.set(encodedEnvelope, forKey: key.value)
+        userDefaults.set(encodedEnvelope, forKey: key.value)
     }
     
     private struct LocalStorageKey {

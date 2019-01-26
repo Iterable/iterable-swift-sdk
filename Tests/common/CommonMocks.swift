@@ -211,15 +211,39 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
     weak var internalApi: IterableAPIInternal?
     weak var inAppSyncDelegate: InAppSynchronizerDelegate?
     
+    var syncCallback: (() -> Void)?
+    var removeCallback: ((String) -> Void)?
+    
+    private var messagesMap = OrderedDictionary<String, IterableInAppMessage>()
+    
     func sync() {
+        ITBInfo()
+
+        inAppSyncDelegate?.onInAppMessagesAvailable(messages: messagesMap.values)
+
+        syncCallback?()
     }
     
     func remove(messageId: String) {
+        ITBInfo()
+        
+        messagesMap.removeValue(forKey: messageId)
+        
+        inAppSyncDelegate?.onInAppRemoved(messageId: messageId)
+        
+        removeCallback?(messageId)
     }
     
     func mockMessagesAvailableFromServer(messages: [IterableInAppMessage]) {
         ITBInfo()
-        inAppSyncDelegate?.onInAppMessagesAvailable(messages: messages)
+        
+        messagesMap = OrderedDictionary<String, IterableInAppMessage>()
+        
+        messages.forEach {
+            messagesMap[$0.messageId] = $0
+        }
+
+        sync()
     }
     
     func mockInAppPayloadFromServer(_ payload: [AnyHashable : Any]) {
@@ -229,10 +253,7 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
             return
         }
         
-        let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: internalApi)
-        if messages.count > 0 {
-            inAppSyncDelegate?.onInAppMessagesAvailable(messages: messages)
-        }
+        mockMessagesAvailableFromServer(messages: InAppHelper.inAppMessages(fromPayload: payload, internalApi: internalApi))
     }
 }
 
@@ -273,8 +294,6 @@ class MockInAppDisplayer : InAppDisplayerProtocol {
 
 class MockInAppDelegate : IterableInAppDelegate {
     var onNewMessageCallback: ((IterableInAppMessage) -> Void)?
-    var onNewBatchCallback: (([IterableInAppMessage]) -> Void)?
-    
     
     init(showInApp: InAppShowResponse = .show) {
         self.showInApp = showInApp
@@ -316,4 +335,20 @@ class MockNotificationCenter: NotificationCenterProtocol {
     
     private var observers = [Observer]()
     
+}
+
+class MockInAppPesister : InAppPersistenceProtocol {
+    private var messages = [IterableInAppMessage]()
+    
+    func getMessages() -> [IterableInAppMessage] {
+        return messages
+    }
+    
+    func persist(_ messages: [IterableInAppMessage]) {
+        self.messages = messages
+    }
+    
+    func clear() {
+        messages.removeAll()
+    }
 }

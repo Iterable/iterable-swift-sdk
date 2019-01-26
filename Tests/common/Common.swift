@@ -8,8 +8,26 @@ import Foundation
 
 @testable import IterableSDK
 
+extension String {
+    func toJsonDict() -> [AnyHashable : Any] {
+        return try! JSONSerialization.jsonObject(with: self.data(using: .utf8)!, options: []) as! [AnyHashable : Any]
+    }
+}
+
+struct TestConsts {
+    static let userDefaultsSuiteName = "testUserDefaults"
+}
+
 /// Add Utility methods common to multiple targets here.
+/// We can't use TestUtils in all tests because TestUtils targets Swift tests only.
 struct TestHelper {
+    static func getTestUserDefaults() -> UserDefaults {
+        return UserDefaults(suiteName: TestConsts.userDefaultsSuiteName)!
+    }
+    
+    static func clearTestUserDefaults() {
+        getTestUserDefaults().removePersistentDomain(forName: TestConsts.userDefaultsSuiteName)
+    }
 }
 
 class InAppPollingSynchronizer : InAppSynchronizerProtocol {
