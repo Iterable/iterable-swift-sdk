@@ -37,8 +37,10 @@ Congratulations! You have now imported Iterable SDK into your project!
 
 Attached to the release you will find two framework bundles. 
 
-	IterableSDK.framework 
-	IterableAppExtensions.framework
+```
+IterableSDK.framework 
+IterableAppExtensions.framework
+```	
 	
 1. In XCode choose the target for your app. Now add IterableSDK.framework to the **embedded binaries** section. If you want to use Iterable Rich Notification Extension, you will have to add IterableAppExtensions.framework to the embedded binaries section as well.
 
@@ -63,7 +65,7 @@ Attached to the release you will find two framework bundles.
 1. ##### Initialize the API with API key.
 	In your app delegate, on application launch in `application:didFinishLaunchingWithOptions:` method, initialize the Iterable SDK:
 
-	Swift:
+	**Swift**
 
 	```swift
 	let config = IterableConfig()
@@ -71,7 +73,7 @@ Attached to the release you will find two framework bundles.
 	IterableAPI.initialize(apiKey: "<your-api-key>", launchOptions: launchOptions, config:config)
 	```
 	
-	Objective-C:
+	**Objective-C**
 
 	```objective-c
 	IterableConfig *config = [[IterableConfig alloc] init];
@@ -85,13 +87,13 @@ Attached to the release you will find two framework bundles.
 
 	Once you know the email or userId of the user, set the value.
 
-	Swift:
+	**Swift**
 	
 	```swift
 	IterableAPI.email = "user@example.com"
 	```
 
-	Objective-C:
+	**Objective-C**
 
 	```objective-c
 	IterableAPI.email = @"user@example.com";
@@ -102,7 +104,7 @@ Attached to the release you will find two framework bundles.
 	* See [Apple Notification Guide](https://developer.apple.com/documentation/usernotifications) regarding how to register for remote notifiations.
 	* In your `AppDelegate`’s [application:didRegisterForRemoteNotificationsWithDeviceToken:](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622958-application) method, send the token obtained to Iterable.
 
-	Swift:
+	**Swift**
 	
 	```swift
 	func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
@@ -110,7 +112,7 @@ Attached to the release you will find two framework bundles.
 	}
 	```
 
-	Objective-C:
+	**Objective-C**
 	
 	```objective-c
 	- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
@@ -123,241 +125,244 @@ Congratulations! You can now send remote push notifications to your device from 
 
 # Using the SDK
 
-1. ##### Handle Push Notifications
+##### 1. Handle Push Notifications
 
-	When the user taps on the push notification or one of the action buttons, the system calls `UNUserNotificationCenterDelegate`'s [userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:](https://developer.apple.com/documentation/usernotifications/unusernotificationcenterdelegate/1649501-usernotificationcenter?language=objc). Pass this call to **`IterableAppIntegration`** to track push open event and perform the associated action (see below for custom action and URL delegates).
+When the user taps on the push notification or one of the action buttons, the system calls `UNUserNotificationCenterDelegate`'s [userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:](https://developer.apple.com/documentation/usernotifications/unusernotificationcenterdelegate/1649501-usernotificationcenter?language=objc). Pass this call to **`IterableAppIntegration`** to track push open event and perform the associated action (see below for custom action and URL delegates).
 	
-	Swift:
+**Swift**
 	
-	```swift
-	public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-		IterableAppIntegration.userNotificationCenter(center, didReceive: response, withCompletionHandler: completionHandler)
-	}
-	```
+```swift
+public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+	IterableAppIntegration.userNotificationCenter(center, didReceive: response, withCompletionHandler: completionHandler)
+}
+```
 
-	Objective-C:
+**Objective-C**
 	
-	```objective-c
-	- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
-		[IterableAppIntegration userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
-	}
-	```
+```objective-c
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
+	[IterableAppIntegration userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
+}
+```
 	
-2. ##### Deep Linking
+##### 2. Deep Linking
 
-	* Handling Links from Push Notifications
-		
-		Push notifications and action buttons may have `openUrl` actions attached to them. When a URL is specified, the SDK first calls `urlDelegate` specified in your `IterableConfig` object. You can use this delegate to handle `openUrl` actions the same way as you handle normal deep links. If the delegate is not set or if it returns `false` (the default), the SDK will open Safari with that URL. If you want to navigate to a UIViewController on receiving a deep link, you should do so in the `urlDelegate`. 
-		
-		In the code below, `DeepLinkHandler` is a custom handler which is reponsible for deep link navigation. You have to provide implementation for deep link navigation. Please see [sample application](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app?raw=true) for a reference implementation.
-		
-		Swift:
-		
-		```swift
-		func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-			...
-			// Initialize Iterable API
-			let config = IterableConfig()
-			...
-			config.urlDelegate = self
-			IterableAPI.initialize(apiKey: apiKey, launchOptions:launchOptions, config: config)
-			...
-		}
-
-		// Iterable URL Delegate. It will be called when you receive 
-		// an `openUrl` event from push notification.
-		func handle(iterableURL url: URL, inContext context: IterableActionContext) -> Bool {
-			return DeeplinkHandler.handle(url: url)
-		}
-		```
-		
-		Objective-C:
-		
-		```objective-c
-		- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-			...
-			// Initialize Iterable SDK
-			IterableConfig *config = [[IterableConfig alloc] init];
-			...
-			config.urlDelegate = self;
-			[IterableAPI initializeWithApiKey:@"YOUR API KEY" launchOptions:launchOptions config:config];
-			...
-		}
-		
-		- (BOOL)handleIterableURL:(NSURL *)url context:(IterableActionContext *)context {
-			// Assuming you have a DeeplinkHandler class that handles all deep link URLs and navigates to the right place in the app
-			return [DeeplinkHandler handleUrl:url];
-		}
-		```
-		
-	* Handling Email Links
-		
-		For Universal Links to work with link rewriting in emails, you need to set up apple-app-site-association file in the Iterable project. More instructions here: [Setting up iOS Universal Links](https://support.iterable.com/hc/en-us/articles/115000440206-Setting-up-iOS-Universal-Links).
-
-		When an email link is clicked your `UIApplicationDelegate`'s [application:continueUserActivity:restorationHandler:](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623072-application?language=swift) method is called. If you already have an Iterable `urlDelegate` defined (see *Handling Links from Push Notifications* section above), the same handler can be used for email deep links by calling `handleUniversalLink:`.
-
-		Swift:
-		
-		```swift
-		func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
-			guard let url = userActivity.webpageURL else {
-				return false
-			}
-
-			// This will track the click, retrieve the original URL and call `handleIterableURL:context:` with the original URL
-			return IterableAPI.handle(universalLink: url)
-		}
-		```
-
-		Objective-C:
-		
-		```objective-c
-		- (BOOL)application:(UIApplication *)application continueUserActivity(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray *restorableObjects))restorationHandler {
-			// This will track the click, retrieve the original URL and call `handleIterableURL:context:` with the original URL
-			return [IterableAPI handleUniversalLink:userActivity.webpageURL];
-		}
-		```
-		
-		Alternatively, call `getAndTrackDeeplink` along with a callback to handle the original deeplink url. You can use this method for any incoming URLs, as it will execute the callback without changing the URL for non-Iterable URLs.
-
-		Swift:
-		
-		```swift
-		func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
-			guard let url = userActivity.webpageURL else {
-				return false
-			}
-
-			IterableAPI.getAndTrack(deeplink: url) { (originalUrl) in
-				// Handle original url deeplink here
-			}
-			return true
-		}
-		```
-
-		Objective-C:
-		
-		```objective-c
-		- (BOOL)application:(UIApplication *)application
-				continueUserActivity(NSUserActivity *)userActivity 
-				restorationHandler:(void (^)(NSArray *restorableObjects))restorationHandler {
-
-			[IterableAPI getAndTrackDeeplink:iterableLink callbackBlock:^(NSString* originalURL) {
-				//Handle Original URL deeplink here
-			}];
-
-			return true;
-		}
-		```
-		
-3. ##### In-App Notifications
-	###### Default Behavior
-	By default, when an in-app message arrives from the server it is automatically shown by the SDK provided the app is in foreground. If an in-app message is already showing when the message arrives, the new in-app will be shown 30 seconds (see how to change this default value below) after the currently displaying in-app is closed. Once an in-app message is shown, it will be "consumed" from the server queue and removed from the local queue as well. There is no need to write any code to get this default behavior. 
+* Handling Links from Push Notifications
 	
-	###### Overriding Whether to Show or Skip a Particular In-App Message
-	When an in-app message arrives from the server, the `onNew` method of `IterableInAppDelegate` is called. This delegate is set via the `inAppDelegate` property of `IterableConfig`. You can set `IterableConfig.inAppDelegate` to a custom class to override the default behavior. This class just needs to implement the `onNew` method. The `onNew` method should return `.show` to show the message or `.skip` to not show the message at this time.
+Push notifications and action buttons may have `openUrl` actions attached to them. When a URL is specified, the SDK first calls `urlDelegate` specified in your `IterableConfig` object. You can use this delegate to handle `openUrl` actions the same way as you handle normal deep links. If the delegate is not set or if it returns `false` (the default), the SDK will open Safari with that URL. If you want to navigate to a UIViewController on receiving a deep link, you should do so in the `urlDelegate`. 
 	
-	Swift:
-
-	```
-	class YourCustomInAppDelegate : IterableInAppDelegate {
-		func onNew(message: IterableInAppMessage) -> InAppShowResponse {
-			// perform custom processing
-
-			// ...
-			
-			return .show // or .skip
-		}
-	}
+In the code below, `DeepLinkHandler` is a custom handler which is reponsible for deep link navigation. You have to provide implementation for deep link navigation. Please see [sample application](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app?raw=true) for a reference implementation.
 	
-	// ...
+**Swift**
 	
+```swift
+func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+	...
+	// Initialize Iterable API
 	let config = IterableConfig()
-	config.inAppDelegate = YourCustomInAppDelegate()
-	IterableAPI.initialize(apiKey: "YOUR API KEY",  launchOptions: nil, config: config)
-	```
+	...
+	config.urlDelegate = self
+	IterableAPI.initialize(apiKey: apiKey, launchOptions:launchOptions, config: config)
+	...
+}
 
-	Objective-C:
-
-	```
-	// Implement this method in your custom class that implements IterableInAppDelegate
-	// This will most likely be the global AppDelegate class.
-	- (enum InAppShowResponse)onNewMessage:(IterableInAppMessage * _Nonnull)message {
-   		// perform custom processing
-   		
-   		// ...
-   		
-    	return InAppShowResponseShow; // or InAppShowResponseSkip
-	}
-
-	// ...
+// Iterable URL Delegate. It will be called when you receive 
+// an `openUrl` event from push notification.
+func handle(iterableURL url: URL, inContext context: IterableActionContext) -> Bool {
+	return DeeplinkHandler.handle(url: url)
+}
+```
 	
-	// Now set this custom class in IterableConfig
+**Objective-C**
+	
+```objective-c
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+	...
+	// Initialize Iterable SDK
 	IterableConfig *config = [[IterableConfig alloc] init];
-	config.inAppDelegate = self; // or other class implementing the protocol
+	...
+	config.urlDelegate = self;
 	[IterableAPI initializeWithApiKey:@"YOUR API KEY" launchOptions:launchOptions config:config];
-	```
+	...
+}
+	
+- (BOOL)handleIterableURL:(NSURL *)url context:(IterableActionContext *)context {
+	// Assuming you have a DeeplinkHandler class that handles all deep link URLs and navigates to the right place in the app
+	return [DeeplinkHandler handleUrl:url];
+}
+```
+		
+* Handling Email Links
+	
+For Universal Links to work with link rewriting in emails, you need to set up apple-app-site-association file in the Iterable project. More instructions here: [Setting up iOS Universal Links](https://support.iterable.com/hc/en-us/articles/115000440206-Setting-up-iOS-Universal-Links).
 
-	###### Getting the Local Queue of In-App Messages
-	All in-app messages that arrive from the server are stored in a local queue until they are consumed. IterableSDK exposes `InAppManager` protocol via the `IterableAPI.inAppManager` read-only property to get to locally stored in-app messages. Please be aware that all in-app messages that are shown will be consumed and removed from this queue by default. So you will have to override the default behavior as mentioned above to keep in-app messages around even after they are shown.
-	
-	Swift:
-	
-	```
-	// Get the in-app messages list
-	let messages = IterableAPI.inAppManager.getMessages()
-	
-	// Show an in-app message 
-	IterableAPI.inAppManager.show(message: message)
-	
-	// Show an in-app message without consuming, i.e., not removing it from the queue
-	IterableAPI.inAppManager.show(message: message, consume: false)
-	
-	```	
-	
-	Objective-C:
-	
-	```
-	// Get the in-app messages list
-    NSArray *messages = [IterableAPI.inAppManager getMessages];
-	
-	// Show an in-app message 
-	[IterableAPI.inAppManager showMessage:message];
-	
-	// Show an in-app message without consuming, i.e., not removing it from the queue
-	[IterableAPI.inAppManager showMessage:message consume:NO callbackBlock:nil];
-	
-	```	
+When an email link is clicked your `UIApplicationDelegate`'s [application:continueUserActivity:restorationHandler:](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623072-application?language=swift) method is called. If you already have an Iterable `urlDelegate` defined (see *Handling Links from Push Notifications* section above), the same handler can be used for email deep links by calling `handleUniversalLink:`.
 
-	###### When User Clicks a Button in the In-App Message
-	If the clicked `href` in the in-app message is a url (which is the case most of the time), `IterableURLDelegate` is called. If you don't set a custom class for `IterableConfig.urlDelegate` then mobile Safari will be opened with the clicked href url.
+**Swift**
 	
-	If the clicked `href` is not a url but a custom action name,  `IterableCustomActionDelegate` is called. Please see example in sample code [here](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app/swift-sample-app/AppDelegate.swift) to see how to implement `IterableURLDelegate` and `IterableCustomActionDelegate` and handle clicked urls.
-	
-	```
-	let config = IterableConfig()
-	config.urlDelegate = YourCustomUrlDelegate()
-	config.customActionDelegate = YourCustomActionDelegate()
-	```
-	
-	###### Changing the Display Interval Between In-App Messages
-	If you want to change the display interval, i.e., the time delay to show two successive in-app messages, to some value other than 30 seconds, change `IterableConfig.inAppDisplayInterval` to the appropriate value.
+```swift
+func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
+	guard let url = userActivity.webpageURL else {
+		return false
+	}
 
-4. ##### Tracking Custom Events
-	Custom events can be tracked using `IterableAPI.track(event:...)` calls.
-	
-5. ##### Updating User Fields
-	User fields can be modified using `IterableAPI.updateUser` call. You also have `updateEmail` and `updateSubscriptions` methods.
-	
-6. ##### Disabling Push Notifications to a Device
-	When a user logs out, you typically want to disable push notifications to that user/device. This can be accomplished by calling `disableDeviceForCurrentUser`. Please note that it will only attempt to disable the device if you have previously called `registerToken`.
-	
-	In order to re-enable push notifcations to that device, simply call `registerToken` as usual when the user logs back in.
-	
-7. ##### Uninstall Tracking
-	Iterable will track uninstalls with no additional work by you. 
+	// This will track the click, retrieve the original URL and call `handleIterableURL:context:` with the original URL
+	return IterableAPI.handle(universalLink: url)
+}
+```
 
-	This is implemented by sending a second push notification some time (currently, twelve hours) after the original campaign. If we receive feedback that the device's token is no longer valid, we assign an uninstall to the device, attributing it to the most recent campaign within twelve hours. A "real" campaign send (as opposed to the later "ghost" send) can also trigger recording an uninstall. In this case, if there was no previous campaign within the attribution period, an uninstall will still be tracked, but it will not be attributed to any campaign.
+**Objective-C**
+	
+```objective-c
+- (BOOL)application:(UIApplication *)application continueUserActivity(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray *restorableObjects))restorationHandler {
+	// This will track the click, retrieve the original URL and call `handleIterableURL:context:` with the original URL
+	return [IterableAPI handleUniversalLink:userActivity.webpageURL];
+}
+```
+	
+Alternatively, call `getAndTrackDeeplink` along with a callback to handle the original deeplink url. You can use this method for any incoming URLs, as it will execute the callback without changing the URL for non-Iterable URLs.
+
+**Swift**
+	
+```swift
+func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
+	guard let url = userActivity.webpageURL else {
+		return false
+	}
+
+	IterableAPI.getAndTrack(deeplink: url) { (originalUrl) in
+		// Handle original url deeplink here
+	}
+	return true
+}
+```
+
+**Objective-C**
+	
+```objective-c
+- (BOOL)application:(UIApplication *)application
+		continueUserActivity(NSUserActivity *)userActivity 
+		restorationHandler:(void (^)(NSArray *restorableObjects))restorationHandler {
+
+	[IterableAPI getAndTrackDeeplink:iterableLink callbackBlock:^(NSString* originalURL) {
+		//Handle Original URL deeplink here
+	}];
+
+	return true;
+}
+```
+	
+##### 3. In-App Notifications
+
+###### Default behavior
+By default, when an in-app message arrives from the server, the SDK automatically shows it if the app is in the foreground. If an in-app message is already showing when the new message arrives, the new in-app message will be shown 30 seconds after the currently displayed in-app message closes (see how to change this default value below). Once an in-app message is shown, it will be "consumed" from the server queue and removed from the local queue as well. There is no need to write any code to get this default behavior. 
+
+###### Overriding whether to show or skip a particular in-app message
+An incoming in-app message triggers a call to the `onNew` method of `IterableConfig.inAppDelegate` (an object of type `IterableInAppDelegate`). To override the default behavior, set `IterableConfig.inAppDelegate` to a custom class that overrides the `onNew` method. `onNew` should return `.show` to show the incoming in-app message or `.skip` to skip showing it.
+
+**Swift**
+
+```swift
+class YourCustomInAppDelegate : IterableInAppDelegate {
+	func onNew(message: IterableInAppMessage) -> InAppShowResponse {
+		// perform custom processing
+
+		// ...
+		
+		return .show // or .skip
+	}
+}
+	
+// ...
+	
+let config = IterableConfig()
+config.inAppDelegate = YourCustomInAppDelegate()
+IterableAPI.initialize(apiKey: "YOUR API KEY",  launchOptions: nil, config: config)
+```
+
+**Objective-C**
+
+```objc
+// Implement this method in your custom class that implements IterableInAppDelegate
+// This will most likely be the global AppDelegate class.
+- (enum InAppShowResponse)onNewMessage:(IterableInAppMessage * _Nonnull)message {
+	// perform custom processing
+	
+	// ...
+	
+	return InAppShowResponseShow; // or InAppShowResponseSkip
+}
+
+// ...
+	
+// Now set this custom class in IterableConfig
+IterableConfig *config = [[IterableConfig alloc] init];
+config.inAppDelegate = self; // or other class implementing the protocol
+[IterableAPI initializeWithApiKey:@"YOUR API KEY" launchOptions:launchOptions config:config];
+```
+
+###### Getting the local queue of in-app messages
+Until they are consumed by the app, all in-app messages that arrive from the server are stored in a local queue. To access that local queue, use the read-only `IterableAPI.inAppManager` property (which conforms to the `InAppManager` protocol). By default, all in-app messages in the local queue will be consumed and removed from this queue. To keep in-app messages around after they are shown, override the default behavior (as described above).
+	
+**Swift**
+	
+```swift
+// Get the in-app messages list
+let messages = IterableAPI.inAppManager.getMessages()
+	
+// Show an in-app message 
+IterableAPI.inAppManager.show(message: message)
+	
+// Show an in-app message without consuming, i.e., not removing it from the queue
+IterableAPI.inAppManager.show(message: message, consume: false)
+	
+```	
+	
+**Objective-C**
+	
+```objc
+// Get the in-app messages list
+NSArray *messages = [IterableAPI.inAppManager getMessages];
+	
+// Show an in-app message 
+[IterableAPI.inAppManager showMessage:message];
+	
+// Show an in-app message without consuming, i.e., not removing it from the queue
+[IterableAPI.inAppManager showMessage:message consume:NO callbackBlock:nil];
+	
+```	
+
+###### When user clicks a button/link in the in-app message
+If the in-app message's clicked button/link's `href` contains a URL (which is usually the case), tapping that button/link will call the `handle` method of `IterableConfig.urlDelegate` (an object of type `IterableURLDelegate`), if one is set. By default if this delegate is not set, tapping the button/link will open Safari with the `href` of the clicked button/link.
+	
+If the in-app message's `href` property contains custom action name (instead of a URL), tapping the  message will call the `handle` method of `IterableConfig.customActionDelegate` (an object that conforms to the `IterableCustomActionDelegate` protocol). If `customActionDelegate` is not set, nothing will happen by default.
+
+Take a look at [this sample code](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app/swift-sample-app/AppDelegate.swift) that demonstrates how to implement and use the `IterableURLDelegate` and `IterableCustomActionDelegate` protocols.
+	
+```swift
+let config = IterableConfig()
+config.urlDelegate = YourCustomUrlDelegate()
+config.customActionDelegate = YourCustomActionDelegate()
+```
+	
+###### Changing the display interval between in-app messages
+To customize the time delay between successive in-app messages (default value of 30 seconds), set `IterableConfig.inAppDisplayInterval` to an appropriate value (in seconds). 
+
+##### 4. Tracking Custom Events
+Custom events can be tracked using `IterableAPI.track(event:...)` calls.
+	
+##### 5. Updating User Fields
+User fields can be modified using `IterableAPI.updateUser` call. You also have `updateEmail` and `updateSubscriptions` methods.
+	
+##### 6. Disabling Push Notifications to a Device
+When a user logs out, you typically want to disable push notifications to that user/device. This can be accomplished by calling `disableDeviceForCurrentUser`. Please note that it will only attempt to disable the device if you have previously called `registerToken`.
+	
+In order to re-enable push notifcations to that device, simply call `registerToken` as usual when the user logs back in.
+	
+##### 7. Uninstall Tracking
+Iterable will track uninstalls with no additional work by you. 
+
+This is implemented by sending a second push notification some time (currently, twelve hours) after the original campaign. If we receive feedback that the device's token is no longer valid, we assign an uninstall to the device, attributing it to the most recent campaign within twelve hours. A "real" campaign send (as opposed to the later "ghost" send) can also trigger recording an uninstall. In this case, if there was no previous campaign within the attribution period, an uninstall will still be tracked, but it will not be attributed to any campaign.
 
 # Rich Push Notifications
 Push notifications may contain media attachments with images, animated gifs or video, and with an upcoming update, there will be a way to create action buttons. For this to work within your app, you need to create a Notification Service Extension. More instructions here: [Rich Push Notifications in iOS 10 and Android - Media Attachments](https://support.iterable.com/hc/en-us/articles/115003982203-Rich-Push-Notifications-in-iOS-10-and-Android-Media-Attachments).   
@@ -373,7 +378,7 @@ end
 
 ###### Notification Service Extension
 
-Swift:
+**Swift**
 
 ```swift
 import UserNotifications
@@ -383,7 +388,7 @@ class NotificationService: ITBNotificationServiceExtension {
 }
 ```
 
-Objective-C: You can not inherit in case of Objective C. You will have to delegate like below.
+**Objective-C** You can not inherit in case of Objective C. You will have to delegate like below.
 
 ```objective-c
 // File: NotificationService.m 
