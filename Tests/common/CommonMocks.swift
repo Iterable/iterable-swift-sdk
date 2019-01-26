@@ -294,8 +294,6 @@ class MockInAppDisplayer : InAppDisplayerProtocol {
 
 class MockInAppDelegate : IterableInAppDelegate {
     var onNewMessageCallback: ((IterableInAppMessage) -> Void)?
-    var onNewBatchCallback: (([IterableInAppMessage]) -> Void)?
-    
     
     init(showInApp: InAppShowResponse = .show) {
         self.showInApp = showInApp

@@ -34,12 +34,28 @@ extension UIEdgeInsets : Codable {
     }
 }
 
+// This is needed because String(describing: ...) returns wrong
+// value for this enum when it is exposed to Objective C
+extension IterableInAppTriggerType : CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .event:
+            return "event"
+        case .immediate:
+            return "immediate"
+        case .never:
+            return "never"
+        }
+    }
+}
+
 extension IterableInAppMessage : Codable {
     enum CodingKeys: String, CodingKey {
         case messageId
         case campaignId
         case channelName
         case contentType
+        case trigger
         case content
         case extraInfo
         case processed
@@ -69,6 +85,7 @@ extension IterableInAppMessage : Codable {
         let messageId = (try? container.decode(String.self, forKey: .messageId)) ?? ""
         let campaignId = (try? container.decode(String.self, forKey: .campaignId)) ?? ""
         let channelName = (try? container.decode(String.self, forKey: .channelName)) ?? ""
+        let trigger = (try? container.decode(IterableInAppTriggerType.self, forKey: .trigger)) ?? .immediate
         let content = (try? container.decode(IterableHtmlInAppContent.self, forKey: .content)) ?? IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
         let extraInfoData = try? container.decode(Data.self, forKey: .extraInfo)
         let extraInfo = IterableInAppMessage.deserializeExtraInfo(withData: extraInfoData)
@@ -77,6 +94,7 @@ extension IterableInAppMessage : Codable {
                   campaignId: campaignId,
                   channelName: channelName,
                   contentType: contentType,
+                  trigger: trigger,
                   content: content,
                   extraInfo: extraInfo)
         
@@ -94,6 +112,7 @@ extension IterableInAppMessage : Codable {
         try? container.encode(campaignId, forKey: .campaignId)
         try? container.encode(channelName, forKey: .channelName)
         try? container.encode(contentType, forKey: .contentType)
+        try? container.encode(trigger, forKey: .trigger)
         try? container.encode(content, forKey: .content)
         try? container.encode(IterableInAppMessage.serialize(extraInfo: extraInfo), forKey: .extraInfo)
         try? container.encode(processed, forKey: .processed)

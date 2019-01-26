@@ -290,7 +290,7 @@ extension InAppManager : InAppSynchronizerDelegate {
     }
     
     private func getFirstProcessableMessage() -> IterableInAppMessage? {
-        return messagesMap.values.filter({ $0.processed == false }).first
+        return messagesMap.values.filter({ $0.processed == false && $0.trigger == .immediate }).first
     }
     
     private func updateMessage(_ message: IterableInAppMessage, processed: Bool, consumed: Bool = false) {
