@@ -6,13 +6,13 @@
 
 `Iterable-iOS-SDK` is a Swift implementation of an iOS client for Iterable, for iOS versions 9.0 and higher.
 
-# Before Starting
+## Before Starting
 
 Before you even start with the SDK, you will need to setup Iterable push notifications for your app. 
 
 For more information, see [Getting Started Guide](https://support.iterable.com/hc/en-us/articles/115000315806-Setting-Up-iOS-Push-Notifications). 
  
-# Automatic Installation (via CocoaPods)
+## Automatic Installation (via CocoaPods)
 
 Iterable supports [CocoaPods](https://cocoapods.org) for easy installation. If you don't have it yet, please refer to [this document](https://guides.cocoapods.org/using/getting-started.html) to install Cocoapods.
 
@@ -33,7 +33,7 @@ Please look at the included sample pod file [HERE](https://github.com/Iterable/s
 
 Congratulations! You have now imported Iterable SDK into your project! 
 
-# Manual Installation
+## Manual Installation
 
 Attached to the release you will find two framework bundles. 
 
@@ -55,105 +55,134 @@ IterableAppExtensions.framework
 	![Linking](https://github.com/Iterable/swift-sdk/blob/master/images/build-setting.png?raw=true)
  
 
-# Initializing the SDK
+## Initializing the SDK
 **Note:** Sample projects are included in this repo.
  
 - [Swift Sample Project](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app?raw=true)
 - [ObjC Sample Project](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/objc-sample-app?raw=true)
 
+### 1. Import IterableSDK module in your project.
 
-1. ##### Initialize the API with API key.
-	In your app delegate, on application launch in `application:didFinishLaunchingWithOptions:` method, initialize the Iterable SDK:
+You need to import IterableSDK module in order to use it. Import in the top your Swift or Obective-C files as shown below.
 
-	**Swift**
+*Swift*
 
-	```swift
-	let config = IterableConfig()
-	config.pushIntegrationName = "<your-iterable-push-integration-name>"
-	IterableAPI.initialize(apiKey: "<your-api-key>", launchOptions: launchOptions, config:config)
-	```
+```swift
+// In AppDelegate.swift file
+// and any other file where you are using IterableSDK
+import IterableSDK
+```
+
+*Objective-C*
+
+```objc
+// In AppDelegate.m file
+// and any other file where you are using IterableSDK
+@import IterableSDK;
+```
+
+
+### 2. Initialize the API with API key.
 	
-	**Objective-C**
-
-	```objective-c
-	IterableConfig *config = [[IterableConfig alloc] init];
-	config.pushIntegrationName = @"<your-iterable-push-integration-name>";
-	[IterableAPI initializeWithApiKey:@"<your-api-key>" launchOptions:launchOptions config:config]
-	```
+In your app delegate, on application launch in `application:didFinishLaunchingWithOptions:` method, initialize the Iterable SDK:
 	
-	See the Iterable guide on how to setup your Iterable push integration and obtain push integration name [here](https://support.iterable.com/hc/en-us/articles/115000315806-Setting-Up-iOS-Push-Notifications).	
+*Swift*
 	
-2. ##### Set userId or email. 
-
-	Once you know the email or userId of the user, set the value.
-
-	**Swift**
+```swift
+let config = IterableConfig()
+config.pushIntegrationName = "<your-iterable-push-integration-name>"
+IterableAPI.initialize(apiKey: "<your-api-key>", launchOptions: launchOptions, config:config)
+```
 	
-	```swift
-	IterableAPI.email = "user@example.com"
-	```
-
-	**Objective-C**
-
-	```objective-c
-	IterableAPI.email = @"user@example.com";
-	```
+*Objective-C*
 	
-3. ##### Send Remote Notification Token to Iterable
-
-	* See [Apple Notification Guide](https://developer.apple.com/documentation/usernotifications) regarding how to register for remote notifiations.
-	* In your `AppDelegate`’s [application:didRegisterForRemoteNotificationsWithDeviceToken:](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622958-application) method, send the token obtained to Iterable.
-
-	**Swift**
+```objective-c
+IterableConfig *config = [[IterableConfig alloc] init];
+config.pushIntegrationName = @"<your-iterable-push-integration-name>";
+[IterableAPI initializeWithApiKey:@"<your-api-key>" launchOptions:launchOptions config:config]
+```
 	
+See the Iterable guide on how to setup your Iterable push integration and obtain push integration name [here](https://support.iterable.com/hc/en-us/articles/115000315806-Setting-Up-iOS-Push-Notifications).	
+	
+### 3. Set userId or email. 
+Once you know the email or userId of the user, set the value.
+
+*Swift*
+	
+```swift
+IterableAPI.email = "user@example.com"
+```
+
+*Objective-C*
+
+```objc
+IterableAPI.email = @"user@example.com";
+```
+	
+## Using the SDK
+
+### Sending push notifications
+
+See [Apple Notification Guide](https://developer.apple.com/documentation/usernotifications) regarding how to register for remote notifiations.
+
+1. Send remote notification token to Iterable
+
+	To send push notifications to your app, you will have to first send the application's remote notification token Iterable.
+
+	In your `AppDelegate`’s [application:didRegisterForRemoteNotificationsWithDeviceToken:](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622958-application) method, send the token obtained to Iterable.
+
+	*Swift*
+		
 	```swift
 	func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
 		IterableAPI.register(token: deviceToken)
 	}
 	```
-
-	**Objective-C**
 	
+	*Objective-C*
+		
 	```objective-c
 	- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 		[IterableAPI registerToken:deviceToken];
 	}
 	```
-	See example in sample app delegate [here](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app/swift-sample-app/AppDelegate.swift).
+
+2. Handle Push Notifications
+
+	When the user taps on the push notification or one of the action buttons, the system calls `UNUserNotificationCenterDelegate`'s [userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:](https://developer.apple.com/documentation/usernotifications/unusernotificationcenterdelegate/1649501-usernotificationcenter?language=objc). Pass this call to **`IterableAppIntegration`** to track push open event and perform the associated action (see below for custom action and URL delegates).
+		
+	*Swift*
+		
+	```swift
+	public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+		IterableAppIntegration.userNotificationCenter(center, didReceive: response, withCompletionHandler: completionHandler)
+	}
+	```
+	
+	*Objective-C*
+		
+	```objective-c
+	- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
+		[IterableAppIntegration userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
+	}
+	```
+
+See example in sample app delegate [here](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app/swift-sample-app/AppDelegate.swift).
 
 Congratulations! You can now send remote push notifications to your device from Iterable! Please note that you can't send push notifications until you set the userId or email. Please see sample applications to see a reference implementation.
 
-# Using the SDK
-
-##### 1. Handle Push Notifications
-
-When the user taps on the push notification or one of the action buttons, the system calls `UNUserNotificationCenterDelegate`'s [userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:](https://developer.apple.com/documentation/usernotifications/unusernotificationcenterdelegate/1649501-usernotificationcenter?language=objc). Pass this call to **`IterableAppIntegration`** to track push open event and perform the associated action (see below for custom action and URL delegates).
 	
-**Swift**
-	
-```swift
-public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-	IterableAppIntegration.userNotificationCenter(center, didReceive: response, withCompletionHandler: completionHandler)
-}
-```
+### Deep Linking
 
-**Objective-C**
-	
-```objective-c
-- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
-	[IterableAppIntegration userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
-}
-```
-	
-##### 2. Deep Linking
+Deep linking allows a uniform resource identifier (URI) to link to a specific location within your mobile app rather than simply launching the app.
 
-* Handling Links from Push Notifications
+#### Handling Links from Push Notifications
 	
 Push notifications and action buttons may have `openUrl` actions attached to them. When a URL is specified, the SDK first calls `urlDelegate` specified in your `IterableConfig` object. You can use this delegate to handle `openUrl` actions the same way as you handle normal deep links. If the delegate is not set or if it returns `false` (the default), the SDK will open Safari with that URL. If you want to navigate to a UIViewController on receiving a deep link, you should do so in the `urlDelegate`. 
 	
 In the code below, `DeepLinkHandler` is a custom handler which is reponsible for deep link navigation. You have to provide implementation for deep link navigation. Please see [sample application](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app?raw=true) for a reference implementation.
 	
-**Swift**
+*Swift*
 	
 ```swift
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
@@ -173,7 +202,7 @@ func handle(iterableURL url: URL, inContext context: IterableActionContext) -> B
 }
 ```
 	
-**Objective-C**
+*Objective-C*
 	
 ```objective-c
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -192,13 +221,13 @@ func handle(iterableURL url: URL, inContext context: IterableActionContext) -> B
 }
 ```
 		
-* Handling Email Links
+#### Handling Email Links
 	
 For Universal Links to work with link rewriting in emails, you need to set up apple-app-site-association file in the Iterable project. More instructions here: [Setting up iOS Universal Links](https://support.iterable.com/hc/en-us/articles/115000440206-Setting-up-iOS-Universal-Links).
 
 When an email link is clicked your `UIApplicationDelegate`'s [application:continueUserActivity:restorationHandler:](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623072-application?language=swift) method is called. If you already have an Iterable `urlDelegate` defined (see *Handling Links from Push Notifications* section above), the same handler can be used for email deep links by calling `handleUniversalLink:`.
 
-**Swift**
+*Swift*
 	
 ```swift
 func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
@@ -211,7 +240,7 @@ func application(_ application: UIApplication, continue userActivity: NSUserActi
 }
 ```
 
-**Objective-C**
+*Objective-C*
 	
 ```objective-c
 - (BOOL)application:(UIApplication *)application continueUserActivity(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray *restorableObjects))restorationHandler {
@@ -220,47 +249,17 @@ func application(_ application: UIApplication, continue userActivity: NSUserActi
 }
 ```
 	
-Alternatively, call `getAndTrackDeeplink` along with a callback to handle the original deeplink url. You can use this method for any incoming URLs, as it will execute the callback without changing the URL for non-Iterable URLs.
+#### In-App Notifications
 
-**Swift**
-	
-```swift
-func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
-	guard let url = userActivity.webpageURL else {
-		return false
-	}
+##### Default behavior
 
-	IterableAPI.getAndTrack(deeplink: url) { (originalUrl) in
-		// Handle original url deeplink here
-	}
-	return true
-}
-```
-
-**Objective-C**
-	
-```objective-c
-- (BOOL)application:(UIApplication *)application
-		continueUserActivity(NSUserActivity *)userActivity 
-		restorationHandler:(void (^)(NSArray *restorableObjects))restorationHandler {
-
-	[IterableAPI getAndTrackDeeplink:iterableLink callbackBlock:^(NSString* originalURL) {
-		//Handle Original URL deeplink here
-	}];
-
-	return true;
-}
-```
-	
-##### 3. In-App Notifications
-
-###### Default behavior
 By default, when an in-app message arrives from the server, the SDK automatically shows it if the app is in the foreground. If an in-app message is already showing when the new message arrives, the new in-app message will be shown 30 seconds after the currently displayed in-app message closes (see how to change this default value below). Once an in-app message is shown, it will be "consumed" from the server queue and removed from the local queue as well. There is no need to write any code to get this default behavior. 
 
-###### Overriding whether to show or skip a particular in-app message
+##### Overriding whether to show or skip a particular in-app message
+
 An incoming in-app message triggers a call to the `onNew` method of `IterableConfig.inAppDelegate` (an object of type `IterableInAppDelegate`). To override the default behavior, set `IterableConfig.inAppDelegate` to a custom class that overrides the `onNew` method. `onNew` should return `.show` to show the incoming in-app message or `.skip` to skip showing it.
 
-**Swift**
+*Swift*
 
 ```swift
 class YourCustomInAppDelegate : IterableInAppDelegate {
@@ -280,7 +279,7 @@ config.inAppDelegate = YourCustomInAppDelegate()
 IterableAPI.initialize(apiKey: "YOUR API KEY",  launchOptions: nil, config: config)
 ```
 
-**Objective-C**
+*Objective-C*
 
 ```objc
 // Implement this method in your custom class that implements IterableInAppDelegate
@@ -301,10 +300,10 @@ config.inAppDelegate = self; // or other class implementing the protocol
 [IterableAPI initializeWithApiKey:@"YOUR API KEY" launchOptions:launchOptions config:config];
 ```
 
-###### Getting the local queue of in-app messages
+##### Getting the local queue of in-app messages
 Until they are consumed by the app, all in-app messages that arrive from the server are stored in a local queue. To access that local queue, use the read-only `IterableAPI.inAppManager` property (which conforms to the `InAppManager` protocol). By default, all in-app messages in the local queue will be consumed and removed from this queue. To keep in-app messages around after they are shown, override the default behavior (as described above).
 	
-**Swift**
+*Swift*
 	
 ```swift
 // Get the in-app messages list
@@ -318,7 +317,7 @@ IterableAPI.inAppManager.show(message: message, consume: false)
 	
 ```	
 	
-**Objective-C**
+*Objective-C*
 	
 ```objc
 // Get the in-app messages list
@@ -332,8 +331,9 @@ NSArray *messages = [IterableAPI.inAppManager getMessages];
 	
 ```	
 
-###### When user clicks a button/link in the in-app message
-If the in-app message's clicked button/link's `href` contains a URL (which is usually the case), tapping that button/link will call the `handle` method of `IterableConfig.urlDelegate` (an object of type `IterableURLDelegate`), if one is set. By default if this delegate is not set, tapping the button/link will open Safari with the `href` of the clicked button/link.
+##### When user clicks a button/link in the in-app message
+
+Button/link clicks from in-app are handled similar to deep links from notifications and emails. Please see those sections above. If the in-app message's clicked button/link's `href` contains a URL (which is usually the case), tapping that button/link will call the `handle` method of `IterableConfig.urlDelegate` (an object of type `IterableURLDelegate`), if one is set. By default if this delegate is not set, tapping the button/link will open Safari with the `href` of the clicked button/link.
 	
 If the in-app message's `href` property contains custom action name (instead of a URL), tapping the  message will call the `handle` method of `IterableConfig.customActionDelegate` (an object that conforms to the `IterableCustomActionDelegate` protocol). If `customActionDelegate` is not set, nothing will happen by default.
 
@@ -345,40 +345,42 @@ config.urlDelegate = YourCustomUrlDelegate()
 config.customActionDelegate = YourCustomActionDelegate()
 ```
 	
-###### Changing the display interval between in-app messages
+##### Changing the display interval between in-app messages
+
 To customize the time delay between successive in-app messages (default value of 30 seconds), set `IterableConfig.inAppDisplayInterval` to an appropriate value (in seconds). 
 
-##### 4. Tracking Custom Events
+
+#### Tracking Custom events
+
 Custom events can be tracked using `IterableAPI.track(event:...)` calls.
 	
-##### 5. Updating User Fields
+#### Updating User Fields
+
 User fields can be modified using `IterableAPI.updateUser` call. You also have `updateEmail` and `updateSubscriptions` methods.
 	
-##### 6. Disabling Push Notifications to a Device
+#### Disabling Push Notifications to a Device
+
 When a user logs out, you typically want to disable push notifications to that user/device. This can be accomplished by calling `disableDeviceForCurrentUser`. Please note that it will only attempt to disable the device if you have previously called `registerToken`.
 	
 In order to re-enable push notifcations to that device, simply call `registerToken` as usual when the user logs back in.
 	
-##### 7. Uninstall Tracking
+#### Uninstall Tracking
+
 Iterable will track uninstalls with no additional work by you. 
 
 This is implemented by sending a second push notification some time (currently, twelve hours) after the original campaign. If we receive feedback that the device's token is no longer valid, we assign an uninstall to the device, attributing it to the most recent campaign within twelve hours. A "real" campaign send (as opposed to the later "ghost" send) can also trigger recording an uninstall. In this case, if there was no previous campaign within the attribution period, an uninstall will still be tracked, but it will not be attributed to any campaign.
 
 # Rich Push Notifications
+
 Push notifications may contain media attachments with images, animated gifs or video, and with an upcoming update, there will be a way to create action buttons. For this to work within your app, you need to create a Notification Service Extension. More instructions here: [Rich Push Notifications in iOS 10 and Android - Media Attachments](https://support.iterable.com/hc/en-us/articles/115003982203-Rich-Push-Notifications-in-iOS-10-and-Android-Media-Attachments).   
-Iterable SDK provides an implementation that handles media attachments and action buttons. If you are calling Iterable SDK from Swift, all you need to do is inherit from it. If you are using Objective-C, you will have to delegate to the implementation provided. Please see example below: 
-###### Podfile
 
-```
-// If the target name for the notification extension is 'MyAppNotificationExtension'
-target 'MyAppNotificationExtension' do
-	pod 'Iterable-iOS-AppExtensions'
-end
-```
+Iterable SDK provides an implementation that handles media attachments and action buttons. 
 
-###### Notification Service Extension
+1. Include `Iterable-iOS-AppExtensions` in your podfile as explained above.
+2. Create a new target of type notification service extension in your XCode project/solution.
+3. If you are calling Iterable SDK from Swift, all you need to do is inherit from ITBNotificationServiceExtension. If you are using Objective-C, you will have to delegate to the implementation provided. 
 
-**Swift**
+*Swift*
 
 ```swift
 import UserNotifications
@@ -388,7 +390,9 @@ class NotificationService: ITBNotificationServiceExtension {
 }
 ```
 
-**Objective-C** You can not inherit in case of Objective C. You will have to delegate like below.
+*Objective-C* 
+
+You can not inherit in case of Objective C. You will have to delegate like below.
 
 ```objective-c
 // File: NotificationService.m 
@@ -427,7 +431,7 @@ The MIT License
 
 See [LICENSE](https://github.com/Iterable/swift-sdk/blob/master/LICENSE?raw=true)
 
-## Want to Contribute?
+# Want to Contribute?
 
 This library is open source, and we will look at pull requests!
 
