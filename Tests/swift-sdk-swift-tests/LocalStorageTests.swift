@@ -105,7 +105,7 @@ class LocalStorageTests: XCTestCase {
         let mockDateProvider = MockDateProvider()
         var localStorage: LocalStorageProtocol = UserDefaultsLocalStorage(dateProvider: mockDateProvider)
         let sdkVersion = "6.0.2"
-        localStorage.deviceId = sdkVersion
-        XCTAssertEqual(localStorage.deviceId, sdkVersion)
+        localStorage.sdkVersion = sdkVersion
+        XCTAssertEqual(localStorage.sdkVersion, sdkVersion)
     }
 }
