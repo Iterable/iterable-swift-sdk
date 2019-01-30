@@ -101,7 +101,7 @@ class LocalStorageTests: XCTestCase {
     func testSdkVersion() {
         var localStorage = UserDefaultsLocalStorage(userDefaults: TestUtils.getTestUserDefaults())
         let sdkVersion = "6.0.2"
-        localStorage.deviceId = sdkVersion
-        XCTAssertEqual(localStorage.deviceId, sdkVersion)
+        localStorage.sdkVersion = sdkVersion
+        XCTAssertEqual(localStorage.sdkVersion, sdkVersion)
     }
 }
