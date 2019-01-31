@@ -10,6 +10,7 @@ import UIKit
 
 /// Callbacks from the synchronizer
 protocol InAppSynchronizerDelegate : class {
+    func onInAppRemoved(messageId: String)
     func onInAppMessagesAvailable(messages: [IterableInAppMessage])
 }
 
@@ -17,6 +18,9 @@ protocol InAppSynchronizerDelegate : class {
 protocol InAppSynchronizerProtocol {
     var internalApi: IterableAPIInternal? {get set}
     var inAppSyncDelegate: InAppSynchronizerDelegate? {get set}
+    
+    func sync()
+    func remove(messageId: String)
 }
 
 protocol InAppDisplayerProtocol {
@@ -34,47 +38,41 @@ class InAppDisplayer : InAppDisplayerProtocol {
     }
 }
 
-class InAppSynchronizer : InAppSynchronizerProtocol {
+class InAppSilentPushSynchronizer : InAppSynchronizerProtocol {
     weak var internalApi: IterableAPIInternal?
     weak var inAppSyncDelegate: InAppSynchronizerDelegate?
     
     init() {
-        if #available(iOS 10.0, *) {
-            Timer.scheduledTimer(withTimeInterval: syncInterval, repeats: true) { [weak self] timer in
-                self?.sync(timer: timer)
-            }
-        } else {
-            // Fallback on earlier versions
-            Timer.scheduledTimer(timeInterval: syncInterval, target: self, selector: #selector(sync(timer:)), userInfo: nil, repeats: true)
-        }
+        ITBInfo()
     }
     
-    @objc private func sync(timer: Timer) {
-        self.timer = timer
-        
+    func sync() {
+        ITBInfo()
         guard let internalApi = self.internalApi else {
             ITBError("Invalid state: expected InternalApi")
             return
         }
-
+        
         InAppHelper.getInAppMessagesFromServer(internalApi: internalApi, number: numMessages).onSuccess {
             if $0.count > 0 {
                 self.inAppSyncDelegate?.onInAppMessagesAvailable(messages: $0)
             }
         }.onError {
-            ITBError($0.localizedDescription)
+                ITBError($0.localizedDescription)
         }
+    }
+    
+    func remove(messageId: String) {
+        ITBInfo()
+        inAppSyncDelegate?.onInAppRemoved(messageId: messageId)
     }
     
     deinit {
         ITBInfo()
-        timer?.invalidate()
     }
     
-    // in seconds
-    private let syncInterval = 1.0
+    // how many messages to fetch
     private let numMessages = 10
-    private var timer: Timer?
 }
 
 
@@ -301,11 +299,12 @@ struct InAppHelper {
         case failure(reason: String, messageId: String?)
     }
     
-    /// This is a struct equivalent of IterableHtmlInAppContent class
+    /// This is a struct equivalent of IterableInAppMessage class
     private struct InAppDetails {
         let channelName: String
         let messageId: String
         let campaignId: String
+        let trigger: IterableInAppTriggerType
         let edgeInsets: UIEdgeInsets
         let backgroundAlpha: Double
         let html: String
@@ -368,7 +367,8 @@ struct InAppHelper {
         
         // this is temporary until we fix backend
         let channelName = extraInfo?["channelName"] as? String ?? ""
-        
+
+        let trigger = parseTrigger(fromTriggerElement: dict[.ITBL_IN_APP_TRIGGER] as? [AnyHashable : Any])
         let inAppDisplaySettings = content[.ITBL_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
         let backgroundAlpha = InAppHelper.getBackgroundAlpha(fromInAppSettings: inAppDisplaySettings)
         let edgeInsets = InAppHelper.getPadding(fromInAppSettings: inAppDisplaySettings)
@@ -377,10 +377,31 @@ struct InAppHelper {
             channelName: channelName,
             messageId: messageId,
             campaignId: campaignId,
+            trigger: trigger,
             edgeInsets: edgeInsets,
             backgroundAlpha: backgroundAlpha,
             html: html,
             extraInfo: extraInfo))
+    }
+    
+    private static func parseTrigger(fromTriggerElement element: [AnyHashable : Any]?) -> IterableInAppTriggerType {
+        guard let element = element else {
+            return .immediate
+        }
+        guard let triggerTypeString = element[.ITBL_IN_APP_TRIGGER_TYPE] as? String else {
+            return .immediate
+        }
+        
+        switch triggerTypeString.lowercased() {
+        case String(describing: IterableInAppTriggerType.immediate).lowercased():
+            return .immediate
+        case String(describing: IterableInAppTriggerType.event).lowercased():
+            return .event
+        case String(describing: IterableInAppTriggerType.never).lowercased():
+            return .never
+        default:
+            return .immediate
+        }
     }
     
     private static func parseExtraInfo(fromContent content: [AnyHashable : Any]) -> [AnyHashable : Any]? {
@@ -397,6 +418,7 @@ struct InAppHelper {
                                         campaignId: inAppDetails.campaignId,
                                         channelName: inAppDetails.channelName,
                                         contentType: .html,
+                                        trigger: inAppDetails.trigger,
                                         content: content,
                                         extraInfo: inAppDetails.extraInfo)
         case .failure(reason: let reason, messageId: let messageId):

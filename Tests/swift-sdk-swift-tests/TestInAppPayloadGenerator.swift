@@ -6,39 +6,29 @@
 
 import Foundation
 
+@testable import IterableSDK
+
 struct TestInAppPayloadGenerator {
-    static func createPayloadWithUrl(numMessages: Int) -> [AnyHashable : Any] {
-        return createPayloadWithUrl(indices: 1...numMessages)
+    static func createPayloadWithUrl(numMessages: Int, trigger: IterableInAppTriggerType = .immediate) -> [AnyHashable : Any] {
+        return createPayloadWithUrl(indices: 1...numMessages, trigger: trigger)
     }
     
-    static func createPayloadWithUrl<T: Sequence>(indices: T) -> [AnyHashable : Any] where T.Element == Int {
+    static func createPayloadWithUrl<T: Sequence>(indices: T, trigger: IterableInAppTriggerType = .immediate) -> [AnyHashable : Any] where T.Element == Int {
         return [
             "inAppMessages" : indices.reduce(into: [[AnyHashable : Any]]()) { (result, index) in
-                result.append(createOneInAppDictWithUrl(index: index))
+                result.append(createOneInAppDictWithUrl(index: index, trigger: trigger))
             }
         ]
     }
 
-    static func createPayloadWithCustomAction(numMessages: Int) -> [AnyHashable : Any] {
+    static func createPayloadWithCustomAction(numMessages: Int, trigger: IterableInAppTriggerType = .immediate) -> [AnyHashable : Any] {
         return [
             "inAppMessages" : (1...numMessages).reduce(into: [[AnyHashable : Any]]()) { (result, index) in
-                result.append(createOneInAppDictWithCustomAction(index: index))
+                result.append(createOneInAppDictWithCustomAction(index: index, trigger: trigger))
             }
         ]
     }
 
-    static func createPayloadWithUrlWithOneMessage(messageNumber: Int) -> [AnyHashable : Any] {
-        return [
-            "inAppMessages" : [createOneInAppDictWithUrl(index: messageNumber)]
-        ]
-    }
-
-    static func createPayloadWithCustomActionWithOneMessage(messageNumber: Int) -> [AnyHashable : Any] {
-        return [
-            "inAppMessages" : [createOneInAppDictWithCustomAction(index: messageNumber)]
-        ]
-    }
-    
     static func getMessageId(index: Int) -> String {
         return "message\(index)"
     }
@@ -63,15 +53,15 @@ struct TestInAppPayloadGenerator {
         return Int(String(campaignId.suffix(1)))!
     }
 
-    private static func createOneInAppDictWithUrl(index: Int) -> [AnyHashable : Any] {
-        return createOneInAppDict(withHref: getClickUrl(index: index), index: index)
+    static func createOneInAppDictWithUrl(index: Int, trigger: IterableInAppTriggerType) -> [AnyHashable : Any] {
+        return createOneInAppDict(withHref: getClickUrl(index: index), index: index, trigger: trigger)
     }
 
-    private static func createOneInAppDictWithCustomAction(index: Int) -> [AnyHashable : Any] {
-        return createOneInAppDict(withHref: getCustomActionUrl(index: index), index: index)
+    static func createOneInAppDictWithCustomAction(index: Int, trigger: IterableInAppTriggerType) -> [AnyHashable : Any] {
+        return createOneInAppDict(withHref: getCustomActionUrl(index: index), index: index, trigger: trigger)
     }
 
-    private static func createOneInAppDict(withHref href: String, index: Int) -> [AnyHashable : Any] {
+    private static func createOneInAppDict(withHref href: String, index: Int, trigger: IterableInAppTriggerType) -> [AnyHashable : Any] {
         return [
             "content" : [
                 "html" : "<a href='\(href)'>Click Here</a>",
@@ -80,6 +70,7 @@ struct TestInAppPayloadGenerator {
             ],
             "messageId" : getMessageId(index: index),
             "campaignId" : getCampaignId(index: index),
+            "trigger" : ["type" : String(describing: trigger)]
         ]
     }
     

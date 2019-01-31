@@ -49,7 +49,6 @@ public struct OrderedDictionary<K: Hashable, V> {
     }
     
     private var dict = [K:V]()
-    
 }
 
 extension OrderedDictionary: Sequence {

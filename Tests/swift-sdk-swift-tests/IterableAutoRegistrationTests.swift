@@ -14,7 +14,7 @@ class IterableAutoRegistrationTests: XCTestCase {
     override func setUp() {
         super.setUp()
         
-        TestUtils.clearUserDefaults()
+        TestUtils.clearTestUserDefaults()
     }
     
     override func tearDown() {
@@ -164,7 +164,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         config.autoPushRegistration = true
         let notificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: expectation1)
         
-        UserDefaults.standard.set("user1@example.com", forKey: .ITBL_USER_DEFAULTS_EMAIL_KEY)
+        TestUtils.getTestUserDefaults().set("user1@example.com", forKey: .ITBL_USER_DEFAULTS_EMAIL_KEY)
         IterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
         
         // only wait for small time, supposed to error out

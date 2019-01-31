@@ -14,8 +14,10 @@
 		00CB31B621096129004ACDEC /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CB31B4210960C4004ACDEC /* TestUtils.swift */; };
 		0B7C33B37D3191A8DAAD6A87 /* libPods-swift-sdk-objc-tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FD666A015C69498DD477DAEB /* libPods-swift-sdk-objc-tests.a */; };
 		A5DF819C89A29E7F3A88DC7F /* libPods-swift-sdk-swift-tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EA3B895070C574A2D2D4FC80 /* libPods-swift-sdk-swift-tests.a */; };
+		AC03094B21E532470003A288 /* InAppPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC03094A21E532470003A288 /* InAppPersistence.swift */; };
 		AC0674E620D8766600C2806D /* NotificationExtensionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AC0674E520D8766600C2806D /* NotificationExtensionTests.m */; };
 		AC2263F020CF49B8009800EB /* IterableSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = AC2263E220CF49B8009800EB /* IterableSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AC2B79F721E6A38900A59080 /* NotificationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2B79F621E6A38900A59080 /* NotificationHelper.swift */; };
 		AC2C667E20D3111900D46CC9 /* DateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C667D20D3111900D46CC9 /* DateProvider.swift */; };
 		AC2C668020D31B1F00D46CC9 /* IterableNotificationResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */; };
 		AC2C668220D32F2800D46CC9 /* IterableAppIntegrationInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668120D32F2800D46CC9 /* IterableAppIntegrationInternal.swift */; };
@@ -179,12 +181,14 @@
 		0BDA0B537E9398A298EEBD89 /* Pods-swift-sdk-objc-tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-swift-sdk-objc-tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-swift-sdk-objc-tests/Pods-swift-sdk-objc-tests.debug.xcconfig"; sourceTree = "<group>"; };
 		6BBDFB5DDE58A33B50FB1494 /* Pods-swift-sdk-objc-tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-swift-sdk-objc-tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-swift-sdk-objc-tests/Pods-swift-sdk-objc-tests.release.xcconfig"; sourceTree = "<group>"; };
 		789F9E27D756A343F1E4E523 /* libPods-swift-sdk.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-swift-sdk.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AC03094A21E532470003A288 /* InAppPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPersistence.swift; sourceTree = "<group>"; };
 		AC0674E420D8766600C2806D /* notification-extensionTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "notification-extensionTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		AC0674E520D8766600C2806D /* NotificationExtensionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationExtensionTests.m; sourceTree = "<group>"; };
 		AC0A45372179300D0040394F /* host-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "host-app.entitlements"; sourceTree = "<group>"; };
 		AC2263DF20CF49B8009800EB /* IterableSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = IterableSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC2263E220CF49B8009800EB /* IterableSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IterableSDK.h; sourceTree = "<group>"; };
 		AC2263E320CF49B8009800EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AC2B79F621E6A38900A59080 /* NotificationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationHelper.swift; sourceTree = "<group>"; };
 		AC2C667D20D3111900D46CC9 /* DateProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateProvider.swift; sourceTree = "<group>"; };
 		AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableNotificationResponseTests.swift; sourceTree = "<group>"; };
 		AC2C668120D32F2800D46CC9 /* IterableAppIntegrationInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAppIntegrationInternal.swift; sourceTree = "<group>"; };
@@ -409,6 +413,7 @@
 				AC72A0AB20CF4BEB004D7997 /* IterableInAppHTMLViewController.swift */,
 				AC72A0AA20CF4BEB004D7997 /* InAppHelper.swift */,
 				ACA8D1AA21966555001B1332 /* InAppManager.swift */,
+				AC03094A21E532470003A288 /* InAppPersistence.swift */,
 			);
 			name = InApp;
 			sourceTree = "<group>";
@@ -485,6 +490,7 @@
 				AC2C668120D32F2800D46CC9 /* IterableAppIntegrationInternal.swift */,
 				ACD6116B2107D004003E7F6B /* NetworkHelper.swift */,
 				ACEDF41C2183C2EC000B9BFE /* Promise.swift */,
+				AC2B79F621E6A38900A59080 /* NotificationHelper.swift */,
 			);
 			path = Internal;
 			sourceTree = "<group>";
@@ -993,9 +999,11 @@
 				ACF560E820E55A6B000AAC23 /* IterableActionContext.swift in Sources */,
 				AC2C668220D32F2800D46CC9 /* IterableAppIntegrationInternal.swift in Sources */,
 				AC72A0C820CF4CE2004D7997 /* ITBConsts.swift in Sources */,
+				AC2B79F721E6A38900A59080 /* NotificationHelper.swift in Sources */,
 				AC776DA6211A1B8A00C27C27 /* IterableRequestUtil.swift in Sources */,
 				ACEDF41D2183C2EC000B9BFE /* Promise.swift in Sources */,
 				AC7125EF20D4579E0043BBC1 /* IterableConfig.swift in Sources */,
+				AC03094B21E532470003A288 /* InAppPersistence.swift in Sources */,
 				AC72A0B620CF4C53004D7997 /* IterableConstants.m in Sources */,
 				AC72A0D120CF4D0B004D7997 /* InAppHelper.swift in Sources */,
 				AC776DA22118B86600C27C27 /* DeviceInfo.swift in Sources */,
@@ -1316,6 +1324,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_TESTABILITY = YES;
 				INFOPLIST_FILE = "swift-sdk/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;

@@ -11,7 +11,8 @@ import UserNotifications
 
 @objc public class IterableAppIntegration : NSObject {
     /**
-     * This method handles incoming Iterable notifications and actions for iOS < 10
+     * This method handles incoming Iterable notifications and actions for iOS < 10.
+     * This also handles 'silent push' notifications for all iOS versions.
      * Call it from your app delegate's application:didReceiveRemoteNotification:fetchCompletionHandler:.
      *
      * - parameter application: UIApplication singleton object

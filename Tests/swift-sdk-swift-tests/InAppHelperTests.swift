@@ -226,15 +226,33 @@ class InAppHelperTests: XCTestCase {
     
     func testExtraInfoParsing() {
         IterableAPI.initializeForTesting()
-        let payload = TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 2)
+        
+        let extraInfo: [AnyHashable : Any] = ["string1" : "value1", "bool1" : true, "date1" : Date()]
+        
+        let payload = createInAppPayload(withExtraInfo: extraInfo)
+        
         let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
-        XCTAssertEqual(messages.count, 2)
-        let first = messages[0]
-        let expectedExtraInfo = ["channelName" : "inBox", "title" : "Product 1 Available", "date" : "2018-11-14T14:00:00:00.32Z"]
-        XCTAssertEqual(first.extraInfo as? [String : String], expectedExtraInfo)
-        XCTAssertEqual(first.channelName, "inBox")
+        
+        XCTAssertEqual(messages.count, 1)
+        let obtained = messages[0].extraInfo
+        XCTAssertEqual(obtained?["string1"] as? String, "value1")
+        XCTAssertEqual(obtained?["bool1"] as? Bool, true)
     }
-
+    
+    private func createInAppPayload(withExtraInfo extraInfo: [AnyHashable : Any]) -> [AnyHashable : Any] {
+        return [
+            "inAppMessages" : [[
+                "content" : [
+                    "html" : "<a href='href1'>Click Here</a>",
+                    "inAppDisplaySettings" : ["backgroundAlpha" : 0.5, "left" : ["percentage" : 60], "right" : ["percentage" : 60], "bottom" : ["displayOption" : "AutoExpand"], "top" : ["displayOption" : "AutoExpand"]],
+                    "payload" : extraInfo
+                ],
+                "messageId" : "messageIdxxx",
+                "campaignId" : "campaignIdxxx",
+            ]]
+        ]
+    }
+    
     // nil host
     func testCallbackUrlParsingCustomScheme1() {
         let url = URL(string: "applewebdata://")!
