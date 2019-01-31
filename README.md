@@ -147,9 +147,9 @@ See [Apple Notification Guide](https://developer.apple.com/documentation/usernot
 	}
 	```
 
-2. Handle Push Notifications
+2. Handle push notifications
 
-	When the user taps on the push notification or one of the action buttons, the system calls `UNUserNotificationCenterDelegate`'s [userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:](https://developer.apple.com/documentation/usernotifications/unusernotificationcenterdelegate/1649501-usernotificationcenter?language=objc). Pass this call to **`IterableAppIntegration`** to track push open event and perform the associated action (see below for custom action and URL delegates).
+	When the user taps on the push notification or one of the action buttons, the system calls `UNUserNotificationCenterDelegate`'s [userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:](https://developer.apple.com/documentation/usernotifications/unusernotificationcenterdelegate/1649501-usernotificationcenter?language=swift). In this method, call `IterableAppIntegration` with the same parameters to track push open event and perform the associated action (see below for custom action and URL delegates).
 		
 	*Swift*
 		
@@ -172,15 +172,15 @@ See example in sample app delegate [here](https://github.com/Iterable/swift-sdk/
 Congratulations! You can now send remote push notifications to your device from Iterable! Please note that you can't send push notifications until you set the userId or email. Please see sample applications to see a reference implementation.
 
 	
-### Deep Linking
+### Deep linking
 
 Deep linking allows a uniform resource identifier (URI) to link to a specific location within your mobile app rather than simply launching the app.
 
-#### Handling Links from Push Notifications
+#### Handling links from push notifications
 	
-Push notifications and action buttons may have `openUrl` actions attached to them. When a URL is specified, the SDK first calls `urlDelegate` specified in your `IterableConfig` object. You can use this delegate to handle `openUrl` actions the same way as you handle normal deep links. If the delegate is not set or if it returns `false` (the default), the SDK will open Safari with that URL. If you want to navigate to a UIViewController on receiving a deep link, you should do so in the `urlDelegate`. 
+Push notifications and action buttons may have `openUrl` actions attached to them. When a URL is specified, the SDK first calls the `urlDelegate` specified in your `IterableConfig` object. You can use this delegate to handle `openUrl` actions the same way as you handle normal deep links. If the delegate is not set or if it returns `false` (the default), the SDK will open Safari with that URL. If you want to navigate to a view controller on receiving a deep link, do so in the `urlDelegate`. 
 	
-In the code below, `DeepLinkHandler` is a custom handler which is reponsible for deep link navigation. You have to provide implementation for deep link navigation. Please see [sample application](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app?raw=true) for a reference implementation.
+In the code below, `DeepLinkHandler` is a custom handler which is reponsible for deep link navigation. You have to provide implementation for deep link navigation. Please see [sample application](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app/swift-sample-app/DeeplinkHandler.swift) for a reference implementation of DeeplinkHandler.
 	
 *Swift*
 	
@@ -221,11 +221,11 @@ func handle(iterableURL url: URL, inContext context: IterableActionContext) -> B
 }
 ```
 		
-#### Handling Email Links
+#### Handling email links
 	
-For Universal Links to work with link rewriting in emails, you need to set up apple-app-site-association file in the Iterable project. More instructions here: [Setting up iOS Universal Links](https://support.iterable.com/hc/en-us/articles/115000440206-Setting-up-iOS-Universal-Links).
+For universal links to work with link rewriting in emails, [set up an **apple-app-site-association** file](https://support.iterable.com/hc/articles/115000440206-Setting-up-iOS-Universal-Links) in the Iterable project. 
 
-When an email link is clicked your `UIApplicationDelegate`'s [application:continueUserActivity:restorationHandler:](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623072-application?language=swift) method is called. If you already have an Iterable `urlDelegate` defined (see *Handling Links from Push Notifications* section above), the same handler can be used for email deep links by calling `handleUniversalLink:`.
+When an email link is clicked, your `UIApplicationDelegate`'s [application:continueUserActivity:restorationHandler:](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623072-application?language=swift) method is called. If you already have an Iterable `urlDelegate` defined (see *Handling Links from Push Notifications* section above), the same handler can be used for email deep links by calling `handleUniversalLink:`.
 
 *Swift*
 	
@@ -249,11 +249,11 @@ func application(_ application: UIApplication, continue userActivity: NSUserActi
 }
 ```
 	
-#### In-App Notifications
+#### In-app notifications
 
 ##### Default behavior
 
-By default, when an in-app message arrives from the server, the SDK automatically shows it if the app is in the foreground. If an in-app message is already showing when the new message arrives, the new in-app message will be shown 30 seconds after the currently displayed in-app message closes (see how to change this default value below). Once an in-app message is shown, it will be "consumed" from the server queue and removed from the local queue as well. There is no need to write any code to get this default behavior. 
+By default, when an in-app message arrives from the server, the SDK automatically shows it if the app is in the foreground. If an in-app message is already showing when the new message arrives, the new in-app message will be shown 30 seconds after the currently displayed in-app message closes ([see how to change this default value below](#Changing-the-display-interval-between-in-app-messages)). Once an in-app message is shown, it will be "consumed" from the server queue and removed from the local queue as well. There is no need to write any code to get this default behavior. 
 
 ##### Overriding whether to show or skip a particular in-app message
 
@@ -335,7 +335,7 @@ NSArray *messages = [IterableAPI.inAppManager getMessages];
 
 Button/link clicks from in-app are handled similar to deep links from notifications and emails. Please see those sections above. If the in-app message's clicked button/link's `href` contains a URL (which is usually the case), tapping that button/link will call the `handle` method of `IterableConfig.urlDelegate` (an object of type `IterableURLDelegate`), if one is set. By default if this delegate is not set, tapping the button/link will open Safari with the `href` of the clicked button/link.
 	
-If the in-app message's `href` property contains custom action name (instead of a URL), tapping the  message will call the `handle` method of `IterableConfig.customActionDelegate` (an object that conforms to the `IterableCustomActionDelegate` protocol). If `customActionDelegate` is not set, nothing will happen by default.
+Custom action is specified by passing `itbl://customActionName` as the link URL (notice the `itbl` scheme name). If the in-app message's `href` property contains custom action name, tapping the  message will call the `handle` method of `IterableConfig.customActionDelegate` (an object that conforms to the `IterableCustomActionDelegate` protocol). If `customActionDelegate` is not set, nothing will happen by default.
 
 Take a look at [this sample code](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app/swift-sample-app/AppDelegate.swift) that demonstrates how to implement and use the `IterableURLDelegate` and `IterableCustomActionDelegate` protocols.
 	
@@ -350,25 +350,25 @@ config.customActionDelegate = YourCustomActionDelegate()
 To customize the time delay between successive in-app messages (default value of 30 seconds), set `IterableConfig.inAppDisplayInterval` to an appropriate value (in seconds). 
 
 
-#### Tracking Custom events
+#### Tracking custom events
 
 Custom events can be tracked using `IterableAPI.track(event:...)` calls.
 	
-#### Updating User Fields
+#### Updating user fields
 
 User fields can be modified using `IterableAPI.updateUser` call. You also have `updateEmail` and `updateSubscriptions` methods.
 	
-#### Disabling Push Notifications to a Device
+#### Disabling push notifications to a device
 
 When a user logs out, you typically want to disable push notifications to that user/device. This can be accomplished by calling `disableDeviceForCurrentUser`. Please note that it will only attempt to disable the device if you have previously called `registerToken`.
 	
 In order to re-enable push notifcations to that device, simply call `registerToken` as usual when the user logs back in.
 	
-#### Uninstall Tracking
+#### Uninstall tracking
 
 Iterable will track uninstalls with no additional work by you. 
 
-This is implemented by sending a second push notification some time (currently, twelve hours) after the original campaign. If we receive feedback that the device's token is no longer valid, we assign an uninstall to the device, attributing it to the most recent campaign within twelve hours. A "real" campaign send (as opposed to the later "ghost" send) can also trigger recording an uninstall. In this case, if there was no previous campaign within the attribution period, an uninstall will still be tracked, but it will not be attributed to any campaign.
+To do this, Iterable sends a silent push notification some time (currently, twelve hours) after a campaign has been sent. Based on this silent push notification, if Iterable receives feedback that the device token is no longer valid, it assigns an uninstall to the device based on the prior campaign. Similarly, if a "real" campaign uncovers an invalid device token, it will also check for a prior (within twelve hours) campaign to mark as the cause for the uninstall. If there was no recent campaign, Iterable still tracks the uninstall, but does not attribute it to a campaign.
 
 # Rich Push Notifications
 
