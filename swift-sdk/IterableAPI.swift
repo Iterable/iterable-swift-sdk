@@ -33,7 +33,7 @@ public final class IterableAPI : NSObject {
     /// - parameter apiKey: Iterable API Key.
     /// - parameter launchOptions: The launchOptions coming from application:didLaunching:withOptions
     public static func initialize(apiKey: String,
-                                  launchOptions: [UIApplicationLaunchOptionsKey: Any]?) {
+                                  launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
         initialize(apiKey: apiKey, launchOptions: launchOptions, config: IterableConfig())
     }
     
@@ -42,7 +42,7 @@ public final class IterableAPI : NSObject {
     /// - parameter launchOptions: The launchOptions coming from application:didLaunching:withOptions
     /// - parameter config: Iterable config object.
     public static func initialize(apiKey: String,
-                                  launchOptions: [UIApplicationLaunchOptionsKey: Any]? = nil,
+                                  launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
                                   config: IterableConfig = IterableConfig()) {
         internalImplementation = IterableAPIInternal.initialize(apiKey: apiKey, launchOptions: launchOptions, config:config)
     }

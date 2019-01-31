@@ -45,7 +45,7 @@ class IterableInAppNotificationTests: XCTestCase {
     
     func testGetPaddingInvalid() {
         let insets = IterableInAppManager.getPaddingFromPayload([:])
-        XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets(insets, UIEdgeInsets.zero))
+        XCTAssertEqual(insets, UIEdgeInsets.zero)
     }
     
     func testGetPaddingFull() {
@@ -57,14 +57,14 @@ class IterableInAppNotificationTests: XCTestCase {
         ]
         
         let insets = IterableInAppManager.getPaddingFromPayload(payload)
-        XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets(insets, UIEdgeInsets.zero))
+        XCTAssertEqual(insets, UIEdgeInsets.zero)
         
         var padding = UIEdgeInsets.zero
         padding.top = CGFloat(IterableInAppManager.decodePadding(payload["top"]))
         padding.left = CGFloat(IterableInAppManager.decodePadding(payload["left"]))
         padding.bottom = CGFloat(IterableInAppManager.decodePadding(payload["bottom"]))
         padding.right = CGFloat(IterableInAppManager.decodePadding(payload["right"]))
-        XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets(padding, UIEdgeInsets.zero))
+        XCTAssertEqual(padding, UIEdgeInsets.zero)
     }
     
     func testGetPaddingCenter() {
@@ -76,14 +76,14 @@ class IterableInAppNotificationTests: XCTestCase {
             ]
         
         let insets = IterableInAppManager.getPaddingFromPayload(payload)
-        XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets(insets, UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0)))
+        XCTAssertEqual(insets, UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
         
         var padding = UIEdgeInsets.zero
         padding.top = CGFloat(IterableInAppManager.decodePadding(payload["top"]))
         padding.left = CGFloat(IterableInAppManager.decodePadding(payload["left"]))
         padding.bottom = CGFloat(IterableInAppManager.decodePadding(payload["bottom"]))
         padding.right = CGFloat(IterableInAppManager.decodePadding(payload["right"]))
-        XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets(padding, UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0)))
+        XCTAssertEqual(padding, UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
     }
     
     func testGetPaddingTop() {
@@ -95,14 +95,14 @@ class IterableInAppNotificationTests: XCTestCase {
             ]
         
         let insets = IterableInAppManager.getPaddingFromPayload(payload)
-        XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets(insets, UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0)))
+        XCTAssertEqual(insets, UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
         
         var padding = UIEdgeInsets.zero
         padding.top = CGFloat(IterableInAppManager.decodePadding(payload["top"]))
         padding.left = CGFloat(IterableInAppManager.decodePadding(payload["left"]))
         padding.bottom = CGFloat(IterableInAppManager.decodePadding(payload["bottom"]))
         padding.right = CGFloat(IterableInAppManager.decodePadding(payload["right"]))
-        XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets(padding, UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0)))
+        XCTAssertEqual(padding, UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
     }
     
     func testGetPaddingBottom() {
@@ -114,14 +114,14 @@ class IterableInAppNotificationTests: XCTestCase {
             ]
         
         let insets = IterableInAppManager.getPaddingFromPayload(payload)
-        XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets(insets, UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0)))
+        XCTAssertEqual(insets, UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
         
         var padding = UIEdgeInsets.zero
         padding.top = CGFloat(IterableInAppManager.decodePadding(payload["top"]))
         padding.left = CGFloat(IterableInAppManager.decodePadding(payload["left"]))
         padding.bottom = CGFloat(IterableInAppManager.decodePadding(payload["bottom"]))
         padding.right = CGFloat(IterableInAppManager.decodePadding(payload["right"]))
-        XCTAssertTrue(UIEdgeInsetsEqualToEdgeInsets(padding, UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0)))
+        XCTAssertEqual(padding, UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
     }
     
     func testNotificationPaddingFull() {
