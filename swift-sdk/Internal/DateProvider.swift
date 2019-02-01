@@ -1,6 +1,4 @@
 //
-//  DateProvider.swift
-//  swift-sdk
 //
 //  Created by Tapash Majumder on 6/14/18.
 //  Copyright © 2018 Iterable. All rights reserved.
@@ -9,7 +7,7 @@
 import Foundation
 
 @objc public protocol DateProviderProtocol: class {
-    @objc var currentDate:Date {get}
+    @objc var currentDate: Date { get }
 }
 
 public class SystemDateProvider : DateProviderProtocol {

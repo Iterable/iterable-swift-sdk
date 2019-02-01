@@ -30,13 +30,13 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
                 return
             }
 
-            disableDeviceForPreviousUser()
+            logoutPreviousUser()
 
             _email = newValue
             _userId = nil
             storeEmailAndUserId()
 
-            enableDeviceForCurrentUser()
+            loginNewUser()
         }
     }
 
@@ -47,14 +47,14 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             guard newValue != _userId else {
                 return
             }
-            
-            disableDeviceForPreviousUser()
+
+            logoutPreviousUser()
             
             _userId = newValue
             _email = nil
             storeEmailAndUserId()
             
-            enableDeviceForCurrentUser()
+            loginNewUser()
         }
     }
     
@@ -85,12 +85,12 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
     
     var lastPushPayload: [AnyHashable : Any]? {
-        return localStorage.payload
+        return localStorage.getPayload(currentDate: dateProvider.currentDate)
     }
     
     var attributionInfo : IterableAttributionInfo? {
         get {
-            return localStorage.attributionInfo
+            return localStorage.getAttributionInfo(currentDate: dateProvider.currentDate)
         } set {
             let expiration = Calendar.current.date(byAdding: .hour,
                                                    value: .ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_EXPIRATION_HOURS,
@@ -99,6 +99,8 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
     }
 
+    var inAppManager: IterableInAppManagerProtocolInternal
+    
     func register(token: Data) {
         register(token: token, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "registerToken"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "registerToken"))
     }
@@ -378,24 +380,17 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "updateSubscriptions"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "updateSubscriptions"))
         }
     }
-    
-    @discardableResult func spawn(inAppNotification callbackBlock:ITEActionBlock?) -> Future<IterableInAppManager.ShowInAppResult> {
-        return getInAppMessages(1)
-            .map { IterableInAppManager.parseInApp(fromPayload: $0)}
-            .flatMap { IterableInAppManager.showInApp(parseResult: $0, callbackBlock: callbackBlock)}
-            .onSuccess {
-                switch $0 {
-                case .success(opened: let opened, messageId: let messageId):
-                    if opened {
-                        self.inAppConsume(messageId)
-                    }
-                case .failure(reason: let reason, messageId: let messageId):
-                    if let messageId = messageId {
-                        self.inAppConsume(messageId)
-                    }
-                    ITBError(reason)
-                }
+
+    @discardableResult func spawn(inAppNotification callbackBlock:ITEActionBlock?) -> Future<Bool> {
+        let promise = Promise<Bool>()
+
+        DispatchQueue.main.async {
+            InAppHelper.spawn(inAppNotification: callbackBlock, internalApi: self).onSuccess {
+                promise.resolve(with: $0)
             }
+        }
+        
+        return promise
     }
 
     @discardableResult func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue> {
@@ -473,7 +468,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
 
     func showSystemNotification(_ title: String, body: String, buttonLeft: String?, buttonRight:String?, callbackBlock: ITEActionBlock?) {
-        IterableInAppManager.showSystemNotification(title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
+        InAppHelper.showSystemNotification(title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
     }
 
     func getAndTrackDeeplink(webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {
@@ -529,6 +524,8 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         networkSessionProvider()
     }()
     
+    private var urlOpener: UrlOpenerProtocol
+    
     /**
      * Returns the push integration name for this app depending on the config options
      */
@@ -550,24 +547,32 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         return IterableUtil.isNotNullOrEmpty(string: _email) || IterableUtil.isNotNullOrEmpty(string: _userId)
     }
     
-    private func disableDeviceForPreviousUser() {
-        guard config.autoPushRegistration == true, isEitherUserIdOrEmailSet() else {
+    private func logoutPreviousUser() {
+        ITBInfo()
+        guard isEitherUserIdOrEmailSet() else {
             return
         }
 
-        disableDeviceForCurrentUser()
+        if config.autoPushRegistration == true {
+            disableDeviceForCurrentUser()
+        }
     }
     
-    private func enableDeviceForCurrentUser() {
-        guard config.autoPushRegistration == true, isEitherUserIdOrEmailSet() else {
+    private func loginNewUser() {
+        ITBInfo()
+        guard isEitherUserIdOrEmailSet() else {
             return
         }
-        
-        notificationStateProvider.notificationsEnabled.onSuccess { (authorized) in
-            if authorized {
-                self.notificationStateProvider.registerForRemoteNotifications()
+
+        if config.autoPushRegistration == true {
+            notificationStateProvider.notificationsEnabled.onSuccess { (authorized) in
+                if authorized {
+                    self.notificationStateProvider.registerForRemoteNotifications()
+                }
             }
         }
+        
+        inAppManager.synchronize()
     }
     
     private func createGetRequest(forPath path: String, withArgs args: [String : String]) -> URLRequest? {
@@ -672,7 +677,14 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
          config: IterableConfig = IterableConfig(),
          dateProvider: DateProviderProtocol = SystemDateProvider(),
          networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
-         notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider()) {
+         notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
+         localStorage: LocalStorageProtocol = UserDefaultsLocalStorage(),
+         inAppSynchronizer: InAppSynchronizerProtocol = InAppSilentPushSynchronizer(),
+         inAppDisplayer: InAppDisplayerProtocol = InAppDisplayer(),
+         inAppPersister: InAppPersistenceProtocol = InAppFilePersister(),
+         urlOpener: UrlOpenerProtocol = AppUrlOpener(),
+         applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
+         notificationCenter: NotificationCenterProtocol = NotificationCenter.default) {
         IterableLogUtil.sharedInstance = IterableLogUtil(dateProvider: dateProvider, logDelegate: config.logDelegate)
         ITBInfo()
         self.apiKey = apiKey
@@ -680,14 +692,30 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         self.dateProvider = dateProvider
         self.networkSessionProvider = networkSession
         self.notificationStateProvider = notificationStateProvider
-        self.localStorage = UserDefaultsLocalStorage(dateProvider: self.dateProvider)
-
+        self.localStorage = localStorage
+        let inAppManager = InAppManager(synchronizer: inAppSynchronizer,
+                                        displayer: inAppDisplayer,
+                                        persister: inAppPersister,
+                                        inAppDelegate: config.inAppDelegate,
+                                        urlDelegate: config.urlDelegate,
+                                        customActionDelegate: config.customActionDelegate,
+                                        urlOpener: urlOpener,
+                                        applicationStateProvider: applicationStateProvider,
+                                        notificationCenter: notificationCenter,
+                                        dateProvider: dateProvider,
+                                        retryInterval: config.inAppDisplayInterval)
+        self.inAppManager = inAppManager
+        self.urlOpener = urlOpener
+        
         // setup
         deeplinkManager = IterableDeeplinkManager()
         
-        // super initlog
+        // super init
         super.init()
-        
+
+        // after calling super we can set self as a property
+        inAppManager.internalApi = self
+
         // sdk version
         updateSDKVersion()
         
@@ -704,7 +732,8 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         IterableAppIntegration.implementation = IterableAppIntegrationInternal(tracker: self,
                                                                        urlDelegate: config.urlDelegate,
                                                                        customActionDelegate: config.customActionDelegate,
-                                                                       urlOpener: AppUrlOpener())
+                                                                       urlOpener: self.urlOpener,
+                                                                       inAppSynchronizer: inAppSynchronizer)
         
         handle(launchOptions: launchOptions)
     }
@@ -715,9 +744,8 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         queue.sync {
             _sharedInstance = IterableAPIInternal(apiKey: apiKey,
                                                   launchOptions: launchOptions,
-                                                  config: config,
-                                                  dateProvider: SystemDateProvider(),
-                                                  networkSession: URLSession(configuration: URLSessionConfiguration.default))
+                                                  config: config
+                                                  )
         }
         return _sharedInstance!
     }
@@ -766,19 +794,27 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     private func handleDDL(json: [AnyHashable : Any]) {
         if let serverResponse = try? JSONDecoder().decode(ServerResponse.self, from: JSONSerialization.data(withJSONObject: json, options: [])),
             serverResponse.isMatch,
-            let destinationUrlString = serverResponse.destinationUrl,
-            let action = IterableAction.actionOpenUrl(fromUrlString: destinationUrlString) {
-            let context = IterableActionContext(action: action, source: .universalLink)
+            let destinationUrlString = serverResponse.destinationUrl {
             
-            DispatchQueue.main.async {
-                IterableActionRunner.execute(action: action,
-                                             context: context,
-                                             urlHandler: IterableUtil.urlHandler(fromUrlDelegate: self.urlDelegate, inContext: context),
-                                             urlOpener: AppUrlOpener())
-            }
+            handleUrl(urlString: destinationUrlString, fromSource: .universalLink)
         }
         
         localStorage.ddlChecked = true
+    }
+    
+    private func handleUrl(urlString: String, fromSource source: IterableActionSource) {
+        guard let action = IterableAction.actionOpenUrl(fromUrlString: urlString) else {
+            ITBError("Could not create action from: \(urlString)")
+            return
+        }
+
+        let context = IterableActionContext(action: action, source: source)
+        DispatchQueue.main.async {
+            IterableActionRunner.execute(action: action,
+                                         context: context,
+                                         urlHandler: IterableUtil.urlHandler(fromUrlDelegate: self.urlDelegate, inContext: context),
+                                         urlOpener: self.urlOpener)
+        }
     }
     
     private func updateSDKVersion() {
@@ -794,5 +830,9 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         // ....
         // then set new version
         localStorage.sdkVersion = newVersion
+    }
+    
+    deinit {
+        ITBInfo()
     }
 }

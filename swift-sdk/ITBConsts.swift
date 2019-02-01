@@ -143,6 +143,9 @@ public extension AnyHashable {
     public static let ITBL_IN_APP_BUTTON_INDEX = "buttonIndex"
     public static let ITBL_IN_APP_MESSAGE = "inAppMessages"
     
+    public static let ITBL_IN_APP_TRIGGER = "trigger"
+    public static let ITBL_IN_APP_TRIGGER_TYPE = "type"
+
     public static let ITBL_IN_APP_CONTENT = "content"
     
     //In-App HTML Constants
@@ -150,5 +153,6 @@ public extension AnyHashable {
     public static let ITBL_IN_APP_HTML = "html"
     public static let ITBL_IN_APP_HREF = "href"
     public static let ITBL_IN_APP_DISPLAY_SETTINGS = "inAppDisplaySettings"
+    public static let ITBL_IN_APP_PAYLOAD = "payload"
 }
 

@@ -35,6 +35,19 @@ import Foundation
 }
 
 /**
+ * This protocol allows you to override default behavior when new inApps arrive.
+ */
+@objc public protocol IterableInAppDelegate : class {
+    /**
+     * This method is called when new inApp message is available.
+     * The default behavior is to `show` if you don't override this method.
+     * - parameter message: `IterableInAppMessage` object containing information regarding inApp to display
+     * - returns: Return `show` to show the inApp or `skip` to skip this.
+     */
+    @objc(onNewMessage:) func onNew(message: IterableInAppMessage) -> InAppShowResponse
+}
+
+/**
  * Lowest level that will be logged. By default the LogLevel is set to LogLevel.info.
  */
 @objc public enum LogLevel : Int {
@@ -113,4 +126,12 @@ public class IterableConfig : NSObject {
     /// The default value is `DefaultLogDelegate`.
     /// It will log everything >= minLogLevel
     public var logDelegate: IterableLogDelegate = DefaultLogDelegate()
+    
+    /// Implement this protocol to override default inApp behavior.
+    /// By default, every single inApp will be shown as soon as it is available.
+    /// If more than 1 inApp is available, we show the first.
+    public var inAppDelegate: IterableInAppDelegate = DefaultInAppDelegate()
+
+    /// How many seconds to wait before showing the next inApp, if there are more than one present
+    public var inAppDisplayInterval: Double = 30.0
 }

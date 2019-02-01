@@ -33,7 +33,7 @@ class LoggingTests: XCTestCase {
         let logDelegate = LogDelegate()
         let config = IterableConfig()
         config.logDelegate = logDelegate
-        IterableAPI.initialize(apiKey: "apiKey", config: config)
+        IterableAPI.initializeForTesting(apiKey: "apiKey", config: config)
         
         ITBDebug("debug message")
         XCTAssert(logDelegate.level == .debug)

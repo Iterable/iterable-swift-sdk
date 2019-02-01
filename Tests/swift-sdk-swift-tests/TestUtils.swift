@@ -52,8 +52,12 @@ struct TestUtils {
         }
     }
     
-    static func clearUserDefaults() {
-        UserDefaults.standard.removePersistentDomain(forName: Bundle.main.bundleIdentifier!)
+    static func getTestUserDefaults() -> UserDefaults {
+        return TestHelper.getTestUserDefaults()
+    }
+
+    static func clearTestUserDefaults() {
+        return TestHelper.clearTestUserDefaults()
     }
     
     private static func validateQueryParameters(inUrlComponents urlComponents: URLComponents, queryParams: [(name:String, value:String)]) {

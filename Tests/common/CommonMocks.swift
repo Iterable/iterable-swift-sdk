@@ -75,11 +75,18 @@ public class MockCustomActionDelegate: NSObject, IterableCustomActionDelegate {
     }
 }
 
-@objc public class MockUrlOpener : NSObject, UrlOpenerProtocol {
+@objcMembers
+public class MockUrlOpener : NSObject, UrlOpenerProtocol {
     @objc var ios10OpenedUrl: URL?
     @objc var preIos10openedUrl: URL?
+    var callback: ((URL) -> Void)? = nil
     
+    public init(callback: ((URL) -> Void)? = nil) {
+        self.callback = callback
+    }
+        
     public func open(url: URL) {
+        callback?(url)
         if #available(iOS 10.0, *) {
             ios10OpenedUrl = url
         } else {
@@ -153,7 +160,7 @@ class MockNetworkSession: NetworkSessionProtocol {
     var data: Data?
     var error: Error?
     
-    convenience init(statusCode: Int) {
+    convenience init(statusCode: Int = 200) {
         self.init(statusCode: statusCode,
                   data: [:].toData(),
                   error: nil)
@@ -200,3 +207,148 @@ class NoNetworkNetworkSession: NetworkSessionProtocol {
     }
 }
 
+class MockInAppSynchronizer : InAppSynchronizerProtocol {
+    weak var internalApi: IterableAPIInternal?
+    weak var inAppSyncDelegate: InAppSynchronizerDelegate?
+    
+    var syncCallback: (() -> Void)?
+    var removeCallback: ((String) -> Void)?
+    
+    private var messagesMap = OrderedDictionary<String, IterableInAppMessage>()
+    
+    func sync() {
+        ITBInfo()
+
+        inAppSyncDelegate?.onInAppMessagesAvailable(messages: messagesMap.values)
+
+        syncCallback?()
+    }
+    
+    func remove(messageId: String) {
+        ITBInfo()
+        
+        messagesMap.removeValue(forKey: messageId)
+        
+        inAppSyncDelegate?.onInAppRemoved(messageId: messageId)
+        
+        removeCallback?(messageId)
+    }
+    
+    func mockMessagesAvailableFromServer(messages: [IterableInAppMessage]) {
+        ITBInfo()
+        
+        messagesMap = OrderedDictionary<String, IterableInAppMessage>()
+        
+        messages.forEach {
+            messagesMap[$0.messageId] = $0
+        }
+
+        sync()
+    }
+    
+    func mockInAppPayloadFromServer(_ payload: [AnyHashable : Any]) {
+        ITBInfo()
+        guard let internalApi = internalApi else {
+            ITBError("Invalid state: expected InternalApi")
+            return
+        }
+        
+        mockMessagesAvailableFromServer(messages: InAppHelper.inAppMessages(fromPayload: payload, internalApi: internalApi))
+    }
+}
+
+class MockInAppDisplayer : InAppDisplayerProtocol {
+    func isShowingInApp() -> Bool {
+        return showing
+    }
+    
+    func showInApp(message: IterableInAppMessage, callback: ITEActionBlock?) -> Bool {
+        if showing {
+            return false
+        }
+        
+        showing = true
+        actionCallback = callback
+        onShowCallback?(message, callback)
+        return true
+    }
+
+    var onShowCallback:  ((IterableInAppMessage, ITEActionBlock?) -> Void)?
+    
+    // Mimics clicking a url
+    func click(url: String) {
+        ITBInfo()
+        showing = false
+        if let (callbackUrl, _) = InAppHelper.getCallbackAndDestinationUrl(url: URL(string: url)!) {
+            actionCallback?(callbackUrl)
+        } else {
+            actionCallback?(nil)
+        }
+    }
+
+    private var actionCallback: ITEActionBlock?
+    
+    private var showing = false
+    
+}
+
+class MockInAppDelegate : IterableInAppDelegate {
+    var onNewMessageCallback: ((IterableInAppMessage) -> Void)?
+    
+    init(showInApp: InAppShowResponse = .show) {
+        self.showInApp = showInApp
+    }
+    
+    func onNew(message: IterableInAppMessage) -> InAppShowResponse {
+        onNewMessageCallback?(message)
+        return showInApp
+    }
+
+    private let showInApp: InAppShowResponse
+}
+
+class MockNotificationCenter: NotificationCenterProtocol {
+    func addObserver(_ observer: Any, selector: Selector, name: Notification.Name?, object: Any?) {
+        observers.append(Observer(observer: observer as! NSObject, notificationName: name!, selector: selector))
+    }
+    
+    func removeObserver(_ observer: Any) {
+    }
+    
+    func fire(notification: Notification.Name) {
+        _ = observers.filter( { $0.notificationName == notification } ).map {
+            _ = $0.observer.perform($0.selector, with: Notification(name: notification))
+        }
+    }
+
+    private class Observer : NSObject {
+        let observer: NSObject
+        let notificationName: Notification.Name
+        let selector: Selector
+        
+        init(observer: NSObject, notificationName: Notification.Name, selector: Selector) {
+            self.observer = observer
+            self.notificationName = notificationName
+            self.selector = selector
+        }
+    }
+    
+    private var observers = [Observer]()
+    
+}
+
+class MockInAppPesister : InAppPersistenceProtocol {
+    private var messages = [IterableInAppMessage]()
+    
+    func getMessages() -> [IterableInAppMessage] {
+        return messages
+    }
+    
+    func persist(_ messages: [IterableInAppMessage]) {
+        self.messages = messages
+    }
+    
+    func clear() {
+        messages.removeAll()
+    }
+}

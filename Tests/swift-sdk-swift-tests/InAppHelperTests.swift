@@ -1,7 +1,5 @@
 //
-//  IterableInAppNotificationTests.swift
-//  swift-sdk-swift-tests
-
+//
 //  Created by David Truong on 10/3/17.
 //  Migrated to Swift by Tapash Majumder on 7/10/18.
 //  Copyright © 2018 Iterable. All rights reserved.
@@ -11,7 +9,7 @@ import XCTest
 
 @testable import IterableSDK
 
-class IterableInAppNotificationTests: XCTestCase {
+class InAppHelperTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
@@ -23,16 +21,6 @@ class IterableInAppNotificationTests: XCTestCase {
         super.tearDown()
     }
 
-    func testGetNextNotificationNil() {
-        let message = IterableInAppManager.getNextMessageFromPayload(nil)
-        XCTAssertNil(message)
-    }
-    
-    func testGetNextNotificationEmpty() {
-        let message = IterableInAppManager.getNextMessageFromPayload([:])
-        XCTAssertNil(message)
-    }
-    
     func testNotificationCreation() {
         //call showIterableNotificationHTML with fake data
         //Check the top level dialog
@@ -44,7 +32,7 @@ class IterableInAppNotificationTests: XCTestCase {
     }
     
     func testGetPaddingInvalid() {
-        let insets = IterableInAppManager.getPaddingFromPayload([:])
+        let insets = InAppHelper.getPadding(fromInAppSettings: [:])
         XCTAssertEqual(insets, UIEdgeInsets.zero)
     }
     
@@ -56,14 +44,14 @@ class IterableInAppNotificationTests: XCTestCase {
             "right" : ["right" : "0"],
         ]
         
-        let insets = IterableInAppManager.getPaddingFromPayload(payload)
+        let insets = InAppHelper.getPadding(fromInAppSettings: payload)
         XCTAssertEqual(insets, UIEdgeInsets.zero)
         
         var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(IterableInAppManager.decodePadding(payload["top"]))
-        padding.left = CGFloat(IterableInAppManager.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(IterableInAppManager.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(IterableInAppManager.decodePadding(payload["right"]))
+        padding.top = CGFloat(InAppHelper.decodePadding(payload["top"]))
+        padding.left = CGFloat(InAppHelper.decodePadding(payload["left"]))
+        padding.bottom = CGFloat(InAppHelper.decodePadding(payload["bottom"]))
+        padding.right = CGFloat(InAppHelper.decodePadding(payload["right"]))
         XCTAssertEqual(padding, UIEdgeInsets.zero)
     }
     
@@ -75,14 +63,14 @@ class IterableInAppNotificationTests: XCTestCase {
             "right" : ["right" : "0"],
             ]
         
-        let insets = IterableInAppManager.getPaddingFromPayload(payload)
+        let insets = InAppHelper.getPadding(fromInAppSettings: payload)
         XCTAssertEqual(insets, UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
         
         var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(IterableInAppManager.decodePadding(payload["top"]))
-        padding.left = CGFloat(IterableInAppManager.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(IterableInAppManager.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(IterableInAppManager.decodePadding(payload["right"]))
+        padding.top = CGFloat(InAppHelper.decodePadding(payload["top"]))
+        padding.left = CGFloat(InAppHelper.decodePadding(payload["left"]))
+        padding.bottom = CGFloat(InAppHelper.decodePadding(payload["bottom"]))
+        padding.right = CGFloat(InAppHelper.decodePadding(payload["right"]))
         XCTAssertEqual(padding, UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
     }
     
@@ -94,14 +82,14 @@ class IterableInAppNotificationTests: XCTestCase {
             "right" : ["right" : "0"],
             ]
         
-        let insets = IterableInAppManager.getPaddingFromPayload(payload)
+        let insets = InAppHelper.getPadding(fromInAppSettings: payload)
         XCTAssertEqual(insets, UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
         
         var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(IterableInAppManager.decodePadding(payload["top"]))
-        padding.left = CGFloat(IterableInAppManager.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(IterableInAppManager.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(IterableInAppManager.decodePadding(payload["right"]))
+        padding.top = CGFloat(InAppHelper.decodePadding(payload["top"]))
+        padding.left = CGFloat(InAppHelper.decodePadding(payload["left"]))
+        padding.bottom = CGFloat(InAppHelper.decodePadding(payload["bottom"]))
+        padding.right = CGFloat(InAppHelper.decodePadding(payload["right"]))
         XCTAssertEqual(padding, UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
     }
     
@@ -113,54 +101,54 @@ class IterableInAppNotificationTests: XCTestCase {
             "right" : ["right" : "0"],
             ]
         
-        let insets = IterableInAppManager.getPaddingFromPayload(payload)
+        let insets = InAppHelper.getPadding(fromInAppSettings: payload)
         XCTAssertEqual(insets, UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
         
         var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(IterableInAppManager.decodePadding(payload["top"]))
-        padding.left = CGFloat(IterableInAppManager.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(IterableInAppManager.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(IterableInAppManager.decodePadding(payload["right"]))
+        padding.top = CGFloat(InAppHelper.decodePadding(payload["top"]))
+        padding.left = CGFloat(InAppHelper.decodePadding(payload["left"]))
+        padding.bottom = CGFloat(InAppHelper.decodePadding(payload["bottom"]))
+        padding.right = CGFloat(InAppHelper.decodePadding(payload["right"]))
         XCTAssertEqual(padding, UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
     }
     
     func testNotificationPaddingFull() {
-        let notificationType = IterableInAppHTMLViewController.setLocation(UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0))
+        let notificationType = IterableInAppHTMLViewController.location(fromPadding: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0))
         XCTAssertEqual(notificationType, .full)
     }
 
     func testNotificationPaddingTop() {
-        let notificationType = IterableInAppHTMLViewController.setLocation(UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
+        let notificationType = IterableInAppHTMLViewController.location(fromPadding: UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
         XCTAssertEqual(notificationType, .top)
     }
     
     func testNotificationPaddingBottom() {
-        let notificationType = IterableInAppHTMLViewController.setLocation(UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
+        let notificationType = IterableInAppHTMLViewController.location(fromPadding: UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
         XCTAssertEqual(notificationType, .bottom)
     }
 
     func testNotificationPaddingCenter() {
-        let notificationType = IterableInAppHTMLViewController.setLocation(UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
+        let notificationType = IterableInAppHTMLViewController.location(fromPadding: UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
         XCTAssertEqual(notificationType, .center)
     }
 
     func testNotificationPaddingDefault() {
-        let notificationType = IterableInAppHTMLViewController.setLocation(UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0))
+        let notificationType = IterableInAppHTMLViewController.location(fromPadding: UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0))
         XCTAssertEqual(notificationType, .center)
     }
     
     func testDoNotShowMultipleTimes() {
-        let shownFirstTime = IterableInAppManager.showIterableNotificationHTML("", callbackBlock: nil)
-        let shownSecondTime = IterableInAppManager.showIterableNotificationHTML("", callbackBlock: nil)
+        let shownFirstTime = InAppHelper.showIterableNotificationHTML("", callbackBlock: nil)
+        let shownSecondTime = InAppHelper.showIterableNotificationHTML("", callbackBlock: nil)
         XCTAssertTrue(shownFirstTime)
         XCTAssertFalse(shownSecondTime)
     }
     
     func testGetBackgroundAlpha() {
-        XCTAssert(IterableInAppManager.getBackgroundAlpha(fromInAppSettings: nil) == 0)
-        XCTAssert(IterableInAppManager.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha" : "x"]) == 0)
-        XCTAssert(IterableInAppManager.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha" : 0.5]) == 0.5)
-        XCTAssert(IterableInAppManager.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha" : 1]) == 1.0)
+        XCTAssert(InAppHelper.getBackgroundAlpha(fromInAppSettings: nil) == 0)
+        XCTAssert(InAppHelper.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha" : "x"]) == 0)
+        XCTAssert(InAppHelper.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha" : 0.5]) == 0.5)
+        XCTAssert(InAppHelper.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha" : 1]) == 1.0)
     }
     
     func testTrackInAppClickWithButtonUrl() {
@@ -169,19 +157,19 @@ class IterableInAppNotificationTests: XCTestCase {
         let expectation1 = expectation(description: "track in app click")
 
         let networkSession = MockNetworkSession(statusCode: 200)
-        IterableAPI.initialize(apiKey: IterableInAppNotificationTests.apiKey, networkSession: networkSession)
-        IterableAPI.userId = IterableInAppNotificationTests.userId
+        IterableAPI.initializeForTesting(apiKey: InAppHelperTests.apiKey, networkSession: networkSession)
+        IterableAPI.userId = InAppHelperTests.userId
         networkSession.callback = {(_, _, _) in
             TestUtils.validate(request: networkSession.request!,
                                requestType: .post,
                                apiEndPoint: .ITBL_ENDPOINT_API,
                                path: .ITBL_PATH_TRACK_INAPP_CLICK,
-                               queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableInAppNotificationTests.apiKey),
+                               queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: InAppHelperTests.apiKey),
                 ])
             let body = networkSession.getRequestBody() as! [String : Any]
             TestUtils.validateMatch(keyPath: KeyPath("messageId"), value: messageId, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath("urlClick"), value: buttonUrl, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("userId"), value: IterableInAppNotificationTests.userId, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("userId"), value: InAppHelperTests.userId, inDictionary: body)
             expectation1.fulfill()
         }
         IterableAPI.track(inAppClick: messageId, buttonURL: buttonUrl)
@@ -194,19 +182,19 @@ class IterableInAppNotificationTests: XCTestCase {
         let expectation1 = expectation(description: "track in app click")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        IterableAPI.initialize(apiKey: IterableInAppNotificationTests.apiKey, networkSession: networkSession)
-        IterableAPI.email = IterableInAppNotificationTests.email
+        IterableAPI.initializeForTesting(apiKey: InAppHelperTests.apiKey, networkSession: networkSession)
+        IterableAPI.email = InAppHelperTests.email
         networkSession.callback = {(_, _, _) in
             TestUtils.validate(request: networkSession.request!,
                                requestType: .post,
                                apiEndPoint: .ITBL_ENDPOINT_API,
                                path: .ITBL_PATH_TRACK_INAPP_CLICK,
-                               queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableInAppNotificationTests.apiKey),
+                               queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: InAppHelperTests.apiKey),
                                              ])
             let body = networkSession.getRequestBody() as! [String : Any]
             TestUtils.validateMatch(keyPath: KeyPath("messageId"), value: messageId, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath("buttonIndex"), value: buttonIndex, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("email"), value: IterableInAppNotificationTests.email, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("email"), value: InAppHelperTests.email, inDictionary: body)
             expectation1.fulfill()
         }
         IterableAPI.track(inAppClick: messageId, buttonIndex: buttonIndex)
@@ -218,22 +206,79 @@ class IterableInAppNotificationTests: XCTestCase {
         let expectation1 = expectation(description: "track in app open")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        IterableAPI.initialize(apiKey: IterableInAppNotificationTests.apiKey, networkSession: networkSession)
-        IterableAPI.email = IterableInAppNotificationTests.email
+        IterableAPI.initializeForTesting(apiKey: InAppHelperTests.apiKey, networkSession: networkSession)
+        IterableAPI.email = InAppHelperTests.email
         networkSession.callback = {(_, _, _) in
             TestUtils.validate(request: networkSession.request!,
                                requestType: .post,
                                apiEndPoint: .ITBL_ENDPOINT_API,
                                path: .ITBL_PATH_TRACK_INAPP_OPEN,
-                               queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableInAppNotificationTests.apiKey),
+                               queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: InAppHelperTests.apiKey),
                                              ])
             let body = networkSession.getRequestBody() as! [String : Any]
             TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_MESSAGE_ID), value: messageId, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_EMAIL), value: IterableInAppNotificationTests.email, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_EMAIL), value: InAppHelperTests.email, inDictionary: body)
             expectation1.fulfill()
         }
         IterableAPI.track(inAppOpen: messageId)
         wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+    
+    func testExtraInfoParsing() {
+        IterableAPI.initializeForTesting()
+        
+        let extraInfo: [AnyHashable : Any] = ["string1" : "value1", "bool1" : true, "date1" : Date()]
+        
+        let payload = createInAppPayload(withExtraInfo: extraInfo)
+        
+        let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
+        
+        XCTAssertEqual(messages.count, 1)
+        let obtained = messages[0].extraInfo
+        XCTAssertEqual(obtained?["string1"] as? String, "value1")
+        XCTAssertEqual(obtained?["bool1"] as? Bool, true)
+    }
+    
+    private func createInAppPayload(withExtraInfo extraInfo: [AnyHashable : Any]) -> [AnyHashable : Any] {
+        return [
+            "inAppMessages" : [[
+                "content" : [
+                    "html" : "<a href='href1'>Click Here</a>",
+                    "inAppDisplaySettings" : ["backgroundAlpha" : 0.5, "left" : ["percentage" : 60], "right" : ["percentage" : 60], "bottom" : ["displayOption" : "AutoExpand"], "top" : ["displayOption" : "AutoExpand"]],
+                    "payload" : extraInfo
+                ],
+                "messageId" : "messageIdxxx",
+                "campaignId" : "campaignIdxxx",
+            ]]
+        ]
+    }
+    
+    // nil host
+    func testCallbackUrlParsingCustomScheme1() {
+        let url = URL(string: "applewebdata://")!
+        XCTAssertNil(InAppHelper.getCallbackAndDestinationUrl(url: url))
+    }
+
+    
+    func testCallbackUrlParsingCustomScheme2() {
+        let url = URL(string: "applewebdata://this-is-uuid/the-real-url")!
+        let (callbackUrl, destinationUrl) = InAppHelper.getCallbackAndDestinationUrl(url: url)!
+        XCTAssertEqual(callbackUrl, "the-real-url")
+        XCTAssertEqual(destinationUrl, "the-real-url")
+    }
+
+    func testCallbackUrlParsingIterableScheme() {
+        let url = URL(string: "itbl://buyProduct")!
+        let (callbackUrl, destinationUrl) = InAppHelper.getCallbackAndDestinationUrl(url: url)!
+        XCTAssertEqual(callbackUrl, "buyProduct")
+        XCTAssertEqual(destinationUrl, "itbl://buyProduct")
+    }
+
+    func testCallbackUrlParsingRegularScheme() {
+        let url = URL(string: "https://host/path")!
+        let (callbackUrl, destinationUrl) = InAppHelper.getCallbackAndDestinationUrl(url: url)!
+        XCTAssertEqual(callbackUrl, "https://host/path")
+        XCTAssertEqual(destinationUrl, "https://host/path")
     }
 
     private static let apiKey = "zeeApiKey"

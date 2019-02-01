@@ -14,41 +14,79 @@ extension Dictionary where Key == AnyHashable {
     }
 }
 
+// Used only by ojbc tests. Remove after converting to Swift.
+extension IterableAPI {
+    @objc public static func initializeForObjcTesting() {
+        internalImplementation = IterableAPIInternal.initializeForTesting()
+    }
+
+    @objc public static func initializeForObjcTesting(apiKey: String) {
+        internalImplementation = IterableAPIInternal.initializeForTesting(apiKey: apiKey)
+    }
+
+    @objc public static func initializeForObjcTesting(config: IterableConfig) {
+        internalImplementation = IterableAPIInternal.initializeForTesting(config: config)
+    }
+}
+
 extension IterableAPI {
     // Internal Only used in unit tests.
-    static func initialize(apiKey: String,
+    static func initializeForTesting(apiKey: String = "zeeApiKey",
                            launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil,
                            config: IterableConfig = IterableConfig(),
                            dateProvider: DateProviderProtocol = SystemDateProvider(),
-                           networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
-                           notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider()) {
-        internalImplementation = IterableAPIInternal.initialize(apiKey: apiKey, launchOptions: launchOptions, config: config, dateProvider: dateProvider, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+                           networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = MockNetworkSession(),
+                           notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
+                           inAppSynchronizer: InAppSynchronizerProtocol = MockInAppSynchronizer(),
+                           inAppDisplayer: InAppDisplayerProtocol = MockInAppDisplayer(),
+                           inAppPersister: InAppPersistenceProtocol = MockInAppPesister(),
+                           urlOpener: UrlOpenerProtocol = MockUrlOpener(),
+                           applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
+                           notificationCenter: NotificationCenterProtocol = NotificationCenter.default) {
+        
+        internalImplementation = IterableAPIInternal.initializeForTesting(apiKey: apiKey,
+                                                                launchOptions: launchOptions,
+                                                                config: config,
+                                                                dateProvider: dateProvider,
+                                                                networkSession: networkSession,
+                                                                notificationStateProvider: notificationStateProvider,
+                                                                inAppSynchronizer: inAppSynchronizer,
+                                                                inAppDisplayer: inAppDisplayer,
+                                                                inAppPersister: inAppPersister,
+                                                                urlOpener: urlOpener,
+                                                                applicationStateProvider: applicationStateProvider,
+                                                                notificationCenter: notificationCenter)
     }
 }
 
 
-// used by objc tests, remove after rewriting in Swift
 extension IterableAPIInternal {
-    @discardableResult public static func initialize(apiKey: String) -> IterableAPIInternal {
-        return initialize(apiKey: apiKey, config:IterableConfig())
-    }
-    
-    // used by objc tests, remove after rewriting them in Swift
-    @discardableResult public static func initialize(apiKey: String,
-                                                     config: IterableConfig) -> IterableAPIInternal {
-        return initialize(apiKey: apiKey, launchOptions: nil, config:config)
-    }
-}
-
-extension IterableAPIInternal {
-    @discardableResult static func initialize(apiKey: String,
-                                              launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil,
-                                              config: IterableConfig = IterableConfig(),
-                                              dateProvider: DateProviderProtocol = SystemDateProvider(),
-                                              networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
-                                              notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider()) -> IterableAPIInternal {
+    @discardableResult static func initializeForTesting(apiKey: String = "zeeApiKey",
+                                                        launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil,
+                                                        config: IterableConfig = IterableConfig(),
+                                                        dateProvider: DateProviderProtocol = SystemDateProvider(),
+                                                        networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = MockNetworkSession(),
+                                                        notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
+                                                        inAppSynchronizer: InAppSynchronizerProtocol = MockInAppSynchronizer(),
+                                                        inAppDisplayer: InAppDisplayerProtocol = MockInAppDisplayer(),
+                                                        inAppPersister: InAppPersistenceProtocol = MockInAppPesister(),
+                                                        urlOpener: UrlOpenerProtocol = MockUrlOpener(),
+                                                        applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
+                                                        notificationCenter: NotificationCenterProtocol = NotificationCenter.default) -> IterableAPIInternal {
         queue.sync {
-            _sharedInstance = IterableAPIInternal(apiKey: apiKey, config: config, dateProvider: dateProvider, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+            _sharedInstance = IterableAPIInternal(apiKey: apiKey,
+                                                  launchOptions: launchOptions,
+                                                  config: config,
+                                                  dateProvider: dateProvider,
+                                                  networkSession: networkSession,
+                                                  notificationStateProvider: notificationStateProvider,
+                                                  localStorage: UserDefaultsLocalStorage(userDefaults: TestHelper.getTestUserDefaults()),
+                                                  inAppSynchronizer: inAppSynchronizer,
+                                                  inAppDisplayer: inAppDisplayer,
+                                                  inAppPersister: inAppPersister,
+                                                  urlOpener: urlOpener,
+                                                  applicationStateProvider: applicationStateProvider,
+                                                  notificationCenter: notificationCenter)
         }
         return _sharedInstance!
     }
