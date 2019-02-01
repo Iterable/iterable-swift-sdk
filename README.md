@@ -357,7 +357,7 @@ If you are already using in-app messages, then you will have to make the followi
 
 1. `spawnInAppNotification` is no longer needed. In-app messages will be displayed automatically. Remove all `spawnInAppNotification` calls.
 2. Stop polling for in-app messages. The SDK will issue a callback using `config.inAppDelegate` [as explained above](#overriding-whether-to-show-or-skip-a-particular-in-app-message).
-3. Remove 'IterableAPI.getInAppMessages()' call and use `IterableAPI.inAppManager.getInAppMessages()` instead.
+3. Remove calls to 'IterableAPI.getInAppMessages()' and use `IterableAPI.inAppManager.getInAppMessages()` instead.
 
 
 #### Tracking custom events
