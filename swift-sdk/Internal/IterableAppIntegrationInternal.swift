@@ -86,7 +86,7 @@ struct UserNotificationResponse : NotificationResponseProtocol {
 
 /// Abstraction of applicationState
 @objc public protocol ApplicationStateProviderProtocol : class {
-    @objc var applicationState: UIApplicationState {get}
+    @objc var applicationState: UIApplication.State {get}
 }
 
 extension UIApplication : ApplicationStateProviderProtocol {
