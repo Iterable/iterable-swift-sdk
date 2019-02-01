@@ -251,7 +251,7 @@ func application(_ application: UIApplication, continue userActivity: NSUserActi
 	
 #### In-app messages
 
-If you are already using in-app messages with IterableSDK, please checkout the [migration section](#Migrating-in-app-messages-from-previous-version-of-SDK).
+If you are already using in-app messages with IterableSDK, please check out the [migration section](#Migrating-in-app-messages-from-previous-version-of-SDK).
 
 ##### Default behavior
 
