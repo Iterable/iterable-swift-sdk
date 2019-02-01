@@ -71,7 +71,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         
         var messages = [IterableInAppMessage] ()
         updateQueue.sync {
-            messages = Array(self.messagesMap.values.filter { $0.consumed == false })
+            messages = Array(self.messagesMap.values.filter { $0.consumed == false && InAppManager.isExpired(message: $0, currentDate: self.dateProvider.currentDate) == false })
         }
         return messages
     }
@@ -191,6 +191,14 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         synchronizer.inAppSyncDelegate = self
         
         synchronize()
+    }
+    
+    private static func isExpired(message: IterableInAppMessage, currentDate: Date) -> Bool {
+        guard let expireAt = message.expireAt else {
+            return false
+        }
+        
+        return currentDate >= expireAt
     }
     
     private var synchronizer: InAppSynchronizerProtocol // this is mutable because we need to set internalApi

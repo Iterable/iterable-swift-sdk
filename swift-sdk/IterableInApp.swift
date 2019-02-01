@@ -99,8 +99,11 @@ public final class IterableInAppMessage : NSObject {
     /// The type of content
     public let contentType: IterableInAppContentType
 
-    /// when to trigger this inApp
+    /// when to trigger this in-app
     public let trigger: IterableInAppTriggerType
+    
+    /// when to expire this in-app, nil means do not expire
+    public let expireAt: Date?
     
     /// The content of the inApp message
     public let content: IterableInAppContent
@@ -123,6 +126,7 @@ public final class IterableInAppMessage : NSObject {
         channelName: String = "reserved",
         contentType: IterableInAppContentType = .html,
         trigger: IterableInAppTriggerType = .immediate,
+        expireAt: Date? = nil,
         content: IterableInAppContent,
         extraInfo: [AnyHashable : Any]? = nil
         ) {
@@ -131,6 +135,7 @@ public final class IterableInAppMessage : NSObject {
         self.channelName = channelName
         self.contentType = contentType
         self.trigger = trigger
+        self.expireAt = expireAt
         self.content = content
         self.extraInfo = extraInfo
     }
