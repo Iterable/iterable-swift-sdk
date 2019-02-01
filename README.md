@@ -351,7 +351,7 @@ config.customActionDelegate = YourCustomActionDelegate()
 
 To customize the time delay between successive in-app messages (default value of 30 seconds), set `IterableConfig.inAppDisplayInterval` to an appropriate value (in seconds). 
 
-##### Migrating in-app messages from previous version of SDK
+##### Migrating in-app messages from the previous version of the SDK
 
 If you are already using in-app messages, then you will have to make the following changes to your code.
 
