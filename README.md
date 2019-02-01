@@ -249,7 +249,9 @@ func application(_ application: UIApplication, continue userActivity: NSUserActi
 }
 ```
 	
-#### In-app notifications
+#### In-app messages
+
+If you are already using in-app messages with IterableSDK, please checkout the [migration section](#Migrating-in-app-messages-from-previous-version-of-SDK).
 
 ##### Default behavior
 
@@ -348,6 +350,14 @@ config.customActionDelegate = YourCustomActionDelegate()
 ##### Changing the display interval between in-app messages
 
 To customize the time delay between successive in-app messages (default value of 30 seconds), set `IterableConfig.inAppDisplayInterval` to an appropriate value (in seconds). 
+
+##### Migrating in-app messages from previous version of SDK
+
+If you are already using in-app messages, then you will have to make the following changes to your code.
+
+1. `spawnInAppNotification` is no longer needed. In-app messages will be displayed automatically without needing any code changes. Remove all `spawnInAppNotification` calls.
+2. Stop polling for in-app messages. The SDK will issue a callback using `config.inAppDelegate` [as explained above](#overriding-whether-to-show-or-skip-a-particular-in-app-message).
+3. Remove 'IterableAPI.getInAppMessages()' call and use `IterableAPI.inAppManager.getInAppMessages()` instead.
 
 
 #### Tracking custom events
