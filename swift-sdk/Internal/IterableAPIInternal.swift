@@ -112,10 +112,20 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             return
         }
         
-        register(token: token, appName: appName, pushServicePlatform: config.pushPlatform, onSuccess: onSuccess, onFailure: onFailure)
+        // Check notificationsEnabled then call register with enabled/not-not enabled
+        notificationStateProvider.notificationsEnabled.onSuccess { (enabled) in
+            self.register(token: token, appName: appName, pushServicePlatform: self.config.pushPlatform, notificationsEnabled: enabled, onSuccess: onSuccess, onFailure: onFailure)
+        }.onError {(error) in
+            self.register(token: token, appName: appName, pushServicePlatform: self.config.pushPlatform, notificationsEnabled: false, onSuccess: onSuccess, onFailure: onFailure)
+        }
     }
 
-    @discardableResult private func register(token: Data, appName: String, pushServicePlatform: PushServicePlatform, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue> {
+    @discardableResult private func register(token: Data,
+                                             appName: String,
+                                             pushServicePlatform: PushServicePlatform,
+                                             notificationsEnabled: Bool,
+                                             onSuccess: OnSuccessHandler? = nil,
+                                             onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue> {
         guard email != nil || userId != nil else {
             ITBError("Both email and userId are nil")
             onFailure?("Both email and userId are nil", nil)
@@ -150,6 +160,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         if let appBuild = Bundle.main.appBuild {
             dataFields[.ITBL_DEVICE_APP_BUILD] = appBuild
         }
+        dataFields[.ITBL_DEVICE_NOTIFICATIONS_ENABLED] = notificationsEnabled
         
         let deviceDictionary: [String : Any] = [
             AnyHashable.ITBL_KEY_TOKEN: hexToken!,
@@ -565,11 +576,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
 
         if config.autoPushRegistration == true {
-            notificationStateProvider.notificationsEnabled.onSuccess { (authorized) in
-                if authorized {
-                    self.notificationStateProvider.registerForRemoteNotifications()
-                }
-            }
+            notificationStateProvider.registerForRemoteNotifications()
         }
         
         inAppManager.synchronize()

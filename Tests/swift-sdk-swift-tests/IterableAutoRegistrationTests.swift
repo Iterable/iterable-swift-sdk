@@ -33,7 +33,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         config.pushIntegrationName = "my-push-integration"
         config.autoPushRegistration = true
         
-        let notificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: expectation2)
+        let notificationStateProvider = MockNotificationStateProvider(enabled: false, expectation: expectation2)
         
         IterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
         IterableAPI.email = "user1@example.com"
@@ -42,6 +42,9 @@ class IterableAutoRegistrationTests: XCTestCase {
             // First call, API call to register endpoint
             expectation1.fulfill()
             TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_REGISTER_DEVICE_TOKEN, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAutoRegistrationTests.apiKey)])
+            let body = networkSession.getRequestBody() as! [String : Any]
+            TestUtils.validateMatch(keyPath: KeyPath("device.dataFields.notificationsEnabled"), value: false, inDictionary: body)
+
             networkSession.callback = {(_, _, _)in
                 // Second call, API call to disable endpoint
                 expectation3.fulfill()
@@ -87,44 +90,6 @@ class IterableAutoRegistrationTests: XCTestCase {
         
         // only wait for small time, supposed to error out
         wait(for: [expectation1], timeout: testExpectationTimeout)
-    }
-    
-    func testDoNotCallRegisterForRemoteNotificationsWhenNotificationsAreDisabled() {
-        let expectation1 = expectation(description: "Call registerToken API endpoint")
-        let expectation2 = expectation(description: "Disable API endpoint called")
-        let expectation3 = expectation(description: "do not call registerForRemoteNotifications")
-        expectation3.isInverted = true
-        
-        let networkSession = MockNetworkSession(statusCode: 200)
-        let config = IterableConfig()
-        config.pushIntegrationName = "my-push-integration"
-        let notificationStateProvider = MockNotificationStateProvider(enabled: false, expectation: expectation3) // Notifications are disabled
-        
-        IterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey,
-                               config: config,
-                               networkSession: networkSession,
-                               notificationStateProvider: notificationStateProvider)
-        IterableAPI.userId = "userId1"
-        let token = "zeeToken".data(using: .utf8)!
-        networkSession.callback = {(_, _, _) in
-            // first call back will be called on register
-            expectation1.fulfill()
-            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_REGISTER_DEVICE_TOKEN, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAutoRegistrationTests.apiKey)])
-            TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_PREFER_USER_ID), value: true, inDictionary: networkSession.getRequestBody() as! [String : Any], message: "Expected to find preferUserId set to true")
-            networkSession.callback = {(_, _, _) in
-                // second call back is for disable when we set new user id
-                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_DISABLE_DEVICE, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAutoRegistrationTests.apiKey)])
-                let body = networkSession.getRequestBody() as! [String : Any]
-                TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOKEN, andValue: (token as NSData).iteHexadecimalString(), inDictionary: body)
-                TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_USER_ID, andValue: "userId1", inDictionary: body)
-                expectation2.fulfill()
-            }
-            IterableAPI.userId = "userId2"
-        }
-        IterableAPI.register(token: token)
-        
-        // only wait for small time, supposed to error out
-        wait(for: [expectation1, expectation2, expectation3], timeout: 1.0)
     }
     
     func testDoNotCallDisableOrEnableWhenAutoPushIsOff() {
