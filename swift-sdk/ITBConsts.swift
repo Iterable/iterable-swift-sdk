@@ -94,6 +94,7 @@ public extension String {
     public static let ITBL_DEVICE_APP_PACKAGE_NAME = "appPackageName"
     public static let ITBL_DEVICE_APP_VERSION = "appVersion"
     public static let ITBL_DEVICE_APP_BUILD = "appBuild"
+    public static let ITBL_DEVICE_NOTIFICATIONS_ENABLED = "notificationsEnabled"
     public static let ITBL_DEVICE_ITERABLE_SDK_VERSION = "iterableSdkVersion"
 }
 
