@@ -73,21 +73,24 @@ class ViewController: UIViewController {
     @IBAction func showInApp2Tap(_ sender: UIButton) {
         ITBInfo()
         
-        let networkSession = MockNetworkSession(
-            statusCode: 200,
-            json: ["inAppMessages" : [[
-                "content" : ["html" : "<a href='https://www.google.com/q=something'>Click Here</a>"],
-                "messageId" : "messageId",
-                "campaignId" : "campaignId"] ]])
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
+        let config = IterableConfig()
+        config.inAppDelegate = mockInAppDelegate
+        let payload = ["inAppMessages" : [[
+            "content" : ["html" : "<a href='https://www.google.com/q=something'>Click Here</a>"],
+            "messageId" : "messageId",
+            "campaignId" : "campaignId"]]
+        ]
         IterableAPI.initializeForTesting(apiKey: "apiKey",
-                               networkSession: networkSession)
-        
-        networkSession.callback = {(_, _, _) in
-            networkSession.data = [:].toData()
-        }
+                                         config: config,
+                                         inAppSynchronizer: mockInAppSynchronizer,
+                                         inAppDisplayer: InAppDisplayer())
 
-        IterableAPI.spawnInAppNotification { (str) in
-            ITBInfo("callback: \(str ?? "<nil>")")
+        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
+        let message = IterableAPI.inAppManager.getMessages()[0]
+
+        IterableAPI.inAppManager.show(message: message, consume: true) { (str) in
             self.statusLbl.text = str
         }
     }
@@ -95,29 +98,29 @@ class ViewController: UIViewController {
     // Center
     @IBAction func showInApp3Tap(_ sender: UIButton) {
         ITBInfo()
-        
-        // In app with Center display
-        // with left and right padding > 100
-        let networkSession = MockNetworkSession(
-            statusCode: 200,
-            json: ["inAppMessages" : [[
-                "content" : [
-                    "html" : "<a href='https://www.google.com/q=something'>Click Here</a>",
-                    "inAppDisplaySettings" : ["backgroundAlpha" : 0.5, "left" : ["percentage" : 60], "right" : ["percentage" : 60], "bottom" : ["displayOption" : "AutoExpand"], "top" : ["displayOption" : "AutoExpand"]]
-                ],
-                "messageId" : "messageId",
-                "campaignId" : "campaignId",
-                ]
-            ]])
+
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
+        let config = IterableConfig()
+        config.inAppDelegate = mockInAppDelegate
+        let payload = ["inAppMessages" : [[
+            "content" : [
+                "html" : "<a href='https://www.google.com/q=something'>Click Here</a>",
+                "inAppDisplaySettings" : ["backgroundAlpha" : 0.5, "left" : ["percentage" : 60], "right" : ["percentage" : 60], "bottom" : ["displayOption" : "AutoExpand"], "top" : ["displayOption" : "AutoExpand"]]
+            ],
+            "messageId" : "messageId",
+            "campaignId" : "campaignId",
+            ]]
+        ]
         IterableAPI.initializeForTesting(apiKey: "apiKey",
-                               networkSession: networkSession)
+                                         config: config,
+                                         inAppSynchronizer: mockInAppSynchronizer,
+                                         inAppDisplayer: InAppDisplayer())
         
-        networkSession.callback = {(_, _, _) in
-            networkSession.data = [:].toData()
-        }
+        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
+        let message = IterableAPI.inAppManager.getMessages()[0]
         
-        IterableAPI.spawnInAppNotification { (str) in
-            ITBInfo("callback: \(str ?? "<nil>")")
+        IterableAPI.inAppManager.show(message: message, consume: true) { (str) in
             self.statusLbl.text = str
         }
     }

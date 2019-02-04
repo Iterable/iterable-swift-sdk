@@ -360,20 +360,6 @@ public final class IterableAPI : NSObject {
     //MARK: In-App Notifications
     
     /**
-     Deprecated. Gets the list of InAppNotification and displays the next notification.
-     
-     This is deprecated in SDK version 6.0.4.
-     InApp notifications are automatically shown via `IterableInAppDelegate` methods.
-     
-     - parameter callbackBlock:  Callback ITEActionBlock
-     
-     */
-    @available(*, deprecated: 6.0.4, message: "InApp messages are automatically shown via IterableInAppDelegate methods.")
-    public static func spawnInAppNotification(_ callbackBlock:ITEActionBlock?) {
-        internalImplementation?.spawn(inAppNotification: callbackBlock)
-    }
-    
-    /**
      Deprecated. Gets the list of InAppMessages from the server.
      
      This is deprecated in SDK version 6.0.4.

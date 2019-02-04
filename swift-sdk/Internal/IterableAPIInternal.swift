@@ -392,18 +392,6 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
     }
 
-    @discardableResult func spawn(inAppNotification callbackBlock:ITEActionBlock?) -> Future<Bool> {
-        let promise = Promise<Bool>()
-
-        DispatchQueue.main.async {
-            InAppHelper.spawn(inAppNotification: callbackBlock, internalApi: self).onSuccess {
-                promise.resolve(with: $0)
-            }
-        }
-        
-        return promise
-    }
-
     @discardableResult func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue> {
         return getInAppMessages(count, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "getMessages"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "getMessages"))
     }

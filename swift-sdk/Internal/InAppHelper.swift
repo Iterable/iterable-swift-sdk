@@ -317,25 +317,6 @@ struct InAppHelper {
         return payload[.ITBL_IN_APP_MESSAGE] as? [[AnyHashable : Any]] ?? []
     }
     
-    /// Gets the first message from the payload, if one esists or nil if the payload is empty
-    static func spawn(inAppNotification callbackBlock: ITEActionBlock?, internalApi: IterableAPIInternal) -> Future<Bool> {
-        return internalApi.getInAppMessages(1).map {
-            getFirstInAppMessage(fromPayload: $0, internalApi: internalApi).map { showInApp(message: $0, callback: callbackBlock) }
-            ?? false
-        }
-    }
-    
-    private static func getFirstMessageDict(fromPayload payload: [AnyHashable : Any]) -> [AnyHashable : Any]? {
-        let messages = getInAppDicts(fromPayload: payload)
-        return messages.count > 0 ? messages[0] : nil
-    }
-    
-    private static func getFirstInAppMessage(fromPayload payload: [AnyHashable : Any], internalApi: IterableAPIInternal) -> IterableInAppMessage? {
-        return getFirstMessageDict(fromPayload: payload)
-            .map { parseInApp(fromDict: $0) }
-            .flatMap { toMessage(fromInAppParseResult: $0, internalApi: internalApi) }
-    }
-
     private static func parseInApps(fromPayload payload: [AnyHashable : Any]) -> [InAppParseResult] {
         return getInAppDicts(fromPayload: payload).map {
             parseInApp(fromDict: $0)
