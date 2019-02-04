@@ -358,7 +358,10 @@ public final class IterableAPI : NSObject {
     }
     
     //MARK: In-App Notifications
-    
+    @available(*, unavailable, message: "In-app messages are automatically shown by SDK now. Please check our migration guide here https://github.com/iterable/swift-sdk/#migrating-in-app-messages-from-the-previous-version-of-the-sdk.")
+    public static func spawnInAppNotification(_ callbackBlock:ITEActionBlock?) {
+    }
+
     /**
      Deprecated. Gets the list of InAppMessages from the server.
      
