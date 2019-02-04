@@ -145,7 +145,7 @@ public extension AnyHashable {
     
     public static let ITBL_IN_APP_TRIGGER = "trigger"
     public static let ITBL_IN_APP_TRIGGER_TYPE = "type"
-    public static let ITBL_IN_APP_EXPIRE_AT = "expireAt"
+    public static let ITBL_IN_APP_EXPIRES_AT = "expiresAt"
 
     public static let ITBL_IN_APP_CONTENT = "content"
     

@@ -194,11 +194,11 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     }
     
     private static func isExpired(message: IterableInAppMessage, currentDate: Date) -> Bool {
-        guard let expireAt = message.expireAt else {
+        guard let expiresAt = message.expiresAt else {
             return false
         }
         
-        return currentDate >= expireAt
+        return currentDate >= expiresAt
     }
     
     private var synchronizer: InAppSynchronizerProtocol // this is mutable because we need to set internalApi
