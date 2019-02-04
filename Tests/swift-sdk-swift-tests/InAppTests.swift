@@ -704,10 +704,10 @@ class InAppTests: XCTestCase {
     
     func testFilePersistence() {
         let payload = ["inAppMessages" : [
-            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 1, trigger: .event),
-            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 2, trigger: .immediate),
+            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 1, trigger: .event, expiresAt: Date()),
+            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 2, trigger: .immediate, expiresAt: Date()),
             TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 3, trigger: .never),
-            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 4, trigger: .immediate),
+            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 4, trigger: .immediate, expiresAt: Date()),
             ]]
         
         let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
@@ -919,8 +919,6 @@ class InAppTests: XCTestCase {
             TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 4, trigger: .immediate),
         ]]
         
-        print(payload)
-        
         let mockInAppSynchronizer = MockInAppSynchronizer()
         let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
         mockInAppDelegate.onNewMessageCallback = {(message) in
@@ -947,6 +945,30 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1, expectation3], timeout: testExpectationTimeoutForInverted)
         wait(for: [expectation2, expectation4], timeout: testExpectationTimeout)
     }
+    
+    func testExpiration() {
+        let mockDateProvider = MockDateProvider()
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        
+        let config = IterableConfig()
+        config.logDelegate = AllLogDelegate()
+        
+        IterableAPI.initializeForTesting(config: config,
+                                         dateProvider: mockDateProvider,
+                                         inAppSynchronizer: mockInAppSynchronizer)
+
+        let message = IterableInAppMessage(messageId: "messageId",
+                                           campaignId: "campaignId",
+                                           expiresAt: mockDateProvider.currentDate.addingTimeInterval(1.0 * 60.0), // one minute from now
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "<html></html>"))
+        mockInAppSynchronizer.mockMessagesAvailableFromServer(messages: [message])
+
+        XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
+        
+        mockDateProvider.currentDate = mockDateProvider.currentDate.addingTimeInterval(2.0 * 60) // two minutes from now
+        
+        XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
+    }
 }
 
 extension IterableHtmlInAppContent {
@@ -965,6 +987,7 @@ extension IterableInAppMessage {
                         "channelName", channelName,
                         "contentType", contentType,
                         "trigger", trigger,
+                        "expiresAt", expiresAt ?? "nil",
                         "content", content,
                         "processed", processed,
                         "consumed", consumed, pairSeparator: " = ", separator: "\n")
