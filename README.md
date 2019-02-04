@@ -259,7 +259,7 @@ Set `IterableConfig.checkForDeferredDeeplink = true` to enable deferred deep lin
 	
 ### In-app messages
 
-If you are already using in-app messages with IterableSDK, please check out the [migration section](#Migrating-in-app-messages-from-previous-version-of-SDK).
+If you are already using in-app messages with IterableSDK, please check out the [migration section](#Migrating-in-app-messages-from-the-previous-version-of-the-SDK).
 
 #### Default behavior
 
