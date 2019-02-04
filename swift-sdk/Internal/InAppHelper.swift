@@ -305,7 +305,7 @@ struct InAppHelper {
         let messageId: String
         let campaignId: String
         let trigger: IterableInAppTriggerType
-        let expireAt: Date?
+        let expiresAt: Date?
         let edgeInsets: UIEdgeInsets
         let backgroundAlpha: Double
         let html: String
@@ -370,7 +370,7 @@ struct InAppHelper {
         let channelName = extraInfo?["channelName"] as? String ?? ""
 
         let trigger = parseTrigger(fromTriggerElement: dict[.ITBL_IN_APP_TRIGGER] as? [AnyHashable : Any])
-        let expireAt = parseExpireAt(dict: dict)
+        let expiresAt = parseExpiresAt(dict: dict)
         let inAppDisplaySettings = content[.ITBL_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
         let backgroundAlpha = InAppHelper.getBackgroundAlpha(fromInAppSettings: inAppDisplaySettings)
         let edgeInsets = InAppHelper.getPadding(fromInAppSettings: inAppDisplaySettings)
@@ -380,15 +380,15 @@ struct InAppHelper {
             messageId: messageId,
             campaignId: campaignId,
             trigger: trigger,
-            expireAt: expireAt,
+            expiresAt: expiresAt,
             edgeInsets: edgeInsets,
             backgroundAlpha: backgroundAlpha,
             html: html,
             extraInfo: extraInfo))
     }
     
-    private static func parseExpireAt(dict: [AnyHashable : Any]) -> Date? {
-        guard let intValue = dict[.ITBL_IN_APP_EXPIRE_AT] as? Int else {
+    private static func parseExpiresAt(dict: [AnyHashable : Any]) -> Date? {
+        guard let intValue = dict[.ITBL_IN_APP_EXPIRES_AT] as? Int else {
             return nil
         }
         
@@ -431,7 +431,7 @@ struct InAppHelper {
                                         channelName: inAppDetails.channelName,
                                         contentType: .html,
                                         trigger: inAppDetails.trigger,
-                                        expireAt: inAppDetails.expireAt,
+                                        expiresAt: inAppDetails.expiresAt,
                                         content: content,
                                         extraInfo: inAppDetails.extraInfo)
         case .failure(reason: let reason, messageId: let messageId):

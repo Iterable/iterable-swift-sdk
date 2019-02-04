@@ -56,7 +56,7 @@ extension IterableInAppMessage : Codable {
         case channelName
         case contentType
         case trigger
-        case expireAt
+        case expiresAt
         case content
         case extraInfo
         case processed
@@ -87,7 +87,7 @@ extension IterableInAppMessage : Codable {
         let campaignId = (try? container.decode(String.self, forKey: .campaignId)) ?? ""
         let channelName = (try? container.decode(String.self, forKey: .channelName)) ?? ""
         let trigger = (try? container.decode(IterableInAppTriggerType.self, forKey: .trigger)) ?? .immediate
-        let expireAt = (try? container.decode(Date.self, forKey: .expireAt))
+        let expiresAt = (try? container.decode(Date.self, forKey: .expiresAt))
         let content = (try? container.decode(IterableHtmlInAppContent.self, forKey: .content)) ?? IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
         let extraInfoData = try? container.decode(Data.self, forKey: .extraInfo)
         let extraInfo = IterableInAppMessage.deserializeExtraInfo(withData: extraInfoData)
@@ -97,7 +97,7 @@ extension IterableInAppMessage : Codable {
                   channelName: channelName,
                   contentType: contentType,
                   trigger: trigger,
-                  expireAt: expireAt,
+                  expiresAt: expiresAt,
                   content: content,
                   extraInfo: extraInfo)
         
@@ -116,7 +116,7 @@ extension IterableInAppMessage : Codable {
         try? container.encode(channelName, forKey: .channelName)
         try? container.encode(contentType, forKey: .contentType)
         try? container.encode(trigger, forKey: .trigger)
-        try? container.encode(expireAt, forKey: .expireAt)
+        try? container.encode(expiresAt, forKey: .expiresAt)
         try? container.encode(content, forKey: .content)
         try? container.encode(IterableInAppMessage.serialize(extraInfo: extraInfo), forKey: .extraInfo)
         try? container.encode(processed, forKey: .processed)

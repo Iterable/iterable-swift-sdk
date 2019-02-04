@@ -704,10 +704,10 @@ class InAppTests: XCTestCase {
     
     func testFilePersistence() {
         let payload = ["inAppMessages" : [
-            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 1, trigger: .event, expireAt: Date()),
-            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 2, trigger: .immediate, expireAt: Date()),
+            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 1, trigger: .event, expiresAt: Date()),
+            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 2, trigger: .immediate, expiresAt: Date()),
             TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 3, trigger: .never),
-            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 4, trigger: .immediate, expireAt: Date()),
+            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 4, trigger: .immediate, expiresAt: Date()),
             ]]
         
         let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
@@ -959,7 +959,7 @@ class InAppTests: XCTestCase {
 
         let message = IterableInAppMessage(messageId: "messageId",
                                            campaignId: "campaignId",
-                                           expireAt: mockDateProvider.currentDate.addingTimeInterval(1.0 * 60.0), // one minute from now
+                                           expiresAt: mockDateProvider.currentDate.addingTimeInterval(1.0 * 60.0), // one minute from now
                                            content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "<html></html>"))
         mockInAppSynchronizer.mockMessagesAvailableFromServer(messages: [message])
 
@@ -987,7 +987,7 @@ extension IterableInAppMessage {
                         "channelName", channelName,
                         "contentType", contentType,
                         "trigger", trigger,
-                        "expireAt", expireAt ?? "nil",
+                        "expiresAt", expiresAt ?? "nil",
                         "content", content,
                         "processed", processed,
                         "consumed", consumed, pairSeparator: " = ", separator: "\n")
