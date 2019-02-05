@@ -125,7 +125,7 @@ public final class IterableInAppMessage : NSObject {
         campaignId: String,
         channelName: String = "reserved",
         contentType: IterableInAppContentType = .html,
-        trigger: IterableInAppTriggerType = .immediate,
+        trigger: IterableInAppTriggerType = .defaultTriggerType,
         expiresAt: Date? = nil,
         content: IterableInAppContent,
         extraInfo: [AnyHashable : Any]? = nil

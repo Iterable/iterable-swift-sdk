@@ -86,7 +86,7 @@ extension IterableInAppMessage : Codable {
         let messageId = (try? container.decode(String.self, forKey: .messageId)) ?? ""
         let campaignId = (try? container.decode(String.self, forKey: .campaignId)) ?? ""
         let channelName = (try? container.decode(String.self, forKey: .channelName)) ?? ""
-        let trigger = (try? container.decode(IterableInAppTriggerType.self, forKey: .trigger)) ?? .immediate
+        let trigger = (try? container.decode(IterableInAppTriggerType.self, forKey: .trigger)) ?? .undefinedTriggerType
         let expiresAt = (try? container.decode(Date.self, forKey: .expiresAt))
         let content = (try? container.decode(IterableHtmlInAppContent.self, forKey: .content)) ?? IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
         let extraInfoData = try? container.decode(Data.self, forKey: .extraInfo)

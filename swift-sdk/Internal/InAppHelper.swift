@@ -38,6 +38,11 @@ class InAppDisplayer : InAppDisplayerProtocol {
     }
 }
 
+extension IterableInAppTriggerType {
+    static let defaultTriggerType = IterableInAppTriggerType.immediate // default is what is chosen by default
+    static let undefinedTriggerType = IterableInAppTriggerType.never // undefined is what we select if payload has new trigger type
+}
+
 class InAppSilentPushSynchronizer : InAppSynchronizerProtocol {
     weak var internalApi: IterableAPIInternal?
     weak var inAppSyncDelegate: InAppSynchronizerDelegate?
@@ -379,10 +384,10 @@ struct InAppHelper {
     
     private static func parseTrigger(fromTriggerElement element: [AnyHashable : Any]?) -> IterableInAppTriggerType {
         guard let element = element else {
-            return .immediate
+            return .undefinedTriggerType
         }
         guard let triggerTypeString = element[.ITBL_IN_APP_TRIGGER_TYPE] as? String else {
-            return .immediate
+            return .undefinedTriggerType
         }
         
         switch triggerTypeString.lowercased() {
@@ -393,7 +398,7 @@ struct InAppHelper {
         case String(describing: IterableInAppTriggerType.never).lowercased():
             return .never
         default:
-            return .immediate
+            return .undefinedTriggerType
         }
     }
     
