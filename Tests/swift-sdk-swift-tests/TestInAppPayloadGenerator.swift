@@ -9,22 +9,22 @@ import Foundation
 @testable import IterableSDK
 
 struct TestInAppPayloadGenerator {
-    static func createPayloadWithUrl(numMessages: Int, trigger: IterableInAppTriggerType = .immediate, expiresAt: Date? = nil) -> [AnyHashable : Any] {
-        return createPayloadWithUrl(indices: 1...numMessages, trigger: trigger, expiresAt: expiresAt)
+    static func createPayloadWithUrl(numMessages: Int, triggerType: IterableInAppTriggerType = .immediate, expiresAt: Date? = nil) -> [AnyHashable : Any] {
+        return createPayloadWithUrl(indices: 1...numMessages, triggerType: triggerType, expiresAt: expiresAt)
     }
     
-    static func createPayloadWithUrl<T: Sequence>(indices: T, trigger: IterableInAppTriggerType = .immediate, expiresAt: Date? = nil) -> [AnyHashable : Any] where T.Element == Int {
+    static func createPayloadWithUrl<T: Sequence>(indices: T, triggerType: IterableInAppTriggerType = .immediate, expiresAt: Date? = nil) -> [AnyHashable : Any] where T.Element == Int {
         return [
             "inAppMessages" : indices.reduce(into: [[AnyHashable : Any]]()) { (result, index) in
-                result.append(createOneInAppDictWithUrl(index: index, trigger: trigger, expiresAt: expiresAt))
+                result.append(createOneInAppDictWithUrl(index: index, triggerType: triggerType, expiresAt: expiresAt))
             }
         ]
     }
 
-    static func createPayloadWithCustomAction(numMessages: Int, trigger: IterableInAppTriggerType = .immediate) -> [AnyHashable : Any] {
+    static func createPayloadWithCustomAction(numMessages: Int, triggerType: IterableInAppTriggerType = .immediate) -> [AnyHashable : Any] {
         return [
             "inAppMessages" : (1...numMessages).reduce(into: [[AnyHashable : Any]]()) { (result, index) in
-                result.append(createOneInAppDictWithCustomAction(index: index, trigger: trigger))
+                result.append(createOneInAppDictWithCustomAction(index: index, triggerType: triggerType))
             }
         ]
     }
@@ -53,25 +53,30 @@ struct TestInAppPayloadGenerator {
         return Int(String(campaignId.suffix(1)))!
     }
 
-    static func createOneInAppDictWithUrl(index: Int, trigger: IterableInAppTriggerType, expiresAt: Date? = nil) -> [AnyHashable : Any] {
+    static func createOneInAppDictWithUrl(index: Int, trigger: IterableInAppTrigger?, expiresAt: Date? = nil) -> [AnyHashable : Any] {
         return createOneInAppDict(withHref: getClickUrl(index: index), index: index, trigger: trigger, expiresAt: expiresAt)
     }
 
-    static func createOneInAppDictWithCustomAction(index: Int, trigger: IterableInAppTriggerType) -> [AnyHashable : Any] {
-        return createOneInAppDict(withHref: getCustomActionUrl(index: index), index: index, trigger: trigger, expiresAt: nil)
+    static func createOneInAppDictWithUrl(index: Int, triggerType: IterableInAppTriggerType, expiresAt: Date? = nil) -> [AnyHashable : Any] {
+        return createOneInAppDict(withHref: getClickUrl(index: index), index: index, trigger: trigger(fromTriggerType: triggerType), expiresAt: expiresAt)
     }
 
-    private static func createOneInAppDict(withHref href: String, index: Int, trigger: IterableInAppTriggerType, expiresAt: Date?) -> [AnyHashable : Any] {
+    static func createOneInAppDictWithCustomAction(index: Int, triggerType: IterableInAppTriggerType) -> [AnyHashable : Any] {
+        return createOneInAppDict(withHref: getCustomActionUrl(index: index), index: index, trigger: trigger(fromTriggerType: triggerType), expiresAt: nil)
+    }
+
+    private static func createOneInAppDict(withHref href: String, index: Int, trigger: IterableInAppTrigger?, expiresAt: Date?) -> [AnyHashable : Any] {
+        var dict = createOneInAppDict(withHref: href, index: index)
         if let expiresAt = expiresAt {
-            var dict = createOneInAppDict(withHref: href, index: index, trigger: trigger)
             dict["expiresAt"] = toMillisecondsSinceEpoch(date: expiresAt)
-            return dict
-        } else {
-            return createOneInAppDict(withHref: href, index: index, trigger: trigger)
         }
+        if let trigger = trigger {
+            dict["trigger"] = trigger.dict
+        }
+        return dict
     }
 
-    private static func createOneInAppDict(withHref href: String, index: Int, trigger: IterableInAppTriggerType) -> [AnyHashable : Any] {
+    private static func createOneInAppDict(withHref href: String, index: Int) -> [AnyHashable : Any] {
         return [
             "content" : [
                 "html" : "<a href='\(href)'>Click Here</a>",
@@ -79,12 +84,15 @@ struct TestInAppPayloadGenerator {
                 "payload" : ["channelName" : "inBox", "title" : "Product 1 Available", "date" : "2018-11-14T14:00:00:00.32Z"]
             ],
             "messageId" : getMessageId(index: index),
-            "campaignId" : getCampaignId(index: index),
-            "trigger" : ["type" : String(describing: trigger)]
+            "campaignId" : getCampaignId(index: index)
         ]
     }
     
     private static func toMillisecondsSinceEpoch(date: Date) -> Int {
         return Int(date.timeIntervalSince1970 * 1000)
+    }
+    
+    private static func trigger(fromTriggerType triggerType: IterableInAppTriggerType) -> IterableInAppTrigger {
+        return IterableInAppTrigger(dict: ["type" : String(describing: triggerType)])
     }
 }

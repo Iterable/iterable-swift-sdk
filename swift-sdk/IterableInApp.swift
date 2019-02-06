@@ -82,7 +82,28 @@ public class IterableHtmlInAppContent : NSObject, IterableInAppContent, Codable 
     case immediate
     case event
     case never
+
 }
+
+@objcMembers
+public final class IterableInAppTrigger : NSObject {
+    public let type: IterableInAppTriggerType
+    
+    // internal
+    let dict: [AnyHashable : Any]
+    
+    // Internal
+    init(dict: [AnyHashable : Any]) {
+        self.dict = dict
+        if let typeString = dict[.ITBL_IN_APP_TRIGGER_TYPE] as? String {
+            self.type = IterableInAppTriggerType.from(string: typeString)
+        } else {
+            // if trigger type is not present in payload
+            self.type = IterableInAppTriggerType.immediate
+        }
+    }
+}
+
 
 /// A message is comprised of content and whether this message was skipped.
 @objcMembers
@@ -100,7 +121,7 @@ public final class IterableInAppMessage : NSObject {
     public let contentType: IterableInAppContentType
 
     /// when to trigger this in-app
-    public let trigger: IterableInAppTriggerType
+    public let trigger: IterableInAppTrigger
     
     /// when to expire this in-app, nil means do not expire
     public let expiresAt: Date?
@@ -125,7 +146,7 @@ public final class IterableInAppMessage : NSObject {
         campaignId: String,
         channelName: String = "reserved",
         contentType: IterableInAppContentType = .html,
-        trigger: IterableInAppTriggerType = .defaultTriggerType,
+        trigger: IterableInAppTrigger = .defaultTrigger,
         expiresAt: Date? = nil,
         content: IterableInAppContent,
         extraInfo: [AnyHashable : Any]? = nil
