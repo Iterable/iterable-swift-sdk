@@ -365,13 +365,13 @@ public final class IterableAPI : NSObject {
     /**
      Deprecated. Gets the list of InAppMessages from the server.
      
-     This is deprecated in SDK version 6.0.4.
-     InApp notifications are automatically shown via `IterableInAppDelegate` methods. The SDK takes care of getting messages automatically.
+     This is deprecated in SDK version 6.1.0.
+     In-App notifications are automatically shown via `IterableInAppDelegate` methods. The SDK takes care of getting messages automatically.
      See `IterableAPI.inAppManager.getMessages()` method to get messages already fetched from the server.
 
      - parameter count:  the number of messages to fetch
      */
-    @available(*, deprecated: 6.0.4, message: "Use IterableAPI.inAppManager.getMessages() method instead.")
+    @available(*, deprecated: 6.1.0, message: "Use IterableAPI.inAppManager.getMessages() method instead.")
     @objc(getInAppMessages:) public static func get(inAppMessages count: NSNumber) {
         internalImplementation?.getInAppMessages(count)
     }
@@ -379,8 +379,8 @@ public final class IterableAPI : NSObject {
     /**
      Deprecated. Gets the list of InAppMessages with optional additional fields and custom completion blocks
      
-     This is deprecated in SDK version 6.0.4.
-     InApp notifications are automatically shown via `IterableInAppDelegate` methods. The SDK takes care of getting messages automatically.
+     This is deprecated in SDK version 6.1.0.
+     In-App notifications are automatically shown via `IterableInAppDelegate` methods. The SDK takes care of getting messages automatically.
      See `IterableAPI.inAppManager.getMessages()` method to get messages already fetched from the server.
 
      - Parameters:
@@ -391,7 +391,7 @@ public final class IterableAPI : NSObject {
      - seeAlso: OnSuccessHandler
      - seeAlso: OnFailureHandler
      */
-    @available(*, deprecated: 6.0.4, message: "Use IterableAPI.inAppManager.getMessages() method instead.")
+    @available(*, deprecated: 6.1.0, message: "Use IterableAPI.inAppManager.getMessages() method instead.")
     @objc(getInAppMessages:onSucess:onFailure:) public static func get(inAppMessages count: NSNumber, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         internalImplementation?.getInAppMessages(count, onSuccess: onSuccess, onFailure: onFailure)
     }
