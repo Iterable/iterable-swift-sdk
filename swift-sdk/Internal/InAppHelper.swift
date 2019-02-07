@@ -38,6 +38,11 @@ class InAppDisplayer : InAppDisplayerProtocol {
     }
 }
 
+extension IterableInAppTriggerType {
+    static let defaultTriggerType = IterableInAppTriggerType.immediate // default is what is chosen by default
+    static let undefinedTriggerType = IterableInAppTriggerType.never // undefined is what we select if payload has new trigger type
+}
+
 class InAppSilentPushSynchronizer : InAppSynchronizerProtocol {
     weak var internalApi: IterableAPIInternal?
     weak var inAppSyncDelegate: InAppSynchronizerDelegate?
@@ -304,7 +309,7 @@ struct InAppHelper {
         let channelName: String
         let messageId: String
         let campaignId: String
-        let trigger: IterableInAppTriggerType
+        let trigger: IterableInAppTrigger
         let expiresAt: Date?
         let edgeInsets: UIEdgeInsets
         let backgroundAlpha: Double
@@ -377,24 +382,12 @@ struct InAppHelper {
         return Date(timeIntervalSince1970: seconds)
     }
     
-    private static func parseTrigger(fromTriggerElement element: [AnyHashable : Any]?) -> IterableInAppTriggerType {
+    private static func parseTrigger(fromTriggerElement element: [AnyHashable : Any]?) -> IterableInAppTrigger {
         guard let element = element else {
-            return .immediate
+            return .defaultTrigger // if element is missing return default which is immediate
         }
-        guard let triggerTypeString = element[.ITBL_IN_APP_TRIGGER_TYPE] as? String else {
-            return .immediate
-        }
-        
-        switch triggerTypeString.lowercased() {
-        case String(describing: IterableInAppTriggerType.immediate).lowercased():
-            return .immediate
-        case String(describing: IterableInAppTriggerType.event).lowercased():
-            return .event
-        case String(describing: IterableInAppTriggerType.never).lowercased():
-            return .never
-        default:
-            return .immediate
-        }
+
+        return IterableInAppTrigger(dict: element)
     }
     
     private static func parseExtraInfo(fromContent content: [AnyHashable : Any]) -> [AnyHashable : Any]? {

@@ -239,6 +239,71 @@ class InAppHelperTests: XCTestCase {
         XCTAssertEqual(obtained?["bool1"] as? Bool, true)
     }
     
+    func testInAppPayloadWithNoTrigger() {
+        let payload = """
+        {
+            "inAppMessages" : [
+                {
+                    "content" : {
+                        "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
+                    },
+                    "messageId" : "messageIdxxx",
+                    "campaignId" : "campaignIdxxx"
+                }
+            ]
+        }
+        """.toJsonDict()
+        let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
+        XCTAssertEqual(messages[0].trigger.type, IterableInAppTriggerType.immediate)
+    }
+    
+    func testInAppPayloadWithKnownTrigger() {
+        let payload = """
+        {
+            "inAppMessages" : [
+                {
+                    "content" : {
+                        "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
+                    },
+                    "messageId" : "messageIdxxx",
+                    "campaignId" : "campaignIdxxx",
+                    "trigger" : {
+                        "type" : "event",
+                        "something" : "else"
+                    }
+                }
+            ]
+        }
+        """.toJsonDict()
+        let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
+        XCTAssertEqual(messages[0].trigger.type, IterableInAppTriggerType.event)
+        XCTAssertEqual(messages[0].trigger.dict["something"] as? String, "else")
+    }
+
+    func testInAppPayloadWithUnKnownTrigger() {
+        let payload = """
+        {
+            "inAppMessages" : [
+                {
+                    "content" : {
+                        "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
+                    },
+                    "messageId" : "messageIdxxx",
+                    "campaignId" : "campaignIdxxx",
+                    "trigger" : {
+                        "type" : "myNewKind",
+                        "myPayload" : {"var1" : "val1"}
+                    }
+                }
+            ]
+        }
+        """.toJsonDict()
+        let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
+        XCTAssertEqual(messages[0].trigger.type, IterableInAppTriggerType.never)
+        let dict = messages[0].trigger.dict as! [String : Any]
+        TestUtils.validateMatch(keyPath: KeyPath("myPayload.var1"), value: "val1", inDictionary: dict, message: "Expected to find val1")
+    }
+
     private func createInAppPayload(withExtraInfo extraInfo: [AnyHashable : Any]) -> [AnyHashable : Any] {
         return [
             "inAppMessages" : [[

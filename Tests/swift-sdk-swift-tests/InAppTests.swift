@@ -704,10 +704,10 @@ class InAppTests: XCTestCase {
     
     func testFilePersistence() {
         let payload = ["inAppMessages" : [
-            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 1, trigger: .event, expiresAt: Date()),
-            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 2, trigger: .immediate, expiresAt: Date()),
-            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 3, trigger: .never),
-            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 4, trigger: .immediate, expiresAt: Date()),
+            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 1, trigger: IterableInAppTrigger(dict: ["type" : "event", "details" : "some event details"]), expiresAt: Date()),
+            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 2, triggerType: .immediate, expiresAt: Date()),
+            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 3, triggerType: .never),
+            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 4, trigger: IterableInAppTrigger(dict: ["type" : "newEventType", "nested" : ["var1" : "val1"]]), expiresAt: Date()),
             ]]
         
         let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
@@ -715,6 +715,10 @@ class InAppTests: XCTestCase {
         persister.persist(messages)
         let obtained = persister.getMessages()
         XCTAssertEqual(messages.description, obtained.description)
+        
+        XCTAssertEqual(obtained[3].trigger.type, IterableInAppTriggerType.never)
+        let dict = obtained[3].trigger.dict as! [String : Any]
+        TestUtils.validateMatch(keyPath: KeyPath("nested.var1"), value: "val1", inDictionary: dict, message: "Expected to find val1 in persisted dictionary")
         persister.clear()
     }
     
@@ -913,10 +917,10 @@ class InAppTests: XCTestCase {
         let expectation4 = expectation(description: "call immediate trigger 2")
         
         let payload = ["inAppMessages" : [
-            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 1, trigger: .event),
-            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 2, trigger: .immediate),
-            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 3, trigger: .never),
-            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 4, trigger: .immediate),
+            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 1, triggerType: .event),
+            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 2, triggerType: .immediate),
+            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 3, triggerType: .never),
+            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 4, triggerType: .immediate),
         ]]
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
@@ -968,6 +972,12 @@ class InAppTests: XCTestCase {
         mockDateProvider.currentDate = mockDateProvider.currentDate.addingTimeInterval(2.0 * 60) // two minutes from now
         
         XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
+    }
+}
+
+extension IterableInAppTrigger {
+    public override var description: String {
+        return "type: \(self.type)"
     }
 }
 

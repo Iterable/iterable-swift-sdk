@@ -49,6 +49,72 @@ extension IterableInAppTriggerType : CustomStringConvertible {
     }
 }
 
+extension IterableInAppTriggerType {
+    // Internal
+    static func from(string: String) -> IterableInAppTriggerType {
+        switch string.lowercased() {
+        case String(describing: IterableInAppTriggerType.immediate).lowercased():
+            return .immediate
+        case String(describing: IterableInAppTriggerType.event).lowercased():
+            return .event
+        case String(describing: IterableInAppTriggerType.never).lowercased():
+            return .never
+        default:
+            return .undefinedTriggerType // if string is not known
+        }
+    }
+}
+
+extension IterableInAppTrigger {
+    static let defaultTrigger = IterableInAppTrigger(dict: createDefaultTriggerDict())
+    static let undefinedTrigger = IterableInAppTrigger(dict: createUndefinedTriggerDict())
+
+    private static func createDefaultTriggerDict() -> [AnyHashable : Any] {
+        return [.ITBL_IN_APP_TRIGGER_TYPE : String(describing: IterableInAppTriggerType.defaultTriggerType)]
+    }
+    
+    private static func createUndefinedTriggerDict() -> [AnyHashable : Any] {
+        return [.ITBL_IN_APP_TRIGGER_TYPE : String(describing: IterableInAppTriggerType.undefinedTriggerType)]
+    }
+}
+
+extension IterableInAppTrigger : Codable {
+    enum CodingKeys: String, CodingKey {
+        case data
+    }
+    
+    public convenience init(from decoder: Decoder) {
+        guard let container = try? decoder.container(keyedBy: CodingKeys.self) else {
+            self.init(dict: IterableInAppTrigger.createDefaultTriggerDict())
+            return
+        }
+
+        guard let data = (try? container.decode(Data.self, forKey: .data)) else {
+            self.init(dict: IterableInAppTrigger.createDefaultTriggerDict())
+            return
+        }
+
+        do {
+            if let dict = try JSONSerialization.jsonObject(with: data, options: []) as? [AnyHashable : Any] {
+                self.init(dict: dict)
+            } else {
+                self.init(dict: IterableInAppTrigger.createDefaultTriggerDict())
+            }
+            
+        } catch (let error) {
+            ITBError(error.localizedDescription)
+            self.init(dict: IterableInAppTrigger.createDefaultTriggerDict())
+        }
+    }
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        if let data = try? JSONSerialization.data(withJSONObject: dict, options: []) {
+            try? container.encode(data, forKey: .data)
+        }
+    }
+}
+
 extension IterableInAppMessage : Codable {
     enum CodingKeys: String, CodingKey {
         case messageId
@@ -86,7 +152,7 @@ extension IterableInAppMessage : Codable {
         let messageId = (try? container.decode(String.self, forKey: .messageId)) ?? ""
         let campaignId = (try? container.decode(String.self, forKey: .campaignId)) ?? ""
         let channelName = (try? container.decode(String.self, forKey: .channelName)) ?? ""
-        let trigger = (try? container.decode(IterableInAppTriggerType.self, forKey: .trigger)) ?? .immediate
+        let trigger = (try? container.decode(IterableInAppTrigger.self, forKey: .trigger)) ?? .undefinedTrigger
         let expiresAt = (try? container.decode(Date.self, forKey: .expiresAt))
         let content = (try? container.decode(IterableHtmlInAppContent.self, forKey: .content)) ?? IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
         let extraInfoData = try? container.decode(Data.self, forKey: .extraInfo)
