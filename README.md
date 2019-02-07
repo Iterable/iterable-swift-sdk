@@ -248,16 +248,51 @@ func application(_ application: UIApplication, continue userActivity: NSUserActi
 	return [IterableAPI handleUniversalLink:userActivity.webpageURL];
 }
 ```
+
+### Deferred deep linking
+
+[Deferred deep linking](https://en.wikipedia.org/wiki/Deferred_deep_linking) allows a user who does not have a specific app installed to:
+
+ - Click on a deep link that would normally open content in that app.
+ - Install the app from the App Store.
+ - Open the app and immediately see the content referenced by the link.
+ 
+As the name implies, the deep link is _deferred_ until the app has been installed. 
+
+After tapping a deep link in an email from an Iterable campaign, users without the associated app will be directed to the App Store to install it. If the app uses the IterableSDK and has deferred deep linking enabled, the content associated with the deep link will load on first launch.
+
+#### Enabling deferred deep linking
+
+Set `IterableConfig.checkForDeferredDeeplink = true` to enable deferred deep linking for IterableSDK.
 	
-#### In-app messages
+### In-app messages
 
-If you are already using in-app messages with IterableSDK, please check out the [migration section](#Migrating-in-app-messages-from-previous-version-of-SDK).
+If you are already using in-app messages with IterableSDK, please check out the [migration section](#Migrating-in-app-messages-from-the-previous-version-of-the-SDK). 
 
-##### Default behavior
+In-app messages are handled via silent push messages from the server. When your application receives a silent push, you need to call IterableSDK in your AppDelegate as in the following code:
+
+*Swift*
+
+```swift
+// In AppDelegate.swift
+func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+    IterableAppIntegration.application(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler)
+}
+```
+
+*Objective-C*
+
+```objc
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+    [IterableAppIntegration application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+}
+```
+
+#### Default behavior
 
 By default, when an in-app message arrives from the server, the SDK automatically shows it if the app is in the foreground. If an in-app message is already showing when the new message arrives, the new in-app message will be shown 30 seconds after the currently displayed in-app message closes ([see how to change this default value below](#Changing-the-display-interval-between-in-app-messages)). Once an in-app message is shown, it will be "consumed" from the server queue and removed from the local queue as well. There is no need to write any code to get this default behavior. 
 
-##### Overriding whether to show or skip a particular in-app message
+#### Overriding whether to show or skip a particular in-app message
 
 An incoming in-app message triggers a call to the `onNew` method of `IterableConfig.inAppDelegate` (an object of type `IterableInAppDelegate`). To override the default behavior, set `IterableConfig.inAppDelegate` to a custom class that overrides the `onNew` method. `onNew` should return `.show` to show the incoming in-app message or `.skip` to skip showing it.
 
@@ -302,7 +337,7 @@ config.inAppDelegate = self; // or other class implementing the protocol
 [IterableAPI initializeWithApiKey:@"YOUR API KEY" launchOptions:launchOptions config:config];
 ```
 
-##### Getting the local queue of in-app messages
+#### Getting the local queue of in-app messages
 Until they are consumed by the app, all in-app messages that arrive from the server are stored in a local queue. To access that local queue, use the read-only `IterableAPI.inAppManager` property (which conforms to the `InAppManager` protocol). By default, all in-app messages in the local queue will be consumed and removed from this queue. To keep in-app messages around after they are shown, override the default behavior (as described above).
 	
 *Swift*
@@ -333,7 +368,7 @@ NSArray *messages = [IterableAPI.inAppManager getMessages];
 	
 ```	
 
-##### When user clicks a button/link in the in-app message
+#### When user clicks a button/link in the in-app message
 
 Button/link clicks from in-app are handled similar to deep links from notifications and emails. Please see those sections above. If the in-app message's clicked button/link's `href` contains a URL (which is usually the case), tapping that button/link will call the `handle` method of `IterableConfig.urlDelegate` (an object of type `IterableURLDelegate`), if one is set. By default if this delegate is not set, tapping the button/link will open Safari with the `href` of the clicked button/link.
 	
@@ -347,11 +382,11 @@ config.urlDelegate = YourCustomUrlDelegate()
 config.customActionDelegate = YourCustomActionDelegate()
 ```
 	
-##### Changing the display interval between in-app messages
+#### Changing the display interval between in-app messages
 
 To customize the time delay between successive in-app messages (default value of 30 seconds), set `IterableConfig.inAppDisplayInterval` to an appropriate value (in seconds). 
 
-##### Migrating in-app messages from the previous version of the SDK
+#### Migrating in-app messages from the previous version of the SDK
 
 If you are already using in-app messages, then you will have to make the following changes to your code:
 
@@ -360,21 +395,21 @@ If you are already using in-app messages, then you will have to make the followi
 3. Remove calls to 'IterableAPI.getInAppMessages()' and use `IterableAPI.inAppManager.getInAppMessages()` instead.
 
 
-#### Tracking custom events
+### Tracking custom events
 
 Custom events can be tracked using `IterableAPI.track(event:...)` calls.
 	
-#### Updating user fields
+### Updating user fields
 
 User fields can be modified using `IterableAPI.updateUser` call. You also have `updateEmail` and `updateSubscriptions` methods.
 	
-#### Disabling push notifications to a device
+### Disabling push notifications to a device
 
 When a user logs out, you typically want to disable push notifications to that user/device. This can be accomplished by calling `disableDeviceForCurrentUser`. Please note that it will only attempt to disable the device if you have previously called `registerToken`.
 	
 In order to re-enable push notifcations to that device, simply call `registerToken` as usual when the user logs back in.
 	
-#### Uninstall tracking
+### Uninstall tracking
 
 Iterable will track uninstalls with no additional work by you. 
 
