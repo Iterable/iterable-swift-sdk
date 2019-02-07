@@ -251,7 +251,7 @@ func application(_ application: UIApplication, continue userActivity: NSUserActi
 
 ### Deferred deep linking
 
-If an app user does not have your app installed, deep linking will not work. The user will need to install your app first. After installing your app, the user will be taken to a specific location within your app when they launch it for the first time. See definition of deferred deep linking [here](#https://en.wikipedia.org/wiki/Deferred_deep_linking).
+Deferred deep linking comes into play when a user of your app does not have your app installed in their iPhone/iPad. See definition of deferred deep linking [here](#https://en.wikipedia.org/wiki/Deferred_deep_linking). If you enable deferred deeplinking in IterableSDK, when the user clicks on a deep link in an email, the user is first sent to the App Store. After installing your app from the App Store, the user is taken to a specific location within your app when they launch it for the first time. 
 
 #### Enabling deferred deep linking
 
@@ -259,7 +259,26 @@ Set `IterableConfig.checkForDeferredDeeplink = true` to enable deferred deep lin
 	
 ### In-app messages
 
-If you are already using in-app messages with IterableSDK, please check out the [migration section](#Migrating-in-app-messages-from-the-previous-version-of-the-SDK).
+If you are already using in-app messages with IterableSDK, please check out the [migration section](#Migrating-in-app-messages-from-the-previous-version-of-the-SDK). 
+
+In-app messages are handled via silent push messages from the server. When your application receives a silent push, you need to call IterableSDK in your AppDelegate as in the following code:
+
+*Swift*
+
+```swift
+// In AppDelegate.swift
+func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+    IterableAppIntegration.application(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler)
+}
+```
+
+*Objective-C*
+
+```objc
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+    [IterableAppIntegration application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+}
+```
 
 #### Default behavior
 
