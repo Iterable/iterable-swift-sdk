@@ -251,7 +251,15 @@ func application(_ application: UIApplication, continue userActivity: NSUserActi
 
 ### Deferred deep linking
 
-Deferred deep linking comes into play when a user of your app does not have your app installed in their iPhone/iPad. See definition of deferred deep linking [here](#https://en.wikipedia.org/wiki/Deferred_deep_linking). If you enable deferred deeplinking in IterableSDK, when the user clicks on a deep link in an email, the user is first sent to the App Store. After installing your app from the App Store, the user is taken to a specific location within your app when they launch it for the first time. 
+[Deferred deep linking](https://en.wikipedia.org/wiki/Deferred_deep_linking) allows a user who does not have a specific app installed to:
+
+ - Click on a deep link that would normally open content in that app.
+ - Install the app from the App Store.
+ - Open the app and immediately see the content referenced by the link.
+ 
+As the name implies, the deep link is _deferred_ until the app has been installed. 
+
+After tapping a deep link in an email from an Iterable campaign, users without the associated app will be directed to the App Store to install it. If the app uses the IterableSDK and has deferred deep linking enabled, the content associated with the deep link will load on first launch.
 
 #### Enabling deferred deep linking
 
