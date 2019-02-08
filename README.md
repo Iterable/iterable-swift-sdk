@@ -391,7 +391,7 @@ To customize the time delay between successive in-app messages (default value of
 If you are already using in-app messages, then you will have to make the following changes to your code:
 
 1. `spawnInAppNotification` is no longer needed and will fail to compile. In-app messages are now displayed automatically.
-2. Stop polling for in-app messages using a timer etc. The SDK will issue a callback using `config.inAppDelegate` [as explained above](#overriding-whether-to-show-or-skip-a-particular-in-app-message).
+2. Stop polling for in-app messages using a timer, etc. The SDK will issue a callback using `config.inAppDelegate` [as explained above](#overriding-whether-to-show-or-skip-a-particular-in-app-message).
 3. If you want to handle all in-app messages manually, as before these changes, define an `inAppHandler` on `IterableConfig` that always returns `InAppShowResponse.skip` to never show in-app messages automatically, and use `getInAppManager().getMessages()` to get the messages and `getInAppManager().showMessage(message)` to show a specific message.
 
 
