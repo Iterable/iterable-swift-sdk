@@ -212,10 +212,10 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             AnyHashable.ITBL_KEY_NEW_EMAIL: newEmail
         ]
 
-        if let userId = userId {
-            args[AnyHashable.ITBL_KEY_CURRENT_USER_ID] = userId
-        } else if let email = email {
+        if let email = email {
             args[AnyHashable.ITBL_KEY_CURRENT_EMAIL] = email
+        } else if let userId = userId {
+            args[AnyHashable.ITBL_KEY_CURRENT_USER_ID] = userId
         } else {
             ITBError("Both email and userId are nil")
             onFailure?("Both email and userId are nil", nil)
