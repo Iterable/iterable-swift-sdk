@@ -39,6 +39,7 @@ public extension AnyHashable {
     static let ITBL_KEY_CAMPAIGN_ID = "campaignId"
     static let ITBL_KEY_COUNT = "count"
     static let ITBL_KEY_CURRENT_EMAIL = "currentEmail"
+    static let ITBL_KEY_CURRENT_USER_ID = "currentUserId"
     static let ITBL_KEY_DATA_FIELDS = "dataFields"
     static let ITBL_KEY_DEVICE = "device"
     static let ITBL_KEY_EMAIL = "email"

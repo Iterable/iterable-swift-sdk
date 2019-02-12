@@ -186,6 +186,40 @@ class IterableAPITests: XCTestCase {
 
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
+
+    func testUpdateEmailWithUserId() {
+        let expectation = XCTestExpectation(description: "testUpdateEmailWithUserId")
+        
+        let currentUserId = IterableUtil.generateUUID()
+        let newEmail = "new_user@example.com"
+        let networkSession = MockNetworkSession(statusCode: 200)
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
+        IterableAPI.userId = currentUserId
+        IterableAPI.updateEmail(newEmail,
+                                onSuccess: {json in
+                                    TestUtils.validate(request: networkSession.request!,
+                                                       requestType: .post,
+                                                       apiEndPoint: .ITBL_ENDPOINT_API,
+                                                       path: .ITBL_PATH_UPDATE_EMAIL,
+                                                       queryParams: [(name: "api_key", value: IterableAPITests.apiKey)])
+                                    let body = networkSession.getRequestBody()
+                                    TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_NEW_EMAIL, andValue: newEmail, inDictionary: body)
+                                    TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_CURRENT_USER_ID, andValue: currentUserId, inDictionary: body)
+                                    XCTAssertEqual(IterableAPI.email, newEmail)
+                                    expectation.fulfill()
+        },
+                                onFailure: {(reason, _) in
+                                    expectation.fulfill()
+                                    if let reason = reason {
+                                        XCTFail("encountered error: \(reason)")
+                                    } else {
+                                        XCTFail("encountered error")
+                                    }
+        })
+        
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+
     
     func testRegisterTokenNilAppName() {
         let expectation = XCTestExpectation(description: "testRegisterToken")
