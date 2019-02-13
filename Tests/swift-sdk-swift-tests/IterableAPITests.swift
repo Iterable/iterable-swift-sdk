@@ -177,7 +177,8 @@ class IterableAPITests: XCTestCase {
                                     let body = networkSession.getRequestBody()
                                     TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_NEW_EMAIL, andValue: newEmail, inDictionary: body)
                                     TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_CURRENT_USER_ID, andValue: currentUserId, inDictionary: body)
-                                    XCTAssertEqual(IterableAPI.email, newEmail)
+                                    XCTAssertEqual(IterableAPI.userId, currentUserId)
+                                    XCTAssertNil(IterableAPI.email)
                                     expectation.fulfill()
         },
                                 onFailure: {(reason, _) in
