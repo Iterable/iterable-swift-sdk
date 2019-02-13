@@ -225,7 +225,10 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         if let request = createPostRequest(forPath: .ITBL_PATH_UPDATE_EMAIL, withBody: args) {
             sendRequest(request,
                         onSuccess: { data in
-                            self.email = newEmail
+                            if let _ = self.email {
+                                // we change the email only if we were using email before
+                                self.email = newEmail
+                            }
                             onSuccess?(data)
                         },
                         onFailure: onFailure)
