@@ -15,6 +15,25 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 #### Fixed
 - nothing yet
 
+## 6.1.0-beta1
+#### Added
+- We have improved the in-app messaging implementation significantly. 
+
+	- The SDK now maintains a local queue and keep it in sync with the server-side queue automatically.
+	- Iterable servers now notify apps via silent push messages whenever the in-app message queue is updated.
+	- In-app messages are shown by default whenever they arrive.
+- It should be straightforward to migrate to the new implementation. There are, however, some breaking changes. Please see [migration guide](https://github.com/iterable/swift-sdk#Migrating-in-app-messages-from-the-previous-version-of-the-SDK) for more details.
+
+#### Removed
+- `spawnInAppNotification` call is removed. Please refer to migration guide mentioned above.
+
+#### Changed
+- You can now use `updateEmail` if the user is identified with either `email` or `userId`. Earlier you could only call `updateEmail` if the user was identified by `email`.
+- The SDK now sets `notificationsEnabled` flag on the device to indicate whether notifications are enabled for your app.
+
+#### Fixed
+- nothing yet
+
 ## [6.0.4](https://github.com/Iterable/swift-sdk/releases/tag/6.0.4)
 #### Added
 - More refactoring and tests.
