@@ -144,7 +144,7 @@ public final class IterableInAppMessage : NSObject {
     init(
         messageId: String,
         campaignId: String,
-        channelName: String = "reserved",
+        channelName: String = "",
         contentType: IterableInAppContentType = .html,
         trigger: IterableInAppTrigger = .defaultTrigger,
         expiresAt: Date? = nil,
