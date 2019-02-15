@@ -36,6 +36,32 @@ extension UIEdgeInsets : Codable {
 
 // This is needed because String(describing: ...) returns wrong
 // value for this enum when it is exposed to Objective C
+extension IterableInAppType : CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .default:
+            return "default"
+        case .inBox:
+            return "never"
+        }
+    }
+}
+
+extension IterableInAppType {
+    static func from(string: String) -> IterableInAppType {
+        switch string.lowercased() {
+        case String(describing: IterableInAppType.default).lowercased():
+            return .default
+        case String(describing: IterableInAppType.inBox).lowercased():
+            return .inBox
+        default:
+            return .default
+        }
+    }
+}
+
+// This is needed because String(describing: ...) returns wrong
+// value for this enum when it is exposed to Objective C
 extension IterableInAppTriggerType : CustomStringConvertible {
     public var description: String {
         switch self {

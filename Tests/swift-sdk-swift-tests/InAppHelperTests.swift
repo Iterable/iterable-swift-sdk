@@ -304,20 +304,18 @@ class InAppHelperTests: XCTestCase {
         TestUtils.validateMatch(keyPath: KeyPath("myPayload.var1"), value: "val1", inDictionary: dict, message: "Expected to find val1")
     }
     
-    // This tests payload as we expect to get when backend is fixed
     func testInAppPayloadParsing() {
-        let customPayload1 = """
+        let customPayloadStr1 = """
         {
-            "contentType" : "html",
-            "inAppType" : "default",
-            "channelName" : "channel1"
+            "var1" : "value1",
+            "obj1" : {
+                "something" : true,
+                "nothing" : "is nothing"
+            }
         }
         """
-        let customPayload2 = """
+        let customPayloadStr2 = """
         {
-            "contentType" : "html",
-            "inAppType" : "inBox",
-            "channelName" : "channel2",
             "promoteToContent" : {
                 "title" : "title",
                 "subTitle" : "subtitle",
@@ -325,7 +323,7 @@ class InAppHelperTests: XCTestCase {
             }
         }
         """
-        
+
         let payload = """
         {
             "inAppMessages" : [
@@ -335,13 +333,19 @@ class InAppHelperTests: XCTestCase {
                     },
                     "messageId" : "messageIdxxx",
                     "campaignId" : "campaignIdxxx",
+                    "contentType" : "html",
+                    "inAppType" : "default",
+                    "channelName" : "channel1",
                     "trigger" : {
                         "type" : "myNewKind",
                         "myPayload" : {"var1" : "val1"}
                     },
-                    "customPayload" : \(customPayload1)
+                    "customPayload" : \(customPayloadStr1)
                 },
                 {
+                    "contentType" : "html",
+                    "inAppType" : "inBox",
+                    "channelName" : "channel2",
                     "content" : {
                         "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
                     },
@@ -351,7 +355,7 @@ class InAppHelperTests: XCTestCase {
                         "type" : "myNewKind",
                         "myPayload" : {"var1" : "val1"}
                     },
-                    "customPayload" : \(customPayload2)
+                    "customPayload" : \(customPayloadStr2)
                 },
                 {
                     "content" : {
@@ -384,11 +388,11 @@ class InAppHelperTests: XCTestCase {
         XCTAssertEqual(messages.count, 4)
         let message1 = messages[0]
         XCTAssertEqual(message1.channelName, "channel1")
-        XCTAssertTrue(TestUtils.areEqual(dict1: message1.extraInfo!, dict2: customPayload1.toJsonDict()))
+        XCTAssertTrue(TestUtils.areEqual(dict1: message1.extraInfo!, dict2: customPayloadStr1.toJsonDict()))
         
         let message2 = messages[1]
         XCTAssertEqual(message2.channelName, "channel2")
-        XCTAssertTrue(TestUtils.areEqual(dict1: message2.extraInfo!, dict2: customPayload2.toJsonDict()))
+        XCTAssertTrue(TestUtils.areEqual(dict1: message2.extraInfo!, dict2: customPayloadStr2.toJsonDict()))
         
         let message3 = messages[2]
         XCTAssertEqual(message3.channelName, "")

@@ -8,12 +8,6 @@ import Foundation
 
 @testable import IterableSDK
 
-extension String {
-    func toJsonDict() -> [AnyHashable : Any] {
-        return try! JSONSerialization.jsonObject(with: self.data(using: .utf8)!, options: []) as! [AnyHashable : Any]
-    }
-}
-
 struct TestConsts {
     static let userDefaultsSuiteName = "testUserDefaults"
 }

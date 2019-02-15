@@ -8,9 +8,19 @@ import Foundation
 
 @testable import IterableSDK
 
+extension String {
+    func toJsonDict() -> [AnyHashable : Any] {
+        return try! JSONSerialization.jsonObject(with: self.data(using: .utf8)!, options: []) as! [AnyHashable : Any]
+    }
+}
+
 extension Dictionary where Key == AnyHashable {
     func toData() -> Data {
         return try! JSONSerialization.data(withJSONObject: self, options: [])
+    }
+    
+    func toString() -> String {
+        return String(data: toData(), encoding: .utf8)!
     }
 }
 

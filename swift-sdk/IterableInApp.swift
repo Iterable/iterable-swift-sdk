@@ -43,6 +43,12 @@ open class DefaultInAppDelegate : IterableInAppDelegate {
 }
 
 @objc
+public enum IterableInAppType : Int, Codable {
+    case `default`
+    case inBox
+}
+
+@objc
 public enum IterableInAppContentType : Int, Codable {
     case html
     case unknown
@@ -117,6 +123,9 @@ public final class IterableInAppMessage : NSObject {
     /// the name of channelFor this message
     public let channelName: String
     
+    /// the in-app type
+    public let inAppType: IterableInAppType
+    
     /// The type of content
     public let contentType: IterableInAppContentType
 
@@ -145,6 +154,7 @@ public final class IterableInAppMessage : NSObject {
         messageId: String,
         campaignId: String,
         channelName: String = "",
+        inAppType: IterableInAppType = .default,
         contentType: IterableInAppContentType = .html,
         trigger: IterableInAppTrigger = .defaultTrigger,
         expiresAt: Date? = nil,
@@ -154,6 +164,7 @@ public final class IterableInAppMessage : NSObject {
         self.messageId = messageId
         self.campaignId = campaignId
         self.channelName = channelName
+        self.inAppType = inAppType
         self.contentType = contentType
         self.trigger = trigger
         self.expiresAt = expiresAt

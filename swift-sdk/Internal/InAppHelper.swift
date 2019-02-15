@@ -324,10 +324,36 @@ struct InAppHelper {
     
     private static func parseInApps(fromPayload payload: [AnyHashable : Any]) -> [InAppParseResult] {
         return getInAppDicts(fromPayload: payload).map {
-            parseInApp(fromDict: $0)
+            parseInApp(fromDict: preProcess(dict: $0))
         }
     }
     
+    // Change the in-app payload coming from the server to one that we expect it to be like
+    // This is temporary until we fix the backend to do the right thing.
+    // 2. Move 'inAppType', 'contentType', 'channelName' to top level from 'customPayload'
+    //!! Remove when we have backend support
+    private static func preProcess(dict: [AnyHashable : Any]) -> [AnyHashable : Any] {
+        var result = dict
+        guard var customPayloadDict = dict[.ITBL_IN_APP_CUSTOM_PAYLOAD] as? [AnyHashable : Any] else {
+            return result
+        }
+
+        moveValue(withKey: AnyHashable.ITBL_IN_APP_INAPP_TYPE, from: &customPayloadDict, to: &result)
+        moveValue(withKey: AnyHashable.ITBL_IN_APP_CONTENT_TYPE, from: &customPayloadDict, to: &result)
+        moveValue(withKey: AnyHashable.ITBL_IN_APP_CHANNEL_NAME, from: &customPayloadDict, to: &result)
+
+        result[.ITBL_IN_APP_CUSTOM_PAYLOAD] = customPayloadDict
+        
+        return result
+    }
+    
+    private static func moveValue(withKey key: String, from source: inout [AnyHashable : Any], to destination: inout [AnyHashable : Any]) {
+        if let value = source[key] {
+            destination[key] = value
+            source[key] = nil
+        }
+    }
+
     private static func parseInApp(fromDict dict: [AnyHashable : Any]) -> InAppParseResult {
         guard let content = dict[.ITBL_IN_APP_CONTENT] as? [AnyHashable : Any] else {
             return .failure(reason: "no message", messageId: nil)
@@ -353,7 +379,7 @@ struct InAppHelper {
         let extraInfo = parseCustomPayload(fromPayload: dict)
         
         // this is temporary until we fix backend
-        let channelName = extraInfo?["channelName"] as? String ?? ""
+        let channelName = dict[.ITBL_IN_APP_CHANNEL_NAME] as? String ?? ""
 
         let trigger = parseTrigger(fromTriggerElement: dict[.ITBL_IN_APP_TRIGGER] as? [AnyHashable : Any])
         let expiresAt = parseExpiresAt(dict: dict)
