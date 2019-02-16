@@ -60,6 +60,7 @@
 		AC7B145320D038C400877BFE /* IterableAPIObjCTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AC7B144B20D038C400877BFE /* IterableAPIObjCTests.m */; };
 		AC85A749216D24F4005241AE /* NotificationExtensionSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC85A748216D24F4005241AE /* NotificationExtensionSwiftTests.swift */; };
 		AC87172621A4E47E00FEA369 /* TestInAppPayloadGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */; };
+		AC8874AA22178BD80075B54B /* InAppContentParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8874A922178BD80075B54B /* InAppContentParser.swift */; };
 		AC89661E2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC89661D2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift */; };
 		AC90C4CD20D8632E00EECA5D /* IterableAppExtensions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC90C4C420D8632D00EECA5D /* IterableAppExtensions.framework */; };
 		AC90C4E220D8639E00EECA5D /* ITBNotificationServiceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC90C4E120D8639E00EECA5D /* ITBNotificationServiceExtension.swift */; };
@@ -233,6 +234,7 @@
 		AC7B144B20D038C400877BFE /* IterableAPIObjCTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IterableAPIObjCTests.m; sourceTree = "<group>"; };
 		AC85A748216D24F4005241AE /* NotificationExtensionSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationExtensionSwiftTests.swift; sourceTree = "<group>"; };
 		AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestInAppPayloadGenerator.swift; sourceTree = "<group>"; };
+		AC8874A922178BD80075B54B /* InAppContentParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppContentParser.swift; sourceTree = "<group>"; };
 		AC89661D2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAutoRegistrationTests.swift; sourceTree = "<group>"; };
 		AC90C4C420D8632D00EECA5D /* IterableAppExtensions.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = IterableAppExtensions.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC90C4C720D8632E00EECA5D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -414,6 +416,7 @@
 				AC72A0AA20CF4BEB004D7997 /* InAppHelper.swift */,
 				ACA8D1AA21966555001B1332 /* InAppManager.swift */,
 				AC03094A21E532470003A288 /* InAppPersistence.swift */,
+				AC8874A922178BD80075B54B /* InAppContentParser.swift */,
 			);
 			name = InApp;
 			sourceTree = "<group>";
@@ -1006,6 +1009,7 @@
 				AC03094B21E532470003A288 /* InAppPersistence.swift in Sources */,
 				AC72A0B620CF4C53004D7997 /* IterableConstants.m in Sources */,
 				AC72A0D120CF4D0B004D7997 /* InAppHelper.swift in Sources */,
+				AC8874AA22178BD80075B54B /* InAppContentParser.swift in Sources */,
 				AC776DA22118B86600C27C27 /* DeviceInfo.swift in Sources */,
 				AC72A0CB20CF4CE2004D7997 /* IterableAPIInternal.swift in Sources */,
 				AC72A0C720CF4CE2004D7997 /* CommerceItem.swift in Sources */,

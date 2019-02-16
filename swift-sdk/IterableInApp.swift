@@ -51,7 +51,8 @@ public enum IterableInAppType : Int, Codable {
 @objc
 public enum IterableInAppContentType : Int, Codable {
     case html
-    case unknown
+    case alert
+    case banner
 }
 
 @objc
