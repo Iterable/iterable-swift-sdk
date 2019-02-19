@@ -23,24 +23,24 @@ struct InAppContentParser {
             contentType = .html
         }
 
-        return map(inAppType: inAppType, contentType: contentType).tryCreate(from: contentDict)
+        return contentCreator(forInAppType: inAppType, andContentType: contentType).tryCreate(from: contentDict)
     }
     
-    private static func map(inAppType: IterableInAppType, contentType: IterableInAppContentType) -> ContentFromJsonCreator.Type {
+    private static func contentCreator(forInAppType inAppType: IterableInAppType, andContentType contentType: IterableInAppContentType) -> ContentFromJsonCreator.Type {
         switch inAppType {
         case .default:
             switch contentType {
             case .html:
-                return IterableHtmlInAppContent.self
+                return DefaultHtmlInAppContentCreator.self
             default:
-                return IterableHtmlInAppContent.self
+                return DefaultHtmlInAppContentCreator.self
             }
         case .inBox:
             switch contentType {
             case .html:
-                return IterableHtmlInAppContent.self
+                return DefaultHtmlInAppContentCreator.self
             default:
-                return IterableHtmlInAppContent.self
+                return DefaultHtmlInAppContentCreator.self
             }
         }
     }
@@ -50,7 +50,7 @@ fileprivate protocol ContentFromJsonCreator {
     static func tryCreate(from content: [AnyHashable : Any]) -> InAppContentParseResult
 }
 
-extension IterableHtmlInAppContent : ContentFromJsonCreator {
+struct DefaultHtmlInAppContentCreator : ContentFromJsonCreator {
     fileprivate static func tryCreate(from content: [AnyHashable : Any]) -> InAppContentParseResult {
         guard let html = content[.ITBL_IN_APP_HTML] as? String else {
             return .failure(reason: "no html")
