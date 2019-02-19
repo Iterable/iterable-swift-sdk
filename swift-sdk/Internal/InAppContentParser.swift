@@ -11,7 +11,7 @@ enum InAppContentParseResult {
 }
 
 struct InAppContentParser {
-    static func parse(json: [AnyHashable : Any]) -> InAppContentParseResult {
+    static func parse(inAppType: IterableInAppType, json: [AnyHashable : Any]) -> InAppContentParseResult {
         guard let contentDict = json[.ITBL_IN_APP_CONTENT] as? [AnyHashable : Any] else {
             return .failure(reason: "no content in json payload")
         }
@@ -23,7 +23,7 @@ struct InAppContentParser {
             contentType = .html
         }
 
-        return map(inAppType: .default, contentType: contentType).tryCreate(from: contentDict)
+        return map(inAppType: inAppType, contentType: contentType).tryCreate(from: contentDict)
     }
     
     private static func map(inAppType: IterableInAppType, contentType: IterableInAppContentType) -> ContentFromJsonCreator.Type {

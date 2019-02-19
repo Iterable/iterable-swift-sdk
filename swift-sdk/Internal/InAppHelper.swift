@@ -358,8 +358,15 @@ struct InAppHelper {
             return .failure(reason: "no message id", messageId: nil)
         }
 
+        let inAppType: IterableInAppType
+        if let inAppTypeStr = dict[.ITBL_IN_APP_INAPP_TYPE] as? String {
+            inAppType = IterableInAppType.from(string: inAppTypeStr)
+        } else {
+            inAppType = .default
+        }
+
         let content: IterableInAppContent
-        switch (InAppContentParser.parse(json: dict)) {
+        switch (InAppContentParser.parse(inAppType: inAppType, json: dict)) {
         case .success(let parsedContent):
             content = parsedContent
         case .failure(let reason):
@@ -383,7 +390,7 @@ struct InAppHelper {
         let expiresAt = parseExpiresAt(dict: dict)
         
         return .success(InAppDetails(
-            inAppType: .default,
+            inAppType: inAppType,
             content: content,
             channelName: channelName,
             messageId: messageId,

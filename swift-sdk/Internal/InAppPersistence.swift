@@ -173,6 +173,7 @@ extension IterableInAppTrigger : Codable {
 
 extension IterableInAppMessage : Codable {
     enum CodingKeys: String, CodingKey {
+        case inAppType
         case messageId
         case campaignId
         case channelName
@@ -205,6 +206,7 @@ extension IterableInAppMessage : Codable {
             return
         }
         
+        let inAppType = (try? container.decode(IterableInAppType.self, forKey: .inAppType)) ?? .default
         let messageId = (try? container.decode(String.self, forKey: .messageId)) ?? ""
         let campaignId = (try? container.decode(String.self, forKey: .campaignId)) ?? ""
         let channelName = (try? container.decode(String.self, forKey: .channelName)) ?? ""
@@ -217,6 +219,7 @@ extension IterableInAppMessage : Codable {
         self.init(messageId: messageId,
                   campaignId: campaignId,
                   channelName: channelName,
+                  inAppType: inAppType,
                   contentType: contentType,
                   trigger: trigger,
                   expiresAt: expiresAt,
@@ -233,6 +236,7 @@ extension IterableInAppMessage : Codable {
         }
         
         var container = encoder.container(keyedBy: CodingKeys.self)
+        try? container.encode(inAppType, forKey: .inAppType)
         try? container.encode(messageId, forKey: .messageId)
         try? container.encode(campaignId, forKey: .campaignId)
         try? container.encode(channelName, forKey: .channelName)

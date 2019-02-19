@@ -388,17 +388,21 @@ class InAppHelperTests: XCTestCase {
         XCTAssertEqual(messages.count, 4)
         let message1 = messages[0]
         XCTAssertEqual(message1.channelName, "channel1")
+        XCTAssertEqual(message1.inAppType, .default)
         XCTAssertTrue(TestUtils.areEqual(dict1: message1.extraInfo!, dict2: customPayloadStr1.toJsonDict()))
         
         let message2 = messages[1]
         XCTAssertEqual(message2.channelName, "channel2")
+        XCTAssertEqual(message2.inAppType, .inBox)
         XCTAssertTrue(TestUtils.areEqual(dict1: message2.extraInfo!, dict2: customPayloadStr2.toJsonDict()))
         
         let message3 = messages[2]
         XCTAssertEqual(message3.channelName, "")
-        
+        XCTAssertEqual(message3.inAppType, .default)
+
         let message4 = messages[3]
         XCTAssertEqual(message4.channelName, "")
+        XCTAssertEqual(message4.inAppType, .default)
     }
 
     private func createInAppPayload(withExtraInfo extraInfo: [AnyHashable : Any]) -> [AnyHashable : Any] {
