@@ -428,7 +428,6 @@ struct InAppHelper {
                                         campaignId: inAppDetails.campaignId,
                                         channelName: inAppDetails.channelName,
                                         inAppType: inAppDetails.inAppType,
-                                        contentType: inAppDetails.content.contentType,
                                         trigger: inAppDetails.trigger,
                                         expiresAt: inAppDetails.expiresAt,
                                         content: inAppDetails.content,

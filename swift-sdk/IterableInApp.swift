@@ -127,9 +127,6 @@ public final class IterableInAppMessage : NSObject {
     /// the in-app type
     public let inAppType: IterableInAppType
     
-    /// The type of content
-    public let contentType: IterableInAppContentType
-
     /// when to trigger this in-app
     public let trigger: IterableInAppTrigger
     
@@ -156,7 +153,6 @@ public final class IterableInAppMessage : NSObject {
         campaignId: String,
         channelName: String = "",
         inAppType: IterableInAppType = .default,
-        contentType: IterableInAppContentType = .html,
         trigger: IterableInAppTrigger = .defaultTrigger,
         expiresAt: Date? = nil,
         content: IterableInAppContent,
@@ -166,7 +162,6 @@ public final class IterableInAppMessage : NSObject {
         self.campaignId = campaignId
         self.channelName = channelName
         self.inAppType = inAppType
-        self.contentType = contentType
         self.trigger = trigger
         self.expiresAt = expiresAt
         self.content = content

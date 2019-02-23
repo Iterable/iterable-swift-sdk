@@ -708,9 +708,8 @@ class InAppTests: XCTestCase {
         [
             {
                 "inAppType": "default",
-                "contentType": "html",
                 "channelName": "channel1",
-                "content": {"inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site1.com\'>Click Here</a>", "payload": {"channelName": "inBox", "title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}},
+                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site1.com\'>Click Here</a>", "payload": {"channelName": "inBox", "title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}},
                 "trigger": {"type": "event", "details": "some event details"},
                 "messageId": "message1",
                 "expiresAt": 1550605745142,
@@ -719,8 +718,7 @@ class InAppTests: XCTestCase {
             },
             {
                 "inAppType": "inBox",
-                "contentType": "alert",
-                "content": {"inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "content": {"contentType": "alert", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
                 "trigger": {"type": "immediate"},
                 "messageId": "message2",
                 "expiresAt": 1550605745145,
@@ -1031,7 +1029,6 @@ extension IterableInAppMessage {
                         "campaignId", campaignId,
                         "inAppType", inAppType,
                         "channelName", channelName,
-                        "contentType", contentType,
                         "trigger", trigger,
                         "expiresAt", expiresAt ?? "nil",
                         "content", content,
