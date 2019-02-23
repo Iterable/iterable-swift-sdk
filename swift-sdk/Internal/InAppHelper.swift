@@ -365,8 +365,12 @@ struct InAppHelper {
             inAppType = .default
         }
 
+        guard let contentDict = dict[.ITBL_IN_APP_CONTENT] as? [AnyHashable : Any] else {
+            return .failure(reason: "no content in json payload", messageId: messageId)
+        }
+
         let content: IterableInAppContent
-        switch (InAppContentParser.parse(inAppType: inAppType, json: dict)) {
+        switch (InAppContentParser.parse(contentDict: contentDict)) {
         case .success(let parsedContent):
             content = parsedContent
         case .failure(let reason):

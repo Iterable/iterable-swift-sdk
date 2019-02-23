@@ -11,37 +11,23 @@ enum InAppContentParseResult {
 }
 
 struct InAppContentParser {
-    static func parse(inAppType: IterableInAppType, json: [AnyHashable : Any]) -> InAppContentParseResult {
-        guard let contentDict = json[.ITBL_IN_APP_CONTENT] as? [AnyHashable : Any] else {
-            return .failure(reason: "no content in json payload")
-        }
-
+    static func parse(contentDict: [AnyHashable : Any]) -> InAppContentParseResult {
         let contentType: IterableInAppContentType
-        if let contentTypeStr = json[.ITBL_IN_APP_CONTENT_TYPE] as? String {
+        if let contentTypeStr = contentDict[.ITBL_IN_APP_CONTENT_TYPE] as? String {
             contentType = IterableInAppContentType.from(string: contentTypeStr)
         } else {
             contentType = .html
         }
 
-        return contentCreator(forInAppType: inAppType, andContentType: contentType).tryCreate(from: contentDict)
+        return contentCreator(forContentType: contentType).tryCreate(from: contentDict)
     }
     
-    private static func contentCreator(forInAppType inAppType: IterableInAppType, andContentType contentType: IterableInAppContentType) -> ContentFromJsonCreator.Type {
-        switch inAppType {
-        case .default:
-            switch contentType {
-            case .html:
-                return DefaultHtmlInAppContentCreator.self
-            default:
-                return DefaultHtmlInAppContentCreator.self
-            }
-        case .inBox:
-            switch contentType {
-            case .html:
-                return DefaultHtmlInAppContentCreator.self
-            default:
-                return DefaultHtmlInAppContentCreator.self
-            }
+    private static func contentCreator(forContentType contentType: IterableInAppContentType) -> ContentFromJsonCreator.Type {
+        switch contentType {
+        case .html:
+            return DefaultHtmlInAppContentCreator.self
+        default:
+            return DefaultHtmlInAppContentCreator.self
         }
     }
 }

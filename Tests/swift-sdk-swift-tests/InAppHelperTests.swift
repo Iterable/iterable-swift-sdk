@@ -329,11 +329,11 @@ class InAppHelperTests: XCTestCase {
             "inAppMessages" : [
                 {
                     "content" : {
+                        "contentType" : "html",
                         "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
                     },
                     "messageId" : "messageIdxxx",
                     "campaignId" : "campaignIdxxx",
-                    "contentType" : "html",
                     "inAppType" : "default",
                     "channelName" : "channel1",
                     "trigger" : {
@@ -343,10 +343,10 @@ class InAppHelperTests: XCTestCase {
                     "customPayload" : \(customPayloadStr1)
                 },
                 {
-                    "contentType" : "html",
                     "inAppType" : "inBox",
                     "channelName" : "channel2",
                     "content" : {
+                        "contentType" : "html",
                         "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
                     },
                     "messageId" : "messageIdxxx",
