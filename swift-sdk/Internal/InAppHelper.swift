@@ -329,7 +329,8 @@ struct InAppHelper {
     
     // Change the in-app payload coming from the server to one that we expect it to be like
     // This is temporary until we fix the backend to do the right thing.
-    // 2. Move 'inAppType', 'contentType', 'channelName' to top level from 'customPayload'
+    // 1. Move 'inAppType', to top level from 'customPayload'
+    // 2. Move 'contentType' to 'content' element.
     //!! Remove when we have backend support
     private static func preProcess(dict: [AnyHashable : Any]) -> [AnyHashable : Any] {
         var result = dict
