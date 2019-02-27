@@ -324,32 +324,10 @@ struct InAppHelper {
     
     private static func parseInApps(fromPayload payload: [AnyHashable : Any]) -> [InAppParseResult] {
         return getInAppDicts(fromPayload: payload).map {
-            parseInApp(fromDict: preProcess(dict:$0))
+            parseInApp(fromDict: $0)
         }
     }
     
-    // Change the in-app payload coming from the server to one that we expect it to be like
-    // This is temporary until we fix the backend to do the right thing.
-    // 1. Move 'payload' from inside 'content' to top level 'customPayload'
-    // 2. form this 'customPayload' move elements to top level making sure not to
-    // override 'messageId' etc. Moving elements to top level will help us simulate when we add these
-    // elements later in backend
-    #warning("Remove when we have backend support")
-    private static func preProcess(dict: [AnyHashable : Any]) -> [AnyHashable : Any] {
-        var result = dict
-        guard let contentDict = dict[.ITBL_IN_APP_CONTENT] as? [AnyHashable : Any], let legacyPayloadDict = contentDict[.ITBL_IN_APP_LEGACY_PAYLOAD] as? [AnyHashable : Any] else {
-            return result
-        }
-
-        var newContentDict = contentDict
-        newContentDict[.ITBL_IN_APP_LEGACY_PAYLOAD] = nil
-        result[.ITBL_IN_APP_CONTENT] = newContentDict
-        
-        result[.ITBL_IN_APP_CUSTOM_PAYLOAD] = legacyPayloadDict
-        
-        return result
-    }
-
     private static func parseInApp(fromDict dict: [AnyHashable : Any]) -> InAppParseResult {
         guard let content = dict[.ITBL_IN_APP_CONTENT] as? [AnyHashable : Any] else {
             return .failure(reason: "no message", messageId: nil)
