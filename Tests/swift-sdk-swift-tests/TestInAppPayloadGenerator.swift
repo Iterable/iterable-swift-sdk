@@ -81,10 +81,10 @@ struct TestInAppPayloadGenerator {
             "content" : [
                 "html" : "<a href='\(href)'>Click Here</a>",
                 "inAppDisplaySettings" : ["backgroundAlpha" : 0.5, "left" : ["percentage" : 60], "right" : ["percentage" : 60], "bottom" : ["displayOption" : "AutoExpand"], "top" : ["displayOption" : "AutoExpand"]],
-                "payload" : ["channelName" : "inBox", "title" : "Product 1 Available", "date" : "2018-11-14T14:00:00:00.32Z"]
             ],
             "messageId" : getMessageId(index: index),
-            "campaignId" : getCampaignId(index: index)
+            "campaignId" : getCampaignId(index: index),
+            "customPayload" : ["channelName" : "inBox", "title" : "Product 1 Available", "date" : "2018-11-14T14:00:00:00.32Z"]
         ]
     }
     

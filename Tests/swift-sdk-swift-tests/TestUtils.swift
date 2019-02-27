@@ -60,6 +60,10 @@ struct TestUtils {
         return TestHelper.clearTestUserDefaults()
     }
     
+    static func areEqual(dict1: [AnyHashable : Any], dict2: [AnyHashable : Any]) -> Bool {
+        return NSDictionary(dictionary: dict1).isEqual(to: dict2)
+    }
+    
     private static func validateQueryParameters(inUrlComponents urlComponents: URLComponents, queryParams: [(name:String, value:String)]) {
         queryParams.forEach { (name, value) in
             validateQueryParameter(inUrlComponents: urlComponents, withName: name, andValue: value)

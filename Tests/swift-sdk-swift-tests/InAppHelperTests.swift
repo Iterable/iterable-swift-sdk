@@ -303,6 +303,99 @@ class InAppHelperTests: XCTestCase {
         let dict = messages[0].trigger.dict as! [String : Any]
         TestUtils.validateMatch(keyPath: KeyPath("myPayload.var1"), value: "val1", inDictionary: dict, message: "Expected to find val1")
     }
+    
+    // This tests payload as we expect to get when backend is fixed
+    func testInAppPayloadParsing() {
+        let customPayload1 = """
+        {
+            "contentType" : "html",
+            "inAppType" : "default",
+            "channelName" : "channel1"
+        }
+        """
+        let customPayload2 = """
+        {
+            "contentType" : "html",
+            "inAppType" : "inBox",
+            "channelName" : "channel2",
+            "promoteToContent" : {
+                "title" : "title",
+                "subTitle" : "subtitle",
+                "imageUrl" : "http://somewhere.com/something.jpg"
+            }
+        }
+        """
+        
+        let payload = """
+        {
+            "inAppMessages" : [
+                {
+                    "content" : {
+                        "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
+                    },
+                    "messageId" : "messageIdxxx",
+                    "campaignId" : "campaignIdxxx",
+                    "trigger" : {
+                        "type" : "myNewKind",
+                        "myPayload" : {"var1" : "val1"}
+                    },
+                    "customPayload" : \(customPayload1)
+                },
+                {
+                    "content" : {
+                        "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
+                    },
+                    "messageId" : "messageIdxxx",
+                    "campaignId" : "campaignIdxxx",
+                    "trigger" : {
+                        "type" : "myNewKind",
+                        "myPayload" : {"var1" : "val1"}
+                    },
+                    "customPayload" : \(customPayload2)
+                },
+                {
+                    "content" : {
+                        "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
+                    },
+                    "messageId" : "messageIdxxx",
+                    "campaignId" : "campaignIdxxx",
+                    "trigger" : {
+                        "type" : "myNewKind",
+                        "myPayload" : {"var1" : "val1"}
+                    },
+                    "customPayload" : {}
+                },
+                {
+                    "content" : {
+                        "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
+                    },
+                    "messageId" : "messageIdxxx",
+                    "campaignId" : "campaignIdxxx",
+                    "trigger" : {
+                        "type" : "myNewKind",
+                        "myPayload" : {"var1" : "val1"}
+                    }
+                }
+            ]
+        }
+        """.toJsonDict()
+        let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
+        
+        XCTAssertEqual(messages.count, 4)
+        let message1 = messages[0]
+        XCTAssertEqual(message1.channelName, "channel1")
+        XCTAssertTrue(TestUtils.areEqual(dict1: message1.extraInfo!, dict2: customPayload1.toJsonDict()))
+        
+        let message2 = messages[1]
+        XCTAssertEqual(message2.channelName, "channel2")
+        XCTAssertTrue(TestUtils.areEqual(dict1: message2.extraInfo!, dict2: customPayload2.toJsonDict()))
+        
+        let message3 = messages[2]
+        XCTAssertEqual(message3.channelName, "")
+        
+        let message4 = messages[3]
+        XCTAssertEqual(message4.channelName, "")
+    }
 
     private func createInAppPayload(withExtraInfo extraInfo: [AnyHashable : Any]) -> [AnyHashable : Any] {
         return [
@@ -310,10 +403,10 @@ class InAppHelperTests: XCTestCase {
                 "content" : [
                     "html" : "<a href='href1'>Click Here</a>",
                     "inAppDisplaySettings" : ["backgroundAlpha" : 0.5, "left" : ["percentage" : 60], "right" : ["percentage" : 60], "bottom" : ["displayOption" : "AutoExpand"], "top" : ["displayOption" : "AutoExpand"]],
-                    "payload" : extraInfo
                 ],
                 "messageId" : "messageIdxxx",
                 "campaignId" : "campaignIdxxx",
+                "customPayload" : extraInfo
             ]]
         ]
     }

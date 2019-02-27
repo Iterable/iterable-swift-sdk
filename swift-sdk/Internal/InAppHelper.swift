@@ -327,7 +327,7 @@ struct InAppHelper {
             parseInApp(fromDict: $0)
         }
     }
-
+    
     private static func parseInApp(fromDict dict: [AnyHashable : Any]) -> InAppParseResult {
         guard let content = dict[.ITBL_IN_APP_CONTENT] as? [AnyHashable : Any] else {
             return .failure(reason: "no message", messageId: nil)
@@ -350,7 +350,7 @@ struct InAppHelper {
             campaignId = ""
         }
 
-        let extraInfo = parseExtraInfo(fromContent: content)
+        let extraInfo = parseCustomPayload(fromPayload: dict)
         
         // this is temporary until we fix backend
         let channelName = extraInfo?["channelName"] as? String ?? ""
@@ -390,8 +390,8 @@ struct InAppHelper {
         return IterableInAppTrigger(dict: element)
     }
     
-    private static func parseExtraInfo(fromContent content: [AnyHashable : Any]) -> [AnyHashable : Any]? {
-        return content[.ITBL_IN_APP_PAYLOAD] as? [AnyHashable : Any]
+    private static func parseCustomPayload(fromPayload payload: [AnyHashable : Any]) -> [AnyHashable : Any]? {
+        return payload[.ITBL_IN_APP_CUSTOM_PAYLOAD] as? [AnyHashable : Any]
     }
     
     private static func toMessage(fromInAppParseResult inAppParseResult: InAppHelper.InAppParseResult, internalApi: IterableAPIInternal) -> IterableInAppMessage? {
