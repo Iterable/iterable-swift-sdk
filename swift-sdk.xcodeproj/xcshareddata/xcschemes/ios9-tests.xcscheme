@@ -83,6 +83,11 @@
                BlueprintName = "swift-sdk-swift-tests"
                ReferencedContainer = "container:swift-sdk.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "LoggingTests">
+               </Test>
+            </SkippedTests>
          </TestableReference>
          <TestableReference
             skipped = "NO">

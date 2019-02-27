@@ -15,12 +15,12 @@ extension String {
 }
 
 extension Dictionary where Key == AnyHashable {
-    func toData() -> Data {
+    func toJsonData() -> Data {
         return try! JSONSerialization.data(withJSONObject: self, options: [])
     }
     
-    func toString() -> String {
-        return String(data: toData(), encoding: .utf8)!
+    func toJsonString() -> String {
+        return String(data: toJsonData(), encoding: .utf8)!
     }
 }
 

@@ -162,13 +162,13 @@ class MockNetworkSession: NetworkSessionProtocol {
     
     convenience init(statusCode: Int = 200) {
         self.init(statusCode: statusCode,
-                  data: [:].toData(),
+                  data: [:].toJsonData(),
                   error: nil)
     }
     
     convenience init(statusCode: Int, json: [AnyHashable : Any], error: Error? = nil) {
         self.init(statusCode: statusCode,
-                  data: json.toData(),
+                  data: json.toJsonData(),
                   error: error)
     }
     

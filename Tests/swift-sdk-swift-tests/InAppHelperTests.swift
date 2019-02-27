@@ -304,6 +304,116 @@ class InAppHelperTests: XCTestCase {
         TestUtils.validateMatch(keyPath: KeyPath("myPayload.var1"), value: "val1", inDictionary: dict, message: "Expected to find val1")
     }
     
+    // Remove this test when backend is fixed
+    // This test assumes that certain parts of payload
+    // are in 'customPayload' element instead of the right places.
+    func testInAppPayloadParsingWithPreprocessing() {
+        let customPayloadStr1 = """
+        {
+            "messageId": "overridden",
+            "var1" : "value1",
+            "obj1" : {
+                "something" : true,
+                "nothing" : "is nothing"
+            },
+        }
+        """
+        var customPayload1 = customPayloadStr1.toJsonDict()
+        customPayload1["inAppType"] = "default"
+        customPayload1["channelName"] = "channel1"
+        customPayload1["contentType"] = "html"
+        
+        let customPayloadStr2 = """
+        {
+            "promoteToContent" : {
+                "title" : "title",
+                "subTitle" : "subtitle",
+                "imageUrl" : "http://somewhere.com/something.jpg"
+            }
+        }
+        """
+        var customPayload2 = customPayloadStr2.toJsonDict()
+        customPayload2["inAppType"] = "inBox"
+        customPayload2["channelName"] = "channel2"
+        customPayload2["contentType"] = "html"
+        
+        let payload = """
+        {
+            "inAppMessages" : [
+                {
+                    "content" : {
+                        "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
+                    },
+                    "messageId" : "messageId1",
+                    "campaignId" : "campaignIdxxx",
+                    "trigger" : {
+                        "type" : "myNewKind",
+                        "myPayload" : {"var1" : "val1"}
+                    },
+                    "customPayload" : \(customPayload1.toJsonString())
+                },
+                {
+                    "content" : {
+                        "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
+                    },
+                    "messageId" : "messageId2",
+                    "campaignId" : "campaignIdxxx",
+                    "trigger" : {
+                        "type" : "myNewKind",
+                        "myPayload" : {"var1" : "val1"}
+                    },
+                    "customPayload" : \(customPayload2.toJsonString())
+                },
+                {
+                    "content" : {
+                        "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
+                    },
+                    "messageId" : "messageId3",
+                    "campaignId" : "campaignIdxxx",
+                    "trigger" : {
+                        "type" : "myNewKind",
+                        "myPayload" : {"var1" : "val1"}
+                    },
+                    "customPayload" : {}
+                },
+                {
+                    "content" : {
+                        "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
+                    },
+                    "messageId" : "messageId4",
+                    "campaignId" : "campaignIdxxx",
+                    "trigger" : {
+                        "type" : "myNewKind",
+                        "myPayload" : {"var1" : "val1"}
+                    }
+                }
+            ]
+        }
+        """.toJsonDict()
+        let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
+        
+        XCTAssertEqual(messages.count, 4)
+        let message1 = messages[0]
+        XCTAssertEqual(message1.messageId, "messageId1")
+        XCTAssertEqual(message1.channelName, "channel1")
+        XCTAssertEqual(message1.inAppType, .default)
+        XCTAssertTrue(TestUtils.areEqual(dict1: message1.extraInfo!, dict2: customPayloadStr1.toJsonDict()))
+        
+        let message2 = messages[1]
+        XCTAssertEqual(message2.channelName, "channel2")
+        XCTAssertEqual(message2.inAppType, .inBox)
+        XCTAssertTrue(TestUtils.areEqual(dict1: message2.extraInfo!, dict2: customPayloadStr2.toJsonDict()))
+        
+        let message3 = messages[2]
+        XCTAssertEqual(message3.channelName, "")
+        XCTAssertEqual(message3.inAppType, .default)
+        
+        let message4 = messages[3]
+        XCTAssertEqual(message4.channelName, "")
+        XCTAssertEqual(message4.inAppType, .default)
+    }
+
+    
     func testInAppPayloadParsing() {
         let customPayloadStr1 = """
         {

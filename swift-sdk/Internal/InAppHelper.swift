@@ -339,8 +339,12 @@ struct InAppHelper {
         }
 
         moveValue(withKey: AnyHashable.ITBL_IN_APP_INAPP_TYPE, from: &customPayloadDict, to: &result)
-        moveValue(withKey: AnyHashable.ITBL_IN_APP_CONTENT_TYPE, from: &customPayloadDict, to: &result)
         moveValue(withKey: AnyHashable.ITBL_IN_APP_CHANNEL_NAME, from: &customPayloadDict, to: &result)
+
+        if var contentDict = dict[.ITBL_IN_APP_CONTENT] as? [AnyHashable : Any] {
+            moveValue(withKey: AnyHashable.ITBL_IN_APP_CONTENT_TYPE, from: &customPayloadDict, to: &contentDict)
+            result[.ITBL_IN_APP_CONTENT] = contentDict
+        }
 
         result[.ITBL_IN_APP_CUSTOM_PAYLOAD] = customPayloadDict
         
@@ -348,6 +352,11 @@ struct InAppHelper {
     }
     
     private static func moveValue(withKey key: String, from source: inout [AnyHashable : Any], to destination: inout [AnyHashable : Any]) {
+        guard destination[key] == nil else {
+            // value exists in destination, so don't override
+            return
+        }
+        
         if let value = source[key] {
             destination[key] = value
             source[key] = nil
