@@ -312,7 +312,7 @@ struct InAppHelper {
         let campaignId: String
         let trigger: IterableInAppTrigger
         let expiresAt: Date?
-        let extraInfo: [AnyHashable : Any]?
+        let customPayload: [AnyHashable : Any]?
     }
 
     /// Returns an array of Dictionaries holding inApp messages.
@@ -393,7 +393,7 @@ struct InAppHelper {
             campaignId = ""
         }
 
-        let extraInfo = parseCustomPayload(fromPayload: dict)
+        let customPayload = parseCustomPayload(fromPayload: dict)
         
         let trigger = parseTrigger(fromTriggerElement: dict[.ITBL_IN_APP_TRIGGER] as? [AnyHashable : Any])
         let expiresAt = parseExpiresAt(dict: dict)
@@ -405,7 +405,7 @@ struct InAppHelper {
             campaignId: campaignId,
             trigger: trigger,
             expiresAt: expiresAt,
-            extraInfo: extraInfo))
+            customPayload: customPayload))
     }
     
     private static func parseExpiresAt(dict: [AnyHashable : Any]) -> Date? {
@@ -438,7 +438,7 @@ struct InAppHelper {
                                         trigger: inAppDetails.trigger,
                                         expiresAt: inAppDetails.expiresAt,
                                         content: inAppDetails.content,
-                                        extraInfo: inAppDetails.extraInfo)
+                                        customPayload: inAppDetails.customPayload)
         case .failure(reason: let reason, messageId: let messageId):
             ITBError(reason)
             if let messageId = messageId {

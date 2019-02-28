@@ -179,7 +179,7 @@ extension IterableInAppMessage : Codable {
         case trigger
         case expiresAt
         case content
-        case extraInfo
+        case customPayload
         case processed
         case consumed
     }
@@ -200,8 +200,8 @@ extension IterableInAppMessage : Codable {
         let trigger = (try? container.decode(IterableInAppTrigger.self, forKey: .trigger)) ?? .undefinedTrigger
         let expiresAt = (try? container.decode(Date.self, forKey: .expiresAt))
         let content = IterableInAppMessage.decodeContent(from: container)
-        let extraInfoData = try? container.decode(Data.self, forKey: .extraInfo)
-        let extraInfo = IterableInAppMessage.deserializeExtraInfo(withData: extraInfoData)
+        let customPayloadData = try? container.decode(Data.self, forKey: .customPayload)
+        let customPayload = IterableInAppMessage.deserializeCustomPayload(withData: customPayloadData)
         
         self.init(messageId: messageId,
                   campaignId: campaignId,
@@ -209,7 +209,7 @@ extension IterableInAppMessage : Codable {
                   trigger: trigger,
                   expiresAt: expiresAt,
                   content: content,
-                  extraInfo: extraInfo)
+                  customPayload: customPayload)
         
         self.processed = (try? container.decode(Bool.self, forKey: .processed)) ?? false
         self.consumed = (try? container.decode(Bool.self, forKey: .consumed)) ?? false
@@ -248,7 +248,7 @@ extension IterableInAppMessage : Codable {
         try? container.encode(trigger, forKey: .trigger)
         try? container.encode(expiresAt, forKey: .expiresAt)
         IterableInAppMessage.encode(content: content, inContainer: &container)
-        try? container.encode(IterableInAppMessage.serialize(extraInfo: extraInfo), forKey: .extraInfo)
+        try? container.encode(IterableInAppMessage.serialize(customPayload: customPayload), forKey: .customPayload)
         try? container.encode(processed, forKey: .processed)
         try? container.encode(consumed, forKey: .consumed)
         
@@ -267,15 +267,15 @@ extension IterableInAppMessage : Codable {
         }
     }
     
-    private static func serialize(extraInfo: [AnyHashable : Any]?) -> Data? {
-        guard let extraInfo = extraInfo else {
+    private static func serialize(customPayload: [AnyHashable : Any]?) -> Data? {
+        guard let customPayload = customPayload else {
             return nil
         }
 
-        return try? JSONSerialization.data(withJSONObject: extraInfo, options: [])
+        return try? JSONSerialization.data(withJSONObject: customPayload, options: [])
     }
     
-    private static func deserializeExtraInfo(withData data: Data?) -> [AnyHashable : Any]? {
+    private static func deserializeCustomPayload(withData data: Data?) -> [AnyHashable : Any]? {
         guard let data = data else {
             return nil
         }
