@@ -176,7 +176,6 @@ extension IterableInAppMessage : Codable {
         case inAppType
         case messageId
         case campaignId
-        case channelName
         case trigger
         case expiresAt
         case content
@@ -198,7 +197,6 @@ extension IterableInAppMessage : Codable {
         let inAppType = (try? container.decode(IterableInAppType.self, forKey: .inAppType)) ?? .default
         let messageId = (try? container.decode(String.self, forKey: .messageId)) ?? ""
         let campaignId = (try? container.decode(String.self, forKey: .campaignId)) ?? ""
-        let channelName = (try? container.decode(String.self, forKey: .channelName)) ?? ""
         let trigger = (try? container.decode(IterableInAppTrigger.self, forKey: .trigger)) ?? .undefinedTrigger
         let expiresAt = (try? container.decode(Date.self, forKey: .expiresAt))
         let content = IterableInAppMessage.decodeContent(from: container)
@@ -207,7 +205,6 @@ extension IterableInAppMessage : Codable {
         
         self.init(messageId: messageId,
                   campaignId: campaignId,
-                  channelName: channelName,
                   inAppType: inAppType,
                   trigger: trigger,
                   expiresAt: expiresAt,
@@ -248,7 +245,6 @@ extension IterableInAppMessage : Codable {
         try? container.encode(inAppType, forKey: .inAppType)
         try? container.encode(messageId, forKey: .messageId)
         try? container.encode(campaignId, forKey: .campaignId)
-        try? container.encode(channelName, forKey: .channelName)
         try? container.encode(trigger, forKey: .trigger)
         try? container.encode(expiresAt, forKey: .expiresAt)
         IterableInAppMessage.encode(content: content, inContainer: &container)

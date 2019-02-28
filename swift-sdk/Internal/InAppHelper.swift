@@ -308,7 +308,6 @@ struct InAppHelper {
     private struct InAppDetails {
         let inAppType: IterableInAppType
         let content: IterableInAppContent
-        let channelName: String
         let messageId: String
         let campaignId: String
         let trigger: IterableInAppTrigger
@@ -339,7 +338,6 @@ struct InAppHelper {
         }
 
         moveValue(withKey: AnyHashable.ITBL_IN_APP_INAPP_TYPE, from: &customPayloadDict, to: &result)
-        moveValue(withKey: AnyHashable.ITBL_IN_APP_CHANNEL_NAME, from: &customPayloadDict, to: &result)
 
         if var contentDict = dict[.ITBL_IN_APP_CONTENT] as? [AnyHashable : Any] {
             moveValue(withKey: AnyHashable.ITBL_IN_APP_CONTENT_TYPE, from: &customPayloadDict, to: &contentDict)
@@ -397,16 +395,12 @@ struct InAppHelper {
 
         let extraInfo = parseCustomPayload(fromPayload: dict)
         
-        // this is temporary until we fix backend
-        let channelName = dict[.ITBL_IN_APP_CHANNEL_NAME] as? String ?? ""
-
         let trigger = parseTrigger(fromTriggerElement: dict[.ITBL_IN_APP_TRIGGER] as? [AnyHashable : Any])
         let expiresAt = parseExpiresAt(dict: dict)
         
         return .success(InAppDetails(
             inAppType: inAppType,
             content: content,
-            channelName: channelName,
             messageId: messageId,
             campaignId: campaignId,
             trigger: trigger,
@@ -440,7 +434,6 @@ struct InAppHelper {
         case .success(let inAppDetails):
             return IterableInAppMessage(messageId: inAppDetails.messageId,
                                         campaignId: inAppDetails.campaignId,
-                                        channelName: inAppDetails.channelName,
                                         inAppType: inAppDetails.inAppType,
                                         trigger: inAppDetails.trigger,
                                         expiresAt: inAppDetails.expiresAt,

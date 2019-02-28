@@ -121,9 +121,6 @@ public final class IterableInAppMessage : NSObject {
     /// the campaign id for this message
     public let campaignId: String
     
-    /// the name of channelFor this message
-    public let channelName: String
-    
     /// the in-app type
     public let inAppType: IterableInAppType
     
@@ -151,7 +148,6 @@ public final class IterableInAppMessage : NSObject {
     init(
         messageId: String,
         campaignId: String,
-        channelName: String = "",
         inAppType: IterableInAppType = .default,
         trigger: IterableInAppTrigger = .defaultTrigger,
         expiresAt: Date? = nil,
@@ -160,7 +156,6 @@ public final class IterableInAppMessage : NSObject {
         ) {
         self.messageId = messageId
         self.campaignId = campaignId
-        self.channelName = channelName
         self.inAppType = inAppType
         self.trigger = trigger
         self.expiresAt = expiresAt

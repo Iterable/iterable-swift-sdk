@@ -708,13 +708,12 @@ class InAppTests: XCTestCase {
         [
             {
                 "inAppType": "default",
-                "channelName": "channel1",
-                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site1.com\'>Click Here</a>", "payload": {"channelName": "inBox", "title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}},
+                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site1.com\'>Click Here</a>", "payload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}},
                 "trigger": {"type": "event", "details": "some event details"},
                 "messageId": "message1",
                 "expiresAt": 1550605745142,
                 "campaignId": "campaign1",
-                "customPayload": {"channelName": "inBox", "title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
             },
             {
                 "inAppType": "inBox",
@@ -723,14 +722,14 @@ class InAppTests: XCTestCase {
                 "messageId": "message2",
                 "expiresAt": 1550605745145,
                 "campaignId": "campaign2",
-                "customPayload": {"channelName": "inBox", "title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
             },
             {
                 "content": {"inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site3.com\'>Click Here</a>"},
                 "trigger": {"type": "never"},
                 "messageId": "message3",
                 "campaignId": "campaign3",
-                "customPayload": {"channelName": "inBox", "title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
             },
             {
                 "content": {"inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site4.com\'>Click Here</a>"},
@@ -738,7 +737,7 @@ class InAppTests: XCTestCase {
                 "messageId": "message4",
                 "expiresAt": 1550605745145,
                 "campaignId": "campaign4",
-                "customPayload": {"channelName": "inBox", "title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
             }
         ]
         }
@@ -1028,7 +1027,6 @@ extension IterableInAppMessage {
         return IterableUtil.describe("messageId", messageId,
                         "campaignId", campaignId,
                         "inAppType", inAppType,
-                        "channelName", channelName,
                         "trigger", trigger,
                         "expiresAt", expiresAt ?? "nil",
                         "content", content,
