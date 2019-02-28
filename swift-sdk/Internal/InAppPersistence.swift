@@ -71,8 +71,8 @@ extension IterableInAppType : CustomStringConvertible {
         switch self {
         case .default:
             return "default"
-        case .inBox:
-            return "inBox"
+        case .inbox:
+            return "inbox"
         }
     }
 }
@@ -82,8 +82,8 @@ extension IterableInAppType {
         switch string.lowercased() {
         case String(describing: IterableInAppType.default).lowercased():
             return .default
-        case String(describing: IterableInAppType.inBox).lowercased():
-            return .inBox
+        case String(describing: IterableInAppType.inbox).lowercased():
+            return .inbox
         default:
             return .default
         }

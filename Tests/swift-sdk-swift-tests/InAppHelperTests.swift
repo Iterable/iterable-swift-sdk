@@ -332,7 +332,7 @@ class InAppHelperTests: XCTestCase {
         }
         """
         var customPayload2 = customPayloadStr2.toJsonDict()
-        customPayload2["inAppType"] = "inBox"
+        customPayload2["inAppType"] = "inbox"
         customPayload2["contentType"] = "html"
         
         let payload = """
@@ -397,7 +397,7 @@ class InAppHelperTests: XCTestCase {
         XCTAssertTrue(TestUtils.areEqual(dict1: message1.customPayload!, dict2: customPayloadStr1.toJsonDict()))
         
         let message2 = messages[1]
-        XCTAssertEqual(message2.inAppType, .inBox)
+        XCTAssertEqual(message2.inAppType, .inbox)
         XCTAssertTrue(TestUtils.areEqual(dict1: message2.customPayload!, dict2: customPayloadStr2.toJsonDict()))
         
         let message3 = messages[2]
@@ -446,7 +446,7 @@ class InAppHelperTests: XCTestCase {
                     "customPayload" : \(customPayloadStr1)
                 },
                 {
-                    "inAppType" : "inBox",
+                    "inAppType" : "inbox",
                     "content" : {
                         "contentType" : "html",
                         "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
@@ -493,7 +493,7 @@ class InAppHelperTests: XCTestCase {
         XCTAssertTrue(TestUtils.areEqual(dict1: message1.customPayload!, dict2: customPayloadStr1.toJsonDict()))
         
         let message2 = messages[1]
-        XCTAssertEqual(message2.inAppType, .inBox)
+        XCTAssertEqual(message2.inAppType, .inbox)
         XCTAssertTrue(TestUtils.areEqual(dict1: message2.customPayload!, dict2: customPayloadStr2.toJsonDict()))
         
         let message3 = messages[2]

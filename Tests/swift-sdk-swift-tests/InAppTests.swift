@@ -716,7 +716,7 @@ class InAppTests: XCTestCase {
                 "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
             },
             {
-                "inAppType": "inBox",
+                "inAppType": "inbox",
                 "content": {"contentType": "alert", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
                 "trigger": {"type": "immediate"},
                 "messageId": "message2",

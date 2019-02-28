@@ -45,7 +45,7 @@ open class DefaultInAppDelegate : IterableInAppDelegate {
 @objc
 public enum IterableInAppType : Int, Codable {
     case `default`
-    case inBox
+    case inbox
 }
 
 @objc
