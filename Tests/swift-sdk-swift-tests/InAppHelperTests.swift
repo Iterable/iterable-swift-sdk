@@ -224,17 +224,17 @@ class InAppHelperTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
-    func testExtraInfoParsing() {
+    func testCustomPayloadParsing() {
         IterableAPI.initializeForTesting()
         
-        let extraInfo: [AnyHashable : Any] = ["string1" : "value1", "bool1" : true, "date1" : Date()]
+        let customPayload: [AnyHashable : Any] = ["string1" : "value1", "bool1" : true, "date1" : Date()]
         
-        let payload = createInAppPayload(withExtraInfo: extraInfo)
+        let payload = createInAppPayload(withCustomPayload: customPayload)
         
         let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
         
         XCTAssertEqual(messages.count, 1)
-        let obtained = messages[0].extraInfo
+        let obtained = messages[0].customPayload
         XCTAssertEqual(obtained?["string1"] as? String, "value1")
         XCTAssertEqual(obtained?["bool1"] as? Bool, true)
     }
@@ -394,11 +394,11 @@ class InAppHelperTests: XCTestCase {
         let message1 = messages[0]
         XCTAssertEqual(message1.messageId, "messageId1")
         XCTAssertEqual(message1.inAppType, .default)
-        XCTAssertTrue(TestUtils.areEqual(dict1: message1.extraInfo!, dict2: customPayloadStr1.toJsonDict()))
+        XCTAssertTrue(TestUtils.areEqual(dict1: message1.customPayload!, dict2: customPayloadStr1.toJsonDict()))
         
         let message2 = messages[1]
         XCTAssertEqual(message2.inAppType, .inBox)
-        XCTAssertTrue(TestUtils.areEqual(dict1: message2.extraInfo!, dict2: customPayloadStr2.toJsonDict()))
+        XCTAssertTrue(TestUtils.areEqual(dict1: message2.customPayload!, dict2: customPayloadStr2.toJsonDict()))
         
         let message3 = messages[2]
         XCTAssertEqual(message3.inAppType, .default)
@@ -490,11 +490,11 @@ class InAppHelperTests: XCTestCase {
         XCTAssertEqual(messages.count, 4)
         let message1 = messages[0]
         XCTAssertEqual(message1.inAppType, .default)
-        XCTAssertTrue(TestUtils.areEqual(dict1: message1.extraInfo!, dict2: customPayloadStr1.toJsonDict()))
+        XCTAssertTrue(TestUtils.areEqual(dict1: message1.customPayload!, dict2: customPayloadStr1.toJsonDict()))
         
         let message2 = messages[1]
         XCTAssertEqual(message2.inAppType, .inBox)
-        XCTAssertTrue(TestUtils.areEqual(dict1: message2.extraInfo!, dict2: customPayloadStr2.toJsonDict()))
+        XCTAssertTrue(TestUtils.areEqual(dict1: message2.customPayload!, dict2: customPayloadStr2.toJsonDict()))
         
         let message3 = messages[2]
         XCTAssertEqual(message3.inAppType, .default)
@@ -503,7 +503,7 @@ class InAppHelperTests: XCTestCase {
         XCTAssertEqual(message4.inAppType, .default)
     }
 
-    private func createInAppPayload(withExtraInfo extraInfo: [AnyHashable : Any]) -> [AnyHashable : Any] {
+    private func createInAppPayload(withCustomPayload customPayload: [AnyHashable : Any]) -> [AnyHashable : Any] {
         return [
             "inAppMessages" : [[
                 "content" : [
@@ -512,7 +512,7 @@ class InAppHelperTests: XCTestCase {
                 ],
                 "messageId" : "messageIdxxx",
                 "campaignId" : "campaignIdxxx",
-                "customPayload" : extraInfo
+                "customPayload" : customPayload
             ]]
         ]
     }

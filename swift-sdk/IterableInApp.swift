@@ -133,8 +133,8 @@ public final class IterableInAppMessage : NSObject {
     /// The content of the inApp message
     public let content: IterableInAppContent
     
-    /// Extra Information from the 'payload' section of message.
-    public let extraInfo: [AnyHashable : Any]?
+    /// Custom Payload for this message.
+    public let customPayload: [AnyHashable : Any]?
 
     /// Whether we have processed this message.
     /// Note: This is internal and not public
@@ -152,7 +152,7 @@ public final class IterableInAppMessage : NSObject {
         trigger: IterableInAppTrigger = .defaultTrigger,
         expiresAt: Date? = nil,
         content: IterableInAppContent,
-        extraInfo: [AnyHashable : Any]? = nil
+        customPayload: [AnyHashable : Any]? = nil
         ) {
         self.messageId = messageId
         self.campaignId = campaignId
@@ -160,7 +160,7 @@ public final class IterableInAppMessage : NSObject {
         self.trigger = trigger
         self.expiresAt = expiresAt
         self.content = content
-        self.extraInfo = extraInfo
+        self.customPayload = customPayload
     }
 }
 
