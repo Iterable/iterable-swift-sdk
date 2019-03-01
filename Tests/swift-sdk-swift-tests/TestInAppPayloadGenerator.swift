@@ -84,7 +84,7 @@ struct TestInAppPayloadGenerator {
             ],
             "messageId" : getMessageId(index: index),
             "campaignId" : getCampaignId(index: index),
-            "customPayload" : ["channelName" : "inBox", "title" : "Product 1 Available", "date" : "2018-11-14T14:00:00:00.32Z"]
+            "customPayload" : ["title" : "Product 1 Available", "date" : "2018-11-14T14:00:00:00.32Z"]
         ]
     }
     

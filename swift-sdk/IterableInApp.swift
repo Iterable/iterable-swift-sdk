@@ -43,9 +43,16 @@ open class DefaultInAppDelegate : IterableInAppDelegate {
 }
 
 @objc
+public enum IterableInAppType : Int, Codable {
+    case `default`
+    case inbox
+}
+
+@objc
 public enum IterableInAppContentType : Int, Codable {
     case html
-    case unknown
+    case alert
+    case banner
 }
 
 @objc
@@ -114,12 +121,9 @@ public final class IterableInAppMessage : NSObject {
     /// the campaign id for this message
     public let campaignId: String
     
-    /// the name of channelFor this message
-    public let channelName: String
+    /// the in-app type
+    public let inAppType: IterableInAppType
     
-    /// The type of content
-    public let contentType: IterableInAppContentType
-
     /// when to trigger this in-app
     public let trigger: IterableInAppTrigger
     
@@ -129,8 +133,8 @@ public final class IterableInAppMessage : NSObject {
     /// The content of the inApp message
     public let content: IterableInAppContent
     
-    /// Extra Information from the 'payload' section of message.
-    public let extraInfo: [AnyHashable : Any]?
+    /// Custom Payload for this message.
+    public let customPayload: [AnyHashable : Any]?
 
     /// Whether we have processed this message.
     /// Note: This is internal and not public
@@ -144,21 +148,19 @@ public final class IterableInAppMessage : NSObject {
     init(
         messageId: String,
         campaignId: String,
-        channelName: String = "",
-        contentType: IterableInAppContentType = .html,
+        inAppType: IterableInAppType = .default,
         trigger: IterableInAppTrigger = .defaultTrigger,
         expiresAt: Date? = nil,
         content: IterableInAppContent,
-        extraInfo: [AnyHashable : Any]? = nil
+        customPayload: [AnyHashable : Any]? = nil
         ) {
         self.messageId = messageId
         self.campaignId = campaignId
-        self.channelName = channelName
-        self.contentType = contentType
+        self.inAppType = inAppType
         self.trigger = trigger
         self.expiresAt = expiresAt
         self.content = content
-        self.extraInfo = extraInfo
+        self.customPayload = customPayload
     }
 }
 

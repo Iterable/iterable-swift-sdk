@@ -703,13 +703,45 @@ class InAppTests: XCTestCase {
 
     
     func testFilePersistence() {
-        let payload = ["inAppMessages" : [
-            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 1, trigger: IterableInAppTrigger(dict: ["type" : "event", "details" : "some event details"]), expiresAt: Date()),
-            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 2, triggerType: .immediate, expiresAt: Date()),
-            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 3, triggerType: .never),
-            TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 4, trigger: IterableInAppTrigger(dict: ["type" : "newEventType", "nested" : ["var1" : "val1"]]), expiresAt: Date()),
-            ]]
-        
+        let payload = """
+        {"inAppMessages":
+        [
+            {
+                "inAppType": "default",
+                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site1.com\'>Click Here</a>", "payload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}},
+                "trigger": {"type": "event", "details": "some event details"},
+                "messageId": "message1",
+                "expiresAt": 1550605745142,
+                "campaignId": "campaign1",
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+            {
+                "inAppType": "inbox",
+                "content": {"contentType": "alert", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "trigger": {"type": "immediate"},
+                "messageId": "message2",
+                "expiresAt": 1550605745145,
+                "campaignId": "campaign2",
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+            {
+                "content": {"inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site3.com\'>Click Here</a>"},
+                "trigger": {"type": "never"},
+                "messageId": "message3",
+                "campaignId": "campaign3",
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+            {
+                "content": {"inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site4.com\'>Click Here</a>"},
+                "trigger": {"type": "newEventType", "nested": {"var1": "val1"}},
+                "messageId": "message4",
+                "expiresAt": 1550605745145,
+                "campaignId": "campaign4",
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            }
+        ]
+        }
+        """.toJsonDict()
         let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
         let persister = InAppFilePersister()
         persister.persist(messages)
@@ -994,8 +1026,7 @@ extension IterableInAppMessage {
     public override var description: String {
         return IterableUtil.describe("messageId", messageId,
                         "campaignId", campaignId,
-                        "channelName", channelName,
-                        "contentType", contentType,
+                        "inAppType", inAppType,
                         "trigger", trigger,
                         "expiresAt", expiresAt ?? "nil",
                         "content", content,

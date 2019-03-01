@@ -306,15 +306,13 @@ struct InAppHelper {
     
     /// This is a struct equivalent of IterableInAppMessage class
     private struct InAppDetails {
-        let channelName: String
+        let inAppType: IterableInAppType
+        let content: IterableInAppContent
         let messageId: String
         let campaignId: String
         let trigger: IterableInAppTrigger
         let expiresAt: Date?
-        let edgeInsets: UIEdgeInsets
-        let backgroundAlpha: Double
-        let html: String
-        let extraInfo: [AnyHashable : Any]?
+        let customPayload: [AnyHashable : Any]?
     }
 
     /// Returns an array of Dictionaries holding inApp messages.
@@ -324,24 +322,69 @@ struct InAppHelper {
     
     private static func parseInApps(fromPayload payload: [AnyHashable : Any]) -> [InAppParseResult] {
         return getInAppDicts(fromPayload: payload).map {
-            parseInApp(fromDict: $0)
+            parseInApp(fromDict: preProcess(dict: $0))
         }
     }
     
-    private static func parseInApp(fromDict dict: [AnyHashable : Any]) -> InAppParseResult {
-        guard let content = dict[.ITBL_IN_APP_CONTENT] as? [AnyHashable : Any] else {
-            return .failure(reason: "no message", messageId: nil)
+    // Change the in-app payload coming from the server to one that we expect it to be like
+    // This is temporary until we fix the backend to do the right thing.
+    // 1. Move 'inAppType', to top level from 'customPayload'
+    // 2. Move 'contentType' to 'content' element.
+    //!! Remove when we have backend support
+    private static func preProcess(dict: [AnyHashable : Any]) -> [AnyHashable : Any] {
+        var result = dict
+        guard var customPayloadDict = dict[.ITBL_IN_APP_CUSTOM_PAYLOAD] as? [AnyHashable : Any] else {
+            return result
         }
+
+        moveValue(withKey: AnyHashable.ITBL_IN_APP_INAPP_TYPE, from: &customPayloadDict, to: &result)
+
+        if var contentDict = dict[.ITBL_IN_APP_CONTENT] as? [AnyHashable : Any] {
+            moveValue(withKey: AnyHashable.ITBL_IN_APP_CONTENT_TYPE, from: &customPayloadDict, to: &contentDict)
+            result[.ITBL_IN_APP_CONTENT] = contentDict
+        }
+
+        result[.ITBL_IN_APP_CUSTOM_PAYLOAD] = customPayloadDict
+        
+        return result
+    }
+    
+    private static func moveValue(withKey key: String, from source: inout [AnyHashable : Any], to destination: inout [AnyHashable : Any]) {
+        guard destination[key] == nil else {
+            // value exists in destination, so don't override
+            return
+        }
+        
+        if let value = source[key] {
+            destination[key] = value
+            source[key] = nil
+        }
+    }
+
+    private static func parseInApp(fromDict dict: [AnyHashable : Any]) -> InAppParseResult {
         guard let messageId = dict[.ITBL_KEY_MESSAGE_ID] as? String else {
             return .failure(reason: "no message id", messageId: nil)
         }
-        guard let html = content[.ITBL_IN_APP_HTML] as? String else {
-            return .failure(reason: "no html", messageId: nil)
-        }
-        guard html.range(of: AnyHashable.ITBL_IN_APP_HREF, options: [.caseInsensitive]) != nil else {
-            return .failure(reason: "No href tag found in in-app html payload \(html)", messageId: messageId)
+
+        let inAppType: IterableInAppType
+        if let inAppTypeStr = dict[.ITBL_IN_APP_INAPP_TYPE] as? String {
+            inAppType = IterableInAppType.from(string: inAppTypeStr)
+        } else {
+            inAppType = .default
         }
 
+        guard let contentDict = dict[.ITBL_IN_APP_CONTENT] as? [AnyHashable : Any] else {
+            return .failure(reason: "no content in json payload", messageId: messageId)
+        }
+
+        let content: IterableInAppContent
+        switch (InAppContentParser.parse(contentDict: contentDict)) {
+        case .success(let parsedContent):
+            content = parsedContent
+        case .failure(let reason):
+            return .failure(reason: reason, messageId: messageId)
+        }
+        
         let campaignId: String
         if let theCampaignId = dict[.ITBL_KEY_CAMPAIGN_ID] as? String {
             campaignId = theCampaignId
@@ -350,27 +393,19 @@ struct InAppHelper {
             campaignId = ""
         }
 
-        let extraInfo = parseCustomPayload(fromPayload: dict)
+        let customPayload = parseCustomPayload(fromPayload: dict)
         
-        // this is temporary until we fix backend
-        let channelName = extraInfo?["channelName"] as? String ?? ""
-
         let trigger = parseTrigger(fromTriggerElement: dict[.ITBL_IN_APP_TRIGGER] as? [AnyHashable : Any])
         let expiresAt = parseExpiresAt(dict: dict)
-        let inAppDisplaySettings = content[.ITBL_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
-        let backgroundAlpha = InAppHelper.getBackgroundAlpha(fromInAppSettings: inAppDisplaySettings)
-        let edgeInsets = InAppHelper.getPadding(fromInAppSettings: inAppDisplaySettings)
         
         return .success(InAppDetails(
-            channelName: channelName,
+            inAppType: inAppType,
+            content: content,
             messageId: messageId,
             campaignId: campaignId,
             trigger: trigger,
             expiresAt: expiresAt,
-            edgeInsets: edgeInsets,
-            backgroundAlpha: backgroundAlpha,
-            html: html,
-            extraInfo: extraInfo))
+            customPayload: customPayload))
     }
     
     private static func parseExpiresAt(dict: [AnyHashable : Any]) -> Date? {
@@ -397,17 +432,13 @@ struct InAppHelper {
     private static func toMessage(fromInAppParseResult inAppParseResult: InAppHelper.InAppParseResult, internalApi: IterableAPIInternal) -> IterableInAppMessage? {
         switch inAppParseResult {
         case .success(let inAppDetails):
-            let content = IterableHtmlInAppContent(edgeInsets: inAppDetails.edgeInsets,
-                                                   backgroundAlpha: inAppDetails.backgroundAlpha,
-                                                   html: inAppDetails.html)
             return IterableInAppMessage(messageId: inAppDetails.messageId,
                                         campaignId: inAppDetails.campaignId,
-                                        channelName: inAppDetails.channelName,
-                                        contentType: .html,
+                                        inAppType: inAppDetails.inAppType,
                                         trigger: inAppDetails.trigger,
                                         expiresAt: inAppDetails.expiresAt,
-                                        content: content,
-                                        extraInfo: inAppDetails.extraInfo)
+                                        content: inAppDetails.content,
+                                        customPayload: inAppDetails.customPayload)
         case .failure(reason: let reason, messageId: let messageId):
             ITBError(reason)
             if let messageId = messageId {

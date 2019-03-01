@@ -135,7 +135,7 @@ class ViewController: UIViewController {
             <a href="http://website/resource#something">Click Me</a>
         """
         let content = IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: html)
-        let message = IterableInAppMessage(messageId: messageId, campaignId: "zeeCampaignId", contentType: .html, content: content)
+        let message = IterableInAppMessage(messageId: messageId, campaignId: "zeeCampaignId", content: content)
         
         let config = IterableConfig()
         let mockUrlDelegate = MockUrlDelegate(returnValue: true)
@@ -166,7 +166,7 @@ class ViewController: UIViewController {
             <a href="http://website/resource#something">Click Me</a>
         """
         let content = IterableHtmlInAppContent(edgeInsets: UIEdgeInsets(top: -1, left: 10, bottom: -1, right: 10), backgroundAlpha: 0.5, html: html)
-        let message = IterableInAppMessage(messageId: messageId, campaignId: "zeeCampaignId", contentType: .html, content: content)
+        let message = IterableInAppMessage(messageId: messageId, campaignId: "zeeCampaignId", content: content)
         
         let config = IterableConfig()
         let mockUrlDelegate = MockUrlDelegate(returnValue: false) // we don't handle, so the url will be opened

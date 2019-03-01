@@ -157,6 +157,7 @@ public extension AnyHashable {
     public static let ITBL_IN_APP_HREF = "href"
     public static let ITBL_IN_APP_DISPLAY_SETTINGS = "inAppDisplaySettings"
     public static let ITBL_IN_APP_CUSTOM_PAYLOAD = "customPayload"
-    public static let ITBL_IN_APP_CHANNEL_NAME = "channelName"
+    public static let ITBL_IN_APP_INAPP_TYPE = "inAppType"
+    public static let ITBL_IN_APP_CONTENT_TYPE = "contentType"
 }
 
