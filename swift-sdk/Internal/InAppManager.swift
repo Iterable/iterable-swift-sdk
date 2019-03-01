@@ -223,15 +223,18 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
 }
 
 extension InAppManager : InAppSynchronizerDelegate {
-    func onInAppMessagesAvailable(messages: [IterableInAppMessage]) {
+    func onInAppMessagesAvailable(messages: [IterableMessageInternal]) {
         ITBDebug()
 
         updateQueue.async {
+            //!!!
+            let inAppMessages = messages.compactMap{$0 as? IterableInAppMessage}
+            
             // Remove messages that are no present in server
-            self.removeDeletedMessages(messagesFromServer: messages)
+            self.removeDeletedMessages(messagesFromServer: inAppMessages)
             
             // add new ones
-            self.addNewMessages(messagesFromServer: messages)
+            self.addNewMessages(messagesFromServer: inAppMessages)
             
             self.persister.persist(self.messagesMap.values)
             

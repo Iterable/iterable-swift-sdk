@@ -234,12 +234,15 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
         removeCallback?(messageId)
     }
     
-    func mockMessagesAvailableFromServer(messages: [IterableInAppMessage]) {
+    func mockMessagesAvailableFromServer(messages: [IterableMessageInternal]) {
         ITBInfo()
         
         messagesMap = OrderedDictionary<String, IterableInAppMessage>()
         
-        messages.forEach {
+        //!!!
+        let inAppMessages = messages.compactMap { $0 as? IterableInAppMessage }
+        
+        inAppMessages.forEach {
             messagesMap[$0.messageId] = $0
         }
 

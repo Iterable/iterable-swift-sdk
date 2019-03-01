@@ -254,7 +254,7 @@ class InAppHelperTests: XCTestCase {
         }
         """.toJsonDict()
         let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
-        XCTAssertEqual(messages[0].trigger.type, IterableInAppTriggerType.immediate)
+        XCTAssertEqual((messages[0] as! IterableInAppMessage).trigger.type, IterableInAppTriggerType.immediate)
     }
     
     func testInAppPayloadWithKnownTrigger() {
@@ -276,8 +276,8 @@ class InAppHelperTests: XCTestCase {
         }
         """.toJsonDict()
         let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
-        XCTAssertEqual(messages[0].trigger.type, IterableInAppTriggerType.event)
-        XCTAssertEqual(messages[0].trigger.dict["something"] as? String, "else")
+        XCTAssertEqual((messages[0] as! IterableInAppMessage).trigger.type, IterableInAppTriggerType.event)
+        XCTAssertEqual((messages[0] as! IterableInAppMessage).trigger.dict["something"] as? String, "else")
     }
 
     func testInAppPayloadWithUnKnownTrigger() {
@@ -299,8 +299,8 @@ class InAppHelperTests: XCTestCase {
         }
         """.toJsonDict()
         let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
-        XCTAssertEqual(messages[0].trigger.type, IterableInAppTriggerType.never)
-        let dict = messages[0].trigger.dict as! [String : Any]
+        XCTAssertEqual((messages[0] as! IterableInAppMessage).trigger.type, IterableInAppTriggerType.never)
+        let dict = (messages[0] as! IterableInAppMessage).trigger.dict as! [String : Any]
         TestUtils.validateMatch(keyPath: KeyPath("myPayload.var1"), value: "val1", inDictionary: dict, message: "Expected to find val1")
     }
     

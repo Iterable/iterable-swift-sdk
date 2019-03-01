@@ -194,6 +194,7 @@ extension IterableInAppMessage : Codable {
             return
         }
         
+        //!!!
         let inAppType = (try? container.decode(IterableInAppType.self, forKey: .inAppType)) ?? .default
         let messageId = (try? container.decode(String.self, forKey: .messageId)) ?? ""
         let campaignId = (try? container.decode(String.self, forKey: .campaignId)) ?? ""
@@ -205,7 +206,6 @@ extension IterableInAppMessage : Codable {
         
         self.init(messageId: messageId,
                   campaignId: campaignId,
-                  inAppType: inAppType,
                   trigger: trigger,
                   expiresAt: expiresAt,
                   content: content,
@@ -302,7 +302,7 @@ class InAppFilePersister : InAppPersistenceProtocol {
         guard let data = FileHelper.read(filename: filename, ext: ext) else {
             return []
         }
-        
+
         guard let messages = try? JSONDecoder().decode([IterableInAppMessage].self, from: data) else {
             return []
         }

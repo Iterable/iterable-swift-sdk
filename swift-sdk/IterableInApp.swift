@@ -43,12 +43,6 @@ open class DefaultInAppDelegate : IterableInAppDelegate {
 }
 
 @objc
-public enum IterableInAppType : Int, Codable {
-    case `default`
-    case inbox
-}
-
-@objc
 public enum IterableInAppContentType : Int, Codable {
     case html
     case alert
@@ -111,18 +105,32 @@ public final class IterableInAppTrigger : NSObject {
     }
 }
 
+@objc
+public protocol IterableMessage: class {
+    /// the id for the inApp message
+    var messageId: String { get }
+    
+    /// the campaign id for this message
+    var campaignId: String { get }
+    
+    /// when to expire this in-app, nil means do not expire
+    var expiresAt: Date? { get }
+    
+    /// The content of the inApp message
+    var content: IterableInAppContent { get }
+    
+    /// Custom Payload for this message.
+    var customPayload: [AnyHashable : Any]? { get }
+}
 
 /// A message is comprised of content and whether this message was skipped.
 @objcMembers
-public final class IterableInAppMessage : NSObject {
+public final class IterableInAppMessage : NSObject, IterableMessage {
     /// the id for the inApp message
     public let messageId: String
 
     /// the campaign id for this message
     public let campaignId: String
-    
-    /// the in-app type
-    public let inAppType: IterableInAppType
     
     /// when to trigger this in-app
     public let trigger: IterableInAppTrigger
@@ -138,17 +146,16 @@ public final class IterableInAppMessage : NSObject {
 
     /// Whether we have processed this message.
     /// Note: This is internal and not public
-    var processed: Bool = false
+    internal var processed: Bool = false
     
     /// Mark this message to be removed from server queue.
     /// Note: This is internal and not public
-    var consumed: Bool = false
+    internal var consumed: Bool = false
 
     // Internal, don't let others create
     init(
         messageId: String,
         campaignId: String,
-        inAppType: IterableInAppType = .default,
         trigger: IterableInAppTrigger = .defaultTrigger,
         expiresAt: Date? = nil,
         content: IterableInAppContent,
@@ -156,7 +163,6 @@ public final class IterableInAppMessage : NSObject {
         ) {
         self.messageId = messageId
         self.campaignId = campaignId
-        self.inAppType = inAppType
         self.trigger = trigger
         self.expiresAt = expiresAt
         self.content = content
@@ -165,3 +171,49 @@ public final class IterableInAppMessage : NSObject {
 }
 
 
+/// A message is comprised of content and whether this message was skipped.
+@objcMembers
+public final class IterableInboxMessage : NSObject, IterableMessage {
+    /// the id for the inApp message
+    public let messageId: String
+    
+    /// the campaign id for this message
+    public let campaignId: String
+    
+    /// when to trigger this in-app
+    public let trigger: IterableInAppTrigger
+    
+    /// when to expire this in-app, nil means do not expire
+    public let expiresAt: Date?
+    
+    /// The content of the inApp message
+    public let content: IterableInAppContent
+    
+    /// Custom Payload for this message.
+    public let customPayload: [AnyHashable : Any]?
+    
+    /// Whether we have processed this message.
+    /// Note: This is internal and not public
+    internal var processed: Bool = false
+    
+    /// Mark this message to be removed from server queue.
+    /// Note: This is internal and not public
+    internal var consumed: Bool = false
+    
+    // Internal, don't let others create
+    init(
+        messageId: String,
+        campaignId: String,
+        trigger: IterableInAppTrigger = .defaultTrigger,
+        expiresAt: Date? = nil,
+        content: IterableInAppContent,
+        customPayload: [AnyHashable : Any]? = nil
+        ) {
+        self.messageId = messageId
+        self.campaignId = campaignId
+        self.trigger = trigger
+        self.expiresAt = expiresAt
+        self.content = content
+        self.customPayload = customPayload
+    }
+}
