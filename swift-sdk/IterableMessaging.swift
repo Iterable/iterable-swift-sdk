@@ -1,4 +1,5 @@
 //
+// This file contains InApp and Inbox messaging classes.
 //
 //  Created by Tapash Majumder on 11/5/18.
 //  Copyright © 2018 Iterable. All rights reserved.
@@ -43,7 +44,7 @@ open class DefaultInAppDelegate : IterableInAppDelegate {
 }
 
 @objc
-public enum IterableInAppContentType : Int, Codable {
+public enum IterableContentType : Int, Codable {
     case html
     case alert
     case banner
@@ -52,12 +53,12 @@ public enum IterableInAppContentType : Int, Codable {
 
 @objc
 public protocol IterableContent {
-    var contentType: IterableInAppContentType {get}
+    var contentType: IterableContentType {get}
 }
 
 @objcMembers
 public class IterableHtmlContent : NSObject, IterableContent {
-    public let contentType = IterableInAppContentType.html
+    public let contentType = IterableContentType.html
     
     /// Edge insets
     public let edgeInsets: UIEdgeInsets

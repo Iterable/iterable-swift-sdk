@@ -14,9 +14,9 @@ enum InAppContentParseResult {
 
 struct InAppContentParser {
     static func parse(contentDict: [AnyHashable : Any]) -> InAppContentParseResult {
-        let contentType: IterableInAppContentType
+        let contentType: IterableContentType
         if let contentTypeStr = contentDict[.ITBL_IN_APP_CONTENT_TYPE] as? String {
-            contentType = IterableInAppContentType.from(string: contentTypeStr)
+            contentType = IterableContentType.from(string: contentTypeStr)
         } else {
             contentType = .html
         }
@@ -24,7 +24,7 @@ struct InAppContentParser {
         return contentCreator(forContentType: contentType).tryCreate(from: contentDict)
     }
     
-    private static func contentCreator(forContentType contentType: IterableInAppContentType) -> ContentFromJsonCreator.Type {
+    private static func contentCreator(forContentType contentType: IterableContentType) -> ContentFromJsonCreator.Type {
         switch contentType {
         case .html:
             return InAppHtmlContentCreator.self

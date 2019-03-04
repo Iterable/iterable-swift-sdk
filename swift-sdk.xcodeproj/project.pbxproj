@@ -73,7 +73,7 @@
 		AC995F9F2167E9FD0099A184 /* CommonExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F9C2167E9FD0099A184 /* CommonExtensions.swift */; };
 		AC9A49AB20F3C8B80007A5A2 /* TestFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9A49AA20F3C8B80007A5A2 /* TestFile.swift */; };
 		AC9A49AE20F41B520007A5A2 /* TestFileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9A49AC20F419AA0007A5A2 /* TestFileTests.swift */; };
-		ACA8D1A321910C66001B1332 /* IterableInApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA8D1A221910C66001B1332 /* IterableInApp.swift */; };
+		ACA8D1A321910C66001B1332 /* IterableMessaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA8D1A221910C66001B1332 /* IterableMessaging.swift */; };
 		ACA8D1A52196309C001B1332 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA8D1A42196309C001B1332 /* Common.swift */; };
 		ACA8D1A62196309C001B1332 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA8D1A42196309C001B1332 /* Common.swift */; };
 		ACA8D1A72196309C001B1332 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA8D1A42196309C001B1332 /* Common.swift */; };
@@ -248,7 +248,7 @@
 		AC995F9C2167E9FD0099A184 /* CommonExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonExtensions.swift; sourceTree = "<group>"; };
 		AC9A49AA20F3C8B80007A5A2 /* TestFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFile.swift; sourceTree = "<group>"; };
 		AC9A49AC20F419AA0007A5A2 /* TestFileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFileTests.swift; sourceTree = "<group>"; };
-		ACA8D1A221910C66001B1332 /* IterableInApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInApp.swift; sourceTree = "<group>"; };
+		ACA8D1A221910C66001B1332 /* IterableMessaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableMessaging.swift; sourceTree = "<group>"; };
 		ACA8D1A42196309C001B1332 /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		ACA8D1A821965B7D001B1332 /* InAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppTests.swift; sourceTree = "<group>"; };
 		ACA8D1AA21966555001B1332 /* InAppManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppManager.swift; sourceTree = "<group>"; };
@@ -399,7 +399,7 @@
 				AC72A0C220CF4CB8004D7997 /* IterableNotificationMetadata.swift */,
 				AC72A0C120CF4CB8004D7997 /* CommerceItem.swift */,
 				AC72A0C620CF4CB9004D7997 /* IterableAppIntegration.swift */,
-				ACA8D1A221910C66001B1332 /* IterableInApp.swift */,
+				ACA8D1A221910C66001B1332 /* IterableMessaging.swift */,
 			);
 			path = "swift-sdk";
 			sourceTree = "<group>";
@@ -419,9 +419,9 @@
 				AC72A0AB20CF4BEB004D7997 /* IterableInAppHTMLViewController.swift */,
 				AC72A0AA20CF4BEB004D7997 /* InAppHelper.swift */,
 				ACA8D1AA21966555001B1332 /* InAppManager.swift */,
-				AC03094A21E532470003A288 /* InAppPersistence.swift */,
 				AC8874A922178BD80075B54B /* InAppContentParser.swift */,
 				ACE6888C2228B86C00A95E5E /* InAppInternal.swift */,
+				AC03094A21E532470003A288 /* InAppPersistence.swift */,
 				ACE6888E2229C2AE00A95E5E /* InboxPersistence.swift */,
 			);
 			name = InApp;
@@ -995,7 +995,7 @@
 				AC72A0CD20CF4CE2004D7997 /* IterableAppIntegration.swift in Sources */,
 				AC72A0CE20CF4CE2004D7997 /* IterableAttributionInfo.swift in Sources */,
 				AC72A0BA20CF4C83004D7997 /* NSData+Conversion.m in Sources */,
-				ACA8D1A321910C66001B1332 /* IterableInApp.swift in Sources */,
+				ACA8D1A321910C66001B1332 /* IterableMessaging.swift in Sources */,
 				AC72A0D420CF4D19004D7997 /* IterableDeeplinkManager.swift in Sources */,
 				ACE6888F2229C2AE00A95E5E /* InboxPersistence.swift in Sources */,
 				AC72A0C920CF4CE2004D7997 /* IterableAction.swift in Sources */,
