@@ -37,38 +37,55 @@ struct InAppContentParser {
 }
 
 fileprivate protocol ContentFromJsonCreator {
-    static func tryCreate(from content: [AnyHashable : Any]) -> InAppContentParseResult
+    static func tryCreate(from json: [AnyHashable : Any]) -> InAppContentParseResult
 }
 
-struct InAppHtmlContentCreator : ContentFromJsonCreator {
-    fileprivate static func tryCreate(from content: [AnyHashable : Any]) -> InAppContentParseResult {
-        guard let html = content[.ITBL_IN_APP_HTML] as? String else {
+struct HtmlContentCreator {
+    enum Result {
+        case success(content: HtmlContent)
+        case failure(reason: String)
+    }
+    
+    struct HtmlContent {
+        let edgeInsets: UIEdgeInsets
+        let backgroundAlpha: Double
+        let html: String
+    }
+    
+    fileprivate static func tryCreate(from json: [AnyHashable : Any]) -> Result {
+        guard let html = json[.ITBL_IN_APP_HTML] as? String else {
             return .failure(reason: "no html")
         }
         guard html.range(of: AnyHashable.ITBL_IN_APP_HREF, options: [.caseInsensitive]) != nil else {
             return .failure(reason: "No href tag found in in-app html payload \(html)")
         }
         
-        let inAppDisplaySettings = content[.ITBL_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
+        let inAppDisplaySettings = json[.ITBL_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
         let backgroundAlpha = InAppHelper.getBackgroundAlpha(fromInAppSettings: inAppDisplaySettings)
         let edgeInsets = InAppHelper.getPadding(fromInAppSettings: inAppDisplaySettings)
-        return .success(content: IterableInAppHtmlContent(edgeInsets: edgeInsets, backgroundAlpha: backgroundAlpha, html: html))
+        return .success(content: HtmlContent(edgeInsets: edgeInsets, backgroundAlpha: backgroundAlpha, html: html))
+    }
+}
+
+struct InAppHtmlContentCreator : ContentFromJsonCreator {
+    fileprivate static func tryCreate(from json: [AnyHashable : Any]) -> InAppContentParseResult {
+        switch HtmlContentCreator.tryCreate(from: json) {
+        case .failure(let reason):
+            return .failure(reason: reason)
+        case .success(let content):
+            return .success(content: IterableInAppHtmlContent(edgeInsets: content.edgeInsets, backgroundAlpha: content.backgroundAlpha, html: content.html))
+        }
     }
 }
 
 struct InboxHtmlContentCreator : ContentFromJsonCreator {
-    fileprivate static func tryCreate(from content: [AnyHashable : Any]) -> InAppContentParseResult {
-        guard let html = content[.ITBL_IN_APP_HTML] as? String else {
-            return .failure(reason: "no html")
+    fileprivate static func tryCreate(from json: [AnyHashable : Any]) -> InAppContentParseResult {
+        switch HtmlContentCreator.tryCreate(from: json) {
+        case .failure(let reason):
+            return .failure(reason: reason)
+        case .success(let content):
+            return .success(content: IterableInboxHtmlContent(edgeInsets: content.edgeInsets, backgroundAlpha: content.backgroundAlpha, html: content.html, title: nil, subTitle: nil, icon: nil))//!!!
         }
-        guard html.range(of: AnyHashable.ITBL_IN_APP_HREF, options: [.caseInsensitive]) != nil else {
-            return .failure(reason: "No href tag found in in-app html payload \(html)")
-        }
-        
-        let inAppDisplaySettings = content[.ITBL_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
-        let backgroundAlpha = InAppHelper.getBackgroundAlpha(fromInAppSettings: inAppDisplaySettings)
-        let edgeInsets = InAppHelper.getPadding(fromInAppSettings: inAppDisplaySettings)
-        return .success(content: IterableInboxHtmlContent(edgeInsets: edgeInsets, backgroundAlpha: backgroundAlpha, html: html, title: nil, subTitle: nil, icon: nil))//!!!
     }
 }
 
