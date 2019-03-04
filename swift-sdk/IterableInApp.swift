@@ -47,15 +47,16 @@ public enum IterableInAppContentType : Int, Codable {
     case html
     case alert
     case banner
+    case inboxHtml
 }
 
 @objc
-public protocol IterableInAppContent {
+public protocol IterableContent {
     var contentType: IterableInAppContentType {get}
 }
 
 @objcMembers
-public class IterableHtmlInAppContent : NSObject, IterableInAppContent, Codable {
+public class IterableHtmlContent : NSObject, IterableContent {
     public let contentType = IterableInAppContentType.html
     
     /// Edge insets
@@ -74,6 +75,10 @@ public class IterableHtmlInAppContent : NSObject, IterableInAppContent, Codable 
         self.backgroundAlpha = backgroundAlpha
         self.html = html
     }
+}
+
+@objcMembers
+public final class IterableInAppHtmlContent : IterableHtmlContent {
 }
 
 /// `immediate` will try to display the inApp automatically immediately
@@ -105,27 +110,9 @@ public final class IterableInAppTrigger : NSObject {
     }
 }
 
-@objc
-public protocol IterableMessage: class {
-    /// the id for the inApp message
-    var messageId: String { get }
-    
-    /// the campaign id for this message
-    var campaignId: String { get }
-    
-    /// when to expire this in-app, nil means do not expire
-    var expiresAt: Date? { get }
-    
-    /// The content of the inApp message
-    var content: IterableInAppContent { get }
-    
-    /// Custom Payload for this message.
-    var customPayload: [AnyHashable : Any]? { get }
-}
-
 /// A message is comprised of content and whether this message was skipped.
 @objcMembers
-public final class IterableInAppMessage : NSObject, IterableMessage {
+public final class IterableInAppMessage : NSObject {
     /// the id for the inApp message
     public let messageId: String
 
@@ -139,7 +126,7 @@ public final class IterableInAppMessage : NSObject, IterableMessage {
     public let expiresAt: Date?
     
     /// The content of the inApp message
-    public let content: IterableInAppContent
+    public let content: IterableContent
     
     /// Custom Payload for this message.
     public let customPayload: [AnyHashable : Any]?
@@ -158,7 +145,7 @@ public final class IterableInAppMessage : NSObject, IterableMessage {
         campaignId: String,
         trigger: IterableInAppTrigger = .defaultTrigger,
         expiresAt: Date? = nil,
-        content: IterableInAppContent,
+        content: IterableContent,
         customPayload: [AnyHashable : Any]? = nil
         ) {
         self.messageId = messageId
@@ -170,24 +157,35 @@ public final class IterableInAppMessage : NSObject, IterableMessage {
     }
 }
 
+@objcMembers
+public final class IterableInboxHtmlContent : IterableHtmlContent {
+    public let title: String?
+    public let subTitle: String?
+    public let icon: String?
+    
+    // internal
+    init(edgeInsets: UIEdgeInsets, backgroundAlpha: Double, html: String, title: String?, subTitle: String?, icon: String?) {
+        self.title = title
+        self.subTitle = subTitle
+        self.icon = icon
+        super.init(edgeInsets: edgeInsets, backgroundAlpha: backgroundAlpha, html: html)
+    }
+}
 
 /// A message is comprised of content and whether this message was skipped.
 @objcMembers
-public final class IterableInboxMessage : NSObject, IterableMessage {
+public final class IterableInboxMessage : NSObject {
     /// the id for the inApp message
     public let messageId: String
     
     /// the campaign id for this message
     public let campaignId: String
     
-    /// when to trigger this in-app
-    public let trigger: IterableInAppTrigger
-    
     /// when to expire this in-app, nil means do not expire
     public let expiresAt: Date?
     
     /// The content of the inApp message
-    public let content: IterableInAppContent
+    public let content: IterableContent
     
     /// Custom Payload for this message.
     public let customPayload: [AnyHashable : Any]?
@@ -204,14 +202,12 @@ public final class IterableInboxMessage : NSObject, IterableMessage {
     init(
         messageId: String,
         campaignId: String,
-        trigger: IterableInAppTrigger = .defaultTrigger,
         expiresAt: Date? = nil,
-        content: IterableInAppContent,
+        content: IterableContent,
         customPayload: [AnyHashable : Any]? = nil
         ) {
         self.messageId = messageId
         self.campaignId = campaignId
-        self.trigger = trigger
         self.expiresAt = expiresAt
         self.content = content
         self.customPayload = customPayload

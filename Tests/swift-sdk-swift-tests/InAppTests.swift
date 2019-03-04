@@ -717,7 +717,7 @@ class InAppTests: XCTestCase {
             },
             {
                 "inAppType": "inbox",
-                "content": {"contentType": "alert", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "content": {"contentType": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
                 "trigger": {"type": "immediate"},
                 "messageId": "message2",
                 "expiresAt": 1550605745145,
@@ -742,16 +742,16 @@ class InAppTests: XCTestCase {
         ]
         }
         """.toJsonDict()
-        //!!!
-        let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!).compactMap { $0 as? IterableInAppMessage }
+        let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
         let persister = InAppFilePersister()
         persister.persist(messages)
         let obtained = persister.getMessages()
         XCTAssertEqual(messages.description, obtained.description)
         
-        XCTAssertEqual(obtained[3].trigger.type, IterableInAppTriggerType.never)
-        let dict = obtained[3].trigger.dict as! [String : Any]
+        XCTAssertEqual((obtained[3] as! IterableInAppMessage).trigger.type, IterableInAppTriggerType.never)
+        let dict = (obtained[3] as! IterableInAppMessage).trigger.dict as! [String : Any]
         TestUtils.validateMatch(keyPath: KeyPath("nested.var1"), value: "val1", inDictionary: dict, message: "Expected to find val1 in persisted dictionary")
+
         persister.clear()
     }
     
@@ -774,9 +774,8 @@ class InAppTests: XCTestCase {
         XCTAssertEqual(badMessages.count, 0)
         
         let payload = TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 3, 2])
-        //!!!
-        let goodMessages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!).compactMap { $0 as? IterableInAppMessage }
-        let goodData = try! JSONEncoder().encode(goodMessages)
+        let goodMessages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
+        let goodData = try! JSONEncoder().encode(goodMessages.map { IterablePersistableMessage(iterableMessage: $0) } )
         FileHelper.write(filename: "test", ext: "json", data: goodData)
         
         let obtainedMessages = persister.getMessages()
@@ -998,7 +997,7 @@ class InAppTests: XCTestCase {
         let message = IterableInAppMessage(messageId: "messageId",
                                            campaignId: "campaignId",
                                            expiresAt: mockDateProvider.currentDate.addingTimeInterval(1.0 * 60.0), // one minute from now
-                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "<html></html>"))
+                                           content: IterableInAppHtmlContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "<html></html>"))
         mockInAppSynchronizer.mockMessagesAvailableFromServer(messages: [message])
 
         XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
@@ -1015,12 +1014,25 @@ extension IterableInAppTrigger {
     }
 }
 
-extension IterableHtmlInAppContent {
-    open override var description: String {
+extension IterableInAppHtmlContent {
+    public override var description: String {
         return IterableUtil.describe("contentType", contentType,
                         "edgeInsets", edgeInsets,
                         "backgroundAlpha", backgroundAlpha,
                         "html", html, pairSeparator: " = ", separator: ", ")
+    }
+}
+
+extension IterableInboxHtmlContent {
+    public override var description: String {
+        return IterableUtil.describe("contentType", contentType,
+                                     "edgeInsets", edgeInsets,
+                                     "backgroundAlpha", backgroundAlpha,
+                                     "html", html,
+                                     "title", title ?? "nil",
+                                     "subTitle", subTitle ?? "nil",
+                                     "icon", icon ?? "nil",
+                                     pairSeparator: " = ", separator: ", ")
     }
 }
 
@@ -1034,5 +1046,17 @@ extension IterableInAppMessage {
                         "content", content,
                         "processed", processed,
                         "consumed", consumed, pairSeparator: " = ", separator: "\n")
+    }
+}
+
+extension IterableInboxMessage {
+    public override var description: String {
+        return IterableUtil.describe("messageId", messageId,
+                                     "campaignId", campaignId,
+                                     "inAppType", inAppType,
+                                     "expiresAt", expiresAt ?? "nil",
+                                     "content", content,
+                                     "processed", processed,
+                                     "consumed", consumed, pairSeparator: " = ", separator: "\n")
     }
 }

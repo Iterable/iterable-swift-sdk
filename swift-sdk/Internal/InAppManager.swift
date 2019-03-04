@@ -181,7 +181,9 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     }
     
     private func initializeMessagesMap() {
-        let messages = persister.getMessages()
+        //!!!
+        let messages = persister.getMessages().compactMap { $0 as? IterableInAppMessage }
+        
         for message in messages {
             messagesMap[message.messageId] = message
         }
@@ -223,7 +225,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
 }
 
 extension InAppManager : InAppSynchronizerDelegate {
-    func onInAppMessagesAvailable(messages: [IterableMessageInternal]) {
+    func onInAppMessagesAvailable(messages: [IterableMessageProtocol]) {
         ITBDebug()
 
         updateQueue.async {

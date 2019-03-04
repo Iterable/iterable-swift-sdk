@@ -234,7 +234,7 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
         removeCallback?(messageId)
     }
     
-    func mockMessagesAvailableFromServer(messages: [IterableMessageInternal]) {
+    func mockMessagesAvailableFromServer(messages: [IterableMessageProtocol]) {
         ITBInfo()
         
         messagesMap = OrderedDictionary<String, IterableInAppMessage>()
@@ -341,13 +341,13 @@ class MockNotificationCenter: NotificationCenterProtocol {
 }
 
 class MockInAppPesister : InAppPersistenceProtocol {
-    private var messages = [IterableInAppMessage]()
+    private var messages = [IterableMessageProtocol]()
     
-    func getMessages() -> [IterableInAppMessage] {
+    func getMessages() -> [IterableMessageProtocol] {
         return messages
     }
     
-    func persist(_ messages: [IterableInAppMessage]) {
+    func persist(_ messages: [IterableMessageProtocol]) {
         self.messages = messages
     }
     

@@ -11,7 +11,7 @@ import UIKit
 /// Callbacks from the synchronizer
 protocol InAppSynchronizerDelegate : class {
     func onInAppRemoved(messageId: String)
-    func onInAppMessagesAvailable(messages: [IterableMessageInternal])
+    func onInAppMessagesAvailable(messages: [IterableMessageProtocol])
 }
 
 ///
@@ -102,7 +102,7 @@ struct InAppHelper {
     /// - parameter callback: the code to execute when user clicks on a link or button on inApp message.
     /// - returns: A Bool indicating whether the inApp was opened.
     @discardableResult fileprivate static func showInApp(message: IterableInAppMessage, callback:ITEActionBlock?) -> Bool {
-        guard let content = message.content as? IterableHtmlInAppContent else {
+        guard let content = message.content as? IterableInAppHtmlContent else {
             ITBError("Invalid content type")
             return false
         }
@@ -278,7 +278,7 @@ struct InAppHelper {
         }
     }
     
-    static func getInAppMessagesFromServer(internalApi: IterableAPIInternal, number: Int) -> Future<[IterableMessageInternal]> {
+    static func getInAppMessagesFromServer(internalApi: IterableAPIInternal, number: Int) -> Future<[IterableMessageProtocol]> {
         return internalApi.getInAppMessages(NSNumber(value: number)).map {
             inAppMessages(fromPayload: $0, internalApi: internalApi)
         }
@@ -286,7 +286,7 @@ struct InAppHelper {
     
     /// Given json payload, It will construct array of IterableInAppMessage
     /// This will also make sure to consume any invalid inAppMessage.
-    static func inAppMessages(fromPayload payload: [AnyHashable : Any], internalApi: IterableAPIInternal) -> [IterableMessageInternal] {
+    static func inAppMessages(fromPayload payload: [AnyHashable : Any], internalApi: IterableAPIInternal) -> [IterableMessageProtocol] {
         return parseInApps(fromPayload: payload).map { toMessage(fromInAppParseResult: $0, internalApi: internalApi) }.compactMap { $0 }
     }
     
@@ -309,7 +309,7 @@ struct InAppHelper {
     /// This is a struct equivalent of IterableInAppMessage class
     private struct InAppDetails {
         let inAppType: IterableInAppType
-        let content: IterableInAppContent
+        let content: IterableContent
         let messageId: String
         let campaignId: String
         let trigger: IterableInAppTrigger
@@ -379,7 +379,7 @@ struct InAppHelper {
             return .failure(reason: "no content in json payload", messageId: messageId)
         }
 
-        let content: IterableInAppContent
+        let content: IterableContent
         switch (InAppContentParser.parse(contentDict: contentDict)) {
         case .success(let parsedContent):
             content = parsedContent
@@ -431,7 +431,7 @@ struct InAppHelper {
         return payload[.ITBL_IN_APP_CUSTOM_PAYLOAD] as? [AnyHashable : Any]
     }
     
-    private static func toMessage(fromInAppParseResult inAppParseResult: InAppHelper.InAppParseResult, internalApi: IterableAPIInternal) -> IterableMessageInternal? {
+    private static func toMessage(fromInAppParseResult inAppParseResult: InAppHelper.InAppParseResult, internalApi: IterableAPIInternal) -> IterableMessageProtocol? {
         switch inAppParseResult {
         case .success(let inAppDetails):
             switch inAppDetails.inAppType {
@@ -445,7 +445,6 @@ struct InAppHelper {
             case .inbox:
                 return IterableInboxMessage(messageId: inAppDetails.messageId,
                                             campaignId: inAppDetails.campaignId,
-                                            trigger: inAppDetails.trigger,
                                             expiresAt: inAppDetails.expiresAt,
                                             content: inAppDetails.content,
                                             customPayload: inAppDetails.customPayload)
