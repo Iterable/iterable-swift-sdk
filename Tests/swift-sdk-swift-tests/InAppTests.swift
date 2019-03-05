@@ -742,7 +742,7 @@ class InAppTests: XCTestCase {
         ]
         }
         """.toJsonDict()
-        let messages = InAppMessageParser.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
+        let messages = InAppTestHelper.inAppMessages(fromPayload: payload)
         let persister = IterableMessageFilePersister()
         persister.persist(messages)
         let obtained = persister.getMessages()
@@ -774,7 +774,7 @@ class InAppTests: XCTestCase {
         XCTAssertEqual(badMessages.count, 0)
         
         let payload = TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 3, 2])
-        let goodMessages = InAppMessageParser.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
+        let goodMessages = InAppTestHelper.inAppMessages(fromPayload: payload)
         let goodData = try! JSONEncoder().encode(goodMessages.map { IterablePersistableMessage(iterableMessage: $0) } )
         FileHelper.write(filename: "test", ext: "json", data: goodData)
         

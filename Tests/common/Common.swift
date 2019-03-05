@@ -24,6 +24,21 @@ struct TestHelper {
     }
 }
 
+struct InAppTestHelper {
+    static func inAppMessages(fromPayload payload: [AnyHashable : Any]) -> [IterableMessageProtocol] {
+        return InAppMessageParser.parse(payload: payload).compactMap(parseResultToOptionalMessage)
+    }
+    
+    private static func parseResultToOptionalMessage(result: IterableResult<IterableMessageProtocol, InAppMessageParser.ParseError>) -> IterableMessageProtocol? {
+        switch result {
+        case .failure:
+            return nil
+        case .success(let message):
+            return message
+        }
+    }
+}
+
 class InAppPollingSynchronizer : InAppSynchronizerProtocol {
     weak var internalApi: IterableAPIInternal?
     weak var inAppSyncDelegate: InAppSynchronizerDelegate?

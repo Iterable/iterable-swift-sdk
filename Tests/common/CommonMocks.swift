@@ -248,12 +248,7 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
     
     func mockInAppPayloadFromServer(_ payload: [AnyHashable : Any]) {
         ITBInfo()
-        guard let internalApi = internalApi else {
-            ITBError("Invalid state: expected InternalApi")
-            return
-        }
-        
-        mockMessagesAvailableFromServer(messages: InAppMessageParser.inAppMessages(fromPayload: payload, internalApi: internalApi))
+        mockMessagesAvailableFromServer(messages: InAppTestHelper.inAppMessages(fromPayload: payload))
     }
 }
 

@@ -13,7 +13,9 @@ import UIKit
 struct InAppHelper {
     static func getInAppMessagesFromServer(internalApi: IterableAPIInternal, number: Int) -> Future<[IterableMessageProtocol]> {
         return internalApi.getInAppMessages(NSNumber(value: number)).map {
-            InAppMessageParser.inAppMessages(fromPayload: $0, internalApi: internalApi)
+            return InAppMessageParser.parse(payload: $0).compactMap { parseResult in
+                process(parseResult: parseResult, internalApi: internalApi)
+            }
         }
     }
     
@@ -68,5 +70,22 @@ struct InAppHelper {
     private static func dropScheme(urlString: String, scheme: String) -> String {
         let prefix = scheme + "://"
         return String(urlString.dropFirst(prefix.count))
+    }
+
+    // process each parseResult and consumes failed message, if messageId is present
+    private static func process(parseResult: IterableResult<IterableMessageProtocol, InAppMessageParser.ParseError>, internalApi: IterableAPIInternal) -> IterableMessageProtocol? {
+        switch parseResult {
+        case .failure(let parseError):
+            switch (parseError) {
+            case .parseFailed(reason: let reason, messageId: let messageId):
+                ITBError(reason)
+                if let messageId = messageId {
+                    internalApi.inAppConsume(messageId)
+                }
+                return nil
+            }
+        case .success(let val):
+            return val
+        }
     }
 }

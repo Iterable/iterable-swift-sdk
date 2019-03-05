@@ -231,7 +231,7 @@ class InAppHelperTests: XCTestCase {
         
         let payload = createInAppPayload(withCustomPayload: customPayload)
         
-        let messages = InAppMessageParser.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
+        let messages = InAppTestHelper.inAppMessages(fromPayload: payload)
         
         XCTAssertEqual(messages.count, 1)
         let obtained = messages[0].customPayload
@@ -253,7 +253,7 @@ class InAppHelperTests: XCTestCase {
             ]
         }
         """.toJsonDict()
-        let messages = InAppMessageParser.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
+        let messages = InAppTestHelper.inAppMessages(fromPayload: payload)
         XCTAssertEqual((messages[0] as! IterableInAppMessage).trigger.type, IterableInAppTriggerType.immediate)
     }
     
@@ -275,7 +275,7 @@ class InAppHelperTests: XCTestCase {
             ]
         }
         """.toJsonDict()
-        let messages = InAppMessageParser.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
+        let messages = InAppTestHelper.inAppMessages(fromPayload: payload)
         XCTAssertEqual((messages[0] as! IterableInAppMessage).trigger.type, IterableInAppTriggerType.event)
         XCTAssertEqual((messages[0] as! IterableInAppMessage).trigger.dict["something"] as? String, "else")
     }
@@ -298,7 +298,7 @@ class InAppHelperTests: XCTestCase {
             ]
         }
         """.toJsonDict()
-        let messages = InAppMessageParser.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
+        let messages = InAppTestHelper.inAppMessages(fromPayload: payload)
         XCTAssertEqual((messages[0] as! IterableInAppMessage).trigger.type, IterableInAppTriggerType.never)
         let dict = (messages[0] as! IterableInAppMessage).trigger.dict as! [String : Any]
         TestUtils.validateMatch(keyPath: KeyPath("myPayload.var1"), value: "val1", inDictionary: dict, message: "Expected to find val1")
@@ -392,7 +392,7 @@ class InAppHelperTests: XCTestCase {
             ]
         }
         """.toJsonDict()
-        let messages = InAppMessageParser.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
+        let messages = InAppTestHelper.inAppMessages(fromPayload: payload)
         
         XCTAssertEqual(messages.count, 4)
         let message1 = messages[0]
@@ -496,7 +496,7 @@ class InAppHelperTests: XCTestCase {
             ]
         }
         """.toJsonDict()
-        let messages = InAppMessageParser.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
+        let messages = InAppTestHelper.inAppMessages(fromPayload: payload)
         
         XCTAssertEqual(messages.count, 4)
         let message1 = messages[0]
