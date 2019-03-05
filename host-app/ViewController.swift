@@ -63,7 +63,7 @@ class ViewController: UIViewController {
         let html = """
             <a href="http://website/resource#something">Click Me</a>
         """
-        InAppHelper.showIterableNotificationHTML(html) { (str) in
+        InAppDisplayer.showIterableHtmlMessage(html) { (str) in
             ITBInfo("callback: \(str ?? "<nil>")")
             self.statusLbl.text = str
         }

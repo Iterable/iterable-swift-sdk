@@ -138,8 +138,8 @@ class InAppHelperTests: XCTestCase {
     }
     
     func testDoNotShowMultipleTimes() {
-        let shownFirstTime = InAppHelper.showIterableNotificationHTML("", callbackBlock: nil)
-        let shownSecondTime = InAppHelper.showIterableNotificationHTML("", callbackBlock: nil)
+        let shownFirstTime = InAppDisplayer.showIterableHtmlMessage("", callbackBlock: nil)
+        let shownSecondTime = InAppDisplayer.showIterableHtmlMessage("", callbackBlock: nil)
         XCTAssertTrue(shownFirstTime)
         XCTAssertFalse(shownSecondTime)
     }

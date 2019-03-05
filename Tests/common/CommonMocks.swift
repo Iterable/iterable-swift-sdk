@@ -273,6 +273,10 @@ class MockInAppDisplayer : InAppDisplayerProtocol {
         return true
     }
 
+    func showSystemNotification(_ title: String, body: String, buttonLeft: String?, buttonRight: String?, callbackBlock: ITEActionBlock?) {
+        ITBInfo()
+    }
+    
     var onShowCallback:  ((IterableInAppMessage, ITEActionBlock?) -> Void)?
     
     // Mimics clicking a url
