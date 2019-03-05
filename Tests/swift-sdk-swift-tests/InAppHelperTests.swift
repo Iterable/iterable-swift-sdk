@@ -324,16 +324,20 @@ class InAppHelperTests: XCTestCase {
         
         let customPayloadStr2 = """
         {
-            "promoteToContent" : {
-                "title" : "title",
-                "subTitle" : "subtitle",
-                "imageUrl" : "http://somewhere.com/something.jpg"
-            }
+            "messageId": "overridden",
+            "var1" : "value1",
+            "obj1" : {
+                "something" : true,
+                "nothing" : "is nothing"
+            },
         }
         """
         var customPayload2 = customPayloadStr2.toJsonDict()
         customPayload2["inAppType"] = "inbox"
-        customPayload2["contentType"] = "html"
+        customPayload2["contentType"] = "inboxHtml"
+        customPayload2["title"] = "title"
+        customPayload2["subTitle"] = "subTitle"
+        customPayload2["icon"] = "icon"
         
         let payload = """
         {
@@ -397,6 +401,7 @@ class InAppHelperTests: XCTestCase {
         XCTAssertTrue(TestUtils.areEqual(dict1: message1.customPayload!, dict2: customPayloadStr1.toJsonDict()))
         
         let message2 = messages[1]
+        XCTAssertEqual(message2.messageId, "messageId2")
         XCTAssertEqual(message2.inAppType, .inbox)
         XCTAssertTrue(TestUtils.areEqual(dict1: message2.customPayload!, dict2: customPayloadStr2.toJsonDict()))
         
@@ -420,14 +425,17 @@ class InAppHelperTests: XCTestCase {
         """
         let customPayloadStr2 = """
         {
-            "promoteToContent" : {
-                "title" : "title",
-                "subTitle" : "subtitle",
-                "imageUrl" : "http://somewhere.com/something.jpg"
+            "obj2" : {
+                "var1" : "value2",
+                "var2" : "value2",
+                "var3" : "value3"
             }
         }
         """
 
+        let inboxTitle = "this is the title"
+        let inboxSubTitle = "this is the subtitle"
+        let inboxIcon = "https://somewhere.com/icon.jpg"
         let payload = """
         {
             "inAppMessages" : [
@@ -448,8 +456,11 @@ class InAppHelperTests: XCTestCase {
                 {
                     "inAppType" : "inbox",
                     "content" : {
-                        "contentType" : "html",
-                        "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
+                        "contentType" : "inboxHtml",
+                        "html" : "<a href=\\"http://somewhere.com\\">Click here</a>",
+                        "title" : "\(inboxTitle)",
+                        "subTitle" : "\(inboxSubTitle)",
+                        "icon" : "\(inboxIcon)",
                     },
                     "messageId" : "messageIdxxx",
                     "campaignId" : "campaignIdxxx",
@@ -492,8 +503,12 @@ class InAppHelperTests: XCTestCase {
         XCTAssertEqual(message1.inAppType, .default)
         XCTAssertTrue(TestUtils.areEqual(dict1: message1.customPayload!, dict2: customPayloadStr1.toJsonDict()))
         
-        let message2 = messages[1]
+        let message2 = messages[1] as! IterableInboxMessage
         XCTAssertEqual(message2.inAppType, .inbox)
+        let content = message2.content as! IterableInboxHtmlContent
+        XCTAssertEqual(content.title, inboxTitle)
+        XCTAssertEqual(content.subTitle, inboxSubTitle)
+        XCTAssertEqual(content.icon, inboxIcon)
         XCTAssertTrue(TestUtils.areEqual(dict1: message2.customPayload!, dict2: customPayloadStr2.toJsonDict()))
         
         let message3 = messages[2]

@@ -343,6 +343,9 @@ struct InAppHelper {
 
         if var contentDict = dict[.ITBL_IN_APP_CONTENT] as? [AnyHashable : Any] {
             moveValue(withKey: AnyHashable.ITBL_IN_APP_CONTENT_TYPE, from: &customPayloadDict, to: &contentDict)
+            moveValue(withKey: JsonKey.inboxTitle.rawValue, from: &customPayloadDict, to: &contentDict)
+            moveValue(withKey: JsonKey.inboxSubtitle.rawValue, from: &customPayloadDict, to: &contentDict)
+            moveValue(withKey: JsonKey.inboxIcon.rawValue, from: &customPayloadDict, to: &contentDict)
             result[.ITBL_IN_APP_CONTENT] = contentDict
         }
 
