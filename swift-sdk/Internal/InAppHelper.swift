@@ -11,72 +11,6 @@ import UIKit
 
 // This is Internal Struct, no public methods
 struct InAppHelper {
-    /**
-     Parses the padding offsets from the payload
-     
-     - parameter settings:         the settings distionary.
-     
-     - returns: the UIEdgeInset
-     */
-    static func getPadding(fromInAppSettings settings: [AnyHashable : Any]?) -> UIEdgeInsets {
-        guard let dict = settings else {
-            return UIEdgeInsets.zero
-        }
-
-        var padding = UIEdgeInsets.zero
-        if let topPadding = dict[PADDING_TOP] {
-            padding.top = CGFloat(decodePadding(topPadding))
-        }
-        if let leftPadding = dict[PADDING_LEFT] {
-            padding.left = CGFloat(decodePadding(leftPadding))
-        }
-        if let rightPadding = dict[PADDING_RIGHT] {
-            padding.right = CGFloat(decodePadding(rightPadding))
-        }
-        if let bottomPadding = dict[PADDING_BOTTOM] {
-            padding.bottom = CGFloat(decodePadding(bottomPadding))
-        }
-        
-        return padding
-    }
-    
-    /**
-     Gets the int value of the padding from the payload
-     
-     @param value          the value
-     
-     @return the padding integer
-     
-     @discussion Passes back -1 for Auto expanded padding
-     */
-    static func decodePadding(_ value: Any?) -> Int {
-        guard let dict = value as? [AnyHashable : Any] else {
-            return 0
-        }
-        
-        if let displayOption = dict[IN_APP_DISPLAY_OPTION] as? String, displayOption == IN_APP_AUTO_EXPAND {
-            return -1
-        } else {
-            if let percentage = dict[IN_APP_PERCENTAGE] as? NSNumber {
-                return percentage.intValue
-            } else {
-                return 0
-            }
-        }
-    }
-    
-    static func getBackgroundAlpha(fromInAppSettings settings: [AnyHashable : Any]?) -> Double {
-        guard let settings = settings else {
-            return 0
-        }
-
-        if let number = settings[.ITBL_IN_APP_BACKGROUND_ALPHA] as? NSNumber {
-            return number.doubleValue
-        } else {
-            return 0
-        }
-    }
-    
     // Given the clicked url in inApp get the callbackUrl and destinationUrl
     static func getCallbackAndDestinationUrl(url: URL) -> (callbackUrl: String, destinationUrl: String)? {
         if url.scheme == UrlScheme.custom.rawValue {
@@ -111,17 +45,6 @@ struct InAppHelper {
     /// This will also make sure to consume any invalid inAppMessage.
     static func inAppMessages(fromPayload payload: [AnyHashable : Any], internalApi: IterableAPIInternal) -> [IterableMessageProtocol] {
         return parseInApps(fromPayload: payload).map { toMessage(fromInAppParseResult: $0, internalApi: internalApi) }.compactMap { $0 }
-    }
-    
-    private static func getTopViewController() -> UIViewController? {
-        guard let rootViewController = IterableUtil.rootViewController else {
-            return nil
-        }
-        var topViewController = rootViewController
-        while (topViewController.presentedViewController != nil) {
-            topViewController = topViewController.presentedViewController!
-        }
-        return topViewController
     }
     
     private enum InAppParseResult {
@@ -312,13 +235,4 @@ struct InAppHelper {
         let prefix = scheme + "://"
         return String(urlString.dropFirst(prefix.count))
     }
-
-    private static let PADDING_TOP = "top"
-    private static let PADDING_LEFT = "left"
-    private static let PADDING_BOTTOM = "bottom"
-    private static let PADDING_RIGHT = "right"
-    
-    private static let IN_APP_DISPLAY_OPTION = "displayOption"
-    private static let IN_APP_AUTO_EXPAND = "AutoExpand"
-    private static let IN_APP_PERCENTAGE = "percentage"
 }

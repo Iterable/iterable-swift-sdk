@@ -32,7 +32,7 @@ class InAppHelperTests: XCTestCase {
     }
     
     func testGetPaddingInvalid() {
-        let insets = InAppHelper.getPadding(fromInAppSettings: [:])
+        let insets = HtmlContentCreator.getPadding(fromInAppSettings: [:])
         XCTAssertEqual(insets, UIEdgeInsets.zero)
     }
     
@@ -44,14 +44,14 @@ class InAppHelperTests: XCTestCase {
             "right" : ["right" : "0"],
         ]
         
-        let insets = InAppHelper.getPadding(fromInAppSettings: payload)
+        let insets = HtmlContentCreator.getPadding(fromInAppSettings: payload)
         XCTAssertEqual(insets, UIEdgeInsets.zero)
         
         var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(InAppHelper.decodePadding(payload["top"]))
-        padding.left = CGFloat(InAppHelper.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(InAppHelper.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(InAppHelper.decodePadding(payload["right"]))
+        padding.top = CGFloat(HtmlContentCreator.decodePadding(payload["top"]))
+        padding.left = CGFloat(HtmlContentCreator.decodePadding(payload["left"]))
+        padding.bottom = CGFloat(HtmlContentCreator.decodePadding(payload["bottom"]))
+        padding.right = CGFloat(HtmlContentCreator.decodePadding(payload["right"]))
         XCTAssertEqual(padding, UIEdgeInsets.zero)
     }
     
@@ -63,14 +63,14 @@ class InAppHelperTests: XCTestCase {
             "right" : ["right" : "0"],
             ]
         
-        let insets = InAppHelper.getPadding(fromInAppSettings: payload)
+        let insets = HtmlContentCreator.getPadding(fromInAppSettings: payload)
         XCTAssertEqual(insets, UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
         
         var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(InAppHelper.decodePadding(payload["top"]))
-        padding.left = CGFloat(InAppHelper.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(InAppHelper.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(InAppHelper.decodePadding(payload["right"]))
+        padding.top = CGFloat(HtmlContentCreator.decodePadding(payload["top"]))
+        padding.left = CGFloat(HtmlContentCreator.decodePadding(payload["left"]))
+        padding.bottom = CGFloat(HtmlContentCreator.decodePadding(payload["bottom"]))
+        padding.right = CGFloat(HtmlContentCreator.decodePadding(payload["right"]))
         XCTAssertEqual(padding, UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
     }
     
@@ -82,14 +82,14 @@ class InAppHelperTests: XCTestCase {
             "right" : ["right" : "0"],
             ]
         
-        let insets = InAppHelper.getPadding(fromInAppSettings: payload)
+        let insets = HtmlContentCreator.getPadding(fromInAppSettings: payload)
         XCTAssertEqual(insets, UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
         
         var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(InAppHelper.decodePadding(payload["top"]))
-        padding.left = CGFloat(InAppHelper.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(InAppHelper.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(InAppHelper.decodePadding(payload["right"]))
+        padding.top = CGFloat(HtmlContentCreator.decodePadding(payload["top"]))
+        padding.left = CGFloat(HtmlContentCreator.decodePadding(payload["left"]))
+        padding.bottom = CGFloat(HtmlContentCreator.decodePadding(payload["bottom"]))
+        padding.right = CGFloat(HtmlContentCreator.decodePadding(payload["right"]))
         XCTAssertEqual(padding, UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
     }
     
@@ -101,14 +101,14 @@ class InAppHelperTests: XCTestCase {
             "right" : ["right" : "0"],
             ]
         
-        let insets = InAppHelper.getPadding(fromInAppSettings: payload)
+        let insets = HtmlContentCreator.getPadding(fromInAppSettings: payload)
         XCTAssertEqual(insets, UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
         
         var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(InAppHelper.decodePadding(payload["top"]))
-        padding.left = CGFloat(InAppHelper.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(InAppHelper.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(InAppHelper.decodePadding(payload["right"]))
+        padding.top = CGFloat(HtmlContentCreator.decodePadding(payload["top"]))
+        padding.left = CGFloat(HtmlContentCreator.decodePadding(payload["left"]))
+        padding.bottom = CGFloat(HtmlContentCreator.decodePadding(payload["bottom"]))
+        padding.right = CGFloat(HtmlContentCreator.decodePadding(payload["right"]))
         XCTAssertEqual(padding, UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
     }
     
@@ -145,10 +145,10 @@ class InAppHelperTests: XCTestCase {
     }
     
     func testGetBackgroundAlpha() {
-        XCTAssert(InAppHelper.getBackgroundAlpha(fromInAppSettings: nil) == 0)
-        XCTAssert(InAppHelper.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha" : "x"]) == 0)
-        XCTAssert(InAppHelper.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha" : 0.5]) == 0.5)
-        XCTAssert(InAppHelper.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha" : 1]) == 1.0)
+        XCTAssert(HtmlContentCreator.getBackgroundAlpha(fromInAppSettings: nil) == 0)
+        XCTAssert(HtmlContentCreator.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha" : "x"]) == 0)
+        XCTAssert(HtmlContentCreator.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha" : 0.5]) == 0.5)
+        XCTAssert(HtmlContentCreator.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha" : 1]) == 1.0)
     }
     
     func testTrackInAppClickWithButtonUrl() {
