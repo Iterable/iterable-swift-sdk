@@ -31,6 +31,7 @@
 		AC3DD9C82142F3650046F886 /* ClassExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3DD9C72142F3650046F886 /* ClassExtensions.swift */; };
 		AC426CC4211B5497002EDBE8 /* ServerResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC426CC3211B5497002EDBE8 /* ServerResponse.swift */; };
 		AC64626B2140AACF0046E1BD /* IterableAPIResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC64626A2140AACF0046E1BD /* IterableAPIResponseTests.swift */; };
+		AC684A86222EF75C00F29749 /* InAppMessageParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC684A85222EF75C00F29749 /* InAppMessageParser.swift */; };
 		AC6FDD8820F4372E005D811E /* IterableAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC6FDD8720F4372E005D811E /* IterableAPI.swift */; };
 		AC6FDD8C20F56309005D811E /* InAppHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC6FDD8B20F56309005D811E /* InAppHelperTests.swift */; };
 		AC7125EF20D4579E0043BBC1 /* IterableConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */; };
@@ -205,6 +206,7 @@
 		AC426CC3211B5497002EDBE8 /* ServerResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerResponse.swift; sourceTree = "<group>"; };
 		AC431DF320D18E9000BFAFD1 /* swift-sdk-objc-tests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "swift-sdk-objc-tests-Bridging-Header.h"; sourceTree = "<group>"; };
 		AC64626A2140AACF0046E1BD /* IterableAPIResponseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPIResponseTests.swift; sourceTree = "<group>"; };
+		AC684A85222EF75C00F29749 /* InAppMessageParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppMessageParser.swift; sourceTree = "<group>"; };
 		AC6FDD8720F4372E005D811E /* IterableAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPI.swift; sourceTree = "<group>"; };
 		AC6FDD8B20F56309005D811E /* InAppHelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppHelperTests.swift; sourceTree = "<group>"; };
 		AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableConfig.swift; sourceTree = "<group>"; };
@@ -423,6 +425,7 @@
 				ACE6888C2228B86C00A95E5E /* InAppInternal.swift */,
 				AC03094A21E532470003A288 /* InAppPersistence.swift */,
 				ACE6888E2229C2AE00A95E5E /* InboxPersistence.swift */,
+				AC684A85222EF75C00F29749 /* InAppMessageParser.swift */,
 			);
 			name = InApp;
 			sourceTree = "<group>";
@@ -997,6 +1000,7 @@
 				AC72A0BA20CF4C83004D7997 /* NSData+Conversion.m in Sources */,
 				ACA8D1A321910C66001B1332 /* IterableMessaging.swift in Sources */,
 				AC72A0D420CF4D19004D7997 /* IterableDeeplinkManager.swift in Sources */,
+				AC684A86222EF75C00F29749 /* InAppMessageParser.swift in Sources */,
 				ACE6888F2229C2AE00A95E5E /* InboxPersistence.swift in Sources */,
 				AC72A0C920CF4CE2004D7997 /* IterableAction.swift in Sources */,
 				AC72A0CA20CF4CE2004D7997 /* IterableActionRunner.swift in Sources */,

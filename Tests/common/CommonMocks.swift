@@ -253,7 +253,7 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
             return
         }
         
-        mockMessagesAvailableFromServer(messages: InAppHelper.inAppMessages(fromPayload: payload, internalApi: internalApi))
+        mockMessagesAvailableFromServer(messages: InAppMessageParser.inAppMessages(fromPayload: payload, internalApi: internalApi))
     }
 }
 
