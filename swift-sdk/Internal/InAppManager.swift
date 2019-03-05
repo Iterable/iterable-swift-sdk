@@ -71,9 +71,17 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         
         var messages = [IterableInAppMessage] ()
         updateQueue.sync {
-            messages = Array(self.messagesMap.values.filter { $0.consumed == false && InAppManager.isExpired(message: $0, currentDate: self.dateProvider.currentDate) == false })
+            messages = Array(self.messagesMap.values.filter { InAppManager.isValidInApp(message: $0, currentDate: dateProvider.currentDate)}.compactMap { $0 as? IterableInAppMessage } )
         }
         return messages
+    }
+    
+    private static func isValidInApp(message: IterableMessageProtocol, currentDate: Date) -> Bool {
+        guard let inAppMessage = message as? IterableInAppMessage else {
+            return false
+        }
+        
+        return inAppMessage.consumed == false && InAppManager.isExpired(message: message, currentDate: currentDate) == false
     }
 
     func show(message: IterableInAppMessage) {
@@ -181,9 +189,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     }
     
     private func initializeMessagesMap() {
-        //!!!
-        let messages = persister.getMessages().compactMap { $0 as? IterableInAppMessage }
-        
+        let messages = persister.getMessages()
         for message in messages {
             messagesMap[message.messageId] = message
         }
@@ -195,7 +201,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         synchronize()
     }
     
-    private static func isExpired(message: IterableInAppMessage, currentDate: Date) -> Bool {
+    private static func isExpired(message: IterableMessageProtocol, currentDate: Date) -> Bool {
         guard let expiresAt = message.expiresAt else {
             return false
         }
@@ -213,7 +219,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     private let notificationCenter: NotificationCenterProtocol
     
     private let persister: IterableMessagePersistenceProtocol
-    private var messagesMap = OrderedDictionary<String, IterableInAppMessage>() // This is mutable
+    private var messagesMap = OrderedDictionary<String, IterableMessageProtocol>() // This is mutable
     private let dateProvider: DateProviderProtocol
     private let retryInterval: TimeInterval // in seconds, if a message is already showing how long to wait?
     private var lastDismissedTime: Date? = nil
@@ -229,19 +235,16 @@ extension InAppManager : InAppSynchronizerDelegate {
         ITBDebug()
 
         updateQueue.async {
-            //!!!
-            let inAppMessages = messages.compactMap{$0 as? IterableInAppMessage}
-            
             // Remove messages that are no present in server
-            self.removeDeletedMessages(messagesFromServer: inAppMessages)
+            self.removeDeletedMessages(messagesFromServer: messages)
             
             // add new ones
-            self.addNewMessages(messagesFromServer: inAppMessages)
+            self.addNewMessages(messagesFromServer: messages)
             
             self.persister.persist(self.messagesMap.values)
             
             // now process
-            self.processNextMessage()
+            self.processNextInAppMessage()
         }
     }
     
@@ -264,18 +267,18 @@ extension InAppManager : InAppSynchronizerDelegate {
             if waitTimeInterval > 0 {
                 ITBDebug("Need to wait for: \(waitTimeInterval)")
                 self.scheduleQueue.asyncAfter(deadline: .now() + waitTimeInterval) {
-                    self.processNextMessage()
+                    self.processNextInAppMessage()
                 }
             } else {
-                self.processNextMessage()
+                self.processNextInAppMessage()
             }
         }
     }
     
-    private func processNextMessage() {
+    private func processNextInAppMessage() {
         ITBDebug()
 
-        guard let message = getFirstProcessableMessage() else {
+        guard let message = getFirstProcessableInAppMessage() else {
             ITBDebug("No message to process")
             return
         }
@@ -293,7 +296,7 @@ extension InAppManager : InAppSynchronizerDelegate {
                 } else {
                     ITBDebug("delegate returned skip, continue processing")
                     self.scheduleQueue.async {
-                        self.processNextMessage()
+                        self.processNextInAppMessage()
                     }
                 }
             } else {
@@ -302,8 +305,28 @@ extension InAppManager : InAppSynchronizerDelegate {
         }
     }
     
-    private func getFirstProcessableMessage() -> IterableInAppMessage? {
-        return messagesMap.values.filter({ $0.processed == false && $0.trigger.type == .immediate }).first
+    private func getFirstProcessableInAppMessage() -> IterableInAppMessage? {
+        return messagesMap.values.filter(InAppManager.isProcessable).first as? IterableInAppMessage
+    }
+    
+    private static func isProcessable(message: IterableMessageProtocol) -> Bool {
+        guard message.inAppType == .default else {
+            // do not process inbox Types
+            return false
+        }
+        guard message.processed == false else {
+            // if already processed return false
+            return false
+        }
+        
+        if let inAppMessage = message as? IterableInAppMessage {
+            // only immediate triggers are processable
+            return inAppMessage.trigger.type == .immediate
+        } else {
+            // inbox messages are processable
+            ITBError("Expecting IterableInAppMessage")
+            return false
+        }
     }
     
     private func updateMessage(_ message: IterableInAppMessage, processed: Bool, consumed: Bool = false) {
@@ -360,7 +383,7 @@ extension InAppManager : InAppSynchronizerDelegate {
         }
     }
     
-    private func addNewMessages(messagesFromServer messages: [IterableInAppMessage]) {
+    private func addNewMessages(messagesFromServer messages: [IterableMessageProtocol]) {
         messages.forEach { message in
             if !messagesMap.contains(where: { $0.key == message.messageId }) {
                 messagesMap[message.messageId] = message
@@ -368,15 +391,15 @@ extension InAppManager : InAppSynchronizerDelegate {
         }
     }
     
-    private func removeDeletedMessages(messagesFromServer messages: [IterableInAppMessage]) {
+    private func removeDeletedMessages(messagesFromServer messages: [IterableMessageProtocol]) {
         getRemovedMessages(messagesFromServer: messages).forEach {
             messagesMap.removeValue(forKey: $0.messageId)
         }
     }
     
     // given `messages` coming for server, find messages that need to be removed
-    private func getRemovedMessages(messagesFromServer messages: [IterableInAppMessage]) -> [IterableInAppMessage] {
-        return messagesMap.values.reduce(into: [IterableInAppMessage]()) { (result, message) in
+    private func getRemovedMessages(messagesFromServer messages: [IterableMessageProtocol]) -> [IterableMessageProtocol] {
+        return messagesMap.values.reduce(into: [IterableMessageProtocol]()) { (result, message) in
             if !messages.contains(where: { $0.messageId == message.messageId }) {
                 result.append(message)
             }

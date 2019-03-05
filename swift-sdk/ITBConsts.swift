@@ -161,3 +161,9 @@ public extension AnyHashable {
     public static let ITBL_IN_APP_CONTENT_TYPE = "contentType"
 }
 
+public enum JsonKey : String {
+    // Inbox Message
+    case inboxTitle = "title"
+    case inboxSubtitle = "subTitle"
+    case inboxIcon = "icon"
+}

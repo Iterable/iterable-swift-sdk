@@ -83,9 +83,18 @@ struct InboxHtmlContentCreator : ContentFromJsonCreator {
         switch HtmlContentCreator.tryCreate(from: json) {
         case .failure(let reason):
             return .failure(reason: reason)
-        case .success(let content):
-            return .success(content: IterableInboxHtmlContent(edgeInsets: content.edgeInsets, backgroundAlpha: content.backgroundAlpha, html: content.html, title: nil, subTitle: nil, icon: nil))//!!!
+        case .success(let htmlContent):
+            return .success(content: createInboxHtmlContent(json: json, htmlContent: htmlContent))
         }
+    }
+    
+    private static func createInboxHtmlContent(json: [AnyHashable : Any], htmlContent: HtmlContentCreator.HtmlContent) -> IterableInboxHtmlContent {
+        return IterableInboxHtmlContent(edgeInsets: htmlContent.edgeInsets,
+                                        backgroundAlpha: htmlContent.backgroundAlpha,
+                                        html: htmlContent.html,
+                                        title: json.getStringValue(key: .inboxTitle),
+                                        subTitle: json.getStringValue(key: .inboxSubtitle),
+                                        icon: json.getStringValue(key: .inboxIcon))
     }
 }
 
