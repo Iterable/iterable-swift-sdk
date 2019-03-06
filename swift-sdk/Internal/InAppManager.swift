@@ -152,7 +152,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
             self.lastDismissedTime = self.dateProvider.currentDate
             
             // check if we need to process more inApps
-            self.scheduleNextMessage()
+            self.scheduleNextInAppMessage()
         }
         
         let showed = displayer.show(iterableMessage: message, withCallback: clickCallback)
@@ -259,7 +259,7 @@ extension InAppManager : InAppSynchronizerDelegate {
         }
     }
     
-    private func scheduleNextMessage() {
+    private func scheduleNextInAppMessage() {
         ITBDebug()
         
         scheduleQueue.async {
