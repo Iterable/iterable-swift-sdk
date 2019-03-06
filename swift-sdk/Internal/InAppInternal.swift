@@ -20,6 +20,9 @@ internal protocol IterableMessageProtocol {
     /// the campaign id for this message
     var campaignId: String { get }
     
+    /// The content of the Message
+    var content: IterableContent { get }
+    
     /// when to expire this in-app, nil means do not expire
     var expiresAt: Date? { get }
     
@@ -60,9 +63,9 @@ protocol InAppSynchronizerProtocol {
     func remove(messageId: String)
 }
 
-protocol InAppDisplayerProtocol {
-    func isShowingInApp() -> Bool
-    func showInApp(message: IterableInAppMessage, callback: ITEActionBlock?) -> Bool
+protocol IterableMessageDisplayerProtocol {
+    func isShowingIterableMessage() -> Bool
+    func show(iterableMessage: IterableMessageProtocol, withCallback callback: ITEActionBlock?) -> Bool
     func showSystemNotification(_ title: String,
                                        body: String,
                                        buttonLeft: String?,
@@ -70,17 +73,17 @@ protocol InAppDisplayerProtocol {
                                        callbackBlock: ITEActionBlock?)
 }
 
-class InAppDisplayer : InAppDisplayerProtocol {
-    func isShowingInApp() -> Bool {
-        return InAppDisplayer.isShowingInApp()
+class IterableMessageDisplayer : IterableMessageDisplayerProtocol {
+    func isShowingIterableMessage() -> Bool {
+        return IterableMessageDisplayer.isShowingIterableMessage()
     }
     
     /// Shows an inApp message and consumes it from server queue if the message is shown.
-    /// - parameter message: The inApp message to show
+    /// - parameter message: The Iterable message to show
     /// - parameter callback: the code to execute when user clicks on a link or button on inApp message.
     /// - returns: A Bool indicating whether the inApp was opened.
-    func showInApp(message: IterableInAppMessage, callback: ITEActionBlock?) -> Bool {
-        return InAppDisplayer.showInApp(message: message, callback: callback)
+    func show(iterableMessage: IterableMessageProtocol, withCallback callback: ITEActionBlock?) -> Bool {
+        return IterableMessageDisplayer.show(iterableMessage: iterableMessage, withCallback: callback)
     }
     
     /**
@@ -96,7 +99,7 @@ class InAppDisplayer : InAppDisplayerProtocol {
      - remark:            passes the string of the button clicked to the callbackBlock
      */
     func showSystemNotification( _ title: String, body: String, buttonLeft: String?, buttonRight: String?, callbackBlock: ITEActionBlock?) {
-        InAppDisplayer.showSystemNotification(title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
+        IterableMessageDisplayer.showSystemNotification(title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
     }
     
     /**
@@ -159,7 +162,7 @@ class InAppDisplayer : InAppDisplayerProtocol {
         topViewController.show(alertController, sender: self)
     }
     
-    fileprivate static func isShowingInApp() -> Bool {
+    fileprivate static func isShowingIterableMessage() -> Bool {
         guard Thread.isMainThread else {
             ITBError("Must be called from main thread")
             return false
@@ -182,13 +185,13 @@ class InAppDisplayer : InAppDisplayerProtocol {
         return topViewController
     }
     
-    @discardableResult fileprivate static func showInApp(message: IterableInAppMessage, callback:ITEActionBlock?) -> Bool {
-        guard let content = message.content as? IterableInAppHtmlContent else {
+    @discardableResult fileprivate static func show(iterableMessage: IterableMessageProtocol, withCallback callback:ITEActionBlock?) -> Bool {
+        guard let content = iterableMessage.content as? IterableHtmlContent else {
             ITBError("Invalid content type")
             return false
         }
         
-        let notificationMetadata = IterableNotificationMetadata.metadata(fromInAppOptions: message.messageId)
+        let notificationMetadata = IterableNotificationMetadata.metadata(fromInAppOptions: iterableMessage.messageId)
         
         return showIterableHtmlMessage(content.html,
                                                    trackParams: notificationMetadata,

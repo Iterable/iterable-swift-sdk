@@ -126,7 +126,7 @@ public final class IterableInAppMessage : NSObject {
     /// when to expire this in-app, nil means do not expire
     public let expiresAt: Date?
     
-    /// The content of the inApp message
+    /// The content of the inbox message
     public let content: IterableContent
     
     /// Custom Payload for this message.

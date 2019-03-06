@@ -44,7 +44,7 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            inAppDisplayer: mockInAppDisplayer
+            iterableMessageDisplayer: mockInAppDisplayer
         )
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1))
@@ -71,7 +71,7 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            inAppDisplayer: mockInAppDisplayer
+            iterableMessageDisplayer: mockInAppDisplayer
         )
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1))
@@ -123,7 +123,7 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            inAppDisplayer: mockInAppDisplayer
+            iterableMessageDisplayer: mockInAppDisplayer
         )
         
         let indices = [1, 3, 2]
@@ -157,7 +157,7 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            inAppDisplayer: mockInAppDisplayer
+            iterableMessageDisplayer: mockInAppDisplayer
         )
 
         mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
@@ -193,7 +193,7 @@ class InAppTests: XCTestCase {
         
         IterableAPI.initializeForTesting(
                                  inAppSynchronizer: mockInAppSynchronizer,
-                                 inAppDisplayer: mockInAppDisplayer,
+                                 iterableMessageDisplayer: mockInAppDisplayer,
                                  urlOpener: mockUrlOpener
         )
         
@@ -229,7 +229,7 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            inAppDisplayer: mockInAppDisplayer,
+            iterableMessageDisplayer: mockInAppDisplayer,
             urlOpener: mockUrlOpener
         )
         
@@ -262,7 +262,7 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            inAppDisplayer: mockInAppDisplayer,
+            iterableMessageDisplayer: mockInAppDisplayer,
             urlOpener: mockUrlOpener
         )
 
@@ -305,7 +305,7 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            inAppDisplayer: mockInAppDisplayer,
+            iterableMessageDisplayer: mockInAppDisplayer,
             urlOpener: mockUrlOpener
         )
         
@@ -347,7 +347,7 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            inAppDisplayer: mockInAppDisplayer
+            iterableMessageDisplayer: mockInAppDisplayer
         )
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1))
@@ -434,7 +434,7 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            inAppDisplayer: mockInAppDisplayer,
+            iterableMessageDisplayer: mockInAppDisplayer,
             applicationStateProvider: mockApplicationStateProvider,
             notificationCenter: mockNotificationCenter
         )
@@ -471,7 +471,7 @@ class InAppTests: XCTestCase {
             config: config,
             dateProvider: mockDateProvider,
             inAppSynchronizer: mockInAppSynchronizer,
-            inAppDisplayer: mockInAppDisplayer,
+            iterableMessageDisplayer: mockInAppDisplayer,
             applicationStateProvider: mockApplicationStateProvider,
             notificationCenter: mockNotificationCenter
         )
@@ -516,7 +516,7 @@ class InAppTests: XCTestCase {
             config: config,
             dateProvider: mockDateProvider,
             inAppSynchronizer: mockInAppSynchronizer,
-            inAppDisplayer: mockInAppDisplayer,
+            iterableMessageDisplayer: mockInAppDisplayer,
             applicationStateProvider: mockApplicationStateProvider,
             notificationCenter: mockNotificationCenter
         )
@@ -582,7 +582,7 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            inAppDisplayer: mockInAppDisplayer
+            iterableMessageDisplayer: mockInAppDisplayer
         )
         
         // send first message payload
@@ -614,7 +614,7 @@ class InAppTests: XCTestCase {
 
         IterableAPI.initializeForTesting(
             inAppSynchronizer: mockInAppSynchronizer,
-            inAppDisplayer: mockInAppDisplayer
+            iterableMessageDisplayer: mockInAppDisplayer
         )
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 3))
@@ -678,7 +678,7 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            inAppDisplayer: mockInAppDisplayer
+            iterableMessageDisplayer: mockInAppDisplayer
         )
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1]))

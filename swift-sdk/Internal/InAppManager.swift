@@ -26,7 +26,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     }
 
     init(synchronizer: InAppSynchronizerProtocol,
-         displayer: InAppDisplayerProtocol,
+         displayer: IterableMessageDisplayerProtocol,
          persister: IterableMessagePersistenceProtocol,
          inAppDelegate: IterableInAppDelegate,
          urlDelegate: IterableURLDelegate?,
@@ -124,7 +124,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     }
     
     // This must be called from MainThread
-    private func showInternal(message: IterableInAppMessage,
+    private func showInternal(message: IterableMessageProtocol,
                               consume: Bool,
                               callback: ITEActionBlock? = nil) {
         ITBInfo()
@@ -155,7 +155,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
             self.scheduleNextMessage()
         }
         
-        let showed = displayer.showInApp(message: message, callback: clickCallback)
+        let showed = displayer.show(iterableMessage: message, withCallback: clickCallback)
         let shouldConsume = showed && consume
         if shouldConsume {
             internalApi?.inAppConsume(message.messageId)
@@ -210,7 +210,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     }
     
     private var synchronizer: InAppSynchronizerProtocol // this is mutable because we need to set internalApi
-    private let displayer: InAppDisplayerProtocol
+    private let displayer: IterableMessageDisplayerProtocol
     private let inAppDelegate: IterableInAppDelegate
     private let urlDelegate: IterableURLDelegate?
     private let customActionDelegate: IterableCustomActionDelegate?
@@ -329,12 +329,13 @@ extension InAppManager : InAppSynchronizerDelegate {
         }
     }
     
-    private func updateMessage(_ message: IterableInAppMessage, processed: Bool, consumed: Bool = false) {
+    private func updateMessage(_ message: IterableMessageProtocol, processed: Bool, consumed: Bool = false) {
         ITBDebug()
         updateQueue.sync {
-            message.processed = processed
-            message.consumed = consumed
-            self.messagesMap.updateValue(message, forKey: message.messageId)
+            var toUpdate = message
+            toUpdate.processed = processed
+            toUpdate.consumed = consumed
+            self.messagesMap.updateValue(toUpdate, forKey: message.messageId)
             persister.persist(self.messagesMap.values)
         }
     }
@@ -344,7 +345,7 @@ extension InAppManager : InAppSynchronizerDelegate {
             ITBInfo("not active")
             return false
         }
-        guard displayer.isShowingInApp() == false else {
+        guard displayer.isShowingIterableMessage() == false else {
             ITBInfo("showing another")
             return false
         }

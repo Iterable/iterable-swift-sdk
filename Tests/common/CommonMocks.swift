@@ -252,19 +252,19 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
     }
 }
 
-class MockInAppDisplayer : InAppDisplayerProtocol {
-    func isShowingInApp() -> Bool {
+class MockInAppDisplayer : IterableMessageDisplayerProtocol {
+    func isShowingIterableMessage() -> Bool {
         return showing
     }
     
-    func showInApp(message: IterableInAppMessage, callback: ITEActionBlock?) -> Bool {
+    func show(iterableMessage: IterableMessageProtocol, withCallback callback: ITEActionBlock?) -> Bool {
         if showing {
             return false
         }
         
         showing = true
         actionCallback = callback
-        onShowCallback?(message, callback)
+        onShowCallback?(iterableMessage, callback)
         return true
     }
 
@@ -272,7 +272,7 @@ class MockInAppDisplayer : InAppDisplayerProtocol {
         ITBInfo()
     }
     
-    var onShowCallback:  ((IterableInAppMessage, ITEActionBlock?) -> Void)?
+    var onShowCallback:  ((IterableMessageProtocol, ITEActionBlock?) -> Void)?
     
     // Mimics clicking a url
     func click(url: String) {
