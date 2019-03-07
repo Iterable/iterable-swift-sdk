@@ -94,30 +94,8 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
         return getUnreadMessages().count
     }
     
-    private static func asValidInApp(message: IterableMessageProtocol, currentDate: Date) -> IterableInAppMessage? {
-        guard let inAppMessage = message as? IterableInAppMessage else {
-            return nil
-        }
-        guard isValid(message: message, currentDate: currentDate) else {
-            return nil
-        }
-
-        return inAppMessage
-    }
-
-    private static func asValidInbox(message: IterableMessageProtocol, currentDate: Date) -> IterableInboxMessage? {
-        guard let inboxMessage = message as? IterableInboxMessage else {
-            return nil
-        }
-        guard isValid(message: message, currentDate: currentDate) else {
-            return nil
-        }
-        
-        return inboxMessage
-    }
-
-    fileprivate static func isValid(message: IterableMessageProtocol, currentDate: Date) -> Bool {
-        return message.consumed == false && InAppManager.isExpired(message: message, currentDate: currentDate) == false
+    func remove(message: IterableInboxMessage) {
+        removePrivate(message: message)
     }
     
     func show(message: IterableInAppMessage) {
@@ -137,8 +115,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
     func remove(message: IterableInAppMessage) {
         ITBInfo()
 
-        updateMessage(message, processed: true, consumed: true)
-        self.internalApi?.inAppConsume(message.messageId)
+        removePrivate(message: message)
     }
     
     func synchronize() {
@@ -246,6 +223,14 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
         synchronize()
     }
     
+    private func removePrivate(message: IterableMessageProtocol) {
+        ITBInfo()
+        
+        updateMessage(message, processed: true, consumed: true)
+        self.internalApi?.inAppConsume(message.messageId)
+    }
+
+    
     private static func isExpired(message: IterableMessageProtocol, currentDate: Date) -> Bool {
         guard let expiresAt = message.expiresAt else {
             return false
@@ -254,6 +239,33 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
         return currentDate >= expiresAt
     }
     
+    fileprivate static func asValidInApp(message: IterableMessageProtocol, currentDate: Date) -> IterableInAppMessage? {
+        guard let inAppMessage = message as? IterableInAppMessage else {
+            return nil
+        }
+        guard isValid(message: message, currentDate: currentDate) else {
+            return nil
+        }
+        
+        return inAppMessage
+    }
+    
+    fileprivate static func asValidInbox(message: IterableMessageProtocol, currentDate: Date) -> IterableInboxMessage? {
+        guard let inboxMessage = message as? IterableInboxMessage else {
+            return nil
+        }
+        guard isValid(message: message, currentDate: currentDate) else {
+            return nil
+        }
+        
+        return inboxMessage
+    }
+    
+    fileprivate static func isValid(message: IterableMessageProtocol, currentDate: Date) -> Bool {
+        return message.consumed == false && isExpired(message: message, currentDate: currentDate) == false
+    }
+    
+
     private var synchronizer: InAppSynchronizerProtocol // this is mutable because we need to set internalApi
     private let displayer: IterableMessageDisplayerProtocol
     private let inAppDelegate: IterableInAppDelegate
@@ -480,6 +492,9 @@ class EmptyInAppManager : IterableInAppManagerProtocol, IterableInboxManagerProt
 
     func getUnreadCount() -> Int {
         return 0
+    }
+
+    func remove(message: IterableInboxMessage) {
     }
 }
 

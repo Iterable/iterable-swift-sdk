@@ -201,7 +201,7 @@ public protocol IterableInboxManagerProtocol {
 //    @objc(showMessage:callbackBlock:) func show(message: IterableInboxMessage, callback:ITEActionBlock?)
     
     /// - parameter message: The message to remove.
-//    @objc(removeMessage:) func remove(message: IterableInboxMessage)
+    @objc(removeInboxMessage:) func remove(message: IterableInboxMessage)
     
     /// - parameter read: Whether this inbox message was read
     /// - parameter message: The inbox message
