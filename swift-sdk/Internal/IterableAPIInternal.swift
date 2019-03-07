@@ -101,6 +101,8 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
 
     var inAppManager: IterableInAppManagerProtocolInternal
     
+    var inboxManager: IterableInboxManagerProtocol
+    
     func register(token: Data) {
         register(token: token, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "registerToken"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "registerToken"))
     }
@@ -710,6 +712,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
                                         dateProvider: dateProvider,
                                         retryInterval: config.inAppDisplayInterval)
         self.inAppManager = inAppManager
+        self.inboxManager = inAppManager
         self.urlOpener = urlOpener
         
         // setup

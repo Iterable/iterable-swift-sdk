@@ -18,7 +18,7 @@ protocol IterableInAppManagerProtocolInternal : IterableInAppManagerProtocol {
     func synchronize()
 }
 
-class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
+class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInboxManagerProtocol {
     weak var internalApi: IterableAPIInternal? {
         didSet {
             self.synchronizer.internalApi = internalApi
@@ -71,19 +71,55 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         
         var messages = [IterableInAppMessage] ()
         updateQueue.sync {
-            messages = Array(self.messagesMap.values.filter { InAppManager.isValidInApp(message: $0, currentDate: dateProvider.currentDate)}.compactMap { $0 as? IterableInAppMessage } )
+            messages = Array(self.messagesMap.values.compactMap { InAppManager.asValidInApp(message: $0, currentDate: dateProvider.currentDate)})
         }
         return messages
     }
     
-    private static func isValidInApp(message: IterableMessageProtocol, currentDate: Date) -> Bool {
-        guard let inAppMessage = message as? IterableInAppMessage else {
-            return false
-        }
+    func getMessages() -> [IterableInboxMessage] {
+        ITBInfo()
         
-        return inAppMessage.consumed == false && InAppManager.isExpired(message: message, currentDate: currentDate) == false
+        var messages = [IterableInboxMessage] ()
+        updateQueue.sync {
+            messages = Array(self.messagesMap.values.compactMap { InAppManager.asValidInbox(message: $0, currentDate: dateProvider.currentDate)})
+        }
+        return messages
+    }
+    
+    func getUnreadMessages() -> [IterableInboxMessage] {
+        return getMessages().filter { $0.read == false }
+    }
+    
+    func getUnreadCount() -> Int {
+        return getUnreadMessages().count
+    }
+    
+    private static func asValidInApp(message: IterableMessageProtocol, currentDate: Date) -> IterableInAppMessage? {
+        guard let inAppMessage = message as? IterableInAppMessage else {
+            return nil
+        }
+        guard isValid(message: message, currentDate: currentDate) else {
+            return nil
+        }
+
+        return inAppMessage
     }
 
+    private static func asValidInbox(message: IterableMessageProtocol, currentDate: Date) -> IterableInboxMessage? {
+        guard let inboxMessage = message as? IterableInboxMessage else {
+            return nil
+        }
+        guard isValid(message: message, currentDate: currentDate) else {
+            return nil
+        }
+        
+        return inboxMessage
+    }
+
+    fileprivate static func isValid(message: IterableMessageProtocol, currentDate: Date) -> Bool {
+        return message.consumed == false && InAppManager.isExpired(message: message, currentDate: currentDate) == false
+    }
+    
     func show(message: IterableInAppMessage) {
         ITBInfo()
         show(message: message, consume: true, callback: nil)
@@ -110,6 +146,15 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         syncQueue.async {
             self.synchronizer.sync()
             self.lastSyncTime = self.dateProvider.currentDate
+        }
+    }
+    
+    func set(read: Bool, forMessage message: IterableInboxMessage) {
+        updateQueue.sync {
+            let toUpdate = message
+            toUpdate.read = read
+            self.messagesMap.updateValue(toUpdate, forKey: message.messageId)
+            persister.persist(self.messagesMap.values)
         }
     }
 
@@ -408,8 +453,16 @@ extension InAppManager : InAppSynchronizerDelegate {
     }
 }
 
-class EmptyInAppManager : IterableInAppManagerProtocol {
+class EmptyInAppManager : IterableInAppManagerProtocol, IterableInboxManagerProtocol {
     func getMessages() -> [IterableInAppMessage] {
+        return []
+    }
+    
+    func getMessages() -> [IterableInboxMessage] {
+        return []
+    }
+    
+    func getUnreadMessages() -> [IterableInboxMessage] {
         return []
     }
     
@@ -420,6 +473,13 @@ class EmptyInAppManager : IterableInAppManagerProtocol {
     }
 
     func remove(message: IterableInAppMessage) {
+    }
+
+    func set(read: Bool, forMessage message: IterableInboxMessage) {
+    }
+
+    func getUnreadCount() -> Int {
+        return 0
     }
 }
 

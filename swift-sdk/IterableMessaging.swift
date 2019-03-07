@@ -23,7 +23,7 @@ public protocol IterableInAppManagerProtocol {
 
     /// - parameter message: The message to show.
     /// - parameter consume: Set to true to consume the event from the server queue if the message is shown. This should be default.
-    /// - parameter callback: block of code to execute once the user clicks on a link or button in the inApp notification.
+    /// - parameter callback: block of code to execute once the user clicks on a link or button in the in-app notification.
     ///   Note that this callback is called in addition to calling `IterableCustomActionDelegate` or `IterableUrlDelegate` on the button action.
     @objc(showMessage:consume:callbackBlock:) func show(message: IterableInAppMessage, consume: Bool, callback:ITEActionBlock?)
     
@@ -181,6 +181,33 @@ public final class IterableInAppMessage : NSObject {
     }
 }
 
+@objc
+public protocol IterableInboxManagerProtocol {
+    /// - returns: A list of all messages
+    @objc(getInboxMessages) func getMessages() -> [IterableInboxMessage]
+
+    /// - returns: A list of all messages that are unread
+    @objc(getUnreadMessages) func getUnreadMessages() -> [IterableInboxMessage]
+
+    /// - returns: A count of unread messages
+    @objc(getUnreadCount) func getUnreadCount() -> Int
+
+    /// - parameter message: The message to show.
+//    @objc(showMessage:) func show(message: IterableInboxMessage)
+    
+    /// - parameter message: The message to show.
+    /// - parameter callback: block of code to execute once the user clicks on a link or button in the inbox notification.
+    ///   Note that this callback is called in addition to calling `IterableCustomActionDelegate` or `IterableUrlDelegate` on the button action.
+//    @objc(showMessage:callbackBlock:) func show(message: IterableInboxMessage, callback:ITEActionBlock?)
+    
+    /// - parameter message: The message to remove.
+//    @objc(removeMessage:) func remove(message: IterableInboxMessage)
+    
+    /// - parameter read: Whether this inbox message was read
+    /// - parameter message: The inbox message
+    @objc(setRead:forMessage:) func set(read: Bool, forMessage message: IterableInboxMessage)
+}
+
 @objcMembers
 public final class IterableInboxHtmlContent : IterableHtmlContent {
     public let title: String?
@@ -213,6 +240,9 @@ public final class IterableInboxMessage : NSObject {
     
     /// Custom Payload for this message.
     public let customPayload: [AnyHashable : Any]?
+    
+    /// Whether this inbox message has been read
+    public internal(set) var read: Bool = false
     
     /// Whether we have processed this message.
     /// Note: This is internal and not public

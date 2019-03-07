@@ -44,5 +44,11 @@
     XCTAssertNil(IterableAPI.email);
 }
 
+- (void)testGetInboxMessages {
+    [IterableAPI initializeForObjcTesting];
+    IterableAPI.email = @"test@email.com";
+    NSArray<IterableInboxMessage *> *messages = [IterableAPI.inboxManager getInboxMessages];
+    XCTAssert(messages.count == 0);
+}
 
 @end
