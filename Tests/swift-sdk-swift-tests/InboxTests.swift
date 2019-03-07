@@ -165,4 +165,70 @@ class InboxTests: XCTestCase {
         let newMessages = IterableAPI.inboxManager.getMessages()
         XCTAssertEqual(newMessages.count, 1)
     }
+
+    func testShowInboxMessage() {
+        let expectation1 = expectation(description: "testShowInboxMessage")
+        let expectation2 = expectation(description: "Unread count decrements after showing")
+        let expectation3 = expectation(description: "Right url callback")
+        
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _) in
+            expectation1.fulfill()
+            // now click and url in the message
+            mockInAppDisplayer.click(url: "https://someurl.com")
+        }
+        
+        let mockUrlDelegate = MockUrlDelegate(returnValue: true)
+        mockUrlDelegate.callback = {(url, _) in
+            XCTAssertEqual(url.absoluteString, "https://someurl.com")
+            expectation2.fulfill()
+            XCTAssertEqual(IterableAPI.inboxManager.getUnreadCount(), 1)
+        }
+        let config = IterableConfig()
+        config.urlDelegate = mockUrlDelegate
+        config.logDelegate = AllLogDelegate()
+        
+        IterableAPI.initializeForTesting(
+            config: config,
+            inAppSynchronizer: mockInAppSynchronizer,
+            iterableMessageDisplayer: mockInAppDisplayer
+        )
+
+        let payload = """
+        {"inAppMessages":
+        [
+            {
+                "inAppType": "inbox",
+                "content": {"contentType": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "trigger": {"type": "immediate"},
+                "messageId": "message1",
+                "campaignId": "campaign1",
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+            {
+                "inAppType": "inbox",
+                "content": {"contentType": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "trigger": {"type": "immediate"},
+                "messageId": "message2",
+                "campaignId": "campaign2",
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+        ]
+        }
+        """.toJsonDict()
+        
+        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
+        
+        XCTAssertEqual(IterableAPI.inboxManager.getUnreadCount(), 2)
+        
+        let messages = IterableAPI.inboxManager.getMessages()
+        IterableAPI.inboxManager.show(message: messages[0]) { (clickedUrl) in
+            XCTAssertEqual(clickedUrl, "https://someurl.com")
+            expectation3.fulfill()
+        }
+
+        wait(for: [expectation1, expectation2, expectation3], timeout: testExpectationTimeout)
+    }
 }

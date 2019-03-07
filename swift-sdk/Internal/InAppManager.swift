@@ -98,6 +98,18 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
         removePrivate(message: message)
     }
     
+    func show(message: IterableInboxMessage) {
+        ITBInfo()
+        show(message: message, callback: nil)
+    }
+    
+    func show(message: IterableInboxMessage, callback: ITEActionBlock?) {
+        // This is public (via public protocol implementation), so make sure we call from Main Thread
+        DispatchQueue.main.async {
+            _ = self.showInternal(message: message, consume: false, callback: callback)
+        }
+    }
+    
     func show(message: IterableInAppMessage) {
         ITBInfo()
         show(message: message, consume: true, callback: nil)
@@ -182,6 +194,9 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
         if shouldConsume {
             internalApi?.inAppConsume(message.messageId)
         }
+        
+        // set read for valid inbox message
+        InAppManager.asValidInbox(message: message, currentDate: dateProvider.currentDate).map { set(read: true, forMessage: $0) }
 
         updateMessage(message, processed: true, consumed: shouldConsume)
     }
@@ -484,6 +499,12 @@ class EmptyInAppManager : IterableInAppManagerProtocol, IterableInboxManagerProt
     func show(message: IterableInAppMessage, consume: Bool, callback: ITEActionBlock?) {
     }
 
+    func show(message: IterableInboxMessage, callback: ITEActionBlock?) {
+    }
+    
+    func show(message: IterableInboxMessage) {
+    }
+    
     func remove(message: IterableInAppMessage) {
     }
 

@@ -193,12 +193,12 @@ public protocol IterableInboxManagerProtocol {
     @objc(getUnreadCount) func getUnreadCount() -> Int
 
     /// - parameter message: The message to show.
-//    @objc(showMessage:) func show(message: IterableInboxMessage)
+    @objc(showInboxMessage:) func show(message: IterableInboxMessage)
     
     /// - parameter message: The message to show.
     /// - parameter callback: block of code to execute once the user clicks on a link or button in the inbox notification.
     ///   Note that this callback is called in addition to calling `IterableCustomActionDelegate` or `IterableUrlDelegate` on the button action.
-//    @objc(showMessage:callbackBlock:) func show(message: IterableInboxMessage, callback:ITEActionBlock?)
+    @objc(showInboxMessage:callbackBlock:) func show(message: IterableInboxMessage, callback:ITEActionBlock?)
     
     /// - parameter message: The message to remove.
     @objc(removeInboxMessage:) func remove(message: IterableInboxMessage)
