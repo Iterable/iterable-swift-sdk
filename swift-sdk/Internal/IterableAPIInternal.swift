@@ -704,6 +704,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
                                         displayer: iterableMessageDisplayer,
                                         persister: inAppPersister,
                                         inAppDelegate: config.inAppDelegate,
+                                        inboxDelegate: config.inboxDelegate,
                                         urlDelegate: config.urlDelegate,
                                         customActionDelegate: config.customActionDelegate,
                                         urlOpener: urlOpener,

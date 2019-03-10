@@ -306,6 +306,18 @@ class MockInAppDelegate : IterableInAppDelegate {
     private let showInApp: InAppShowResponse
 }
 
+class MockInboxDelegate : IterableInboxDelegate {
+    var callback: (([IterableInboxMessage]) -> Void)?
+    
+    init(callback: (([IterableInboxMessage]) -> Void)? = nil) {
+        self.callback = callback
+    }
+    
+    func onNew(messages: [IterableInboxMessage]) {
+        callback?(messages)
+    }
+}
+
 class MockNotificationCenter: NotificationCenterProtocol {
     func addObserver(_ observer: Any, selector: Selector, name: Notification.Name?, object: Any?) {
         observers.append(Observer(observer: observer as! NSObject, notificationName: name!, selector: selector))

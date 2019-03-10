@@ -35,16 +35,27 @@ import Foundation
 }
 
 /**
- * This protocol allows you to override default behavior when new inApps arrive.
+ * This protocol allows you to override default behavior when new in-app messages arrive.
  */
 @objc public protocol IterableInAppDelegate : class {
     /**
-     * This method is called when new inApp message is available.
+     * This method is called when new in-app message is available.
      * The default behavior is to `show` if you don't override this method.
      * - parameter message: `IterableInAppMessage` object containing information regarding inApp to display
      * - returns: Return `show` to show the inApp or `skip` to skip this.
      */
     @objc(onNewMessage:) func onNew(message: IterableInAppMessage) -> InAppShowResponse
+}
+
+/**
+ * This protocol informs you when when new inbox messages arrive.
+ */
+@objc public protocol IterableInboxDelegate : class {
+    /**
+     * This method is called when new inbox messages is available.
+     * - parameter messages: Array of `IterableInboxMessage` object containing information regarding inbox messages
+     */
+    @objc(onNewMessage:) func onNew(messages: [IterableInboxMessage])
 }
 
 /**
@@ -131,6 +142,9 @@ public class IterableConfig : NSObject {
     /// By default, every single inApp will be shown as soon as it is available.
     /// If more than 1 inApp is available, we show the first.
     public var inAppDelegate: IterableInAppDelegate = DefaultInAppDelegate()
+
+    /// Set a value for inboxDelegate to be informed when a new inbox messages arrives.
+    public var inboxDelegate: IterableInboxDelegate? = nil
 
     /// How many seconds to wait before showing the next inApp, if there are more than one present
     public var inAppDisplayInterval: Double = 30.0

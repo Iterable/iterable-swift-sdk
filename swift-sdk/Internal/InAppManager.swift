@@ -29,6 +29,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
          displayer: IterableMessageDisplayerProtocol,
          persister: IterableMessagePersistenceProtocol,
          inAppDelegate: IterableInAppDelegate,
+         inboxDelegate: IterableInboxDelegate?,
          urlDelegate: IterableURLDelegate?,
          customActionDelegate: IterableCustomActionDelegate?,
          urlOpener: UrlOpenerProtocol,
@@ -41,6 +42,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
         self.displayer = displayer
         self.persister = persister
         self.inAppDelegate = inAppDelegate
+        self.inboxDelegate = inboxDelegate
         self.urlDelegate = urlDelegate
         self.customActionDelegate = customActionDelegate
         self.urlOpener = urlOpener
@@ -284,6 +286,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
     private var synchronizer: InAppSynchronizerProtocol // this is mutable because we need to set internalApi
     private let displayer: IterableMessageDisplayerProtocol
     private let inAppDelegate: IterableInAppDelegate
+    private let inboxDelegate: IterableInboxDelegate?
     private let urlDelegate: IterableURLDelegate?
     private let customActionDelegate: IterableCustomActionDelegate?
     private let urlOpener: UrlOpenerProtocol
@@ -315,7 +318,10 @@ extension InAppManager : InAppSynchronizerDelegate {
             
             self.persister.persist(self.messagesMap.values)
             
-            // now process
+            // process inbox messages
+            self.processInboxMessages()
+            
+            // now process in app messages
             self.processNextInAppMessage()
         }
     }
@@ -328,6 +334,22 @@ extension InAppManager : InAppSynchronizerDelegate {
                 self.messagesMap.removeValue(forKey: messageId)
                 self.persister.persist(self.messagesMap.values)
             }
+        }
+    }
+    
+    private func processInboxMessages() {
+        ITBDebug()
+        let newInboxMessages = messagesMap.values.compactMap { InAppManager.asValidInbox(message: $0, currentDate: dateProvider.currentDate) }.filter { $0.processed == false }
+        
+        if newInboxMessages.count > 0 {
+            newInboxMessages.forEach {
+                let toUpdate = $0
+                toUpdate.processed = true
+                self.messagesMap.updateValue(toUpdate, forKey: $0.messageId)
+            }
+            persister.persist(self.messagesMap.values)
+
+            inboxDelegate?.onNew(messages: newInboxMessages)
         }
     }
     
