@@ -303,4 +303,115 @@ class InboxTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
+
+    func testBothInboxAndInAppDelegate() {
+        let expectation1 = expectation(description: "call inbox delegate")
+        expectation1.expectedFulfillmentCount = 2
+        let expectation2 = expectation(description: "call inApp delegate")
+        expectation2.expectedFulfillmentCount = 2
+        
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        
+        var inAppCallbackCount = 0
+        let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
+        mockInAppDelegate.onNewMessageCallback = {(message) in
+            if inAppCallbackCount == 0 {
+                XCTAssertEqual(message.messageId, "inAppMessage0")
+            } else {
+                XCTAssertEqual(message.messageId, "inAppMessage1")
+            }
+            expectation2.fulfill()
+            inAppCallbackCount += 1
+        }
+        
+        var inboxCallbackCount = 0
+        let config = IterableConfig()
+        config.inboxDelegate = MockInboxDelegate() { messages in
+            if inboxCallbackCount == 0 {
+                XCTAssertEqual(messages.count, 1)
+                XCTAssertEqual(messages[0].messageId, "message0")
+            } else {
+                XCTAssertEqual(messages.count, 1)
+                XCTAssertEqual(messages[0].messageId, "message1")
+            }
+            expectation1.fulfill()
+            inboxCallbackCount += 1
+        }
+        config.inAppDelegate = mockInAppDelegate
+        config.logDelegate = AllLogDelegate()
+        
+        IterableAPI.initializeForTesting(
+            config: config,
+            inAppSynchronizer: mockInAppSynchronizer
+        )
+        
+        let payload = """
+        {"inAppMessages":
+        [
+            {
+                "inAppType": "inbox",
+                "content": {"contentType": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "trigger": {"type": "immediate"},
+                "messageId": "message0",
+                "campaignId": "campaign1",
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+            {
+                "inAppType": "default",
+                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "trigger": {"type": "immediate"},
+                "messageId": "inAppMessage0",
+                "campaignId": "campaign1",
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+        ]
+        }
+        """.toJsonDict()
+        
+        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
+        
+        let payload2 = """
+        {"inAppMessages":
+        [
+            {
+                "inAppType": "inbox",
+                "content": {"contentType": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "trigger": {"type": "immediate"},
+                "messageId": "message0",
+                "campaignId": "campaign1",
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+            {
+                "inAppType": "inbox",
+                "content": {"contentType": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "trigger": {"type": "immediate"},
+                "messageId": "message1",
+                "campaignId": "campaign1",
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+            {
+                "inAppType": "default",
+                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "trigger": {"type": "immediate"},
+                "messageId": "inAppMessage0",
+                "campaignId": "campaign1",
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+            {
+                "inAppType": "default",
+                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "trigger": {"type": "immediate"},
+                "messageId": "inAppMessage1",
+                "campaignId": "campaign1",
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+        ]
+        }
+        """.toJsonDict()
+        
+        mockInAppSynchronizer.mockInAppPayloadFromServer(payload2)
+        
+        
+        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
+    }
 }
