@@ -357,6 +357,9 @@ class InboxTests: XCTestCase {
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
 
+        // Give some time to finish processing
+        Thread.sleep(forTimeInterval: 1.0)
+        
         // Initialize again
         IterableAPI.initializeForTesting(config: config,
                                          inAppPersister: persister)
