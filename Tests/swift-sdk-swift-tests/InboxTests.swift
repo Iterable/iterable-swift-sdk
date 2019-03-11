@@ -304,6 +304,68 @@ class InboxTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
+    func testInboxDelegateReadyCallback() {
+        let expectation1 = expectation(description: "testInboxDelegateCallback")
+        let expectation2 = expectation(description: "testInboxDelegateReadyCallback")
+        expectation2.expectedFulfillmentCount = 2
+
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        let persister = IterableMessageFilePersister()
+        persister.clear()
+        let config = IterableConfig()
+        let mockInboxDelegate = MockInboxDelegate()
+        mockInboxDelegate.callback = { messages in
+            XCTAssertEqual(messages.count, 1)
+            XCTAssertEqual(messages[0].messageId, "message0")
+            expectation1.fulfill()
+        }
+        var readyCallbackCount = 0
+        mockInboxDelegate.onReadyCallback = { messages in
+            if readyCallbackCount == 0 {
+                XCTAssertEqual(messages.count, 0)
+            } else {
+                XCTAssertEqual(messages.count, 1)
+                XCTAssertEqual(messages[0].messageId, "message0")
+            }
+            readyCallbackCount += 1
+            expectation2.fulfill()
+        }
+        
+        config.inboxDelegate = mockInboxDelegate
+        config.logDelegate = AllLogDelegate()
+        
+        IterableAPI.initializeForTesting(
+            config: config,
+            inAppSynchronizer: mockInAppSynchronizer,
+            inAppPersister: persister
+        )
+        
+        let payload = """
+        {"inAppMessages":
+        [
+            {
+                "inAppType": "inbox",
+                "content": {"contentType": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "trigger": {"type": "immediate"},
+                "messageId": "message0",
+                "campaignId": "campaign1",
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+        ]
+        }
+        """.toJsonDict()
+        
+        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
+
+        // Initialize again
+        IterableAPI.initializeForTesting(config: config,
+                                         inAppPersister: persister)
+        
+        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
+        persister.clear()
+    }
+
+    
     func testBothInboxAndInAppDelegate() {
         let expectation1 = expectation(description: "call inbox delegate")
         expectation1.expectedFulfillmentCount = 2

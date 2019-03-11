@@ -52,6 +52,12 @@ import Foundation
  */
 @objc public protocol IterableInboxDelegate : class {
     /**
+     * This method is called when inbox is ready. This is called right after app is launched and inbox messages
+     * are loaded from storage.
+     * - parameter messages: Array of `IterableInboxMessage` object containing information regarding inbox messages
+     */
+    @objc(onInboxReady:) func onReady(messages: [IterableInboxMessage])
+    /**
      * This method is called when new inbox messages is available.
      * - parameter messages: Array of `IterableInboxMessage` object containing information regarding inbox messages
      */

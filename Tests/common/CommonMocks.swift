@@ -307,6 +307,7 @@ class MockInAppDelegate : IterableInAppDelegate {
 }
 
 class MockInboxDelegate : IterableInboxDelegate {
+    var onReadyCallback: (([IterableInboxMessage]) -> Void)?
     var callback: (([IterableInboxMessage]) -> Void)?
     
     init(callback: (([IterableInboxMessage]) -> Void)? = nil) {
@@ -315,6 +316,10 @@ class MockInboxDelegate : IterableInboxDelegate {
     
     func onNew(messages: [IterableInboxMessage]) {
         callback?(messages)
+    }
+
+    func onReady(messages: [IterableInboxMessage]) {
+        onReadyCallback?(messages)
     }
 }
 

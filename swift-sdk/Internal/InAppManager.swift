@@ -60,7 +60,10 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
         self.notificationCenter.addObserver(self,
                                        selector: #selector(onAppEnteredForeground(notification:)),
                                        name: UIApplication.didBecomeActiveNotification,
+
                                        object: nil)
+        
+        inboxDelegate?.onReady(messages: getMessages())
     }
     
     deinit {
