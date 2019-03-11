@@ -55,7 +55,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
         
         self.initializeMessagesMap()
 
-        self.setupSynchronizer()
+        self.synchronizer.inAppSyncDelegate = self
         
         self.notificationCenter.addObserver(self,
                                        selector: #selector(onAppEnteredForeground(notification:)),
@@ -236,13 +236,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
             messagesMap[message.messageId] = message
         }
     }
-    
-    private func setupSynchronizer() {
-        synchronizer.inAppSyncDelegate = self
-        
-        synchronize()
-    }
-    
+
     private func removePrivate(message: IterableMessageProtocol) {
         ITBInfo()
         
