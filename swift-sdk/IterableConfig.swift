@@ -48,7 +48,7 @@ import Foundation
 }
 
 /**
- * This protocol informs you when when new inbox messages arrive.
+ * This protocol informs you when new inbox messages arrive.
  */
 @objc public protocol IterableInboxDelegate : class {
     /**

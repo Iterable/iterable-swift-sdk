@@ -21,18 +21,8 @@ class InAppHelperTests: XCTestCase {
         super.tearDown()
     }
 
-    func testNotificationCreation() {
-        //call showIterableNotificationHTML with fake data
-        //Check the top level dialog
-        
-        let htmlString = "<a href=\"http://www.iterable.com\" target=\"http://www.iterable.com\">test</a>"
-        let baseNotification = IterableInAppHTMLViewController(data: htmlString)
-        let html = baseNotification.getHtml()
-        XCTAssertEqual(html, htmlString)
-    }
-    
     func testGetPaddingInvalid() {
-        let insets = HtmlContentCreator.getPadding(fromInAppSettings: [:])
+        let insets = HtmlContentParser.getPadding(fromInAppSettings: [:])
         XCTAssertEqual(insets, UIEdgeInsets.zero)
     }
     
@@ -44,14 +34,14 @@ class InAppHelperTests: XCTestCase {
             "right" : ["right" : "0"],
         ]
         
-        let insets = HtmlContentCreator.getPadding(fromInAppSettings: payload)
+        let insets = HtmlContentParser.getPadding(fromInAppSettings: payload)
         XCTAssertEqual(insets, UIEdgeInsets.zero)
         
         var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(HtmlContentCreator.decodePadding(payload["top"]))
-        padding.left = CGFloat(HtmlContentCreator.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(HtmlContentCreator.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(HtmlContentCreator.decodePadding(payload["right"]))
+        padding.top = CGFloat(HtmlContentParser.decodePadding(payload["top"]))
+        padding.left = CGFloat(HtmlContentParser.decodePadding(payload["left"]))
+        padding.bottom = CGFloat(HtmlContentParser.decodePadding(payload["bottom"]))
+        padding.right = CGFloat(HtmlContentParser.decodePadding(payload["right"]))
         XCTAssertEqual(padding, UIEdgeInsets.zero)
     }
     
@@ -63,14 +53,14 @@ class InAppHelperTests: XCTestCase {
             "right" : ["right" : "0"],
             ]
         
-        let insets = HtmlContentCreator.getPadding(fromInAppSettings: payload)
+        let insets = HtmlContentParser.getPadding(fromInAppSettings: payload)
         XCTAssertEqual(insets, UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
         
         var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(HtmlContentCreator.decodePadding(payload["top"]))
-        padding.left = CGFloat(HtmlContentCreator.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(HtmlContentCreator.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(HtmlContentCreator.decodePadding(payload["right"]))
+        padding.top = CGFloat(HtmlContentParser.decodePadding(payload["top"]))
+        padding.left = CGFloat(HtmlContentParser.decodePadding(payload["left"]))
+        padding.bottom = CGFloat(HtmlContentParser.decodePadding(payload["bottom"]))
+        padding.right = CGFloat(HtmlContentParser.decodePadding(payload["right"]))
         XCTAssertEqual(padding, UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
     }
     
@@ -82,14 +72,14 @@ class InAppHelperTests: XCTestCase {
             "right" : ["right" : "0"],
             ]
         
-        let insets = HtmlContentCreator.getPadding(fromInAppSettings: payload)
+        let insets = HtmlContentParser.getPadding(fromInAppSettings: payload)
         XCTAssertEqual(insets, UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
         
         var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(HtmlContentCreator.decodePadding(payload["top"]))
-        padding.left = CGFloat(HtmlContentCreator.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(HtmlContentCreator.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(HtmlContentCreator.decodePadding(payload["right"]))
+        padding.top = CGFloat(HtmlContentParser.decodePadding(payload["top"]))
+        padding.left = CGFloat(HtmlContentParser.decodePadding(payload["left"]))
+        padding.bottom = CGFloat(HtmlContentParser.decodePadding(payload["bottom"]))
+        padding.right = CGFloat(HtmlContentParser.decodePadding(payload["right"]))
         XCTAssertEqual(padding, UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
     }
     
@@ -101,39 +91,39 @@ class InAppHelperTests: XCTestCase {
             "right" : ["right" : "0"],
             ]
         
-        let insets = HtmlContentCreator.getPadding(fromInAppSettings: payload)
+        let insets = HtmlContentParser.getPadding(fromInAppSettings: payload)
         XCTAssertEqual(insets, UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
         
         var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(HtmlContentCreator.decodePadding(payload["top"]))
-        padding.left = CGFloat(HtmlContentCreator.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(HtmlContentCreator.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(HtmlContentCreator.decodePadding(payload["right"]))
+        padding.top = CGFloat(HtmlContentParser.decodePadding(payload["top"]))
+        padding.left = CGFloat(HtmlContentParser.decodePadding(payload["left"]))
+        padding.bottom = CGFloat(HtmlContentParser.decodePadding(payload["bottom"]))
+        padding.right = CGFloat(HtmlContentParser.decodePadding(payload["right"]))
         XCTAssertEqual(padding, UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
     }
     
     func testNotificationPaddingFull() {
-        let notificationType = IterableInAppHTMLViewController.location(fromPadding: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0))
+        let notificationType = HtmlContentParser.location(fromPadding: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0))
         XCTAssertEqual(notificationType, .full)
     }
 
     func testNotificationPaddingTop() {
-        let notificationType = IterableInAppHTMLViewController.location(fromPadding: UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
+        let notificationType = HtmlContentParser.location(fromPadding: UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
         XCTAssertEqual(notificationType, .top)
     }
     
     func testNotificationPaddingBottom() {
-        let notificationType = IterableInAppHTMLViewController.location(fromPadding: UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
+        let notificationType = HtmlContentParser.location(fromPadding: UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
         XCTAssertEqual(notificationType, .bottom)
     }
 
     func testNotificationPaddingCenter() {
-        let notificationType = IterableInAppHTMLViewController.location(fromPadding: UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
+        let notificationType = HtmlContentParser.location(fromPadding: UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
         XCTAssertEqual(notificationType, .center)
     }
 
     func testNotificationPaddingDefault() {
-        let notificationType = IterableInAppHTMLViewController.location(fromPadding: UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0))
+        let notificationType = HtmlContentParser.location(fromPadding: UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0))
         XCTAssertEqual(notificationType, .center)
     }
     
@@ -145,10 +135,10 @@ class InAppHelperTests: XCTestCase {
     }
     
     func testGetBackgroundAlpha() {
-        XCTAssert(HtmlContentCreator.getBackgroundAlpha(fromInAppSettings: nil) == 0)
-        XCTAssert(HtmlContentCreator.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha" : "x"]) == 0)
-        XCTAssert(HtmlContentCreator.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha" : 0.5]) == 0.5)
-        XCTAssert(HtmlContentCreator.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha" : 1]) == 1.0)
+        XCTAssert(HtmlContentParser.getBackgroundAlpha(fromInAppSettings: nil) == 0)
+        XCTAssert(HtmlContentParser.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha" : "x"]) == 0)
+        XCTAssert(HtmlContentParser.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha" : 0.5]) == 0.5)
+        XCTAssert(HtmlContentParser.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha" : 1]) == 1.0)
     }
     
     func testTrackInAppClickWithButtonUrl() {

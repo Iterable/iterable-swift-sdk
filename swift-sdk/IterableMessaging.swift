@@ -200,6 +200,12 @@ public protocol IterableInboxManagerProtocol {
     ///   Note that this callback is called in addition to calling `IterableCustomActionDelegate` or `IterableUrlDelegate` on the button action.
     @objc(showInboxMessage:callbackBlock:) func show(message: IterableInboxMessage, callback:ITEActionBlock?)
     
+    /// This will create a ViewController which displays an inbox message.
+    /// This ViewController would typically be pushed into the navigation stack.
+    /// - parameter message: The message to show.
+    /// - returns: UIViewController which displays the message.
+    @objc(createInboxMessageViewControllerForMessage:) func createInboxMessageViewController(for message: IterableInboxMessage) -> UIViewController?
+    
     /// - parameter message: The message to remove.
     @objc(removeInboxMessage:) func remove(message: IterableInboxMessage)
     

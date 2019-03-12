@@ -1,93 +1,45 @@
 //
-//  IterableInAppHTMLViewController.swift
-//  new-ios-sdk
 //
-//  Created by Tapash Majumder on 6/7/18.
-//  Copyright © 2018 Iterable. All rights reserved.
+//  Created by Tapash Majumder on 3/11/19.
+//  Copyright © 2019 Iterable. All rights reserved.
 //
 
 import UIKit
 
-enum InAppNotificationType : Int {
+enum IterableMessageLocation : Int {
     case full
     case top
     case center
     case bottom
 }
 
-class IterableInAppHTMLViewController: UIViewController {
-    /**
-     Constructs an inapp notification with via html
-     
-     - parameter htmlString: the html string
-     */
-    init(data htmlString: String) {
-        self.htmlString = htmlString
+class IterableHtmlMessageViewController: UIViewController {
+    struct Input {
+        let html: String
+        let padding: UIEdgeInsets
+        let callback: ITEActionBlock?
+        let trackParams: IterableNotificationMetadata?
+        let prefersStatusBarHidden: Bool
+        
+        init(html: String,
+             padding: UIEdgeInsets = .zero,
+             callback: ITEActionBlock? = nil,
+             trackParams: IterableNotificationMetadata? = nil,
+             prefersStatusBarHidden: Bool = false) {
+            self.html = html
+            self.padding = IterableHtmlMessageViewController.padding(fromPadding: padding)
+            self.callback = callback
+            self.trackParams = trackParams
+            self.prefersStatusBarHidden = prefersStatusBarHidden
+        }
+    }
+
+    init(input: Input) {
+        self.input = input
         super.init(nibName: nil, bundle: nil)
     }
     
-    /**
-     Sets the padding
-     
-     - parameter: insetPadding the padding
-     
-     - remark: defaults to 0 for left/right if left+right > 100
-     */
-    func ITESetPadding(_ padding: UIEdgeInsets) {
-        var insetPadding = padding
-        
-        if insetPadding.left + insetPadding.right >= 100 {
-            ITBError("Can't display an in-app with padding > 100%. Defaulting to 0 for padding left/right")
-            insetPadding.left = 0
-            insetPadding.right = 0
-        }
-
-        self.insetPadding = insetPadding
-    }
-
-    /**
-     Sets the callback
-     
-     - parameter callbackBlock: the payload data
-     */
-    func ITESetCallback(_ callbackBlock: ITEActionBlock?) {
-        customBlockCallback = callbackBlock
-    }
-
-    /**
-     Sets the track parameters
-     
-     - parameter params: the track parameters
-     */
-    func ITESetTrackParams(_ params:IterableNotificationMetadata?) {
-        trackParams = params
-    }
-
-    /**
-     Gets the html string
-     
-     - returns: a NSString of the html
-     */
-    func getHtml() -> String? {
-        return htmlString
-    }
-    
-    /**
-     Gets the location from a inset data
-     
-     - returns: the location as an INAPP_NOTIFICATION_TYPE
-     */
-    static func location(fromPadding padding: UIEdgeInsets) -> InAppNotificationType {
-        if padding.top == 0 && padding.bottom == 0 {
-            return .full
-        } else if padding.top == 0 && padding.bottom < 0 {
-            return .top
-        } else if padding.top < 0 && padding.bottom == 0 {
-            return .bottom
-        } else {
-            return .center
-        }
-    }
+    override var prefersStatusBarHidden: Bool {return input.prefersStatusBarHidden}
     
     /**
      Loads the view and sets up the webView
@@ -95,11 +47,11 @@ class IterableInAppHTMLViewController: UIViewController {
     override func loadView() {
         super.loadView()
         
-        location = IterableInAppHTMLViewController.location(fromPadding: insetPadding)
+        location = HtmlContentParser.location(fromPadding: input.padding)
         view.backgroundColor = UIColor.clear
         
         let webView = UIWebView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
-        webView.loadHTMLString(htmlString, baseURL: URL(string: ""))
+        webView.loadHTMLString(input.html, baseURL: URL(string: ""))
         webView.scrollView.bounces = false
         webView.isOpaque = false
         webView.backgroundColor = UIColor.clear
@@ -108,6 +60,7 @@ class IterableInAppHTMLViewController: UIViewController {
         view.addSubview(webView)
         self.webView = webView
     }
+
     
     /**
      Tracks an inApp open and layouts the webview
@@ -115,36 +68,31 @@ class IterableInAppHTMLViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let trackParams = trackParams, let messageId = trackParams.messageId {
+        if let trackParams = input.trackParams, let messageId = trackParams.messageId {
             IterableAPIInternal.sharedInstance?.trackInAppOpen(messageId)
         }
-
+        
         webView?.layoutSubviews()
     }
     
-    override var prefersStatusBarHidden: Bool {return true}
-
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         if let webView = webView {
             resizeWebView(webView)
         }
     }
-    
-    private let htmlString: String
-    private var insetPadding: UIEdgeInsets = UIEdgeInsets.zero
-    private var customBlockCallback: ITEActionBlock?
-    private var trackParams: IterableNotificationMetadata?
-    private var webView: UIWebView?
-    private var location: InAppNotificationType = .full
-    private var loaded = false
-    
+
     required init?(coder aDecoder: NSCoder) {
-        self.htmlString = aDecoder.decodeObject(forKey: "htmlString") as? String ?? ""
+        self.input = aDecoder.decodeObject(forKey: "input") as? Input ?? Input(html: "")
 
         super.init(coder: aDecoder)
     }
-    
+
+    private var input: Input
+    private var webView: UIWebView?
+    private var location: IterableMessageLocation = .full
+    private var loaded = false
+
     /**
      Resizes the webview based upon the insetPadding if the html is finished loading
      
@@ -165,14 +113,14 @@ class IterableInAppHTMLViewController: UIViewController {
         aWebView.frame = frame;
         let fittingSize = aWebView.sizeThatFits(.zero)
         frame.size = fittingSize
-        let notificationWidth = 100 - (insetPadding.left + insetPadding.right)
+        let notificationWidth = 100 - (input.padding.left + input.padding.right)
         let screenWidth = view.bounds.width
         frame.size.width = screenWidth*notificationWidth/100
         frame.size.height = min(frame.height, self.view.bounds.height)
         aWebView.frame = frame;
         
-        let resizeCenterX = screenWidth*(insetPadding.left + notificationWidth/2)/100
-
+        let resizeCenterX = screenWidth*(input.padding.left + notificationWidth/2)/100
+        
         // Position webview
         var center = self.view.center
         let webViewHeight = aWebView.frame.height/2
@@ -186,9 +134,22 @@ class IterableInAppHTMLViewController: UIViewController {
         center.x = resizeCenterX;
         aWebView.center = center;
     }
+
+    
+    
+    private static func padding(fromPadding padding: UIEdgeInsets) -> UIEdgeInsets {
+        var insetPadding = padding
+        if insetPadding.left + insetPadding.right >= 100 {
+            ITBError("Can't display an in-app with padding > 100%. Defaulting to 0 for padding left/right")
+            insetPadding.left = 0
+            insetPadding.right = 0
+        }
+        return insetPadding
+    }
+    
 }
 
-extension IterableInAppHTMLViewController : UIWebViewDelegate {
+extension IterableHtmlMessageViewController : UIWebViewDelegate {
     func webViewDidFinishLoad(_ webView: UIWebView) {
         loaded = true
         if let myWebview = self.webView {
@@ -204,10 +165,10 @@ extension IterableInAppHTMLViewController : UIWebViewDelegate {
         guard let (callbackURL, destinationURL) = InAppHelper.getCallbackAndDestinationUrl(url: url) else {
             return true
         }
-
+        
         dismiss(animated: false) { [weak self, callbackURL] in
-            self?.customBlockCallback?(callbackURL)
-            if let trackParams = self?.trackParams, let messageId = trackParams.messageId {
+            self?.input.callback?(callbackURL)
+            if let trackParams = self?.input.trackParams, let messageId = trackParams.messageId {
                 IterableAPIInternal.sharedInstance?.trackInAppClick(messageId, buttonURL: destinationURL)
             }
         }

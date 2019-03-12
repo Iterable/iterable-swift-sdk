@@ -60,7 +60,6 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
         self.notificationCenter.addObserver(self,
                                        selector: #selector(onAppEnteredForeground(notification:)),
                                        name: UIApplication.didBecomeActiveNotification,
-
                                        object: nil)
         
         inboxDelegate?.onReady(messages: getMessages())
@@ -113,6 +112,15 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
         DispatchQueue.main.async {
             _ = self.showInternal(message: message, consume: false, callback: callback)
         }
+    }
+    
+    func createInboxMessageViewController(for message: IterableInboxMessage) -> UIViewController? {
+        guard let content = message.content as? IterableInboxHtmlContent else {
+            ITBError("Invalid Content in message")
+            return nil
+        }
+        let input = IterableHtmlMessageViewController.Input(html: content.html, trackParams: IterableNotificationMetadata.metadata(fromInAppOptions: message.messageId))
+        return IterableHtmlMessageViewController(input: input)
     }
     
     func show(message: IterableInAppMessage) {
@@ -244,7 +252,6 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
         self.internalApi?.inAppConsume(message.messageId)
     }
 
-    
     private static func isExpired(message: IterableMessageProtocol, currentDate: Date) -> Bool {
         guard let expiresAt = message.expiresAt else {
             return false
@@ -279,7 +286,6 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
         return message.consumed == false && isExpired(message: message, currentDate: currentDate) == false
     }
     
-
     private var synchronizer: InAppSynchronizerProtocol // this is mutable because we need to set internalApi
     private let displayer: IterableMessageDisplayerProtocol
     private let inAppDelegate: IterableInAppDelegate
@@ -500,6 +506,10 @@ extension InAppManager : InAppSynchronizerDelegate {
 }
 
 class EmptyInAppManager : IterableInAppManagerProtocol, IterableInboxManagerProtocol {
+    func createInboxMessageViewController(for message: IterableInboxMessage) -> UIViewController {
+        fatalError("Can't create VC")
+    }
+    
     func getMessages() -> [IterableInAppMessage] {
         return []
     }

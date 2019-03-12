@@ -21,26 +21,26 @@ struct InAppContentParser {
             contentType = .html
         }
 
-        return contentCreator(forContentType: contentType).tryCreate(from: contentDict)
+        return contentParser(forContentType: contentType).tryCreate(from: contentDict)
     }
     
-    private static func contentCreator(forContentType contentType: IterableContentType) -> ContentFromJsonCreator.Type {
+    private static func contentParser(forContentType contentType: IterableContentType) -> ContentFromJsonParser.Type {
         switch contentType {
         case .html:
-            return InAppHtmlContentCreator.self
+            return InAppHtmlContentParser.self
         case .inboxHtml:
-            return InboxHtmlContentCreator.self
+            return InboxHtmlContentParser.self
         default:
-            return InAppHtmlContentCreator.self
+            return InAppHtmlContentParser.self
         }
     }
 }
 
-fileprivate protocol ContentFromJsonCreator {
+fileprivate protocol ContentFromJsonParser {
     static func tryCreate(from json: [AnyHashable : Any]) -> InAppContentParseResult
 }
 
-struct HtmlContentCreator {
+struct HtmlContentParser {
     enum Result {
         case success(content: HtmlContent)
         case failure(reason: String)
@@ -96,6 +96,23 @@ struct HtmlContentCreator {
     }
     
     /**
+     Gets the location from a inset data
+     
+     - returns: the location as an INAPP_NOTIFICATION_TYPE
+     */
+    static func location(fromPadding padding: UIEdgeInsets) -> IterableMessageLocation {
+        if padding.top == 0 && padding.bottom == 0 {
+            return .full
+        } else if padding.top == 0 && padding.bottom < 0 {
+            return .top
+        } else if padding.top < 0 && padding.bottom == 0 {
+            return .bottom
+        } else {
+            return .center
+        }
+    }
+    
+    /**
      Gets the int value of the padding from the payload
      
      @param value          the value
@@ -142,9 +159,9 @@ struct HtmlContentCreator {
     private static let IN_APP_PERCENTAGE = "percentage"
 }
 
-struct InAppHtmlContentCreator : ContentFromJsonCreator {
+struct InAppHtmlContentParser : ContentFromJsonParser {
     fileprivate static func tryCreate(from json: [AnyHashable : Any]) -> InAppContentParseResult {
-        switch HtmlContentCreator.tryCreate(from: json) {
+        switch HtmlContentParser.tryCreate(from: json) {
         case .failure(let reason):
             return .failure(reason: reason)
         case .success(let content):
@@ -153,9 +170,9 @@ struct InAppHtmlContentCreator : ContentFromJsonCreator {
     }
 }
 
-struct InboxHtmlContentCreator : ContentFromJsonCreator {
+struct InboxHtmlContentParser : ContentFromJsonParser {
     fileprivate static func tryCreate(from json: [AnyHashable : Any]) -> InAppContentParseResult {
-        switch HtmlContentCreator.tryCreate(from: json) {
+        switch HtmlContentParser.tryCreate(from: json) {
         case .failure(let reason):
             return .failure(reason: reason)
         case .success(let htmlContent):
@@ -163,7 +180,7 @@ struct InboxHtmlContentCreator : ContentFromJsonCreator {
         }
     }
     
-    private static func createInboxHtmlContent(json: [AnyHashable : Any], htmlContent: HtmlContentCreator.HtmlContent) -> IterableInboxHtmlContent {
+    private static func createInboxHtmlContent(json: [AnyHashable : Any], htmlContent: HtmlContentParser.HtmlContent) -> IterableInboxHtmlContent {
         return IterableInboxHtmlContent(edgeInsets: htmlContent.edgeInsets,
                                         backgroundAlpha: htmlContent.backgroundAlpha,
                                         html: htmlContent.html,

@@ -68,15 +68,17 @@ class IterableMessageDisplayer : IterableMessageDisplayerProtocol {
         guard let topViewController = getTopViewController() else {
             return false
         }
-        if topViewController is IterableInAppHTMLViewController {
+        if topViewController is IterableHtmlMessageViewController {
             ITBError("Skipping the in-app notification. Another notification is already being displayed.")
             return false
         }
         
-        let baseNotification = IterableInAppHTMLViewController(data: htmlString)
-        baseNotification.ITESetTrackParams(trackParams)
-        baseNotification.ITESetCallback(callbackBlock)
-        baseNotification.ITESetPadding(padding)
+        let input = IterableHtmlMessageViewController.Input(html: htmlString,
+                                                             padding: padding,
+                                                             callback: callbackBlock,
+                                                             trackParams: trackParams,
+                                                             prefersStatusBarHidden: true)
+        let baseNotification = IterableHtmlMessageViewController(input: input)
         
         topViewController.definesPresentationContext = true
         baseNotification.view.backgroundColor = UIColor(white: 0, alpha: CGFloat(backgroundAlpha))
@@ -116,7 +118,7 @@ class IterableMessageDisplayer : IterableMessageDisplayerProtocol {
             return false
         }
         
-        return topViewController is IterableInAppHTMLViewController
+        return topViewController is IterableHtmlMessageViewController
     }
     
     private static func getTopViewController() -> UIViewController? {
