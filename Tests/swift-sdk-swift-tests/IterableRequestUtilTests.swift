@@ -57,15 +57,6 @@ class IterableRequestUtilTests: XCTestCase {
         TestUtils.validate(request: request, requestType: .get, apiEndPoint: apiEndPoint, path: path, queryParams: queryParams)
     }
 
-    func testGetRequestWithPlusSignInEmail() {
-        let apiEndPoint = "https://somewhere.com/"
-        let path = "path"
-        let args = ["email" : "user+1@somewhere.com"]
-        let request = IterableRequestUtil.createGetRequest(forApiEndPoint: apiEndPoint, path: path, args: args)!
-        let requestString = String(describing: request)
-        XCTAssertEqual(requestString, "https://somewhere.com/path?email=user%2B1@somewhere.com")
-    }
-
     func testPostRequest() {
         let apiEndPoint = "https://somewhere.com/"
         let path = "path"
@@ -85,5 +76,12 @@ class IterableRequestUtilTests: XCTestCase {
         
         TestUtils.validateElementPresent(withName: "var1", andValue: "val1", inDictionary: bodyFromRequest)
         TestUtils.validateElementPresent(withName: "var2", andValue: "val2", inDictionary: bodyFromRequest)
+    }
+
+    func testEncodeUrlQueryParam() {
+        let encoded = IterableRequestUtil.encodeURLParam("you+me@iterable.com")
+        XCTAssertEqual(encoded!, "you%2Bme@iterable.com")
+        XCTAssertEqual(IterableRequestUtil.encodeURLParam(""), "")
+        XCTAssertNil(IterableRequestUtil.encodeURLParam(nil))
     }
 }
