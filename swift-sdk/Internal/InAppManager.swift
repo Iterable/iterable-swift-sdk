@@ -119,7 +119,20 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
             ITBError("Invalid Content in message")
             return nil
         }
-        let input = IterableHtmlMessageViewController.Input(html: content.html, trackParams: IterableNotificationMetadata.metadata(fromInAppOptions: message.messageId))
+        
+        let clickCallback = { (urlOrAction: String?) in
+            ITBInfo()
+            
+            // in addition perform action or url delegate task
+            if let urlOrAction = urlOrAction {
+                self.handleUrlOrAction(urlOrAction: urlOrAction)
+            } else {
+                ITBError("No name for clicked button/link in inApp")
+            }
+        }
+        let input = IterableHtmlMessageViewController.Input(html: content.html,
+                                                            callback: clickCallback,
+                                                            trackParams: IterableNotificationMetadata.metadata(fromInAppOptions: message.messageId))
         return IterableHtmlMessageViewController(input: input)
     }
     
@@ -506,8 +519,9 @@ extension InAppManager : InAppSynchronizerDelegate {
 }
 
 class EmptyInAppManager : IterableInAppManagerProtocol, IterableInboxManagerProtocol {
-    func createInboxMessageViewController(for message: IterableInboxMessage) -> UIViewController {
-        fatalError("Can't create VC")
+    func createInboxMessageViewController(for message: IterableInboxMessage) -> UIViewController? {
+        ITBError("Can't create VC")
+        return nil
     }
     
     func getMessages() -> [IterableInAppMessage] {
