@@ -77,7 +77,7 @@ class IterableMessageDisplayer : IterableMessageDisplayerProtocol {
                                                              padding: padding,
                                                              callback: callbackBlock,
                                                              trackParams: trackParams,
-                                                             prefersStatusBarHidden: true)
+                                                             isModal: true)
         let baseNotification = IterableHtmlMessageViewController(input: input)
         
         topViewController.definesPresentationContext = true

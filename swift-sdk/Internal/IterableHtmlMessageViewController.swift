@@ -19,18 +19,18 @@ class IterableHtmlMessageViewController: UIViewController {
         let padding: UIEdgeInsets
         let callback: ITEActionBlock?
         let trackParams: IterableNotificationMetadata?
-        let prefersStatusBarHidden: Bool
+        let isModal: Bool
         
         init(html: String,
              padding: UIEdgeInsets = .zero,
              callback: ITEActionBlock? = nil,
              trackParams: IterableNotificationMetadata? = nil,
-             prefersStatusBarHidden: Bool = false) {
+             isModal: Bool) {
             self.html = html
             self.padding = IterableHtmlMessageViewController.padding(fromPadding: padding)
             self.callback = callback
             self.trackParams = trackParams
-            self.prefersStatusBarHidden = prefersStatusBarHidden
+            self.isModal = isModal
         }
     }
 
@@ -39,7 +39,7 @@ class IterableHtmlMessageViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
-    override var prefersStatusBarHidden: Bool {return input.prefersStatusBarHidden}
+    override var prefersStatusBarHidden: Bool {return input.isModal}
     
     /**
      Loads the view and sets up the webView
@@ -48,7 +48,11 @@ class IterableHtmlMessageViewController: UIViewController {
         super.loadView()
         
         location = HtmlContentParser.location(fromPadding: input.padding)
-        view.backgroundColor = UIColor.clear
+        if input.isModal {
+            view.backgroundColor = UIColor.clear
+        } else {
+            view.backgroundColor = UIColor.white
+        }
         
         let webView = UIWebView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
         webView.loadHTMLString(input.html, baseURL: URL(string: ""))
@@ -83,7 +87,7 @@ class IterableHtmlMessageViewController: UIViewController {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        self.input = aDecoder.decodeObject(forKey: "input") as? Input ?? Input(html: "")
+        self.input = aDecoder.decodeObject(forKey: "input") as? Input ?? Input(html: "", isModal: false)
 
         super.init(coder: aDecoder)
     }
@@ -166,12 +170,21 @@ extension IterableHtmlMessageViewController : UIWebViewDelegate {
             return true
         }
         
-        dismiss(animated: false) { [weak self, callbackURL] in
-            self?.input.callback?(callbackURL)
-            if let trackParams = self?.input.trackParams, let messageId = trackParams.messageId {
+        if input.isModal {
+            dismiss(animated: false) { [weak self, callbackURL] in
+                self?.input.callback?(callbackURL)
+                if let trackParams = self?.input.trackParams, let messageId = trackParams.messageId {
+                    IterableAPIInternal.sharedInstance?.trackInAppClick(messageId, buttonURL: destinationURL)
+                }
+            }
+        } else {
+            input.callback?(callbackURL)
+            if let trackParams = input.trackParams, let messageId = trackParams.messageId {
                 IterableAPIInternal.sharedInstance?.trackInAppClick(messageId, buttonURL: destinationURL)
             }
+            navigationController?.popViewController(animated: true)
         }
+        
         return false
     }
 }

@@ -132,7 +132,8 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
         }
         let input = IterableHtmlMessageViewController.Input(html: content.html,
                                                             callback: clickCallback,
-                                                            trackParams: IterableNotificationMetadata.metadata(fromInAppOptions: message.messageId))
+                                                            trackParams: IterableNotificationMetadata.metadata(fromInAppOptions: message.messageId),
+                                                            isModal: false)
         return IterableHtmlMessageViewController(input: input)
     }
     
