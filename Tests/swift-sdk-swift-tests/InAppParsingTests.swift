@@ -320,7 +320,7 @@ class InAppHelperTests: XCTestCase {
         """
         var customPayload1 = customPayloadStr1.toJsonDict()
         customPayload1["inAppType"] = "default"
-        customPayload1["contentType"] = "html"
+        customPayload1["type"] = "html"
         
         let customPayloadStr2 = """
         {
@@ -334,7 +334,7 @@ class InAppHelperTests: XCTestCase {
         """
         var customPayload2 = customPayloadStr2.toJsonDict()
         customPayload2["inAppType"] = "inbox"
-        customPayload2["contentType"] = "inboxHtml"
+        customPayload2["type"] = "inboxHtml"
         customPayload2["title"] = "title"
         customPayload2["subTitle"] = "subTitle"
         customPayload2["icon"] = "icon"
@@ -441,7 +441,7 @@ class InAppHelperTests: XCTestCase {
             "inAppMessages" : [
                 {
                     "content" : {
-                        "contentType" : "html",
+                        "type" : "html",
                         "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
                     },
                     "messageId" : "messageIdxxx",
@@ -456,7 +456,7 @@ class InAppHelperTests: XCTestCase {
                 {
                     "inAppType" : "inbox",
                     "content" : {
-                        "contentType" : "inboxHtml",
+                        "type" : "inboxHtml",
                         "html" : "<a href=\\"http://somewhere.com\\">Click here</a>",
                         "title" : "\(inboxTitle)",
                         "subTitle" : "\(inboxSubTitle)",
