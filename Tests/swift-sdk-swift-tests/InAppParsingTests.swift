@@ -9,8 +9,7 @@ import XCTest
 
 @testable import IterableSDK
 
-class InAppHelperTests: XCTestCase {
-    
+class InAppParsingTests: XCTestCase {
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -147,19 +146,19 @@ class InAppHelperTests: XCTestCase {
         let expectation1 = expectation(description: "track in app click")
 
         let networkSession = MockNetworkSession(statusCode: 200)
-        IterableAPI.initializeForTesting(apiKey: InAppHelperTests.apiKey, networkSession: networkSession)
-        IterableAPI.userId = InAppHelperTests.userId
+        IterableAPI.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
+        IterableAPI.userId = InAppParsingTests.userId
         networkSession.callback = {(_, _, _) in
             TestUtils.validate(request: networkSession.request!,
                                requestType: .post,
                                apiEndPoint: .ITBL_ENDPOINT_API,
                                path: .ITBL_PATH_TRACK_INAPP_CLICK,
-                               queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: InAppHelperTests.apiKey),
+                               queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: InAppParsingTests.apiKey),
                 ])
             let body = networkSession.getRequestBody() as! [String : Any]
             TestUtils.validateMatch(keyPath: KeyPath("messageId"), value: messageId, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath("urlClick"), value: buttonUrl, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("userId"), value: InAppHelperTests.userId, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("userId"), value: InAppParsingTests.userId, inDictionary: body)
             expectation1.fulfill()
         }
         IterableAPI.track(inAppClick: messageId, buttonURL: buttonUrl)
@@ -172,19 +171,19 @@ class InAppHelperTests: XCTestCase {
         let expectation1 = expectation(description: "track in app click")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        IterableAPI.initializeForTesting(apiKey: InAppHelperTests.apiKey, networkSession: networkSession)
-        IterableAPI.email = InAppHelperTests.email
+        IterableAPI.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
+        IterableAPI.email = InAppParsingTests.email
         networkSession.callback = {(_, _, _) in
             TestUtils.validate(request: networkSession.request!,
                                requestType: .post,
                                apiEndPoint: .ITBL_ENDPOINT_API,
                                path: .ITBL_PATH_TRACK_INAPP_CLICK,
-                               queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: InAppHelperTests.apiKey),
+                               queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: InAppParsingTests.apiKey),
                                              ])
             let body = networkSession.getRequestBody() as! [String : Any]
             TestUtils.validateMatch(keyPath: KeyPath("messageId"), value: messageId, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath("buttonIndex"), value: buttonIndex, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("email"), value: InAppHelperTests.email, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("email"), value: InAppParsingTests.email, inDictionary: body)
             expectation1.fulfill()
         }
         IterableAPI.track(inAppClick: messageId, buttonIndex: buttonIndex)
@@ -196,18 +195,18 @@ class InAppHelperTests: XCTestCase {
         let expectation1 = expectation(description: "track in app open")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        IterableAPI.initializeForTesting(apiKey: InAppHelperTests.apiKey, networkSession: networkSession)
-        IterableAPI.email = InAppHelperTests.email
+        IterableAPI.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
+        IterableAPI.email = InAppParsingTests.email
         networkSession.callback = {(_, _, _) in
             TestUtils.validate(request: networkSession.request!,
                                requestType: .post,
                                apiEndPoint: .ITBL_ENDPOINT_API,
                                path: .ITBL_PATH_TRACK_INAPP_OPEN,
-                               queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: InAppHelperTests.apiKey),
+                               queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: InAppParsingTests.apiKey),
                                              ])
             let body = networkSession.getRequestBody() as! [String : Any]
             TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_MESSAGE_ID), value: messageId, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_EMAIL), value: InAppHelperTests.email, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_EMAIL), value: InAppParsingTests.email, inDictionary: body)
             expectation1.fulfill()
         }
         IterableAPI.track(inAppOpen: messageId)
