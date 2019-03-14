@@ -392,7 +392,7 @@ extension IterableInAppMessage : Codable {
     }
     
     enum ContentCodingKeys: String, CodingKey {
-        case contentType
+        case type
     }
     
     public convenience init(from decoder: Decoder) {
@@ -447,7 +447,7 @@ extension IterableInAppMessage : Codable {
             return createDefaultContent()
         }
         
-        let contentType = (try? contentContainer.decode(String.self, forKey: .contentType)).map{ IterableContentType.from(string: $0) } ?? .html
+        let contentType = (try? contentContainer.decode(String.self, forKey: .type)).map{ IterableContentType.from(string: $0) } ?? .html
         
         switch contentType {
         case .html:
@@ -458,7 +458,7 @@ extension IterableInAppMessage : Codable {
     }
     
     private static func encode(content: IterableContent, inContainer container: inout KeyedEncodingContainer<IterableInAppMessage.CodingKeys>) {
-        switch content.contentType {
+        switch content.type {
         case .html:
             if let content = content as? IterableInAppHtmlContent {
                 try? container.encode(content, forKey: .content)

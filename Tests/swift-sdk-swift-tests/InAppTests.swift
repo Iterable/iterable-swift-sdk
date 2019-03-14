@@ -1016,7 +1016,7 @@ extension IterableInAppTrigger {
 
 extension IterableInAppHtmlContent {
     public override var description: String {
-        return IterableUtil.describe("type", contentType,
+        return IterableUtil.describe("type", type,
                         "edgeInsets", edgeInsets,
                         "backgroundAlpha", backgroundAlpha,
                         "html", html, pairSeparator: " = ", separator: ", ")
@@ -1025,7 +1025,7 @@ extension IterableInAppHtmlContent {
 
 extension IterableInboxHtmlContent {
     public override var description: String {
-        return IterableUtil.describe("type", contentType,
+        return IterableUtil.describe("type", type,
                                      "edgeInsets", edgeInsets,
                                      "backgroundAlpha", backgroundAlpha,
                                      "html", html,

@@ -53,12 +53,12 @@ public enum IterableContentType : Int, Codable {
 
 @objc
 public protocol IterableContent {
-    var contentType: IterableContentType {get}
+    var type: IterableContentType {get}
 }
 
 @objcMembers
 public class IterableHtmlContent : NSObject, IterableContent {
-    public let contentType = IterableContentType.html
+    public let type = IterableContentType.html
     
     /// Edge insets
     public let edgeInsets: UIEdgeInsets
