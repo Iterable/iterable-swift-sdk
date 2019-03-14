@@ -79,6 +79,24 @@ public class IterableHtmlContent : NSObject, IterableContent {
 }
 
 @objcMembers
+public class IterableInboxMetadata : NSObject {
+    public let title: String?
+    public let subTitle: String?
+    public let icon: String?
+    
+    // Internal
+    init(
+        title: String? = nil,
+        subTitle: String? = nil,
+        icon: String? = nil
+        ) {
+        self.title = title
+        self.subTitle = subTitle
+        self.icon = icon
+    }
+}
+
+@objcMembers
 public final class IterableInAppHtmlContent : IterableHtmlContent {
 }
 
@@ -129,6 +147,9 @@ public final class IterableInAppMessage : NSObject {
     /// The content of the inbox message
     public let content: IterableContent
     
+    /// Metadata such as title, subtitle etc. needed to display this in-app message in inbox.
+    public let inboxMetadata: IterableInboxMetadata?
+    
     /// Custom Payload for this message.
     public let customPayload: [AnyHashable : Any]?
 
@@ -147,6 +168,7 @@ public final class IterableInAppMessage : NSObject {
         trigger: IterableInAppTrigger = .defaultTrigger,
         expiresAt: Date? = nil,
         content: IterableContent,
+        inboxMetadata: IterableInboxMetadata? = nil,
         customPayload: [AnyHashable : Any]? = nil
         ) {
         self.messageId = messageId
@@ -154,6 +176,7 @@ public final class IterableInAppMessage : NSObject {
         self.trigger = trigger
         self.expiresAt = expiresAt
         self.content = content
+        self.inboxMetadata = inboxMetadata
         self.customPayload = customPayload
     }
 }
