@@ -39,7 +39,7 @@ extension IterableInboxMessage : Codable {
     }
     
     public func encode(to encoder: Encoder) {
-        let message = IterableMessagePersistenceHelper.IterableMessageInfo(inAppType: inAppType,
+        let message = IterableMessagePersistenceHelper.IterableMessageInfo(saveToInbox: saveToInbox,
                                                                            messageId: messageId,
                                                                            campaignId: campaignId,
                                                                            expiresAt: expiresAt,

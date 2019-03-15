@@ -147,6 +147,9 @@ public final class IterableInAppMessage : NSObject {
     /// The content of the inbox message
     public let content: IterableContent
     
+    /// Whether to save this message to inbox
+    public let saveToInbox: Bool
+    
     /// Metadata such as title, subtitle etc. needed to display this in-app message in inbox.
     public let inboxMetadata: IterableInboxMetadata?
     
@@ -168,6 +171,7 @@ public final class IterableInAppMessage : NSObject {
         trigger: IterableInAppTrigger = .defaultTrigger,
         expiresAt: Date? = nil,
         content: IterableContent,
+        saveToInbox: Bool = false,
         inboxMetadata: IterableInboxMetadata? = nil,
         customPayload: [AnyHashable : Any]? = nil
         ) {
@@ -176,6 +180,7 @@ public final class IterableInAppMessage : NSObject {
         self.trigger = trigger
         self.expiresAt = expiresAt
         self.content = content
+        self.saveToInbox = saveToInbox
         self.inboxMetadata = inboxMetadata
         self.customPayload = customPayload
     }
@@ -244,6 +249,9 @@ public final class IterableInboxMessage : NSObject {
     /// The content of the inApp message
     public let content: IterableContent
     
+    /// Whether to save this message to inbox
+    public let saveToInbox = true
+
     /// Custom Payload for this message.
     public let customPayload: [AnyHashable : Any]?
     

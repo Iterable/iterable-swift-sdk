@@ -5,14 +5,9 @@
 
 import Foundation
 
-enum IterableInAppType : Int, Codable {
-    case `default`
-    case inbox
-}
-
 internal protocol IterableMessageProtocol {
-    /// the in-app type
-    var inAppType: IterableInAppType { get }
+    /// Whether to save this message to inbox
+    var saveToInbox: Bool { get }
     
     /// the id for the inApp message
     var messageId: String { get }
@@ -39,11 +34,11 @@ internal protocol IterableMessageProtocol {
 }
 
 extension IterableInAppMessage : IterableMessageProtocol {
-    var inAppType : IterableInAppType { return .default }
+    
 }
 
 extension IterableInboxMessage : IterableMessageProtocol {
-    var inAppType : IterableInAppType { return .inbox }
+    
 }
 
 /// Callbacks from the synchronizer

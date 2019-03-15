@@ -70,32 +70,6 @@ extension IterableContentType {
 
 // This is needed because String(describing: ...) returns wrong
 // value for this enum when it is exposed to Objective C
-extension IterableInAppType : CustomStringConvertible {
-    public var description: String {
-        switch self {
-        case .default:
-            return "default"
-        case .inbox:
-            return "inbox"
-        }
-    }
-}
-
-extension IterableInAppType {
-    static func from(string: String) -> IterableInAppType {
-        switch string.lowercased() {
-        case String(describing: IterableInAppType.default).lowercased():
-            return .default
-        case String(describing: IterableInAppType.inbox).lowercased():
-            return .inbox
-        default:
-            return .default
-        }
-    }
-}
-
-// This is needed because String(describing: ...) returns wrong
-// value for this enum when it is exposed to Objective C
 extension IterableInAppTriggerType : CustomStringConvertible {
     public var description: String {
         switch self {
@@ -248,10 +222,6 @@ extension IterableInboxHtmlContent : Codable {
 }
 
 struct IterablePersistableMessage : Codable {
-    enum CodingKeys : String, CodingKey {
-        case inAppType
-    }
-    
     let iterableMessage: IterableMessageProtocol
     
     init(iterableMessage: IterableMessageProtocol) {
@@ -259,33 +229,17 @@ struct IterablePersistableMessage : Codable {
     }
     
     func encode(to encoder: Encoder) {
-        switch (iterableMessage.inAppType) {
-        case .default:
-            (iterableMessage as? IterableInAppMessage)?.encode(to: encoder)
-        case .inbox:
-            (iterableMessage as? IterableInboxMessage)?.encode(to: encoder)
-        }
+        (iterableMessage as? IterableInAppMessage)?.encode(to: encoder)
     }
     
     init(from decoder: Decoder) {
-        guard let container = try? decoder.container(keyedBy: CodingKeys.self) else {
-            ITBError("Can not decode, returning default")
-            self.iterableMessage = IterablePersistableMessage.createDefaultMessage()
-            return
-        }
         guard let mainContainer = try? decoder.singleValueContainer() else {
             ITBError("Can not decode, returning default")
             self.iterableMessage = IterablePersistableMessage.createDefaultMessage()
             return
         }
         
-        let inAppType = (try? container.decode(IterableInAppType.self, forKey: .inAppType)) ?? .default
-        switch (inAppType) {
-        case .default:
-            self.iterableMessage = (try? mainContainer.decode(IterableInAppMessage.self)) ?? IterablePersistableMessage.createDefaultMessage()
-        case .inbox:
-            self.iterableMessage = (try? mainContainer.decode(IterableInboxMessage.self)) ?? IterablePersistableMessage.createDefaultMessage()
-        }
+        self.iterableMessage = (try? mainContainer.decode(IterableInAppMessage.self)) ?? IterablePersistableMessage.createDefaultMessage()
     }
     
     private static func createDefaultMessage() -> IterableMessageProtocol {
@@ -295,7 +249,7 @@ struct IterablePersistableMessage : Codable {
 
 struct IterableMessagePersistenceHelper {
     struct IterableMessageInfo {
-        let inAppType: IterableInAppType
+        let saveToInbox: Bool
         
         let messageId: String
         
@@ -309,8 +263,8 @@ struct IterableMessagePersistenceHelper {
         
         var consumed: Bool = false
         
-        init(inAppType: IterableInAppType, messageId: String, campaignId: String, expiresAt: Date?, customPayload: [AnyHashable : Any]?, processed: Bool, consumed: Bool) {
-            self.inAppType = inAppType
+        init(saveToInbox: Bool, messageId: String, campaignId: String, expiresAt: Date?, customPayload: [AnyHashable : Any]?, processed: Bool, consumed: Bool) {
+            self.saveToInbox = saveToInbox
             self.messageId = messageId
             self.campaignId = campaignId
             self.expiresAt = expiresAt
@@ -321,7 +275,7 @@ struct IterableMessagePersistenceHelper {
     }
     
     enum CodingKeys: String, CodingKey {
-        case inAppType
+        case saveToInbox
         case messageId
         case campaignId
         case expiresAt
@@ -336,7 +290,7 @@ struct IterableMessagePersistenceHelper {
             return defaultMessage
         }
 
-        let inAppType = (try? container.decode(IterableInAppType.self, forKey: .inAppType)) ?? .default
+        let saveToInbox = (try? container.decode(Bool.self, forKey: .saveToInbox)) ?? false
         let messageId = (try? container.decode(String.self, forKey: .messageId)) ?? ""
         let campaignId = (try? container.decode(String.self, forKey: .campaignId)) ?? ""
         let expiresAt = (try? container.decode(Date.self, forKey: .expiresAt))
@@ -345,7 +299,7 @@ struct IterableMessagePersistenceHelper {
         let processed = (try? container.decode(Bool.self, forKey: .processed)) ?? false
         let consumed = (try? container.decode(Bool.self, forKey: .consumed)) ?? false
 
-        return IterableMessageInfo(inAppType: inAppType,
+        return IterableMessageInfo(saveToInbox: saveToInbox,
                             messageId: messageId,
                             campaignId: campaignId,
                             expiresAt: expiresAt,
@@ -356,7 +310,7 @@ struct IterableMessagePersistenceHelper {
     
     static func encode(message: IterableMessageInfo, to encoder: Encoder) {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try? container.encode(message.inAppType, forKey: .inAppType)
+        try? container.encode(message.saveToInbox, forKey: .saveToInbox)
         try? container.encode(message.messageId, forKey: .messageId)
         try? container.encode(message.campaignId, forKey: .campaignId)
         try? container.encode(message.expiresAt, forKey: .expiresAt)
@@ -382,7 +336,7 @@ struct IterableMessagePersistenceHelper {
         return (deserialized as? [AnyHashable : Any])
     }
 
-    private static let defaultMessage = IterableMessageInfo(inAppType: .default, messageId: "", campaignId: "", expiresAt: nil, customPayload: nil, processed: false, consumed: false)
+    private static let defaultMessage = IterableMessageInfo(saveToInbox: false, messageId: "", campaignId: "", expiresAt: nil, customPayload: nil, processed: false, consumed: false)
 }
 
 extension IterableInAppMessage : Codable {
@@ -427,7 +381,7 @@ extension IterableInAppMessage : Codable {
 
     
     public func encode(to encoder: Encoder) {
-        let message = IterableMessagePersistenceHelper.IterableMessageInfo(inAppType: inAppType,
+        let message = IterableMessagePersistenceHelper.IterableMessageInfo(saveToInbox: saveToInbox,
                                                                                messageId: messageId,
                                                                                campaignId: campaignId,
                                                                                expiresAt: expiresAt,

@@ -707,7 +707,7 @@ class InAppTests: XCTestCase {
         {"inAppMessages":
         [
             {
-                "inAppType": "default",
+                "saveToInbox": false,
                 "content": {"type": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site1.com\'>Click Here</a>", "payload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}},
                 "trigger": {"type": "event", "details": "some event details"},
                 "messageId": "message1",
@@ -716,7 +716,7 @@ class InAppTests: XCTestCase {
                 "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
             },
             {
-                "inAppType": "inbox",
+                "saveToInbox": true,
                 "content": {"type": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
                 "trigger": {"type": "immediate"},
                 "messageId": "message2",
@@ -1040,7 +1040,7 @@ extension IterableInAppMessage {
     public override var description: String {
         return IterableUtil.describe("messageId", messageId,
                         "campaignId", campaignId,
-                        "inAppType", inAppType,
+                        "saveToInbox", saveToInbox,
                         "trigger", trigger,
                         "expiresAt", expiresAt ?? "nil",
                         "content", content,
@@ -1053,7 +1053,7 @@ extension IterableInboxMessage {
     public override var description: String {
         return IterableUtil.describe("messageId", messageId,
                                      "campaignId", campaignId,
-                                     "inAppType", inAppType,
+                                     "saveToInbox", saveToInbox,
                                      "expiresAt", expiresAt ?? "nil",
                                      "content", content,
                                      "processed", processed,

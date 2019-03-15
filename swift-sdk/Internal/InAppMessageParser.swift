@@ -27,7 +27,7 @@ struct InAppMessageParser {
     
     // Change the in-app payload coming from the server to one that we expect it to be like
     // This is temporary until we fix the backend to do the right thing.
-    // 1. Move 'inAppType', to top level from 'customPayload'
+    // 1. Move 'saveToInbox', to top level from 'customPayload'
     // 2. Move 'type' to 'content' element.
     //!! Remove when we have backend support
     private static func preProcess(payload: [AnyHashable : Any]) -> [AnyHashable : Any] {
@@ -36,7 +36,7 @@ struct InAppMessageParser {
             return result
         }
         
-        moveValue(withKey: AnyHashable.ITBL_IN_APP_INAPP_TYPE, from: &customPayloadDict, to: &result)
+        moveValue(withKey: AnyHashable.ITBL_IN_APP_SAVE_TO_INBOX, from: &customPayloadDict, to: &result)
         
         if var contentDict = payload[.ITBL_IN_APP_CONTENT] as? [AnyHashable : Any] {
             moveValue(withKey: AnyHashable.ITBL_IN_APP_CONTENT_TYPE, from: &customPayloadDict, to: &contentDict)
@@ -65,7 +65,7 @@ struct InAppMessageParser {
 
     /// Holds information about 'base' IterableMessage
     private struct InAppParseDetails {
-        let inAppType: IterableInAppType
+        let saveToInbox: Bool
         let content: IterableContent
         let messageId: String
         let campaignId: String
@@ -78,12 +78,7 @@ struct InAppMessageParser {
             return .failure(.parseFailed(reason: "no messageId", messageId: nil))
         }
         
-        let inAppType: IterableInAppType
-        if let inAppTypeStr = json[.ITBL_IN_APP_INAPP_TYPE] as? String {
-            inAppType = IterableInAppType.from(string: inAppTypeStr)
-        } else {
-            inAppType = .default
-        }
+        let saveToInbox = json[.ITBL_IN_APP_SAVE_TO_INBOX] as? Bool ?? false
         
         guard let contentDict = json[.ITBL_IN_APP_CONTENT] as? [AnyHashable : Any] else {
             return .failure(.parseFailed(reason: "no content in json payload", messageId: messageId))
@@ -110,7 +105,7 @@ struct InAppMessageParser {
         let expiresAt = parseExpiresAt(dict: json)
         
         return .success(InAppParseDetails(
-            inAppType: inAppType,
+            saveToInbox: saveToInbox,
             content: content,
             messageId: messageId,
             campaignId: campaignId,
@@ -128,23 +123,14 @@ struct InAppMessageParser {
     }
     
     private static func createMessage(fromParseDetails details: InAppParseDetails, AndJson json: [AnyHashable : Any]) -> IterableMessageProtocol {
-        switch details.inAppType {
-        case .default:
-            let trigger = parseTrigger(fromTriggerElement: json[.ITBL_IN_APP_TRIGGER] as? [AnyHashable : Any])
-            return IterableInAppMessage(messageId: details.messageId,
-                                        campaignId: details.campaignId,
-                                        trigger: trigger,
-                                        expiresAt: details.expiresAt,
-                                        content: details.content,
-                                        customPayload: details.customPayload)
-
-        case .inbox:
-            return IterableInboxMessage(messageId: details.messageId,
-                                        campaignId: details.campaignId,
-                                        expiresAt: details.expiresAt,
-                                        content: details.content,
-                                        customPayload: details.customPayload)
-        }
+        let trigger = parseTrigger(fromTriggerElement: json[.ITBL_IN_APP_TRIGGER] as? [AnyHashable : Any])
+        return IterableInAppMessage(messageId: details.messageId,
+                                    campaignId: details.campaignId,
+                                    trigger: trigger,
+                                    expiresAt: details.expiresAt,
+                                    content: details.content,
+                                    saveToInbox: details.saveToInbox,
+                                    customPayload: details.customPayload)
     }
 
     

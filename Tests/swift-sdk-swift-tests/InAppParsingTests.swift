@@ -308,7 +308,7 @@ class InAppParsingTests: XCTestCase {
         }
         """
         var customPayload1 = customPayloadStr1.toJsonDict()
-        customPayload1["inAppType"] = "default"
+        customPayload1["saveToInbox"] = false
         customPayload1["type"] = "html"
         
         let customPayloadStr2 = """
@@ -322,7 +322,7 @@ class InAppParsingTests: XCTestCase {
         }
         """
         var customPayload2 = customPayloadStr2.toJsonDict()
-        customPayload2["inAppType"] = "inbox"
+        customPayload2["saveToInbox"] = true
         customPayload2["type"] = "inboxHtml"
         customPayload2["title"] = "title"
         customPayload2["subTitle"] = "subTitle"
@@ -386,19 +386,19 @@ class InAppParsingTests: XCTestCase {
         XCTAssertEqual(messages.count, 4)
         let message1 = messages[0]
         XCTAssertEqual(message1.messageId, "messageId1")
-        XCTAssertEqual(message1.inAppType, .default)
+        XCTAssertEqual(message1.saveToInbox, false)
         XCTAssertTrue(TestUtils.areEqual(dict1: message1.customPayload!, dict2: customPayloadStr1.toJsonDict()))
         
         let message2 = messages[1]
         XCTAssertEqual(message2.messageId, "messageId2")
-        XCTAssertEqual(message2.inAppType, .inbox)
+        XCTAssertEqual(message2.saveToInbox, true)
         XCTAssertTrue(TestUtils.areEqual(dict1: message2.customPayload!, dict2: customPayloadStr2.toJsonDict()))
         
         let message3 = messages[2]
-        XCTAssertEqual(message3.inAppType, .default)
+        XCTAssertEqual(message3.saveToInbox, false)
         
         let message4 = messages[3]
-        XCTAssertEqual(message4.inAppType, .default)
+        XCTAssertEqual(message4.saveToInbox, false)
     }
 
     
@@ -435,7 +435,7 @@ class InAppParsingTests: XCTestCase {
                     },
                     "messageId" : "messageIdxxx",
                     "campaignId" : "campaignIdxxx",
-                    "inAppType" : "default",
+                    "saveToInbox" : false,
                     "trigger" : {
                         "type" : "myNewKind",
                         "myPayload" : {"var1" : "val1"}
@@ -443,7 +443,7 @@ class InAppParsingTests: XCTestCase {
                     "customPayload" : \(customPayloadStr1)
                 },
                 {
-                    "inAppType" : "inbox",
+                    "saveToInbox" : true,
                     "content" : {
                         "type" : "inboxHtml",
                         "html" : "<a href=\\"http://somewhere.com\\">Click here</a>",
@@ -489,11 +489,11 @@ class InAppParsingTests: XCTestCase {
         
         XCTAssertEqual(messages.count, 4)
         let message1 = messages[0]
-        XCTAssertEqual(message1.inAppType, .default)
+        XCTAssertEqual(message1.saveToInbox, false)
         XCTAssertTrue(TestUtils.areEqual(dict1: message1.customPayload!, dict2: customPayloadStr1.toJsonDict()))
         
         let message2 = messages[1] as! IterableInboxMessage
-        XCTAssertEqual(message2.inAppType, .inbox)
+        XCTAssertEqual(message2.saveToInbox, true)
         let content = message2.content as! IterableInboxHtmlContent
         XCTAssertEqual(content.title, inboxTitle)
         XCTAssertEqual(content.subTitle, inboxSubTitle)
@@ -501,10 +501,10 @@ class InAppParsingTests: XCTestCase {
         XCTAssertTrue(TestUtils.areEqual(dict1: message2.customPayload!, dict2: customPayloadStr2.toJsonDict()))
         
         let message3 = messages[2]
-        XCTAssertEqual(message3.inAppType, .default)
+        XCTAssertEqual(message3.saveToInbox, false)
 
         let message4 = messages[3]
-        XCTAssertEqual(message4.inAppType, .default)
+        XCTAssertEqual(message4.saveToInbox, false)
     }
 
     private func createInAppPayload(withCustomPayload customPayload: [AnyHashable : Any]) -> [AnyHashable : Any] {

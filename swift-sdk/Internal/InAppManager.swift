@@ -421,7 +421,7 @@ extension InAppManager : InAppSynchronizerDelegate {
     }
     
     private static func isProcessable(message: IterableMessageProtocol) -> Bool {
-        guard message.inAppType == .default else {
+        guard message.saveToInbox == false else {
             // do not process inbox Types
             return false
         }
