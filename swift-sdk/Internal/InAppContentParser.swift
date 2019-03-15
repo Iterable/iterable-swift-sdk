@@ -27,11 +27,9 @@ struct InAppContentParser {
     private static func contentParser(forContentType contentType: IterableContentType) -> ContentFromJsonParser.Type {
         switch contentType {
         case .html:
-            return InAppHtmlContentParser.self
-        case .inboxHtml:
-            return InboxHtmlContentParser.self
+            return HtmlContentParser.self
         default:
-            return InAppHtmlContentParser.self
+            return HtmlContentParser.self
         }
     }
 }
@@ -41,31 +39,6 @@ fileprivate protocol ContentFromJsonParser {
 }
 
 struct HtmlContentParser {
-    enum Result {
-        case success(content: HtmlContent)
-        case failure(reason: String)
-    }
-    
-    struct HtmlContent {
-        let edgeInsets: UIEdgeInsets
-        let backgroundAlpha: Double
-        let html: String
-    }
-    
-    fileprivate static func tryCreate(from json: [AnyHashable : Any]) -> Result {
-        guard let html = json[.ITBL_IN_APP_HTML] as? String else {
-            return .failure(reason: "no html")
-        }
-        guard html.range(of: AnyHashable.ITBL_IN_APP_HREF, options: [.caseInsensitive]) != nil else {
-            return .failure(reason: "No href tag found in in-app html payload \(html)")
-        }
-        
-        let inAppDisplaySettings = json[.ITBL_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
-        let backgroundAlpha = getBackgroundAlpha(fromInAppSettings: inAppDisplaySettings)
-        let edgeInsets = getPadding(fromInAppSettings: inAppDisplaySettings)
-        return .success(content: HtmlContent(edgeInsets: edgeInsets, backgroundAlpha: backgroundAlpha, html: html))
-    }
-
     /**
      Parses the padding offsets from the payload
      
@@ -159,34 +132,19 @@ struct HtmlContentParser {
     private static let IN_APP_PERCENTAGE = "percentage"
 }
 
-struct InAppHtmlContentParser : ContentFromJsonParser {
+extension HtmlContentParser : ContentFromJsonParser {
     fileprivate static func tryCreate(from json: [AnyHashable : Any]) -> InAppContentParseResult {
-        switch HtmlContentParser.tryCreate(from: json) {
-        case .failure(let reason):
-            return .failure(reason: reason)
-        case .success(let content):
-            return .success(content: IterableInAppHtmlContent(edgeInsets: content.edgeInsets, backgroundAlpha: content.backgroundAlpha, html: content.html))
+        guard let html = json[.ITBL_IN_APP_HTML] as? String else {
+            return .failure(reason: "no html")
         }
+        guard html.range(of: AnyHashable.ITBL_IN_APP_HREF, options: [.caseInsensitive]) != nil else {
+            return .failure(reason: "No href tag found in in-app html payload \(html)")
+        }
+        
+        let inAppDisplaySettings = json[.ITBL_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
+        let backgroundAlpha = getBackgroundAlpha(fromInAppSettings: inAppDisplaySettings)
+        let edgeInsets = getPadding(fromInAppSettings: inAppDisplaySettings)
+
+        return .success(content: IterableHtmlContent(edgeInsets: edgeInsets, backgroundAlpha: backgroundAlpha, html: html))
     }
 }
-
-struct InboxHtmlContentParser : ContentFromJsonParser {
-    fileprivate static func tryCreate(from json: [AnyHashable : Any]) -> InAppContentParseResult {
-        switch HtmlContentParser.tryCreate(from: json) {
-        case .failure(let reason):
-            return .failure(reason: reason)
-        case .success(let htmlContent):
-            return .success(content: createInboxHtmlContent(json: json, htmlContent: htmlContent))
-        }
-    }
-    
-    private static func createInboxHtmlContent(json: [AnyHashable : Any], htmlContent: HtmlContentParser.HtmlContent) -> IterableInboxHtmlContent {
-        return IterableInboxHtmlContent(edgeInsets: htmlContent.edgeInsets,
-                                        backgroundAlpha: htmlContent.backgroundAlpha,
-                                        html: htmlContent.html,
-                                        title: json.getStringValue(key: .inboxTitle),
-                                        subTitle: json.getStringValue(key: .inboxSubtitle),
-                                        icon: json.getStringValue(key: .inboxIcon))
-    }
-}
-

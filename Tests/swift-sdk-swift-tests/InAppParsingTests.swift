@@ -492,12 +492,12 @@ class InAppParsingTests: XCTestCase {
         XCTAssertEqual(message1.saveToInbox, false)
         XCTAssertTrue(TestUtils.areEqual(dict1: message1.customPayload!, dict2: customPayloadStr1.toJsonDict()))
         
-        let message2 = messages[1] as! IterableInboxMessage
+        let message2 = messages[1] as! IterableInAppMessage
         XCTAssertEqual(message2.saveToInbox, true)
-        let content = message2.content as! IterableInboxHtmlContent
-        XCTAssertEqual(content.title, inboxTitle)
-        XCTAssertEqual(content.subTitle, inboxSubTitle)
-        XCTAssertEqual(content.icon, inboxIcon)
+        let inboxMetadata = message2.inboxMetadata as! IterableInboxMetadata
+        XCTAssertEqual(inboxMetadata.title, inboxTitle)
+        XCTAssertEqual(inboxMetadata.subTitle, inboxSubTitle)
+        XCTAssertEqual(inboxMetadata.icon, inboxIcon)
         XCTAssertTrue(TestUtils.areEqual(dict1: message2.customPayload!, dict2: customPayloadStr2.toJsonDict()))
         
         let message3 = messages[2]

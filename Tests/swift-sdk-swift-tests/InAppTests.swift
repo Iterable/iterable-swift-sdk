@@ -748,8 +748,8 @@ class InAppTests: XCTestCase {
         let obtained = persister.getMessages()
         XCTAssertEqual(messages.description, obtained.description)
         
-        XCTAssertEqual((obtained[3] as! IterableInAppMessage).trigger.type, IterableInAppTriggerType.never)
-        let dict = (obtained[3] as! IterableInAppMessage).trigger.dict as! [String : Any]
+        XCTAssertEqual((obtained[3]).trigger.type, IterableInAppTriggerType.never)
+        let dict = (obtained[3]).trigger.dict as! [String : Any]
         TestUtils.validateMatch(keyPath: KeyPath("nested.var1"), value: "val1", inDictionary: dict, message: "Expected to find val1 in persisted dictionary")
 
         persister.clear()
@@ -775,7 +775,7 @@ class InAppTests: XCTestCase {
         
         let payload = TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 3, 2])
         let goodMessages = InAppTestHelper.inAppMessages(fromPayload: payload)
-        let goodData = try! JSONEncoder().encode(goodMessages.map { IterablePersistableMessage(iterableMessage: $0) } )
+        let goodData = try! JSONEncoder().encode(goodMessages)
         FileHelper.write(filename: "test", ext: "json", data: goodData)
         
         let obtainedMessages = persister.getMessages()
@@ -997,7 +997,7 @@ class InAppTests: XCTestCase {
         let message = IterableInAppMessage(messageId: "messageId",
                                            campaignId: "campaignId",
                                            expiresAt: mockDateProvider.currentDate.addingTimeInterval(1.0 * 60.0), // one minute from now
-                                           content: IterableInAppHtmlContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "<html></html>"))
+                                           content: IterableHtmlContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "<html></html>"))
         mockInAppSynchronizer.mockMessagesAvailableFromServer(messages: [message])
 
         XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
@@ -1014,7 +1014,7 @@ extension IterableInAppTrigger {
     }
 }
 
-extension IterableInAppHtmlContent {
+extension IterableHtmlContent {
     public override var description: String {
         return IterableUtil.describe("type", type,
                         "edgeInsets", edgeInsets,
@@ -1023,13 +1023,9 @@ extension IterableInAppHtmlContent {
     }
 }
 
-extension IterableInboxHtmlContent {
+extension IterableInboxMetadata {
     public override var description: String {
-        return IterableUtil.describe("type", type,
-                                     "edgeInsets", edgeInsets,
-                                     "backgroundAlpha", backgroundAlpha,
-                                     "html", html,
-                                     "title", title ?? "nil",
+        return IterableUtil.describe("title", title ?? "nil",
                                      "subTitle", subTitle ?? "nil",
                                      "icon", icon ?? "nil",
                                      pairSeparator: " = ", separator: ", ")
@@ -1041,6 +1037,7 @@ extension IterableInAppMessage {
         return IterableUtil.describe("messageId", messageId,
                         "campaignId", campaignId,
                         "saveToInbox", saveToInbox,
+                        "inboxMetadata", inboxMetadata ?? "nil",
                         "trigger", trigger,
                         "expiresAt", expiresAt ?? "nil",
                         "content", content,

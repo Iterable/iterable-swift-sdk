@@ -11,7 +11,7 @@ import UIKit
 
 // This is Internal Struct, no public methods
 struct InAppHelper {
-    static func getInAppMessagesFromServer(internalApi: IterableAPIInternal, number: Int) -> Future<[IterableMessageProtocol]> {
+    static func getInAppMessagesFromServer(internalApi: IterableAPIInternal, number: Int) -> Future<[IterableInAppMessage]> {
         return internalApi.getInAppMessages(NSNumber(value: number)).map {
             return InAppMessageParser.parse(payload: $0).compactMap { parseResult in
                 process(parseResult: parseResult, internalApi: internalApi)
@@ -73,7 +73,7 @@ struct InAppHelper {
     }
 
     // process each parseResult and consumes failed message, if messageId is present
-    private static func process(parseResult: IterableResult<IterableMessageProtocol, InAppMessageParser.ParseError>, internalApi: IterableAPIInternal) -> IterableMessageProtocol? {
+    private static func process(parseResult: IterableResult<IterableInAppMessage, InAppMessageParser.ParseError>, internalApi: IterableAPIInternal) -> IterableInAppMessage? {
         switch parseResult {
         case .failure(let parseError):
             switch (parseError) {

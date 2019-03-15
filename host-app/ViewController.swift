@@ -134,7 +134,7 @@ class ViewController: UIViewController {
         let html = """
             <a href="http://website/resource#something">Click Me</a>
         """
-        let content = IterableInAppHtmlContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: html)
+        let content = IterableHtmlContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: html)
         let message = IterableInAppMessage(messageId: messageId, campaignId: "zeeCampaignId", content: content)
         
         let config = IterableConfig()
@@ -165,7 +165,7 @@ class ViewController: UIViewController {
         let html = """
             <a href="http://website/resource#something">Click Me</a>
         """
-        let content = IterableInAppHtmlContent(edgeInsets: UIEdgeInsets(top: -1, left: 10, bottom: -1, right: 10), backgroundAlpha: 0.5, html: html)
+        let content = IterableHtmlContent(edgeInsets: UIEdgeInsets(top: -1, left: 10, bottom: -1, right: 10), backgroundAlpha: 0.5, html: html)
         let message = IterableInAppMessage(messageId: messageId, campaignId: "zeeCampaignId", content: content)
         
         let config = IterableConfig()

@@ -75,19 +75,14 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
         
         var messages = [IterableInAppMessage] ()
         updateQueue.sync {
-            messages = Array(self.messagesMap.values.compactMap { InAppManager.asValidInApp(message: $0, currentDate: dateProvider.currentDate)})
+            messages = Array(self.messagesMap.values.filter { InAppManager.isValid(message: $0, currentDate: dateProvider.currentDate)})
         }
         return messages
     }
     
     func getMessages() -> [IterableInboxMessage] {
         ITBInfo()
-        
-        var messages = [IterableInboxMessage] ()
-        updateQueue.sync {
-            messages = Array(self.messagesMap.values.compactMap { InAppManager.asValidInbox(message: $0, currentDate: dateProvider.currentDate)})
-        }
-        return messages
+        return []
     }
     
     func getUnreadMessages() -> [IterableInboxMessage] {
@@ -99,7 +94,6 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
     }
     
     func remove(message: IterableInboxMessage) {
-        removePrivate(message: message)
     }
     
     func show(message: IterableInboxMessage) {
@@ -108,14 +102,10 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
     }
     
     func show(message: IterableInboxMessage, callback: ITEActionBlock?) {
-        // This is public (via public protocol implementation), so make sure we call from Main Thread
-        DispatchQueue.main.async {
-            _ = self.showInternal(message: message, consume: false, callback: callback)
-        }
     }
     
     func createInboxMessageViewController(for message: IterableInboxMessage) -> UIViewController? {
-        guard let content = message.content as? IterableInboxHtmlContent else {
+        guard let content = message.content as? IterableHtmlContent else {
             ITBError("Invalid Content in message")
             return nil
         }
@@ -165,7 +155,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
         }
     }
     
-    func set(read: Bool, forMessage message: IterableInboxMessage) {
+    func set(read: Bool, forMessage message: IterableInAppMessage) {
         updateQueue.sync {
             let toUpdate = message
             toUpdate.read = read
@@ -185,7 +175,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
     }
     
     // This must be called from MainThread
-    private func showInternal(message: IterableMessageProtocol,
+    private func showInternal(message: IterableInAppMessage,
                               consume: Bool,
                               callback: ITEActionBlock? = nil) {
         ITBInfo()
@@ -222,8 +212,8 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
             internalApi?.inAppConsume(message.messageId)
         }
         
-        // set read for valid inbox message
-        InAppManager.asValidInbox(message: message, currentDate: dateProvider.currentDate).map { set(read: true, forMessage: $0) }
+        // set read
+        set(read: true, forMessage: message)
 
         updateMessage(message, processed: true, consumed: shouldConsume)
     }
@@ -259,14 +249,14 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
         }
     }
 
-    private func removePrivate(message: IterableMessageProtocol) {
+    private func removePrivate(message: IterableInAppMessage) {
         ITBInfo()
         
         updateMessage(message, processed: true, consumed: true)
         self.internalApi?.inAppConsume(message.messageId)
     }
 
-    private static func isExpired(message: IterableMessageProtocol, currentDate: Date) -> Bool {
+    private static func isExpired(message: IterableInAppMessage, currentDate: Date) -> Bool {
         guard let expiresAt = message.expiresAt else {
             return false
         }
@@ -274,29 +264,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
         return currentDate >= expiresAt
     }
     
-    fileprivate static func asValidInApp(message: IterableMessageProtocol, currentDate: Date) -> IterableInAppMessage? {
-        guard let inAppMessage = message as? IterableInAppMessage else {
-            return nil
-        }
-        guard isValid(message: message, currentDate: currentDate) else {
-            return nil
-        }
-        
-        return inAppMessage
-    }
-    
-    fileprivate static func asValidInbox(message: IterableMessageProtocol, currentDate: Date) -> IterableInboxMessage? {
-        guard let inboxMessage = message as? IterableInboxMessage else {
-            return nil
-        }
-        guard isValid(message: message, currentDate: currentDate) else {
-            return nil
-        }
-        
-        return inboxMessage
-    }
-    
-    fileprivate static func isValid(message: IterableMessageProtocol, currentDate: Date) -> Bool {
+    fileprivate static func isValid(message: IterableInAppMessage, currentDate: Date) -> Bool {
         return message.consumed == false && isExpired(message: message, currentDate: currentDate) == false
     }
     
@@ -311,7 +279,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
     private let notificationCenter: NotificationCenterProtocol
     
     private let persister: IterableMessagePersistenceProtocol
-    private var messagesMap = OrderedDictionary<String, IterableMessageProtocol>() // This is mutable
+    private var messagesMap = OrderedDictionary<String, IterableInAppMessage>() // This is mutable
     private let dateProvider: DateProviderProtocol
     private let retryInterval: TimeInterval // in seconds, if a message is already showing how long to wait?
     private var lastDismissedTime: Date? = nil
@@ -323,7 +291,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
 }
 
 extension InAppManager : InAppSynchronizerDelegate {
-    func onInAppMessagesAvailable(messages: [IterableMessageProtocol]) {
+    func onInAppMessagesAvailable(messages: [IterableInAppMessage]) {
         ITBDebug()
 
         updateQueue.async {
@@ -356,18 +324,19 @@ extension InAppManager : InAppSynchronizerDelegate {
     
     private func processInboxMessages() {
         ITBDebug()
-        let newInboxMessages = messagesMap.values.compactMap { InAppManager.asValidInbox(message: $0, currentDate: dateProvider.currentDate) }.filter { $0.processed == false }
-        
-        if newInboxMessages.count > 0 {
-            newInboxMessages.forEach {
-                let toUpdate = $0
-                toUpdate.processed = true
-                self.messagesMap.updateValue(toUpdate, forKey: $0.messageId)
-            }
-            persister.persist(self.messagesMap.values)
-
-            inboxDelegate?.onNew(messages: newInboxMessages)
-        }
+        //!!!
+//        let newInboxMessages = messagesMap.values.compactMap { InAppManager.asValidInbox(message: $0, currentDate: dateProvider.currentDate) }.filter { $0.processed == false }
+//
+//        if newInboxMessages.count > 0 {
+//            newInboxMessages.forEach {
+//                let toUpdate = $0
+//                toUpdate.processed = true
+//                self.messagesMap.updateValue(toUpdate, forKey: $0.messageId)
+//            }
+//            persister.persist(self.messagesMap.values as! [IterableInAppMessage])
+//
+//            inboxDelegate?.onNew(messages: newInboxMessages)
+//        }
     }
     
     private func scheduleNextInAppMessage() {
@@ -417,10 +386,10 @@ extension InAppManager : InAppSynchronizerDelegate {
     }
     
     private func getFirstProcessableInAppMessage() -> IterableInAppMessage? {
-        return messagesMap.values.filter(InAppManager.isProcessable).first as? IterableInAppMessage
+        return messagesMap.values.filter(InAppManager.isProcessable).first
     }
     
-    private static func isProcessable(message: IterableMessageProtocol) -> Bool {
+    private static func isProcessable(message: IterableInAppMessage) -> Bool {
         guard message.saveToInbox == false else {
             // do not process inbox Types
             return false
@@ -430,20 +399,13 @@ extension InAppManager : InAppSynchronizerDelegate {
             return false
         }
         
-        if let inAppMessage = message as? IterableInAppMessage {
-            // only immediate triggers are processable
-            return inAppMessage.trigger.type == .immediate
-        } else {
-            // inbox messages are processable
-            ITBError("Expecting IterableInAppMessage")
-            return false
-        }
+        return message.trigger.type == .immediate
     }
     
-    private func updateMessage(_ message: IterableMessageProtocol, processed: Bool, consumed: Bool = false) {
+    private func updateMessage(_ message: IterableInAppMessage, processed: Bool, consumed: Bool = false) {
         ITBDebug()
         updateQueue.sync {
-            var toUpdate = message
+            let toUpdate = message
             toUpdate.processed = processed
             toUpdate.consumed = consumed
             self.messagesMap.updateValue(toUpdate, forKey: message.messageId)
@@ -495,7 +457,7 @@ extension InAppManager : InAppSynchronizerDelegate {
         }
     }
     
-    private func addNewMessages(messagesFromServer messages: [IterableMessageProtocol]) {
+    private func addNewMessages(messagesFromServer messages: [IterableInAppMessage]) {
         messages.forEach { message in
             if !messagesMap.contains(where: { $0.key == message.messageId }) {
                 messagesMap[message.messageId] = message
@@ -503,15 +465,15 @@ extension InAppManager : InAppSynchronizerDelegate {
         }
     }
     
-    private func removeDeletedMessages(messagesFromServer messages: [IterableMessageProtocol]) {
+    private func removeDeletedMessages(messagesFromServer messages: [IterableInAppMessage]) {
         getRemovedMessages(messagesFromServer: messages).forEach {
             messagesMap.removeValue(forKey: $0.messageId)
         }
     }
     
     // given `messages` coming for server, find messages that need to be removed
-    private func getRemovedMessages(messagesFromServer messages: [IterableMessageProtocol]) -> [IterableMessageProtocol] {
-        return messagesMap.values.reduce(into: [IterableMessageProtocol]()) { (result, message) in
+    private func getRemovedMessages(messagesFromServer messages: [IterableInAppMessage]) -> [IterableInAppMessage] {
+        return messagesMap.values.reduce(into: [IterableInAppMessage]()) { (result, message) in
             if !messages.contains(where: { $0.messageId == message.messageId }) {
                 result.append(message)
             }
@@ -552,7 +514,7 @@ class EmptyInAppManager : IterableInAppManagerProtocol, IterableInboxManagerProt
     func remove(message: IterableInAppMessage) {
     }
 
-    func set(read: Bool, forMessage message: IterableInboxMessage) {
+    func set(read: Bool, forMessage message: IterableInAppMessage) {
     }
 
     func getUnreadCount() -> Int {

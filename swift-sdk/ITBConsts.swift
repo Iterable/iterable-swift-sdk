@@ -159,6 +159,7 @@ public extension AnyHashable {
     public static let ITBL_IN_APP_CUSTOM_PAYLOAD = "customPayload"
     public static let ITBL_IN_APP_SAVE_TO_INBOX = "saveToInbox"
     public static let ITBL_IN_APP_CONTENT_TYPE = "type"
+    public static let ITBL_IN_APP_INBOX_METADATA = "inboxMetadata"
 }
 
 public enum JsonKey : String {

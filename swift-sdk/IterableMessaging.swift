@@ -29,6 +29,10 @@ public protocol IterableInAppManagerProtocol {
     
     /// - parameter message: The message to remove.
     @objc(removeMessage:) func remove(message: IterableInAppMessage)
+
+    /// - parameter read: Whether this inbox message was read
+    /// - parameter message: The inbox message
+    @objc(setRead:forMessage:) func set(read: Bool, forMessage message: IterableInAppMessage)
 }
 
 /// By default, every single inApp will be shown as soon as it is available.
@@ -57,7 +61,7 @@ public protocol IterableContent {
 }
 
 @objcMembers
-public class IterableHtmlContent : NSObject, IterableContent {
+public final class IterableHtmlContent : NSObject, IterableContent {
     public let type = IterableContentType.html
     
     /// Edge insets
@@ -79,7 +83,7 @@ public class IterableHtmlContent : NSObject, IterableContent {
 }
 
 @objcMembers
-public class IterableInboxMetadata : NSObject {
+public final class IterableInboxMetadata : NSObject {
     public let title: String?
     public let subTitle: String?
     public let icon: String?
@@ -94,10 +98,6 @@ public class IterableInboxMetadata : NSObject {
         self.subTitle = subTitle
         self.icon = icon
     }
-}
-
-@objcMembers
-public final class IterableInAppHtmlContent : IterableHtmlContent {
 }
 
 /// `immediate` will try to display the inApp automatically immediately
@@ -164,6 +164,9 @@ public final class IterableInAppMessage : NSObject {
     /// Note: This is internal and not public
     internal var consumed: Bool = false
 
+    /// Whether this inbox message has been read
+    public internal(set) var read: Bool = false
+
     // Internal, don't let others create
     init(
         messageId: String,
@@ -213,25 +216,6 @@ public protocol IterableInboxManagerProtocol {
     
     /// - parameter message: The message to remove.
     @objc(removeInboxMessage:) func remove(message: IterableInboxMessage)
-    
-    /// - parameter read: Whether this inbox message was read
-    /// - parameter message: The inbox message
-    @objc(setRead:forMessage:) func set(read: Bool, forMessage message: IterableInboxMessage)
-}
-
-@objcMembers
-public final class IterableInboxHtmlContent : IterableHtmlContent {
-    public let title: String?
-    public let subTitle: String?
-    public let icon: String?
-    
-    // internal
-    init(edgeInsets: UIEdgeInsets, backgroundAlpha: Double, html: String, title: String?, subTitle: String?, icon: String?) {
-        self.title = title
-        self.subTitle = subTitle
-        self.icon = icon
-        super.init(edgeInsets: edgeInsets, backgroundAlpha: backgroundAlpha, html: html)
-    }
 }
 
 /// A message is comprised of content and whether this message was skipped.

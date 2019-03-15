@@ -214,7 +214,7 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
     var syncCallback: (() -> Void)?
     var removeCallback: ((String) -> Void)?
     
-    private var messagesMap = OrderedDictionary<String, IterableMessageProtocol>()
+    private var messagesMap = OrderedDictionary<String, IterableInAppMessage>()
     
     func sync() {
         ITBInfo()
@@ -234,10 +234,10 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
         removeCallback?(messageId)
     }
     
-    func mockMessagesAvailableFromServer(messages: [IterableMessageProtocol]) {
+    func mockMessagesAvailableFromServer(messages: [IterableInAppMessage]) {
         ITBInfo()
         
-        messagesMap = OrderedDictionary<String, IterableMessageProtocol>()
+        messagesMap = OrderedDictionary<String, IterableInAppMessage>()
         
         messages.forEach {
             messagesMap[$0.messageId] = $0
@@ -257,7 +257,7 @@ class MockInAppDisplayer : IterableMessageDisplayerProtocol {
         return showing
     }
     
-    func show(iterableMessage: IterableMessageProtocol, withCallback callback: ITEActionBlock?) -> Bool {
+    func show(iterableMessage: IterableInAppMessage, withCallback callback: ITEActionBlock?) -> Bool {
         if showing {
             return false
         }
@@ -272,7 +272,7 @@ class MockInAppDisplayer : IterableMessageDisplayerProtocol {
         ITBInfo()
     }
     
-    var onShowCallback:  ((IterableMessageProtocol, ITEActionBlock?) -> Void)?
+    var onShowCallback:  ((IterableInAppMessage, ITEActionBlock?) -> Void)?
     
     // Mimics clicking a url
     func click(url: String) {
@@ -354,13 +354,13 @@ class MockNotificationCenter: NotificationCenterProtocol {
 }
 
 class MockInAppPesister : IterableMessagePersistenceProtocol {
-    private var messages = [IterableMessageProtocol]()
+    private var messages = [IterableInAppMessage]()
     
-    func getMessages() -> [IterableMessageProtocol] {
+    func getMessages() -> [IterableInAppMessage] {
         return messages
     }
     
-    func persist(_ messages: [IterableMessageProtocol]) {
+    func persist(_ messages: [IterableInAppMessage]) {
         self.messages = messages
     }
     

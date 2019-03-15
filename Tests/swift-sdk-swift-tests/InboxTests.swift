@@ -111,9 +111,9 @@ class InboxTests: XCTestCase {
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
         
-        let messages = IterableAPI.inboxManager.getMessages();
+        let messages = IterableAPI.inAppManager.getMessages();
         XCTAssertEqual(messages.count, 2)
-        IterableAPI.inboxManager.set(read: true, forMessage: messages[1])
+        IterableAPI.inAppManager.set(read: true, forMessage: messages[1])
         XCTAssertEqual(messages[0].read, false)
         XCTAssertEqual(messages[1].read, true)
         

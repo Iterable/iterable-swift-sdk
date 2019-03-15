@@ -13,7 +13,7 @@ protocol IterableMessageDisplayerProtocol {
     /// - parameter message: The Iterable message to show
     /// - parameter callback: the code to execute when user clicks on a link or button on the message.
     /// - returns: A Bool indicating whether the message was opened.
-    func show(iterableMessage: IterableMessageProtocol, withCallback callback: ITEActionBlock?) -> Bool
+    func show(iterableMessage: IterableInAppMessage, withCallback callback: ITEActionBlock?) -> Bool
 
     /**
      Displays a iOS system style notification with two buttons
@@ -39,7 +39,7 @@ class IterableMessageDisplayer : IterableMessageDisplayerProtocol {
         return IterableMessageDisplayer.isShowingIterableMessage()
     }
     
-    func show(iterableMessage: IterableMessageProtocol, withCallback callback: ITEActionBlock?) -> Bool {
+    func show(iterableMessage: IterableInAppMessage, withCallback callback: ITEActionBlock?) -> Bool {
         return IterableMessageDisplayer.show(iterableMessage: iterableMessage, withCallback: callback)
     }
     
@@ -132,7 +132,7 @@ class IterableMessageDisplayer : IterableMessageDisplayerProtocol {
         return topViewController
     }
     
-    @discardableResult fileprivate static func show(iterableMessage: IterableMessageProtocol, withCallback callback:ITEActionBlock?) -> Bool {
+    @discardableResult fileprivate static func show(iterableMessage: IterableInAppMessage, withCallback callback:ITEActionBlock?) -> Bool {
         guard let content = iterableMessage.content as? IterableHtmlContent else {
             ITBError("Invalid content type")
             return false
