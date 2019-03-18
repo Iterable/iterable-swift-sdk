@@ -1045,15 +1045,3 @@ extension IterableInAppMessage {
                         "consumed", consumed, pairSeparator: " = ", separator: "\n")
     }
 }
-
-extension IterableInboxMessage {
-    public override var description: String {
-        return IterableUtil.describe("messageId", messageId,
-                                     "campaignId", campaignId,
-                                     "saveToInbox", saveToInbox,
-                                     "expiresAt", expiresAt ?? "nil",
-                                     "content", content,
-                                     "processed", processed,
-                                     "consumed", consumed, pairSeparator: " = ", separator: "\n")
-    }
-}

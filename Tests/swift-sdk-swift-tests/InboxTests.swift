@@ -70,7 +70,7 @@ class InboxTests: XCTestCase {
 
         mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
 
-        let messages = IterableAPI.inboxManager.getMessages();
+        let messages = IterableAPI.inAppManager.getInboxMessages()
         XCTAssertEqual(messages.count, 2)
         XCTAssertEqual(messages[0].messageId, "message2")
         XCTAssertEqual(messages[1].messageId, "message4")
@@ -111,14 +111,14 @@ class InboxTests: XCTestCase {
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
         
-        let messages = IterableAPI.inAppManager.getMessages();
+        let messages = IterableAPI.inAppManager.getInboxMessages()
         XCTAssertEqual(messages.count, 2)
         IterableAPI.inAppManager.set(read: true, forMessage: messages[1])
         XCTAssertEqual(messages[0].read, false)
         XCTAssertEqual(messages[1].read, true)
         
-        let unreadMessages = IterableAPI.inboxManager.getUnreadMessages()
-        XCTAssertEqual(IterableAPI.inboxManager.getUnreadCount(), 1)
+        let unreadMessages = IterableAPI.inAppManager.getUnreadInboxMessages()
+        XCTAssertEqual(IterableAPI.inAppManager.getUnreadInboxMessagesCount(), 1)
         XCTAssertEqual(unreadMessages.count, 1)
         XCTAssertEqual(unreadMessages[0].read, false)
     }
@@ -158,11 +158,11 @@ class InboxTests: XCTestCase {
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
         
-        let messages = IterableAPI.inboxManager.getMessages();
+        let messages = IterableAPI.inAppManager.getInboxMessages()
         XCTAssertEqual(messages.count, 2)
         
-        IterableAPI.inboxManager.remove(message: messages[0])
-        let newMessages = IterableAPI.inboxManager.getMessages()
+        IterableAPI.inAppManager.remove(message: messages[0])
+        let newMessages = IterableAPI.inAppManager.getInboxMessages()
         XCTAssertEqual(newMessages.count, 1)
     }
 
@@ -184,7 +184,7 @@ class InboxTests: XCTestCase {
         mockUrlDelegate.callback = {(url, _) in
             XCTAssertEqual(url.absoluteString, "https://someurl.com")
             expectation2.fulfill()
-            XCTAssertEqual(IterableAPI.inboxManager.getUnreadCount(), 1)
+            XCTAssertEqual(IterableAPI.inAppManager.getUnreadInboxMessagesCount(), 1)
         }
         let config = IterableConfig()
         config.urlDelegate = mockUrlDelegate
@@ -221,10 +221,10 @@ class InboxTests: XCTestCase {
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
         
-        XCTAssertEqual(IterableAPI.inboxManager.getUnreadCount(), 2)
+        XCTAssertEqual(IterableAPI.inAppManager.getUnreadInboxMessagesCount(), 2)
         
-        let messages = IterableAPI.inboxManager.getMessages()
-        IterableAPI.inboxManager.show(message: messages[0]) { (clickedUrl) in
+        let messages = IterableAPI.inAppManager.getInboxMessages()
+        IterableAPI.inAppManager.show(message: messages[0], consume: false) { (clickedUrl) in
             XCTAssertEqual(clickedUrl, "https://someurl.com")
             expectation3.fulfill()
         }
@@ -232,15 +232,15 @@ class InboxTests: XCTestCase {
         wait(for: [expectation1, expectation2, expectation3], timeout: testExpectationTimeout)
     }
 
-    func testInboxDelegate() {
-        let expectation1 = expectation(description: "testInboxDelegate")
+    func testInboxNewMessagesCallback() {
+        let expectation1 = expectation(description: "testInboxNewMessagesCallback")
         expectation1.expectedFulfillmentCount = 2
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
         var count = 0
-        let config = IterableConfig()
-        config.inboxDelegate = MockInboxDelegate() { messages in
+        let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
+        mockInAppDelegate.onNewInboxMessagesCallback = { messages in
             if count == 0 {
                 XCTAssertEqual(messages.count, 1)
                 XCTAssertEqual(messages[0].messageId, "message0")
@@ -251,6 +251,9 @@ class InboxTests: XCTestCase {
             expectation1.fulfill()
             count += 1
         }
+
+        let config = IterableConfig()
+        config.inAppDelegate = mockInAppDelegate
         config.logDelegate = AllLogDelegate()
         
         IterableAPI.initializeForTesting(
@@ -304,23 +307,23 @@ class InboxTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
-    func testInboxDelegateReadyCallback() {
-        let expectation1 = expectation(description: "testInboxDelegateCallback")
-        let expectation2 = expectation(description: "testInboxDelegateReadyCallback")
+    func testInboxReadyCallback() {
+        let expectation1 = expectation(description: "verify on new messages are called")
+        let expectation2 = expectation(description: "verify onready is called")
         expectation2.expectedFulfillmentCount = 2
 
         let mockInAppSynchronizer = MockInAppSynchronizer()
         let persister = IterableMessageFilePersister()
         persister.clear()
         let config = IterableConfig()
-        let mockInboxDelegate = MockInboxDelegate()
-        mockInboxDelegate.callback = { messages in
+        let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
+        mockInAppDelegate.onNewInboxMessagesCallback = { messages in
             XCTAssertEqual(messages.count, 1)
             XCTAssertEqual(messages[0].messageId, "message0")
             expectation1.fulfill()
         }
         var readyCallbackCount = 0
-        mockInboxDelegate.onReadyCallback = { messages in
+        mockInAppDelegate.onReadyCallback = { messages in
             if readyCallbackCount == 0 {
                 XCTAssertEqual(messages.count, 0)
             } else {
@@ -331,7 +334,7 @@ class InboxTests: XCTestCase {
             expectation2.fulfill()
         }
         
-        config.inboxDelegate = mockInboxDelegate
+        config.inAppDelegate = mockInAppDelegate
         config.logDelegate = AllLogDelegate()
         
         IterableAPI.initializeForTesting(
@@ -369,10 +372,10 @@ class InboxTests: XCTestCase {
     }
 
     
-    func testBothInboxAndInAppDelegate() {
-        let expectation1 = expectation(description: "call inbox delegate")
+    func testInboxAndInAppCallbacksTogether() {
+        let expectation1 = expectation(description: "call inbox callback")
         expectation1.expectedFulfillmentCount = 2
-        let expectation2 = expectation(description: "call inApp delegate")
+        let expectation2 = expectation(description: "call inApp callback")
         expectation2.expectedFulfillmentCount = 2
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
@@ -390,8 +393,7 @@ class InboxTests: XCTestCase {
         }
         
         var inboxCallbackCount = 0
-        let config = IterableConfig()
-        config.inboxDelegate = MockInboxDelegate() { messages in
+        mockInAppDelegate.onNewInboxMessagesCallback = { messages in
             if inboxCallbackCount == 0 {
                 XCTAssertEqual(messages.count, 1)
                 XCTAssertEqual(messages[0].messageId, "message0")
@@ -402,6 +404,8 @@ class InboxTests: XCTestCase {
             expectation1.fulfill()
             inboxCallbackCount += 1
         }
+        
+        let config = IterableConfig()
         config.inAppDelegate = mockInAppDelegate
         config.logDelegate = AllLogDelegate()
         

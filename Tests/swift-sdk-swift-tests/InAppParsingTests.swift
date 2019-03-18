@@ -243,7 +243,7 @@ class InAppParsingTests: XCTestCase {
         }
         """.toJsonDict()
         let messages = InAppTestHelper.inAppMessages(fromPayload: payload)
-        XCTAssertEqual((messages[0] as! IterableInAppMessage).trigger.type, IterableInAppTriggerType.immediate)
+        XCTAssertEqual((messages[0]).trigger.type, IterableInAppTriggerType.immediate)
     }
     
     func testInAppPayloadWithKnownTrigger() {
@@ -265,8 +265,8 @@ class InAppParsingTests: XCTestCase {
         }
         """.toJsonDict()
         let messages = InAppTestHelper.inAppMessages(fromPayload: payload)
-        XCTAssertEqual((messages[0] as! IterableInAppMessage).trigger.type, IterableInAppTriggerType.event)
-        XCTAssertEqual((messages[0] as! IterableInAppMessage).trigger.dict["something"] as? String, "else")
+        XCTAssertEqual((messages[0]).trigger.type, IterableInAppTriggerType.event)
+        XCTAssertEqual((messages[0]).trigger.dict["something"] as? String, "else")
     }
 
     func testInAppPayloadWithUnKnownTrigger() {
@@ -288,8 +288,8 @@ class InAppParsingTests: XCTestCase {
         }
         """.toJsonDict()
         let messages = InAppTestHelper.inAppMessages(fromPayload: payload)
-        XCTAssertEqual((messages[0] as! IterableInAppMessage).trigger.type, IterableInAppTriggerType.never)
-        let dict = (messages[0] as! IterableInAppMessage).trigger.dict as! [String : Any]
+        XCTAssertEqual((messages[0]).trigger.type, IterableInAppTriggerType.never)
+        let dict = (messages[0]).trigger.dict as! [String : Any]
         TestUtils.validateMatch(keyPath: KeyPath("myPayload.var1"), value: "val1", inDictionary: dict, message: "Expected to find val1")
     }
     
@@ -492,9 +492,9 @@ class InAppParsingTests: XCTestCase {
         XCTAssertEqual(message1.saveToInbox, false)
         XCTAssertTrue(TestUtils.areEqual(dict1: message1.customPayload!, dict2: customPayloadStr1.toJsonDict()))
         
-        let message2 = messages[1] as! IterableInAppMessage
+        let message2 = messages[1]
         XCTAssertEqual(message2.saveToInbox, true)
-        let inboxMetadata = message2.inboxMetadata as! IterableInboxMetadata
+        let inboxMetadata = message2.inboxMetadata!
         XCTAssertEqual(inboxMetadata.title, inboxTitle)
         XCTAssertEqual(inboxMetadata.subTitle, inboxSubTitle)
         XCTAssertEqual(inboxMetadata.icon, inboxIcon)

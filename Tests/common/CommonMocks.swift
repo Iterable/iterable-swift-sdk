@@ -292,10 +292,16 @@ class MockInAppDisplayer : IterableMessageDisplayerProtocol {
 }
 
 class MockInAppDelegate : IterableInAppDelegate {
+    var onReadyCallback: (([IterableInAppMessage]) -> Void)?
     var onNewMessageCallback: ((IterableInAppMessage) -> Void)?
+    var onNewInboxMessagesCallback: (([IterableInAppMessage]) -> Void)?
     
     init(showInApp: InAppShowResponse = .show) {
         self.showInApp = showInApp
+    }
+    
+    func onInboxReady(messages: [IterableInAppMessage]) {
+        onReadyCallback?(messages)
     }
     
     func onNew(message: IterableInAppMessage) -> InAppShowResponse {
@@ -303,24 +309,11 @@ class MockInAppDelegate : IterableInAppDelegate {
         return showInApp
     }
 
+    func onNew(inboxMessages: [IterableInAppMessage]) {
+        onNewInboxMessagesCallback?(inboxMessages)
+    }
+    
     private let showInApp: InAppShowResponse
-}
-
-class MockInboxDelegate : IterableInboxDelegate {
-    var onReadyCallback: (([IterableInboxMessage]) -> Void)?
-    var callback: (([IterableInboxMessage]) -> Void)?
-    
-    init(callback: (([IterableInboxMessage]) -> Void)? = nil) {
-        self.callback = callback
-    }
-    
-    func onNew(messages: [IterableInboxMessage]) {
-        callback?(messages)
-    }
-
-    func onReady(messages: [IterableInboxMessage]) {
-        onReadyCallback?(messages)
-    }
 }
 
 class MockNotificationCenter: NotificationCenterProtocol {

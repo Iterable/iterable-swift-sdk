@@ -18,6 +18,15 @@ public protocol IterableInAppManagerProtocol {
     /// - returns: A list of all messages
     @objc(getMessages) func getMessages() -> [IterableInAppMessage]
 
+    /// - returns: A list of all messages
+    @objc(getInboxMessages) func getInboxMessages() -> [IterableInAppMessage]
+
+    /// - returns: A list of all messages that are unread
+    @objc(getUnreadInboxMessages) func getUnreadInboxMessages() -> [IterableInAppMessage]
+
+    /// - returns: A count of unread messages
+    @objc(getUnreadInboxMessagesCount) func getUnreadInboxMessagesCount() -> Int
+
     /// - parameter message: The message to show.
     @objc(showMessage:) func show(message: IterableInAppMessage)
 
@@ -33,6 +42,12 @@ public protocol IterableInAppManagerProtocol {
     /// - parameter read: Whether this inbox message was read
     /// - parameter message: The inbox message
     @objc(setRead:forMessage:) func set(read: Bool, forMessage message: IterableInAppMessage)
+
+    /// This will create a ViewController which displays an inbox message.
+    /// This ViewController would typically be pushed into the navigation stack.
+    /// - parameter message: The message to show.
+    /// - returns: UIViewController which displays the message.
+    @objc(createInboxMessageViewControllerForMessage:) func createInboxMessageViewController(for message: IterableInAppMessage) -> UIViewController?
 }
 
 /// By default, every single inApp will be shown as soon as it is available.
@@ -41,9 +56,17 @@ public protocol IterableInAppManagerProtocol {
 open class DefaultInAppDelegate : IterableInAppDelegate {
     public init() {}
     
+    public func onInboxReady(messages: [IterableInAppMessage]) {
+        ITBInfo()
+    }
+    
     open func onNew(message: IterableInAppMessage) -> InAppShowResponse {
         ITBInfo()
         return .show
+    }
+
+    public func onNew(inboxMessages: [IterableInAppMessage]) {
+        ITBInfo()
     }
 }
 
@@ -185,83 +208,6 @@ public final class IterableInAppMessage : NSObject {
         self.content = content
         self.saveToInbox = saveToInbox
         self.inboxMetadata = inboxMetadata
-        self.customPayload = customPayload
-    }
-}
-
-@objc
-public protocol IterableInboxManagerProtocol {
-    /// - returns: A list of all messages
-    @objc(getInboxMessages) func getMessages() -> [IterableInboxMessage]
-
-    /// - returns: A list of all messages that are unread
-    @objc(getUnreadMessages) func getUnreadMessages() -> [IterableInboxMessage]
-
-    /// - returns: A count of unread messages
-    @objc(getUnreadCount) func getUnreadCount() -> Int
-
-    /// - parameter message: The message to show.
-    @objc(showInboxMessage:) func show(message: IterableInboxMessage)
-    
-    /// - parameter message: The message to show.
-    /// - parameter callback: block of code to execute once the user clicks on a link or button in the inbox notification.
-    ///   Note that this callback is called in addition to calling `IterableCustomActionDelegate` or `IterableUrlDelegate` on the button action.
-    @objc(showInboxMessage:callbackBlock:) func show(message: IterableInboxMessage, callback:ITEActionBlock?)
-    
-    /// This will create a ViewController which displays an inbox message.
-    /// This ViewController would typically be pushed into the navigation stack.
-    /// - parameter message: The message to show.
-    /// - returns: UIViewController which displays the message.
-    @objc(createInboxMessageViewControllerForMessage:) func createInboxMessageViewController(for message: IterableInboxMessage) -> UIViewController?
-    
-    /// - parameter message: The message to remove.
-    @objc(removeInboxMessage:) func remove(message: IterableInboxMessage)
-}
-
-/// A message is comprised of content and whether this message was skipped.
-@objcMembers
-public final class IterableInboxMessage : NSObject {
-    /// the id for the inApp message
-    public let messageId: String
-    
-    /// the campaign id for this message
-    public let campaignId: String
-    
-    /// when to expire this in-app, nil means do not expire
-    public let expiresAt: Date?
-    
-    /// The content of the inApp message
-    public let content: IterableContent
-    
-    /// Whether to save this message to inbox
-    public let saveToInbox = true
-
-    /// Custom Payload for this message.
-    public let customPayload: [AnyHashable : Any]?
-    
-    /// Whether this inbox message has been read
-    public internal(set) var read: Bool = false
-    
-    /// Whether we have processed this message.
-    /// Note: This is internal and not public
-    internal var processed: Bool = false
-    
-    /// Mark this message to be removed from server queue.
-    /// Note: This is internal and not public
-    internal var consumed: Bool = false
-    
-    // Internal, don't let others create
-    init(
-        messageId: String,
-        campaignId: String,
-        expiresAt: Date? = nil,
-        content: IterableContent,
-        customPayload: [AnyHashable : Any]? = nil
-        ) {
-        self.messageId = messageId
-        self.campaignId = campaignId
-        self.expiresAt = expiresAt
-        self.content = content
         self.customPayload = customPayload
     }
 }

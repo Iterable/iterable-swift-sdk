@@ -502,22 +502,6 @@ public final class IterableAPI : NSObject {
         return internalImplementation.inAppManager
     }
 
-    /// Use this property for getting and showing inbox Messages.
-    /// This property has no meaning if IterableAPI has not been initialized using
-    /// IterableAPI.initialize
-    /// ```
-    /// - IterableAPI.inboxManager.getMessages()
-    /// - IterableAPI.inboxManager.show(message: message)
-    /// ```
-    @objc public static var inboxManager: IterableInboxManagerProtocol {
-        guard let internalImplementation = internalImplementation else {
-            ITBError("IterableAPI is not initialized yet. InApp will not work now.")
-            return EmptyInAppManager()
-        }
-        return internalImplementation.inboxManager
-    }
-
-    
     // MARK: Private and Internal
     static var internalImplementation: IterableAPIInternal?
     private override init() {super.init()}

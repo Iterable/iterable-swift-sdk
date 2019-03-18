@@ -18,7 +18,7 @@ protocol IterableInAppManagerProtocolInternal : IterableInAppManagerProtocol {
     func synchronize()
 }
 
-class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInboxManagerProtocol {
+class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     weak var internalApi: IterableAPIInternal? {
         didSet {
             self.synchronizer.internalApi = internalApi
@@ -29,7 +29,6 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
          displayer: IterableMessageDisplayerProtocol,
          persister: IterableMessagePersistenceProtocol,
          inAppDelegate: IterableInAppDelegate,
-         inboxDelegate: IterableInboxDelegate?,
          urlDelegate: IterableURLDelegate?,
          customActionDelegate: IterableCustomActionDelegate?,
          urlOpener: UrlOpenerProtocol,
@@ -42,7 +41,6 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
         self.displayer = displayer
         self.persister = persister
         self.inAppDelegate = inAppDelegate
-        self.inboxDelegate = inboxDelegate
         self.urlDelegate = urlDelegate
         self.customActionDelegate = customActionDelegate
         self.urlOpener = urlOpener
@@ -62,7 +60,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
                                        name: UIApplication.didBecomeActiveNotification,
                                        object: nil)
         
-        inboxDelegate?.onReady(messages: getMessages())
+        self.inAppDelegate.onInboxReady(messages: getInboxMessages())
     }
     
     deinit {
@@ -80,31 +78,24 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
         return messages
     }
     
-    func getMessages() -> [IterableInboxMessage] {
+    func getInboxMessages() -> [IterableInAppMessage] {
         ITBInfo()
-        return []
+        var messages = [IterableInAppMessage] ()
+        updateQueue.sync {
+            messages = Array(self.messagesMap.values.filter { InAppManager.isValid(message: $0, currentDate: dateProvider.currentDate) && $0.saveToInbox == true})
+        }
+        return messages
     }
     
-    func getUnreadMessages() -> [IterableInboxMessage] {
-        return getMessages().filter { $0.read == false }
+    func getUnreadInboxMessages() -> [IterableInAppMessage] {
+        return getInboxMessages().filter { $0.read == false }
     }
     
-    func getUnreadCount() -> Int {
-        return getUnreadMessages().count
+    func getUnreadInboxMessagesCount() -> Int {
+        return getUnreadInboxMessages().count
     }
     
-    func remove(message: IterableInboxMessage) {
-    }
-    
-    func show(message: IterableInboxMessage) {
-        ITBInfo()
-        show(message: message, callback: nil)
-    }
-    
-    func show(message: IterableInboxMessage, callback: ITEActionBlock?) {
-    }
-    
-    func createInboxMessageViewController(for message: IterableInboxMessage) -> UIViewController? {
+    func createInboxMessageViewController(for message: IterableInAppMessage) -> UIViewController? {
         guard let content = message.content as? IterableHtmlContent else {
             ITBError("Invalid Content in message")
             return nil
@@ -271,7 +262,6 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal, IterableInb
     private var synchronizer: InAppSynchronizerProtocol // this is mutable because we need to set internalApi
     private let displayer: IterableMessageDisplayerProtocol
     private let inAppDelegate: IterableInAppDelegate
-    private let inboxDelegate: IterableInboxDelegate?
     private let urlDelegate: IterableURLDelegate?
     private let customActionDelegate: IterableCustomActionDelegate?
     private let urlOpener: UrlOpenerProtocol
@@ -481,8 +471,8 @@ extension InAppManager : InAppSynchronizerDelegate {
     }
 }
 
-class EmptyInAppManager : IterableInAppManagerProtocol, IterableInboxManagerProtocol {
-    func createInboxMessageViewController(for message: IterableInboxMessage) -> UIViewController? {
+class EmptyInAppManager : IterableInAppManagerProtocol {
+    func createInboxMessageViewController(for message: IterableInAppMessage) -> UIViewController? {
         ITBError("Can't create VC")
         return nil
     }
@@ -491,11 +481,11 @@ class EmptyInAppManager : IterableInAppManagerProtocol, IterableInboxManagerProt
         return []
     }
     
-    func getMessages() -> [IterableInboxMessage] {
+    func getInboxMessages() -> [IterableInAppMessage] {
         return []
     }
     
-    func getUnreadMessages() -> [IterableInboxMessage] {
+    func getUnreadInboxMessages() -> [IterableInAppMessage] {
         return []
     }
     
@@ -505,23 +495,14 @@ class EmptyInAppManager : IterableInAppManagerProtocol, IterableInboxManagerProt
     func show(message: IterableInAppMessage, consume: Bool, callback: ITEActionBlock?) {
     }
 
-    func show(message: IterableInboxMessage, callback: ITEActionBlock?) {
-    }
-    
-    func show(message: IterableInboxMessage) {
-    }
-    
     func remove(message: IterableInAppMessage) {
     }
 
     func set(read: Bool, forMessage message: IterableInAppMessage) {
     }
 
-    func getUnreadCount() -> Int {
+    func getUnreadInboxMessagesCount() -> Int {
         return 0
-    }
-
-    func remove(message: IterableInboxMessage) {
     }
 }
 
