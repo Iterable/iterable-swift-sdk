@@ -179,9 +179,13 @@ public final class IterableInAppMessage : NSObject {
     /// Custom Payload for this message.
     public let customPayload: [AnyHashable : Any]?
 
-    /// Whether we have processed this message.
+    /// Whether we have processed the trigger for this message.
     /// Note: This is internal and not public
-    internal var processed: Bool = false
+    internal var didProcessTrigger = false
+    
+    /// Whether we have processed 'save to inbox' for this message.
+    /// Note: This is internal and not public
+    internal var didProcessInbox = false
     
     /// Mark this message to be removed from server queue.
     /// Note: This is internal and not public

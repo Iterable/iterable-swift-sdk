@@ -206,7 +206,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         // set read
         set(read: true, forMessage: message)
 
-        updateMessage(message, processed: true, consumed: shouldConsume)
+        updateMessage(message, didProcessTrigger: true, consumed: shouldConsume)
     }
 
     private func handleUrlOrAction(urlOrAction: String) {
@@ -243,7 +243,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     private func removePrivate(message: IterableInAppMessage) {
         ITBInfo()
         
-        updateMessage(message, processed: true, consumed: true)
+        updateMessage(message, didProcessTrigger: true, didProcessInbox: true, consumed: true)
         self.internalApi?.inAppConsume(message.messageId)
     }
 
@@ -314,12 +314,12 @@ extension InAppManager : InAppSynchronizerDelegate {
     
     private func processInboxMessages() {
         ITBDebug()
-        let newInboxMessages = messagesMap.values.filter { InAppManager.isValid(message: $0, currentDate: dateProvider.currentDate) && $0.saveToInbox == true && $0.processed == false }
+        let newInboxMessages = messagesMap.values.filter { InAppManager.isValid(message: $0, currentDate: dateProvider.currentDate) && $0.saveToInbox == true && $0.didProcessInbox == false }
 
         if newInboxMessages.count > 0 {
             newInboxMessages.forEach {
                 let toUpdate = $0
-                toUpdate.processed = true
+                toUpdate.didProcessInbox = true
                 self.messagesMap.updateValue(toUpdate, forKey: $0.messageId)
             }
             persister.persist(self.messagesMap.values)
@@ -357,11 +357,12 @@ extension InAppManager : InAppSynchronizerDelegate {
         // We can only check applicationState from main queue so need to do the following
         DispatchQueue.main.async {
             if self.isOkToShowNow(message: message) {
-                self.updateMessage(message, processed: true)
+                self.updateMessage(message, didProcessTrigger: true)
 
                 if self.inAppDelegate.onNew(message: message) == .show {
                     ITBDebug("delegate returned show")
-                    self.showInternal(message: message, consume: true, callback: nil)
+                    let consume = !message.saveToInbox
+                    self.showInternal(message: message, consume: consume, callback: nil)
                 } else {
                     ITBDebug("delegate returned skip, continue processing")
                     self.scheduleQueue.async {
@@ -379,23 +380,22 @@ extension InAppManager : InAppSynchronizerDelegate {
     }
     
     private static func isProcessable(message: IterableInAppMessage) -> Bool {
-        guard message.saveToInbox == false else {
-            // do not process inbox Types
-            return false
-        }
-        guard message.processed == false else {
-            // if already processed return false
-            return false
-        }
-        
-        return message.trigger.type == .immediate
+        return message.didProcessTrigger == false && message.trigger.type == .immediate
     }
     
-    private func updateMessage(_ message: IterableInAppMessage, processed: Bool, consumed: Bool = false) {
+    private func updateMessage(_ message: IterableInAppMessage,
+                               didProcessTrigger: Bool? = false,
+                               didProcessInbox: Bool? = false,
+                               consumed: Bool = false) {
         ITBDebug()
         updateQueue.sync {
             let toUpdate = message
-            toUpdate.processed = processed
+            if let didProcessTrigger = didProcessTrigger {
+                toUpdate.didProcessTrigger = didProcessTrigger
+            }
+            if let didProcessInbox = didProcessInbox {
+                toUpdate.didProcessInbox = didProcessInbox
+            }
             toUpdate.consumed = consumed
             self.messagesMap.updateValue(toUpdate, forKey: message.messageId)
             persister.persist(self.messagesMap.values)
@@ -411,7 +411,7 @@ extension InAppManager : InAppSynchronizerDelegate {
             ITBInfo("showing another")
             return false
         }
-        guard message.processed == false else {
+        guard message.didProcessTrigger == false else {
             ITBInfo("message with id: \(message.messageId) is already processed")
             return false
         }

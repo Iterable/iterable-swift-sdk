@@ -44,7 +44,7 @@ class InboxTests: XCTestCase {
             {
                 "saveToInbox": true,
                 "content": {"contentType": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
-                "trigger": {"type": "immediate"},
+                "trigger": {"type": "never"},
                 "messageId": "message2",
                 "campaignId": "campaign2",
                 "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
@@ -59,7 +59,7 @@ class InboxTests: XCTestCase {
             {
                 "saveToInbox": true,
                 "content": {"contentType": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
-                "trigger": {"type": "immediate"},
+                "trigger": {"type": "never"},
                 "messageId": "message4",
                 "campaignId": "campaign4",
                 "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
@@ -92,7 +92,7 @@ class InboxTests: XCTestCase {
             {
                 "saveToInbox": true,
                 "content": {"contentType": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
-                "trigger": {"type": "immediate"},
+                "trigger": {"type": "never"},
                 "messageId": "message1",
                 "campaignId": "campaign1",
                 "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
@@ -100,7 +100,7 @@ class InboxTests: XCTestCase {
             {
                 "saveToInbox": true,
                 "content": {"contentType": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
-                "trigger": {"type": "immediate"},
+                "trigger": {"type": "never"},
                 "messageId": "message2",
                 "campaignId": "campaign2",
                 "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
@@ -139,7 +139,7 @@ class InboxTests: XCTestCase {
             {
                 "saveToInbox": true,
                 "content": {"contentType": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
-                "trigger": {"type": "immediate"},
+                "trigger": {"type": "never"},
                 "messageId": "message1",
                 "campaignId": "campaign1",
                 "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
@@ -147,7 +147,7 @@ class InboxTests: XCTestCase {
             {
                 "saveToInbox": true,
                 "content": {"contentType": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
-                "trigger": {"type": "immediate"},
+                "trigger": {"type": "never"},
                 "messageId": "message2",
                 "campaignId": "campaign2",
                 "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
@@ -202,7 +202,7 @@ class InboxTests: XCTestCase {
             {
                 "saveToInbox": true,
                 "content": {"contentType": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
-                "trigger": {"type": "immediate"},
+                "trigger": {"type": "never"},
                 "messageId": "message1",
                 "campaignId": "campaign1",
                 "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
@@ -210,7 +210,7 @@ class InboxTests: XCTestCase {
             {
                 "saveToInbox": true,
                 "content": {"contentType": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
-                "trigger": {"type": "immediate"},
+                "trigger": {"type": "never"},
                 "messageId": "message2",
                 "campaignId": "campaign2",
                 "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
@@ -267,7 +267,7 @@ class InboxTests: XCTestCase {
             {
                 "saveToInbox": true,
                 "content": {"contentType": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
-                "trigger": {"type": "immediate"},
+                "trigger": {"type": "never"},
                 "messageId": "message0",
                 "campaignId": "campaign1",
                 "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
@@ -284,7 +284,7 @@ class InboxTests: XCTestCase {
             {
                 "saveToInbox": true,
                 "content": {"contentType": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
-                "trigger": {"type": "immediate"},
+                "trigger": {"type": "never"},
                 "messageId": "message0",
                 "campaignId": "campaign1",
                 "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
@@ -292,7 +292,7 @@ class InboxTests: XCTestCase {
             {
                 "saveToInbox": true,
                 "content": {"contentType": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
-                "trigger": {"type": "immediate"},
+                "trigger": {"type": "never"},
                 "messageId": "message1",
                 "campaignId": "campaign1",
                 "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
@@ -349,7 +349,7 @@ class InboxTests: XCTestCase {
             {
                 "saveToInbox": true,
                 "content": {"contentType": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
-                "trigger": {"type": "immediate"},
+                "trigger": {"type": "never"},
                 "messageId": "message0",
                 "campaignId": "campaign1",
                 "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
@@ -420,7 +420,7 @@ class InboxTests: XCTestCase {
             {
                 "saveToInbox": true,
                 "content": {"contentType": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
-                "trigger": {"type": "immediate"},
+                "trigger": {"type": "never"},
                 "messageId": "message0",
                 "campaignId": "campaign1",
                 "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
@@ -445,7 +445,7 @@ class InboxTests: XCTestCase {
             {
                 "saveToInbox": true,
                 "content": {"contentType": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
-                "trigger": {"type": "immediate"},
+                "trigger": {"type": "never"},
                 "messageId": "message0",
                 "campaignId": "campaign1",
                 "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
@@ -453,7 +453,7 @@ class InboxTests: XCTestCase {
             {
                 "saveToInbox": true,
                 "content": {"contentType": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
-                "trigger": {"type": "immediate"},
+                "trigger": {"type": "never"},
                 "messageId": "message1",
                 "campaignId": "campaign1",
                 "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
@@ -480,6 +480,66 @@ class InboxTests: XCTestCase {
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(payload2)
         
+        
+        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
+    }
+    
+    func testShowNowAndInboxMessage() {
+        let expectation1 = expectation(description: "inbox message is displayed automatically")
+        let expectation2 = expectation(description: "Unread count decrements after showing")
+        
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _) in
+            expectation1.fulfill()
+            // now click and url in the message
+            mockInAppDisplayer.click(url: "https://someurl.com")
+        }
+        
+        let mockUrlDelegate = MockUrlDelegate(returnValue: true)
+        mockUrlDelegate.callback = {(url, _) in
+            XCTAssertEqual(url.absoluteString, "https://someurl.com")
+            expectation2.fulfill()
+            XCTAssertEqual(IterableAPI.inAppManager.getUnreadInboxMessagesCount(), 0)
+            XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 2)
+        }
+        let config = IterableConfig()
+        config.urlDelegate = mockUrlDelegate
+        config.logDelegate = AllLogDelegate()
+        
+        IterableAPI.initializeForTesting(
+            config: config,
+            inAppSynchronizer: mockInAppSynchronizer,
+            iterableMessageDisplayer: mockInAppDisplayer
+        )
+        
+        let payload = """
+        {"inAppMessages":
+        [
+            {
+                "saveToInbox": true,
+                "content": {"contentType": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "trigger": {"type": "immediate"},
+                "messageId": "message1",
+                "campaignId": "campaign1",
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+            {
+                "saveToInbox": false,
+                "content": {"contentType": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "trigger": {"type": "never"},
+                "messageId": "message2",
+                "campaignId": "campaign2",
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+        ]
+        }
+        """.toJsonDict()
+        
+        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
+        
+        XCTAssertEqual(IterableAPI.inAppManager.getUnreadInboxMessagesCount(), 1)
         
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
     }

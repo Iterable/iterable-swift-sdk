@@ -78,7 +78,7 @@ class InAppTests: XCTestCase {
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
-            XCTAssertEqual(IterableAPI.inAppManager.getMessages()[0].processed, true)
+            XCTAssertEqual(IterableAPI.inAppManager.getMessages()[0].didProcessTrigger, true)
         }
 
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
@@ -165,7 +165,7 @@ class InAppTests: XCTestCase {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
             let messages = IterableAPI.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 3)
-            XCTAssertEqual(Set(messages.map { $0.processed }), Set([true, true, true]))
+            XCTAssertEqual(Set(messages.map { $0.didProcessTrigger }), Set([true, true, true]))
             expectation2.fulfill()
         }
 
@@ -294,7 +294,7 @@ class InAppTests: XCTestCase {
             XCTAssertEqual(url.absoluteString, TestInAppPayloadGenerator.getClickUrl(index: 1))
             let messages = IterableAPI.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 1)
-            XCTAssertEqual(messages[0].processed, true)
+            XCTAssertEqual(messages[0].didProcessTrigger, true)
             
             expectation2.fulfill()
         }
@@ -1041,7 +1041,8 @@ extension IterableInAppMessage {
                         "trigger", trigger,
                         "expiresAt", expiresAt ?? "nil",
                         "content", content,
-                        "processed", processed,
+                        "didProcessTrigger", didProcessTrigger,
+                        "didProcessInbox", didProcessInbox,
                         "consumed", consumed, pairSeparator: " = ", separator: "\n")
     }
 }
