@@ -25,11 +25,11 @@ struct TestHelper {
 }
 
 struct InAppTestHelper {
-    static func inAppMessages(fromPayload payload: [AnyHashable : Any]) -> [IterableMessageProtocol] {
+    static func inAppMessages(fromPayload payload: [AnyHashable : Any]) -> [IterableInAppMessage] {
         return InAppMessageParser.parse(payload: payload).compactMap(parseResultToOptionalMessage)
     }
     
-    private static func parseResultToOptionalMessage(result: IterableResult<IterableMessageProtocol, InAppMessageParser.ParseError>) -> IterableMessageProtocol? {
+    private static func parseResultToOptionalMessage(result: IterableResult<IterableInAppMessage, InAppMessageParser.ParseError>) -> IterableInAppMessage? {
         switch result {
         case .failure:
             return nil

@@ -13,10 +13,10 @@ struct InAppMessageParser {
     
     /// Given json payload, It will construct array of IterableInAppMessage or ParseError
     /// The caller needs to make sure to consume errored out messages
-    static func parse(payload: [AnyHashable : Any]) -> [IterableResult<IterableMessageProtocol, ParseError>] {
+    static func parse(payload: [AnyHashable : Any]) -> [IterableResult<IterableInAppMessage, ParseError>] {
         return getInAppDicts(fromPayload: payload).map {
-            let json = preProcess(payload: $0)
-            return createMessageOrError(fromParseResult: parseInAppDetails(fromJson: json), andJson: json)
+            let oneJson = preProcessOneJson(fromJson: $0)
+            return parseOneMessage(fromJson: oneJson)
         }
     }
     
@@ -27,22 +27,24 @@ struct InAppMessageParser {
     
     // Change the in-app payload coming from the server to one that we expect it to be like
     // This is temporary until we fix the backend to do the right thing.
-    // 1. Move 'inAppType', to top level from 'customPayload'
+    // 1. Move 'saveToInbox', to top level from 'customPayload'
     // 2. Move 'type' to 'content' element.
     //!! Remove when we have backend support
-    private static func preProcess(payload: [AnyHashable : Any]) -> [AnyHashable : Any] {
-        var result = payload
-        guard var customPayloadDict = payload[.ITBL_IN_APP_CUSTOM_PAYLOAD] as? [AnyHashable : Any] else {
+    private static func preProcessOneJson(fromJson json: [AnyHashable : Any]) -> [AnyHashable : Any] {
+        var result = json
+        guard var customPayloadDict = json[.ITBL_IN_APP_CUSTOM_PAYLOAD] as? [AnyHashable : Any] else {
             return result
         }
         
-        moveValue(withKey: AnyHashable.ITBL_IN_APP_INAPP_TYPE, from: &customPayloadDict, to: &result)
+        moveValue(withSourceKey: AnyHashable.ITBL_IN_APP_SAVE_TO_INBOX, andDestinationKey: AnyHashable.ITBL_IN_APP_SAVE_TO_INBOX, from: &customPayloadDict, to: &result)
         
-        if var contentDict = payload[.ITBL_IN_APP_CONTENT] as? [AnyHashable : Any] {
-            moveValue(withKey: AnyHashable.ITBL_IN_APP_CONTENT_TYPE, from: &customPayloadDict, to: &contentDict)
-            moveValue(withKey: JsonKey.inboxTitle.rawValue, from: &customPayloadDict, to: &contentDict)
-            moveValue(withKey: JsonKey.inboxSubtitle.rawValue, from: &customPayloadDict, to: &contentDict)
-            moveValue(withKey: JsonKey.inboxIcon.rawValue, from: &customPayloadDict, to: &contentDict)
+        if let inboxMetadataDict = customPayloadDict[.ITBL_IN_APP_INBOX_METADATA] as? [AnyHashable : Any] {
+            result[.ITBL_IN_APP_INBOX_METADATA] = inboxMetadataDict
+            customPayloadDict[.ITBL_IN_APP_INBOX_METADATA] = nil
+        }
+        
+        if var contentDict = json[.ITBL_IN_APP_CONTENT] as? [AnyHashable : Any] {
+            moveValue(withSourceKey: "contentType", andDestinationKey: AnyHashable.ITBL_IN_APP_CONTENT_TYPE, from: &customPayloadDict, to: &contentDict)
             result[.ITBL_IN_APP_CONTENT] = contentDict
         }
         
@@ -51,38 +53,21 @@ struct InAppMessageParser {
         return result
     }
     
-    private static func moveValue(withKey key: String, from source: inout [AnyHashable : Any], to destination: inout [AnyHashable : Any]) {
-        guard destination[key] == nil else {
+    private static func moveValue(withSourceKey sourceKey: String, andDestinationKey destinationKey: String, from source: inout [AnyHashable : Any], to destination: inout [AnyHashable : Any]) {
+        guard destination[destinationKey] == nil else {
             // value exists in destination, so don't override
             return
         }
         
-        if let value = source[key] {
-            destination[key] = value
-            source[key] = nil
+        if let value = source[sourceKey] {
+            destination[destinationKey] = value
+            source[sourceKey] = nil
         }
     }
 
-    /// Holds information about 'base' IterableMessage
-    private struct InAppParseDetails {
-        let inAppType: IterableInAppType
-        let content: IterableContent
-        let messageId: String
-        let campaignId: String
-        let expiresAt: Date?
-        let customPayload: [AnyHashable : Any]?
-    }
-    
-    private static func parseInAppDetails(fromJson json: [AnyHashable : Any]) -> IterableResult<InAppParseDetails, ParseError> {
+    private static func parseOneMessage(fromJson json: [AnyHashable : Any]) -> IterableResult<IterableInAppMessage, ParseError> {
         guard let messageId = json[.ITBL_KEY_MESSAGE_ID] as? String else {
             return .failure(.parseFailed(reason: "no messageId", messageId: nil))
-        }
-        
-        let inAppType: IterableInAppType
-        if let inAppTypeStr = json[.ITBL_IN_APP_INAPP_TYPE] as? String {
-            inAppType = IterableInAppType.from(string: inAppTypeStr)
-        } else {
-            inAppType = .default
         }
         
         guard let contentDict = json[.ITBL_IN_APP_CONTENT] as? [AnyHashable : Any] else {
@@ -104,49 +89,22 @@ struct InAppMessageParser {
             ITBDebug("Could not find campaignId") // This is debug level because this happens a lot with proof inApps
             campaignId = ""
         }
-        
+
+        let saveToInbox = json[.ITBL_IN_APP_SAVE_TO_INBOX] as? Bool ?? false
+        let inboxMetadata = parseInboxMetadata(fromPayload: json)
+        let trigger = parseTrigger(fromTriggerElement: json[.ITBL_IN_APP_TRIGGER] as? [AnyHashable : Any])
         let customPayload = parseCustomPayload(fromPayload: json)
-        
         let expiresAt = parseExpiresAt(dict: json)
         
-        return .success(InAppParseDetails(
-            inAppType: inAppType,
-            content: content,
-            messageId: messageId,
-            campaignId: campaignId,
-            expiresAt: expiresAt,
-            customPayload: customPayload))
+        return .success(IterableInAppMessage(messageId: messageId,
+                             campaignId: campaignId,
+                             trigger: trigger,
+                             expiresAt: expiresAt,
+                             content: content,
+                             saveToInbox: saveToInbox,
+                             inboxMetadata: inboxMetadata,
+                             customPayload: customPayload))
     }
-    
-    private static func createMessageOrError(fromParseResult parseResult: IterableResult<InAppParseDetails, ParseError>, andJson json: [AnyHashable : Any]) -> IterableResult<IterableMessageProtocol, ParseError> {
-        switch parseResult{
-        case .failure(let parseError):
-            return .failure(parseError)
-        case .success(let parseDetails):
-            return .success(createMessage(fromParseDetails: parseDetails, AndJson: json))
-        }
-    }
-    
-    private static func createMessage(fromParseDetails details: InAppParseDetails, AndJson json: [AnyHashable : Any]) -> IterableMessageProtocol {
-        switch details.inAppType {
-        case .default:
-            let trigger = parseTrigger(fromTriggerElement: json[.ITBL_IN_APP_TRIGGER] as? [AnyHashable : Any])
-            return IterableInAppMessage(messageId: details.messageId,
-                                        campaignId: details.campaignId,
-                                        trigger: trigger,
-                                        expiresAt: details.expiresAt,
-                                        content: details.content,
-                                        customPayload: details.customPayload)
-
-        case .inbox:
-            return IterableInboxMessage(messageId: details.messageId,
-                                        campaignId: details.campaignId,
-                                        expiresAt: details.expiresAt,
-                                        content: details.content,
-                                        customPayload: details.customPayload)
-        }
-    }
-
     
     private static func parseExpiresAt(dict: [AnyHashable : Any]) -> Date? {
         guard let intValue = dict[.ITBL_IN_APP_EXPIRES_AT] as? Int else {
@@ -167,5 +125,17 @@ struct InAppMessageParser {
     
     private static func parseCustomPayload(fromPayload payload: [AnyHashable : Any]) -> [AnyHashable : Any]? {
         return payload[.ITBL_IN_APP_CUSTOM_PAYLOAD] as? [AnyHashable : Any]
+    }
+    
+    private static func parseInboxMetadata(fromPayload payload: [AnyHashable : Any]) -> IterableInboxMetadata? {
+        guard let inboxMetadataDict = payload[.ITBL_IN_APP_INBOX_METADATA] as? [AnyHashable : Any] else {
+            return nil
+        }
+        
+        let title = inboxMetadataDict.getStringValue(key: .inboxTitle)
+        let subTitle = inboxMetadataDict.getStringValue(key: .inboxSubtitle)
+        let icon = inboxMetadataDict.getStringValue(key: .inboxIcon)
+        
+        return IterableInboxMetadata(title: title, subTitle: subTitle, icon: icon)
     }
 }

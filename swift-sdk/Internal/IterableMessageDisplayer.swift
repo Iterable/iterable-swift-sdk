@@ -13,7 +13,7 @@ protocol IterableMessageDisplayerProtocol {
     /// - parameter message: The Iterable message to show
     /// - parameter callback: the code to execute when user clicks on a link or button on the message.
     /// - returns: A Bool indicating whether the message was opened.
-    func show(iterableMessage: IterableMessageProtocol, withCallback callback: ITEActionBlock?) -> Bool
+    func show(iterableMessage: IterableInAppMessage, withCallback callback: ITEActionBlock?) -> Bool
 
     /**
      Displays a iOS system style notification with two buttons
@@ -39,7 +39,7 @@ class IterableMessageDisplayer : IterableMessageDisplayerProtocol {
         return IterableMessageDisplayer.isShowingIterableMessage()
     }
     
-    func show(iterableMessage: IterableMessageProtocol, withCallback callback: ITEActionBlock?) -> Bool {
+    func show(iterableMessage: IterableInAppMessage, withCallback callback: ITEActionBlock?) -> Bool {
         return IterableMessageDisplayer.show(iterableMessage: iterableMessage, withCallback: callback)
     }
     
@@ -68,15 +68,17 @@ class IterableMessageDisplayer : IterableMessageDisplayerProtocol {
         guard let topViewController = getTopViewController() else {
             return false
         }
-        if topViewController is IterableInAppHTMLViewController {
+        if topViewController is IterableHtmlMessageViewController {
             ITBError("Skipping the in-app notification. Another notification is already being displayed.")
             return false
         }
         
-        let baseNotification = IterableInAppHTMLViewController(data: htmlString)
-        baseNotification.ITESetTrackParams(trackParams)
-        baseNotification.ITESetCallback(callbackBlock)
-        baseNotification.ITESetPadding(padding)
+        let input = IterableHtmlMessageViewController.Input(html: htmlString,
+                                                             padding: padding,
+                                                             callback: callbackBlock,
+                                                             trackParams: trackParams,
+                                                             isModal: true)
+        let baseNotification = IterableHtmlMessageViewController(input: input)
         
         topViewController.definesPresentationContext = true
         baseNotification.view.backgroundColor = UIColor(white: 0, alpha: CGFloat(backgroundAlpha))
@@ -116,7 +118,7 @@ class IterableMessageDisplayer : IterableMessageDisplayerProtocol {
             return false
         }
         
-        return topViewController is IterableInAppHTMLViewController
+        return topViewController is IterableHtmlMessageViewController
     }
     
     private static func getTopViewController() -> UIViewController? {
@@ -130,7 +132,7 @@ class IterableMessageDisplayer : IterableMessageDisplayerProtocol {
         return topViewController
     }
     
-    @discardableResult fileprivate static func show(iterableMessage: IterableMessageProtocol, withCallback callback:ITEActionBlock?) -> Bool {
+    @discardableResult fileprivate static func show(iterableMessage: IterableInAppMessage, withCallback callback:ITEActionBlock?) -> Bool {
         guard let content = iterableMessage.content as? IterableHtmlContent else {
             ITBError("Invalid content type")
             return false

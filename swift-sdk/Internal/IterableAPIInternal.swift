@@ -720,6 +720,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
 
         // after calling super we can set self as a property
         inAppManager.internalApi = self
+        inAppManager.synchronize()
 
         // sdk version
         updateSDKVersion()

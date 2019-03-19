@@ -35,16 +35,27 @@ import Foundation
 }
 
 /**
- * This protocol allows you to override default behavior when new inApps arrive.
+ * This protocol allows you to override default behavior when new in-app messages arrive.
  */
 @objc public protocol IterableInAppDelegate : class {
     /**
-     * This method is called when new inApp message is available.
+     * This method is called when inbox is ready. This is called right after app is launched and inbox messages
+     * are loaded from storage.
+     * - parameter messages: Array of `IterableInAppMessage` object containing information regarding inbox messages
+     */
+    @objc(onInboxReady:) func onInboxReady(messages: [IterableInAppMessage])
+    /**
+     * This method is called when new in-app message is available.
      * The default behavior is to `show` if you don't override this method.
      * - parameter message: `IterableInAppMessage` object containing information regarding inApp to display
      * - returns: Return `show` to show the inApp or `skip` to skip this.
      */
     @objc(onNewMessage:) func onNew(message: IterableInAppMessage) -> InAppShowResponse
+    /**
+     * This method is called when new inbox messages are available.
+     * - parameter inboxMessages: Array of `IterableInAppMessage` objects containing information regarding inbox messages
+     */
+    @objc(onNewInboxMessages:) func onNew(inboxMessages: [IterableInAppMessage])
 }
 
 /**
