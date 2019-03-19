@@ -344,14 +344,14 @@ extension IterableInAppMessage : Codable {
     }
 }
 
-protocol IterableMessagePersistenceProtocol {
+protocol InAppPersistenceProtocol {
     func getMessages() -> [IterableInAppMessage]
     func persist(_ messages: [IterableInAppMessage])
     func clear()
 }
 
 
-class IterableMessageFilePersister : IterableMessagePersistenceProtocol {
+class InAppFilePersister : InAppPersistenceProtocol {
     init(filename: String = "itbl_inapp", ext: String = "json") {
         self.filename = filename
         self.ext = ext

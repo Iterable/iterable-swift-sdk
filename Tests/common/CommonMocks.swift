@@ -346,7 +346,7 @@ class MockNotificationCenter: NotificationCenterProtocol {
     
 }
 
-class MockInAppPesister : IterableMessagePersistenceProtocol {
+class MockInAppPesister : InAppPersistenceProtocol {
     private var messages = [IterableInAppMessage]()
     
     func getMessages() -> [IterableInAppMessage] {

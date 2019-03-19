@@ -313,7 +313,7 @@ class InboxTests: XCTestCase {
         expectation2.expectedFulfillmentCount = 2
 
         let mockInAppSynchronizer = MockInAppSynchronizer()
-        let persister = IterableMessageFilePersister()
+        let persister = InAppFilePersister()
         persister.clear()
         let config = IterableConfig()
         let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)

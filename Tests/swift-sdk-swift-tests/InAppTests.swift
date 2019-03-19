@@ -743,7 +743,7 @@ class InAppTests: XCTestCase {
         }
         """.toJsonDict()
         let messages = InAppTestHelper.inAppMessages(fromPayload: payload)
-        let persister = IterableMessageFilePersister()
+        let persister = InAppFilePersister()
         persister.persist(messages)
         let obtained = persister.getMessages()
         XCTAssertEqual(messages.description, obtained.description)
@@ -756,7 +756,7 @@ class InAppTests: XCTestCase {
     }
     
     func testFilePersisterInitial() {
-        let persister = IterableMessageFilePersister()
+        let persister = InAppFilePersister()
         persister.clear()
 
         let read = persister.getMessages()
@@ -764,7 +764,7 @@ class InAppTests: XCTestCase {
     }
     
     func testCorruptedData() {
-        let persister = IterableMessageFilePersister(filename: "test", ext: "json")
+        let persister = InAppFilePersister(filename: "test", ext: "json")
         
         let badData = "some junk data".data(using: .utf8)!
         
@@ -793,7 +793,7 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            inAppPersister: IterableMessageFilePersister()
+            inAppPersister: InAppFilePersister()
         )
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 3, 2]))
@@ -804,7 +804,7 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            inAppPersister: IterableMessageFilePersister()
+            inAppPersister: InAppFilePersister()
         )
 
         XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 3)

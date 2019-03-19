@@ -685,7 +685,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
          localStorage: LocalStorageProtocol = UserDefaultsLocalStorage(),
          inAppSynchronizer: InAppSynchronizerProtocol = InAppSilentPushSynchronizer(),
          iterableMessageDisplayer: IterableMessageDisplayerProtocol = IterableMessageDisplayer(),
-         inAppPersister: IterableMessagePersistenceProtocol = IterableMessageFilePersister(),
+         inAppPersister: InAppPersistenceProtocol = InAppFilePersister(),
          urlOpener: UrlOpenerProtocol = AppUrlOpener(),
          applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
          notificationCenter: NotificationCenterProtocol = NotificationCenter.default) {

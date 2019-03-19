@@ -49,7 +49,7 @@ extension IterableAPI {
                            notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
                            inAppSynchronizer: InAppSynchronizerProtocol = MockInAppSynchronizer(),
                            iterableMessageDisplayer: IterableMessageDisplayerProtocol = MockInAppDisplayer(),
-                           inAppPersister: IterableMessagePersistenceProtocol = MockInAppPesister(),
+                           inAppPersister: InAppPersistenceProtocol = MockInAppPesister(),
                            urlOpener: UrlOpenerProtocol = MockUrlOpener(),
                            applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
                            notificationCenter: NotificationCenterProtocol = NotificationCenter.default) {
@@ -79,7 +79,7 @@ extension IterableAPIInternal {
                                                         notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
                                                         inAppSynchronizer: InAppSynchronizerProtocol = MockInAppSynchronizer(),
                                                         iterableMessageDisplayer: IterableMessageDisplayerProtocol = MockInAppDisplayer(),
-                                                        inAppPersister: IterableMessagePersistenceProtocol = MockInAppPesister(),
+                                                        inAppPersister: InAppPersistenceProtocol = MockInAppPesister(),
                                                         urlOpener: UrlOpenerProtocol = MockUrlOpener(),
                                                         applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
                                                         notificationCenter: NotificationCenterProtocol = NotificationCenter.default) -> IterableAPIInternal {
