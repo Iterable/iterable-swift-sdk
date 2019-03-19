@@ -717,7 +717,7 @@ class InAppTests: XCTestCase {
             },
             {
                 "saveToInbox": true,
-                "content": {"type": "inboxHtml", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "content": {"type": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
                 "trigger": {"type": "immediate"},
                 "messageId": "message2",
                 "expiresAt": 1550605745145,

@@ -75,7 +75,6 @@ public enum IterableContentType : Int, Codable {
     case html
     case alert
     case banner
-    case inboxHtml
 }
 
 @objc

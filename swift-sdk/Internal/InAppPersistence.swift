@@ -45,8 +45,6 @@ extension IterableContentType : CustomStringConvertible {
             return "alert"
         case .banner:
             return "banner"
-        case .inboxHtml:
-            return "inboxHtml"
         }
     }
 }
@@ -60,8 +58,6 @@ extension IterableContentType {
             return .alert
         case String(describing: IterableContentType.banner).lowercased():
             return .banner
-        case String(describing: IterableContentType.inboxHtml).lowercased():
-            return .inboxHtml
         default:
             return .html
         }

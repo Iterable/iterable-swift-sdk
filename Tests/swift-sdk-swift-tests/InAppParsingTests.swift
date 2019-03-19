@@ -449,7 +449,7 @@ class InAppParsingTests: XCTestCase {
                 {
                     "saveToInbox" : true,
                     "content" : {
-                        "type" : "inboxHtml",
+                        "type" : "html",
                         "html" : "<a href=\\"http://somewhere.com\\">Click here</a>",
                     },
                     "messageId" : "messageIdxxx",
