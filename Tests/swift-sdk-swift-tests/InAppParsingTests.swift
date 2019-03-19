@@ -309,7 +309,7 @@ class InAppParsingTests: XCTestCase {
         """
         var customPayload1 = customPayloadStr1.toJsonDict()
         customPayload1["saveToInbox"] = false
-        customPayload1["type"] = "html"
+        customPayload1["contentType"] = "html"
         
         let customPayloadStr2 = """
         {
@@ -323,10 +323,14 @@ class InAppParsingTests: XCTestCase {
         """
         var customPayload2 = customPayloadStr2.toJsonDict()
         customPayload2["saveToInbox"] = true
-        customPayload2["type"] = "inboxHtml"
-        customPayload2["title"] = "title"
-        customPayload2["subTitle"] = "subTitle"
-        customPayload2["icon"] = "icon"
+        customPayload2["contentType"] = "html"
+        customPayload2["inboxMetadata"] = """
+        {
+            "title": "title",
+            "subTitle": "subTitle",
+            "icon": "icon",
+        }
+        """.toJsonDict()
         
         let payload = """
         {
@@ -447,15 +451,17 @@ class InAppParsingTests: XCTestCase {
                     "content" : {
                         "type" : "inboxHtml",
                         "html" : "<a href=\\"http://somewhere.com\\">Click here</a>",
-                        "title" : "\(inboxTitle)",
-                        "subTitle" : "\(inboxSubTitle)",
-                        "icon" : "\(inboxIcon)",
                     },
                     "messageId" : "messageIdxxx",
                     "campaignId" : "campaignIdxxx",
                     "trigger" : {
                         "type" : "myNewKind",
                         "myPayload" : {"var1" : "val1"}
+                    },
+                    "inboxMetadata": {
+                        "title" : "\(inboxTitle)",
+                        "subTitle" : "\(inboxSubTitle)",
+                        "icon" : "\(inboxIcon)",
                     },
                     "customPayload" : \(customPayloadStr2)
                 },

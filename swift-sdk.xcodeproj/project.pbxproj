@@ -520,6 +520,7 @@
 				AC2C668620D3435700D46CC9 /* IterableActionRunnerTests.swift */,
 				AC6FDD8B20F56309005D811E /* InAppParsingTests.swift */,
 				ACA8D1A821965B7D001B1332 /* InAppTests.swift */,
+				AC1670CC2230A91C00989F8E /* InboxTests.swift */,
 				00B6FACB210E8484007535CF /* APNSUtilTests.swift */,
 				AC776DA3211A17C700C27C27 /* IterableRequestUtilTests.swift */,
 				AC2C668320D3370600D46CC9 /* Mocks.swift */,
@@ -530,7 +531,6 @@
 				ACED4C00213F50B30055A497 /* LoggingTests.swift */,
 				AC64626A2140AACF0046E1BD /* IterableAPIResponseTests.swift */,
 				ACEDF41E2183C436000B9BFE /* PromiseTests.swift */,
-				AC1670CC2230A91C00989F8E /* InboxTests.swift */,
 			);
 			path = "swift-sdk-swift-tests";
 			sourceTree = "<group>";

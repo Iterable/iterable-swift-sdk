@@ -314,19 +314,18 @@ extension InAppManager : InAppSynchronizerDelegate {
     
     private func processInboxMessages() {
         ITBDebug()
-        //!!!
-//        let newInboxMessages = messagesMap.values.compactMap { InAppManager.asValidInbox(message: $0, currentDate: dateProvider.currentDate) }.filter { $0.processed == false }
-//
-//        if newInboxMessages.count > 0 {
-//            newInboxMessages.forEach {
-//                let toUpdate = $0
-//                toUpdate.processed = true
-//                self.messagesMap.updateValue(toUpdate, forKey: $0.messageId)
-//            }
-//            persister.persist(self.messagesMap.values as! [IterableInAppMessage])
-//
-//            inboxDelegate?.onNew(messages: newInboxMessages)
-//        }
+        let newInboxMessages = messagesMap.values.filter { InAppManager.isValid(message: $0, currentDate: dateProvider.currentDate) && $0.saveToInbox == true && $0.processed == false }
+
+        if newInboxMessages.count > 0 {
+            newInboxMessages.forEach {
+                let toUpdate = $0
+                toUpdate.processed = true
+                self.messagesMap.updateValue(toUpdate, forKey: $0.messageId)
+            }
+            persister.persist(self.messagesMap.values)
+
+            inAppDelegate.onNew(inboxMessages: newInboxMessages)
+        }
     }
     
     private func scheduleNextInAppMessage() {
