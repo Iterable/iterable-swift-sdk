@@ -252,19 +252,19 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
     }
 }
 
-class MockInAppDisplayer : IterableMessageDisplayerProtocol {
-    func isShowingIterableMessage() -> Bool {
+class MockIterableMessagepDisplayer : IterableMessageDisplayerProtocol {
+    func isShowingInApp() -> Bool {
         return showing
     }
     
-    func show(iterableMessage: IterableInAppMessage, withCallback callback: ITEActionBlock?) -> Bool {
+    func showInApp(message: IterableInAppMessage, withCallback callback: ITEActionBlock?) -> Bool {
         if showing {
             return false
         }
         
         showing = true
         actionCallback = callback
-        onShowCallback?(iterableMessage, callback)
+        onShowCallback?(message, callback)
         return true
     }
 

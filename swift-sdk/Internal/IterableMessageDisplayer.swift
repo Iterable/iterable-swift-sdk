@@ -7,13 +7,13 @@
 import Foundation
 
 protocol IterableMessageDisplayerProtocol {
-    func isShowingIterableMessage() -> Bool
+    func isShowingInApp() -> Bool
 
     /// Shows an IterableMessage.
     /// - parameter message: The Iterable message to show
     /// - parameter callback: the code to execute when user clicks on a link or button on the message.
     /// - returns: A Bool indicating whether the message was opened.
-    func show(iterableMessage: IterableInAppMessage, withCallback callback: ITEActionBlock?) -> Bool
+    func showInApp(message: IterableInAppMessage, withCallback callback: ITEActionBlock?) -> Bool
 
     /**
      Displays a iOS system style notification with two buttons
@@ -35,12 +35,12 @@ protocol IterableMessageDisplayerProtocol {
 }
 
 class IterableMessageDisplayer : IterableMessageDisplayerProtocol {
-    func isShowingIterableMessage() -> Bool {
+    func isShowingInApp() -> Bool {
         return IterableMessageDisplayer.isShowingIterableMessage()
     }
     
-    func show(iterableMessage: IterableInAppMessage, withCallback callback: ITEActionBlock?) -> Bool {
-        return IterableMessageDisplayer.show(iterableMessage: iterableMessage, withCallback: callback)
+    func showInApp(message: IterableInAppMessage, withCallback callback: ITEActionBlock?) -> Bool {
+        return IterableMessageDisplayer.show(iterableMessage: message, withCallback: callback)
     }
     
     func showSystemNotification( _ title: String, body: String, buttonLeft: String?, buttonRight: String?, callbackBlock: ITEActionBlock?) {

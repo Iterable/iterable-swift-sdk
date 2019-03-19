@@ -197,7 +197,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
             self.scheduleNextInAppMessage()
         }
         
-        let showed = displayer.show(iterableMessage: message, withCallback: clickCallback)
+        let showed = displayer.showInApp(message: message, withCallback: clickCallback)
         let shouldConsume = showed && consume
         if shouldConsume {
             internalApi?.inAppConsume(message.messageId)
@@ -407,7 +407,7 @@ extension InAppManager : InAppSynchronizerDelegate {
             ITBInfo("not active")
             return false
         }
-        guard displayer.isShowingIterableMessage() == false else {
+        guard displayer.isShowingInApp() == false else {
             ITBInfo("showing another")
             return false
         }
