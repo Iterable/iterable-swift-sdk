@@ -252,7 +252,7 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
     }
 }
 
-class MockIterableMessagepDisplayer : IterableMessageDisplayerProtocol {
+class MockIterableMessageDisplayer : IterableMessageDisplayerProtocol {
     func isShowingInApp() -> Bool {
         return showing
     }

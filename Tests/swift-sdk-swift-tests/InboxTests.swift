@@ -173,11 +173,11 @@ class InboxTests: XCTestCase {
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
-        let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _) in
+        let mockIterableMessageDisplayer = MockIterableMessageDisplayer()
+        mockIterableMessageDisplayer.onShowCallback = {(_, _) in
             expectation1.fulfill()
             // now click and url in the message
-            mockInAppDisplayer.click(url: "https://someurl.com")
+            mockIterableMessageDisplayer.click(url: "https://someurl.com")
         }
         
         let mockUrlDelegate = MockUrlDelegate(returnValue: true)
@@ -193,7 +193,7 @@ class InboxTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            iterableMessageDisplayer: mockInAppDisplayer
+            iterableMessageDisplayer: mockIterableMessageDisplayer
         )
 
         let payload = """
@@ -490,11 +490,11 @@ class InboxTests: XCTestCase {
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
-        let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _) in
+        let mockIterableMessageDisplayer = MockIterableMessageDisplayer()
+        mockIterableMessageDisplayer.onShowCallback = {(_, _) in
             expectation1.fulfill()
             // now click and url in the message
-            mockInAppDisplayer.click(url: "https://someurl.com")
+            mockIterableMessageDisplayer.click(url: "https://someurl.com")
         }
         
         let mockUrlDelegate = MockUrlDelegate(returnValue: true)
@@ -511,7 +511,7 @@ class InboxTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            iterableMessageDisplayer: mockInAppDisplayer
+            iterableMessageDisplayer: mockIterableMessageDisplayer
         )
         
         let payload = """
