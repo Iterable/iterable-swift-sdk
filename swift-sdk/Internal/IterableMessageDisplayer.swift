@@ -14,24 +14,6 @@ protocol IterableMessageDisplayerProtocol {
     /// - parameter callback: the code to execute when user clicks on a link or button on the message.
     /// - returns: A Bool indicating whether the message was opened.
     func showInApp(message: IterableInAppMessage, withCallback callback: ITEActionBlock?) -> Bool
-
-    /**
-     Displays a iOS system style notification with two buttons
-     
-     - parameters:
-     - title:           The notification title
-     - body:            The notification message body
-     - buttonLeft:      The text of the left button
-     - buttonRight:     The text of the right button
-     - callbackBlock:   The callback to send after a button on the notification is clicked
-     
-     - remark:            passes the string of the button clicked to the callbackBlock
-     */
-    func showSystemNotification(_ title: String,
-                                body: String,
-                                buttonLeft: String?,
-                                buttonRight: String?,
-                                callbackBlock: ITEActionBlock?)
 }
 
 class IterableMessageDisplayer : IterableMessageDisplayerProtocol {
@@ -41,10 +23,6 @@ class IterableMessageDisplayer : IterableMessageDisplayerProtocol {
     
     func showInApp(message: IterableInAppMessage, withCallback callback: ITEActionBlock?) -> Bool {
         return IterableMessageDisplayer.show(iterableMessage: message, withCallback: callback)
-    }
-    
-    func showSystemNotification( _ title: String, body: String, buttonLeft: String?, buttonRight: String?, callbackBlock: ITEActionBlock?) {
-        IterableMessageDisplayer.showSystemNotification(title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
     }
     
     /**
@@ -88,7 +66,7 @@ class IterableMessageDisplayer : IterableMessageDisplayerProtocol {
         return true
     }
     
-    private static func showSystemNotification(_ title: String,
+    static func showSystemNotification(_ title: String,
                                                body: String,
                                                buttonLeft: String?,
                                                buttonRight: String?,

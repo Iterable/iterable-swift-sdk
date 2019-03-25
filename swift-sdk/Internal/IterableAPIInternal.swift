@@ -474,7 +474,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
 
     func showSystemNotification(_ title: String, body: String, buttonLeft: String?, buttonRight:String?, callbackBlock: ITEActionBlock?) {
-        iterableMessageDisplayer.showSystemNotification(title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
+        IterableMessageDisplayer.showSystemNotification(title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
     }
 
     func getAndTrackDeeplink(webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {
