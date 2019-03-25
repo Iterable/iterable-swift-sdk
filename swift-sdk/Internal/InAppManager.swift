@@ -157,6 +157,10 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
             self.messagesMap.updateValue(toUpdate, forKey: message.messageId)
             persister.persist(self.messagesMap.values)
         }
+        self.callbackQueue.async {
+            self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
+        }
+
     }
 
     @objc private func onAppReady(notification: Notification) {
