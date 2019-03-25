@@ -214,7 +214,13 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
     var syncCallback: (() -> Void)?
     var removeCallback: ((String) -> Void)?
     
-    private var messagesMap = OrderedDictionary<String, IterableInAppMessage>()
+    init(messages: [IterableInAppMessage] = []) {
+        ITBInfo()
+        for message in messages {
+            messagesMap[message.messageId] = message
+        }
+        
+    }
     
     func sync() {
         ITBInfo()
@@ -250,6 +256,8 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
         ITBInfo()
         mockMessagesAvailableFromServer(messages: InAppTestHelper.inAppMessages(fromPayload: payload))
     }
+
+    private var messagesMap = OrderedDictionary<String, IterableInAppMessage>()
 }
 
 class MockIterableMessageDisplayer : IterableMessageDisplayerProtocol {
@@ -292,25 +300,20 @@ class MockIterableMessageDisplayer : IterableMessageDisplayerProtocol {
 }
 
 class MockInAppDelegate : IterableInAppDelegate {
-    var onReadyCallback: (([IterableInAppMessage]) -> Void)?
+    var onInboxChangedCallback: (() -> Void)?
     var onNewMessageCallback: ((IterableInAppMessage) -> Void)?
-    var onNewInboxMessagesCallback: (([IterableInAppMessage]) -> Void)?
     
     init(showInApp: InAppShowResponse = .show) {
         self.showInApp = showInApp
     }
     
-    func onInboxReady(messages: [IterableInAppMessage]) {
-        onReadyCallback?(messages)
+    func onInboxChanged() {
+        onInboxChangedCallback?()
     }
     
     func onNew(message: IterableInAppMessage) -> InAppShowResponse {
         onNewMessageCallback?(message)
         return showInApp
-    }
-
-    func onNew(inboxMessages: [IterableInAppMessage]) {
-        onNewInboxMessagesCallback?(inboxMessages)
     }
     
     private let showInApp: InAppShowResponse
@@ -324,9 +327,9 @@ class MockNotificationCenter: NotificationCenterProtocol {
     func removeObserver(_ observer: Any) {
     }
     
-    func fire(notification: Notification.Name) {
-        _ = observers.filter( { $0.notificationName == notification } ).map {
-            _ = $0.observer.perform($0.selector, with: Notification(name: notification))
+    func post(name: Notification.Name, object: Any?, userInfo: [AnyHashable : Any]?) {
+        _ = observers.filter( { $0.notificationName == name } ).map {
+            _ = $0.observer.perform($0.selector, with: Notification(name: name))
         }
     }
 

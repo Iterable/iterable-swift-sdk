@@ -50,23 +50,19 @@ public protocol IterableInAppManagerProtocol {
     @objc(createInboxMessageViewControllerForMessage:) func createInboxMessageViewController(for message: IterableInAppMessage) -> UIViewController?
 }
 
-/// By default, every single inApp will be shown as soon as it is available.
-/// If more than 1 inApp is available, we show the first showable one.
 @objcMembers
 open class DefaultInAppDelegate : IterableInAppDelegate {
     public init() {}
     
-    public func onInboxReady(messages: [IterableInAppMessage]) {
+    public func onInboxChanged() {
         ITBInfo()
     }
     
+    /// By default, every single inApp will be shown as soon as it is available.
+    /// If more than 1 inApp is available, we show the first showable one.
     open func onNew(message: IterableInAppMessage) -> InAppShowResponse {
         ITBInfo()
         return .show
-    }
-
-    public func onNew(inboxMessages: [IterableInAppMessage]) {
-        ITBInfo()
     }
 }
 

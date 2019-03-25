@@ -238,18 +238,19 @@ class InboxTests: XCTestCase {
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
-        var count = 0
+        var callbackCount = 0
         let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
-        mockInAppDelegate.onNewInboxMessagesCallback = { messages in
-            if count == 0 {
+        mockInAppDelegate.onInboxChangedCallback = {
+            let messages = IterableAPI.inAppManager.getInboxMessages()
+            if callbackCount == 0 {
                 XCTAssertEqual(messages.count, 1)
                 XCTAssertEqual(messages[0].messageId, "message0")
             } else {
-                XCTAssertEqual(messages.count, 1)
-                XCTAssertEqual(messages[0].messageId, "message1")
+                XCTAssertEqual(messages.count, 2)
+                XCTAssertEqual(messages[1].messageId, "message1")
             }
             expectation1.fulfill()
-            count += 1
+            callbackCount += 1
         }
 
         let config = IterableConfig()
@@ -307,42 +308,9 @@ class InboxTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
-    func testInboxReadyCallback() {
-        let expectation1 = expectation(description: "verify on new messages are called")
-        let expectation2 = expectation(description: "verify onready is called")
-        expectation2.expectedFulfillmentCount = 2
+    func testInboxChangedCalledOnInitialization() {
+        let expectation1 = expectation(description: "verify on inbox changed is called")
 
-        let mockInAppSynchronizer = MockInAppSynchronizer()
-        let persister = InAppFilePersister()
-        persister.clear()
-        let config = IterableConfig()
-        let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
-        mockInAppDelegate.onNewInboxMessagesCallback = { messages in
-            XCTAssertEqual(messages.count, 1)
-            XCTAssertEqual(messages[0].messageId, "message0")
-            expectation1.fulfill()
-        }
-        var readyCallbackCount = 0
-        mockInAppDelegate.onReadyCallback = { messages in
-            if readyCallbackCount == 0 {
-                XCTAssertEqual(messages.count, 0)
-            } else {
-                XCTAssertEqual(messages.count, 1)
-                XCTAssertEqual(messages[0].messageId, "message0")
-            }
-            readyCallbackCount += 1
-            expectation2.fulfill()
-        }
-        
-        config.inAppDelegate = mockInAppDelegate
-        config.logDelegate = AllLogDelegate()
-        
-        IterableAPI.initializeForTesting(
-            config: config,
-            inAppSynchronizer: mockInAppSynchronizer,
-            inAppPersister: persister
-        )
-        
         let payload = """
         {"inAppMessages":
         [
@@ -357,17 +325,33 @@ class InboxTests: XCTestCase {
         ]
         }
         """.toJsonDict()
-        
-        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
+        let messages = InAppTestHelper.inAppMessages(fromPayload: payload)
+        let persister = InAppFilePersister()
+        persister.clear()
+        persister.persist(messages)
 
-        // Give some time to finish processing
-        Thread.sleep(forTimeInterval: 1.0)
+        let config = IterableConfig()
+        let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
+        mockInAppDelegate.onInboxChangedCallback = {
+            
+            let messages = IterableAPI.inAppManager.getInboxMessages()
+            XCTAssertEqual(messages.count, 1)
+            expectation1.fulfill()
+        }
         
-        // Initialize again
-        IterableAPI.initializeForTesting(config: config,
-                                         inAppPersister: persister)
+        config.inAppDelegate = mockInAppDelegate
+        config.logDelegate = AllLogDelegate()
         
-        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
+        let mockInAppSynchronizer = MockInAppSynchronizer(messages: messages)
+        
+        IterableAPI.initializeForTesting(
+            config: config,
+            inAppSynchronizer: mockInAppSynchronizer,
+            inAppPersister: persister
+        )
+
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
         persister.clear()
     }
 
@@ -393,13 +377,14 @@ class InboxTests: XCTestCase {
         }
         
         var inboxCallbackCount = 0
-        mockInAppDelegate.onNewInboxMessagesCallback = { messages in
+        mockInAppDelegate.onInboxChangedCallback = {
+            let messages = IterableAPI.inAppManager.getInboxMessages()
             if inboxCallbackCount == 0 {
                 XCTAssertEqual(messages.count, 1)
                 XCTAssertEqual(messages[0].messageId, "message0")
             } else {
-                XCTAssertEqual(messages.count, 1)
-                XCTAssertEqual(messages[0].messageId, "message1")
+                XCTAssertEqual(messages.count, 2)
+                XCTAssertEqual(messages[1].messageId, "message1")
             }
             expectation1.fulfill()
             inboxCallbackCount += 1

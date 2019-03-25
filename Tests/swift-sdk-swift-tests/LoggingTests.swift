@@ -20,31 +20,44 @@ class LoggingTests: XCTestCase {
     }
 
     func testLogging() {
+        let expectation1 = expectation(description: "debug message")
+        let expectation2 = expectation(description: "info message")
+        let expectation3 = expectation(description: "error message")
+        
         class LogDelegate : IterableLogDelegate {
-            var level: LogLevel? = nil
-            var message: String? = nil
+            var callback: ((LogLevel, String) -> Void)? = nil
             
             func log(level: LogLevel, message: String) {
-                self.level = level
-                self.message = message
+                callback?(level, message)
             }
         }
         
+        let debugMessage = UUID().uuidString
+        let infoMessage = UUID().uuidString
+        let errorMessage = UUID().uuidString
+        
         let logDelegate = LogDelegate()
+        logDelegate.callback = { (logLevel, message) in
+            if logLevel == .debug && message.contains(debugMessage) {
+                expectation1.fulfill()
+            }
+            if logLevel == .info && message.contains(infoMessage) {
+                expectation2.fulfill()
+            }
+            if logLevel == .error && message.contains(errorMessage) {
+                expectation3.fulfill()
+            }
+        }
         let config = IterableConfig()
         config.logDelegate = logDelegate
         IterableAPI.initializeForTesting(apiKey: "apiKey", config: config)
         
-        ITBDebug("debug message")
-        XCTAssert(logDelegate.level == .debug)
-        XCTAssert(logDelegate.message!.contains("debug message"))
+        ITBDebug(debugMessage)
 
-        ITBInfo("info message")
-        XCTAssert(logDelegate.level == .info)
-        XCTAssert(logDelegate.message!.contains("info message"))
+        ITBInfo(infoMessage)
 
-        ITBError("error message")
-        XCTAssert(logDelegate.level == .error)
-        XCTAssert(logDelegate.message!.contains("error message"))
+        ITBError(errorMessage)
+        
+        wait(for: [expectation1, expectation2, expectation3], timeout: 10.0)
     }
 }

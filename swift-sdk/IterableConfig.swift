@@ -39,12 +39,6 @@ import Foundation
  */
 @objc public protocol IterableInAppDelegate : class {
     /**
-     * This method is called when inbox is ready. This is called right after app is launched and inbox messages
-     * are loaded from storage.
-     * - parameter messages: Array of `IterableInAppMessage` object containing information regarding inbox messages
-     */
-    @objc(onInboxReady:) func onInboxReady(messages: [IterableInAppMessage])
-    /**
      * This method is called when new in-app message is available.
      * The default behavior is to `show` if you don't override this method.
      * - parameter message: `IterableInAppMessage` object containing information regarding inApp to display
@@ -52,10 +46,9 @@ import Foundation
      */
     @objc(onNewMessage:) func onNew(message: IterableInAppMessage) -> InAppShowResponse
     /**
-     * This method is called when new inbox messages are available.
-     * - parameter inboxMessages: Array of `IterableInAppMessage` objects containing information regarding inbox messages
+     * This method is called when new inbox messages are added or deleted from the server
      */
-    @objc(onNewInboxMessages:) func onNew(inboxMessages: [IterableInAppMessage])
+    @objc(onInboxChanged) func onInboxChanged()
 }
 
 /**

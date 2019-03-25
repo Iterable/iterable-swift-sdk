@@ -482,7 +482,7 @@ class InAppTests: XCTestCase {
         
         mockDateProvider.currentDate = mockDateProvider.currentDate.addingTimeInterval(1000.0)
         mockApplicationStateProvider.applicationState = .active
-        mockNotificationCenter.fire(notification: UIApplication.didBecomeActiveNotification)
+        mockNotificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
         
         wait(for: [expectation2], timeout: testExpectationTimeout)
     }
@@ -527,15 +527,15 @@ class InAppTests: XCTestCase {
         
         mockDateProvider.currentDate = mockDateProvider.currentDate.addingTimeInterval(1000.0)
         mockApplicationStateProvider.applicationState = .active
-        mockNotificationCenter.fire(notification: UIApplication.didBecomeActiveNotification)
-        
+        mockNotificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
+
         wait(for: [expectation2], timeout: testExpectationTimeout)
 
         // now move to foreground within interval
         mockInAppSynchronizer.syncCallback = {
             expectation3.fulfill()
         }
-        mockNotificationCenter.fire(notification: UIApplication.didBecomeActiveNotification)
+        mockNotificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
         wait(for: [expectation3], timeout: testExpectationTimeoutForInverted)
         
         // now move to foreground outside of interval
@@ -543,7 +543,7 @@ class InAppTests: XCTestCase {
         mockInAppSynchronizer.syncCallback = {
             expectation4.fulfill()
         }
-        mockNotificationCenter.fire(notification: UIApplication.didBecomeActiveNotification)
+        mockNotificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
         wait(for: [expectation4], timeout: testExpectationTimeout)
     }
 
