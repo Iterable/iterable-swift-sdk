@@ -260,7 +260,7 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
     private var messagesMap = OrderedDictionary<String, IterableInAppMessage>()
 }
 
-class MockIterableMessageDisplayer : IterableMessageDisplayerProtocol {
+class MockInAppDisplayer : InAppDisplayerProtocol {
     func isShowingInApp() -> Bool {
         return showing
     }

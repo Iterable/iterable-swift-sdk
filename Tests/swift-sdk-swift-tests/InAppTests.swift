@@ -24,13 +24,13 @@ class InAppTests: XCTestCase {
 
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
-        let mockIterableMessageDisplayer = MockIterableMessageDisplayer()
-        mockIterableMessageDisplayer.onShowCallback = {(_, _) in
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _) in
             // 1 message is present when showing
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
             expectation1.fulfill()
             // now click the inApp
-            mockIterableMessageDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: 1))
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: 1))
         }
         
         let mockUrlDelegate = MockUrlDelegate(returnValue: true)
@@ -44,7 +44,7 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            iterableMessageDisplayer: mockIterableMessageDisplayer
+            inAppDisplayer: mockInAppDisplayer
         )
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1))
@@ -59,10 +59,10 @@ class InAppTests: XCTestCase {
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
-        let mockIterableMessageDisplayer = MockIterableMessageDisplayer()
-        mockIterableMessageDisplayer.onShowCallback = {(_, _) in
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _) in
             expectation1.fulfill()
-            mockIterableMessageDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: 1))
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: 1))
         }
         
         let config = IterableConfig()
@@ -71,7 +71,7 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            iterableMessageDisplayer: mockIterableMessageDisplayer
+            inAppDisplayer: mockInAppDisplayer
         )
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1))
@@ -93,9 +93,9 @@ class InAppTests: XCTestCase {
 
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
-        let mockIterableMessageDisplayer = MockIterableMessageDisplayer()
-        mockIterableMessageDisplayer.onShowCallback = {(message, _) in
-            mockIterableMessageDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: TestInAppPayloadGenerator.index(fromCampaignId: message.campaignId)))
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(message, _) in
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: TestInAppPayloadGenerator.index(fromCampaignId: message.campaignId)))
             expectation0.fulfill()
         }
         
@@ -123,7 +123,7 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            iterableMessageDisplayer: mockIterableMessageDisplayer
+            inAppDisplayer: mockInAppDisplayer
         )
         
         let indices = [1, 3, 2]
@@ -145,8 +145,8 @@ class InAppTests: XCTestCase {
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
-        let mockIterableMessageDisplayer = MockIterableMessageDisplayer()
-        mockIterableMessageDisplayer.onShowCallback = {(_, _) in
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _) in
             expectation1.fulfill()
         }
         
@@ -157,7 +157,7 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            iterableMessageDisplayer: mockIterableMessageDisplayer
+            inAppDisplayer: mockInAppDisplayer
         )
 
         mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
@@ -185,15 +185,15 @@ class InAppTests: XCTestCase {
             expectation1.fulfill()
         }
         
-        let mockIterableMessageDisplayer = MockIterableMessageDisplayer()
-        mockIterableMessageDisplayer.onShowCallback = {(_, _) in
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _) in
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
-            mockIterableMessageDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: 1))
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: 1))
         }
         
         IterableAPI.initializeForTesting(
                                  inAppSynchronizer: mockInAppSynchronizer,
-                                 iterableMessageDisplayer: mockIterableMessageDisplayer,
+                                 inAppDisplayer: mockInAppDisplayer,
                                  urlOpener: mockUrlOpener
         )
         
@@ -217,10 +217,10 @@ class InAppTests: XCTestCase {
             expectation1.fulfill()
         }
         
-        let mockIterableMessageDisplayer = MockIterableMessageDisplayer()
-        mockIterableMessageDisplayer.onShowCallback = {(_, _) in
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _) in
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
-            mockIterableMessageDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: 1))
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: 1))
         }
         
         let mockUrlDelegate = MockUrlDelegate(returnValue: true)
@@ -229,7 +229,7 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            iterableMessageDisplayer: mockIterableMessageDisplayer,
+            inAppDisplayer: mockInAppDisplayer,
             urlOpener: mockUrlOpener
         )
         
@@ -244,9 +244,9 @@ class InAppTests: XCTestCase {
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
-        let mockIterableMessageDisplayer = MockIterableMessageDisplayer()
-        mockIterableMessageDisplayer.onShowCallback = {(_, _) in
-            mockIterableMessageDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: 1))
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _) in
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: 1))
         }
         
         let mockUrlOpener = MockUrlOpener { (url) in
@@ -262,7 +262,7 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            iterableMessageDisplayer: mockIterableMessageDisplayer,
+            inAppDisplayer: mockInAppDisplayer,
             urlOpener: mockUrlOpener
         )
 
@@ -285,9 +285,9 @@ class InAppTests: XCTestCase {
 
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
-        let mockIterableMessageDisplayer = MockIterableMessageDisplayer()
-        mockIterableMessageDisplayer.onShowCallback = {(_, _) in
-            mockIterableMessageDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: 1))
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _) in
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: 1))
         }
         
         let mockUrlOpener = MockUrlOpener { (url) in
@@ -305,7 +305,7 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            iterableMessageDisplayer: mockIterableMessageDisplayer,
+            inAppDisplayer: mockInAppDisplayer,
             urlOpener: mockUrlOpener
         )
         
@@ -327,9 +327,9 @@ class InAppTests: XCTestCase {
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
-        let mockIterableMessageDisplayer = MockIterableMessageDisplayer()
-        mockIterableMessageDisplayer.onShowCallback = {(_, _) in
-            mockIterableMessageDisplayer.click(url: TestInAppPayloadGenerator.getCustomActionUrl(index: 1))
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _) in
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getCustomActionUrl(index: 1))
         }
         
         let mockCustomActionDelegate = MockCustomActionDelegate(returnValue: true) // returnValue is reserved, no effect
@@ -347,7 +347,7 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            iterableMessageDisplayer: mockIterableMessageDisplayer
+            inAppDisplayer: mockInAppDisplayer
         )
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1))
@@ -420,8 +420,8 @@ class InAppTests: XCTestCase {
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
-        let mockIterableMessageDisplayer = MockIterableMessageDisplayer()
-        mockIterableMessageDisplayer.onShowCallback = {(_, _) in
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _) in
             expectation1.fulfill()
         }
         
@@ -434,7 +434,7 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            iterableMessageDisplayer: mockIterableMessageDisplayer,
+            inAppDisplayer: mockInAppDisplayer,
             applicationStateProvider: mockApplicationStateProvider,
             notificationCenter: mockNotificationCenter
         )
@@ -455,8 +455,8 @@ class InAppTests: XCTestCase {
         let mockInAppSynchronizer = MockInAppSynchronizer()
         let mockDateProvider = MockDateProvider()
         
-        let mockIterableMessageDisplayer = MockIterableMessageDisplayer()
-        mockIterableMessageDisplayer.onShowCallback = {(_, _) in
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _) in
             expectation1.fulfill() // expectation1 should not be fulfilled within timeout (inverted)
             expectation2.fulfill()
         }
@@ -471,7 +471,7 @@ class InAppTests: XCTestCase {
             config: config,
             dateProvider: mockDateProvider,
             inAppSynchronizer: mockInAppSynchronizer,
-            iterableMessageDisplayer: mockIterableMessageDisplayer,
+            inAppDisplayer: mockInAppDisplayer,
             applicationStateProvider: mockApplicationStateProvider,
             notificationCenter: mockNotificationCenter
         )
@@ -500,8 +500,8 @@ class InAppTests: XCTestCase {
         let mockInAppSynchronizer = MockInAppSynchronizer()
         let mockDateProvider = MockDateProvider()
         
-        let mockIterableMessageDisplayer = MockIterableMessageDisplayer()
-        mockIterableMessageDisplayer.onShowCallback = {(_, _) in
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _) in
             expectation1.fulfill() // expectation1 should not be fulfilled within timeout (inverted)
             expectation2.fulfill()
         }
@@ -516,7 +516,7 @@ class InAppTests: XCTestCase {
             config: config,
             dateProvider: mockDateProvider,
             inAppSynchronizer: mockInAppSynchronizer,
-            iterableMessageDisplayer: mockIterableMessageDisplayer,
+            inAppDisplayer: mockInAppDisplayer,
             applicationStateProvider: mockApplicationStateProvider,
             notificationCenter: mockNotificationCenter
         )
@@ -558,18 +558,18 @@ class InAppTests: XCTestCase {
 
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
-        let mockIterableMessageDisplayer = MockIterableMessageDisplayer()
+        let mockInAppDisplayer = MockInAppDisplayer()
         var messageNumber = -1
-        mockIterableMessageDisplayer.onShowCallback = {(_, _) in
+        mockInAppDisplayer.onShowCallback = {(_, _) in
             if messageNumber == 1 {
                 expectation1.fulfill()
-                mockIterableMessageDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: messageNumber))
+                mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: messageNumber))
             } else if messageNumber == 2 {
                 expectation2.fulfill()
-                mockIterableMessageDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: messageNumber))
+                mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: messageNumber))
             } else if messageNumber == 3 {
                 expectation3.fulfill()
-                mockIterableMessageDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: messageNumber))
+                mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: messageNumber))
             } else {
                 // unexpected message number
                 XCTFail()
@@ -582,7 +582,7 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            iterableMessageDisplayer: mockIterableMessageDisplayer
+            inAppDisplayer: mockInAppDisplayer
         )
         
         // send first message payload
@@ -606,15 +606,15 @@ class InAppTests: XCTestCase {
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
-        let mockIterableMessageDisplayer = MockIterableMessageDisplayer()
-        mockIterableMessageDisplayer.onShowCallback = {(_, _) in
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _) in
             expectation1.fulfill()
-            mockIterableMessageDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: 1))
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: 1))
         }
 
         IterableAPI.initializeForTesting(
             inAppSynchronizer: mockInAppSynchronizer,
-            iterableMessageDisplayer: mockIterableMessageDisplayer
+            inAppDisplayer: mockInAppDisplayer
         )
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 3))
@@ -643,9 +643,9 @@ class InAppTests: XCTestCase {
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
-        let mockIterableMessageDisplayer = MockIterableMessageDisplayer()
-        mockIterableMessageDisplayer.onShowCallback = {(message, _) in
-            mockIterableMessageDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: TestInAppPayloadGenerator.index(fromCampaignId: message.campaignId)))
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(message, _) in
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: TestInAppPayloadGenerator.index(fromCampaignId: message.campaignId)))
             expectation0.fulfill()
         }
         
@@ -678,7 +678,7 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(
             config: config,
             inAppSynchronizer: mockInAppSynchronizer,
-            iterableMessageDisplayer: mockIterableMessageDisplayer
+            inAppDisplayer: mockInAppDisplayer
         )
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1]))

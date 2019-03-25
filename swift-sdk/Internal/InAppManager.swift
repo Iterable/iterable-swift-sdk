@@ -27,7 +27,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     }
 
     init(synchronizer: InAppSynchronizerProtocol,
-         displayer: IterableMessageDisplayerProtocol,
+         displayer: InAppDisplayerProtocol,
          persister: InAppPersistenceProtocol,
          inAppDelegate: IterableInAppDelegate,
          urlDelegate: IterableURLDelegate?,
@@ -275,7 +275,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     }
     
     private var synchronizer: InAppSynchronizerProtocol // this is mutable because we need to set internalApi
-    private let displayer: IterableMessageDisplayerProtocol
+    private let displayer: InAppDisplayerProtocol
     private let inAppDelegate: IterableInAppDelegate
     private let urlDelegate: IterableURLDelegate?
     private let customActionDelegate: IterableCustomActionDelegate?

@@ -63,7 +63,7 @@ class ViewController: UIViewController {
         let html = """
             <a href="http://website/resource#something">Click Me</a>
         """
-        IterableMessageDisplayer.showIterableHtmlMessage(html) { (str) in
+        InAppDisplayer.showIterableHtmlMessage(html) { (str) in
             ITBInfo("callback: \(str ?? "<nil>")")
             self.statusLbl.text = str
         }
@@ -85,7 +85,7 @@ class ViewController: UIViewController {
         IterableAPI.initializeForTesting(apiKey: "apiKey",
                                          config: config,
                                          inAppSynchronizer: mockInAppSynchronizer,
-                                         iterableMessageDisplayer: IterableMessageDisplayer())
+                                         inAppDisplayer: InAppDisplayer())
 
         mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
         let message = IterableAPI.inAppManager.getMessages()[0]
@@ -115,7 +115,7 @@ class ViewController: UIViewController {
         IterableAPI.initializeForTesting(apiKey: "apiKey",
                                          config: config,
                                          inAppSynchronizer: mockInAppSynchronizer,
-                                         iterableMessageDisplayer: IterableMessageDisplayer())
+                                         inAppDisplayer: InAppDisplayer())
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
         let message = IterableAPI.inAppManager.getMessages()[0]
@@ -150,7 +150,7 @@ class ViewController: UIViewController {
         IterableAPI.initializeForTesting(apiKey: "apiKey",
                                config: config,
                                inAppSynchronizer: mockInAppSynchronizer,
-                               iterableMessageDisplayer: IterableMessageDisplayer()
+                               inAppDisplayer: InAppDisplayer()
                                )
         
         mockInAppSynchronizer.mockMessagesAvailableFromServer(messages: [message])
@@ -181,7 +181,7 @@ class ViewController: UIViewController {
                                config: config,
                                networkSession: MockNetworkSession(),
                                inAppSynchronizer: mockInAppSynchronizer,
-                               iterableMessageDisplayer: IterableMessageDisplayer(),
+                               inAppDisplayer: InAppDisplayer(),
                                urlOpener: mockUrlOpener)
         
         mockInAppSynchronizer.mockMessagesAvailableFromServer(messages: [message])

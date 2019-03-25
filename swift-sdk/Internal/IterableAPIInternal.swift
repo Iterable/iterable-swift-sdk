@@ -474,7 +474,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
 
     func showSystemNotification(_ title: String, body: String, buttonLeft: String?, buttonRight:String?, callbackBlock: ITEActionBlock?) {
-        IterableMessageDisplayer.showSystemNotification(title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
+        InAppDisplayer.showSystemNotification(title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
     }
 
     func getAndTrackDeeplink(webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {
@@ -510,7 +510,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     
     private let dateProvider: DateProviderProtocol
     
-    private let iterableMessageDisplayer: IterableMessageDisplayerProtocol
+    private let inAppDisplayer: InAppDisplayerProtocol
     
     private var deeplinkManager: IterableDeeplinkManager
     
@@ -684,7 +684,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
          notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
          localStorage: LocalStorageProtocol = UserDefaultsLocalStorage(),
          inAppSynchronizer: InAppSynchronizerProtocol = InAppSilentPushSynchronizer(),
-         iterableMessageDisplayer: IterableMessageDisplayerProtocol = IterableMessageDisplayer(),
+         inAppDisplayer: InAppDisplayerProtocol = InAppDisplayer(),
          inAppPersister: InAppPersistenceProtocol = InAppFilePersister(),
          urlOpener: UrlOpenerProtocol = AppUrlOpener(),
          applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
@@ -697,9 +697,9 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         self.networkSessionProvider = networkSession
         self.notificationStateProvider = notificationStateProvider
         self.localStorage = localStorage
-        self.iterableMessageDisplayer = iterableMessageDisplayer
+        self.inAppDisplayer = inAppDisplayer
         let inAppManager = InAppManager(synchronizer: inAppSynchronizer,
-                                        displayer: iterableMessageDisplayer,
+                                        displayer: inAppDisplayer,
                                         persister: inAppPersister,
                                         inAppDelegate: config.inAppDelegate,
                                         urlDelegate: config.urlDelegate,

@@ -6,7 +6,7 @@
 
 import Foundation
 
-protocol IterableMessageDisplayerProtocol {
+protocol InAppDisplayerProtocol {
     func isShowingInApp() -> Bool
 
     /// Shows an IterableMessage.
@@ -16,13 +16,13 @@ protocol IterableMessageDisplayerProtocol {
     func showInApp(message: IterableInAppMessage, withCallback callback: ITEActionBlock?) -> Bool
 }
 
-class IterableMessageDisplayer : IterableMessageDisplayerProtocol {
+class InAppDisplayer : InAppDisplayerProtocol {
     func isShowingInApp() -> Bool {
-        return IterableMessageDisplayer.isShowingIterableMessage()
+        return InAppDisplayer.isShowingIterableMessage()
     }
     
     func showInApp(message: IterableInAppMessage, withCallback callback: ITEActionBlock?) -> Bool {
-        return IterableMessageDisplayer.show(iterableMessage: message, withCallback: callback)
+        return InAppDisplayer.show(iterableMessage: message, withCallback: callback)
     }
     
     /**
