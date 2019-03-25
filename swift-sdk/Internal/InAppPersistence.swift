@@ -222,7 +222,6 @@ extension IterableInAppMessage : Codable {
         case expiresAt
         case customPayload
         case didProcessTrigger
-        case didProcessInbox
         case consumed
         case trigger
         case content
@@ -250,7 +249,6 @@ extension IterableInAppMessage : Codable {
         let customPayloadData = try? container.decode(Data.self, forKey: .customPayload)
         let customPayload = IterableInAppMessage.deserializeCustomPayload(withData: customPayloadData)
         let didProcessTrigger = (try? container.decode(Bool.self, forKey: .didProcessTrigger)) ?? false
-        let didProcessInbox = (try? container.decode(Bool.self, forKey: .didProcessInbox)) ?? false
         let consumed = (try? container.decode(Bool.self, forKey: .consumed)) ?? false
 
         let trigger = (try? container.decode(IterableInAppTrigger.self, forKey: .trigger)) ?? .undefinedTrigger
@@ -266,7 +264,6 @@ extension IterableInAppMessage : Codable {
                   customPayload: customPayload)
         
         self.didProcessTrigger = didProcessTrigger
-        self.didProcessInbox = didProcessInbox
         self.consumed = consumed
     }
 
@@ -280,7 +277,6 @@ extension IterableInAppMessage : Codable {
         try? container.encode(expiresAt, forKey: .expiresAt)
         try? container.encode(IterableInAppMessage.serialize(customPayload: customPayload), forKey: .customPayload)
         try? container.encode(didProcessTrigger, forKey: .didProcessTrigger)
-        try? container.encode(didProcessInbox, forKey: .didProcessInbox)
         try? container.encode(consumed, forKey: .consumed)
         if let inboxMetadata = inboxMetadata {
             try? container.encode(inboxMetadata, forKey: .inboxMetadata)

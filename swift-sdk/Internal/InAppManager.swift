@@ -262,7 +262,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     private func removePrivate(message: IterableInAppMessage) {
         ITBInfo()
         
-        updateMessage(message, didProcessTrigger: true, didProcessInbox: true, consumed: true)
+        updateMessage(message, didProcessTrigger: true, consumed: true)
         self.internalApi?.inAppConsume(message.messageId)
     }
 
@@ -393,16 +393,12 @@ extension InAppManager : InAppSynchronizerDelegate {
     
     private func updateMessage(_ message: IterableInAppMessage,
                                didProcessTrigger: Bool? = false,
-                               didProcessInbox: Bool? = false,
                                consumed: Bool = false) {
         ITBDebug()
         updateQueue.sync {
             let toUpdate = message
             if let didProcessTrigger = didProcessTrigger {
                 toUpdate.didProcessTrigger = didProcessTrigger
-            }
-            if let didProcessInbox = didProcessInbox {
-                toUpdate.didProcessInbox = didProcessInbox
             }
             toUpdate.consumed = consumed
             self.messagesMap.updateValue(toUpdate, forKey: message.messageId)

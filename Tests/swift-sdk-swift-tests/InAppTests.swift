@@ -1042,7 +1042,6 @@ extension IterableInAppMessage {
                         "expiresAt", expiresAt ?? "nil",
                         "content", content,
                         "didProcessTrigger", didProcessTrigger,
-                        "didProcessInbox", didProcessInbox,
                         "consumed", consumed, pairSeparator: " = ", separator: "\n")
     }
 }

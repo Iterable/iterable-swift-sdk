@@ -180,10 +180,6 @@ public final class IterableInAppMessage : NSObject {
     /// Note: This is internal and not public
     internal var didProcessTrigger = false
     
-    /// Whether we have processed 'save to inbox' for this message.
-    /// Note: This is internal and not public
-    internal var didProcessInbox = false
-    
     /// Mark this message to be removed from server queue.
     /// Note: This is internal and not public
     internal var consumed: Bool = false
