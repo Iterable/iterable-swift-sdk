@@ -74,7 +74,7 @@ struct InAppMessageParser {
             return .failure(.parseFailed(reason: "no content in json payload", messageId: messageId))
         }
         
-        let content: IterableContent
+        let content: IterableInAppContent
         switch (InAppContentParser.parse(contentDict: contentDict)) {
         case .success(let parsedContent):
             content = parsedContent

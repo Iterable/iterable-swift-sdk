@@ -111,7 +111,7 @@ class InAppDisplayer : InAppDisplayerProtocol {
     }
     
     @discardableResult fileprivate static func show(iterableMessage: IterableInAppMessage, withCallback callback:ITEActionBlock?) -> Bool {
-        guard let content = iterableMessage.content as? IterableHtmlContent else {
+        guard let content = iterableMessage.content as? IterableHtmlInAppContent else {
             ITBError("Invalid content type")
             return false
         }

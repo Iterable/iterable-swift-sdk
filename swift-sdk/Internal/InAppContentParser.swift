@@ -8,15 +8,15 @@
 import Foundation
 
 enum InAppContentParseResult {
-    case success(content: IterableContent)
+    case success(content: IterableInAppContent)
     case failure(reason: String)
 }
 
 struct InAppContentParser {
     static func parse(contentDict: [AnyHashable : Any]) -> InAppContentParseResult {
-        let contentType: IterableContentType
+        let contentType: IterableInAppContentType
         if let contentTypeStr = contentDict[.ITBL_IN_APP_CONTENT_TYPE] as? String {
-            contentType = IterableContentType.from(string: contentTypeStr)
+            contentType = IterableInAppContentType.from(string: contentTypeStr)
         } else {
             contentType = .html
         }
@@ -24,7 +24,7 @@ struct InAppContentParser {
         return contentParser(forContentType: contentType).tryCreate(from: contentDict)
     }
     
-    private static func contentParser(forContentType contentType: IterableContentType) -> ContentFromJsonParser.Type {
+    private static func contentParser(forContentType contentType: IterableInAppContentType) -> ContentFromJsonParser.Type {
         switch contentType {
         case .html:
             return HtmlContentParser.self
@@ -145,6 +145,6 @@ extension HtmlContentParser : ContentFromJsonParser {
         let backgroundAlpha = getBackgroundAlpha(fromInAppSettings: inAppDisplaySettings)
         let edgeInsets = getPadding(fromInAppSettings: inAppDisplaySettings)
 
-        return .success(content: IterableHtmlContent(edgeInsets: edgeInsets, backgroundAlpha: backgroundAlpha, html: html))
+        return .success(content: IterableHtmlInAppContent(edgeInsets: edgeInsets, backgroundAlpha: backgroundAlpha, html: html))
     }
 }

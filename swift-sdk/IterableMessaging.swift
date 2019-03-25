@@ -67,20 +67,20 @@ open class DefaultInAppDelegate : IterableInAppDelegate {
 }
 
 @objc
-public enum IterableContentType : Int, Codable {
+public enum IterableInAppContentType : Int, Codable {
     case html
     case alert
     case banner
 }
 
 @objc
-public protocol IterableContent {
-    var type: IterableContentType {get}
+public protocol IterableInAppContent {
+    var type: IterableInAppContentType {get}
 }
 
 @objcMembers
-public final class IterableHtmlContent : NSObject, IterableContent {
-    public let type = IterableContentType.html
+public final class IterableHtmlInAppContent : NSObject, IterableInAppContent {
+    public let type = IterableInAppContentType.html
     
     /// Edge insets
     public let edgeInsets: UIEdgeInsets
@@ -163,7 +163,7 @@ public final class IterableInAppMessage : NSObject {
     public let expiresAt: Date?
     
     /// The content of the inbox message
-    public let content: IterableContent
+    public let content: IterableInAppContent
     
     /// Whether to save this message to inbox
     public let saveToInbox: Bool
@@ -195,7 +195,7 @@ public final class IterableInAppMessage : NSObject {
         campaignId: String,
         trigger: IterableInAppTrigger = .defaultTrigger,
         expiresAt: Date? = nil,
-        content: IterableContent,
+        content: IterableInAppContent,
         saveToInbox: Bool = false,
         inboxMetadata: IterableInboxMetadata? = nil,
         customPayload: [AnyHashable : Any]? = nil

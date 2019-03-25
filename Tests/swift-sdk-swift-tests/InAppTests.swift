@@ -997,7 +997,7 @@ class InAppTests: XCTestCase {
         let message = IterableInAppMessage(messageId: "messageId",
                                            campaignId: "campaignId",
                                            expiresAt: mockDateProvider.currentDate.addingTimeInterval(1.0 * 60.0), // one minute from now
-                                           content: IterableHtmlContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "<html></html>"))
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "<html></html>"))
         mockInAppSynchronizer.mockMessagesAvailableFromServer(messages: [message])
 
         XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
@@ -1014,7 +1014,7 @@ extension IterableInAppTrigger {
     }
 }
 
-extension IterableHtmlContent {
+extension IterableHtmlInAppContent {
     public override var description: String {
         return IterableUtil.describe("type", type,
                         "edgeInsets", edgeInsets,

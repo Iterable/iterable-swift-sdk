@@ -36,7 +36,7 @@ extension UIEdgeInsets : Codable {
 
 // This is needed because String(describing: ...) returns wrong
 // value for this enum when it is exposed to Objective C
-extension IterableContentType : CustomStringConvertible {
+extension IterableInAppContentType : CustomStringConvertible {
     public var description: String {
         switch self {
         case .html:
@@ -49,14 +49,14 @@ extension IterableContentType : CustomStringConvertible {
     }
 }
 
-extension IterableContentType {
-    static func from(string: String) -> IterableContentType {
+extension IterableInAppContentType {
+    static func from(string: String) -> IterableInAppContentType {
         switch string.lowercased() {
-        case String(describing: IterableContentType.html).lowercased():
+        case String(describing: IterableInAppContentType.html).lowercased():
             return .html
-        case String(describing: IterableContentType.alert).lowercased():
+        case String(describing: IterableInAppContentType.alert).lowercased():
             return .alert
-        case String(describing: IterableContentType.banner).lowercased():
+        case String(describing: IterableInAppContentType.banner).lowercased():
             return .banner
         default:
             return .html
@@ -145,27 +145,27 @@ extension IterableInAppTrigger : Codable {
     }
 }
 
-extension IterableHtmlContent : Codable {
+extension IterableHtmlInAppContent : Codable {
     enum CodingKeys: String, CodingKey {
         case edgeInsets
         case backgroundAlpha
         case html
     }
     
-    static func htmlContent(from decoder: Decoder) -> IterableHtmlContent {
+    static func htmlContent(from decoder: Decoder) -> IterableHtmlInAppContent {
         guard let container = try? decoder.container(keyedBy: CodingKeys.self) else {
             ITBError("Can not decode, returning default")
-            return IterableHtmlContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
+            return IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
         }
         
         let edgeInsets = (try? container.decode(UIEdgeInsets.self, forKey: .edgeInsets)) ?? .zero
         let backgroundAlpha = (try? container.decode(Double.self, forKey: .backgroundAlpha)) ?? 0.0
         let html = (try? container.decode(String.self, forKey: .html)) ?? ""
         
-        return IterableHtmlContent(edgeInsets: edgeInsets, backgroundAlpha: backgroundAlpha, html: html)
+        return IterableHtmlInAppContent(edgeInsets: edgeInsets, backgroundAlpha: backgroundAlpha, html: html)
     }
     
-    static func encode(htmlContent: IterableHtmlContent, to encoder: Encoder) {
+    static func encode(htmlContent: IterableHtmlInAppContent, to encoder: Encoder) {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try? container.encode(htmlContent.edgeInsets, forKey: .edgeInsets)
         try? container.encode(htmlContent.backgroundAlpha, forKey: .backgroundAlpha)
@@ -173,12 +173,12 @@ extension IterableHtmlContent : Codable {
     }
 
     public convenience init(from decoder: Decoder) {
-        let htmlContent = IterableHtmlContent.htmlContent(from: decoder)
+        let htmlContent = IterableHtmlInAppContent.htmlContent(from: decoder)
         self.init(edgeInsets: htmlContent.edgeInsets, backgroundAlpha: htmlContent.backgroundAlpha, html: htmlContent.html)
     }
     
     public func encode(to encoder: Encoder) {
-        IterableHtmlContent.encode(htmlContent: self, to: encoder)
+        IterableHtmlInAppContent.encode(htmlContent: self, to: encoder)
     }
 }
 
@@ -289,8 +289,8 @@ extension IterableInAppMessage : Codable {
         IterableInAppMessage.encode(content: content, inContainer: &container)
     }
     
-    private static func createDefaultContent() -> IterableContent {
-        return IterableHtmlContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
+    private static func createDefaultContent() -> IterableInAppContent {
+        return IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
     }
     
     private static func serialize(customPayload: [AnyHashable : Any]?) -> Data? {
@@ -310,30 +310,30 @@ extension IterableInAppMessage : Codable {
         return (deserialized as? [AnyHashable : Any])
     }
     
-    private static func decodeContent(from container: KeyedDecodingContainer<IterableInAppMessage.CodingKeys>) -> IterableContent {
+    private static func decodeContent(from container: KeyedDecodingContainer<IterableInAppMessage.CodingKeys>) -> IterableInAppContent {
         guard let contentContainer = try? container.nestedContainer(keyedBy: ContentCodingKeys.self, forKey: .content) else {
             ITBError()
             return createDefaultContent()
         }
         
-        let contentType = (try? contentContainer.decode(String.self, forKey: .type)).map{ IterableContentType.from(string: $0) } ?? .html
+        let contentType = (try? contentContainer.decode(String.self, forKey: .type)).map{ IterableInAppContentType.from(string: $0) } ?? .html
         
         switch contentType {
         case .html:
-            return (try? container.decode(IterableHtmlContent.self, forKey: .content)) ?? createDefaultContent()
+            return (try? container.decode(IterableHtmlInAppContent.self, forKey: .content)) ?? createDefaultContent()
         default:
-            return (try? container.decode(IterableHtmlContent.self, forKey: .content)) ?? createDefaultContent()
+            return (try? container.decode(IterableHtmlInAppContent.self, forKey: .content)) ?? createDefaultContent()
         }
     }
     
-    private static func encode(content: IterableContent, inContainer container: inout KeyedEncodingContainer<IterableInAppMessage.CodingKeys>) {
+    private static func encode(content: IterableInAppContent, inContainer container: inout KeyedEncodingContainer<IterableInAppMessage.CodingKeys>) {
         switch content.type {
         case .html:
-            if let content = content as? IterableHtmlContent {
+            if let content = content as? IterableHtmlInAppContent {
                 try? container.encode(content, forKey: .content)
             }
         default:
-            if let content = content as? IterableHtmlContent {
+            if let content = content as? IterableHtmlInAppContent {
                 try? container.encode(content, forKey: .content)
             }
         }

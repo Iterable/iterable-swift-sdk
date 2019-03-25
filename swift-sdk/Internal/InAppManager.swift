@@ -100,7 +100,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     }
     
     func createInboxMessageViewController(for message: IterableInAppMessage) -> UIViewController? {
-        guard let content = message.content as? IterableHtmlContent else {
+        guard let content = message.content as? IterableHtmlInAppContent else {
             ITBError("Invalid Content in message")
             return nil
         }
