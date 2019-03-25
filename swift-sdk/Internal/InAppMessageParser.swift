@@ -38,6 +38,11 @@ struct InAppMessageParser {
         
         moveValue(withSourceKey: AnyHashable.ITBL_IN_APP_SAVE_TO_INBOX, andDestinationKey: AnyHashable.ITBL_IN_APP_SAVE_TO_INBOX, from: &customPayloadDict, to: &result)
         
+        if let triggerDict = customPayloadDict[.ITBL_IN_APP_TRIGGER] as? [AnyHashable : Any] {
+            result[.ITBL_IN_APP_TRIGGER] = triggerDict
+            customPayloadDict[.ITBL_IN_APP_TRIGGER] = nil
+        }
+        
         if let inboxMetadataDict = customPayloadDict[.ITBL_IN_APP_INBOX_METADATA] as? [AnyHashable : Any] {
             result[.ITBL_IN_APP_INBOX_METADATA] = inboxMetadataDict
             customPayloadDict[.ITBL_IN_APP_INBOX_METADATA] = nil
