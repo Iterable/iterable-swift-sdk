@@ -51,12 +51,12 @@ class InAppDisplayer : InAppDisplayerProtocol {
             return false
         }
         
-        let input = IterableHtmlMessageViewController.Input(html: htmlString,
+        let parameters = IterableHtmlMessageViewController.Parameters(html: htmlString,
                                                              padding: padding,
                                                              callback: callbackBlock,
                                                              trackParams: trackParams,
                                                              isModal: true)
-        let baseNotification = IterableHtmlMessageViewController(input: input)
+        let baseNotification = IterableHtmlMessageViewController(parameters: parameters)
         
         topViewController.definesPresentationContext = true
         baseNotification.view.backgroundColor = UIColor(white: 0, alpha: CGFloat(backgroundAlpha))

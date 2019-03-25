@@ -115,11 +115,11 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
                 ITBError("No name for clicked button/link in inApp")
             }
         }
-        let input = IterableHtmlMessageViewController.Input(html: content.html,
+        let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
                                                             callback: clickCallback,
                                                             trackParams: IterableNotificationMetadata.metadata(fromInAppOptions: message.messageId),
                                                             isModal: false)
-        return IterableHtmlMessageViewController(input: input)
+        return IterableHtmlMessageViewController(parameters: parameters)
     }
     
     func show(message: IterableInAppMessage) {

@@ -14,7 +14,7 @@ enum IterableMessageLocation : Int {
 }
 
 class IterableHtmlMessageViewController: UIViewController {
-    struct Input {
+    struct Parameters {
         let html: String
         let padding: UIEdgeInsets
         let callback: ITEActionBlock?
@@ -34,12 +34,12 @@ class IterableHtmlMessageViewController: UIViewController {
         }
     }
 
-    init(input: Input) {
-        self.input = input
+    init(parameters: Parameters) {
+        self.parameters = parameters
         super.init(nibName: nil, bundle: nil)
     }
     
-    override var prefersStatusBarHidden: Bool {return input.isModal}
+    override var prefersStatusBarHidden: Bool {return parameters.isModal}
     
     /**
      Loads the view and sets up the webView
@@ -47,15 +47,15 @@ class IterableHtmlMessageViewController: UIViewController {
     override func loadView() {
         super.loadView()
         
-        location = HtmlContentParser.location(fromPadding: input.padding)
-        if input.isModal {
+        location = HtmlContentParser.location(fromPadding: parameters.padding)
+        if parameters.isModal {
             view.backgroundColor = UIColor.clear
         } else {
             view.backgroundColor = UIColor.white
         }
         
         let webView = UIWebView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
-        webView.loadHTMLString(input.html, baseURL: URL(string: ""))
+        webView.loadHTMLString(parameters.html, baseURL: URL(string: ""))
         webView.scrollView.bounces = false
         webView.isOpaque = false
         webView.backgroundColor = UIColor.clear
@@ -72,7 +72,7 @@ class IterableHtmlMessageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let trackParams = input.trackParams, let messageId = trackParams.messageId {
+        if let trackParams = parameters.trackParams, let messageId = trackParams.messageId {
             IterableAPIInternal.sharedInstance?.trackInAppOpen(messageId)
         }
         
@@ -87,12 +87,12 @@ class IterableHtmlMessageViewController: UIViewController {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        self.input = aDecoder.decodeObject(forKey: "input") as? Input ?? Input(html: "", isModal: false)
+        self.parameters = aDecoder.decodeObject(forKey: "input") as? Parameters ?? Parameters(html: "", isModal: false)
 
         super.init(coder: aDecoder)
     }
 
-    private var input: Input
+    private var parameters: Parameters
     private var webView: UIWebView?
     private var location: IterableMessageLocation = .full
     private var loaded = false
@@ -117,13 +117,13 @@ class IterableHtmlMessageViewController: UIViewController {
         aWebView.frame = frame;
         let fittingSize = aWebView.sizeThatFits(.zero)
         frame.size = fittingSize
-        let notificationWidth = 100 - (input.padding.left + input.padding.right)
+        let notificationWidth = 100 - (parameters.padding.left + parameters.padding.right)
         let screenWidth = view.bounds.width
         frame.size.width = screenWidth*notificationWidth/100
         frame.size.height = min(frame.height, self.view.bounds.height)
         aWebView.frame = frame;
         
-        let resizeCenterX = screenWidth*(input.padding.left + notificationWidth/2)/100
+        let resizeCenterX = screenWidth*(parameters.padding.left + notificationWidth/2)/100
         
         // Position webview
         var center = self.view.center
@@ -170,16 +170,16 @@ extension IterableHtmlMessageViewController : UIWebViewDelegate {
             return true
         }
         
-        if input.isModal {
+        if parameters.isModal {
             dismiss(animated: false) { [weak self, callbackURL] in
-                self?.input.callback?(callbackURL)
-                if let trackParams = self?.input.trackParams, let messageId = trackParams.messageId {
+                self?.parameters.callback?(callbackURL)
+                if let trackParams = self?.parameters.trackParams, let messageId = trackParams.messageId {
                     IterableAPIInternal.sharedInstance?.trackInAppClick(messageId, buttonURL: destinationURL)
                 }
             }
         } else {
-            input.callback?(callbackURL)
-            if let trackParams = input.trackParams, let messageId = trackParams.messageId {
+            parameters.callback?(callbackURL)
+            if let trackParams = parameters.trackParams, let messageId = trackParams.messageId {
                 IterableAPIInternal.sharedInstance?.trackInAppClick(messageId, buttonURL: destinationURL)
             }
             navigationController?.popViewController(animated: true)
