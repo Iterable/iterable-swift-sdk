@@ -452,29 +452,29 @@ extension InAppManager : InAppSynchronizerDelegate {
 
     // returns count of inbox messages (save to inbox)
     private func addNewMessages(messagesFromServer messages: [IterableInAppMessage]) -> Int {
-        var count = 0
+        var inboxCount = 0
         messages.forEach { message in
             if !messagesMap.contains(where: { $0.key == message.messageId }) {
                 if message.saveToInbox == true {
-                    count += 1
+                    inboxCount += 1
                 }
                 messagesMap[message.messageId] = message
             }
         }
-        return count
+        return inboxCount
     }
     
     // return count of deleted inbox messages
     private func removeDeletedMessages(messagesFromServer messages: [IterableInAppMessage]) -> Int {
-        var count = 0
+        var inboxCount = 0
         let removedMessages = getRemovedMessages(messagesFromServer: messages)
         removedMessages.forEach {
             if $0.saveToInbox == true {
-                count += 1
+                inboxCount += 1
             }
             messagesMap.removeValue(forKey: $0.messageId)
         }
-        return count
+        return inboxCount
     }
     
     // given `messages` coming for server, find messages that need to be removed
