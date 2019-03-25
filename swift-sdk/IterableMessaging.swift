@@ -50,13 +50,15 @@ public protocol IterableInAppManagerProtocol {
     @objc(createInboxMessageViewControllerForMessage:) func createInboxMessageViewController(for message: IterableInAppMessage) -> UIViewController?
 }
 
+/// Iterable Notification names
+public extension Notification.Name {
+    /// This is fired when in app inbox changes.
+    public static let iterableInboxChanged = Notification.Name(rawValue: "itbl_inbox_changed")
+}
+
 @objcMembers
 open class DefaultInAppDelegate : IterableInAppDelegate {
     public init() {}
-    
-    public func onInboxChanged() {
-        ITBInfo()
-    }
     
     /// By default, every single inApp will be shown as soon as it is available.
     /// If more than 1 inApp is available, we show the first showable one.

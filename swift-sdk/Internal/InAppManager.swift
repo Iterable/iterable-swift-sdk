@@ -163,7 +163,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         ITBInfo()
         if self.messagesMap.values.filter({$0.saveToInbox == true}).count > 0 {
             self.callbackQueue.async {
-                self.inAppDelegate.onInboxChanged()
+                self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
             }
         }
         synchronize()
@@ -311,7 +311,7 @@ extension InAppManager : InAppSynchronizerDelegate {
             
             if deletedInboxCount + addedInboxCount > 0 {
                 self.callbackQueue.async {
-                    self.inAppDelegate.onInboxChanged()
+                    self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
                 }
             }
             

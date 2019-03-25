@@ -296,15 +296,10 @@ class MockInAppDisplayer : InAppDisplayerProtocol {
 }
 
 class MockInAppDelegate : IterableInAppDelegate {
-    var onInboxChangedCallback: (() -> Void)?
     var onNewMessageCallback: ((IterableInAppMessage) -> Void)?
     
     init(showInApp: InAppShowResponse = .show) {
         self.showInApp = showInApp
-    }
-    
-    func onInboxChanged() {
-        onInboxChangedCallback?()
     }
     
     func onNew(message: IterableInAppMessage) -> InAppShowResponse {
@@ -327,6 +322,22 @@ class MockNotificationCenter: NotificationCenterProtocol {
         _ = observers.filter( { $0.notificationName == name } ).map {
             _ = $0.observer.perform($0.selector, with: Notification(name: name))
         }
+    }
+    
+    func addCallback(forNotification notification: Notification.Name, callback: @escaping ()->Void) {
+        class CallbackClass : NSObject {
+            let callback: () -> Void
+            init(callback: @escaping ()->Void) {
+                self.callback = callback
+            }
+            
+            @objc func onNotification(notification: Notification) {
+                callback()
+            }
+        }
+        
+        let callbackClass = CallbackClass(callback: callback)
+        addObserver(callbackClass, selector: #selector(callbackClass.onNotification(notification:)), name: notification, object: self)
     }
 
     private class Observer : NSObject {

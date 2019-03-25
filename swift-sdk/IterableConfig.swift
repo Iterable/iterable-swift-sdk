@@ -45,10 +45,6 @@ import Foundation
      * - returns: Return `show` to show the inApp or `skip` to skip this.
      */
     @objc(onNewMessage:) func onNew(message: IterableInAppMessage) -> InAppShowResponse
-    /**
-     * This method is called when new inbox messages are added or deleted from the server
-     */
-    @objc(onInboxChanged) func onInboxChanged()
 }
 
 /**

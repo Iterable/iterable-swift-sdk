@@ -9,6 +9,8 @@
 
 @end
 
+#define ITERABLE_INBOX_CHANGED_NOTIFICATION_NAME @"itbl_inbox_changed"
+
 typedef void (^ITEActionBlock)(NSString *);
 
 typedef void (^ITBURLCallback)(NSURL *);
