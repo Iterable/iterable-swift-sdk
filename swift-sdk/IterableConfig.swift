@@ -35,11 +35,11 @@ import Foundation
 }
 
 /**
- * This protocol allows you to override default behavior when new inApps arrive.
+ * This protocol allows you to override default behavior when new in-app messages arrive.
  */
 @objc public protocol IterableInAppDelegate : class {
     /**
-     * This method is called when new inApp message is available.
+     * This method is called when new in-app message is available.
      * The default behavior is to `show` if you don't override this method.
      * - parameter message: `IterableInAppMessage` object containing information regarding inApp to display
      * - returns: Return `show` to show the inApp or `skip` to skip this.

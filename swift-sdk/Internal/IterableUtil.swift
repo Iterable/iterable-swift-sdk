@@ -8,6 +8,12 @@
 import Foundation
 import os
 
+/// Functionality such as this will be built in for Swift 5.0. This will help with the transition
+enum IterableResult<T, E> {
+    case success(T)
+    case failure(E)
+}
+
 @objc public final class IterableUtil : NSObject {
     static var rootViewController : UIViewController? {
         return UIApplication.shared.delegate?.window??.rootViewController

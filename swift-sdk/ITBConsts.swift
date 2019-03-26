@@ -157,7 +157,14 @@ public extension AnyHashable {
     public static let ITBL_IN_APP_HREF = "href"
     public static let ITBL_IN_APP_DISPLAY_SETTINGS = "inAppDisplaySettings"
     public static let ITBL_IN_APP_CUSTOM_PAYLOAD = "customPayload"
-    public static let ITBL_IN_APP_INAPP_TYPE = "inAppType"
-    public static let ITBL_IN_APP_CONTENT_TYPE = "contentType"
+    public static let ITBL_IN_APP_SAVE_TO_INBOX = "saveToInbox"
+    public static let ITBL_IN_APP_CONTENT_TYPE = "type"
+    public static let ITBL_IN_APP_INBOX_METADATA = "inboxMetadata"
 }
 
+public enum JsonKey : String {
+    // Inbox Message
+    case inboxTitle = "title"
+    case inboxSubtitle = "subTitle"
+    case inboxIcon = "icon"
+}

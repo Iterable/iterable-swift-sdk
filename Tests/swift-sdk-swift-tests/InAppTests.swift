@@ -78,7 +78,7 @@ class InAppTests: XCTestCase {
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
-            XCTAssertEqual(IterableAPI.inAppManager.getMessages()[0].processed, true)
+            XCTAssertEqual(IterableAPI.inAppManager.getMessages()[0].didProcessTrigger, true)
         }
 
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
@@ -165,7 +165,7 @@ class InAppTests: XCTestCase {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
             let messages = IterableAPI.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 3)
-            XCTAssertEqual(Set(messages.map { $0.processed }), Set([true, true, true]))
+            XCTAssertEqual(Set(messages.map { $0.didProcessTrigger }), Set([true, true, true]))
             expectation2.fulfill()
         }
 
@@ -294,7 +294,7 @@ class InAppTests: XCTestCase {
             XCTAssertEqual(url.absoluteString, TestInAppPayloadGenerator.getClickUrl(index: 1))
             let messages = IterableAPI.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 1)
-            XCTAssertEqual(messages[0].processed, true)
+            XCTAssertEqual(messages[0].didProcessTrigger, true)
             
             expectation2.fulfill()
         }
@@ -482,7 +482,7 @@ class InAppTests: XCTestCase {
         
         mockDateProvider.currentDate = mockDateProvider.currentDate.addingTimeInterval(1000.0)
         mockApplicationStateProvider.applicationState = .active
-        mockNotificationCenter.fire(notification: UIApplication.didBecomeActiveNotification)
+        mockNotificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
         
         wait(for: [expectation2], timeout: testExpectationTimeout)
     }
@@ -527,15 +527,15 @@ class InAppTests: XCTestCase {
         
         mockDateProvider.currentDate = mockDateProvider.currentDate.addingTimeInterval(1000.0)
         mockApplicationStateProvider.applicationState = .active
-        mockNotificationCenter.fire(notification: UIApplication.didBecomeActiveNotification)
-        
+        mockNotificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
+
         wait(for: [expectation2], timeout: testExpectationTimeout)
 
         // now move to foreground within interval
         mockInAppSynchronizer.syncCallback = {
             expectation3.fulfill()
         }
-        mockNotificationCenter.fire(notification: UIApplication.didBecomeActiveNotification)
+        mockNotificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
         wait(for: [expectation3], timeout: testExpectationTimeoutForInverted)
         
         // now move to foreground outside of interval
@@ -543,7 +543,7 @@ class InAppTests: XCTestCase {
         mockInAppSynchronizer.syncCallback = {
             expectation4.fulfill()
         }
-        mockNotificationCenter.fire(notification: UIApplication.didBecomeActiveNotification)
+        mockNotificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
         wait(for: [expectation4], timeout: testExpectationTimeout)
     }
 
@@ -707,8 +707,8 @@ class InAppTests: XCTestCase {
         {"inAppMessages":
         [
             {
-                "inAppType": "default",
-                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site1.com\'>Click Here</a>", "payload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}},
+                "saveToInbox": false,
+                "content": {"type": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site1.com\'>Click Here</a>", "payload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}},
                 "trigger": {"type": "event", "details": "some event details"},
                 "messageId": "message1",
                 "expiresAt": 1550605745142,
@@ -716,8 +716,8 @@ class InAppTests: XCTestCase {
                 "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
             },
             {
-                "inAppType": "inbox",
-                "content": {"contentType": "alert", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "saveToInbox": true,
+                "content": {"type": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
                 "trigger": {"type": "immediate"},
                 "messageId": "message2",
                 "expiresAt": 1550605745145,
@@ -742,15 +742,16 @@ class InAppTests: XCTestCase {
         ]
         }
         """.toJsonDict()
-        let messages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
+        let messages = InAppTestHelper.inAppMessages(fromPayload: payload)
         let persister = InAppFilePersister()
         persister.persist(messages)
         let obtained = persister.getMessages()
         XCTAssertEqual(messages.description, obtained.description)
         
-        XCTAssertEqual(obtained[3].trigger.type, IterableInAppTriggerType.never)
-        let dict = obtained[3].trigger.dict as! [String : Any]
+        XCTAssertEqual((obtained[3]).trigger.type, IterableInAppTriggerType.never)
+        let dict = (obtained[3]).trigger.dict as! [String : Any]
         TestUtils.validateMatch(keyPath: KeyPath("nested.var1"), value: "val1", inDictionary: dict, message: "Expected to find val1 in persisted dictionary")
+
         persister.clear()
     }
     
@@ -773,7 +774,7 @@ class InAppTests: XCTestCase {
         XCTAssertEqual(badMessages.count, 0)
         
         let payload = TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 3, 2])
-        let goodMessages = InAppHelper.inAppMessages(fromPayload: payload, internalApi: IterableAPI.internalImplementation!)
+        let goodMessages = InAppTestHelper.inAppMessages(fromPayload: payload)
         let goodData = try! JSONEncoder().encode(goodMessages)
         FileHelper.write(filename: "test", ext: "json", data: goodData)
         
@@ -1014,11 +1015,20 @@ extension IterableInAppTrigger {
 }
 
 extension IterableHtmlInAppContent {
-    open override var description: String {
-        return IterableUtil.describe("contentType", contentType,
+    public override var description: String {
+        return IterableUtil.describe("type", type,
                         "edgeInsets", edgeInsets,
                         "backgroundAlpha", backgroundAlpha,
                         "html", html, pairSeparator: " = ", separator: ", ")
+    }
+}
+
+extension IterableInboxMetadata {
+    public override var description: String {
+        return IterableUtil.describe("title", title ?? "nil",
+                                     "subTitle", subTitle ?? "nil",
+                                     "icon", icon ?? "nil",
+                                     pairSeparator: " = ", separator: ", ")
     }
 }
 
@@ -1026,11 +1036,12 @@ extension IterableInAppMessage {
     public override var description: String {
         return IterableUtil.describe("messageId", messageId,
                         "campaignId", campaignId,
-                        "inAppType", inAppType,
+                        "saveToInbox", saveToInbox,
+                        "inboxMetadata", inboxMetadata ?? "nil",
                         "trigger", trigger,
                         "expiresAt", expiresAt ?? "nil",
                         "content", content,
-                        "processed", processed,
+                        "didProcessTrigger", didProcessTrigger,
                         "consumed", consumed, pairSeparator: " = ", separator: "\n")
     }
 }

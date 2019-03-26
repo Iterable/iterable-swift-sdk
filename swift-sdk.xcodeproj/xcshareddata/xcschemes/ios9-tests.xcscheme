@@ -85,6 +85,15 @@
             </BuildableReference>
             <SkippedTests>
                <Test
+                  Identifier = "InAppParsingTests">
+               </Test>
+               <Test
+                  Identifier = "InAppTests">
+               </Test>
+               <Test
+                  Identifier = "InboxTests">
+               </Test>
+               <Test
                   Identifier = "LoggingTests">
                </Test>
             </SkippedTests>

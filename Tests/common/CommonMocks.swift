@@ -214,7 +214,13 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
     var syncCallback: (() -> Void)?
     var removeCallback: ((String) -> Void)?
     
-    private var messagesMap = OrderedDictionary<String, IterableInAppMessage>()
+    init(messages: [IterableInAppMessage] = []) {
+        ITBInfo()
+        for message in messages {
+            messagesMap[message.messageId] = message
+        }
+        
+    }
     
     func sync() {
         ITBInfo()
@@ -248,13 +254,10 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
     
     func mockInAppPayloadFromServer(_ payload: [AnyHashable : Any]) {
         ITBInfo()
-        guard let internalApi = internalApi else {
-            ITBError("Invalid state: expected InternalApi")
-            return
-        }
-        
-        mockMessagesAvailableFromServer(messages: InAppHelper.inAppMessages(fromPayload: payload, internalApi: internalApi))
+        mockMessagesAvailableFromServer(messages: InAppTestHelper.inAppMessages(fromPayload: payload))
     }
+
+    private var messagesMap = OrderedDictionary<String, IterableInAppMessage>()
 }
 
 class MockInAppDisplayer : InAppDisplayerProtocol {
@@ -262,7 +265,7 @@ class MockInAppDisplayer : InAppDisplayerProtocol {
         return showing
     }
     
-    func showInApp(message: IterableInAppMessage, callback: ITEActionBlock?) -> Bool {
+    func showInApp(message: IterableInAppMessage, withCallback callback: ITEActionBlock?) -> Bool {
         if showing {
             return false
         }
@@ -303,7 +306,7 @@ class MockInAppDelegate : IterableInAppDelegate {
         onNewMessageCallback?(message)
         return showInApp
     }
-
+    
     private let showInApp: InAppShowResponse
 }
 
@@ -315,10 +318,26 @@ class MockNotificationCenter: NotificationCenterProtocol {
     func removeObserver(_ observer: Any) {
     }
     
-    func fire(notification: Notification.Name) {
-        _ = observers.filter( { $0.notificationName == notification } ).map {
-            _ = $0.observer.perform($0.selector, with: Notification(name: notification))
+    func post(name: Notification.Name, object: Any?, userInfo: [AnyHashable : Any]?) {
+        _ = observers.filter( { $0.notificationName == name } ).map {
+            _ = $0.observer.perform($0.selector, with: Notification(name: name))
         }
+    }
+    
+    func addCallback(forNotification notification: Notification.Name, callback: @escaping ()->Void) {
+        class CallbackClass : NSObject {
+            let callback: () -> Void
+            init(callback: @escaping ()->Void) {
+                self.callback = callback
+            }
+            
+            @objc func onNotification(notification: Notification) {
+                callback()
+            }
+        }
+        
+        let callbackClass = CallbackClass(callback: callback)
+        addObserver(callbackClass, selector: #selector(callbackClass.onNotification(notification:)), name: notification, object: self)
     }
 
     private class Observer : NSObject {

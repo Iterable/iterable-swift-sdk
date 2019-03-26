@@ -474,7 +474,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
 
     func showSystemNotification(_ title: String, body: String, buttonLeft: String?, buttonRight:String?, callbackBlock: ITEActionBlock?) {
-        InAppHelper.showSystemNotification(title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
+        InAppDisplayer.showSystemNotification(title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
     }
 
     func getAndTrackDeeplink(webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {
@@ -509,6 +509,8 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     private var config: IterableConfig
     
     private let dateProvider: DateProviderProtocol
+    
+    private let inAppDisplayer: InAppDisplayerProtocol
     
     private var deeplinkManager: IterableDeeplinkManager
     
@@ -695,6 +697,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         self.networkSessionProvider = networkSession
         self.notificationStateProvider = notificationStateProvider
         self.localStorage = localStorage
+        self.inAppDisplayer = inAppDisplayer
         let inAppManager = InAppManager(synchronizer: inAppSynchronizer,
                                         displayer: inAppDisplayer,
                                         persister: inAppPersister,

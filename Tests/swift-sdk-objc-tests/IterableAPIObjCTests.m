@@ -43,6 +43,4 @@
     XCTAssertEqualObjects(IterableAPI.userId, @"testUserId");
     XCTAssertNil(IterableAPI.email);
 }
-
-
 @end
