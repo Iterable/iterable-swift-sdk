@@ -168,3 +168,8 @@ public enum JsonKey : String {
     case inboxSubtitle = "subTitle"
     case inboxIcon = "icon"
 }
+
+public enum IterableInAppCustomActionName : String, CaseIterable {
+    case dismiss = "itbl_inapp_dismiss"
+    case delete = "itbl_inapp_delete"
+}

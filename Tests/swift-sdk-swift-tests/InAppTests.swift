@@ -363,6 +363,93 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
     }
 
+    func testShowInAppWithIterableCustomActionDelete() {
+        let expectation1 = expectation(description: "custom action delete called")
+        
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _) in
+            mockInAppDisplayer.click(url: "itbl://itbl_inapp_delete")
+            XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
+            expectation1.fulfill()
+        }
+        
+        let config = IterableConfig()
+        config.inAppDelegate = MockInAppDelegate(showInApp: .show)
+        
+        IterableAPI.initializeForTesting(
+            config: config,
+            inAppSynchronizer: mockInAppSynchronizer,
+            inAppDisplayer: mockInAppDisplayer
+        )
+        
+        let payload = """
+        {"inAppMessages":
+        [
+            {
+                "saveToInbox": true,
+                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'itbl://itbl_inapp_delete'>Click Here</a>"},
+                "trigger": {"type": "immediate"},
+                "messageId": "message0",
+                "campaignId": "campaign1",
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+        ]
+        }
+        """.toJsonDict()
+        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
+        
+        let messages = IterableAPI.inAppManager.getMessages()
+        XCTAssertEqual(messages.count, 1)
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+
+    func testShowInAppWithIterableCustomActionDismiss() {
+        let expectation1 = expectation(description: "custom action dismiss called")
+        
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _) in
+            mockInAppDisplayer.click(url: "itbl://itbl_inapp_dismiss")
+            XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
+            expectation1.fulfill()
+        }
+        
+        let config = IterableConfig()
+        config.inAppDelegate = MockInAppDelegate(showInApp: .show)
+        
+        IterableAPI.initializeForTesting(
+            config: config,
+            inAppSynchronizer: mockInAppSynchronizer,
+            inAppDisplayer: mockInAppDisplayer
+        )
+        
+        let payload = """
+        {"inAppMessages":
+        [
+            {
+                "saveToInbox": true,
+                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'itbl://itbl_inapp_dismiss'>Click Here</a>"},
+                "trigger": {"type": "immediate"},
+                "messageId": "message0",
+                "campaignId": "campaign1",
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+        ]
+        }
+        """.toJsonDict()
+        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
+        
+        let messages = IterableAPI.inAppManager.getMessages()
+        XCTAssertEqual(messages.count, 1)
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+
+    
     // Check that onNew is called just once if the messageId is same.
     func testOnNewNotCalledMultipleTimes() {
         let expectation1 = expectation(description: "testOnNewNotCalledMultipleTimes")

@@ -110,7 +110,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
             
             // in addition perform action or url delegate task
             if let urlOrAction = urlOrAction {
-                self.handleUrlOrAction(urlOrAction: urlOrAction)
+                self.handleUrlOrAction(urlOrAction: urlOrAction, forMessage: message)
             } else {
                 ITBError("No name for clicked button/link in inApp")
             }
@@ -204,7 +204,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
             
             // in addition perform action or url delegate task
             if let urlOrAction = urlOrAction {
-                self.handleUrlOrAction(urlOrAction: urlOrAction)
+                self.handleUrlOrAction(urlOrAction: urlOrAction, forMessage: message)
             } else {
                 ITBError("No name for clicked button/link in inApp")
             }
@@ -228,9 +228,13 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         updateMessage(message, didProcessTrigger: true, consumed: shouldConsume)
     }
 
-    private func handleUrlOrAction(urlOrAction: String) {
+    private func handleUrlOrAction(urlOrAction: String, forMessage message: IterableInAppMessage) {
         guard let action = createAction(fromUrlOrAction: urlOrAction) else {
             ITBError("Could not create action from: \(urlOrAction)")
+            return
+        }
+        guard handleIterableCustomAction(forAction: action, andMessage: message) == false else {
+            ITBInfo("handled iterable custom action")
             return
         }
         
@@ -242,6 +246,22 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
                                          customActionHandler: IterableUtil.customActionHandler(fromCustomActionDelegate: self.customActionDelegate, inContext: context),
                                          urlOpener: self.urlOpener)
         }
+    }
+    
+    private func handleIterableCustomAction(forAction action: IterableAction, andMessage message: IterableInAppMessage) -> Bool {
+        guard let iterableCustomAction = IterableInAppCustomActionName(rawValue: action.type) else {
+            return false
+        }
+        
+        switch iterableCustomAction {
+        case .dismiss:
+            ITBInfo("dismissed")
+        case .delete:
+            ITBInfo("deleted")
+            remove(message: message)
+        }
+
+        return true
     }
     
     private func createAction(fromUrlOrAction urlOrAction: String) -> IterableAction? {
