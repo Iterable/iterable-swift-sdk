@@ -138,7 +138,7 @@ public extension AnyHashable {
 
 //In-App Constants
 public extension AnyHashable {
-    public static let ITBL_IN_APP_CLICK_URL = "urlClick"
+    public static let ITBL_IN_APP_CLICKED_URL = "clickedUrl"
     
     public static let ITBL_IN_APP_BUTTON_INDEX = "buttonIndex"
     public static let ITBL_IN_APP_MESSAGE = "inAppMessages"
