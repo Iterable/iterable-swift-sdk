@@ -180,7 +180,7 @@ class IterableInAppNotificationTests: XCTestCase {
                 ])
             let body = networkSession.getRequestBody() as! [String : Any]
             TestUtils.validateMatch(keyPath: KeyPath("messageId"), value: messageId, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("urlClick"), value: buttonUrl, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("clickedUrl"), value: buttonUrl, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath("userId"), value: IterableInAppNotificationTests.userId, inDictionary: body)
             expectation1.fulfill()
         }
