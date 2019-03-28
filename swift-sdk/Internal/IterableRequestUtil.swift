@@ -45,17 +45,11 @@ struct IterableRequestUtil {
         }
 
         if let args = args {
-            components.queryItems = args.map{ URLQueryItem(name: $0.key, value: encodeURLParam($0.value)) }
+            components.queryItems = args.map { URLQueryItem(name: $0.key, value: $0.value) }
         }
+        components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
 
         return components
-    }
-    
-    static func encodeURLParam(_ paramValue: String?) -> String? {
-        guard let paramValue = paramValue else {
-            return nil
-        }
-        return paramValue.addingPercentEncoding(withAllowedCharacters: encodedCharacterSet)
     }
     
     static func dictToJsonData(_ dict: [AnyHashable : Any]?) -> Data? {
@@ -81,10 +75,4 @@ struct IterableRequestUtil {
         result.append(path2)
         return result
     }
-
-    private static let encodedCharacterSet : CharacterSet = {
-        var characterSet = CharacterSet.urlQueryAllowed
-        characterSet.remove(charactersIn: "+")
-        return characterSet
-    } ()
 }
