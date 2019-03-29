@@ -448,7 +448,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     func trackInAppClick(_ messageId: String, buttonURL: String) {
         var args: [AnyHashable : Any] = [
             .ITBL_KEY_MESSAGE_ID: messageId,
-            .ITBL_IN_APP_CLICK_URL: buttonURL
+            .ITBL_IN_APP_CLICKED_URL: buttonURL
         ]
         addEmailOrUserId(args: &args)
         
