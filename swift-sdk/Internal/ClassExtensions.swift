@@ -7,18 +7,18 @@
 import Foundation
 
 public extension Bundle {
-    public var appPackageName : String? {
+    var appPackageName : String? {
         return bundleIdentifier
     }
     
-    public var appVersion : String? {
+    var appVersion : String? {
         guard let infoDictionary = self.infoDictionary else {
             return nil
         }
         return infoDictionary["CFBundleShortVersionString"] as? String
     }
 
-    public var appBuild : String? {
+    var appBuild : String? {
         guard let infoDictionary = self.infoDictionary else {
             return nil
         }
