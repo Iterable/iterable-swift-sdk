@@ -2,18 +2,18 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
-#### Added
-- nothing yet
-
-#### Removed
-- nothing yet
-
-#### Changed
-- nothing yet
-
+## [6.0.7](https://github.com/Iterable/swift-sdk/releases/tag/6.0.7)
 #### Fixed
-- nothing yet
+- XCode 10.2 Warnings
+- URL Query parameters encoding bug
+
+## [6.0.6](https://github.com/Iterable/swift-sdk/releases/tag/6.0.6)
+#### Added
+- Update to Swift 4.2
+
+## [6.0.5](https://github.com/Iterable/swift-sdk/releases/tag/6.0.5)
+#### Fixed
+- Carthage support
 
 ## 6.1.0-beta1
 #### Added
@@ -65,4 +65,17 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 #### Fixed
 - Fixed issue that affects clients who are upgrading from Objective C Iterable SDK to Swift SDK. If you have attribution info stored in the previous Objective C SDK, it was not being deserialized in Swift SDK.
+
+## [Unreleased]
+#### Added
+- nothing yet
+
+#### Removed
+- nothing yet
+
+#### Changed
+- nothing yet
+
+#### Fixed
+- nothing yet
 
