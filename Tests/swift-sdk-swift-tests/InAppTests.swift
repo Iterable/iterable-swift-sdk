@@ -743,6 +743,7 @@ class InAppTests: XCTestCase {
         }
         """.toJsonDict()
         let messages = InAppTestHelper.inAppMessages(fromPayload: payload)
+        messages[0].read = true
         let persister = InAppFilePersister()
         persister.persist(messages)
         let obtained = persister.getMessages()
@@ -1042,6 +1043,8 @@ extension IterableInAppMessage {
                         "expiresAt", expiresAt ?? "nil",
                         "content", content,
                         "didProcessTrigger", didProcessTrigger,
-                        "consumed", consumed, pairSeparator: " = ", separator: "\n")
+                        "consumed", consumed,
+                        "read", read,
+                        pairSeparator: " = ", separator: "\n")
     }
 }

@@ -264,6 +264,9 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         
         updateMessage(message, didProcessTrigger: true, consumed: true)
         self.internalApi?.inAppConsume(message.messageId)
+        self.callbackQueue.async {
+            self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
+        }
     }
 
     private static func isExpired(message: IterableInAppMessage, currentDate: Date) -> Bool {
