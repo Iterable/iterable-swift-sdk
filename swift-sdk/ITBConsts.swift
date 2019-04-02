@@ -168,3 +168,9 @@ public enum JsonKey : String {
     case inboxSubtitle = "subTitle"
     case inboxIcon = "icon"
 }
+
+// These are custom action for "itbl://delete" etc.
+public enum IterableCustomActionName : String, CaseIterable {
+    case dismiss
+    case delete
+}

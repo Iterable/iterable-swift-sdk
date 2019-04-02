@@ -109,7 +109,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
             ITBInfo()
             
             // in addition perform action or url delegate task
-            self.handle(clickedUrl: url)
+            self.handle(clickedUrl: url, forMessage: message)
         }
         let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
                                                             callback: clickCallback,
@@ -199,7 +199,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
             _ = callback?(url)
             
             // in addition perform action or url delegate task
-            self.handle(clickedUrl: url)
+            self.handle(clickedUrl: url, forMessage: message)
             
             // set the dismiss time
             self.lastDismissedTime = self.dateProvider.currentDate
@@ -220,7 +220,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         updateMessage(message, didProcessTrigger: true, consumed: shouldConsume)
     }
 
-    private func handle(clickedUrl url: URL?) {
+    private func handle(clickedUrl url: URL?, forMessage message: IterableInAppMessage) {
         guard let theUrl = url, let inAppClickedUrl = InAppHelper.parse(inAppUrl: theUrl) else {
             ITBError("Could not parse url: \(url?.absoluteString ?? "nil")")
             return
@@ -228,7 +228,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         
         switch (inAppClickedUrl) {
         case .iterableCustomAction(name: let iterableCustomActionName):
-            handleIterableCustomAction(name: iterableCustomActionName)
+            handleIterableCustomAction(name: iterableCustomActionName, forMessage: message)
             break
         case .customAction(name: let customActionName):
             handleUrlOrAction(urlOrAction: customActionName)
@@ -241,9 +241,18 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         }
     }
     
-    // Implement this
-    private func handleIterableCustomAction(name: String) {
-        
+    private func handleIterableCustomAction(name: String, forMessage message: IterableInAppMessage) {
+        guard let iterableCustomActionName = IterableCustomActionName(rawValue: name) else {
+            return
+        }
+
+        switch iterableCustomActionName {
+        case .delete:
+            remove(message: message)
+            break
+        case .dismiss:
+            break
+        }
     }
     
     private func handleUrlOrAction(urlOrAction: String) {
