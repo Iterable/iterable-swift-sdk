@@ -63,9 +63,13 @@ class ViewController: UIViewController {
         let html = """
             <a href="http://website/resource#something">Click Me</a>
         """
-        InAppDisplayer.showIterableHtmlMessage(html) { (str) in
-            ITBInfo("callback: \(str ?? "<nil>")")
-            self.statusLbl.text = str
+        InAppDisplayer.showIterableHtmlMessage(html) { (url) in
+            guard let url = url else {
+                ITBError("Could not find url")
+                return
+            }
+            ITBInfo("callback: \(url)")
+            self.statusLbl.text = url.absoluteString
         }
     }
     
@@ -90,8 +94,8 @@ class ViewController: UIViewController {
         mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
         let message = IterableAPI.inAppManager.getMessages()[0]
 
-        IterableAPI.inAppManager.show(message: message, consume: true) { (str) in
-            self.statusLbl.text = str
+        IterableAPI.inAppManager.show(message: message, consume: true) { (url) in
+            self.statusLbl.text = url!.absoluteString
         }
     }
 
@@ -120,8 +124,8 @@ class ViewController: UIViewController {
         mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
         let message = IterableAPI.inAppManager.getMessages()[0]
         
-        IterableAPI.inAppManager.show(message: message, consume: true) { (str) in
-            self.statusLbl.text = str
+        IterableAPI.inAppManager.show(message: message, consume: true) { (url) in
+            self.statusLbl.text = url!.absoluteString
         }
     }
 

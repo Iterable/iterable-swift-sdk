@@ -105,15 +105,11 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
             return nil
         }
         
-        let clickCallback = { (urlOrAction: String?) in
+        let clickCallback = { (url: URL?) -> Void in
             ITBInfo()
             
             // in addition perform action or url delegate task
-            if let urlOrAction = urlOrAction {
-                self.handleUrlOrAction(urlOrAction: urlOrAction)
-            } else {
-                ITBError("No name for clicked button/link in inApp")
-            }
+            self.handle(clickedUrl: url)
         }
         let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
                                                             callback: clickCallback,
@@ -127,15 +123,15 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         show(message: message, consume: true, callback: nil)
     }
     
-    func show(message: IterableInAppMessage, consume: Bool = true, callback: ITEActionBlock? = nil) {
+    func show(message: IterableInAppMessage, consume: Bool = true, callback: ITBURLCallback? = nil) {
         ITBInfo()
-        
+
         // This is public (via public protocol implementation), so make sure we call from Main Thread
         DispatchQueue.main.async {
             _ = self.showInternal(message: message, consume: consume, callback: callback)
         }
     }
-
+    
     func remove(message: IterableInAppMessage) {
         ITBInfo()
 
@@ -187,7 +183,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     // This must be called from MainThread
     private func showInternal(message: IterableInAppMessage,
                               consume: Bool,
-                              callback: ITEActionBlock? = nil) {
+                              callback: ITBURLCallback? = nil) {
         ITBInfo()
 
         guard Thread.isMainThread else {
@@ -196,18 +192,14 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         }
         
         // This is called when the user clicks on a link in the inAPP
-        let clickCallback = { (urlOrAction: String?) in
+        let clickCallback = { (url: URL?) in
             ITBInfo()
             
             // call the client callback, if present
-            callback?(urlOrAction)
+            _ = callback?(url)
             
             // in addition perform action or url delegate task
-            if let urlOrAction = urlOrAction {
-                self.handleUrlOrAction(urlOrAction: urlOrAction)
-            } else {
-                ITBError("No name for clicked button/link in inApp")
-            }
+            self.handle(clickedUrl: url)
             
             // set the dismiss time
             self.lastDismissedTime = self.dateProvider.currentDate
@@ -228,6 +220,32 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         updateMessage(message, didProcessTrigger: true, consumed: shouldConsume)
     }
 
+    private func handle(clickedUrl url: URL?) {
+        guard let theUrl = url, let inAppClickedUrl = InAppHelper.parse(inAppUrl: theUrl) else {
+            ITBError("Could not parse url: \(url?.absoluteString ?? "nil")")
+            return
+        }
+        
+        switch (inAppClickedUrl) {
+        case .iterableCustomAction(name: let iterableCustomActionName):
+            handleIterableCustomAction(name: iterableCustomActionName)
+            break
+        case .customAction(name: let customActionName):
+            handleUrlOrAction(urlOrAction: customActionName)
+            break
+        case .localResource(name: let localResourceName):
+            handleUrlOrAction(urlOrAction: localResourceName)
+            break
+        case .regularUrl(_):
+            handleUrlOrAction(urlOrAction: theUrl.absoluteString)
+        }
+    }
+    
+    // Implement this
+    private func handleIterableCustomAction(name: String) {
+        
+    }
+    
     private func handleUrlOrAction(urlOrAction: String) {
         guard let action = createAction(fromUrlOrAction: urlOrAction) else {
             ITBError("Could not create action from: \(urlOrAction)")
@@ -511,7 +529,7 @@ class EmptyInAppManager : IterableInAppManagerProtocol {
     func show(message: IterableInAppMessage) {
     }
     
-    func show(message: IterableInAppMessage, consume: Bool, callback: ITEActionBlock?) {
+    func show(message: IterableInAppMessage, consume: Bool, callback: ITBURLCallback?) {
     }
 
     func remove(message: IterableInAppMessage) {

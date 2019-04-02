@@ -13,7 +13,7 @@ protocol InAppDisplayerProtocol {
     /// - parameter message: The Iterable message to show
     /// - parameter callback: the code to execute when user clicks on a link or button on the message.
     /// - returns: A Bool indicating whether the message was opened.
-    func showInApp(message: IterableInAppMessage, withCallback callback: ITEActionBlock?) -> Bool
+    func showInApp(message: IterableInAppMessage, withCallback callback: ITBURLCallback?) -> Bool
 }
 
 class InAppDisplayer : InAppDisplayerProtocol {
@@ -21,7 +21,7 @@ class InAppDisplayer : InAppDisplayerProtocol {
         return InAppDisplayer.isShowingIterableMessage()
     }
     
-    func showInApp(message: IterableInAppMessage, withCallback callback: ITEActionBlock?) -> Bool {
+    func showInApp(message: IterableInAppMessage, withCallback callback: ITBURLCallback?) -> Bool {
         return InAppDisplayer.show(iterableMessage: message, withCallback: callback)
     }
     
@@ -41,7 +41,7 @@ class InAppDisplayer : InAppDisplayerProtocol {
                                                            trackParams: IterableNotificationMetadata? = nil,
                                                            backgroundAlpha: Double = 0,
                                                            padding: UIEdgeInsets = .zero,
-                                                           callbackBlock: ITEActionBlock?
+                                                           callbackBlock: ITBURLCallback?
         ) -> Bool {
         guard let topViewController = getTopViewController() else {
             return false
@@ -110,7 +110,7 @@ class InAppDisplayer : InAppDisplayerProtocol {
         return topViewController
     }
     
-    @discardableResult fileprivate static func show(iterableMessage: IterableInAppMessage, withCallback callback:ITEActionBlock?) -> Bool {
+    @discardableResult fileprivate static func show(iterableMessage: IterableInAppMessage, withCallback callback:ITBURLCallback?) -> Bool {
         guard let content = iterableMessage.content as? IterableHtmlInAppContent else {
             ITBError("Invalid content type")
             return false

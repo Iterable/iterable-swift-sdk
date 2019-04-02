@@ -265,7 +265,7 @@ class MockInAppDisplayer : InAppDisplayerProtocol {
         return showing
     }
     
-    func showInApp(message: IterableInAppMessage, withCallback callback: ITEActionBlock?) -> Bool {
+    func showInApp(message: IterableInAppMessage, withCallback callback: ITBURLCallback?) -> Bool {
         if showing {
             return false
         }
@@ -276,20 +276,17 @@ class MockInAppDisplayer : InAppDisplayerProtocol {
         return true
     }
 
-    var onShowCallback:  ((IterableInAppMessage, ITEActionBlock?) -> Void)?
+    var onShowCallback:  ((IterableInAppMessage, ITBURLCallback?) -> Void)?
     
     // Mimics clicking a url
-    func click(url: String) {
+    func click(url: URL) {
         ITBInfo()
         showing = false
-        if let (callbackUrl, _) = InAppHelper.getCallbackAndDestinationUrl(url: URL(string: url)!) {
-            actionCallback?(callbackUrl)
-        } else {
-            actionCallback?(nil)
-        }
+        
+        actionCallback?(url)
     }
 
-    private var actionCallback: ITEActionBlock?
+    private var actionCallback: ITBURLCallback?
     
     private var showing = false
     

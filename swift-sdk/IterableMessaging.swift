@@ -34,7 +34,7 @@ public protocol IterableInAppManagerProtocol {
     /// - parameter consume: Set to true to consume the event from the server queue if the message is shown. This should be default.
     /// - parameter callback: block of code to execute once the user clicks on a link or button in the in-app notification.
     ///   Note that this callback is called in addition to calling `IterableCustomActionDelegate` or `IterableUrlDelegate` on the button action.
-    @objc(showMessage:consume:callbackBlock:) func show(message: IterableInAppMessage, consume: Bool, callback:ITEActionBlock?)
+    @objc(showMessage:consume:callbackBlock:) func show(message: IterableInAppMessage, consume: Bool, callback:ITBURLCallback?)
     
     /// - parameter message: The message to remove.
     @objc(removeMessage:) func remove(message: IterableInAppMessage)
@@ -53,7 +53,7 @@ public protocol IterableInAppManagerProtocol {
 /// Iterable Notification names
 public extension Notification.Name {
     /// This is fired when in app inbox changes.
-    public static let iterableInboxChanged = Notification.Name(rawValue: "itbl_inbox_changed")
+    static let iterableInboxChanged = Notification.Name(rawValue: "itbl_inbox_changed")
 }
 
 @objcMembers

@@ -30,7 +30,7 @@ class InAppTests: XCTestCase {
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
             expectation1.fulfill()
             // now click the inApp
-            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: 1))
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: 1))
         }
         
         let mockUrlDelegate = MockUrlDelegate(returnValue: true)
@@ -62,7 +62,7 @@ class InAppTests: XCTestCase {
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShowCallback = {(_, _) in
             expectation1.fulfill()
-            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: 1))
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: 1))
         }
         
         let config = IterableConfig()
@@ -95,22 +95,22 @@ class InAppTests: XCTestCase {
         
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShowCallback = {(message, _) in
-            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: TestInAppPayloadGenerator.index(fromCampaignId: message.campaignId)))
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: TestInAppPayloadGenerator.index(fromCampaignId: message.campaignId)))
             expectation0.fulfill()
         }
         
         var callOrder = [Int]()
         let urlDelegate = MockUrlDelegate(returnValue: true)
         urlDelegate.callback = {(url, _) in
-            if url.absoluteString == TestInAppPayloadGenerator.getClickUrl(index: 1) {
+            if url == TestInAppPayloadGenerator.getClickedUrl(index: 1) {
                 callOrder.append(1)
                 expectation1.fulfill()
             }
-            if url.absoluteString == TestInAppPayloadGenerator.getClickUrl(index: 2) {
+            if url == TestInAppPayloadGenerator.getClickedUrl(index: 2) {
                 callOrder.append(2)
                 expectation2.fulfill()
             }
-            if url.absoluteString == TestInAppPayloadGenerator.getClickUrl(index: 3) {
+            if url == TestInAppPayloadGenerator.getClickedUrl(index: 3) {
                 callOrder.append(3)
                 expectation3.fulfill()
             }
@@ -180,7 +180,7 @@ class InAppTests: XCTestCase {
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
         let mockUrlOpener = MockUrlOpener { (url) in
-            XCTAssertEqual(url.absoluteString, TestInAppPayloadGenerator.getClickUrl(index: 1))
+            XCTAssertEqual(url, TestInAppPayloadGenerator.getClickedUrl(index: 1))
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
             expectation1.fulfill()
         }
@@ -188,7 +188,7 @@ class InAppTests: XCTestCase {
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShowCallback = {(_, _) in
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
-            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: 1))
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: 1))
         }
         
         IterableAPI.initializeForTesting(
@@ -210,7 +210,7 @@ class InAppTests: XCTestCase {
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
         let mockUrlOpener = MockUrlOpener { (url) in
-            XCTAssertEqual(url.absoluteString, TestInAppPayloadGenerator.getClickUrl(index: 1))
+            XCTAssertEqual(url, TestInAppPayloadGenerator.getClickedUrl(index: 1))
             let messages = IterableAPI.inAppManager.getMessages()
             // Message count is 0 because inApp is still being shown. It is just not opening external url on click.
             XCTAssertEqual(messages.count, 0)
@@ -220,7 +220,7 @@ class InAppTests: XCTestCase {
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShowCallback = {(_, _) in
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
-            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: 1))
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: 1))
         }
         
         let mockUrlDelegate = MockUrlDelegate(returnValue: true)
@@ -246,11 +246,11 @@ class InAppTests: XCTestCase {
         
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShowCallback = {(_, _) in
-            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: 1))
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: 1))
         }
         
         let mockUrlOpener = MockUrlOpener { (url) in
-            XCTAssertEqual(url.absoluteString, TestInAppPayloadGenerator.getClickUrl(index: 1))
+            XCTAssertEqual(url, TestInAppPayloadGenerator.getClickedUrl(index: 1))
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
             
             expectation2.fulfill()
@@ -272,7 +272,7 @@ class InAppTests: XCTestCase {
         XCTAssertEqual(messages.count, 1)
         
         IterableAPI.inAppManager.show(message: messages[0], consume: true) { (clickedUrl) in
-            XCTAssertEqual(clickedUrl, TestInAppPayloadGenerator.getClickUrl(index: 1))
+            XCTAssertEqual(clickedUrl, TestInAppPayloadGenerator.getClickedUrl(index: 1))
             expectation1.fulfill()
         }
         
@@ -287,11 +287,11 @@ class InAppTests: XCTestCase {
         
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShowCallback = {(_, _) in
-            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: 1))
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: 1))
         }
         
         let mockUrlOpener = MockUrlOpener { (url) in
-            XCTAssertEqual(url.absoluteString, TestInAppPayloadGenerator.getClickUrl(index: 1))
+            XCTAssertEqual(url, TestInAppPayloadGenerator.getClickedUrl(index: 1))
             let messages = IterableAPI.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 1)
             XCTAssertEqual(messages[0].didProcessTrigger, true)
@@ -314,7 +314,7 @@ class InAppTests: XCTestCase {
         var messages = IterableAPI.inAppManager.getMessages()
         // Now show the first message, but don't consume
         IterableAPI.inAppManager.show(message: messages[0], consume: false) { (clickedUrl) in
-            XCTAssertEqual(clickedUrl, TestInAppPayloadGenerator.getClickUrl(index: 1))
+            XCTAssertEqual(clickedUrl, TestInAppPayloadGenerator.getClickedUrl(index: 1))
             expectation1.fulfill()
         }
         
@@ -355,8 +355,8 @@ class InAppTests: XCTestCase {
         let messages = IterableAPI.inAppManager.getMessages()
         XCTAssertEqual(messages.count, 1)
         
-        IterableAPI.inAppManager.show(message: messages[0], consume: true) { (customActionName) in
-            XCTAssertEqual(customActionName, TestInAppPayloadGenerator.getCustomActionName(index: 1))
+        IterableAPI.inAppManager.show(message: messages[0], consume: true) { (customActionUrl) in
+            XCTAssertEqual(customActionUrl, TestInAppPayloadGenerator.getCustomActionUrl(index: 1))
             expectation1.fulfill()
         }
         
@@ -563,13 +563,13 @@ class InAppTests: XCTestCase {
         mockInAppDisplayer.onShowCallback = {(_, _) in
             if messageNumber == 1 {
                 expectation1.fulfill()
-                mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: messageNumber))
+                mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: messageNumber))
             } else if messageNumber == 2 {
                 expectation2.fulfill()
-                mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: messageNumber))
+                mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: messageNumber))
             } else if messageNumber == 3 {
                 expectation3.fulfill()
-                mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: messageNumber))
+                mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: messageNumber))
             } else {
                 // unexpected message number
                 XCTFail()
@@ -609,7 +609,7 @@ class InAppTests: XCTestCase {
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShowCallback = {(_, _) in
             expectation1.fulfill()
-            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: 1))
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: 1))
         }
 
         IterableAPI.initializeForTesting(
@@ -645,7 +645,7 @@ class InAppTests: XCTestCase {
         
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShowCallback = {(message, _) in
-            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickUrl(index: TestInAppPayloadGenerator.index(fromCampaignId: message.campaignId)))
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: TestInAppPayloadGenerator.index(fromCampaignId: message.campaignId)))
             expectation0.fulfill()
         }
         
@@ -653,17 +653,17 @@ class InAppTests: XCTestCase {
         var callTimes = [Date]()
         let urlDelegate = MockUrlDelegate(returnValue: true)
         urlDelegate.callback = {(url, _) in
-            if url.absoluteString == TestInAppPayloadGenerator.getClickUrl(index: 1) {
+            if url == TestInAppPayloadGenerator.getClickedUrl(index: 1) {
                 callTimes.append(Date())
                 callOrder.append(1)
                 expectation1.fulfill()
             }
-            if url.absoluteString == TestInAppPayloadGenerator.getClickUrl(index: 2) {
+            if url == TestInAppPayloadGenerator.getClickedUrl(index: 2) {
                 callTimes.append(Date())
                 callOrder.append(2)
                 expectation2.fulfill()
             }
-            if url.absoluteString == TestInAppPayloadGenerator.getClickUrl(index: 3) {
+            if url == TestInAppPayloadGenerator.getClickedUrl(index: 3) {
                 callTimes.append(Date())
                 callOrder.append(3)
                 expectation3.fulfill()

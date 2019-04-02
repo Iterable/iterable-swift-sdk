@@ -17,13 +17,13 @@ class IterableHtmlMessageViewController: UIViewController {
     struct Parameters {
         let html: String
         let padding: UIEdgeInsets
-        let callback: ITEActionBlock?
+        let callback: ITBURLCallback?
         let trackParams: IterableNotificationMetadata?
         let isModal: Bool
         
         init(html: String,
              padding: UIEdgeInsets = .zero,
-             callback: ITEActionBlock? = nil,
+             callback: ITBURLCallback? = nil,
              trackParams: IterableNotificationMetadata? = nil,
              isModal: Bool) {
             self.html = html
@@ -165,22 +165,28 @@ extension IterableHtmlMessageViewController : UIWebViewDelegate {
         guard navigationType == .linkClicked, let url = request.url else {
             return true
         }
-        
-        guard let (callbackURL, destinationURL) = InAppHelper.getCallbackAndDestinationUrl(url: url) else {
+        guard let parsed = InAppHelper.parse(inAppUrl: url) else {
             return true
+        }
+
+        let destinationUrl: String
+        if case let InAppHelper.InAppClickedUrl.localResource(name) = parsed {
+            destinationUrl = name
+        } else {
+            destinationUrl = url.absoluteString
         }
         
         if parameters.isModal {
-            dismiss(animated: false) { [weak self, callbackURL] in
-                self?.parameters.callback?(callbackURL)
+            dismiss(animated: false) { [weak self, destinationUrl] in
+                _ = self?.parameters.callback?(url)
                 if let trackParams = self?.parameters.trackParams, let messageId = trackParams.messageId {
-                    IterableAPIInternal.sharedInstance?.trackInAppClick(messageId, buttonURL: destinationURL)
+                    IterableAPIInternal.sharedInstance?.trackInAppClick(messageId, buttonURL: destinationUrl)
                 }
             }
         } else {
-            parameters.callback?(callbackURL)
+            _ = parameters.callback?(url)
             if let trackParams = parameters.trackParams, let messageId = trackParams.messageId {
-                IterableAPIInternal.sharedInstance?.trackInAppClick(messageId, buttonURL: destinationURL)
+                IterableAPIInternal.sharedInstance?.trackInAppClick(messageId, buttonURL: destinationUrl)
             }
             navigationController?.popViewController(animated: true)
         }
