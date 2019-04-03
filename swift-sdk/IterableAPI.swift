@@ -12,7 +12,7 @@ import Foundation
 @objcMembers
 public final class IterableAPI : NSObject {
     // Current SDK Version.
-    static let sdkVersion = "6.0.7"
+    static let sdkVersion = "6.0.8"
     
     // MARK: Initialization
     /// You should call this method and not call the init method directly.
