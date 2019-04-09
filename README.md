@@ -84,6 +84,7 @@ Attached to the release you will find two framework bundles.
 2. ##### Set userId or email. 
 
 	Once you know the email or userId of the user, set the value.
+	> &#x26A0; Don't specify both email and userId in the same session, as they will be treated as different users by the SDK. Only use one type of identifier, email or userId, to identify the user.
 
 	Swift:
 	
