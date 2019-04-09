@@ -19,34 +19,51 @@ struct InAppHelper {
         }
     }
     
-    // Given the clicked url in inApp get the callbackUrl and destinationUrl
-    static func getCallbackAndDestinationUrl(url: URL) -> (callbackUrl: String, destinationUrl: String)? {
-        if url.scheme == UrlScheme.custom.rawValue {
-            // Since we are calling loadHTMLString with a nil baseUrl, any request url without a valid scheme get treated as a local resource.
-            // Url looks like applewebdata://abc-def/something
-            // Removes the extra applewebdata scheme/host data that is appended to the original url.
-            // So in this case (callback = something, destination = something)
-            // Warn the client that the request url does not contain a valid scheme
+    enum InAppClickedUrl {
+        case localResource(name: String) // applewebdata://abc-def/something => something
+        case iterableCustomAction(name: String) // itbl://something => something
+        case customAction(name: String) // action:something => something
+        case regularUrl(URL) // https://something => https://something
+    }
+    
+    static func parse(inAppUrl url: URL) -> InAppClickedUrl? {
+        guard let scheme = UrlScheme.from(url: url) else {
             ITBError("Request url contains an invalid scheme: \(url)")
-            
+            return nil
+        }
+
+        switch scheme {
+        case .applewebdata:
+            ITBError("Request url contains an invalid scheme: \(url)")
             guard let urlPath = getUrlPath(url: url) else {
                 return nil
             }
-            return (callbackUrl: urlPath, destinationUrl: urlPath)
-        } else if url.scheme == UrlScheme.itbl.rawValue {
-            // itbl://something => (callback = something, destination = itbl://something)
-            let callbackUrl = dropScheme(urlString: url.absoluteString, scheme: UrlScheme.itbl.rawValue)
-            return (callbackUrl: callbackUrl, destinationUrl: url.absoluteString)
-        } else {
-            // http, https etc, return unchanged
-            return (url.absoluteString, url.absoluteString)
+            return .localResource(name: urlPath)
+        case .itbl:
+            return .iterableCustomAction(name: dropScheme(urlString: url.absoluteString, scheme: UrlScheme.itbl.rawValue))
+        case .action:
+            return .customAction(name: dropScheme(urlString: url.absoluteString, scheme: UrlScheme.action.rawValue))
+        case .other:
+            return .regularUrl(url)
         }
     }
     
     private enum UrlScheme : String {
-        case custom = "applewebdata"
+        case applewebdata = "applewebdata"
         case itbl = "itbl"
+        case action = "action"
         case other
+        
+        fileprivate static func from(url: URL) -> UrlScheme? {
+            guard let name = url.scheme else {
+                return nil
+            }
+            if let scheme = UrlScheme(rawValue: name.lowercased()) {
+                return scheme
+            } else {
+                return .other
+            }
+        }
     }
     
     // returns everything other than scheme, hostname and leading slashes

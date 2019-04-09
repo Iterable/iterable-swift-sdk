@@ -177,7 +177,7 @@ class InboxTests: XCTestCase {
         mockInAppDisplayer.onShowCallback = {(_, _) in
             expectation1.fulfill()
             // now click and url in the message
-            mockInAppDisplayer.click(url: "https://someurl.com")
+            mockInAppDisplayer.click(url: URL(string: "https://someurl.com")!)
         }
         
         let mockUrlDelegate = MockUrlDelegate(returnValue: true)
@@ -225,7 +225,7 @@ class InboxTests: XCTestCase {
         
         let messages = IterableAPI.inAppManager.getInboxMessages()
         IterableAPI.inAppManager.show(message: messages[0], consume: false) { (clickedUrl) in
-            XCTAssertEqual(clickedUrl, "https://someurl.com")
+            XCTAssertEqual(clickedUrl!.absoluteString, "https://someurl.com")
             expectation3.fulfill()
         }
 
@@ -485,7 +485,7 @@ class InboxTests: XCTestCase {
         mockInAppDisplayer.onShowCallback = {(_, _) in
             expectation1.fulfill()
             // now click and url in the message
-            mockInAppDisplayer.click(url: "https://someurl.com")
+            mockInAppDisplayer.click(url: URL(string: "https://someurl.com")!)
         }
         
         let mockUrlDelegate = MockUrlDelegate(returnValue: true)

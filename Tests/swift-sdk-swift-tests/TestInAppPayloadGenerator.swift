@@ -37,12 +37,12 @@ struct TestInAppPayloadGenerator {
         return "campaign\(index)"
     }
     
-    static func getClickUrl(index: Int) -> String {
-        return "https://www.site\(index).com"
+    static func getClickedUrl(index: Int) -> URL {
+        return URL(string: getClickedLink(index: index))!
     }
-
-    static func getCustomActionUrl(index: Int) -> String {
-        return "itbl://\(getCustomActionName(index: index))"
+    
+    static func getCustomActionUrl(index: Int) -> URL {
+        return URL(string: "action://\(getCustomActionName(index: index))")!
     }
     
     static func getCustomActionName(index: Int) -> String {
@@ -54,15 +54,15 @@ struct TestInAppPayloadGenerator {
     }
 
     static func createOneInAppDictWithUrl(index: Int, trigger: IterableInAppTrigger?, expiresAt: Date? = nil) -> [AnyHashable : Any] {
-        return createOneInAppDict(withHref: getClickUrl(index: index), index: index, trigger: trigger, expiresAt: expiresAt)
+        return createOneInAppDict(withHref: getClickedLink(index: index), index: index, trigger: trigger, expiresAt: expiresAt)
     }
 
     static func createOneInAppDictWithUrl(index: Int, triggerType: IterableInAppTriggerType, expiresAt: Date? = nil) -> [AnyHashable : Any] {
-        return createOneInAppDict(withHref: getClickUrl(index: index), index: index, trigger: trigger(fromTriggerType: triggerType), expiresAt: expiresAt)
+        return createOneInAppDict(withHref: getClickedLink(index: index), index: index, trigger: trigger(fromTriggerType: triggerType), expiresAt: expiresAt)
     }
 
     static func createOneInAppDictWithCustomAction(index: Int, triggerType: IterableInAppTriggerType) -> [AnyHashable : Any] {
-        return createOneInAppDict(withHref: getCustomActionUrl(index: index), index: index, trigger: trigger(fromTriggerType: triggerType), expiresAt: nil)
+        return createOneInAppDict(withHref: getCustomActionUrl(index: index).absoluteString, index: index, trigger: trigger(fromTriggerType: triggerType), expiresAt: nil)
     }
 
     private static func createOneInAppDict(withHref href: String, index: Int, trigger: IterableInAppTrigger?, expiresAt: Date?) -> [AnyHashable : Any] {
@@ -94,5 +94,9 @@ struct TestInAppPayloadGenerator {
     
     private static func trigger(fromTriggerType triggerType: IterableInAppTriggerType) -> IterableInAppTrigger {
         return IterableInAppTrigger(dict: ["type" : String(describing: triggerType)])
+    }
+
+    private static func getClickedLink(index: Int) -> String {
+        return "https://www.site\(index).com"
     }
 }
