@@ -7,7 +7,7 @@
 import Foundation
 
 // Adhering to Codable
-extension UIEdgeInsets : Codable {
+extension UIEdgeInsets {
     enum CodingKeys: String, CodingKey {
         case top
         case left
