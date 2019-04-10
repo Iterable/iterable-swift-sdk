@@ -255,7 +255,7 @@ struct InAppHelper {
     enum InAppClickedUrl {
         case localResource(name: String) // applewebdata://abc-def/something => something
         case iterableCustomAction(name: String) // itbl://something => something
-        case customAction(name: String) // action:something => something
+        case customAction(name: String) // action://something => something
         case regularUrl(URL) // https://something => https://something
     }
     
