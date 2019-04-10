@@ -62,7 +62,7 @@ public class Future<Value> {
 }
 
 public extension Future {
-    public func flatMap<NextValue>(_ closure: @escaping (Value) -> Future<NextValue>) -> Future<NextValue> {
+    func flatMap<NextValue>(_ closure: @escaping (Value) -> Future<NextValue>) -> Future<NextValue> {
         let promise = Promise<NextValue>()
         
         onSuccess { (value) in
@@ -84,7 +84,7 @@ public extension Future {
         return promise
     }
 
-    public func map<NextValue>(_ closure: @escaping (Value) -> NextValue) -> Future<NextValue> {
+    func map<NextValue>(_ closure: @escaping (Value) -> NextValue) -> Future<NextValue> {
         let promise = Promise<NextValue>()
         
         onSuccess { value in

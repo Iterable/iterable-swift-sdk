@@ -518,31 +518,38 @@ class InAppHelperTests: XCTestCase {
     }
     
     // nil host
-    func testCallbackUrlParsingCustomScheme1() {
+    func testCallbackUrlParsingAppleWebdataScheme1() {
         let url = URL(string: "applewebdata://")!
-        XCTAssertNil(InAppHelper.getCallbackAndDestinationUrl(url: url))
+        XCTAssertNil(InAppHelper.parse(inAppUrl: url))
     }
 
     
-    func testCallbackUrlParsingCustomScheme2() {
+    func testCallbackUrlParsingAppleWebdataScheme2() {
         let url = URL(string: "applewebdata://this-is-uuid/the-real-url")!
-        let (callbackUrl, destinationUrl) = InAppHelper.getCallbackAndDestinationUrl(url: url)!
-        XCTAssertEqual(callbackUrl, "the-real-url")
-        XCTAssertEqual(destinationUrl, "the-real-url")
+        let parsed = InAppHelper.parse(inAppUrl: url)!
+        if case let InAppHelper.InAppClickedUrl.localResource(name: name) = parsed {
+            XCTAssertEqual(name, "the-real-url")
+        } else {
+            XCTFail("could not parse")
+        }
     }
 
-    func testCallbackUrlParsingIterableScheme() {
-        let url = URL(string: "itbl://buyProduct")!
-        let (callbackUrl, destinationUrl) = InAppHelper.getCallbackAndDestinationUrl(url: url)!
-        XCTAssertEqual(callbackUrl, "buyProduct")
-        XCTAssertEqual(destinationUrl, "itbl://buyProduct")
+    func testCallbackUrlParsingCustomActionScheme() {
+        let url = URL(string: "action://buyProduct")!
+        if case let InAppHelper.InAppClickedUrl.customAction(name: name) = InAppHelper.parse(inAppUrl: url)! {
+            XCTAssertEqual(name, "buyProduct")
+        } else {
+            XCTFail("Could not parse")
+        }
     }
 
     func testCallbackUrlParsingRegularScheme() {
         let url = URL(string: "https://host/path")!
-        let (callbackUrl, destinationUrl) = InAppHelper.getCallbackAndDestinationUrl(url: url)!
-        XCTAssertEqual(callbackUrl, "https://host/path")
-        XCTAssertEqual(destinationUrl, "https://host/path")
+        if case let InAppHelper.InAppClickedUrl.regularUrl(parsedUrl) = InAppHelper.parse(inAppUrl: url)! {
+            XCTAssertEqual(parsedUrl, url)
+        } else {
+            XCTFail("Could not parse")
+        }
     }
 
     private static let apiKey = "zeeApiKey"

@@ -50,7 +50,7 @@ class IterableInAppHTMLViewController: UIViewController {
      
      - parameter callbackBlock: the payload data
      */
-    func ITESetCallback(_ callbackBlock: ITEActionBlock?) {
+    func ITESetCallback(_ callbackBlock: ITBURLCallback?) {
         customBlockCallback = callbackBlock
     }
 
@@ -133,7 +133,7 @@ class IterableInAppHTMLViewController: UIViewController {
     
     private let htmlString: String
     private var insetPadding: UIEdgeInsets = UIEdgeInsets.zero
-    private var customBlockCallback: ITEActionBlock?
+    private var customBlockCallback: ITBURLCallback?
     private var trackParams: IterableNotificationMetadata?
     private var webView: UIWebView?
     private var location: InAppNotificationType = .full
@@ -201,14 +201,21 @@ extension IterableInAppHTMLViewController : UIWebViewDelegate {
             return true
         }
         
-        guard let (callbackURL, destinationURL) = InAppHelper.getCallbackAndDestinationUrl(url: url) else {
+        guard let parsed = InAppHelper.parse(inAppUrl: url) else {
             return true
         }
+        
+        let destinationUrl: String
+        if case let InAppHelper.InAppClickedUrl.localResource(name) = parsed {
+            destinationUrl = name
+        } else {
+            destinationUrl = url.absoluteString
+        }
 
-        dismiss(animated: false) { [weak self, callbackURL] in
-            self?.customBlockCallback?(callbackURL)
+        dismiss(animated: false) { [weak self] in
+            self?.customBlockCallback?(url)
             if let trackParams = self?.trackParams, let messageId = trackParams.messageId {
-                IterableAPIInternal.sharedInstance?.trackInAppClick(messageId, buttonURL: destinationURL)
+                IterableAPIInternal.sharedInstance?.trackInAppClick(messageId, buttonURL: destinationUrl)
             }
         }
         return false
