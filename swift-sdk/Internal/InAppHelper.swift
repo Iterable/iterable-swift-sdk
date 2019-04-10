@@ -281,30 +281,6 @@ struct InAppHelper {
         }
     }
     
-    // Given the clicked url in inApp get the callbackUrl and destinationUrl
-    static func getCallbackAndDestinationUrl(url: URL) -> (callbackUrl: String, destinationUrl: String)? {
-        if url.scheme == UrlScheme.applewebdata.rawValue {
-            // Since we are calling loadHTMLString with a nil baseUrl, any request url without a valid scheme get treated as a local resource.
-            // Url looks like applewebdata://abc-def/something
-            // Removes the extra applewebdata scheme/host data that is appended to the original url.
-            // So in this case (callback = something, destination = something)
-            // Warn the client that the request url does not contain a valid scheme
-            ITBError("Request url contains an invalid scheme: \(url)")
-            
-            guard let urlPath = getUrlPath(url: url) else {
-                return nil
-            }
-            return (callbackUrl: urlPath, destinationUrl: urlPath)
-        } else if url.scheme == UrlScheme.itbl.rawValue {
-            // itbl://something => (callback = something, destination = itbl://something)
-            let callbackUrl = dropScheme(urlString: url.absoluteString, scheme: UrlScheme.itbl.rawValue)
-            return (callbackUrl: callbackUrl, destinationUrl: url.absoluteString)
-        } else {
-            // http, https etc, return unchanged
-            return (url.absoluteString, url.absoluteString)
-        }
-    }
-    
     static func getInAppMessagesFromServer(internalApi: IterableAPIInternal, number: Int) -> Future<[IterableInAppMessage]> {
         return internalApi.getInAppMessages(NSNumber(value: number)).map {
             inAppMessages(fromPayload: $0, internalApi: internalApi)
