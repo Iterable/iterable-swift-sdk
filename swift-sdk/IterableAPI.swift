@@ -371,7 +371,7 @@ public final class IterableAPI : NSObject {
 
      - parameter count:  the number of messages to fetch
      */
-    @available(*, deprecated: 6.1.0, message: "Use IterableAPI.inAppManager.getMessages() method instead.")
+    @available(*, deprecated, message: "Use IterableAPI.inAppManager.getMessages() method instead.")
     @objc(getInAppMessages:) public static func get(inAppMessages count: NSNumber) {
         internalImplementation?.getInAppMessages(count)
     }
@@ -391,7 +391,7 @@ public final class IterableAPI : NSObject {
      - seeAlso: OnSuccessHandler
      - seeAlso: OnFailureHandler
      */
-    @available(*, deprecated: 6.1.0, message: "Use IterableAPI.inAppManager.getMessages() method instead.")
+    @available(*, deprecated, message: "Use IterableAPI.inAppManager.getMessages() method instead.")
     @objc(getInAppMessages:onSucess:onFailure:) public static func get(inAppMessages count: NSNumber, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         internalImplementation?.getInAppMessages(count, onSuccess: onSuccess, onFailure: onFailure)
     }
