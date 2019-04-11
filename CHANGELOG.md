@@ -5,8 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## 6.1.0-beta2
 #### Added
 - Support for `action://your-custom-action-name` URL scheme for calling custom actions 
-- Support for reserved `itbl://sdk-custom-action` scheme for SDK internal actions. 
-	- For example, to have `IterableCustomActionDelegate` call a custom `buyCoffee` action when a user taps on an in-app message's **Buy** button, set the href of the button to `action://buyCoffee`.
+	- For example, to have `IterableCustomActionDelegate` call a custom `buyCoffee` action when a user taps on an in-app message's **Buy** button.
+- Support for reserved `itbl://sdk-custom-action` scheme for SDK internal actions.
 	- URL scheme `itbl://sdk-custom-action` is reserved for internal SDK actions. Do not use it for custom actions. 
 	- For example, future versions of the SDK may allow buttons to call href `itbl://delete` to delete an in-app message.
 
