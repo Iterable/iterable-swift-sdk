@@ -10,22 +10,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 	- URL scheme `itbl://sdk-custom-action` is reserved for internal SDK actions. Do not use it for custom actions. 
 	- For example, future versions of the SDK may allow buttons to call href `itbl://delete` to delete an in-app message.
 
-## [6.0.8](https://github.com/Iterable/swift-sdk/releases/tag/6.0.8)
 #### Fixed
 - Carthage support with Xcode 10.2
-
-## [6.0.7](https://github.com/Iterable/swift-sdk/releases/tag/6.0.7)
-#### Fixed
 - XCode 10.2 Warnings
 - URL Query parameters encoding bug
-
-## [6.0.6](https://github.com/Iterable/swift-sdk/releases/tag/6.0.6)
-#### Added
-- Update to Swift 4.2
-
-## [6.0.5](https://github.com/Iterable/swift-sdk/releases/tag/6.0.5)
-#### Fixed
-- Carthage support
 
 ## 6.1.0-beta1
 #### Added
