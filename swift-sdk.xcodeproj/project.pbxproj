@@ -374,6 +374,7 @@
 		AC219C4A225FD7F900B98631 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				AC219C4E225FEDBD00B98631 /* IterableInboxCell.swift */,
 				AC219C48225FD7EB00B98631 /* IterableInboxViewController.swift */,
 			);
 			name = UI;
@@ -383,9 +384,6 @@
 			isa = PBXGroup;
 			children = (
 				AC219C4C225FE4C000B98631 /* InboxMessageViewModel.swift */,
-				AC219C4E225FEDBD00B98631 /* IterableInboxCell.swift */,
-				AC219C4F225FEDBD00B98631 /* IterableInboxCell.xib */,
-				AC219C522260006600B98631 /* Assets.xcassets */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -420,6 +418,7 @@
 		AC2263E120CF49B8009800EB /* swift-sdk */ = {
 			isa = PBXGroup;
 			children = (
+				AC44C0EB22615F8100E0641D /* Resources */,
 				AC72A0BB20CF4C8C004D7997 /* Internal */,
 				AC72A0AE20CF4C1E004D7997 /* Objective C */,
 				AC2263F920CF4B63009800EB /* Supporting Files */,
@@ -494,6 +493,15 @@
 				AC426CC3211B5497002EDBE8 /* ServerResponse.swift */,
 			);
 			name = Fp;
+			sourceTree = "<group>";
+		};
+		AC44C0EB22615F8100E0641D /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				AC219C522260006600B98631 /* Assets.xcassets */,
+				AC219C4F225FEDBD00B98631 /* IterableInboxCell.xib */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		AC72A0AC20CF4C08004D7997 /* Util */ = {

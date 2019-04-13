@@ -74,6 +74,9 @@ Pod::Spec.new do |s|
 
   s.source_files  = "swift-sdk/**/*.{h,m,swift}"
 
+  s.resources = ['swift-sdk/Resources/**/*.{storyboard,xib,xcassets}']
+  
+
   s.pod_target_xcconfig = {
     'SWIFT_VERSION' => '4.2'
   }
