@@ -143,14 +143,34 @@ open class IterableInboxViewController: UITableViewController {
             cell.detailTextLabel?.text = viewModel.subTitle
         }
         if let imageUrlString = viewModel.imageUrl, let url = URL(string: imageUrlString) {
-            cell.imageView?.image = UIImage(named: "Loading")
-            if let networkSession = IterableAPIInternal._sharedInstance?.networkSession {
-                NetworkHelper.getData(fromUrl: url, usingSession: networkSession).onSuccess {
-                    cell.imageView?.image = UIImage(data: $0)
-                }.onError {
-                    ITBError($0.localizedDescription)
-                }
+            if let data = viewModel.imageData {
+                cell.imageView?.backgroundColor = nil // remove loading
+                cell.imageView?.image = UIImage(data: data)
+            } else {
+                cell.imageView?.backgroundColor = UIColor(hex: "EEEEEE") // loading image
+                loadImage(forMessageId: viewModel.iterableMessage.messageId, fromUrl: url)
             }
         }
+    }
+    
+    private func loadImage(forMessageId messageId: String, fromUrl url: URL) {
+        if let networkSession = IterableAPIInternal._sharedInstance?.networkSession {
+            NetworkHelper.getData(fromUrl: url, usingSession: networkSession).onSuccess {[weak self] in
+                self?.updateCell(forMessageId: messageId, withData: $0)
+            }.onError {
+                ITBError($0.localizedDescription)
+            }
+        }
+    }
+    
+    private func updateCell(forMessageId messageId: String, withData data: Data) {
+        guard let row = viewModels.firstIndex (where: { $0.iterableMessage.messageId == messageId }) else {
+            return
+        }
+        var viewModel = viewModels[row]
+        viewModel.imageData = data
+        viewModels[row] = viewModel
+        
+        tableView.reloadRows(at: [IndexPath(row: row, section: 0)], with: .automatic)
     }
 }

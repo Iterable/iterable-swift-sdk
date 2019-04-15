@@ -10,6 +10,7 @@ struct InboxMessageViewModel {
     let title: String
     let subTitle: String?
     let imageUrl: String?
+    var imageData: Data?
     let createdAt: Date? // Not used at the moment
     let read: Bool
     let iterableMessage: IterableInAppMessage
@@ -18,6 +19,7 @@ struct InboxMessageViewModel {
         return InboxMessageViewModel(title: getTitle(message: message),
                               subTitle: getSubTitle(message: message),
                               imageUrl: getImageUrl(message: message),
+                              imageData: nil,
                               createdAt: nil,
                               read: message.read,
                               iterableMessage: message)
