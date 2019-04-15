@@ -9,6 +9,12 @@
 import UIKit
 
 class IterableInboxCell: UITableViewCell {
+    @IBOutlet weak var readCircleView: UIView!
+    @IBOutlet weak var titleLbl: UILabel!
+    @IBOutlet weak var subTitleLbl: UILabel!
+    @IBOutlet weak var timeLbl: UILabel!
+    @IBOutlet weak var iconImageView: UIImageView!
+    
 
     override func awakeFromNib() {
         super.awakeFromNib()

@@ -129,30 +129,22 @@ open class IterableInboxViewController: UITableViewController {
     }
 
     private func configure(cell: IterableInboxCell, forViewModel viewModel: InboxMessageViewModel) {
+        cell.titleLbl.text = viewModel.title
+        cell.subTitleLbl.text = viewModel.subTitle
         if !viewModel.read {
-            let titleSize = cell.textLabel?.font.pointSize ?? 20.0
-            let detailSize = cell.detailTextLabel?.font.pointSize ?? 12
-            cell.textLabel?.text = nil
-            cell.detailTextLabel?.text = nil
-            cell.textLabel?.attributedText = NSAttributedString(string: viewModel.title, attributes: [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: titleSize)])
-            cell.detailTextLabel?.attributedText = NSAttributedString(string: (viewModel.subTitle ?? ""), attributes: [NSAttributedString.Key.font : UIFont.boldSystemFont(ofSize: detailSize)])
         } else {
-            cell.textLabel?.attributedText = nil
-            cell.detailTextLabel?.attributedText = nil
-            cell.textLabel?.text = viewModel.title
-            cell.detailTextLabel?.text = viewModel.subTitle
         }
         if let imageUrlString = viewModel.imageUrl, let url = URL(string: imageUrlString) {
             if let data = viewModel.imageData {
-                cell.imageView?.backgroundColor = nil // remove loading
-                cell.imageView?.image = UIImage(data: data)
+                cell.iconImageView.backgroundColor = nil // remove loading image
+                cell.iconImageView.image = UIImage(data: data)
             } else {
-                cell.imageView?.backgroundColor = UIColor(hex: "EEEEEE") // loading image
+                cell.iconImageView.backgroundColor = UIColor(hex: "EEEEEE") // loading image
                 loadImage(forMessageId: viewModel.iterableMessage.messageId, fromUrl: url)
             }
         }
     }
-    
+
     private func loadImage(forMessageId messageId: String, fromUrl url: URL) {
         if let networkSession = IterableAPIInternal._sharedInstance?.networkSession {
             NetworkHelper.getData(fromUrl: url, usingSession: networkSession).onSuccess {[weak self] in
