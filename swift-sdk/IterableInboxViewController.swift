@@ -32,6 +32,9 @@ open class IterableInboxViewController: UITableViewController {
         ITBInfo()
         super.viewDidLoad()
 
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 150
+        
         let nib = UINib(nibName: "IterableInboxCell", bundle: Bundle(for: type(of:self)))
         tableView.register(nib, forCellReuseIdentifier: "inboxCell")
     }
@@ -131,18 +134,23 @@ open class IterableInboxViewController: UITableViewController {
     private func configure(cell: IterableInboxCell, forViewModel viewModel: InboxMessageViewModel) {
         cell.titleLbl.text = viewModel.title
         cell.subTitleLbl.text = viewModel.subTitle
-        if !viewModel.read {
-        } else {
-        }
+        cell.readCircleView.isHidden = viewModel.read
+        
+        cell.iconImageView.layer.cornerRadius = 5
+        cell.iconImageView.clipsToBounds = true
+
         if let imageUrlString = viewModel.imageUrl, let url = URL(string: imageUrlString) {
             if let data = viewModel.imageData {
-                cell.iconImageView.backgroundColor = nil // remove loading image
                 cell.iconImageView.image = UIImage(data: data)
             } else {
                 cell.iconImageView.backgroundColor = UIColor(hex: "EEEEEE") // loading image
                 loadImage(forMessageId: viewModel.iterableMessage.messageId, fromUrl: url)
             }
+        } else {
+            cell.rightView.isHidden = true
         }
+        
+        cell.timeLbl.isHidden = true
     }
 
     private func loadImage(forMessageId messageId: String, fromUrl url: URL) {

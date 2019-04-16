@@ -13,6 +13,7 @@ class IterableInboxCell: UITableViewCell {
     @IBOutlet weak var titleLbl: UILabel!
     @IBOutlet weak var subTitleLbl: UILabel!
     @IBOutlet weak var timeLbl: UILabel!
+    @IBOutlet weak var rightView: UIView!
     @IBOutlet weak var iconImageView: UIImageView!
     
 
