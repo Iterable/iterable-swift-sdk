@@ -73,7 +73,7 @@ class IterableHtmlMessageViewController: UIViewController {
         super.viewDidLoad()
         
         if let trackParams = parameters.trackParams, let messageId = trackParams.messageId {
-            IterableAPIInternal.sharedInstance?.trackInAppOpen(messageId)
+            IterableAPI.track(inAppOpen: messageId)
         }
         
         webView?.layoutSubviews()
@@ -180,13 +180,13 @@ extension IterableHtmlMessageViewController : UIWebViewDelegate {
             dismiss(animated: false) { [weak self, destinationUrl] in
                 _ = self?.parameters.callback?(url)
                 if let trackParams = self?.parameters.trackParams, let messageId = trackParams.messageId {
-                    IterableAPIInternal.sharedInstance?.trackInAppClick(messageId, buttonURL: destinationUrl)
+                    IterableAPI.track(inAppClick: messageId, buttonURL: destinationUrl)
                 }
             }
         } else {
             _ = parameters.callback?(url)
             if let trackParams = parameters.trackParams, let messageId = trackParams.messageId {
-                IterableAPIInternal.sharedInstance?.trackInAppClick(messageId, buttonURL: destinationUrl)
+                IterableAPI.track(inAppClick: messageId, buttonURL: destinationUrl)
             }
             navigationController?.popViewController(animated: true)
         }

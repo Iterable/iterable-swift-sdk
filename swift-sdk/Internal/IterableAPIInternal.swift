@@ -8,18 +8,6 @@ import Foundation
 import UserNotifications
 
 final class IterableAPIInternal : NSObject, PushTrackerProtocol {
-    /**
-     Get the previously instantiated singleton instance of the API
-     Must be initialized with `initialize:` before
-     calling this class method.
-     */
-    static var sharedInstance : IterableAPIInternal? {
-        if _sharedInstance == nil {
-            ITBError("instance called before initializing API")
-        }
-        return _sharedInstance
-    }
-    
     var apiKey: String
 
     var email: String? {
