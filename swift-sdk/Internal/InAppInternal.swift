@@ -43,9 +43,7 @@ class InAppSilentPushSynchronizer : InAppSynchronizerProtocol {
         }
         
         InAppHelper.getInAppMessagesFromServer(internalApi: internalApi, number: numMessages).onSuccess {
-            if $0.count > 0 {
                 self.inAppSyncDelegate?.onInAppMessagesAvailable(messages: $0)
-            }
             }.onError {
                 ITBError($0.localizedDescription)
         }

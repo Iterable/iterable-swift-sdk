@@ -85,6 +85,7 @@ open class IterableInboxViewController: UITableViewController {
     private var viewModels = [InboxMessageViewModel]()
 
     private static func setup(instance: IterableInboxViewController) {
+        instance.refreshMessages()
         NotificationCenter.default.addObserver(instance, selector: #selector(onInboxChanged(notification:)), name: .iterableInboxChanged, object: nil)
     }
     
