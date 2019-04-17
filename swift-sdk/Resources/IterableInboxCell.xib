@@ -70,7 +70,7 @@
                                     </label>
                                 </subviews>
                             </stackView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TD9-9o-2aC" userLabel="rightView">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TD9-9o-2aC">
                                 <rect key="frame" x="295" y="0.0" width="75" height="109.5"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="f0D-ar-87s">
@@ -106,12 +106,12 @@
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
+                <outlet property="iconContainerView" destination="TD9-9o-2aC" id="qeL-Df-1OB"/>
                 <outlet property="iconImageView" destination="f0D-ar-87s" id="nl0-OQ-JD9"/>
-                <outlet property="readCircleView" destination="5jr-jX-cOI" id="xFr-vV-OPu"/>
-                <outlet property="rightView" destination="TD9-9o-2aC" id="qeL-Df-1OB"/>
                 <outlet property="subTitleLbl" destination="U2b-JZ-SoG" id="lxa-7a-tkc"/>
                 <outlet property="timeLbl" destination="z2z-Gm-d6R" id="3aD-4P-cx6"/>
                 <outlet property="titleLbl" destination="kln-C6-dxu" id="pSQ-Ye-qDu"/>
+                <outlet property="unreadCircleView" destination="5jr-jX-cOI" id="xFr-vV-OPu"/>
             </connections>
             <point key="canvasLocation" x="70.28985507246378" y="62.276785714285708"/>
         </tableViewCell>

@@ -8,24 +8,34 @@
 
 import UIKit
 
-class IterableInboxCell: UITableViewCell {
-    @IBOutlet weak var readCircleView: UIView!
-    @IBOutlet weak var titleLbl: UILabel!
-    @IBOutlet weak var subTitleLbl: UILabel!
-    @IBOutlet weak var timeLbl: UILabel!
-    @IBOutlet weak var rightView: UIView!
-    @IBOutlet weak var iconImageView: UIImageView!
-    
+/// If you are creating your own Xib file you must
+/// connect the outlets.
+open class IterableInboxCell: UITableViewCell {
+    /// A "dot" view showing that the message is unread
+    @IBOutlet weak open var unreadCircleView: UIView?
 
-    override func awakeFromNib() {
+    /// The title label
+    @IBOutlet weak open var titleLbl: UILabel?
+
+    /// The sub title label
+    @IBOutlet weak open var subTitleLbl: UILabel?
+    
+    /// This shows the time when the message was created
+    @IBOutlet weak open var timeLbl: UILabel?
+
+    /// This is the container view for the icon image.
+    /// You may or may not set it.
+    /// Set this outlet if you have the icon inside a container view
+    /// and you want the container to be set to hidden when icons are not
+    /// present for the message.
+    @IBOutlet weak open var iconContainerView: UIView?
+    
+    /// This is the icon image
+    @IBOutlet weak open var iconImageView: UIImageView?
+
+    override open func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
     }
 
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
-    }
-    
 }

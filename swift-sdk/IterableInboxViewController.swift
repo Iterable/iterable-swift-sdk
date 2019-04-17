@@ -6,6 +6,11 @@
 import UIKit
 
 open class IterableInboxViewController: UITableViewController {
+    /// If you want to use a custom layout for your Inbox TableViewCell
+    /// this is where you should override it. Please note that this assumes
+    /// that the xib is present in the main bundle.
+    @IBInspectable public var cellNibName: String? = nil
+    
     // MARK: Initializers
     public override init(style: UITableView.Style) {
         ITBInfo()
@@ -35,8 +40,7 @@ open class IterableInboxViewController: UITableViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 150
         
-        let nib = UINib(nibName: "IterableInboxCell", bundle: Bundle(for: type(of:self)))
-        tableView.register(nib, forCellReuseIdentifier: "inboxCell")
+        registerTableViewCell()
     }
 
     // MARK: - Table view data source
@@ -49,7 +53,9 @@ open class IterableInboxViewController: UITableViewController {
     }
 
     override open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "inboxCell", for: indexPath) as! IterableInboxCell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "inboxCell", for: indexPath) as? IterableInboxCell else {
+            fatalError("Please make sure that an the nib: \(cellNibName!) is present in the main bundle")
+        }
 
         configure(cell: cell, forViewModel: viewModels[indexPath.row])
 
@@ -82,6 +88,8 @@ open class IterableInboxViewController: UITableViewController {
         }
     }
 
+    private let iterableCellNibName = "IterableInboxCell"
+    
     private var viewModels = [InboxMessageViewModel]()
 
     private static func setup(instance: IterableInboxViewController) {
@@ -92,6 +100,14 @@ open class IterableInboxViewController: UITableViewController {
     deinit {
         ITBInfo()
         NotificationCenter.default.removeObserver(self)
+    }
+    
+    private func registerTableViewCell() {
+        let cellNibName = self.cellNibName ?? self.iterableCellNibName
+        let bundle = self.cellNibName == nil ? Bundle(for: IterableInboxViewController.self) : Bundle.main
+        
+        let nib = UINib(nibName: cellNibName, bundle: bundle)
+        tableView.register(nib, forCellReuseIdentifier: "inboxCell")
     }
     
     @objc private func onInboxChanged(notification: NSNotification) {
@@ -115,25 +131,29 @@ open class IterableInboxViewController: UITableViewController {
     }
 
     private func configure(cell: IterableInboxCell, forViewModel viewModel: InboxMessageViewModel) {
-        cell.titleLbl.text = viewModel.title
-        cell.subTitleLbl.text = viewModel.subTitle
-        cell.readCircleView.isHidden = viewModel.read
+        cell.titleLbl?.text = viewModel.title
+        cell.subTitleLbl?.text = viewModel.subTitle
+        cell.unreadCircleView?.isHidden = viewModel.read
         
-        cell.iconImageView.layer.cornerRadius = 5
-        cell.iconImageView.clipsToBounds = true
+        cell.iconImageView?.layer.cornerRadius = 5
+        cell.iconImageView?.clipsToBounds = true
 
         if let imageUrlString = viewModel.imageUrl, let url = URL(string: imageUrlString) {
+            cell.iconContainerView?.isHidden = false
+            cell.iconImageView?.isHidden = false
+
             if let data = viewModel.imageData {
-                cell.iconImageView.image = UIImage(data: data)
+                cell.iconImageView?.image = UIImage(data: data)
             } else {
-                cell.iconImageView.backgroundColor = UIColor(hex: "EEEEEE") // loading image
+                cell.iconImageView?.backgroundColor = UIColor(hex: "EEEEEE") // loading image
                 loadImage(forMessageId: viewModel.iterableMessage.messageId, fromUrl: url)
             }
         } else {
-            cell.rightView.isHidden = true
+            cell.iconContainerView?.isHidden = true
+            cell.iconImageView?.isHidden = true
         }
         
-        cell.timeLbl.isHidden = true
+        cell.timeLbl?.isHidden = true
     }
 
     private func loadImage(forMessageId messageId: String, fromUrl url: URL) {
