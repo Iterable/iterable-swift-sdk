@@ -44,7 +44,7 @@ public final class IterableAPI : NSObject {
     public static func initialize(apiKey: String,
                                   launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
                                   config: IterableConfig = IterableConfig()) {
-        internalImplementation = IterableAPIInternal.initialize(apiKey: apiKey, launchOptions: launchOptions, config:config)
+        internalImplementation = IterableAPIInternal(apiKey: apiKey, launchOptions: launchOptions, config:config)
         NotificationCenter.default.post(name: .iterableAppReady, object: self, userInfo: nil)
     }
     

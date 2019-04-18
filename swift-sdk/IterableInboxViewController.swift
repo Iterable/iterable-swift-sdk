@@ -157,7 +157,7 @@ open class IterableInboxViewController: UITableViewController {
     }
 
     private func loadImage(forMessageId messageId: String, fromUrl url: URL) {
-        if let networkSession = IterableAPIInternal._sharedInstance?.networkSession {
+        if let networkSession = IterableAPI.internalImplementation?.networkSession {
             NetworkHelper.getData(fromUrl: url, usingSession: networkSession).onSuccess {[weak self] in
                 self?.updateCell(forMessageId: messageId, withData: $0)
             }.onError {

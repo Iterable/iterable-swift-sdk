@@ -490,10 +490,6 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
     
     // MARK: For Private and Internal Use ========================================>
-    static var _sharedInstance: IterableAPIInternal?
-    
-    static var queue = DispatchQueue(label: "MyLockQueue")
-    
     private var config: IterableConfig
     
     private let dateProvider: DateProviderProtocol
@@ -729,18 +725,6 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
                                                                        inAppSynchronizer: inAppSynchronizer)
         
         handle(launchOptions: launchOptions)
-    }
-
-    static func initialize(apiKey: String,
-                           launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil,
-                           config: IterableConfig = IterableConfig()) -> IterableAPIInternal {
-        queue.sync {
-            _sharedInstance = IterableAPIInternal(apiKey: apiKey,
-                                                  launchOptions: launchOptions,
-                                                  config: config
-                                                  )
-        }
-        return _sharedInstance!
     }
 
     private func handle(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
