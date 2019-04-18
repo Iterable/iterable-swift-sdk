@@ -385,7 +385,7 @@ class InboxTests: XCTestCase {
         mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) {
             let messages = IterableAPI.inAppManager.getInboxMessages()
             if inboxCallbackCount == 0 {
-                XCTAssertEqual(messages.count, 1)
+                XCTAssertEqual(messages.count, 1, "inboxMessages: \(IterableAPI.inAppManager.getInboxMessages())")
                 XCTAssertEqual(messages[0].messageId, "message0")
             } else {
                 XCTAssertEqual(messages.count, 2)
