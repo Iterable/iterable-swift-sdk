@@ -245,10 +245,10 @@ class InboxTests: XCTestCase {
             let messages = IterableAPI.inAppManager.getInboxMessages()
             if callbackCount == 0 {
                 XCTAssertEqual(messages.count, 1)
-                XCTAssertEqual(messages[0].messageId, "message0")
+                XCTAssertEqual(messages[0].messageId, "message0", "inboxMessages: \(IterableAPI.inAppManager.getInboxMessages())")
             } else {
                 XCTAssertEqual(messages.count, 2)
-                XCTAssertEqual(messages[1].messageId, "message1")
+                XCTAssertEqual(messages[1].messageId, "message1", "inboxMessages: \(IterableAPI.inAppManager.getInboxMessages())")
             }
             expectation1.fulfill()
             callbackCount += 1
