@@ -13,13 +13,10 @@ protocol InAppSynchronizerDelegate : class {
 
 ///
 protocol InAppSynchronizerProtocol {
-    // These variables are used for callbacks
-    var internalApi: IterableAPIInternal? {get set}
     var inAppSyncDelegate: InAppSynchronizerDelegate? {get set}
     
-    // These methods are called on new messages arrive etc.
+    // Fetch from server and sync
     func sync()
-    func remove(messageId: String)
 }
 
 extension IterableInAppTriggerType {
@@ -27,8 +24,7 @@ extension IterableInAppTriggerType {
     static let undefinedTriggerType = IterableInAppTriggerType.never // undefined is what we select if payload has new trigger type
 }
 
-class InAppSilentPushSynchronizer : InAppSynchronizerProtocol {
-    weak var internalApi: IterableAPIInternal?
+class InAppSynchronizer : InAppSynchronizerProtocol {
     weak var inAppSyncDelegate: InAppSynchronizerDelegate?
     
     init() {
@@ -37,21 +33,16 @@ class InAppSilentPushSynchronizer : InAppSynchronizerProtocol {
     
     func sync() {
         ITBInfo()
-        guard let internalApi = self.internalApi else {
+        guard let internalApi = IterableAPI.internalImplementation else {
             ITBError("Invalid state: expected InternalApi")
             return
         }
         
         InAppHelper.getInAppMessagesFromServer(internalApi: internalApi, number: numMessages).onSuccess {
-                self.inAppSyncDelegate?.onInAppMessagesAvailable(messages: $0)
-            }.onError {
-                ITBError($0.localizedDescription)
+            self.inAppSyncDelegate?.onInAppMessagesAvailable(messages: $0)
+        }.onError {
+            ITBError($0.localizedDescription)
         }
-    }
-    
-    func remove(messageId: String) {
-        ITBInfo()
-        inAppSyncDelegate?.onInAppRemoved(messageId: messageId)
     }
     
     deinit {

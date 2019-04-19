@@ -16,16 +16,12 @@ extension NotificationCenter : NotificationCenterProtocol {
 }
 
 protocol IterableInAppManagerProtocolInternal : IterableInAppManagerProtocol {
+    // This is internal. Do not expose
     func synchronize()
+    func onInAppRemoved(messageId: String)
 }
 
 class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
-    weak var internalApi: IterableAPIInternal? {
-        didSet {
-            self.synchronizer.internalApi = internalApi
-        }
-    }
-
     init(synchronizer: InAppSynchronizerProtocol,
          displayer: InAppDisplayerProtocol,
          persister: InAppPersistenceProtocol,
@@ -286,6 +282,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         }
     }
 
+    // From client side
     private func removePrivate(message: IterableInAppMessage) {
         ITBInfo()
         
@@ -308,6 +305,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         return message.consumed == false && isExpired(message: message, currentDate: currentDate) == false
     }
     
+    weak var internalApi: IterableAPIInternal?
     private var synchronizer: InAppSynchronizerProtocol // this is mutable because we need to set internalApi
     private let displayer: InAppDisplayerProtocol
     private let inAppDelegate: IterableInAppDelegate
@@ -354,6 +352,7 @@ extension InAppManager : InAppSynchronizerDelegate {
         }
     }
     
+    // from server side
     func onInAppRemoved(messageId: String) {
         ITBInfo()
         
@@ -517,7 +516,7 @@ extension InAppManager : InAppSynchronizerDelegate {
     }
 }
 
-class EmptyInAppManager : IterableInAppManagerProtocol {
+class EmptyInAppManager : IterableInAppManagerProtocolInternal {
     func createInboxMessageViewController(for message: IterableInAppMessage) -> UIViewController? {
         ITBError("Can't create VC")
         return nil
@@ -550,5 +549,12 @@ class EmptyInAppManager : IterableInAppManagerProtocol {
     func getUnreadInboxMessagesCount() -> Int {
         return 0
     }
+
+    func synchronize() {
+    }
+    
+    func onInAppRemoved(messageId: String) {
+    }
+    
 }
 

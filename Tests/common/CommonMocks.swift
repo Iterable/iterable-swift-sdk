@@ -231,7 +231,6 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
     weak var inAppSyncDelegate: InAppSynchronizerDelegate?
     
     var syncCallback: (() -> Void)?
-    var removeCallback: ((String) -> Void)?
     
     init(messages: [IterableInAppMessage] = []) {
         ITBInfo()
@@ -247,16 +246,6 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
         inAppSyncDelegate?.onInAppMessagesAvailable(messages: messagesMap.values)
 
         syncCallback?()
-    }
-    
-    func remove(messageId: String) {
-        ITBInfo()
-        
-        messagesMap.removeValue(forKey: messageId)
-        
-        inAppSyncDelegate?.onInAppRemoved(messageId: messageId)
-        
-        removeCallback?(messageId)
     }
     
     func mockMessagesAvailableFromServer(messages: [IterableInAppMessage]) {

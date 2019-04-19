@@ -71,7 +71,8 @@ class IterableNotificationResponseTests: XCTestCase {
         
         let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker,
                                                             customActionDelegate: customActionDelegate,
-                                                            urlOpener: MockUrlOpener())
+                                                            urlOpener: MockUrlOpener(),
+                                                            inAppManager: EmptyInAppManager())
         appIntegration.userNotificationCenter(nil, didReceive: response, withCompletionHandler: nil)
         
         wait(for: [expection], timeout: testExpectationTimeout)
@@ -118,7 +119,8 @@ class IterableNotificationResponseTests: XCTestCase {
 
         let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker,
                                                             customActionDelegate: customActionDelegate,
-                                                            urlOpener: MockUrlOpener())
+                                                            urlOpener: MockUrlOpener(),
+                                                            inAppManager: EmptyInAppManager())
         appIntegration.userNotificationCenter(nil, didReceive: response, withCompletionHandler: nil)
 
         wait(for: [expection], timeout: testExpectationTimeout)
@@ -157,7 +159,8 @@ class IterableNotificationResponseTests: XCTestCase {
             
             let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker,
                                                                 customActionDelegate: customActionDelegate,
-                                                                urlOpener: MockUrlOpener())
+                                                                urlOpener: MockUrlOpener(),
+                                                                inAppManager: EmptyInAppManager())
             appIntegration.application(MockApplicationStateProvider(applicationState: .inactive), didReceiveRemoteNotification: userInfo, fetchCompletionHandler: nil)
             
             wait(for: [expection], timeout: testExpectationTimeout)
@@ -258,7 +261,8 @@ class IterableNotificationResponseTests: XCTestCase {
         let urlOpener = MockUrlOpener()
         let pushTracker = MockPushTracker()
         let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker,
-                                                            urlOpener: urlOpener)
+                                                            urlOpener: urlOpener,
+                                                            inAppManager: EmptyInAppManager())
         appIntegration.userNotificationCenter(nil, didReceive: response, withCompletionHandler: nil)
         
         XCTAssertEqual(pushTracker.campaignId, 1234)

@@ -987,21 +987,23 @@ class InAppTests: XCTestCase {
         }
         """.toJsonDict()
         
-        let mockInAppSynchronizer = MockInAppSynchronizer()
-        mockInAppSynchronizer.removeCallback = {(messageId) in
-            XCTAssertEqual(messageId, "messageId")
-            expectation1.fulfill()
+        class MockInAppManager : EmptyInAppManager {
+            let expectation: XCTestExpectation
+            
+            init(expectation: XCTestExpectation) {
+                self.expectation = expectation
+            }
+            
+            override func onInAppRemoved(messageId: String) {
+                XCTAssertEqual(messageId, "messageId")
+                expectation.fulfill()
+            }
         }
         
-        let config = IterableConfig()
-        config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
-        
-        IterableAPI.initializeForTesting(
-            config: config,
-            inAppSynchronizer: mockInAppSynchronizer
-        )
-        
-        IterableAppIntegration.application(UIApplication.shared, didReceiveRemoteNotification: notification, fetchCompletionHandler: nil)
+        let mockInAppManager = MockInAppManager(expectation: expectation1)
+
+        let appIntegration = IterableAppIntegrationInternal(tracker: MockPushTracker(), inAppManager: mockInAppManager)
+        appIntegration.application(MockApplicationStateProvider(applicationState: .background), didReceiveRemoteNotification: notification, fetchCompletionHandler: nil)
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
