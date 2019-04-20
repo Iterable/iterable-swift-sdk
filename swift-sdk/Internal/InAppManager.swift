@@ -15,10 +15,8 @@ protocol NotificationCenterProtocol {
 extension NotificationCenter : NotificationCenterProtocol {
 }
 
-protocol IterableInAppManagerProtocolInternal : IterableInAppManagerProtocol {
+protocol IterableInAppManagerProtocolInternal : IterableInAppManagerProtocol, InAppNotifiable {
     // This is internal. Do not expose
-    func synchronize()
-    func onInAppRemoved(messageId: String)
 }
 
 class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
@@ -50,8 +48,6 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         
         self.initializeMessagesMap()
 
-        self.synchronizer.inAppSyncDelegate = self
-        
         self.notificationCenter.addObserver(self,
                                        selector: #selector(onAppEnteredForeground(notification:)),
                                        name: UIApplication.didBecomeActiveNotification,
@@ -134,12 +130,9 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         removePrivate(message: message)
     }
     
-    func synchronize() {
+    func onInAppSyncNeeded() {
         ITBInfo()
-        syncQueue.async {
-            self.synchronizer.sync()
-            self.lastSyncTime = self.dateProvider.currentDate
-        }
+        synchronize()
     }
     
     func set(read: Bool, forMessage message: IterableInAppMessage) {
@@ -173,6 +166,16 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
             synchronize()
         } else {
             ITBInfo("can't sync now, need to wait: \(waitTime)")
+        }
+    }
+    
+    private func synchronize() {
+        ITBInfo()
+        syncQueue.async {
+            self.synchronizer.sync()
+                .onSuccess{ self.onInAppMessagesAvailable(messages: $0) }
+                .onError { ITBError($0.localizedDescription) }
+            self.lastSyncTime = self.dateProvider.currentDate
         }
     }
     
@@ -328,7 +331,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     private let moveToForegroundSyncInterval: Double = 1.0 * 60.0 // don't sync within sixty seconds
 }
 
-extension InAppManager : InAppSynchronizerDelegate {
+extension InAppManager { //!!!
     func onInAppMessagesAvailable(messages: [IterableInAppMessage]) {
         ITBDebug()
 
@@ -550,11 +553,10 @@ class EmptyInAppManager : IterableInAppManagerProtocolInternal {
         return 0
     }
 
-    func synchronize() {
+    func onInAppSyncNeeded() {
     }
     
     func onInAppRemoved(messageId: String) {
     }
-    
 }
 

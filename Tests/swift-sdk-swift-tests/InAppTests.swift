@@ -639,7 +639,7 @@ class InAppTests: XCTestCase {
         let expectation1 = expectation(description: "show first message")
         let expectation2 = expectation(description: "don't show second message within interval")
         expectation2.isInverted = true
-        let expectation3 = expectation(description: "show second message after retry interval")
+        let expectation3 = expectation(description: "show third message after retry interval")
 
         let retryInterval = 2.0
 
@@ -679,7 +679,7 @@ class InAppTests: XCTestCase {
 
         // second message payload, should not be shown
         messageNumber = 2
-        let margin = 0.1 // give some time for execution
+        let margin = 1.1 // give some time for execution (1.0 for mockMessages and 0.1 for execution) !!!
         mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: messageNumber...messageNumber))
         wait(for: [expectation2], timeout: retryInterval - margin)
 
@@ -1002,7 +1002,7 @@ class InAppTests: XCTestCase {
         
         let mockInAppManager = MockInAppManager(expectation: expectation1)
 
-        let appIntegration = IterableAppIntegrationInternal(tracker: MockPushTracker(), inAppManager: mockInAppManager)
+        let appIntegration = IterableAppIntegrationInternal(tracker: MockPushTracker(), inAppNotifiable: mockInAppManager)
         appIntegration.application(MockApplicationStateProvider(applicationState: .background), didReceiveRemoteNotification: notification, fetchCompletionHandler: nil)
         
         wait(for: [expectation1], timeout: testExpectationTimeout)

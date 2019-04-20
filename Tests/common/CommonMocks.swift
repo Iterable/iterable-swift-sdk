@@ -227,9 +227,6 @@ class NoNetworkNetworkSession: NetworkSessionProtocol {
 }
 
 class MockInAppSynchronizer : InAppSynchronizerProtocol {
-    weak var internalApi: IterableAPIInternal?
-    weak var inAppSyncDelegate: InAppSynchronizerDelegate?
-    
     var syncCallback: (() -> Void)?
     
     init(messages: [IterableInAppMessage] = []) {
@@ -237,16 +234,16 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
         for message in messages {
             messagesMap[message.messageId] = message
         }
-        
     }
     
-    func sync() {
+    func sync() -> Future<[IterableInAppMessage]> {
         ITBInfo()
-
-        inAppSyncDelegate?.onInAppMessagesAvailable(messages: messagesMap.values)
-
+        
         syncCallback?()
+
+        return Promise(value: messagesMap.values)
     }
+
     
     func mockMessagesAvailableFromServer(messages: [IterableInAppMessage]) {
         ITBInfo()
@@ -257,7 +254,9 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
             messagesMap[$0.messageId] = $0
         }
 
-        sync()
+        (IterableAPI.inAppManager as! IterableInAppManagerProtocolInternal).onInAppSyncNeeded()
+
+        Thread.sleep(forTimeInterval: 1.0) // !!!
     }
     
     func mockInAppPayloadFromServer(_ payload: [AnyHashable : Any]) {

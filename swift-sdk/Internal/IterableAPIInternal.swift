@@ -560,7 +560,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             notificationStateProvider.registerForRemoteNotifications()
         }
         
-        inAppManager.synchronize()
+        inAppManager.onInAppSyncNeeded()
     }
     
     private func createGetRequest(forPath path: String, withArgs args: [String : String]) -> URLRequest? {
@@ -722,7 +722,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
                                                                        urlDelegate: config.urlDelegate,
                                                                        customActionDelegate: config.customActionDelegate,
                                                                        urlOpener: self.urlOpener,
-                                                                       inAppManager: self.inAppManager)
+                                                                       inAppNotifiable: self.inAppManager)
         
         handle(launchOptions: launchOptions)
     }

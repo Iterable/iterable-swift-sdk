@@ -5,18 +5,16 @@
 
 import Foundation
 
-/// Callbacks from the synchronizer
-protocol InAppSynchronizerDelegate : class {
-    func onInAppRemoved(messageId: String)
-    func onInAppMessagesAvailable(messages: [IterableInAppMessage])
-}
-
 ///
 protocol InAppSynchronizerProtocol {
-    var inAppSyncDelegate: InAppSynchronizerDelegate? {get set}
-    
     // Fetch from server and sync
-    func sync()
+    func sync() -> Future<[IterableInAppMessage]>
+}
+
+/// For callbacks when silent push notifications arrive
+protocol InAppNotifiable {
+    func onInAppSyncNeeded()
+    func onInAppRemoved(messageId: String)
 }
 
 extension IterableInAppTriggerType {
@@ -25,30 +23,24 @@ extension IterableInAppTriggerType {
 }
 
 class InAppSynchronizer : InAppSynchronizerProtocol {
-    weak var inAppSyncDelegate: InAppSynchronizerDelegate?
-    
     init() {
         ITBInfo()
     }
     
-    func sync() {
+    func sync() -> Future<[IterableInAppMessage]> {
         ITBInfo()
         guard let internalApi = IterableAPI.internalImplementation else {
             ITBError("Invalid state: expected InternalApi")
-            return
+            return Promise(error: IterableError.general(description: "Invalid state: expected InternalApi"))
         }
-        
-        InAppHelper.getInAppMessagesFromServer(internalApi: internalApi, number: numMessages).onSuccess {
-            self.inAppSyncDelegate?.onInAppMessagesAvailable(messages: $0)
-        }.onError {
-            ITBError($0.localizedDescription)
-        }
+
+        return InAppHelper.getInAppMessagesFromServer(internalApi: internalApi, number: numMessages)
     }
-    
+
     deinit {
         ITBInfo()
     }
     
     // how many messages to fetch
-    private let numMessages = 10
+    private let numMessages = 100
 }
