@@ -130,11 +130,6 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         removePrivate(message: message)
     }
     
-    func onInAppSyncNeeded() {
-        ITBInfo()
-        synchronize()
-    }
-    
     func set(read: Bool, forMessage message: IterableInAppMessage) {
         updateQueue.sync {
             let toUpdate = message
@@ -173,9 +168,32 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         ITBInfo()
         syncQueue.async {
             self.synchronizer.sync()
-                .onSuccess{ self.onInAppMessagesAvailable(messages: $0) }
+                .onSuccess{ self.handleInAppMessagesObtainedFromServer(messages: $0) }
                 .onError { ITBError($0.localizedDescription) }
             self.lastSyncTime = self.dateProvider.currentDate
+        }
+    }
+    
+    private func handleInAppMessagesObtainedFromServer(messages: [IterableInAppMessage]) {
+        ITBDebug()
+        
+        updateQueue.async {
+            // Remove messages that are no present in server
+            let deletedInboxCount = self.removeDeletedMessages(messagesFromServer: messages)
+            
+            // add new ones
+            let addedInboxCount = self.addNewMessages(messagesFromServer: messages)
+            
+            self.persister.persist(self.messagesMap.values)
+            
+            if deletedInboxCount + addedInboxCount > 0 {
+                self.callbackQueue.async {
+                    self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
+                }
+            }
+            
+            // now process in app messages
+            self.processNextTriggeredMessage()
         }
     }
     
@@ -217,6 +235,157 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         set(read: true, forMessage: message)
 
         updateMessage(message, didProcessTrigger: true, consumed: shouldConsume)
+    }
+    
+    // This method schedules next triggered message after showing a message
+    private func scheduleNextInAppMessage() {
+        ITBDebug()
+        
+        scheduleQueue.async {
+            let waitTimeInterval = self.getInAppShowingWaitTimeInterval()
+            if waitTimeInterval > 0 {
+                ITBDebug("Need to wait for: \(waitTimeInterval)")
+                self.scheduleQueue.asyncAfter(deadline: .now() + waitTimeInterval) {
+                    self.processNextTriggeredMessage()
+                }
+            } else {
+                self.processNextTriggeredMessage()
+            }
+        }
+    }
+    
+    private func processNextTriggeredMessage() {
+        ITBDebug()
+        
+        guard let message = getFirstProcessableTriggeredMessage() else {
+            ITBDebug("No message to process")
+            return
+        }
+        
+        ITBDebug("processing message with id: \(message.messageId)")
+        
+        // We can only check applicationState from main queue so need to do the following
+        DispatchQueue.main.async {
+            if self.isOkToShowNow(message: message) {
+                self.updateMessage(message, didProcessTrigger: true)
+                
+                if self.inAppDelegate.onNew(message: message) == .show {
+                    ITBDebug("delegate returned show")
+                    let consume = !message.saveToInbox
+                    self.showInternal(message: message, consume: consume, callback: nil)
+                } else {
+                    ITBDebug("delegate returned skip, continue processing")
+                    self.scheduleQueue.async {
+                        self.processNextTriggeredMessage()
+                    }
+                }
+            } else {
+                ITBInfo("Cannot show inApp with id: \(message.messageId) now.")
+            }
+        }
+    }
+    
+    private func getFirstProcessableTriggeredMessage() -> IterableInAppMessage? {
+        return messagesMap.values.filter(InAppManager.isProcessableTriggeredMessage).first
+    }
+    
+    private static func isProcessableTriggeredMessage(_ message: IterableInAppMessage) -> Bool {
+        return message.didProcessTrigger == false && message.trigger.type == .immediate
+    }
+    
+    private func updateMessage(_ message: IterableInAppMessage,
+                               didProcessTrigger: Bool? = false,
+                               consumed: Bool = false) {
+        ITBDebug()
+        updateQueue.sync {
+            let toUpdate = message
+            if let didProcessTrigger = didProcessTrigger {
+                toUpdate.didProcessTrigger = didProcessTrigger
+            }
+            toUpdate.consumed = consumed
+            self.messagesMap.updateValue(toUpdate, forKey: message.messageId)
+            persister.persist(self.messagesMap.values)
+        }
+    }
+    
+    private func isOkToShowNow(message: IterableInAppMessage) -> Bool {
+        guard applicationStateProvider.applicationState == .active else {
+            ITBInfo("not active")
+            return false
+        }
+        guard displayer.isShowingInApp() == false else {
+            ITBInfo("showing another")
+            return false
+        }
+        guard message.didProcessTrigger == false else {
+            ITBInfo("message with id: \(message.messageId) is already processed")
+            return false
+        }
+        guard getInAppShowingWaitTimeInterval() <= 0 else {
+            ITBInfo("can't display within retryInterval window")
+            return false
+        }
+        
+        return true
+    }
+    
+    // How long do we have to wait before showing the message
+    // > 0 means wait, otherwise we are good to show
+    private func getInAppShowingWaitTimeInterval() -> TimeInterval {
+        return InAppManager.getWaitTimeInterval(fromLastTime: lastDismissedTime, currentTime: dateProvider.currentDate, gap: retryInterval)
+    }
+    
+    // How long do we have to wait?
+    // > 0 means wait, otherwise we are good to show
+    private static func getWaitTimeInterval(fromLastTime lastTime: Date?, currentTime: Date, gap: TimeInterval) -> TimeInterval {
+        if let lastTime = lastTime {
+            // if it has been shown once
+            let nextShowingTime = Date(timeInterval: gap + 0.1, since: lastTime)
+            if currentTime >= nextShowingTime {
+                return 0.0
+            } else {
+                return nextShowingTime.timeIntervalSinceReferenceDate - currentTime.timeIntervalSinceReferenceDate
+            }
+        } else {
+            // we have not shown any messages
+            return 0.0
+        }
+    }
+    
+    // returns count of inbox messages (save to inbox)
+    private func addNewMessages(messagesFromServer messages: [IterableInAppMessage]) -> Int {
+        var inboxCount = 0
+        messages.forEach { message in
+            if !messagesMap.contains(where: { $0.key == message.messageId }) {
+                if message.saveToInbox == true {
+                    inboxCount += 1
+                }
+                messagesMap[message.messageId] = message
+            }
+        }
+        return inboxCount
+    }
+    
+    // return count of deleted inbox messages
+    private func removeDeletedMessages(messagesFromServer messages: [IterableInAppMessage]) -> Int {
+        var inboxCount = 0
+        let removedMessages = getRemovedMessages(messagesFromServer: messages)
+        removedMessages.forEach {
+            if $0.saveToInbox == true {
+                inboxCount += 1
+            }
+            messagesMap.removeValue(forKey: $0.messageId)
+        }
+        return inboxCount
+    }
+    
+    // given `messages` coming for server, find messages that need to be removed
+    private func getRemovedMessages(messagesFromServer messages: [IterableInAppMessage]) -> [IterableInAppMessage] {
+        return messagesMap.values.reduce(into: [IterableInAppMessage]()) { (result, message) in
+            if !messages.contains(where: { $0.messageId == message.messageId }) {
+                result.append(message)
+            }
+        }
     }
 
     private func handle(clickedUrl url: URL?, forMessage message: IterableInAppMessage) {
@@ -331,28 +500,10 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     private let moveToForegroundSyncInterval: Double = 1.0 * 60.0 // don't sync within sixty seconds
 }
 
-extension InAppManager { //!!!
-    func onInAppMessagesAvailable(messages: [IterableInAppMessage]) {
-        ITBDebug()
-
-        updateQueue.async {
-            // Remove messages that are no present in server
-            let deletedInboxCount = self.removeDeletedMessages(messagesFromServer: messages)
-            
-            // add new ones
-            let addedInboxCount = self.addNewMessages(messagesFromServer: messages)
-            
-            self.persister.persist(self.messagesMap.values)
-            
-            if deletedInboxCount + addedInboxCount > 0 {
-                self.callbackQueue.async {
-                    self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
-                }
-            }
-            
-            // now process in app messages
-            self.processNextTriggeredMessage()
-        }
+extension InAppManager : InAppNotifiable {
+    func onInAppSyncNeeded() {
+        ITBInfo()
+        synchronize()
     }
     
     // from server side
@@ -363,157 +514,6 @@ extension InAppManager { //!!!
             if let _ = self.messagesMap.filter({$0.key == messageId}).first {
                 self.messagesMap.removeValue(forKey: messageId)
                 self.persister.persist(self.messagesMap.values)
-            }
-        }
-    }
-    
-    // This method schedules next triggered message after showing a message
-    private func scheduleNextInAppMessage() {
-        ITBDebug()
-        
-        scheduleQueue.async {
-            let waitTimeInterval = self.getInAppShowingWaitTimeInterval()
-            if waitTimeInterval > 0 {
-                ITBDebug("Need to wait for: \(waitTimeInterval)")
-                self.scheduleQueue.asyncAfter(deadline: .now() + waitTimeInterval) {
-                    self.processNextTriggeredMessage()
-                }
-            } else {
-                self.processNextTriggeredMessage()
-            }
-        }
-    }
-    
-    private func processNextTriggeredMessage() {
-        ITBDebug()
-
-        guard let message = getFirstProcessableTriggeredMessage() else {
-            ITBDebug("No message to process")
-            return
-        }
-        
-        ITBDebug("processing message with id: \(message.messageId)")
-        
-        // We can only check applicationState from main queue so need to do the following
-        DispatchQueue.main.async {
-            if self.isOkToShowNow(message: message) {
-                self.updateMessage(message, didProcessTrigger: true)
-
-                if self.inAppDelegate.onNew(message: message) == .show {
-                    ITBDebug("delegate returned show")
-                    let consume = !message.saveToInbox
-                    self.showInternal(message: message, consume: consume, callback: nil)
-                } else {
-                    ITBDebug("delegate returned skip, continue processing")
-                    self.scheduleQueue.async {
-                        self.processNextTriggeredMessage()
-                    }
-                }
-            } else {
-                ITBInfo("Cannot show inApp with id: \(message.messageId) now.")
-            }
-        }
-    }
-    
-    private func getFirstProcessableTriggeredMessage() -> IterableInAppMessage? {
-        return messagesMap.values.filter(InAppManager.isProcessableTriggeredMessage).first
-    }
-    
-    private static func isProcessableTriggeredMessage(_ message: IterableInAppMessage) -> Bool {
-        return message.didProcessTrigger == false && message.trigger.type == .immediate
-    }
-    
-    private func updateMessage(_ message: IterableInAppMessage,
-                               didProcessTrigger: Bool? = false,
-                               consumed: Bool = false) {
-        ITBDebug()
-        updateQueue.sync {
-            let toUpdate = message
-            if let didProcessTrigger = didProcessTrigger {
-                toUpdate.didProcessTrigger = didProcessTrigger
-            }
-            toUpdate.consumed = consumed
-            self.messagesMap.updateValue(toUpdate, forKey: message.messageId)
-            persister.persist(self.messagesMap.values)
-        }
-    }
-    
-    private func isOkToShowNow(message: IterableInAppMessage) -> Bool {
-        guard applicationStateProvider.applicationState == .active else {
-            ITBInfo("not active")
-            return false
-        }
-        guard displayer.isShowingInApp() == false else {
-            ITBInfo("showing another")
-            return false
-        }
-        guard message.didProcessTrigger == false else {
-            ITBInfo("message with id: \(message.messageId) is already processed")
-            return false
-        }
-        guard getInAppShowingWaitTimeInterval() <= 0 else {
-            ITBInfo("can't display within retryInterval window")
-            return false
-        }
-        
-        return true
-    }
-    
-    // How long do we have to wait before showing the message
-    // > 0 means wait, otherwise we are good to show
-    private func getInAppShowingWaitTimeInterval() -> TimeInterval {
-        return InAppManager.getWaitTimeInterval(fromLastTime: lastDismissedTime, currentTime: dateProvider.currentDate, gap: retryInterval)
-    }
-    
-    // How long do we have to wait?
-    // > 0 means wait, otherwise we are good to show
-    private static func getWaitTimeInterval(fromLastTime lastTime: Date?, currentTime: Date, gap: TimeInterval) -> TimeInterval {
-        if let lastTime = lastTime {
-            // if it has been shown once
-            let nextShowingTime = Date(timeInterval: gap + 0.1, since: lastTime)
-            if currentTime >= nextShowingTime {
-                return 0.0
-            } else {
-                return nextShowingTime.timeIntervalSinceReferenceDate - currentTime.timeIntervalSinceReferenceDate
-            }
-        } else {
-            // we have not shown any messages
-            return 0.0
-        }
-    }
-
-    // returns count of inbox messages (save to inbox)
-    private func addNewMessages(messagesFromServer messages: [IterableInAppMessage]) -> Int {
-        var inboxCount = 0
-        messages.forEach { message in
-            if !messagesMap.contains(where: { $0.key == message.messageId }) {
-                if message.saveToInbox == true {
-                    inboxCount += 1
-                }
-                messagesMap[message.messageId] = message
-            }
-        }
-        return inboxCount
-    }
-    
-    // return count of deleted inbox messages
-    private func removeDeletedMessages(messagesFromServer messages: [IterableInAppMessage]) -> Int {
-        var inboxCount = 0
-        let removedMessages = getRemovedMessages(messagesFromServer: messages)
-        removedMessages.forEach {
-            if $0.saveToInbox == true {
-                inboxCount += 1
-            }
-            messagesMap.removeValue(forKey: $0.messageId)
-        }
-        return inboxCount
-    }
-    
-    // given `messages` coming for server, find messages that need to be removed
-    private func getRemovedMessages(messagesFromServer messages: [IterableInAppMessage]) -> [IterableInAppMessage] {
-        return messagesMap.values.reduce(into: [IterableInAppMessage]()) { (result, message) in
-            if !messages.contains(where: { $0.messageId == message.messageId }) {
-                result.append(message)
             }
         }
     }

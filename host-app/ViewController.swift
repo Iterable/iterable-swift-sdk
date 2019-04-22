@@ -91,11 +91,12 @@ class ViewController: UIViewController {
                                          inAppSynchronizer: mockInAppSynchronizer,
                                          inAppDisplayer: InAppDisplayer())
 
-        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
-        let message = IterableAPI.inAppManager.getMessages()[0]
-
-        IterableAPI.inAppManager.show(message: message, consume: true) { (url) in
-            self.statusLbl.text = url!.absoluteString
+        mockInAppSynchronizer.mockInAppPayloadFromServer(payload) {
+            let message = IterableAPI.inAppManager.getMessages()[0]
+            
+            IterableAPI.inAppManager.show(message: message, consume: true) { (url) in
+                self.statusLbl.text = url!.absoluteString
+            }
         }
     }
 
@@ -121,11 +122,12 @@ class ViewController: UIViewController {
                                          inAppSynchronizer: mockInAppSynchronizer,
                                          inAppDisplayer: InAppDisplayer())
         
-        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
-        let message = IterableAPI.inAppManager.getMessages()[0]
-        
-        IterableAPI.inAppManager.show(message: message, consume: true) { (url) in
-            self.statusLbl.text = url!.absoluteString
+        mockInAppSynchronizer.mockInAppPayloadFromServer(payload) {
+            let message = IterableAPI.inAppManager.getMessages()[0]
+            
+            IterableAPI.inAppManager.show(message: message, consume: true) { (url) in
+                self.statusLbl.text = url!.absoluteString
+            }
         }
     }
 
@@ -218,15 +220,12 @@ class ViewController: UIViewController {
                                          inAppDisplayer: InAppDisplayer(),
                                          urlOpener: mockUrlOpener)
 
-        mockInAppSynchronizer.mockMessagesAvailableFromServer(messages: [message])
-
-        sleep(2)
-        
-        let viewController = IterableInboxViewController(style: .plain)
-        present(viewController, animated: true) {
-            ITBInfo("Presented Inbox")
+        mockInAppSynchronizer.mockMessagesAvailableFromServer(messages: [message]) {
+            let viewController = IterableInboxViewController(style: .plain)
+            self.present(viewController, animated: true) {
+                ITBInfo("Presented Inbox")
+            }
         }
-        
     }
     
     @available(iOS 10.0, *)

@@ -266,14 +266,14 @@ class InAppTests: XCTestCase {
             urlOpener: mockUrlOpener
         )
 
-        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1))
-        
-        let messages = IterableAPI.inAppManager.getMessages()
-        XCTAssertEqual(messages.count, 1)
-        
-        IterableAPI.inAppManager.show(message: messages[0], consume: true) { (clickedUrl) in
-            XCTAssertEqual(clickedUrl, TestInAppPayloadGenerator.getClickedUrl(index: 1))
-            expectation1.fulfill()
+        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1)) {
+            let messages = IterableAPI.inAppManager.getMessages()
+            XCTAssertEqual(messages.count, 1)
+            
+            IterableAPI.inAppManager.show(message: messages[0], consume: true) { (clickedUrl) in
+                XCTAssertEqual(clickedUrl, TestInAppPayloadGenerator.getClickedUrl(index: 1))
+                expectation1.fulfill()
+            }
         }
         
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
@@ -309,13 +309,13 @@ class InAppTests: XCTestCase {
             urlOpener: mockUrlOpener
         )
         
-        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1))
-        
-        var messages = IterableAPI.inAppManager.getMessages()
-        // Now show the first message, but don't consume
-        IterableAPI.inAppManager.show(message: messages[0], consume: false) { (clickedUrl) in
-            XCTAssertEqual(clickedUrl, TestInAppPayloadGenerator.getClickedUrl(index: 1))
-            expectation1.fulfill()
+        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1)) {
+            var messages = IterableAPI.inAppManager.getMessages()
+            // Now show the first message, but don't consume
+            IterableAPI.inAppManager.show(message: messages[0], consume: false) { (clickedUrl) in
+                XCTAssertEqual(clickedUrl, TestInAppPayloadGenerator.getClickedUrl(index: 1))
+                expectation1.fulfill()
+            }
         }
         
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
@@ -350,14 +350,14 @@ class InAppTests: XCTestCase {
             inAppDisplayer: mockInAppDisplayer
         )
         
-        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1))
-        
-        let messages = IterableAPI.inAppManager.getMessages()
-        XCTAssertEqual(messages.count, 1)
-        
-        IterableAPI.inAppManager.show(message: messages[0], consume: true) { (customActionUrl) in
-            XCTAssertEqual(customActionUrl, TestInAppPayloadGenerator.getCustomActionUrl(index: 1))
-            expectation1.fulfill()
+        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1)) {
+            let messages = IterableAPI.inAppManager.getMessages()
+            XCTAssertEqual(messages.count, 1)
+            
+            IterableAPI.inAppManager.show(message: messages[0], consume: true) { (customActionUrl) in
+                XCTAssertEqual(customActionUrl, TestInAppPayloadGenerator.getCustomActionUrl(index: 1))
+                expectation1.fulfill()
+            }
         }
         
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
@@ -398,10 +398,12 @@ class InAppTests: XCTestCase {
         ]
         }
         """.toJsonDict()
-        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
         
-        let messages = IterableAPI.inAppManager.getMessages()
-        XCTAssertEqual(messages.count, 1)
+        mockInAppSynchronizer.mockInAppPayloadFromServer(payload) {
+            let messages = IterableAPI.inAppManager.getMessages()
+            XCTAssertEqual(messages.count, 1)
+            
+        }
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
@@ -441,10 +443,11 @@ class InAppTests: XCTestCase {
         ]
         }
         """.toJsonDict()
-        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
-        
-        let messages = IterableAPI.inAppManager.getMessages()
-        XCTAssertEqual(messages.count, 1)
+        mockInAppSynchronizer.mockInAppPayloadFromServer(payload) {
+            let messages = IterableAPI.inAppManager.getMessages()
+            XCTAssertEqual(messages.count, 1)
+            
+        }
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
@@ -479,6 +482,8 @@ class InAppTests: XCTestCase {
     }
     
     func testDeleteInServerDeletesInClient() {
+        let expectation1 = expectation(description: "testDeleteInServerDeletesInClient1")
+        let expectation2 = expectation(description: "testDeleteInServerDeletesInClient2")
         let mockInAppSynchronizer = MockInAppSynchronizer()
         let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
         
@@ -490,13 +495,16 @@ class InAppTests: XCTestCase {
             inAppSynchronizer: mockInAppSynchronizer
         )
         
-        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 3))
+        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 3)) {
+            XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 3)
+            expectation1.fulfill()
+            mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 2)) {
+                XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 2)
+                expectation2.fulfill()
+            }
+        }
         
-        XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 3)
-
-        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 2))
-
-        XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 2)
+        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
     }
     
     func testInAppDoNotShowInBackground() {
@@ -674,14 +682,13 @@ class InAppTests: XCTestCase {
         
         // send first message payload
         messageNumber = 1
-        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: messageNumber...messageNumber))
+        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: 1...messageNumber))
         wait(for: [expectation1], timeout: testExpectationTimeout)
 
         // second message payload, should not be shown
         messageNumber = 2
-        let margin = 1.1 // give some time for execution (1.0 for mockMessages and 0.1 for execution) !!!
-        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: messageNumber...messageNumber))
-        wait(for: [expectation2], timeout: retryInterval - margin)
+        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: 1...messageNumber))
+        wait(for: [expectation2], timeout: retryInterval)
 
         // After retryInternval, the third should show
         messageNumber = 3
@@ -689,13 +696,14 @@ class InAppTests: XCTestCase {
     }
     
     func testRemoveMessages() {
-        let expectation1 = expectation(description: "testRemoveMessages")
-        
+        let expectation1 = expectation(description: "testRemoveMessages1")
+        let expectation2 = expectation(description: "testRemoveMessages2")
+
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShowCallback = {(_, _) in
-            expectation1.fulfill()
+            expectation2.fulfill()
             mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: 1))
         }
 
@@ -704,12 +712,12 @@ class InAppTests: XCTestCase {
             inAppDisplayer: mockInAppDisplayer
         )
         
-        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 3))
+        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 3)) {
+            expectation1.fulfill()
+        }
         
-        XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 3)
-
         // First one will be shown automatically, so we have two left now
-        wait(for: [expectation1], timeout: testExpectationTimeout)
+        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
         XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 2)
 
         // now remove 1, there should be 1 left
@@ -873,6 +881,8 @@ class InAppTests: XCTestCase {
     }
     
     func testPersistBetweenSessions() {
+        let expectation1 = expectation(description: "testPersistBetweenSessions1")
+        
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
         let config = IterableConfig()
@@ -884,10 +894,12 @@ class InAppTests: XCTestCase {
             inAppPersister: InAppFilePersister()
         )
         
-        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 3, 2]))
-
-        XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 3)
-        
+        mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 3, 2])) {
+            XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 3)
+            expectation1.fulfill()
+        }
+    
+        wait(for: [expectation1], timeout: testExpectationTimeout)
 
         IterableAPI.initializeForTesting(
             config: config,
@@ -1074,11 +1086,14 @@ class InAppTests: XCTestCase {
     }
     
     func testExpiration() {
+        let expectation1 = expectation(description: "testExpiration")
+        
         let mockDateProvider = MockDateProvider()
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
         let config = IterableConfig()
         config.logDelegate = AllLogDelegate()
+        config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
         
         IterableAPI.initializeForTesting(config: config,
                                          dateProvider: mockDateProvider,
@@ -1088,13 +1103,16 @@ class InAppTests: XCTestCase {
                                            campaignId: "campaignId",
                                            expiresAt: mockDateProvider.currentDate.addingTimeInterval(1.0 * 60.0), // one minute from now
                                            content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "<html></html>"))
-        mockInAppSynchronizer.mockMessagesAvailableFromServer(messages: [message])
+        mockInAppSynchronizer.mockMessagesAvailableFromServer(messages: [message]) {
+            XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
+            
+            mockDateProvider.currentDate = mockDateProvider.currentDate.addingTimeInterval(2.0 * 60) // two minutes from now
+            
+            XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
+            expectation1.fulfill()
+        }
 
-        XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
-        
-        mockDateProvider.currentDate = mockDateProvider.currentDate.addingTimeInterval(2.0 * 60) // two minutes from now
-        
-        XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 }
 

@@ -111,7 +111,6 @@ class UITests: XCTestCase {
         waitForElementToAppear(app.staticTexts["MyUniqueCustomAction"])
     }
 
-    
     func testShowSystemNotification() {
         // Tap the Left Button
         app.buttons["Show System Notification#1"].tap()

@@ -245,7 +245,7 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
     }
 
     
-    func mockMessagesAvailableFromServer(messages: [IterableInAppMessage]) {
+    func mockMessagesAvailableFromServer(messages: [IterableInAppMessage], completion: (()->())? = nil) {
         ITBInfo()
         
         messagesMap = OrderedDictionary<String, IterableInAppMessage>()
@@ -256,15 +256,20 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
 
         (IterableAPI.inAppManager as! IterableInAppManagerProtocolInternal).onInAppSyncNeeded()
 
-        Thread.sleep(forTimeInterval: 1.0) // !!!
+        if let completion = completion {
+            DispatchQueue.main.asyncAfter(deadline: .now() + queueFinishTimeInterval) {
+                completion()
+            }
+        }
     }
     
-    func mockInAppPayloadFromServer(_ payload: [AnyHashable : Any]) {
+    func mockInAppPayloadFromServer(_ payload: [AnyHashable : Any], completion: (()->())? = nil) {
         ITBInfo()
-        mockMessagesAvailableFromServer(messages: InAppTestHelper.inAppMessages(fromPayload: payload))
+        mockMessagesAvailableFromServer(messages: InAppTestHelper.inAppMessages(fromPayload: payload), completion: completion)
     }
 
     private var messagesMap = OrderedDictionary<String, IterableInAppMessage>()
+    private let queueFinishTimeInterval: TimeInterval = 1.0
 }
 
 class MockInAppDisplayer : InAppDisplayerProtocol {
