@@ -488,7 +488,9 @@ class InboxTests: XCTestCase {
         }
         """.toJsonDict()
         
-        mockInAppSynchronizer.mockInAppPayloadFromServer(payload2)
+        mockInAppSynchronizer.mockInAppPayloadFromServer(payload2) {
+            expectation4.fulfill()
+        }
         
         wait(for: [expectation4, expectation1, expectation2], timeout: testExpectationTimeout)
     }
