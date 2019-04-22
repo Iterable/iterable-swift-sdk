@@ -250,6 +250,7 @@ class InboxTests: XCTestCase {
     func testInboxNewMessagesCallback() {
         let expectation1 = expectation(description: "testInboxNewMessagesCallback")
         expectation1.expectedFulfillmentCount = 2
+        let expectation2 = expectation(description: "testInboxNewMessagesCallback: finish payload processing")
         
         let mockInAppSynchronizer = MockInAppSynchronizer()
         
@@ -294,7 +295,10 @@ class InboxTests: XCTestCase {
         }
         """.toJsonDict()
         
-        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
+        mockInAppSynchronizer.mockInAppPayloadFromServer(payload) {
+            expectation2.fulfill()
+        }
+        wait(for: [expectation2], timeout: testExpectationTimeout)
 
         let payload2 = """
         {"inAppMessages":
