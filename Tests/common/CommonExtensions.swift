@@ -67,6 +67,6 @@ extension IterableAPI {
                                                                 urlOpener: urlOpener,
                                                                 applicationStateProvider: applicationStateProvider,
                                                                 notificationCenter: notificationCenter)
-        notificationCenter.post(name: .iterableAppReady, object: self, userInfo: nil)
+        internalImplementation?.start()
     }
 }

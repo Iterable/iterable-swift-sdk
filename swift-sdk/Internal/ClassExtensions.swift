@@ -20,10 +20,6 @@ public extension Dictionary where Key == AnyHashable, Value == Any {
     }
 }
 
-public extension Notification.Name {
-    static let iterableAppReady = Notification.Name(rawValue: "iterable_app_ready")
-}
-
 public extension Bundle {
     var appPackageName : String? {
         return bundleIdentifier

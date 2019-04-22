@@ -15,8 +15,10 @@ protocol NotificationCenterProtocol {
 extension NotificationCenter : NotificationCenterProtocol {
 }
 
+// This is internal. Do not expose
 protocol IterableInAppManagerProtocolInternal : IterableInAppManagerProtocol, InAppNotifiable {
-    // This is internal. Do not expose
+    var internalApi: IterableAPIInternal? { get set }
+    func start()
 }
 
 class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
@@ -52,16 +54,21 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
                                        selector: #selector(onAppEnteredForeground(notification:)),
                                        name: UIApplication.didBecomeActiveNotification,
                                        object: nil)
-        self.notificationCenter.addObserver(self,
-                                            selector: #selector(onAppReady(notification:)),
-                                            name: .iterableAppReady,
-                                            object: nil)
-
     }
     
     deinit {
         ITBInfo()
         notificationCenter.removeObserver(self)
+    }
+    
+    func start() {
+        ITBInfo()
+        if self.messagesMap.values.filter({$0.saveToInbox == true}).count > 0 {
+            self.callbackQueue.async {
+                self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
+            }
+        }
+        synchronize()
     }
     
     func getMessages() -> [IterableInAppMessage] {
@@ -142,17 +149,6 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         }
 
     }
-
-    @objc private func onAppReady(notification: Notification) {
-        ITBInfo()
-        if self.messagesMap.values.filter({$0.saveToInbox == true}).count > 0 {
-            self.callbackQueue.async {
-                self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
-            }
-        }
-        synchronize()
-    }
-
 
     @objc private func onAppEnteredForeground(notification: Notification) {
         ITBInfo()
@@ -478,6 +474,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     }
     
     weak var internalApi: IterableAPIInternal?
+
     private var synchronizer: InAppSynchronizerProtocol // this is mutable because we need to set internalApi
     private let displayer: InAppDisplayerProtocol
     private let inAppDelegate: IterableInAppDelegate
@@ -520,6 +517,11 @@ extension InAppManager : InAppNotifiable {
 }
 
 class EmptyInAppManager : IterableInAppManagerProtocolInternal {
+    weak var internalApi: IterableAPIInternal?
+    
+    func start() {
+    }
+    
     func createInboxMessageViewController(for message: IterableInAppMessage) -> UIViewController? {
         ITBError("Can't create VC")
         return nil
