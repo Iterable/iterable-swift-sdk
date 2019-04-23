@@ -146,6 +146,7 @@ open class IterableInboxViewController: UITableViewController {
                 cell.iconImageView?.image = UIImage(data: data)
             } else {
                 cell.iconImageView?.backgroundColor = UIColor(hex: "EEEEEE") // loading image
+                cell.iconImageView?.image = nil
                 loadImage(forMessageId: viewModel.iterableMessage.messageId, fromUrl: url)
             }
         } else {
