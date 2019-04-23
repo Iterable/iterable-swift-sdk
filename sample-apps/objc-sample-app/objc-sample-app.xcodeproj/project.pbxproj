@@ -353,7 +353,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-objc-sample-app/Pods-objc-sample-app-frameworks.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-objc-sample-app/Pods-objc-sample-app-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Iterable-iOS-SDK/IterableSDK.framework",
 				"${BUILT_PRODUCTS_DIR}/Iterable-iOS-AppExtensions/IterableAppExtensions.framework",
 			);
@@ -364,7 +364,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-objc-sample-app/Pods-objc-sample-app-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-objc-sample-app/Pods-objc-sample-app-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		459DDAFDFA23308D87287385 /* [CP] Check Pods Manifest.lock */ = {
