@@ -106,7 +106,7 @@ See the Iterable guide on how to setup your Iterable push integration and obtain
 	
 ### 3. Set userId or email. 
 Once you know the email or userId of the user, set the value.
-
+> &#x26A0; Don't specify both email and userId in the same session, as they will be treated as different users by the SDK. Only use one type of identifier, email or userId, to identify the user.
 *Swift*
 	
 ```swift
@@ -417,7 +417,7 @@ To do this, Iterable sends a silent push notification some time (currently, twel
 
 # Rich Push Notifications
 
-Push notifications may contain media attachments with images, animated gifs or video, and with an upcoming update, there will be a way to create action buttons. For this to work within your app, you need to create a Notification Service Extension. More instructions here: [Rich Push Notifications in iOS 10 and Android - Media Attachments](https://support.iterable.com/hc/en-us/articles/115003982203-Rich-Push-Notifications-in-iOS-10-and-Android-Media-Attachments).   
+Push notifications may contain media attachments with images, animated gifs or video, and action buttons. For this to work within your app, you need to create a Notification Service Extension. More instructions here: [Rich Push Notifications in iOS 10 and Android - Media Attachments](https://support.iterable.com/hc/en-us/articles/115003982203-Rich-Push-Notifications-in-iOS-10-and-Android-Media-Attachments).   
 
 Iterable SDK provides an implementation that handles media attachments and action buttons. 
 
