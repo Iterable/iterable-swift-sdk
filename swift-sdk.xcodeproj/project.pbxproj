@@ -65,6 +65,10 @@
 		AC7B144F20D038C400877BFE /* CommerceItemTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AC7B144720D038C400877BFE /* CommerceItemTests.m */; };
 		AC7B145220D038C400877BFE /* IterableNotificationMetadataTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AC7B144A20D038C400877BFE /* IterableNotificationMetadataTests.m */; };
 		AC7B145320D038C400877BFE /* IterableAPIObjCTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AC7B144B20D038C400877BFE /* IterableAPIObjCTests.m */; };
+		AC819184227138EF0014955E /* Dwifft.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC819183227138E60014955E /* Dwifft.swift */; };
+		AC819186227139230014955E /* SectionedValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC819185227139230014955E /* SectionedValues.swift */; };
+		AC81918822713A110014955E /* Dwifft+UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC81918722713A110014955E /* Dwifft+UIKit.swift */; };
+		AC81918A22713A400014955E /* AbstractDiffCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC81918922713A400014955E /* AbstractDiffCalculator.swift */; };
 		AC85A749216D24F4005241AE /* NotificationExtensionSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC85A748216D24F4005241AE /* NotificationExtensionSwiftTests.swift */; };
 		AC87172621A4E47E00FEA369 /* TestInAppPayloadGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */; };
 		AC8874AA22178BD80075B54B /* InAppContentParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8874A922178BD80075B54B /* InAppContentParser.swift */; };
@@ -248,6 +252,10 @@
 		AC7B144720D038C400877BFE /* CommerceItemTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CommerceItemTests.m; sourceTree = "<group>"; };
 		AC7B144A20D038C400877BFE /* IterableNotificationMetadataTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IterableNotificationMetadataTests.m; sourceTree = "<group>"; };
 		AC7B144B20D038C400877BFE /* IterableAPIObjCTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IterableAPIObjCTests.m; sourceTree = "<group>"; };
+		AC819183227138E60014955E /* Dwifft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dwifft.swift; sourceTree = "<group>"; };
+		AC819185227139230014955E /* SectionedValues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionedValues.swift; sourceTree = "<group>"; };
+		AC81918722713A110014955E /* Dwifft+UIKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dwifft+UIKit.swift"; sourceTree = "<group>"; };
+		AC81918922713A400014955E /* AbstractDiffCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbstractDiffCalculator.swift; sourceTree = "<group>"; };
 		AC85A748216D24F4005241AE /* NotificationExtensionSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationExtensionSwiftTests.swift; sourceTree = "<group>"; };
 		AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestInAppPayloadGenerator.swift; sourceTree = "<group>"; };
 		AC8874A922178BD80075B54B /* InAppContentParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppContentParser.swift; sourceTree = "<group>"; };
@@ -530,6 +538,7 @@
 		AC72A0BB20CF4C8C004D7997 /* Internal */ = {
 			isa = PBXGroup;
 			children = (
+				AC819182227138D40014955E /* Diff */,
 				AC219C4B225FE2B300B98631 /* UI */,
 				AC3C10F7213F43AC00A9B839 /* Logging */,
 				ACE34AB121376ACB00691224 /* Local Storage */,
@@ -583,6 +592,17 @@
 				AC7B144A20D038C400877BFE /* IterableNotificationMetadataTests.m */,
 			);
 			path = "swift-sdk-objc-tests";
+			sourceTree = "<group>";
+		};
+		AC819182227138D40014955E /* Diff */ = {
+			isa = PBXGroup;
+			children = (
+				AC81918922713A400014955E /* AbstractDiffCalculator.swift */,
+				AC819185227139230014955E /* SectionedValues.swift */,
+				AC819183227138E60014955E /* Dwifft.swift */,
+				AC81918722713A110014955E /* Dwifft+UIKit.swift */,
+			);
+			name = Diff;
 			sourceTree = "<group>";
 		};
 		AC87172421A4E3FF00FEA369 /* Helper Classes */ = {
@@ -1051,11 +1071,13 @@
 				AC72A0CF20CF4CE2004D7997 /* IterableNotificationMetadata.swift in Sources */,
 				ACD6116C2107D004003E7F6B /* NetworkHelper.swift in Sources */,
 				ACB8273F22372A5C00DB17D3 /* IterableHtmlMessageViewController.swift in Sources */,
+				AC81918A22713A400014955E /* AbstractDiffCalculator.swift in Sources */,
 				AC684A88222F4FDD00F29749 /* InAppDisplayer.swift in Sources */,
 				AC72A0D220CF4D12004D7997 /* IterableUtil.swift in Sources */,
 				AC32E16821DD55B900BD4F83 /* OrderedDictionary.swift in Sources */,
 				AC3C10F9213F46A900A9B839 /* IterableLogging.swift in Sources */,
 				ACE34AB72139D70B00691224 /* LocalStorageProtocol.swift in Sources */,
+				AC819186227139230014955E /* SectionedValues.swift in Sources */,
 				AC6FDD8820F4372E005D811E /* IterableAPI.swift in Sources */,
 				ACF560E820E55A6B000AAC23 /* IterableActionContext.swift in Sources */,
 				AC2C668220D32F2800D46CC9 /* IterableAppIntegrationInternal.swift in Sources */,
@@ -1066,6 +1088,7 @@
 				ACEDF41D2183C2EC000B9BFE /* Promise.swift in Sources */,
 				AC7125EF20D4579E0043BBC1 /* IterableConfig.swift in Sources */,
 				AC03094B21E532470003A288 /* InAppPersistence.swift in Sources */,
+				AC819184227138EF0014955E /* Dwifft.swift in Sources */,
 				AC72A0B620CF4C53004D7997 /* IterableConstants.m in Sources */,
 				AC72A0D120CF4D0B004D7997 /* InAppHelper.swift in Sources */,
 				AC8874AA22178BD80075B54B /* InAppContentParser.swift in Sources */,
@@ -1075,6 +1098,7 @@
 				ACE34AB321376B1000691224 /* UserDefaultsLocalStorage.swift in Sources */,
 				AC2C667E20D3111900D46CC9 /* DateProvider.swift in Sources */,
 				ACA8D1AB21966555001B1332 /* InAppManager.swift in Sources */,
+				AC81918822713A110014955E /* Dwifft+UIKit.swift in Sources */,
 				AC347B5C20E5A7E1003449CF /* IterableAPNSUtil.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

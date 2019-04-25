@@ -6,7 +6,7 @@
 
 import Foundation
 
-struct InboxMessageViewModel {
+struct InboxMessageViewModel : Hashable {
     let title: String
     let subTitle: String?
     let imageUrl: String?
@@ -35,5 +35,18 @@ struct InboxMessageViewModel {
     
     private static func getImageUrl(message: IterableInAppMessage) -> String? {
         return message.inboxMetadata?.icon
+    }
+    
+}
+
+extension InboxMessageViewModel : Equatable {
+    static func == (lhs: InboxMessageViewModel, rhs: InboxMessageViewModel) -> Bool {
+        guard lhs.iterableMessage.messageId == rhs.iterableMessage.messageId else {
+            return false
+        }
+        guard lhs.read == rhs.read else {
+            return false
+        }
+        return true
     }
 }
