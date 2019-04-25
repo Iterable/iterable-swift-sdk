@@ -21,7 +21,7 @@ open class IterableInboxCell: UITableViewCell {
     @IBOutlet weak open var subTitleLbl: UILabel?
     
     /// This shows the time when the message was created
-    @IBOutlet weak open var timeLbl: UILabel?
+    @IBOutlet weak open var createdAtLbl: UILabel?
 
     /// This is the container view for the icon image.
     /// You may or may not set it.
