@@ -38,7 +38,7 @@ open class IterableInboxViewController: UITableViewController {
         super.viewDidLoad()
 
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 150
+        tableView.estimatedRowHeight = UITableView.automaticDimension
         
         registerTableViewCell()
     }
