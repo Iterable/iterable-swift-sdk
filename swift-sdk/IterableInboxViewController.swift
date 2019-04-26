@@ -134,7 +134,6 @@ open class IterableInboxViewController: UITableViewController {
         cell.subTitleLbl?.text = viewModel.subTitle
         cell.unreadCircleView?.isHidden = viewModel.read
         
-        cell.iconImageView?.layer.cornerRadius = 5
         cell.iconImageView?.clipsToBounds = true
 
         if let imageUrlString = viewModel.imageUrl, let url = URL(string: imageUrlString) {
