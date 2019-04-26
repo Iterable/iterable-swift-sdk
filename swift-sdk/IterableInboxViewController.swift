@@ -16,21 +16,21 @@ open class IterableInboxViewController: UITableViewController {
         ITBInfo()
         super.init(style: style)
      
-        IterableInboxViewController.setup(instance: self)
+        setup()
     }
     
     public required init?(coder aDecoder: NSCoder) {
         ITBInfo()
         super.init(coder: aDecoder)
         
-        IterableInboxViewController.setup(instance: self)
+        setup()
     }
     
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         ITBInfo()
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         
-        IterableInboxViewController.setup(instance: self)
+        setup()
     }
     
     override open func viewDidLoad() {
@@ -83,7 +83,6 @@ open class IterableInboxViewController: UITableViewController {
         let iterableMessage = viewModels[indexPath.row].iterableMessage
         if let viewController = IterableAPI.inAppManager.createInboxMessageViewController(for: iterableMessage) {
             IterableAPI.inAppManager.set(read: true, forMessage: iterableMessage)
-            viewController.navigationItem.title = iterableMessage.inboxMetadata?.title
             navigationController?.pushViewController(viewController, animated: true)
         }
     }
@@ -92,9 +91,9 @@ open class IterableInboxViewController: UITableViewController {
     
     private var viewModels = [InboxMessageViewModel]()
 
-    private static func setup(instance: IterableInboxViewController) {
-        instance.refreshMessages()
-        NotificationCenter.default.addObserver(instance, selector: #selector(onInboxChanged(notification:)), name: .iterableInboxChanged, object: nil)
+    private func setup() {
+        refreshMessages()
+        NotificationCenter.default.addObserver(self, selector: #selector(onInboxChanged(notification:)), name: .iterableInboxChanged, object: nil)
     }
     
     deinit {
@@ -135,7 +134,6 @@ open class IterableInboxViewController: UITableViewController {
         cell.subTitleLbl?.text = viewModel.subTitle
         cell.unreadCircleView?.isHidden = viewModel.read
         
-        cell.iconImageView?.layer.cornerRadius = 5
         cell.iconImageView?.clipsToBounds = true
 
         if let imageUrlString = viewModel.imageUrl, let url = URL(string: imageUrlString) {
@@ -154,20 +152,20 @@ open class IterableInboxViewController: UITableViewController {
             cell.iconImageView?.isHidden = true
         }
         
-        cell.timeLbl?.isHidden = true
+        cell.createdAtLbl?.isHidden = true
     }
 
     private func loadImage(forMessageId messageId: String, fromUrl url: URL) {
         if let networkSession = IterableAPI.internalImplementation?.networkSession {
             NetworkHelper.getData(fromUrl: url, usingSession: networkSession).onSuccess {[weak self] in
-                self?.updateCell(forMessageId: messageId, withData: $0)
+                self?.updateCell(forMessageId: messageId, withImageData: $0)
             }.onError {
                 ITBError($0.localizedDescription)
             }
         }
     }
     
-    private func updateCell(forMessageId messageId: String, withData data: Data) {
+    private func updateCell(forMessageId messageId: String, withImageData data: Data) {
         guard let row = viewModels.firstIndex (where: { $0.iterableMessage.messageId == messageId }) else {
             return
         }
