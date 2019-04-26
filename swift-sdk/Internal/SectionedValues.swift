@@ -5,7 +5,9 @@
 //  Created by Jack Flintermann on 4/14/17.
 //  Copyright © 2017 jflinter. All rights reserved.
 //
-
+//  Modified by Tapash Majumder for XCode 10.2
+//  remove "public" from extension methods
+//
 /// SectionedValues represents, well, a bunch of sections and their associated values.
 /// You can think of it sort of like an "ordered dictionary", or an order of key-pairs.
 /// If you are diffing a multidimensional structure of values (what might normally be,
@@ -72,7 +74,7 @@ public extension SectionedValues where Section: Hashable {
     ///     should be sorted before the second. Used to sort the sections in the returned `SectionedValues`.
     ///   - sortValues: A function that compares two values, and returns true if the first
     ///     should be sorted before the second. Used to sort the values in each section of the returned `SectionedValues`.
-    public init(
+    init(
         values: [Value],
         valueToSection: ((Value) -> Section),
         sortSections: ((Section, Section) -> Bool),

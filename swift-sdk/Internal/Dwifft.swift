@@ -5,6 +5,9 @@
 //  Created by Jack Flintermann on 3/14/15.
 //  Copyright (c) 2015 jflinter. All rights reserved.
 //
+//  Modified by Tapash Majumder for XCode 10.2
+//  Remove "public" from extension methods
+//  Rename "Result" to "Resultx" to remove namespace collision.
 
 /// These get returned from calls to Dwifft.diff(). They represent insertions or deletions
 /// that need to happen to transform one array into another.
@@ -309,13 +312,13 @@ public extension Array where Element: Equatable {
 
     /// Deprecated in favor of `Dwifft.diff`.
     @available(*, deprecated)
-    public func diff(_ other: [Element]) -> [DiffStep<Element>] {
+    func diff(_ other: [Element]) -> [DiffStep<Element>] {
         return Dwifft.diff(self, other)
     }
 
     /// Deprecated in favor of `Dwifft.apply`.
     @available(*, deprecated)
-    public func apply(_ diff: [DiffStep<Element>]) -> [Element] {
+    func apply(_ diff: [DiffStep<Element>]) -> [Element] {
         return Dwifft.apply(diff: diff, toArray: self)
     }
 
