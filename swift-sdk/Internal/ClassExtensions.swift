@@ -43,3 +43,17 @@ public extension Bundle {
         return infoDictionary["CFBundleVersion"] as? String
     }
 }
+
+public extension UIColor {
+    convenience init?(hex: String) {
+        guard let int = Int(hex, radix: 16) else {
+            return nil
+        }
+
+        let r = Float(((int & 0xFF0000) >> 16)) / 255.0
+        let g = Float(((int & 0x00FF00) >> 8)) / 255.0
+        let b = Float(((int & 0x0000FF) >> 0)) / 255.0
+
+        self.init(red: CGFloat(r), green: CGFloat(g), blue: CGFloat(b), alpha: 1.0)
+    }
+}

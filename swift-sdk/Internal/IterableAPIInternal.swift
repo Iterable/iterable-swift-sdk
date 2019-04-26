@@ -528,7 +528,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     
     private var localStorage: LocalStorageProtocol
     
-    private lazy var networkSession: NetworkSessionProtocol = {
+    lazy var networkSession: NetworkSessionProtocol = {
         networkSessionProvider()
     }()
     

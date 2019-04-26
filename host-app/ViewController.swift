@@ -191,6 +191,43 @@ class ViewController: UIViewController {
         mockInAppSynchronizer.mockMessagesAvailableFromServer(messages: [message])
     }
 
+    @IBAction func showInboxTap(_ sender: UIButton) {
+        ITBInfo()
+        
+        let messageId = "zeeMessageId"
+        let html = """
+            <a href="http://website/resource#something">Click Me</a>
+        """
+        let content = IterableHtmlInAppContent(edgeInsets: UIEdgeInsets(top: -1, left: 10, bottom: -1, right: 10), backgroundAlpha: 0.5, html: html)
+        let inboxMetadata = IterableInboxMetadata(title: "Title #1", subTitle: "Subtitle #1", icon: nil)
+        let message = IterableInAppMessage(messageId: messageId, campaignId: "zeeCampaignId", trigger: IterableInAppTrigger(dict: ["type" : "never"]), content: content, saveToInbox: true, inboxMetadata: inboxMetadata)
+        
+        let config = IterableConfig()
+        let mockUrlDelegate = MockUrlDelegate(returnValue: false) // we don't handle, so the url will be opened
+        config.urlDelegate = mockUrlDelegate
+        
+        let mockUrlOpener = MockUrlOpener() { (url) in
+            self.statusLbl.text = url.absoluteString
+        }
+        
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        IterableAPI.initializeForTesting(apiKey: "apiKey",
+                                         config: config,
+                                         networkSession: MockNetworkSession(),
+                                         inAppSynchronizer: mockInAppSynchronizer,
+                                         inAppDisplayer: InAppDisplayer(),
+                                         urlOpener: mockUrlOpener)
+
+        mockInAppSynchronizer.mockMessagesAvailableFromServer(messages: [message])
+
+        sleep(2)
+        
+        let viewController = IterableInboxViewController(style: .plain)
+        present(viewController, animated: true) {
+            ITBInfo("Presented Inbox")
+        }
+        
+    }
     
     @available(iOS 10.0, *)
     private func setupNotifications(onCompletion: (() -> Void)? = nil) {

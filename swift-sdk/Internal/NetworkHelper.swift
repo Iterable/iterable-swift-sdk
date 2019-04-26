@@ -17,8 +17,8 @@ struct SendRequestError : Error {
         self.data = data
     }
     
-    static func createErroredFuture(reason: String? = nil) -> Future<SendRequestValue> {
-        return Promise<SendRequestValue>(error: SendRequestError(reason: reason))
+    static func createErroredFuture<T>(reason: String? = nil) -> Future<T> {
+        return Promise<T>(error: SendRequestError(reason: reason))
     }
 }
 
@@ -31,6 +31,7 @@ extension SendRequestError : LocalizedError {
 protocol NetworkSessionProtocol {
     typealias CompletionHandler = (Data?, URLResponse?, Error?) -> Void
     func makeRequest(_ request: URLRequest, completionHandler: @escaping CompletionHandler)
+    func makeDataRequest(with url: URL, completionHandler: @escaping CompletionHandler)
 }
 
 extension URLSession : NetworkSessionProtocol {
@@ -40,9 +41,36 @@ extension URLSession : NetworkSessionProtocol {
         }
         task.resume()
     }
+
+    func makeDataRequest(with url: URL, completionHandler: @escaping CompletionHandler) {
+        let task = dataTask(with: url) { (data, response, error) in
+            completionHandler(data, response, error)
+        }
+        task.resume()
+    }
 }
 
 struct NetworkHelper {
+    static func getData(fromUrl url: URL, usingSession networkSession: NetworkSessionProtocol) -> Future<Data> {
+        let promise = Promise<Data>()
+        
+        networkSession.makeDataRequest(with: url) { (data, response, error) in
+            let result = createDataResultFromNetworkResponse(data: data, response: response, error: error)
+            switch (result) {
+            case .value(let value):
+                DispatchQueue.main.async {
+                    promise.resolve(with: value)
+                }
+            case .error(let error):
+                DispatchQueue.main.async {
+                    promise.reject(with: error)
+                }
+            }
+        }
+        
+        return promise
+    }
+    
     static func sendRequest(_ request: URLRequest, usingSession networkSession: NetworkSessionProtocol) -> Future<SendRequestValue>  {
         let promise = Promise<SendRequestValue>()
         
@@ -113,4 +141,16 @@ struct NetworkHelper {
             return .error(SendRequestError(reason: "Received non-200 response: \(responseCode)", data: data))
         }
     }
+    
+    static func createDataResultFromNetworkResponse(data: Data?, response: URLResponse?, error: Error?) -> Result<Data> {
+        if let error = error {
+            return .error(SendRequestError(reason: "\(error.localizedDescription)"))
+        }
+        guard let data = data else {
+            return .error(SendRequestError(reason: "No data"))
+        }
+        
+        return .value(data)
+    }
+
 }

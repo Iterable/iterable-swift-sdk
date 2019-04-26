@@ -115,7 +115,9 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
                                                             callback: clickCallback,
                                                             trackParams: IterableNotificationMetadata.metadata(fromInAppOptions: message.messageId),
                                                             isModal: false)
-        return IterableHtmlMessageViewController(parameters: parameters)
+        let viewController = IterableHtmlMessageViewController(parameters: parameters)
+        viewController.navigationItem.title = message.inboxMetadata?.title
+        return viewController
     }
     
     func show(message: IterableInAppMessage) {

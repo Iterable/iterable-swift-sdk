@@ -153,6 +153,7 @@ public class MockPushTracker : NSObject, PushTrackerProtocol {
 }
 
 class MockNetworkSession: NetworkSessionProtocol {
+    var url: URL?
     var request: URLRequest?
     var callback: ((Data?, URLResponse?, Error?) -> Void)?
     
@@ -188,6 +189,16 @@ class MockNetworkSession: NetworkSessionProtocol {
         }
     }
     
+    func makeDataRequest(with url: URL, completionHandler: @escaping NetworkSessionProtocol.CompletionHandler) {
+        DispatchQueue.main.async {
+            self.url = url
+            let response = HTTPURLResponse(url: url, statusCode: self.statusCode, httpVersion: "HTTP/1.1", headerFields: [:])
+            completionHandler(self.data, response, self.error)
+            
+            self.callback?(self.data, response, self.error)
+        }
+    }
+    
     func getRequestBody() -> [AnyHashable : Any] {
         return MockNetworkSession.json(fromData: request!.httpBody!)
     }
@@ -201,6 +212,14 @@ class NoNetworkNetworkSession: NetworkSessionProtocol {
     func makeRequest(_ request: URLRequest, completionHandler: @escaping NetworkSessionProtocol.CompletionHandler) {
         DispatchQueue.main.async {
             let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: [:])
+            let error = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: nil)
+            completionHandler(try! JSONSerialization.data(withJSONObject: [:], options: []), response, error)
+        }
+    }
+
+    func makeDataRequest(with url: URL, completionHandler: @escaping NetworkSessionProtocol.CompletionHandler) {
+        DispatchQueue.main.async {
+            let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: [:])
             let error = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: nil)
             completionHandler(try! JSONSerialization.data(withJSONObject: [:], options: []), response, error)
         }
