@@ -22,7 +22,7 @@ protocol IterableInAppManagerProtocolInternal : IterableInAppManagerProtocol, In
 }
 
 class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
-    init(synchronizer: InAppSynchronizerProtocol,
+    init(fetcher: InAppFetcherProtocol,
          displayer: InAppDisplayerProtocol,
          persister: InAppPersistenceProtocol,
          inAppDelegate: IterableInAppDelegate,
@@ -34,7 +34,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
          dateProvider: DateProviderProtocol,
          retryInterval: Double) {
         ITBInfo()
-        self.synchronizer = synchronizer
+        self.fetcher = fetcher
         self.displayer = displayer
         self.persister = persister
         self.inAppDelegate = inAppDelegate
@@ -165,7 +165,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     private func synchronize() {
         ITBInfo()
         syncQueue.async {
-            self.synchronizer.sync()
+            self.fetcher.fetch()
                 .onSuccess{ self.handleInAppMessagesObtainedFromServer(messages: $0) }
                 .onError { ITBError($0.localizedDescription) }
             self.lastSyncTime = self.dateProvider.currentDate
@@ -475,9 +475,13 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         return message.consumed == false && isExpired(message: message, currentDate: currentDate) == false
     }
     
-    weak var internalApi: IterableAPIInternal?
+    weak var internalApi: IterableAPIInternal? {
+        didSet {
+            fetcher.internalApi = internalApi
+        }
+    }
 
-    private var synchronizer: InAppSynchronizerProtocol // this is mutable because we need to set internalApi
+    private var fetcher: InAppFetcherProtocol // this is mutable because we need to set internalApi
     private let displayer: InAppDisplayerProtocol
     private let inAppDelegate: IterableInAppDelegate
     private let urlDelegate: IterableURLDelegate?

@@ -669,7 +669,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
          networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
          notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
          localStorage: LocalStorageProtocol = UserDefaultsLocalStorage(),
-         inAppSynchronizer: InAppSynchronizerProtocol = InAppSynchronizer(),
+         inAppFetcher: InAppFetcherProtocol = InAppFetcher(),
          inAppDisplayer: InAppDisplayerProtocol = InAppDisplayer(),
          inAppPersister: InAppPersistenceProtocol = InAppFilePersister(),
          urlOpener: UrlOpenerProtocol = AppUrlOpener(),
@@ -688,7 +688,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         self.launchOptions = launchOptions
 
         // setup managers
-        inAppManager = InAppManager(synchronizer: inAppSynchronizer,
+        inAppManager = InAppManager(fetcher: inAppFetcher,
                                     displayer: inAppDisplayer,
                                     persister: inAppPersister,
                                     inAppDelegate: config.inAppDelegate,

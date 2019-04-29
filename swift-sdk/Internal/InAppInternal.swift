@@ -6,9 +6,11 @@
 import Foundation
 
 ///
-protocol InAppSynchronizerProtocol {
+protocol InAppFetcherProtocol {
+    //
+    var internalApi: IterableAPIInternal? { get set }
     // Fetch from server and sync
-    func sync() -> Future<[IterableInAppMessage]>
+    func fetch() -> Future<[IterableInAppMessage]>
 }
 
 /// For callbacks when silent push notifications arrive
@@ -22,14 +24,16 @@ extension IterableInAppTriggerType {
     static let undefinedTriggerType = IterableInAppTriggerType.never // undefined is what we select if payload has new trigger type
 }
 
-class InAppSynchronizer : InAppSynchronizerProtocol {
+class InAppFetcher : InAppFetcherProtocol {
     init() {
         ITBInfo()
     }
     
-    func sync() -> Future<[IterableInAppMessage]> {
+    weak var internalApi: IterableAPIInternal?
+    
+    func fetch() -> Future<[IterableInAppMessage]> {
         ITBInfo()
-        guard let internalApi = IterableAPI.internalImplementation else {
+        guard let internalApi = internalApi else {
             ITBError("Invalid state: expected InternalApi")
             return Promise(error: IterableError.general(description: "Invalid state: expected InternalApi"))
         }

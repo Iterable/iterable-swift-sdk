@@ -226,7 +226,9 @@ class NoNetworkNetworkSession: NetworkSessionProtocol {
     }
 }
 
-class MockInAppSynchronizer : InAppSynchronizerProtocol {
+class MockInAppFetcher : InAppFetcherProtocol {
+    weak var internalApi: IterableAPIInternal?
+
     var syncCallback: (() -> Void)?
     
     init(messages: [IterableInAppMessage] = []) {
@@ -236,7 +238,7 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
         }
     }
     
-    func sync() -> Future<[IterableInAppMessage]> {
+    func fetch() -> Future<[IterableInAppMessage]> {
         ITBInfo()
         
         syncCallback?()
