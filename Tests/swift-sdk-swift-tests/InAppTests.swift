@@ -1019,7 +1019,33 @@ class InAppTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-    
+
+    func testInboxChangedIsCalledWhenInAppIsRemovedInServer() {
+        let expectation1 = expectation(description: "testInboxChangedIsCalledWhenInAppIsRemovedInServer")
+        
+        let notification = """
+        {
+            "itbl" : {
+                "messageId" : "background_notification",
+                "isGhostPush" : true
+            },
+            "notificationType" : "InAppRemove",
+            "messageId" : "messageId"
+        }
+        """.toJsonDict()
+        
+        let mockNotificationCenter = MockNotificationCenter()
+        mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) {
+            expectation1.fulfill()
+        }
+        
+        IterableAPI.initializeForTesting(notificationCenter: mockNotificationCenter)
+        
+        IterableAppIntegration.implementation?.application(MockApplicationStateProvider(applicationState: .background), didReceiveRemoteNotification: notification, fetchCompletionHandler: nil)
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+
     func testSyncIsCalledOnLogin() {
         let expectation1 = expectation(description: "testSyncIsCalledOnLogin")
         expectation1.expectedFulfillmentCount = 2 // once on initialization

@@ -149,7 +149,6 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         self.callbackQueue.async {
             self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
         }
-
     }
 
     @objc private func onAppEnteredForeground(notification: Notification) {
@@ -518,6 +517,9 @@ extension InAppManager : InAppNotifiable {
                 self.messagesMap.removeValue(forKey: messageId)
                 self.persister.persist(self.messagesMap.values)
             }
+        }
+        self.callbackQueue.async {
+            self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
         }
     }
 }
