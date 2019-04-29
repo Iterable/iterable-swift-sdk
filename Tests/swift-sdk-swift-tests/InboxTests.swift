@@ -121,7 +121,7 @@ class InboxTests: XCTestCase {
             XCTAssertEqual(messages[0].read, false)
             XCTAssertEqual(messages[1].read, true)
             
-            let unreadMessages = IterableAPI.inAppManager.getUnreadInboxMessages()
+            let unreadMessages = IterableAPI.inAppManager.getInboxMessages().filter { $0.read == false }
             XCTAssertEqual(IterableAPI.inAppManager.getUnreadInboxMessagesCount(), 1)
             XCTAssertEqual(unreadMessages.count, 1)
             XCTAssertEqual(unreadMessages[0].read, false)

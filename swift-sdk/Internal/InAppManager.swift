@@ -90,12 +90,8 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         return messages
     }
     
-    func getUnreadInboxMessages() -> [IterableInAppMessage] {
-        return getInboxMessages().filter { $0.read == false }
-    }
-    
     func getUnreadInboxMessagesCount() -> Int {
-        return getUnreadInboxMessages().count
+        return getInboxMessages().filter { $0.read == false }.count
     }
     
     func createInboxMessageViewController(for message: IterableInAppMessage) -> UIViewController? {
@@ -540,10 +536,6 @@ class EmptyInAppManager : IterableInAppManagerProtocolInternal {
     }
     
     func getInboxMessages() -> [IterableInAppMessage] {
-        return []
-    }
-    
-    func getUnreadInboxMessages() -> [IterableInAppMessage] {
         return []
     }
     
