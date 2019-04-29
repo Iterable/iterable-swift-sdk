@@ -498,7 +498,7 @@ public final class IterableAPI : NSObject {
     @objc public static var inAppManager: IterableInAppManagerProtocol {
         guard let internalImplementation = internalImplementation else {
             ITBError("IterableAPI is not initialized yet. InApp will not work now.")
-            assertionFailure("IterableAPI is not initialized yet. InApp will not work now.")
+            assertionFailure("IterableAPI is not initialized yet. In-app will not work now.")
             return EmptyInAppManager()
         }
         return internalImplementation.inAppManager
