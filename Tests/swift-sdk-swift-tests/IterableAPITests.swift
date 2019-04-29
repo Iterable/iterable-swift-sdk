@@ -101,8 +101,8 @@ class IterableAPITests: XCTestCase {
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
     
-    func testUpdateUser() {
-        let expectation = XCTestExpectation(description: "testUpdateUser")
+    func testUpdateUserWithEmail() {
+        let expectation = XCTestExpectation(description: "testUpdateUserWithEmail")
         
         let networkSession = MockNetworkSession(statusCode: 200)
         IterableAPI.initialize(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
@@ -124,6 +124,34 @@ class IterableAPITests: XCTestCase {
             expectation.fulfill()
         }
 
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+
+    func testUpdateUserWithUserId() {
+        let expectation = XCTestExpectation(description: "testUpdateUserWithUserId")
+        
+        let userId = UUID().uuidString
+        let networkSession = MockNetworkSession(statusCode: 200)
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
+        IterableAPI.userId = userId
+        let dataFields: Dictionary<String, String> = ["var1" : "val1", "var2" : "val2"]
+        IterableAPI.updateUser(dataFields, mergeNestedObjects: true, onSuccess: {(json) in
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_UPDATE_USER, queryParams: [(name: "api_key", IterableAPITests.apiKey)])
+            let body = networkSession.getRequestBody()
+            TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_USER_ID, andValue: userId, inDictionary: body)
+            TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_PREFER_USER_ID, andValue: true, inDictionary: body)
+            TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_MERGE_NESTED, andValue: true, inDictionary: body)
+            TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_DATA_FIELDS, andValue: dataFields, inDictionary: body)
+            expectation.fulfill()
+        }) {(reason, _) in
+            if let reason = reason {
+                XCTFail("encountered error: \(reason)")
+            } else {
+                XCTFail("encountered error")
+            }
+            expectation.fulfill()
+        }
+        
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
 

@@ -198,6 +198,9 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         args[.ITBL_KEY_DATA_FIELDS] = dataFields
         args[.ITBL_KEY_MERGE_NESTED] = mergeNested
         addEmailOrUserId(args: &args)
+        if email == nil && userId != nil {
+            args[.ITBL_KEY_PREFER_USER_ID] = true
+        }
 
         if let request = createPostRequest(forPath: .ITBL_PATH_UPDATE_USER, withBody: args) {
             sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
