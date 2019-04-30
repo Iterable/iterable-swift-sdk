@@ -5,6 +5,8 @@
 //  Created by Jack Flintermann on 3/13/15.
 //  Copyright (c) 2015 jflinter. All rights reserved.
 //
+//  Modified by Tapash Majumder on 2019-04-30
+//  Added method to allow rows to SingleSectionTableViewDiffCalculator without firing an event.
 
 #if os(iOS) || os(tvOS)
 
@@ -129,6 +131,11 @@ public final class SingleSectionTableViewDiffCalculator<Value: Equatable> {
         }
     }
 
+    /// When you want to update without firing an event
+    internal func setRowsWithoutEvent(_ rows: [Value]) {
+        internalDiffCalculator._sectionedValues = SectionedValues([(0, rows)])
+    }
+    
     /// Initializes a new diff calculator.
     ///
     /// - Parameters:
@@ -143,7 +150,6 @@ public final class SingleSectionTableViewDiffCalculator<Value: Equatable> {
     }
 
     private let internalDiffCalculator: TableViewDiffCalculator<Int, Value>
-
 }
 
 /// If your collection view only has a single section, or you only want to power a single section of it with Dwifft,

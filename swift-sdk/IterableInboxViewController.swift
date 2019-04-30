@@ -45,11 +45,11 @@ open class IterableInboxViewController: UITableViewController {
 
     // MARK: - Table view data source
     override open func numberOfSections(in tableView: UITableView) -> Int {
-        return diffCalculator?.numberOfSections() ?? 0
+        return 1
     }
 
     override open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return diffCalculator?.numberOfObjects(inSection: section) ?? 0
+        return diffCalculator?.rows.count ?? 0
     }
 
     override open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -57,7 +57,7 @@ open class IterableInboxViewController: UITableViewController {
             fatalError("Please make sure that an the nib: \(cellNibName!) is present in the main bundle")
         }
 
-        if let viewModel = diffCalculator?.value(atIndexPath: indexPath) {
+        if let viewModel = diffCalculator?.rows[indexPath.row] {
             configure(cell: cell, forViewModel: viewModel)
         }
 
@@ -74,7 +74,7 @@ open class IterableInboxViewController: UITableViewController {
     override open func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             // Delete the row from the data source
-            guard let iterableMessage = diffCalculator?.value(atIndexPath: indexPath).iterableMessage else {
+            guard let iterableMessage = diffCalculator?.rows[indexPath.row].iterableMessage else {
                 return
             }
             IterableAPI.inAppManager.remove(message: iterableMessage)
@@ -82,7 +82,7 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     override open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        guard let iterableMessage = diffCalculator?.value(atIndexPath: indexPath).iterableMessage else {
+        guard let iterableMessage = diffCalculator?.rows[indexPath.row].iterableMessage else {
             return
         }
         if let viewController = IterableAPI.inAppManager.createInboxMessageViewController(for: iterableMessage) {
@@ -93,8 +93,8 @@ open class IterableInboxViewController: UITableViewController {
 
     private let iterableCellNibName = "IterableInboxCell"
     
-    private lazy var diffCalculator: TableViewDiffCalculator<Int, InboxMessageViewModel>? = {
-        TableViewDiffCalculator(tableView: self.tableView, initialSectionedValues: SectionedValues([]))
+    private lazy var diffCalculator: SingleSectionTableViewDiffCalculator<InboxMessageViewModel>? = {
+        SingleSectionTableViewDiffCalculator(tableView: self.tableView)
     }()
     
     private func setup() {
@@ -124,7 +124,7 @@ open class IterableInboxViewController: UITableViewController {
         ITBInfo()
         DispatchQueue.main.async { [weak self] in
             self?.updateUnreadBadgeCount()
-            self?.diffCalculator?.sectionedValues = IterableInboxViewController.createSectionedValues(fromInboxMessages: IterableAPI.inAppManager.getInboxMessages())
+            self?.diffCalculator?.rows = IterableAPI.inAppManager.getInboxMessages().map { InboxMessageViewModel.from(message: $0) }
         }
     }
     
@@ -177,7 +177,7 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     private func updateCell(forMessageId messageId: String, withImageData data: Data) {
-        guard var viewModels = diffCalculator?.sectionedValues[0].1 else {
+        guard var viewModels = diffCalculator?.rows else {
             return
         }
         guard let row = viewModels.firstIndex (where: { $0.iterableMessage.messageId == messageId }) else {
@@ -187,7 +187,7 @@ open class IterableInboxViewController: UITableViewController {
         viewModel.imageData = data
         viewModels[row] = viewModel
         
-        diffCalculator?._sectionedValues = SectionedValues([(0, viewModels)])
+        diffCalculator?.setRowsWithoutEvent(viewModels)
 
         tableView.reloadRows(at: [IndexPath(row: row, section: 0)], with: .automatic)
     }
