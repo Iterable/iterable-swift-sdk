@@ -44,8 +44,8 @@ public final class IterableAPI : NSObject {
     public static func initialize(apiKey: String,
                                   launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
                                   config: IterableConfig = IterableConfig()) {
-        internalImplementation = IterableAPIInternal.initialize(apiKey: apiKey, launchOptions: launchOptions, config:config)
-        NotificationCenter.default.post(name: .iterableAppReady, object: self, userInfo: nil)
+        internalImplementation = IterableAPIInternal(apiKey: apiKey, launchOptions: launchOptions, config:config)
+        internalImplementation?.start()
     }
     
     /**
@@ -498,6 +498,7 @@ public final class IterableAPI : NSObject {
     @objc public static var inAppManager: IterableInAppManagerProtocol {
         guard let internalImplementation = internalImplementation else {
             ITBError("IterableAPI is not initialized yet. InApp will not work now.")
+            assertionFailure("IterableAPI is not initialized yet. In-app will not work now.")
             return EmptyInAppManager()
         }
         return internalImplementation.inAppManager

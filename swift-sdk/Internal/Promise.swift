@@ -13,6 +13,19 @@ public enum Result<Value> {
     case error(Error)
 }
 
+public enum IterableError : Error {
+    case general(description: String)
+}
+
+extension IterableError : LocalizedError {
+    public var localizedDescription: String {
+        switch self {
+        case .general(let description):
+            return description
+        }
+    }
+}
+
 // This has only two public methods
 // either there is a success with result
 // or there is a failure with error

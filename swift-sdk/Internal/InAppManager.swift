@@ -15,18 +15,14 @@ protocol NotificationCenterProtocol {
 extension NotificationCenter : NotificationCenterProtocol {
 }
 
-protocol IterableInAppManagerProtocolInternal : IterableInAppManagerProtocol {
-    func synchronize()
+// This is internal. Do not expose
+protocol IterableInAppManagerProtocolInternal : IterableInAppManagerProtocol, InAppNotifiable {
+    var internalApi: IterableAPIInternal? { get set }
+    func start()
 }
 
 class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
-    weak var internalApi: IterableAPIInternal? {
-        didSet {
-            self.synchronizer.internalApi = internalApi
-        }
-    }
-
-    init(synchronizer: InAppSynchronizerProtocol,
+    init(fetcher: InAppFetcherProtocol,
          displayer: InAppDisplayerProtocol,
          persister: InAppPersistenceProtocol,
          inAppDelegate: IterableInAppDelegate,
@@ -38,7 +34,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
          dateProvider: DateProviderProtocol,
          retryInterval: Double) {
         ITBInfo()
-        self.synchronizer = synchronizer
+        self.fetcher = fetcher
         self.displayer = displayer
         self.persister = persister
         self.inAppDelegate = inAppDelegate
@@ -54,22 +50,25 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         
         self.initializeMessagesMap()
 
-        self.synchronizer.inAppSyncDelegate = self
-        
         self.notificationCenter.addObserver(self,
                                        selector: #selector(onAppEnteredForeground(notification:)),
                                        name: UIApplication.didBecomeActiveNotification,
                                        object: nil)
-        self.notificationCenter.addObserver(self,
-                                            selector: #selector(onAppReady(notification:)),
-                                            name: .iterableAppReady,
-                                            object: nil)
-
     }
     
     deinit {
         ITBInfo()
         notificationCenter.removeObserver(self)
+    }
+    
+    func start() {
+        ITBInfo()
+        if self.messagesMap.values.filter({$0.saveToInbox == true}).count > 0 {
+            self.callbackQueue.async {
+                self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
+            }
+        }
+        synchronize()
     }
     
     func getMessages() -> [IterableInAppMessage] {
@@ -91,12 +90,8 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         return messages
     }
     
-    func getUnreadInboxMessages() -> [IterableInAppMessage] {
-        return getInboxMessages().filter { $0.read == false }
-    }
-    
     func getUnreadInboxMessagesCount() -> Int {
-        return getUnreadInboxMessages().count
+        return getInboxMessages().filter { $0.read == false }.count
     }
     
     func createInboxMessageViewController(for message: IterableInAppMessage) -> UIViewController? {
@@ -140,14 +135,6 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         removePrivate(message: message)
     }
     
-    func synchronize() {
-        ITBInfo()
-        syncQueue.async {
-            self.synchronizer.sync()
-            self.lastSyncTime = self.dateProvider.currentDate
-        }
-    }
-    
     func set(read: Bool, forMessage message: IterableInAppMessage) {
         updateQueue.sync {
             let toUpdate = message
@@ -158,19 +145,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         self.callbackQueue.async {
             self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
         }
-
     }
-
-    @objc private func onAppReady(notification: Notification) {
-        ITBInfo()
-        if self.messagesMap.values.filter({$0.saveToInbox == true}).count > 0 {
-            self.callbackQueue.async {
-                self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
-            }
-        }
-        synchronize()
-    }
-
 
     @objc private func onAppEnteredForeground(notification: Notification) {
         ITBInfo()
@@ -179,6 +154,39 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
             synchronize()
         } else {
             ITBInfo("can't sync now, need to wait: \(waitTime)")
+        }
+    }
+    
+    private func synchronize() {
+        ITBInfo()
+        syncQueue.async {
+            self.fetcher.fetch()
+                .onSuccess{ self.handleInAppMessagesObtainedFromServer(messages: $0) }
+                .onError { ITBError($0.localizedDescription) }
+            self.lastSyncTime = self.dateProvider.currentDate
+        }
+    }
+    
+    private func handleInAppMessagesObtainedFromServer(messages: [IterableInAppMessage]) {
+        ITBDebug()
+        
+        updateQueue.async {
+            // Remove messages that are no present in server
+            let deletedInboxCount = self.removeDeletedMessages(messagesFromServer: messages)
+            
+            // add new ones
+            let addedInboxCount = self.addNewMessages(messagesFromServer: messages)
+            
+            self.persister.persist(self.messagesMap.values)
+            
+            if deletedInboxCount + addedInboxCount > 0 {
+                self.callbackQueue.async {
+                    self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
+                }
+            }
+            
+            // now process in app messages
+            self.processNextTriggeredMessage()
         }
     }
     
@@ -221,151 +229,6 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
 
         updateMessage(message, didProcessTrigger: true, consumed: shouldConsume)
     }
-
-    private func handle(clickedUrl url: URL?, forMessage message: IterableInAppMessage) {
-        guard let theUrl = url, let inAppClickedUrl = InAppHelper.parse(inAppUrl: theUrl) else {
-            ITBError("Could not parse url: \(url?.absoluteString ?? "nil")")
-            return
-        }
-        
-        switch (inAppClickedUrl) {
-        case .iterableCustomAction(name: let iterableCustomActionName):
-            handleIterableCustomAction(name: iterableCustomActionName, forMessage: message)
-            break
-        case .customAction(name: let customActionName):
-            handleUrlOrAction(urlOrAction: customActionName)
-            break
-        case .localResource(name: let localResourceName):
-            handleUrlOrAction(urlOrAction: localResourceName)
-            break
-        case .regularUrl(_):
-            handleUrlOrAction(urlOrAction: theUrl.absoluteString)
-        }
-    }
-    
-    private func handleIterableCustomAction(name: String, forMessage message: IterableInAppMessage) {
-        guard let iterableCustomActionName = IterableCustomActionName(rawValue: name) else {
-            return
-        }
-
-        switch iterableCustomActionName {
-        case .delete:
-            remove(message: message)
-            break
-        case .dismiss:
-            break
-        }
-    }
-    
-    private func handleUrlOrAction(urlOrAction: String) {
-        guard let action = createAction(fromUrlOrAction: urlOrAction) else {
-            ITBError("Could not create action from: \(urlOrAction)")
-            return
-        }
-        
-        let context = IterableActionContext(action: action, source: .inApp)
-        DispatchQueue.main.async {
-            IterableActionRunner.execute(action: action,
-                                         context: context,
-                                         urlHandler: IterableUtil.urlHandler(fromUrlDelegate: self.urlDelegate, inContext: context),
-                                         customActionHandler: IterableUtil.customActionHandler(fromCustomActionDelegate: self.customActionDelegate, inContext: context),
-                                         urlOpener: self.urlOpener)
-        }
-    }
-    
-    private func createAction(fromUrlOrAction urlOrAction: String) -> IterableAction? {
-        if let parsedUrl = URL(string: urlOrAction), let _ = parsedUrl.scheme {
-            return IterableAction.actionOpenUrl(fromUrlString: urlOrAction)
-        } else {
-            return IterableAction.action(fromDictionary: ["type" : urlOrAction])
-        }
-    }
-    
-    private func initializeMessagesMap() {
-        let messages = persister.getMessages()
-        for message in messages {
-            messagesMap[message.messageId] = message
-        }
-    }
-
-    private func removePrivate(message: IterableInAppMessage) {
-        ITBInfo()
-        
-        updateMessage(message, didProcessTrigger: true, consumed: true)
-        self.internalApi?.inAppConsume(message.messageId)
-        self.callbackQueue.async {
-            self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
-        }
-    }
-
-    private static func isExpired(message: IterableInAppMessage, currentDate: Date) -> Bool {
-        guard let expiresAt = message.expiresAt else {
-            return false
-        }
-        
-        return currentDate >= expiresAt
-    }
-    
-    fileprivate static func isValid(message: IterableInAppMessage, currentDate: Date) -> Bool {
-        return message.consumed == false && isExpired(message: message, currentDate: currentDate) == false
-    }
-    
-    private var synchronizer: InAppSynchronizerProtocol // this is mutable because we need to set internalApi
-    private let displayer: InAppDisplayerProtocol
-    private let inAppDelegate: IterableInAppDelegate
-    private let urlDelegate: IterableURLDelegate?
-    private let customActionDelegate: IterableCustomActionDelegate?
-    private let urlOpener: UrlOpenerProtocol
-    private let applicationStateProvider: ApplicationStateProviderProtocol
-    private let notificationCenter: NotificationCenterProtocol
-    
-    private let persister: InAppPersistenceProtocol
-    private var messagesMap = OrderedDictionary<String, IterableInAppMessage>() // This is mutable
-    private let dateProvider: DateProviderProtocol
-    private let retryInterval: TimeInterval // in seconds, if a message is already showing how long to wait?
-    private var lastDismissedTime: Date? = nil
-    private let updateQueue = DispatchQueue(label: "UpdateQueue")
-    private let scheduleQueue = DispatchQueue(label: "ScheduleQueue")
-    private let syncQueue = DispatchQueue(label: "SyncQueue")
-    private let callbackQueue = DispatchQueue(label: "CallbackQueue")
-    private var lastSyncTime: Date? = nil
-    private let moveToForegroundSyncInterval: Double = 1.0 * 60.0 // don't sync within sixty seconds
-}
-
-extension InAppManager : InAppSynchronizerDelegate {
-    func onInAppMessagesAvailable(messages: [IterableInAppMessage]) {
-        ITBDebug()
-
-        updateQueue.async {
-            // Remove messages that are no present in server
-            let deletedInboxCount = self.removeDeletedMessages(messagesFromServer: messages)
-            
-            // add new ones
-            let addedInboxCount = self.addNewMessages(messagesFromServer: messages)
-            
-            self.persister.persist(self.messagesMap.values)
-            
-            if deletedInboxCount + addedInboxCount > 0 {
-                self.callbackQueue.async {
-                    self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
-                }
-            }
-            
-            // now process in app messages
-            self.processNextTriggeredMessage()
-        }
-    }
-    
-    func onInAppRemoved(messageId: String) {
-        ITBInfo()
-        
-        updateQueue.async {
-            if let _ = self.messagesMap.filter({$0.key == messageId}).first {
-                self.messagesMap.removeValue(forKey: messageId)
-                self.persister.persist(self.messagesMap.values)
-            }
-        }
-    }
     
     // This method schedules next triggered message after showing a message
     private func scheduleNextInAppMessage() {
@@ -386,7 +249,7 @@ extension InAppManager : InAppSynchronizerDelegate {
     
     private func processNextTriggeredMessage() {
         ITBDebug()
-
+        
         guard let message = getFirstProcessableTriggeredMessage() else {
             ITBDebug("No message to process")
             return
@@ -398,7 +261,7 @@ extension InAppManager : InAppSynchronizerDelegate {
         DispatchQueue.main.async {
             if self.isOkToShowNow(message: message) {
                 self.updateMessage(message, didProcessTrigger: true)
-
+                
                 if self.inAppDelegate.onNew(message: message) == .show {
                     ITBDebug("delegate returned show")
                     let consume = !message.saveToInbox
@@ -481,7 +344,7 @@ extension InAppManager : InAppSynchronizerDelegate {
             return 0.0
         }
     }
-
+    
     // returns count of inbox messages (save to inbox)
     private func addNewMessages(messagesFromServer messages: [IterableInAppMessage]) -> Int {
         var inboxCount = 0
@@ -517,9 +380,152 @@ extension InAppManager : InAppSynchronizerDelegate {
             }
         }
     }
+
+    private func handle(clickedUrl url: URL?, forMessage message: IterableInAppMessage) {
+        guard let theUrl = url, let inAppClickedUrl = InAppHelper.parse(inAppUrl: theUrl) else {
+            ITBError("Could not parse url: \(url?.absoluteString ?? "nil")")
+            return
+        }
+        
+        switch (inAppClickedUrl) {
+        case .iterableCustomAction(name: let iterableCustomActionName):
+            handleIterableCustomAction(name: iterableCustomActionName, forMessage: message)
+            break
+        case .customAction(name: let customActionName):
+            handleUrlOrAction(urlOrAction: customActionName)
+            break
+        case .localResource(name: let localResourceName):
+            handleUrlOrAction(urlOrAction: localResourceName)
+            break
+        case .regularUrl(_):
+            handleUrlOrAction(urlOrAction: theUrl.absoluteString)
+        }
+    }
+    
+    private func handleIterableCustomAction(name: String, forMessage message: IterableInAppMessage) {
+        guard let iterableCustomActionName = IterableCustomActionName(rawValue: name) else {
+            return
+        }
+
+        switch iterableCustomActionName {
+        case .delete:
+            remove(message: message)
+            break
+        case .dismiss:
+            break
+        }
+    }
+    
+    private func handleUrlOrAction(urlOrAction: String) {
+        guard let action = createAction(fromUrlOrAction: urlOrAction) else {
+            ITBError("Could not create action from: \(urlOrAction)")
+            return
+        }
+        
+        let context = IterableActionContext(action: action, source: .inApp)
+        DispatchQueue.main.async {
+            IterableActionRunner.execute(action: action,
+                                         context: context,
+                                         urlHandler: IterableUtil.urlHandler(fromUrlDelegate: self.urlDelegate, inContext: context),
+                                         customActionHandler: IterableUtil.customActionHandler(fromCustomActionDelegate: self.customActionDelegate, inContext: context),
+                                         urlOpener: self.urlOpener)
+        }
+    }
+    
+    private func createAction(fromUrlOrAction urlOrAction: String) -> IterableAction? {
+        if let parsedUrl = URL(string: urlOrAction), let _ = parsedUrl.scheme {
+            return IterableAction.actionOpenUrl(fromUrlString: urlOrAction)
+        } else {
+            return IterableAction.action(fromDictionary: ["type" : urlOrAction])
+        }
+    }
+    
+    private func initializeMessagesMap() {
+        let messages = persister.getMessages()
+        for message in messages {
+            messagesMap[message.messageId] = message
+        }
+    }
+
+    // From client side
+    private func removePrivate(message: IterableInAppMessage) {
+        ITBInfo()
+        
+        updateMessage(message, didProcessTrigger: true, consumed: true)
+        self.internalApi?.inAppConsume(message.messageId)
+        self.callbackQueue.async {
+            self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
+        }
+    }
+
+    private static func isExpired(message: IterableInAppMessage, currentDate: Date) -> Bool {
+        guard let expiresAt = message.expiresAt else {
+            return false
+        }
+        
+        return currentDate >= expiresAt
+    }
+    
+    fileprivate static func isValid(message: IterableInAppMessage, currentDate: Date) -> Bool {
+        return message.consumed == false && isExpired(message: message, currentDate: currentDate) == false
+    }
+    
+    weak var internalApi: IterableAPIInternal? {
+        didSet {
+            fetcher.internalApi = internalApi
+        }
+    }
+
+    private var fetcher: InAppFetcherProtocol // this is mutable because we need to set internalApi
+    private let displayer: InAppDisplayerProtocol
+    private let inAppDelegate: IterableInAppDelegate
+    private let urlDelegate: IterableURLDelegate?
+    private let customActionDelegate: IterableCustomActionDelegate?
+    private let urlOpener: UrlOpenerProtocol
+    private let applicationStateProvider: ApplicationStateProviderProtocol
+    private let notificationCenter: NotificationCenterProtocol
+    
+    private let persister: InAppPersistenceProtocol
+    private var messagesMap = OrderedDictionary<String, IterableInAppMessage>() // This is mutable
+    private let dateProvider: DateProviderProtocol
+    private let retryInterval: TimeInterval // in seconds, if a message is already showing how long to wait?
+    private var lastDismissedTime: Date? = nil
+    private let updateQueue = DispatchQueue(label: "UpdateQueue")
+    private let scheduleQueue = DispatchQueue(label: "ScheduleQueue")
+    private let syncQueue = DispatchQueue(label: "SyncQueue")
+    private let callbackQueue = DispatchQueue(label: "CallbackQueue")
+    private var lastSyncTime: Date? = nil
+    private let moveToForegroundSyncInterval: Double = 1.0 * 60.0 // don't sync within sixty seconds
 }
 
-class EmptyInAppManager : IterableInAppManagerProtocol {
+extension InAppManager : InAppNotifiable {
+    func onInAppSyncNeeded() {
+        ITBInfo()
+        synchronize()
+    }
+    
+    // from server side
+    func onInAppRemoved(messageId: String) {
+        ITBInfo()
+        
+        updateQueue.async {
+            if let _ = self.messagesMap.filter({$0.key == messageId}).first {
+                self.messagesMap.removeValue(forKey: messageId)
+                self.persister.persist(self.messagesMap.values)
+            }
+        }
+        self.callbackQueue.async {
+            self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
+        }
+    }
+}
+
+class EmptyInAppManager : IterableInAppManagerProtocolInternal {
+    weak var internalApi: IterableAPIInternal?
+    
+    func start() {
+    }
+    
     func createInboxMessageViewController(for message: IterableInAppMessage) -> UIViewController? {
         ITBError("Can't create VC")
         return nil
@@ -530,10 +536,6 @@ class EmptyInAppManager : IterableInAppManagerProtocol {
     }
     
     func getInboxMessages() -> [IterableInAppMessage] {
-        return []
-    }
-    
-    func getUnreadInboxMessages() -> [IterableInAppMessage] {
         return []
     }
     
@@ -551,6 +553,12 @@ class EmptyInAppManager : IterableInAppManagerProtocol {
 
     func getUnreadInboxMessagesCount() -> Int {
         return 0
+    }
+
+    func onInAppSyncNeeded() {
+    }
+    
+    func onInAppRemoved(messageId: String) {
     }
 }
 

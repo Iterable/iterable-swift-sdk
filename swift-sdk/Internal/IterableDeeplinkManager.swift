@@ -91,7 +91,7 @@ class IterableDeeplinkManager : NSObject {
                 if let deeplinkCampaignId = self.deeplinkCampaignId,
                     let deeplinkTemplateId = self.deeplinkTemplateId,
                     let deeplinkMessageId = self.deeplinkMessageId {
-                    IterableAPIInternal.sharedInstance?.attributionInfo = IterableAttributionInfo(campaignId: deeplinkCampaignId, templateId: deeplinkTemplateId, messageId: deeplinkMessageId)
+                    IterableAPI.attributionInfo = IterableAttributionInfo(campaignId: deeplinkCampaignId, templateId: deeplinkTemplateId, messageId: deeplinkMessageId)
                 }
                 callbackBlock(self.deeplinkLocation)
             }

@@ -15,16 +15,13 @@ import Foundation
 
 @objc
 public protocol IterableInAppManagerProtocol {
-    /// - returns: A list of all messages
+    /// - returns: A list of all in-app messages
     @objc(getMessages) func getMessages() -> [IterableInAppMessage]
 
-    /// - returns: A list of all messages
+    /// - returns: A list of all inbox messages
     @objc(getInboxMessages) func getInboxMessages() -> [IterableInAppMessage]
 
-    /// - returns: A list of all messages that are unread
-    @objc(getUnreadInboxMessages) func getUnreadInboxMessages() -> [IterableInAppMessage]
-
-    /// - returns: A count of unread messages
+    /// - returns: A count of unread inbox messages
     @objc(getUnreadInboxMessagesCount) func getUnreadInboxMessagesCount() -> Int
 
     /// - parameter message: The message to show.

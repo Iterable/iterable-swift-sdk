@@ -226,40 +226,28 @@ class NoNetworkNetworkSession: NetworkSessionProtocol {
     }
 }
 
-class MockInAppSynchronizer : InAppSynchronizerProtocol {
+class MockInAppFetcher : InAppFetcherProtocol {
     weak var internalApi: IterableAPIInternal?
-    weak var inAppSyncDelegate: InAppSynchronizerDelegate?
-    
+
     var syncCallback: (() -> Void)?
-    var removeCallback: ((String) -> Void)?
     
     init(messages: [IterableInAppMessage] = []) {
         ITBInfo()
         for message in messages {
             messagesMap[message.messageId] = message
         }
-        
     }
     
-    func sync() {
+    func fetch() -> Future<[IterableInAppMessage]> {
         ITBInfo()
-
-        inAppSyncDelegate?.onInAppMessagesAvailable(messages: messagesMap.values)
-
+        
         syncCallback?()
+
+        return Promise(value: messagesMap.values)
     }
+
     
-    func remove(messageId: String) {
-        ITBInfo()
-        
-        messagesMap.removeValue(forKey: messageId)
-        
-        inAppSyncDelegate?.onInAppRemoved(messageId: messageId)
-        
-        removeCallback?(messageId)
-    }
-    
-    func mockMessagesAvailableFromServer(messages: [IterableInAppMessage]) {
+    func mockMessagesAvailableFromServer(messages: [IterableInAppMessage], completion: (()->())? = nil) {
         ITBInfo()
         
         messagesMap = OrderedDictionary<String, IterableInAppMessage>()
@@ -268,15 +256,22 @@ class MockInAppSynchronizer : InAppSynchronizerProtocol {
             messagesMap[$0.messageId] = $0
         }
 
-        sync()
+        (IterableAPI.inAppManager as! IterableInAppManagerProtocolInternal).onInAppSyncNeeded()
+
+        if let completion = completion {
+            DispatchQueue.main.asyncAfter(deadline: .now() + queueFinishTimeInterval) {
+                completion()
+            }
+        }
     }
     
-    func mockInAppPayloadFromServer(_ payload: [AnyHashable : Any]) {
+    func mockInAppPayloadFromServer(_ payload: [AnyHashable : Any], completion: (()->())? = nil) {
         ITBInfo()
-        mockMessagesAvailableFromServer(messages: InAppTestHelper.inAppMessages(fromPayload: payload))
+        mockMessagesAvailableFromServer(messages: InAppTestHelper.inAppMessages(fromPayload: payload), completion: completion)
     }
 
     private var messagesMap = OrderedDictionary<String, IterableInAppMessage>()
+    private let queueFinishTimeInterval: TimeInterval = 1.0
 }
 
 class MockInAppDisplayer : InAppDisplayerProtocol {

@@ -27,15 +27,15 @@ extension Dictionary where Key == AnyHashable {
 // Used only by ojbc tests. Remove after converting to Swift.
 extension IterableAPI {
     @objc public static func initializeForObjcTesting() {
-        internalImplementation = IterableAPIInternal.initializeForTesting()
+        IterableAPI.initializeForTesting()
     }
 
     @objc public static func initializeForObjcTesting(apiKey: String) {
-        internalImplementation = IterableAPIInternal.initializeForTesting(apiKey: apiKey)
+        IterableAPI.initializeForTesting(apiKey: apiKey)
     }
 
     @objc public static func initializeForObjcTesting(config: IterableConfig) {
-        internalImplementation = IterableAPIInternal.initializeForTesting(config: config)
+        IterableAPI.initializeForTesting(config: config)
     }
 }
 
@@ -47,58 +47,26 @@ extension IterableAPI {
                            dateProvider: DateProviderProtocol = SystemDateProvider(),
                            networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = MockNetworkSession(),
                            notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
-                           inAppSynchronizer: InAppSynchronizerProtocol = MockInAppSynchronizer(),
+                           inAppFetcher: InAppFetcherProtocol = MockInAppFetcher(),
                            inAppDisplayer: InAppDisplayerProtocol = MockInAppDisplayer(),
                            inAppPersister: InAppPersistenceProtocol = MockInAppPesister(),
                            urlOpener: UrlOpenerProtocol = MockUrlOpener(),
                            applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
                            notificationCenter: NotificationCenterProtocol = NotificationCenter.default) {
         
-        internalImplementation = IterableAPIInternal.initializeForTesting(apiKey: apiKey,
+        internalImplementation = IterableAPIInternal(apiKey: apiKey,
                                                                 launchOptions: launchOptions,
                                                                 config: config,
                                                                 dateProvider: dateProvider,
                                                                 networkSession: networkSession,
                                                                 notificationStateProvider: notificationStateProvider,
-                                                                inAppSynchronizer: inAppSynchronizer,
+                                                                localStorage: UserDefaultsLocalStorage(userDefaults: TestHelper.getTestUserDefaults()),
+                                                                inAppFetcher: inAppFetcher,
                                                                 inAppDisplayer: inAppDisplayer,
                                                                 inAppPersister: inAppPersister,
                                                                 urlOpener: urlOpener,
                                                                 applicationStateProvider: applicationStateProvider,
                                                                 notificationCenter: notificationCenter)
-        notificationCenter.post(name: .iterableAppReady, object: self, userInfo: nil)
-    }
-}
-
-
-extension IterableAPIInternal {
-    @discardableResult static func initializeForTesting(apiKey: String = "zeeApiKey",
-                                                        launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil,
-                                                        config: IterableConfig = IterableConfig(),
-                                                        dateProvider: DateProviderProtocol = SystemDateProvider(),
-                                                        networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = MockNetworkSession(),
-                                                        notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
-                                                        inAppSynchronizer: InAppSynchronizerProtocol = MockInAppSynchronizer(),
-                                                        inAppDisplayer: InAppDisplayerProtocol = MockInAppDisplayer(),
-                                                        inAppPersister: InAppPersistenceProtocol = MockInAppPesister(),
-                                                        urlOpener: UrlOpenerProtocol = MockUrlOpener(),
-                                                        applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
-                                                        notificationCenter: NotificationCenterProtocol = NotificationCenter.default) -> IterableAPIInternal {
-        queue.sync {
-            _sharedInstance = IterableAPIInternal(apiKey: apiKey,
-                                                  launchOptions: launchOptions,
-                                                  config: config,
-                                                  dateProvider: dateProvider,
-                                                  networkSession: networkSession,
-                                                  notificationStateProvider: notificationStateProvider,
-                                                  localStorage: UserDefaultsLocalStorage(userDefaults: TestHelper.getTestUserDefaults()),
-                                                  inAppSynchronizer: inAppSynchronizer,
-                                                  inAppDisplayer: inAppDisplayer,
-                                                  inAppPersister: inAppPersister,
-                                                  urlOpener: urlOpener,
-                                                  applicationStateProvider: applicationStateProvider,
-                                                  notificationCenter: notificationCenter)
-        }
-        return _sharedInstance!
+        internalImplementation?.start()
     }
 }

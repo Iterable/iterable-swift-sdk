@@ -21,13 +21,14 @@ class InboxTests: XCTestCase {
     }
 
     func testInboxOrdering() {
-        let mockInAppSynchronizer = MockInAppSynchronizer()
+        let expectation1 = expectation(description: "testInboxOrdering")
+        let mockInAppFetcher = MockInAppFetcher()
         let config = IterableConfig()
         config.logDelegate = AllLogDelegate()
         
         IterableAPI.initializeForTesting(
             config: config,
-            inAppSynchronizer: mockInAppSynchronizer
+            inAppFetcher: mockInAppFetcher
         )
        
         let payload = """
@@ -68,22 +69,26 @@ class InboxTests: XCTestCase {
         }
         """.toJsonDict()
 
-        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
-
-        let messages = IterableAPI.inAppManager.getInboxMessages()
-        XCTAssertEqual(messages.count, 2)
-        XCTAssertEqual(messages[0].messageId, "message2")
-        XCTAssertEqual(messages[1].messageId, "message4")
+        mockInAppFetcher.mockInAppPayloadFromServer(payload) {
+            let messages = IterableAPI.inAppManager.getInboxMessages()
+            XCTAssertEqual(messages.count, 2)
+            XCTAssertEqual(messages[0].messageId, "message2")
+            XCTAssertEqual(messages[1].messageId, "message4")
+            expectation1.fulfill()
+        }
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
     func testSetRead() {
-        let mockInAppSynchronizer = MockInAppSynchronizer()
+        let expectation1 = expectation(description: "testSetRead")
+        let mockInAppFetcher = MockInAppFetcher()
         let config = IterableConfig()
         config.logDelegate = AllLogDelegate()
         
         IterableAPI.initializeForTesting(
             config: config,
-            inAppSynchronizer: mockInAppSynchronizer
+            inAppFetcher: mockInAppFetcher
         )
         
         let payload = """
@@ -109,28 +114,32 @@ class InboxTests: XCTestCase {
         }
         """.toJsonDict()
         
-        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
+        mockInAppFetcher.mockInAppPayloadFromServer(payload) {
+            let messages = IterableAPI.inAppManager.getInboxMessages()
+            XCTAssertEqual(messages.count, 2)
+            IterableAPI.inAppManager.set(read: true, forMessage: messages[1])
+            XCTAssertEqual(messages[0].read, false)
+            XCTAssertEqual(messages[1].read, true)
+            
+            let unreadMessages = IterableAPI.inAppManager.getInboxMessages().filter { $0.read == false }
+            XCTAssertEqual(IterableAPI.inAppManager.getUnreadInboxMessagesCount(), 1)
+            XCTAssertEqual(unreadMessages.count, 1)
+            XCTAssertEqual(unreadMessages[0].read, false)
+            expectation1.fulfill()
+        }
         
-        let messages = IterableAPI.inAppManager.getInboxMessages()
-        XCTAssertEqual(messages.count, 2)
-        IterableAPI.inAppManager.set(read: true, forMessage: messages[1])
-        XCTAssertEqual(messages[0].read, false)
-        XCTAssertEqual(messages[1].read, true)
-        
-        let unreadMessages = IterableAPI.inAppManager.getUnreadInboxMessages()
-        XCTAssertEqual(IterableAPI.inAppManager.getUnreadInboxMessagesCount(), 1)
-        XCTAssertEqual(unreadMessages.count, 1)
-        XCTAssertEqual(unreadMessages[0].read, false)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
     func testRemove() {
-        let mockInAppSynchronizer = MockInAppSynchronizer()
+        let expectation1 = expectation(description: "testRemove")
+        let mockInAppFetcher = MockInAppFetcher()
         let config = IterableConfig()
         config.logDelegate = AllLogDelegate()
         
         IterableAPI.initializeForTesting(
             config: config,
-            inAppSynchronizer: mockInAppSynchronizer
+            inAppFetcher: mockInAppFetcher
         )
         
         let payload = """
@@ -156,22 +165,26 @@ class InboxTests: XCTestCase {
         }
         """.toJsonDict()
         
-        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
-        
-        let messages = IterableAPI.inAppManager.getInboxMessages()
-        XCTAssertEqual(messages.count, 2)
-        
-        IterableAPI.inAppManager.remove(message: messages[0])
-        let newMessages = IterableAPI.inAppManager.getInboxMessages()
-        XCTAssertEqual(newMessages.count, 1)
+        mockInAppFetcher.mockInAppPayloadFromServer(payload) {
+            let messages = IterableAPI.inAppManager.getInboxMessages()
+            XCTAssertEqual(messages.count, 2)
+            
+            IterableAPI.inAppManager.remove(message: messages[0])
+            let newMessages = IterableAPI.inAppManager.getInboxMessages()
+            XCTAssertEqual(newMessages.count, 1)
+            expectation1.fulfill()
+        }
+       
+        wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
     func testShowInboxMessage() {
         let expectation1 = expectation(description: "testShowInboxMessage")
         let expectation2 = expectation(description: "Unread count decrements after showing")
         let expectation3 = expectation(description: "Right url callback")
+        let expectation4 = expectation(description: "wait for messages")
         
-        let mockInAppSynchronizer = MockInAppSynchronizer()
+        let mockInAppFetcher = MockInAppFetcher()
         
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShowCallback = {(_, _) in
@@ -192,7 +205,7 @@ class InboxTests: XCTestCase {
         
         IterableAPI.initializeForTesting(
             config: config,
-            inAppSynchronizer: mockInAppSynchronizer,
+            inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer
         )
 
@@ -219,8 +232,10 @@ class InboxTests: XCTestCase {
         }
         """.toJsonDict()
         
-        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
-        
+        mockInAppFetcher.mockInAppPayloadFromServer(payload) {
+            expectation4.fulfill()
+        }
+        wait(for: [expectation4], timeout: testExpectationTimeout)
         XCTAssertEqual(IterableAPI.inAppManager.getUnreadInboxMessagesCount(), 2)
         
         let messages = IterableAPI.inAppManager.getInboxMessages()
@@ -235,8 +250,9 @@ class InboxTests: XCTestCase {
     func testInboxNewMessagesCallback() {
         let expectation1 = expectation(description: "testInboxNewMessagesCallback")
         expectation1.expectedFulfillmentCount = 2
+        let expectation2 = expectation(description: "testInboxNewMessagesCallback: finish payload processing")
         
-        let mockInAppSynchronizer = MockInAppSynchronizer()
+        let mockInAppFetcher = MockInAppFetcher()
         
         var callbackCount = 0
         let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
@@ -245,10 +261,10 @@ class InboxTests: XCTestCase {
             let messages = IterableAPI.inAppManager.getInboxMessages()
             if callbackCount == 0 {
                 XCTAssertEqual(messages.count, 1)
-                XCTAssertEqual(messages[0].messageId, "message0")
+                XCTAssertEqual(messages[0].messageId, "message0", "inboxMessages: \(IterableAPI.inAppManager.getInboxMessages())")
             } else {
                 XCTAssertEqual(messages.count, 2)
-                XCTAssertEqual(messages[1].messageId, "message1")
+                XCTAssertEqual(messages[1].messageId, "message1", "inboxMessages: \(IterableAPI.inAppManager.getInboxMessages())")
             }
             expectation1.fulfill()
             callbackCount += 1
@@ -260,7 +276,7 @@ class InboxTests: XCTestCase {
         
         IterableAPI.initializeForTesting(
             config: config,
-            inAppSynchronizer: mockInAppSynchronizer,
+            inAppFetcher: mockInAppFetcher,
             notificationCenter: mockNotificationCenter
         )
         
@@ -279,7 +295,10 @@ class InboxTests: XCTestCase {
         }
         """.toJsonDict()
         
-        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
+        mockInAppFetcher.mockInAppPayloadFromServer(payload) {
+            expectation2.fulfill()
+        }
+        wait(for: [expectation2], timeout: testExpectationTimeout)
 
         let payload2 = """
         {"inAppMessages":
@@ -304,9 +323,8 @@ class InboxTests: XCTestCase {
         }
         """.toJsonDict()
         
-        mockInAppSynchronizer.mockInAppPayloadFromServer(payload2)
+        mockInAppFetcher.mockInAppPayloadFromServer(payload2)
 
-        
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
@@ -345,11 +363,11 @@ class InboxTests: XCTestCase {
         config.inAppDelegate = mockInAppDelegate
         config.logDelegate = AllLogDelegate()
         
-        let mockInAppSynchronizer = MockInAppSynchronizer(messages: messages)
+        let mockInAppFetcher = MockInAppFetcher(messages: messages)
         
         IterableAPI.initializeForTesting(
             config: config,
-            inAppSynchronizer: mockInAppSynchronizer,
+            inAppFetcher: mockInAppFetcher,
             inAppPersister: persister,
             notificationCenter: mockNotificationCenter
         )
@@ -365,8 +383,10 @@ class InboxTests: XCTestCase {
         expectation1.expectedFulfillmentCount = 2
         let expectation2 = expectation(description: "call inApp callback")
         expectation2.expectedFulfillmentCount = 2
+        let expectation3 = expectation(description: "payload 1 processed")
+        let expectation4 = expectation(description: "payload 2 processed")
         
-        let mockInAppSynchronizer = MockInAppSynchronizer()
+        let mockInAppFetcher = MockInAppFetcher()
         
         var inAppCallbackCount = 0
         let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
@@ -385,7 +405,7 @@ class InboxTests: XCTestCase {
         mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) {
             let messages = IterableAPI.inAppManager.getInboxMessages()
             if inboxCallbackCount == 0 {
-                XCTAssertEqual(messages.count, 1)
+                XCTAssertEqual(messages.count, 1, "inboxMessages: \(IterableAPI.inAppManager.getInboxMessages())")
                 XCTAssertEqual(messages[0].messageId, "message0")
             } else {
                 XCTAssertEqual(messages.count, 2)
@@ -401,7 +421,7 @@ class InboxTests: XCTestCase {
         
         IterableAPI.initializeForTesting(
             config: config,
-            inAppSynchronizer: mockInAppSynchronizer,
+            inAppFetcher: mockInAppFetcher,
             notificationCenter: mockNotificationCenter
         )
         
@@ -428,8 +448,11 @@ class InboxTests: XCTestCase {
         }
         """.toJsonDict()
         
-        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
-        
+        mockInAppFetcher.mockInAppPayloadFromServer(payload) {
+            expectation3.fulfill()
+        }
+        wait(for: [expectation3], timeout: testExpectationTimeout)
+
         let payload2 = """
         {"inAppMessages":
         [
@@ -469,17 +492,19 @@ class InboxTests: XCTestCase {
         }
         """.toJsonDict()
         
-        mockInAppSynchronizer.mockInAppPayloadFromServer(payload2)
+        mockInAppFetcher.mockInAppPayloadFromServer(payload2) {
+            expectation4.fulfill()
+        }
         
-        
-        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
+        wait(for: [expectation4, expectation1, expectation2], timeout: testExpectationTimeout)
     }
     
     func testShowNowAndInboxMessage() {
         let expectation1 = expectation(description: "inbox message is displayed automatically")
         let expectation2 = expectation(description: "Unread count decrements after showing")
+        let expectation3 = expectation(description: "testShowNowAndInboxMessage: wait for processing")
         
-        let mockInAppSynchronizer = MockInAppSynchronizer()
+        let mockInAppFetcher = MockInAppFetcher()
         
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShowCallback = {(_, _) in
@@ -501,7 +526,7 @@ class InboxTests: XCTestCase {
         
         IterableAPI.initializeForTesting(
             config: config,
-            inAppSynchronizer: mockInAppSynchronizer,
+            inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer
         )
         
@@ -528,10 +553,9 @@ class InboxTests: XCTestCase {
         }
         """.toJsonDict()
         
-        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
-        
-        XCTAssertEqual(IterableAPI.inAppManager.getUnreadInboxMessagesCount(), 1)
-        
-        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
+        mockInAppFetcher.mockInAppPayloadFromServer(payload) {
+            expectation3.fulfill()
+        }
+        wait(for: [expectation3, expectation1, expectation2], timeout: testExpectationTimeout)
     }
 }

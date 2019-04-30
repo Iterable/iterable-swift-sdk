@@ -5,21 +5,18 @@
 
 import Foundation
 
-/// Callbacks from the synchronizer
-protocol InAppSynchronizerDelegate : class {
-    func onInAppRemoved(messageId: String)
-    func onInAppMessagesAvailable(messages: [IterableInAppMessage])
+///
+protocol InAppFetcherProtocol {
+    //
+    var internalApi: IterableAPIInternal? { get set }
+    // Fetch from server and sync
+    func fetch() -> Future<[IterableInAppMessage]>
 }
 
-///
-protocol InAppSynchronizerProtocol {
-    // These variables are used for callbacks
-    var internalApi: IterableAPIInternal? {get set}
-    var inAppSyncDelegate: InAppSynchronizerDelegate? {get set}
-    
-    // These methods are called on new messages arrive etc.
-    func sync()
-    func remove(messageId: String)
+/// For callbacks when silent push notifications arrive
+protocol InAppNotifiable {
+    func onInAppSyncNeeded()
+    func onInAppRemoved(messageId: String)
 }
 
 extension IterableInAppTriggerType {
@@ -27,37 +24,27 @@ extension IterableInAppTriggerType {
     static let undefinedTriggerType = IterableInAppTriggerType.never // undefined is what we select if payload has new trigger type
 }
 
-class InAppSilentPushSynchronizer : InAppSynchronizerProtocol {
-    weak var internalApi: IterableAPIInternal?
-    weak var inAppSyncDelegate: InAppSynchronizerDelegate?
-    
+class InAppFetcher : InAppFetcherProtocol {
     init() {
         ITBInfo()
     }
     
-    func sync() {
+    weak var internalApi: IterableAPIInternal?
+    
+    func fetch() -> Future<[IterableInAppMessage]> {
         ITBInfo()
-        guard let internalApi = self.internalApi else {
+        guard let internalApi = internalApi else {
             ITBError("Invalid state: expected InternalApi")
-            return
+            return Promise(error: IterableError.general(description: "Invalid state: expected InternalApi"))
         }
-        
-        InAppHelper.getInAppMessagesFromServer(internalApi: internalApi, number: numMessages).onSuccess {
-                self.inAppSyncDelegate?.onInAppMessagesAvailable(messages: $0)
-            }.onError {
-                ITBError($0.localizedDescription)
-        }
+
+        return InAppHelper.getInAppMessagesFromServer(internalApi: internalApi, number: numMessages)
     }
-    
-    func remove(messageId: String) {
-        ITBInfo()
-        inAppSyncDelegate?.onInAppRemoved(messageId: messageId)
-    }
-    
+
     deinit {
         ITBInfo()
     }
     
     // how many messages to fetch
-    private let numMessages = 10
+    private let numMessages = 100
 }

@@ -144,6 +144,7 @@ open class IterableInboxViewController: UITableViewController {
                 cell.iconImageView?.image = UIImage(data: data)
             } else {
                 cell.iconImageView?.backgroundColor = UIColor(hex: "EEEEEE") // loading image
+                cell.iconImageView?.image = nil
                 loadImage(forMessageId: viewModel.iterableMessage.messageId, fromUrl: url)
             }
         } else {
@@ -155,7 +156,7 @@ open class IterableInboxViewController: UITableViewController {
     }
 
     private func loadImage(forMessageId messageId: String, fromUrl url: URL) {
-        if let networkSession = IterableAPIInternal._sharedInstance?.networkSession {
+        if let networkSession = IterableAPI.internalImplementation?.networkSession {
             NetworkHelper.getData(fromUrl: url, usingSession: networkSession).onSuccess {[weak self] in
                 self?.updateCell(forMessageId: messageId, withImageData: $0)
             }.onError {

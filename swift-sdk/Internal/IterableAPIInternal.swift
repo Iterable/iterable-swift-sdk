@@ -8,18 +8,6 @@ import Foundation
 import UserNotifications
 
 final class IterableAPIInternal : NSObject, PushTrackerProtocol {
-    /**
-     Get the previously instantiated singleton instance of the API
-     Must be initialized with `initialize:` before
-     calling this class method.
-     */
-    static var sharedInstance : IterableAPIInternal? {
-        if _sharedInstance == nil {
-            ITBError("instance called before initializing API")
-        }
-        return _sharedInstance
-    }
-    
     var apiKey: String
 
     var email: String? {
@@ -502,10 +490,6 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
     
     // MARK: For Private and Internal Use ========================================>
-    static var _sharedInstance: IterableAPIInternal?
-    
-    static var queue = DispatchQueue(label: "MyLockQueue")
-    
     private var config: IterableConfig
     
     private let dateProvider: DateProviderProtocol
@@ -527,6 +511,8 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     private var notificationStateProvider: NotificationStateProviderProtocol
     
     private var localStorage: LocalStorageProtocol
+    
+    private var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     
     lazy var networkSession: NetworkSessionProtocol = {
         networkSessionProvider()
@@ -576,7 +562,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             notificationStateProvider.registerForRemoteNotifications()
         }
         
-        inAppManager.synchronize()
+        inAppManager.onInAppSyncNeeded()
     }
     
     private func createGetRequest(forPath path: String, withArgs args: [String : String]) -> URLRequest? {
@@ -683,7 +669,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
          networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
          notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
          localStorage: LocalStorageProtocol = UserDefaultsLocalStorage(),
-         inAppSynchronizer: InAppSynchronizerProtocol = InAppSilentPushSynchronizer(),
+         inAppFetcher: InAppFetcherProtocol = InAppFetcher(),
          inAppDisplayer: InAppDisplayerProtocol = InAppDisplayer(),
          inAppPersister: InAppPersistenceProtocol = InAppFilePersister(),
          urlOpener: UrlOpenerProtocol = AppUrlOpener(),
@@ -698,61 +684,49 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         self.notificationStateProvider = notificationStateProvider
         self.localStorage = localStorage
         self.inAppDisplayer = inAppDisplayer
-        let inAppManager = InAppManager(synchronizer: inAppSynchronizer,
-                                        displayer: inAppDisplayer,
-                                        persister: inAppPersister,
-                                        inAppDelegate: config.inAppDelegate,
-                                        urlDelegate: config.urlDelegate,
-                                        customActionDelegate: config.customActionDelegate,
-                                        urlOpener: urlOpener,
-                                        applicationStateProvider: applicationStateProvider,
-                                        notificationCenter: notificationCenter,
-                                        dateProvider: dateProvider,
-                                        retryInterval: config.inAppDisplayInterval)
-        self.inAppManager = inAppManager
         self.urlOpener = urlOpener
-        
-        // setup
+        self.launchOptions = launchOptions
+
+        // setup managers
+        inAppManager = InAppManager(fetcher: inAppFetcher,
+                                    displayer: inAppDisplayer,
+                                    persister: inAppPersister,
+                                    inAppDelegate: config.inAppDelegate,
+                                    urlDelegate: config.urlDelegate,
+                                    customActionDelegate: config.customActionDelegate,
+                                    urlOpener: urlOpener,
+                                    applicationStateProvider: applicationStateProvider,
+                                    notificationCenter: notificationCenter,
+                                    dateProvider: dateProvider,
+                                    retryInterval: config.inAppDisplayInterval)
         deeplinkManager = IterableDeeplinkManager()
-        
-        // super init
-        super.init()
-
-        // after calling super we can set self as a property
-        inAppManager.internalApi = self
-
+    }
+    
+    func start() {
+        ITBInfo()
         // sdk version
         updateSDKVersion()
-        
+
         // check for deferred deeplinking
         checkForDeferredDeeplink()
-        
+
         // get email and userId from UserDefaults if present
         retrieveEmailAndUserId()
-        
+
         if config.autoPushRegistration == true && isEitherUserIdOrEmailSet() {
             notificationStateProvider.registerForRemoteNotifications()
         }
-        
-        IterableAppIntegration.implementation = IterableAppIntegrationInternal(tracker: self,
-                                                                       urlDelegate: config.urlDelegate,
-                                                                       customActionDelegate: config.customActionDelegate,
-                                                                       urlOpener: self.urlOpener,
-                                                                       inAppSynchronizer: inAppSynchronizer)
-        
-        handle(launchOptions: launchOptions)
-    }
 
-    static func initialize(apiKey: String,
-                           launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil,
-                           config: IterableConfig = IterableConfig()) -> IterableAPIInternal {
-        queue.sync {
-            _sharedInstance = IterableAPIInternal(apiKey: apiKey,
-                                                  launchOptions: launchOptions,
-                                                  config: config
-                                                  )
-        }
-        return _sharedInstance!
+        IterableAppIntegration.implementation = IterableAppIntegrationInternal(tracker: self,
+                                                                               urlDelegate: config.urlDelegate,
+                                                                               customActionDelegate: config.customActionDelegate,
+                                                                               urlOpener: self.urlOpener,
+                                                                               inAppNotifiable: self.inAppManager)
+
+        handle(launchOptions: launchOptions)
+        
+        inAppManager.internalApi = self
+        inAppManager.start()
     }
 
     private func handle(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {

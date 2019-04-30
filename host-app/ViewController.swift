@@ -77,7 +77,7 @@ class ViewController: UIViewController {
     @IBAction func showInApp2Tap(_ sender: UIButton) {
         ITBInfo()
         
-        let mockInAppSynchronizer = MockInAppSynchronizer()
+        let mockInAppFetcher = MockInAppFetcher()
         let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
         let config = IterableConfig()
         config.inAppDelegate = mockInAppDelegate
@@ -88,14 +88,15 @@ class ViewController: UIViewController {
         ]
         IterableAPI.initializeForTesting(apiKey: "apiKey",
                                          config: config,
-                                         inAppSynchronizer: mockInAppSynchronizer,
+                                         inAppFetcher: mockInAppFetcher,
                                          inAppDisplayer: InAppDisplayer())
 
-        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
-        let message = IterableAPI.inAppManager.getMessages()[0]
-
-        IterableAPI.inAppManager.show(message: message, consume: true) { (url) in
-            self.statusLbl.text = url!.absoluteString
+        mockInAppFetcher.mockInAppPayloadFromServer(payload) {
+            let message = IterableAPI.inAppManager.getMessages()[0]
+            
+            IterableAPI.inAppManager.show(message: message, consume: true) { (url) in
+                self.statusLbl.text = url!.absoluteString
+            }
         }
     }
 
@@ -103,7 +104,7 @@ class ViewController: UIViewController {
     @IBAction func showInApp3Tap(_ sender: UIButton) {
         ITBInfo()
 
-        let mockInAppSynchronizer = MockInAppSynchronizer()
+        let mockInAppFetcher = MockInAppFetcher()
         let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
         let config = IterableConfig()
         config.inAppDelegate = mockInAppDelegate
@@ -118,14 +119,15 @@ class ViewController: UIViewController {
         ]
         IterableAPI.initializeForTesting(apiKey: "apiKey",
                                          config: config,
-                                         inAppSynchronizer: mockInAppSynchronizer,
+                                         inAppFetcher: mockInAppFetcher,
                                          inAppDisplayer: InAppDisplayer())
         
-        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
-        let message = IterableAPI.inAppManager.getMessages()[0]
-        
-        IterableAPI.inAppManager.show(message: message, consume: true) { (url) in
-            self.statusLbl.text = url!.absoluteString
+        mockInAppFetcher.mockInAppPayloadFromServer(payload) {
+            let message = IterableAPI.inAppManager.getMessages()[0]
+            
+            IterableAPI.inAppManager.show(message: message, consume: true) { (url) in
+                self.statusLbl.text = url!.absoluteString
+            }
         }
     }
 
@@ -150,14 +152,14 @@ class ViewController: UIViewController {
         }
         config.urlDelegate = mockUrlDelegate
         
-        let mockInAppSynchronizer = MockInAppSynchronizer()
+        let mockInAppFetcher = MockInAppFetcher()
         IterableAPI.initializeForTesting(apiKey: "apiKey",
                                config: config,
-                               inAppSynchronizer: mockInAppSynchronizer,
+                               inAppFetcher: mockInAppFetcher,
                                inAppDisplayer: InAppDisplayer()
                                )
         
-        mockInAppSynchronizer.mockMessagesAvailableFromServer(messages: [message])
+        mockInAppFetcher.mockMessagesAvailableFromServer(messages: [message])
     }
 
     // Center and Open url, corresponds to UITests.testShowInApp5
@@ -180,15 +182,15 @@ class ViewController: UIViewController {
             self.statusLbl.text = url.absoluteString
         }
         
-        let mockInAppSynchronizer = MockInAppSynchronizer()
+        let mockInAppFetcher = MockInAppFetcher()
         IterableAPI.initializeForTesting(apiKey: "apiKey",
                                config: config,
                                networkSession: MockNetworkSession(),
-                               inAppSynchronizer: mockInAppSynchronizer,
+                               inAppFetcher: mockInAppFetcher,
                                inAppDisplayer: InAppDisplayer(),
                                urlOpener: mockUrlOpener)
         
-        mockInAppSynchronizer.mockMessagesAvailableFromServer(messages: [message])
+        mockInAppFetcher.mockMessagesAvailableFromServer(messages: [message])
     }
 
     @IBAction func showInboxTap(_ sender: UIButton) {
@@ -210,23 +212,20 @@ class ViewController: UIViewController {
             self.statusLbl.text = url.absoluteString
         }
         
-        let mockInAppSynchronizer = MockInAppSynchronizer()
+        let mockInAppFetcher = MockInAppFetcher()
         IterableAPI.initializeForTesting(apiKey: "apiKey",
                                          config: config,
                                          networkSession: MockNetworkSession(),
-                                         inAppSynchronizer: mockInAppSynchronizer,
+                                         inAppFetcher: mockInAppFetcher,
                                          inAppDisplayer: InAppDisplayer(),
                                          urlOpener: mockUrlOpener)
 
-        mockInAppSynchronizer.mockMessagesAvailableFromServer(messages: [message])
-
-        sleep(2)
-        
-        let viewController = IterableInboxViewController(style: .plain)
-        present(viewController, animated: true) {
-            ITBInfo("Presented Inbox")
+        mockInAppFetcher.mockMessagesAvailableFromServer(messages: [message]) {
+            let viewController = IterableInboxViewController(style: .plain)
+            self.present(viewController, animated: true) {
+                ITBInfo("Presented Inbox")
+            }
         }
-        
     }
     
     @available(iOS 10.0, *)
