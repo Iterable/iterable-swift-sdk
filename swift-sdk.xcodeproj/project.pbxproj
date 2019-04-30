@@ -370,6 +370,17 @@
 			name = "Test Files";
 			sourceTree = "<group>";
 		};
+		AC0248062279132400495FB9 /* Dwifft */ = {
+			isa = PBXGroup;
+			children = (
+				AC81918922713A400014955E /* AbstractDiffCalculator.swift */,
+				AC819185227139230014955E /* SectionedValues.swift */,
+				AC819183227138E60014955E /* Dwifft.swift */,
+				AC81918722713A110014955E /* Dwifft+UIKit.swift */,
+			);
+			path = Dwifft;
+			sourceTree = "<group>";
+		};
 		AC0674E720D87D5B00C2806D /* Helper Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -538,7 +549,7 @@
 		AC72A0BB20CF4C8C004D7997 /* Internal */ = {
 			isa = PBXGroup;
 			children = (
-				AC819182227138D40014955E /* Diff */,
+				AC0248062279132400495FB9 /* Dwifft */,
 				AC219C4B225FE2B300B98631 /* UI */,
 				AC3C10F7213F43AC00A9B839 /* Logging */,
 				ACE34AB121376ACB00691224 /* Local Storage */,
@@ -592,17 +603,6 @@
 				AC7B144A20D038C400877BFE /* IterableNotificationMetadataTests.m */,
 			);
 			path = "swift-sdk-objc-tests";
-			sourceTree = "<group>";
-		};
-		AC819182227138D40014955E /* Diff */ = {
-			isa = PBXGroup;
-			children = (
-				AC81918922713A400014955E /* AbstractDiffCalculator.swift */,
-				AC819185227139230014955E /* SectionedValues.swift */,
-				AC819183227138E60014955E /* Dwifft.swift */,
-				AC81918722713A110014955E /* Dwifft+UIKit.swift */,
-			);
-			name = Diff;
 			sourceTree = "<group>";
 		};
 		AC87172421A4E3FF00FEA369 /* Helper Classes */ = {
