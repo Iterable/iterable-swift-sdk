@@ -34,5 +34,14 @@ fi
 # Step 4. Create universal binary file using lipo and place the combined executable in the copied framework directory
 lipo -create -output "${UNIVERSAL_OUTPUTFOLDER}/${MODULE_NAME}.framework/${MODULE_NAME}" "${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${MODULE_NAME}.framework/${MODULE_NAME}" "${BUILD_DIR}/${CONFIGURATION}-iphoneos/${MODULE_NAME}.framework/${MODULE_NAME}"
 
+# Step 4.5 Xcode10.2 Fix IterableSDK-Swift.h
+# Workaround for known issue in Xcode 10.2: https://developer.apple.com/documentation/xcode_release_notes/xcode_10_2_release_notes#3136806
+# Merge the simulator and device headers for the now-merged framework.
+DEVICE_HEADER_PATH="${BUILD_DIR}/${CONFIGURATION}-iphoneos/${MODULE_NAME}.framework/Headers/${MODULE_NAME}-Swift.h"
+SIMULATOR_HEADER_PATH="${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${MODULE_NAME}.framework/Headers/${MODULE_NAME}-Swift.h"
+OUTPUT_HEADER_PATH="${UNIVERSAL_OUTPUTFOLDER}/${MODULE_NAME}.framework/Headers/${MODULE_NAME}-Swift.h"
+cat "${DEVICE_HEADER_PATH}" > "${OUTPUT_HEADER_PATH}"
+cat "${SIMULATOR_HEADER_PATH}" >> "${OUTPUT_HEADER_PATH}"
+
 # Step 5. Convenience step to copy the framework to the build directory
 cp -R "${UNIVERSAL_OUTPUTFOLDER}/${MODULE_NAME}.framework" "${BUILD_DIR}"
