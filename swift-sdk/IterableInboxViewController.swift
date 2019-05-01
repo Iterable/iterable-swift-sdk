@@ -124,7 +124,7 @@ open class IterableInboxViewController: UITableViewController {
         ITBInfo()
         DispatchQueue.main.async { [weak self] in
             self?.updateUnreadBadgeCount()
-            self?.diffCalculator?.rows = IterableAPI.inAppManager.getInboxMessages().map { InboxMessageViewModel.from(message: $0) }
+            self?.diffCalculator?.rows = IterableAPI.inAppManager.getInboxMessages().map { InboxMessageViewModel(message: $0) }
         }
     }
     
@@ -135,7 +135,7 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     private static func createSectionedValues(fromInboxMessages inboxMessages: [IterableInAppMessage]) -> SectionedValues<Int, InboxMessageViewModel> {
-        let viewModels = inboxMessages.map { InboxMessageViewModel.from(message: $0) }
+        let viewModels = inboxMessages.map { InboxMessageViewModel(message: $0) }
         return SectionedValues([(0, viewModels)])
     }
     
@@ -183,11 +183,8 @@ open class IterableInboxViewController: UITableViewController {
         guard let row = viewModels.firstIndex (where: { $0.iterableMessage.messageId == messageId }) else {
             return
         }
-        var viewModel = viewModels[row]
+        let viewModel = viewModels[row]
         viewModel.imageData = data
-        viewModels[row] = viewModel
-        
-        diffCalculator?.setRowsWithoutEvent(viewModels)
 
         tableView.reloadRows(at: [IndexPath(row: row, section: 0)], with: .automatic)
     }
