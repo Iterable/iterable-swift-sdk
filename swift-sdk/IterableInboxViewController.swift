@@ -40,6 +40,9 @@ open class IterableInboxViewController: UITableViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = UITableView.automaticDimension
         
+        // Set footer view so that 
+        tableView.tableFooterView = UIView()
+        
         registerTableViewCell()
     }
 
