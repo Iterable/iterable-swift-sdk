@@ -77,7 +77,7 @@ class InAppSilentPushSynchronizer : InAppSynchronizerProtocol {
     }
     
     // how many messages to fetch
-    private let numMessages = 10
+    private let numMessages = 100
 }
 
 
