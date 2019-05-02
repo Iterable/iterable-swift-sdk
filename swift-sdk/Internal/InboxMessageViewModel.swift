@@ -6,25 +6,23 @@
 
 import Foundation
 
-struct InboxMessageViewModel {
+class InboxMessageViewModel {
     let title: String
     let subTitle: String?
     let imageUrl: String?
-    var imageData: Data?
-    let createdAt: Date? // Not used at the moment
+    var imageData: Data? = nil
+    let createdAt: Date? = nil // Not used at the moment
     let read: Bool
     let iterableMessage: IterableInAppMessage
     
-    static func from(message: IterableInAppMessage) -> InboxMessageViewModel {
-        return InboxMessageViewModel(title: getTitle(message: message),
-                              subTitle: getSubTitle(message: message),
-                              imageUrl: getImageUrl(message: message),
-                              imageData: nil,
-                              createdAt: nil,
-                              read: message.read,
-                              iterableMessage: message)
+    init(message: IterableInAppMessage) {
+        self.title = InboxMessageViewModel.getTitle(message: message)
+        self.subTitle = InboxMessageViewModel.getSubTitle(message: message)
+        self.imageUrl = InboxMessageViewModel.getImageUrl(message: message)
+        self.read = message.read
+        self.iterableMessage = message
     }
-
+    
     private static func getTitle(message: IterableInAppMessage) -> String {
         return message.inboxMetadata?.title ?? ""
     }
@@ -35,5 +33,24 @@ struct InboxMessageViewModel {
     
     private static func getImageUrl(message: IterableInAppMessage) -> String? {
         return message.inboxMetadata?.icon
+    }
+}
+
+extension InboxMessageViewModel : Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(self.iterableMessage.messageId)
+        hasher.combine(self.read)
+    }
+}
+
+extension InboxMessageViewModel : Equatable {
+    static func == (lhs: InboxMessageViewModel, rhs: InboxMessageViewModel) -> Bool {
+        guard lhs.iterableMessage.messageId == rhs.iterableMessage.messageId else {
+            return false
+        }
+        guard lhs.read == rhs.read else {
+            return false
+        }
+        return true
     }
 }

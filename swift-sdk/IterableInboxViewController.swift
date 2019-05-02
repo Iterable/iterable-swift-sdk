@@ -38,7 +38,7 @@ open class IterableInboxViewController: UITableViewController {
         super.viewDidLoad()
 
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.estimatedRowHeight = 150
+        tableView.estimatedRowHeight = UITableView.automaticDimension
         
         registerTableViewCell()
     }
@@ -49,7 +49,7 @@ open class IterableInboxViewController: UITableViewController {
     }
 
     override open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModels.count
+        return diffCalculator?.rows.count ?? 0
     }
 
     override open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -57,7 +57,9 @@ open class IterableInboxViewController: UITableViewController {
             fatalError("Please make sure that an the nib: \(cellNibName!) is present in the main bundle")
         }
 
-        configure(cell: cell, forViewModel: viewModels[indexPath.row])
+        if let viewModel = diffCalculator?.rows[indexPath.row] {
+            configure(cell: cell, forViewModel: viewModel)
+        }
 
         return cell
     }
@@ -72,15 +74,17 @@ open class IterableInboxViewController: UITableViewController {
     override open func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             // Delete the row from the data source
-            let iterableMessage = viewModels[indexPath.row].iterableMessage
-            viewModels.remove(at: indexPath.row)
+            guard let iterableMessage = diffCalculator?.rows[indexPath.row].iterableMessage else {
+                return
+            }
             IterableAPI.inAppManager.remove(message: iterableMessage)
-            tableView.deleteRows(at: [indexPath], with: .fade)
         }
     }
     
     override open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let iterableMessage = viewModels[indexPath.row].iterableMessage
+        guard let iterableMessage = diffCalculator?.rows[indexPath.row].iterableMessage else {
+            return
+        }
         if let viewController = IterableAPI.inAppManager.createInboxMessageViewController(for: iterableMessage) {
             IterableAPI.inAppManager.set(read: true, forMessage: iterableMessage)
             navigationController?.pushViewController(viewController, animated: true)
@@ -89,13 +93,15 @@ open class IterableInboxViewController: UITableViewController {
 
     private let iterableCellNibName = "IterableInboxCell"
     
-    private var viewModels = [InboxMessageViewModel]()
-
+    private lazy var diffCalculator: SingleSectionTableViewDiffCalculator<InboxMessageViewModel>? = {
+        SingleSectionTableViewDiffCalculator(tableView: self.tableView)
+    }()
+    
     private func setup() {
         refreshMessages()
         NotificationCenter.default.addObserver(self, selector: #selector(onInboxChanged(notification:)), name: .iterableInboxChanged, object: nil)
     }
-    
+
     deinit {
         ITBInfo()
         NotificationCenter.default.removeObserver(self)
@@ -115,20 +121,24 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     private func refreshMessages() {
+        ITBInfo()
         DispatchQueue.main.async { [weak self] in
-            self?.viewModels.removeAll()
-            IterableAPI.inAppManager.getInboxMessages().forEach {
-                self?.viewModels.append(InboxMessageViewModel.from(message: $0))
-            }
-            
-            let unreadCount = IterableAPI.inAppManager.getUnreadInboxMessagesCount()
-            let badgeValue = unreadCount == 0 ? nil : "\(unreadCount)"
-            
-            self?.navigationController?.tabBarItem?.badgeValue = badgeValue
-            self?.tableView.reloadData()
+            self?.updateUnreadBadgeCount()
+            self?.diffCalculator?.rows = IterableAPI.inAppManager.getInboxMessages().map { InboxMessageViewModel(message: $0) }
         }
     }
-
+    
+    private func updateUnreadBadgeCount() {
+        let unreadCount = IterableAPI.inAppManager.getUnreadInboxMessagesCount()
+        let badgeValue = unreadCount == 0 ? nil : "\(unreadCount)"
+        navigationController?.tabBarItem?.badgeValue = badgeValue
+    }
+    
+    private static func createSectionedValues(fromInboxMessages inboxMessages: [IterableInAppMessage]) -> SectionedValues<Int, InboxMessageViewModel> {
+        let viewModels = inboxMessages.map { InboxMessageViewModel(message: $0) }
+        return SectionedValues([(0, viewModels)])
+    }
+    
     private func configure(cell: IterableInboxCell, forViewModel viewModel: InboxMessageViewModel) {
         cell.titleLbl?.text = viewModel.title
         cell.subTitleLbl?.text = viewModel.subTitle
@@ -141,6 +151,7 @@ open class IterableInboxViewController: UITableViewController {
             cell.iconImageView?.isHidden = false
 
             if let data = viewModel.imageData {
+                cell.iconImageView?.backgroundColor = nil
                 cell.iconImageView?.image = UIImage(data: data)
             } else {
                 cell.iconImageView?.backgroundColor = UIColor(hex: "EEEEEE") // loading image
@@ -166,13 +177,15 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     private func updateCell(forMessageId messageId: String, withImageData data: Data) {
+        guard var viewModels = diffCalculator?.rows else {
+            return
+        }
         guard let row = viewModels.firstIndex (where: { $0.iterableMessage.messageId == messageId }) else {
             return
         }
-        var viewModel = viewModels[row]
+        let viewModel = viewModels[row]
         viewModel.imageData = data
-        viewModels[row] = viewModel
-        
+
         tableView.reloadRows(at: [IndexPath(row: row, section: 0)], with: .automatic)
     }
 }

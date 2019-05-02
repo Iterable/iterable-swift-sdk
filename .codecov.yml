@@ -1,3 +1,5 @@
 ignore:
   - "Tests"
   - "host-app"
+  - "swift-sdk/Internal/Dwifft"
+  
