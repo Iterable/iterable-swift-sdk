@@ -87,7 +87,9 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
     }
 
-    var inAppManager: IterableInAppManagerProtocolInternal
+    lazy var inAppManager: IterableInAppManagerProtocolInternal = {
+        self.dependencyContainer.createInAppManager(config: self.config, apiInternal: self)
+    } ()
     
     func register(token: Data) {
         register(token: token, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "registerToken"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "registerToken"))
@@ -506,19 +508,17 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
      */
     private var hexToken: String?
     
-    private var networkSessionProvider : () -> NetworkSessionProtocol
-    
     private var notificationStateProvider: NotificationStateProviderProtocol
     
     private var localStorage: LocalStorageProtocol
     
     private var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     
-    lazy var networkSession: NetworkSessionProtocol = {
-        networkSessionProvider()
-    }()
+    var networkSession: NetworkSessionProtocol
     
     private var urlOpener: UrlOpenerProtocol
+    
+    private var dependencyContainer: DependencyContainerProtocol
     
     /**
      * Returns the push integration name for this app depending on the config options
@@ -661,47 +661,27 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
 
     // MARK: Initialization
+    
     // Package private method. Do not call this directly.
     init(apiKey: String,
          launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
          config: IterableConfig = IterableConfig(),
-         dateProvider: DateProviderProtocol = SystemDateProvider(),
-         networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = URLSession(configuration: URLSessionConfiguration.default),
-         notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
-         localStorage: LocalStorageProtocol = UserDefaultsLocalStorage(),
-         inAppFetcher: InAppFetcherProtocol = InAppFetcher(),
-         inAppDisplayer: InAppDisplayerProtocol = InAppDisplayer(),
-         inAppPersister: InAppPersistenceProtocol = InAppFilePersister(),
-         urlOpener: UrlOpenerProtocol = AppUrlOpener(),
-         applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
-         notificationCenter: NotificationCenterProtocol = NotificationCenter.default) {
-        IterableLogUtil.sharedInstance = IterableLogUtil(dateProvider: dateProvider, logDelegate: config.logDelegate)
+         dependencyContainer: DependencyContainerProtocol = DependencyContainer()) {
+        IterableLogUtil.sharedInstance = IterableLogUtil(dateProvider: dependencyContainer.dateProvider, logDelegate: config.logDelegate)
         ITBInfo()
         self.apiKey = apiKey
-        self.config = config
-        self.dateProvider = dateProvider
-        self.networkSessionProvider = networkSession
-        self.notificationStateProvider = notificationStateProvider
-        self.localStorage = localStorage
-        self.inAppDisplayer = inAppDisplayer
-        self.urlOpener = urlOpener
         self.launchOptions = launchOptions
-
-        // setup managers
-        inAppManager = InAppManager(fetcher: inAppFetcher,
-                                    displayer: inAppDisplayer,
-                                    persister: inAppPersister,
-                                    inAppDelegate: config.inAppDelegate,
-                                    urlDelegate: config.urlDelegate,
-                                    customActionDelegate: config.customActionDelegate,
-                                    urlOpener: urlOpener,
-                                    applicationStateProvider: applicationStateProvider,
-                                    notificationCenter: notificationCenter,
-                                    dateProvider: dateProvider,
-                                    retryInterval: config.inAppDisplayInterval)
-        deeplinkManager = IterableDeeplinkManager()
+        self.config = config
+        self.dependencyContainer = dependencyContainer
+        self.dateProvider = dependencyContainer.dateProvider
+        self.networkSession = dependencyContainer.networkSession
+        self.notificationStateProvider = dependencyContainer.notificationStateProvider
+        self.localStorage = dependencyContainer.localStorage
+        self.inAppDisplayer = dependencyContainer.inAppDisplayer
+        self.urlOpener = dependencyContainer.urlOpener
+        self.deeplinkManager = IterableDeeplinkManager()
     }
-    
+
     func start() {
         ITBInfo()
         // sdk version
