@@ -88,7 +88,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
 
     lazy var inAppManager: IterableInAppManagerProtocolInternal = {
-        self.dependencyContainer.createInAppManager(config: self.config, apiInternal: self)
+        self.dependencyContainer.createInAppManager(config: self.config, internalApi: self)
     } ()
     
     func register(token: Data) {
@@ -705,7 +705,6 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
 
         handle(launchOptions: launchOptions)
         
-        inAppManager.internalApi = self
         inAppManager.start()
     }
 

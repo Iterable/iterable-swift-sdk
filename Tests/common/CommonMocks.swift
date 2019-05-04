@@ -227,8 +227,6 @@ class NoNetworkNetworkSession: NetworkSessionProtocol {
 }
 
 class MockInAppFetcher : InAppFetcherProtocol {
-    weak var internalApi: IterableAPIInternal?
-
     var syncCallback: (() -> Void)?
     
     init(messages: [IterableInAppMessage] = []) {

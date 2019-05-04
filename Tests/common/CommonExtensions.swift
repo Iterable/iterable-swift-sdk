@@ -74,7 +74,7 @@ class MockDependencyContainer : DependencyContainerProtocol {
     }
     
     func createInAppFetcher(internalApi: IterableAPIInternal) -> InAppFetcherProtocol {
-        return MockInAppFetcher()
+        return self.inAppFetcher
     }
 }
 

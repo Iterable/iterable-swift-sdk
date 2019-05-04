@@ -11,7 +11,6 @@ protocol DependencyContainerProtocol {
     var networkSession: NetworkSessionProtocol { get }
     var notificationStateProvider: NotificationStateProviderProtocol { get }
     var localStorage: LocalStorageProtocol { get }
-    var inAppFetcher: InAppFetcherProtocol { get }
     var inAppDisplayer: InAppDisplayerProtocol { get }
     var inAppPersister: InAppPersistenceProtocol { get }
     var urlOpener: UrlOpenerProtocol { get }
@@ -22,8 +21,9 @@ protocol DependencyContainerProtocol {
 }
 
 extension DependencyContainerProtocol {
-    func createInAppManager(config: IterableConfig, apiInternal: IterableAPIInternal) -> IterableInAppManagerProtocolInternal {
-        return InAppManager(fetcher: inAppFetcher,
+    func createInAppManager(config: IterableConfig, internalApi: IterableAPIInternal) -> IterableInAppManagerProtocolInternal {
+        return InAppManager(internalApi: internalApi,
+                            fetcher: createInAppFetcher(internalApi: internalApi),
                             displayer: inAppDisplayer,
                             persister: inAppPersister,
                             inAppDelegate: config.inAppDelegate,
@@ -39,14 +39,13 @@ extension DependencyContainerProtocol {
 
 struct DependencyContainer : DependencyContainerProtocol {
     func createInAppFetcher(internalApi: IterableAPIInternal) -> InAppFetcherProtocol {
-        return InAppFetcher()
+        return InAppFetcher(internalApi: internalApi)
     }
     
     let dateProvider: DateProviderProtocol = SystemDateProvider()
     let networkSession: NetworkSessionProtocol = URLSession(configuration: .default)
     let notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider()
     let localStorage: LocalStorageProtocol = UserDefaultsLocalStorage()
-    let inAppFetcher: InAppFetcherProtocol = InAppFetcher()
     let inAppDisplayer: InAppDisplayerProtocol = InAppDisplayer()
     let inAppPersister: InAppPersistenceProtocol = InAppFilePersister()
     let urlOpener: UrlOpenerProtocol = AppUrlOpener()

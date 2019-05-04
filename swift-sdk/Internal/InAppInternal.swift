@@ -7,8 +7,6 @@ import Foundation
 
 ///
 protocol InAppFetcherProtocol {
-    //
-    var internalApi: IterableAPIInternal? { get set }
     // Fetch from server and sync
     func fetch() -> Future<[IterableInAppMessage]>
 }
@@ -25,11 +23,10 @@ extension IterableInAppTriggerType {
 }
 
 class InAppFetcher : InAppFetcherProtocol {
-    init() {
+    init(internalApi: IterableAPIInternal) {
         ITBInfo()
+        self.internalApi = internalApi
     }
-    
-    weak var internalApi: IterableAPIInternal?
     
     func fetch() -> Future<[IterableInAppMessage]> {
         ITBInfo()
@@ -41,6 +38,8 @@ class InAppFetcher : InAppFetcherProtocol {
         return InAppHelper.getInAppMessagesFromServer(internalApi: internalApi, number: numMessages)
     }
 
+    private weak var internalApi: IterableAPIInternal?
+    
     deinit {
         ITBInfo()
     }
