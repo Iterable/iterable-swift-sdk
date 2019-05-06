@@ -56,23 +56,14 @@ IterableAppExtensions.framework
 
 ## Migrating from a pre-6.1.0 version of the SDK
 
-### In-app messages
-
-#### spawnInAppNotification
-
-`spawnInAppNotification` is no longer needed and will fail to compile. In-app messages are now displayed automatically.
-
-#### Polling for in-app messages
-
-Stop polling for in-app messages using a timer, etc. The SDK will issue a callback using `config.inAppDelegate` [as explained above](#overriding-whether-to-show-or-skip-a-particular-in-app-message).
-
-#### Manual handling of in-app messages
-
-If you want to handle all in-app messages manually, as before these changes, define an `inAppHandler` on `IterableConfig`. It should return `InAppShowResponse.skip` to prevent in-app messages from showing automatically. It can call `getInAppManager().getMessages()` to get the messages and `getInAppManager().showMessage(message)` to show a specific message.
-
-#### Custom actions
-
-### Consolidated deep link URL handling
+- In-app messages: `spawnInAppNotification`
+    - `spawnInAppNotification` is no longer needed and will fail to compile. In-app messages are now displayed automatically.
+- In-app messages: polling for in-app messages
+    - Stop polling for in-app messages using a timer, etc. The SDK will issue a callback using `config.inAppDelegate` [as explained above](#overriding-whether-to-show-or-skip-a-particular-in-app-message).
+- In-app messages: handling manually
+    - If you want to handle all in-app messages manually, as before these changes, define an `inAppHandler` on `IterableConfig`. It should return `InAppShowResponse.skip` to prevent in-app messages from showing automatically. It can call `getInAppManager().getMessages()` to get the messages and `getInAppManager().showMessage(message)` to show a specific message.
+- In-app messages: custom actions
+- Consolidated deep link URL handling
 
 ## Initializing the SDK
 
