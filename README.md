@@ -58,17 +58,21 @@ IterableAppExtensions.framework
 
 ### In-app messages
 
-If you are already using in-app messages, then you will have to make the following changes to your code:
+#### spawnInAppNotification
 
-1. `spawnInAppNotification` is no longer needed and will fail to compile. In-app messages are now displayed automatically.
+`spawnInAppNotification` is no longer needed and will fail to compile. In-app messages are now displayed automatically.
 
-2. Stop polling for in-app messages using a timer, etc. The SDK will issue a callback using `config.inAppDelegate` [as explained above](#overriding-whether-to-show-or-skip-a-particular-in-app-message).
+#### Polling for in-app messages
 
-3. If you want to handle all in-app messages manually, as before these changes, define an `inAppHandler` on `IterableConfig`. It should return `InAppShowResponse.skip` to prevent in-app messages from showing automatically. It can call `getInAppManager().getMessages()` to get the messages and `getInAppManager().showMessage(message)` to show a specific message.
+Stop polling for in-app messages using a timer, etc. The SDK will issue a callback using `config.inAppDelegate` [as explained above](#overriding-whether-to-show-or-skip-a-particular-in-app-message).
 
-### Actions
+#### Manual handling of in-app messages
 
-### Deep link URLs
+If you want to handle all in-app messages manually, as before these changes, define an `inAppHandler` on `IterableConfig`. It should return `InAppShowResponse.skip` to prevent in-app messages from showing automatically. It can call `getInAppManager().getMessages()` to get the messages and `getInAppManager().showMessage(message)` to show a specific message.
+
+#### Custom actions
+
+### Consolidated deep link URL handling
 
 ## Initializing the SDK
 
@@ -283,8 +287,6 @@ After tapping a deep link in an email from an Iterable campaign, users without t
 Set `IterableConfig.checkForDeferredDeeplink = true` to enable deferred deep linking for IterableSDK.
 	
 ### In-app messages
-
-If you are already using in-app messages with IterableSDK, please check out the [migration section](#Migrating-in-app-messages-from-the-previous-version-of-the-SDK). 
 
 In-app messages are handled via silent push messages from the server. When your application receives a silent push, you need to call IterableSDK in your AppDelegate as in the following code:
 
