@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.1.0-beta3
+#### Changed
+- Increase number of in-app messages fetched from the server to 100.
+
 ## 6.1.0-beta2
 #### Added
 - Support for `action://your-custom-action-name` URL scheme for calling custom actions 
