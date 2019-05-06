@@ -56,8 +56,8 @@ open class IterableInboxNavigationViewController: UINavigationController {
     private func setup() {
         let inboxViewController: IterableInboxViewController
         if viewControllers.count > 0 {
-            ITBError("You should either use IterableInboxViewController or IterableInboxNavigationViewController")
-            // This is not usual. When here it means that they have used both NavController and TableViewController
+            // Means this view controller was initialized in code and we have set
+            // the rootViewController.
             guard let viewController = viewControllers[0] as? IterableInboxViewController else {
                 assertionFailure("RootViewController must be of type IterableInboxViewController")
                 return
