@@ -17,12 +17,13 @@ open class IterableInboxNavigationViewController: UINavigationController {
             }
         }
     }
-
+    
     // MARK: Initializers
     
     /// This initializer should be used when initializing from Code.
     public init() {
-        super.init(rootViewController: IterableInboxViewController(style: .plain))
+        ITBInfo()
+        super.init(nibName: nil, bundle: nil)
         setup()
     }
     
@@ -34,9 +35,23 @@ open class IterableInboxNavigationViewController: UINavigationController {
     }
     
     override open func viewDidLoad() {
+        ITBInfo()
         super.viewDidLoad()
 
-        // Do any additional setup after loading the view.
+        // Add "Done" button if this view is being presented by another view controller
+        // We have to do the following asynchronously because
+        // self.presentingViewController is not set yet.
+        DispatchQueue.main.async { [weak self] in
+            guard let strongSelf = self, strongSelf.viewControllers.count > 0 else {
+                return
+            }
+            if let _ = strongSelf.presentingViewController {
+                let viewController = strongSelf.viewControllers[0]
+                if viewController.navigationItem.leftBarButtonItem == nil && viewController.navigationItem.rightBarButtonItem == nil {
+                    viewController.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(strongSelf.onDoneTapped))
+                }
+            }
+        }
     }
 
     /// Do not use this
@@ -69,5 +84,10 @@ open class IterableInboxNavigationViewController: UINavigationController {
         }
         
         inboxViewController.cellNibName = self.cellNibName
+    }
+    
+    @objc private func onDoneTapped() {
+        ITBInfo()
+        presentingViewController?.dismiss(animated: true)
     }
 }
