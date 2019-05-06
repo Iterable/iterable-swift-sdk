@@ -464,9 +464,7 @@ Iterable will track uninstalls with no additional work by you.
 
 To do this, Iterable sends a silent push notification some time (currently, twelve hours) after a campaign has been sent. Based on this silent push notification, if Iterable receives feedback that the device token is no longer valid, it assigns an uninstall to the device based on the prior campaign. Similarly, if a "real" campaign uncovers an invalid device token, it will also check for a prior (within twelve hours) campaign to mark as the cause for the uninstall. If there was no recent campaign, Iterable still tracks the uninstall, but does not attribute it to a campaign.
 
-
-	
-## Additional Information
+## Additional information
 
 For more information, take a look at:
 
@@ -480,7 +478,7 @@ The MIT License
 
 See [LICENSE](https://github.com/Iterable/swift-sdk/blob/master/LICENSE?raw=true)
 
-## Want to Contribute?
+## Want to contribute?
 
 This library is open source, and we will look at pull requests!
 
