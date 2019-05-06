@@ -40,6 +40,10 @@ open class IterableInboxViewController: UITableViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = UITableView.automaticDimension
         
+        // Set footer view so that we don't see table view separators
+        // for the empty rows.
+        tableView.tableFooterView = UIView()
+        
         registerTableViewCell()
     }
 
