@@ -8,7 +8,8 @@
 
 ## Before Starting
 
-Before you even start with the SDK, you will need to setup Iterable push notifications for your app. 
+Before you even start with the SDK, you will need to setup Iterable push
+notifications for your app.
 
 For more information, see [Getting Started Guide](https://support.iterable.com/hc/en-us/articles/115000315806-Setting-Up-iOS-Push-Notifications). 
  
@@ -464,19 +465,21 @@ You can not inherit in case of Objective C. You will have to delegate like below
 
 ```
 	
-# Additional Information
+## Additional Information
 
-See our [setup guide](https://support.iterable.com/hc/en-us/articles/115000315806-Setting-Up-iOS-Push-Notifications) for more information.
+For more information, take a look at:
 
-Also see our [push notification setup FAQs](http://support.iterable.com/hc/en-us/articles/206791196-Push-Notification-Setup-FAQ-s).
+- Iterable's [iOS SDK Release Notes](https://support.iterable.com/hc/articles/360027798391)
+- Iterable's [Setting Up iOS Push Notifications](https://support.iterable.com/hc/articles/115000315806-Setting-Up-iOS-Push-Notifications) guide
+- Iterable's [Push Notification Setup FAQs](http://support.iterable.com/hc/articles/206791196-Push-Notification-Setup-FAQ-s)
 
-# License
+## License
 
 The MIT License
 
 See [LICENSE](https://github.com/Iterable/swift-sdk/blob/master/LICENSE?raw=true)
 
-# Want to Contribute?
+## Want to Contribute?
 
 This library is open source, and we will look at pull requests!
 
