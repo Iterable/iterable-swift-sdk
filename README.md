@@ -29,7 +29,6 @@ If you want to include Iterable Rich Notification Extension you will also need t
 pod 'Iterable-iOS-AppExtensions'
 ```
 
-
 Please look at the included sample pod file [HERE](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app/Podfile?raw=true).
 
 Congratulations! You have now imported Iterable SDK into your project! 
@@ -54,9 +53,25 @@ IterableAppExtensions.framework
 3. In build settings, set `Always Embed Swift Standard Libraries` setting to 'Yes'. This is required for Objective C projects.
 	
 	![Linking](https://github.com/Iterable/swift-sdk/blob/master/images/build-setting.png?raw=true)
- 
+
+## Migrating from a pre-6.1.0 version of the SDK
+
+### In-app messages
+
+If you are already using in-app messages, then you will have to make the following changes to your code:
+
+1. `spawnInAppNotification` is no longer needed and will fail to compile. In-app messages are now displayed automatically.
+
+2. Stop polling for in-app messages using a timer, etc. The SDK will issue a callback using `config.inAppDelegate` [as explained above](#overriding-whether-to-show-or-skip-a-particular-in-app-message).
+
+3. If you want to handle all in-app messages manually, as before these changes, define an `inAppHandler` on `IterableConfig`. It should return `InAppShowResponse.skip` to prevent in-app messages from showing automatically. It can call `getInAppManager().getMessages()` to get the messages and `getInAppManager().showMessage(message)` to show a specific message.
+
+### Actions
+
+### Deep link URLs
 
 ## Initializing the SDK
+
 **Note:** Sample projects are included in this repo.
  
 - [Swift Sample Project](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app?raw=true)
@@ -82,7 +97,6 @@ import IterableSDK
 @import IterableSDK;
 ```
 
-
 ### 2. Initialize the API with API key.
 	
 In your app delegate, on application launch in `application:didFinishLaunchingWithOptions:` method, initialize the Iterable SDK:
@@ -106,7 +120,9 @@ config.pushIntegrationName = @"<your-iterable-push-integration-name>";
 See the Iterable guide on how to setup your Iterable push integration and obtain push integration name [here](https://support.iterable.com/hc/en-us/articles/115000315806-Setting-Up-iOS-Push-Notifications).	
 	
 ### 3. Set userId or email. 
+
 Once you know the email or userId of the user, set the value.
+
 > &#x26A0; Don't specify both email and userId in the same session, as they will be treated as different users by the SDK. Only use one type of identifier, email or userId, to identify the user.
 *Swift*
 	
@@ -339,6 +355,7 @@ config.inAppDelegate = self; // or other class implementing the protocol
 ```
 
 #### Getting the local queue of in-app messages
+
 Until they are consumed by the app, all in-app messages that arrive from the server are stored in a local queue. To access that local queue, use the read-only `IterableAPI.inAppManager` property (which conforms to the `InAppManager` protocol). By default, all in-app messages in the local queue will be consumed and removed from this queue. To keep in-app messages around after they are shown, override the default behavior (as described above).
 	
 *Swift*
@@ -386,15 +403,6 @@ config.customActionDelegate = YourCustomActionDelegate()
 #### Changing the display interval between in-app messages
 
 To customize the time delay between successive in-app messages (default value of 30 seconds), set `IterableConfig.inAppDisplayInterval` to an appropriate value (in seconds). 
-
-#### Migrating in-app messages from the previous version of the SDK
-
-If you are already using in-app messages, then you will have to make the following changes to your code:
-
-1. `spawnInAppNotification` is no longer needed and will fail to compile. In-app messages are now displayed automatically.
-2. Stop polling for in-app messages using a timer, etc. The SDK will issue a callback using `config.inAppDelegate` [as explained above](#overriding-whether-to-show-or-skip-a-particular-in-app-message).
-3. If you want to handle all in-app messages manually, as before these changes, define an `inAppHandler` on `IterableConfig`. It should return `InAppShowResponse.skip` to prevent in-app messages from showing automatically. It can call `getInAppManager().getMessages()` to get the messages and `getInAppManager().showMessage(message)` to show a specific message.
-
 
 ### Tracking custom events
 
