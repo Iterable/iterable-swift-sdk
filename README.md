@@ -54,7 +54,7 @@ IterableAppExtensions.framework
 	
 	![Linking](https://github.com/Iterable/swift-sdk/blob/master/images/build-setting.png?raw=true)
 
-## Migrating from an older (before 6.1.0) version of the SDK
+## Migrating from a version prior to 6.1.0
 
 - In-app messages: `spawnInAppNotification`
     - `spawnInAppNotification` is no longer needed and will fail to compile. In-app messages are now displayed automatically.
