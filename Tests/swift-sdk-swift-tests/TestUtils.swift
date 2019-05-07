@@ -64,6 +64,24 @@ struct TestUtils {
         return NSDictionary(dictionary: dict1).isEqual(to: dict2)
     }
     
+    static func validateEqual(date1: Date?, date2: Date?) {
+        if !areEqual(date1: date1, date2: date2) {
+            XCTFail("date1: \(date1?.description ?? "nil") and date2: \(date2?.description ?? "nil") are not equal")
+        }
+    }
+    
+    static func areEqual(date1: Date?, date2: Date?) -> Bool {
+        guard let date1 = date1 else {
+            return date2 == nil
+        }
+        guard let date2 = date2 else {
+            return false
+        }
+        
+        return abs(date1.timeIntervalSinceReferenceDate - date2.timeIntervalSinceReferenceDate) < 0.001
+    }
+
+    
     private static func validateQueryParameters(inUrlComponents urlComponents: URLComponents, queryParams: [(name:String, value:String)]) {
         queryParams.forEach { (name, value) in
             validateQueryParameter(inUrlComponents: urlComponents, withName: name, andValue: value)

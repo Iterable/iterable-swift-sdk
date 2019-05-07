@@ -99,11 +99,13 @@ struct InAppMessageParser {
         let inboxMetadata = parseInboxMetadata(fromPayload: json)
         let trigger = parseTrigger(fromTriggerElement: json[.ITBL_IN_APP_TRIGGER] as? [AnyHashable : Any])
         let customPayload = parseCustomPayload(fromPayload: json)
-        let expiresAt = parseExpiresAt(dict: json)
+        let createdAt = parseTime(withKey: .inboxCreatedAt, fromJson: json)
+        let expiresAt = parseTime(withKey: .inboxExpiresAt, fromJson: json)
         
         return .success(IterableInAppMessage(messageId: messageId,
                              campaignId: campaignId,
                              trigger: trigger,
+                             createdAt: createdAt,
                              expiresAt: expiresAt,
                              content: content,
                              saveToInbox: saveToInbox,
@@ -111,15 +113,10 @@ struct InAppMessageParser {
                              customPayload: customPayload))
     }
     
-    private static func parseExpiresAt(dict: [AnyHashable : Any]) -> Date? {
-        guard let intValue = dict[.ITBL_IN_APP_EXPIRES_AT] as? Int else {
-            return nil
-        }
-        
-        let seconds = Double(intValue) / 1000.0
-        return Date(timeIntervalSince1970: seconds)
+    private static func parseTime(withKey key: JsonKey, fromJson json: [AnyHashable : Any]) -> Date? {
+        return json.getIntValue(key: key).map(IterableUtil.date(fromInt:))
     }
-    
+
     private static func parseTrigger(fromTriggerElement element: [AnyHashable : Any]?) -> IterableInAppTrigger {
         guard let element = element else {
             return .defaultTrigger // if element is missing return default which is immediate

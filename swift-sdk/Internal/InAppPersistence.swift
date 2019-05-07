@@ -219,6 +219,7 @@ extension IterableInAppMessage : Codable {
         case inboxMetadata
         case messageId
         case campaignId
+        case createdAt
         case expiresAt
         case customPayload
         case didProcessTrigger
@@ -246,6 +247,7 @@ extension IterableInAppMessage : Codable {
         let inboxMetadata = (try? container.decode(IterableInboxMetadata.self, forKey: .inboxMetadata))
         let messageId = (try? container.decode(String.self, forKey: .messageId)) ?? ""
         let campaignId = (try? container.decode(String.self, forKey: .campaignId)) ?? ""
+        let createdAt = (try? container.decode(Date.self, forKey: .createdAt))
         let expiresAt = (try? container.decode(Date.self, forKey: .expiresAt))
         let customPayloadData = try? container.decode(Data.self, forKey: .customPayload)
         let customPayload = IterableInAppMessage.deserializeCustomPayload(withData: customPayloadData)
@@ -259,6 +261,7 @@ extension IterableInAppMessage : Codable {
         self.init(messageId: messageId,
                   campaignId: campaignId,
                   trigger: trigger,
+                  createdAt: createdAt,
                   expiresAt: expiresAt,
                   content: content,
                   saveToInbox: saveToInbox,
@@ -277,6 +280,7 @@ extension IterableInAppMessage : Codable {
         try? container.encode(saveToInbox, forKey: .saveToInbox)
         try? container.encode(messageId, forKey: .messageId)
         try? container.encode(campaignId, forKey: .campaignId)
+        try? container.encode(createdAt, forKey: .createdAt)
         try? container.encode(expiresAt, forKey: .expiresAt)
         try? container.encode(IterableInAppMessage.serialize(customPayload: customPayload), forKey: .customPayload)
         try? container.encode(didProcessTrigger, forKey: .didProcessTrigger)

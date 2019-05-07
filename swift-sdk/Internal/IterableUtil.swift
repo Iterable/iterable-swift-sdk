@@ -39,6 +39,17 @@ enum IterableResult<T, E> {
         return UUID().uuidString
     }
     
+    /// int is milliseconds since epoch.
+    static func date(fromInt int: Int) -> Date {
+        let seconds = Double(int) / 1000.0 // millis -> seconds
+        return Date(timeIntervalSince1970: seconds)
+    }
+    
+    /// milliseconds since epoch.
+    static func int(fromDate date: Date) -> Int {
+        return Int(date.timeIntervalSince1970 * 1000)
+    }
+    
     // given "var1", "val1", "var2", "val2" as input
     // this will return "var1: val1, var2: val2"
     // this is useful for description of an object or struct
