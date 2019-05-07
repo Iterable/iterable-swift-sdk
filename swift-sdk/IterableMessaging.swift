@@ -102,17 +102,17 @@ public final class IterableHtmlInAppContent : NSObject, IterableInAppContent {
 @objcMembers
 public final class IterableInboxMetadata : NSObject {
     public let title: String?
-    public let subTitle: String?
+    public let subtitle: String?
     public let icon: String?
     
     // Internal
     init(
         title: String? = nil,
-        subTitle: String? = nil,
+        subtitle: String? = nil,
         icon: String? = nil
         ) {
         self.title = title
-        self.subTitle = subTitle
+        self.subtitle = subtitle
         self.icon = icon
     }
 }

@@ -145,7 +145,7 @@ open class IterableInboxViewController: UITableViewController {
     
     private func configure(cell: IterableInboxCell, forViewModel viewModel: InboxMessageViewModel) {
         cell.titleLbl?.text = viewModel.title
-        cell.subTitleLbl?.text = viewModel.subTitle
+        cell.subtitleLbl?.text = viewModel.subtitle
         cell.unreadCircleView?.isHidden = viewModel.read
         
         cell.iconImageView?.clipsToBounds = true

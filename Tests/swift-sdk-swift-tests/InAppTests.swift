@@ -1160,7 +1160,7 @@ extension IterableHtmlInAppContent {
 extension IterableInboxMetadata {
     public override var description: String {
         return IterableUtil.describe("title", title ?? "nil",
-                                     "subTitle", subTitle ?? "nil",
+                                     "subtitle", subtitle ?? "nil",
                                      "icon", icon ?? "nil",
                                      pairSeparator: " = ", separator: ", ")
     }

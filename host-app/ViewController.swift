@@ -201,7 +201,7 @@ class ViewController: UIViewController {
             <a href="http://website/resource#something">Click Me</a>
         """
         let content = IterableHtmlInAppContent(edgeInsets: UIEdgeInsets(top: -1, left: 10, bottom: -1, right: 10), backgroundAlpha: 0.5, html: html)
-        let inboxMetadata = IterableInboxMetadata(title: "Title #1", subTitle: "Subtitle #1", icon: nil)
+        let inboxMetadata = IterableInboxMetadata(title: "Title #1", subtitle: "Subtitle #1", icon: nil)
         let message = IterableInAppMessage(messageId: messageId, campaignId: "zeeCampaignId", trigger: IterableInAppTrigger(dict: ["type" : "never"]), content: content, saveToInbox: true, inboxMetadata: inboxMetadata)
         
         let config = IterableConfig()

@@ -165,7 +165,7 @@ public extension AnyHashable {
 public enum JsonKey : String {
     // Inbox Message
     case inboxTitle = "title"
-    case inboxSubtitle = "subTitle"
+    case inboxSubtitle = "subtitle"
     case inboxIcon = "icon"
 }
 

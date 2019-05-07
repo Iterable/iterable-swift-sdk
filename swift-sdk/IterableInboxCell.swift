@@ -18,7 +18,7 @@ open class IterableInboxCell: UITableViewCell {
     @IBOutlet weak open var titleLbl: UILabel?
 
     /// The sub title label
-    @IBOutlet weak open var subTitleLbl: UILabel?
+    @IBOutlet weak open var subtitleLbl: UILabel?
     
     /// This shows the time when the message was created
     @IBOutlet weak open var createdAtLbl: UILabel?

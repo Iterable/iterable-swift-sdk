@@ -138,9 +138,9 @@ struct InAppMessageParser {
         }
         
         let title = inboxMetadataDict.getStringValue(key: .inboxTitle)
-        let subTitle = inboxMetadataDict.getStringValue(key: .inboxSubtitle)
+        let subtitle = inboxMetadataDict.getStringValue(key: .inboxSubtitle)
         let icon = inboxMetadataDict.getStringValue(key: .inboxIcon)
         
-        return IterableInboxMetadata(title: title, subTitle: subTitle, icon: icon)
+        return IterableInboxMetadata(title: title, subtitle: subtitle, icon: icon)
     }
 }
