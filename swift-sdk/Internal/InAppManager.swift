@@ -17,12 +17,12 @@ extension NotificationCenter : NotificationCenterProtocol {
 
 // This is internal. Do not expose
 protocol IterableInAppManagerProtocolInternal : IterableInAppManagerProtocol, InAppNotifiable {
-    var internalApi: IterableAPIInternal? { get set }
     func start()
 }
 
 class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
-    init(fetcher: InAppFetcherProtocol,
+    init(internalApi: IterableAPIInternal,
+         fetcher: InAppFetcherProtocol,
          displayer: InAppDisplayerProtocol,
          persister: InAppPersistenceProtocol,
          inAppDelegate: IterableInAppDelegate,
@@ -34,6 +34,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
          dateProvider: DateProviderProtocol,
          retryInterval: Double) {
         ITBInfo()
+        self.internalApi = internalApi
         self.fetcher = fetcher
         self.displayer = displayer
         self.persister = persister
@@ -470,12 +471,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         return message.consumed == false && isExpired(message: message, currentDate: currentDate) == false
     }
     
-    weak var internalApi: IterableAPIInternal? {
-        didSet {
-            fetcher.internalApi = internalApi
-        }
-    }
-
+    private weak var internalApi: IterableAPIInternal?
     private var fetcher: InAppFetcherProtocol // this is mutable because we need to set internalApi
     private let displayer: InAppDisplayerProtocol
     private let inAppDelegate: IterableInAppDelegate
