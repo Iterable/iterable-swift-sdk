@@ -56,21 +56,59 @@ IterableAppExtensions.framework
 ## Migrating from a version prior to 6.1.0
 
 - Version 6.1.0 of the SDK requires Xcode 10.2.
+
 - In-app messages: `spawnInAppNotification`
-    - `spawnInAppNotification` is no longer needed and will fail to compile. In-app messages are now displayed automatically.
-- In-app messages: polling for in-app messages
-    - Stop polling for in-app messages using a timer, etc. The SDK will issue a callback using `config.inAppDelegate` [as explained below](#overriding-whether-to-show-or-skip-a-particular-in-app-message).
+
+    - `spawnInAppNotification` is no longer needed and will fail to compile.
+    The SDK now displays in-app messages automatically. For more information,
+	see [In-app messages](#in-app-messages).
+
+	- There is no need to poll the server for new messages.
+
 - In-app messages: handling manually
-    - If you want to handle all in-app messages manually, as with prior versions of the SDK, define an `inAppHandler` on `IterableConfig`. It should return `InAppShowResponse.skip` to prevent in-app messages from showing automatically. It can call `getInAppManager().getMessages()` to get the messages and `getInAppManager().showMessage(message)` to show a specific message.
+
+    - To control when in-app messages display (rather than displaying them
+    automatically), set an `inAppDelegate` (an object that conforms to the
+    `IterableInAppDelegate` protocol) on `IterableConfig`. From the `onNew`
+	(Swift) method, return `.skip`.
+
+    - To get the queue of available in-app messages, call
+    `IterableApi.inAppManager.getMessages()`. Then, call
+    `IterableApi.inAppManager.show(message)` to show a specific message.
+
+	- For more details, see [In-app messages](#in-app-messages).
+
+- In-app messages: custom actions
+
+   - This version of the SDK reserves the `iterable://` URL scheme for
+    Iterable-defined actions handled by the SDK and the `action://` URL
+    scheme for custom actions handled by the mobile application's custom
+    action handler. For more details, see 
+    [Handling in-app message buttons and links](#handling-in-app-message-buttons-and-links). .
+
+    - If you are currently using the `itbl://` URL scheme for custom actions,
+    the SDK will still pass these actions to the custom action handler.
+    However, support for this URL scheme will eventually be removed (timeline
+    TBD), so it is best to move templates to the `action://` URL scheme as
+    it's possible to do so.
+
 - Consolidated deep link URL handling
-	- By default, the beta SDK handles deep links with the the URL delegate assigned to `IterableConfig`. Follow the instructions in [Deep Linking](#deep-linking) to migrate any existing URL handling code to this new API.
+
+    - By default, the beta SDK handles deep links with the the URL delegate
+    assigned to `IterableConfig`. Follow the instructions in 
+	[Deep Linking](#deep-linking) to migrate any existing URL handling code 
+	to this new API.
+
+## Sample projects
+
+For sample projects, look at the following repositories:
+
+- [Swift sample project](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app?raw=true)
+- [Objective-C sample project](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/objc-sample-app?raw=true)
 
 ## Initializing the SDK
 
-**Note:** Sample projects are included in this repo.
- 
-- [Swift sample project](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app?raw=true)
-- [Objective-C sample project](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/objc-sample-app?raw=true)
+Follow these instructions to use the Iterable iOS SDK:
 
 ### 1. Import IterableSDK module in your project
 
