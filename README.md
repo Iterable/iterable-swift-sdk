@@ -68,9 +68,8 @@ IterableAppExtensions.framework
 - In-app messages: handling manually
 
     - To control when in-app messages display (rather than displaying them
-    automatically), set an `inAppDelegate` (an object that conforms to the
-    `IterableInAppDelegate` protocol) on `IterableConfig`. From the `onNew`
-	(Swift) method, return `.skip`.
+    automatically), set `IterableConfig.inAppDelegate` (an 
+	`IterableInAppDelegate` object). From its `onNew` method, return `.skip`.
 
     - To get the queue of available in-app messages, call
     `IterableApi.inAppManager.getMessages()`. Then, call
@@ -89,12 +88,12 @@ IterableAppExtensions.framework
     - If you are currently using the `itbl://` URL scheme for custom actions,
     the SDK will still pass these actions to the custom action handler.
     However, support for this URL scheme will eventually be removed (timeline
-    TBD), so it is best to move templates to the `action://` URL scheme as
-    it's possible to do so.
+    TBD), so it is best to move to the `action://` URL scheme as it's 
+	possible to do so.
 
 - Consolidated deep link URL handling
 
-    - By default, the beta SDK handles deep links with the the URL delegate
+    - By default, the SDK handles deep links with the the URL delegate
     assigned to `IterableConfig`. Follow the instructions in 
 	[Deep Linking](#deep-linking) to migrate any existing URL handling code 
 	to this new API.
@@ -466,12 +465,34 @@ NSArray *messages = [IterableAPI.inAppManager getMessages];
 
 #### Handling in-app message buttons and links
 
-Button and link clicks in in-app messages are handled similarly to [deep links](#deep-linking) in push notifications and emails. If a user taps a button or link in an in-app message, and its `href` contains a URL (which is usually the case), the SDK will call the `handle` method of `IterableConfig.urlDelegate` (an object of type `IterableURLDelegate`), if it is set. If this delegate is not set, by default the URL found in the `href` property will open in Safari.
-	
-Custom actions are specified by passing `action://customActionName` as the link URL (notice the `action://` scheme name). If the in-app message's `href` property contains a custom action, tapping the message will call the `handle` method of `IterableConfig.customActionDelegate` (an object that conforms to the `IterableCustomActionDelegate` protocol). If `customActionDelegate` is not set, by default nothing will happen.
+The SDK handles in-app message buttons and links as follows:
 
-Take a look at [this sample code](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app/swift-sample-app/AppDelegate.swift), which demonstrates how to implement and use the `IterableURLDelegate` and `IterableCustomActionDelegate` protocols.
-	
+- If the URL of the button or link uses the `action://` URL scheme, the SDK
+passes the action to `IterableConfig.customActionDelegate.handle()`. If 
+`customActionDelegate` (an `IterableCustomActionDelegate` object) has not 
+been set, the action will not be handled.
+
+    - For the time being, the SDK will treat `itbl://` URLs the same way as
+    `action://` URLs. However, this behavior will eventually be deprecated
+    (timeline TBD), so it's best to migrate to the `action://` URL scheme
+    as it's possible to do so.
+
+- The `iterable://` URL scheme is reserved for action names predefined by
+the SDK. If the URL of the button or link uses an `iterable://` URL known
+to the SDK, it will be handled automatically and will not be passed to the
+custom action handler.
+
+- The SDK passes all other URLs to `IterableConfig.urlDelegate.handle()`. If
+`urlDelegate` (an `IterableUrlDelegate` object) has not been set, or if it 
+returns `false` for the provided URL, the URL will be opened by the system 
+(using a web browser or other application, as applicable).
+
+Take a look at [this sample code](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app/swift-sample-app/AppDelegate.swift) 
+for a demonstration of how to implement and use the `IterableURLDelegate` and `IterableCustomActionDelegate` protocols.
+
+The following code demonstrates how to assign a `urlDelegate` and
+`customActionDelegate` to an `IterableConfig` object:
+
 ```swift
 let config = IterableConfig()
 config.urlDelegate = YourCustomUrlDelegate()
