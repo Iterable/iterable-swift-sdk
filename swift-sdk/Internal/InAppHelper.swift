@@ -21,8 +21,8 @@ struct InAppHelper {
     
     enum InAppClickedUrl {
         case localResource(name: String) // applewebdata://abc-def/something => something
-        case iterableCustomAction(name: String) // itbl://something => something
-        case customAction(name: String) // action:something => something
+        case iterableCustomAction(name: String) // iterable://something => something
+        case customAction(name: String) // action:something => something or itbl://something => something
         case regularUrl(URL) // https://something => https://something
     }
     
@@ -39,10 +39,10 @@ struct InAppHelper {
                 return nil
             }
             return .localResource(name: urlPath)
-        case .itbl:
-            return .iterableCustomAction(name: dropScheme(urlString: url.absoluteString, scheme: UrlScheme.itbl.rawValue))
-        case .action:
-            return .customAction(name: dropScheme(urlString: url.absoluteString, scheme: UrlScheme.action.rawValue))
+        case .iterable:
+            return .iterableCustomAction(name: dropScheme(urlString: url.absoluteString, scheme: scheme.rawValue))
+        case .action, .itbl:
+            return .customAction(name: dropScheme(urlString: url.absoluteString, scheme: scheme.rawValue))
         case .other:
             return .regularUrl(url)
         }
@@ -50,8 +50,9 @@ struct InAppHelper {
     
     private enum UrlScheme : String {
         case applewebdata = "applewebdata"
-        case itbl = "itbl"
+        case iterable = "iterable"
         case action = "action"
+        case itbl = "itbl" // this is for backward compatibility and should be handled just like action://
         case other
         
         fileprivate static func from(url: URL) -> UrlScheme? {

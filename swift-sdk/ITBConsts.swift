@@ -171,7 +171,7 @@ public enum JsonKey : String {
     case inboxCreatedAt = "createdAt"
 }
 
-// These are custom action for "itbl://delete" etc.
+// These are custom action for "iterable://delete" etc.
 public enum IterableCustomActionName : String, CaseIterable {
     case dismiss
     case delete
