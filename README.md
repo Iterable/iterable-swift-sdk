@@ -482,6 +482,9 @@ the SDK. If the URL of the button or link uses an `iterable://` URL known
 to the SDK, it will be handled automatically and will not be passed to the
 custom action handler.
 
+    - The SDK does not yet recognize any `iterable://` actions, but may
+    do so in the future.
+
 - The SDK passes all other URLs to `IterableConfig.urlDelegate.handle()`. If
 `urlDelegate` (an `IterableUrlDelegate` object) has not been set, or if it 
 returns `false` for the provided URL, the URL will be opened by the system 
