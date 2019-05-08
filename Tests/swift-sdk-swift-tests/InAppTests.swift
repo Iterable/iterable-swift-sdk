@@ -362,6 +362,26 @@ class InAppTests: XCTestCase {
         
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
     }
+    
+    func testShowInAppWithCustomActionBackwardCompatibility() {
+        let customActionScheme = "itbl"
+        let customActionName = "my_custom_action"
+        let expectation1 = expectation(description: "verify custom action is called, customActionScheme: \(customActionScheme), customActionName: \(customActionName)")
+        verifyCustomActionIsCalled(expectation: expectation1,
+                                   customActionScheme: customActionScheme,
+                                   customActionName: customActionName)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+    
+    func testShowInAppWithCustomAction1() {
+        let customActionScheme = "action"
+        let customActionName = "my_custom_action"
+        let expectation1 = expectation(description: "verify custom action is called, customActionScheme: \(customActionScheme), customActionName: \(customActionName)")
+        verifyCustomActionIsCalled(expectation: expectation1,
+                                   customActionScheme: customActionScheme,
+                                   customActionName: customActionName)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
 
     // Check that onNew is called just once if the messageId is same.
     func testOnNewNotCalledMultipleTimes() {
@@ -1005,6 +1025,50 @@ class InAppTests: XCTestCase {
         
         XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
     }
+    
+    fileprivate func verifyCustomActionIsCalled(expectation: XCTestExpectation, customActionScheme: String, customActionName: String) {
+        let mockInAppSynchronizer = MockInAppSynchronizer()
+        
+        let customActionUrl = "\(customActionScheme)://\(customActionName)"
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _) in
+            mockInAppDisplayer.click(url: URL(string: customActionUrl)!)
+        }
+        
+        let mockCustomActionDelegate = MockCustomActionDelegate(returnValue: true)
+        mockCustomActionDelegate.callback = {(actionName, context) in
+            XCTAssertEqual(actionName, customActionName)
+            expectation.fulfill()
+        }
+        
+        let config = IterableConfig()
+        config.inAppDelegate = MockInAppDelegate(showInApp: .show)
+        config.customActionDelegate = mockCustomActionDelegate
+        
+        IterableAPI.initializeForTesting(
+            config: config,
+            inAppSynchronizer: mockInAppSynchronizer,
+            inAppDisplayer: mockInAppDisplayer
+        )
+        
+        let payload = """
+            {"inAppMessages":
+            [
+            {
+            "saveToInbox": true,
+            "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'\(customActionUrl)'>Click Here</a>"},
+            "trigger": {"type": "immediate"},
+            "messageId": "message0",
+            "campaignId": "campaign1",
+            "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+            ]
+            }
+            """.toJsonDict()
+        
+        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
+    }
+    
 }
 
 extension IterableInAppTrigger {
