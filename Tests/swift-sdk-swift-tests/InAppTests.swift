@@ -368,9 +368,10 @@ class InAppTests: XCTestCase {
         
         let mockInAppFetcher = MockInAppFetcher()
         
+        let iterableDeleteUrl = "iterable://delete"
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShowCallback = {(_, _) in
-            mockInAppDisplayer.click(url: URL(string: "itbl://delete")!)
+            mockInAppDisplayer.click(url: URL(string: iterableDeleteUrl)!)
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
             expectation1.fulfill()
         }
@@ -389,7 +390,7 @@ class InAppTests: XCTestCase {
         [
             {
                 "saveToInbox": true,
-                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'itbl://itbl_inapp_delete'>Click Here</a>"},
+                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'\(iterableDeleteUrl)'>Click Here</a>"},
                 "trigger": {"type": "immediate"},
                 "messageId": "message0",
                 "campaignId": "campaign1",
@@ -407,15 +408,16 @@ class InAppTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-    
+
     func testShowInAppWithIterableCustomActionDismiss() {
         let expectation1 = expectation(description: "custom action dismiss called")
         
         let mockInAppFetcher = MockInAppFetcher()
         
+        let iterableDismissUrl = "iterable://dismiss"
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShowCallback = {(_, _) in
-            mockInAppDisplayer.click(url: URL(string: "itbl://dismiss")!)
+            mockInAppDisplayer.click(url: URL(string: iterableDismissUrl)!)
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
             expectation1.fulfill()
         }
@@ -434,7 +436,7 @@ class InAppTests: XCTestCase {
         [
             {
                 "saveToInbox": true,
-                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'itbl://itbl_inapp_dismiss'>Click Here</a>"},
+                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'\(iterableDismissUrl)'>Click Here</a>"},
                 "trigger": {"type": "immediate"},
                 "messageId": "message0",
                 "campaignId": "campaign1",
@@ -452,6 +454,25 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
+    func testShowInAppWithCustomActionBackwardCompatibility() {
+        let customActionScheme = "itbl"
+        let customActionName = "my_custom_action"
+        let expectation1 = expectation(description: "verify custom action is called, customActionScheme: \(customActionScheme), customActionName: \(customActionName)")
+        verifyCustomActionIsCalled(expectation: expectation1,
+                                   customActionScheme: customActionScheme,
+                                   customActionName: customActionName)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+
+    func testShowInAppWithCustomAction1() {
+        let customActionScheme = "action"
+        let customActionName = "my_custom_action"
+        let expectation1 = expectation(description: "verify custom action is called, customActionScheme: \(customActionScheme), customActionName: \(customActionName)")
+        verifyCustomActionIsCalled(expectation: expectation1,
+                                   customActionScheme: customActionScheme,
+                                   customActionName: customActionName)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
 
     // Check that onNew is called just once if the messageId is same.
     func testOnNewNotCalledMultipleTimes() {
@@ -1147,6 +1168,54 @@ class InAppTests: XCTestCase {
 
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
+    
+    fileprivate func verifyCustomActionIsCalled(expectation: XCTestExpectation, customActionScheme: String, customActionName: String) {
+        let mockInAppFetcher = MockInAppFetcher()
+        
+        let customActionUrl = "\(customActionScheme)://\(customActionName)"
+        let mockInAppDisplayer = MockInAppDisplayer()
+        mockInAppDisplayer.onShowCallback = {(_, _) in
+            mockInAppDisplayer.click(url: URL(string: customActionUrl)!)
+        }
+        
+        let mockCustomActionDelegate = MockCustomActionDelegate(returnValue: true)
+        mockCustomActionDelegate.callback = {(actionName, context) in
+            XCTAssertEqual(actionName, customActionName)
+            expectation.fulfill()
+        }
+        
+        let config = IterableConfig()
+        config.inAppDelegate = MockInAppDelegate(showInApp: .show)
+        config.customActionDelegate = mockCustomActionDelegate
+        
+        IterableAPI.initializeForTesting(
+            config: config,
+            inAppFetcher: mockInAppFetcher,
+            inAppDisplayer: mockInAppDisplayer
+        )
+        
+        let payload = """
+            {"inAppMessages":
+            [
+            {
+            "saveToInbox": true,
+            "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'\(customActionUrl)'>Click Here</a>"},
+            "trigger": {"type": "immediate"},
+            "messageId": "message0",
+            "campaignId": "campaign1",
+            "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+            ]
+            }
+            """.toJsonDict()
+        
+        mockInAppFetcher.mockInAppPayloadFromServer(payload) {
+            let messages = IterableAPI.inAppManager.getMessages()
+            XCTAssertEqual(messages.count, 1)
+            
+        }
+    }
+    
 }
 
 extension IterableInAppTrigger {
