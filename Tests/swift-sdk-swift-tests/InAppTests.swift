@@ -798,6 +798,8 @@ class InAppTests: XCTestCase {
 
     
     func testFilePersistence() {
+        let createdAt = Date()
+        let expiresAt = createdAt.addingTimeInterval(60*60*24)
         let payload = """
         {"inAppMessages":
         [
@@ -806,7 +808,8 @@ class InAppTests: XCTestCase {
                 "content": {"type": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site1.com\'>Click Here</a>", "payload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}},
                 "trigger": {"type": "event", "details": "some event details"},
                 "messageId": "message1",
-                "expiresAt": 1550605745142,
+                "createdAt": \(IterableUtil.int(fromDate: createdAt)),
+                "expiresAt": \(IterableUtil.int(fromDate: expiresAt)),
                 "campaignId": "campaign1",
                 "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
             },
@@ -815,7 +818,8 @@ class InAppTests: XCTestCase {
                 "content": {"type": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
                 "trigger": {"type": "immediate"},
                 "messageId": "message2",
-                "expiresAt": 1550605745145,
+                "createdAt": 1550605745142,
+                "expiresAt": 1657258509185,
                 "campaignId": "campaign2",
                 "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
             },
@@ -830,7 +834,8 @@ class InAppTests: XCTestCase {
                 "content": {"inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site4.com\'>Click Here</a>"},
                 "trigger": {"type": "newEventType", "nested": {"var1": "val1"}},
                 "messageId": "message4",
-                "expiresAt": 1550605745145,
+                "createdAt": 1550605745142,
+                "expiresAt": 1657258509185,
                 "campaignId": "campaign4",
                 "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
             }
@@ -839,6 +844,8 @@ class InAppTests: XCTestCase {
         """.toJsonDict()
         let messages = InAppTestHelper.inAppMessages(fromPayload: payload)
         messages[0].read = true
+        TestUtils.validateEqual(date1: messages[0].createdAt, date2: createdAt)
+        TestUtils.validateEqual(date1: messages[0].expiresAt, date2: expiresAt)
         let persister = InAppFilePersister()
         persister.persist(messages)
         let obtained = persister.getMessages()
@@ -1160,7 +1167,7 @@ extension IterableHtmlInAppContent {
 extension IterableInboxMetadata {
     public override var description: String {
         return IterableUtil.describe("title", title ?? "nil",
-                                     "subTitle", subTitle ?? "nil",
+                                     "subtitle", subtitle ?? "nil",
                                      "icon", icon ?? "nil",
                                      pairSeparator: " = ", separator: ", ")
     }
@@ -1173,6 +1180,7 @@ extension IterableInAppMessage {
                         "saveToInbox", saveToInbox,
                         "inboxMetadata", inboxMetadata ?? "nil",
                         "trigger", trigger,
+                        "createdAt", createdAt ?? "nil",
                         "expiresAt", expiresAt ?? "nil",
                         "content", content,
                         "didProcessTrigger", didProcessTrigger,

@@ -340,7 +340,7 @@ class InAppParsingTests: XCTestCase {
         customPayload2["inboxMetadata"] = """
         {
             "title": "title",
-            "subTitle": "subTitle",
+            "subtitle": "subtitle",
             "icon": "icon",
         }
         """.toJsonDict()
@@ -426,7 +426,7 @@ class InAppParsingTests: XCTestCase {
         """
 
         let inboxTitle = "this is the title"
-        let inboxSubTitle = "this is the subtitle"
+        let inboxSubtitle = "this is the subtitle"
         let inboxIcon = "https://somewhere.com/icon.jpg"
         let payload = """
         {
@@ -459,7 +459,7 @@ class InAppParsingTests: XCTestCase {
                     },
                     "inboxMetadata": {
                         "title" : "\(inboxTitle)",
-                        "subTitle" : "\(inboxSubTitle)",
+                        "subtitle" : "\(inboxSubtitle)",
                         "icon" : "\(inboxIcon)",
                     },
                     "customPayload" : \(customPayloadStr2)
@@ -503,7 +503,7 @@ class InAppParsingTests: XCTestCase {
         let inboxMetadata = message2.inboxMetadata!
         XCTAssertEqual(message2.trigger.type, IterableInAppTriggerType.never)
         XCTAssertEqual(inboxMetadata.title, inboxTitle)
-        XCTAssertEqual(inboxMetadata.subTitle, inboxSubTitle)
+        XCTAssertEqual(inboxMetadata.subtitle, inboxSubtitle)
         XCTAssertEqual(inboxMetadata.icon, inboxIcon)
         XCTAssertTrue(TestUtils.areEqual(dict1: message2.customPayload!, dict2: customPayloadStr2.toJsonDict()))
         

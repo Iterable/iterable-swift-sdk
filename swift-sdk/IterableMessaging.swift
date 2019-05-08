@@ -102,17 +102,17 @@ public final class IterableHtmlInAppContent : NSObject, IterableInAppContent {
 @objcMembers
 public final class IterableInboxMetadata : NSObject {
     public let title: String?
-    public let subTitle: String?
+    public let subtitle: String?
     public let icon: String?
     
     // Internal
     init(
         title: String? = nil,
-        subTitle: String? = nil,
+        subtitle: String? = nil,
         icon: String? = nil
         ) {
         self.title = title
-        self.subTitle = subTitle
+        self.subtitle = subtitle
         self.icon = icon
     }
 }
@@ -158,6 +158,9 @@ public final class IterableInAppMessage : NSObject {
     /// when to trigger this in-app
     public let trigger: IterableInAppTrigger
     
+    /// when was this message created
+    public let createdAt: Date?
+
     /// when to expire this in-app, nil means do not expire
     public let expiresAt: Date?
     
@@ -189,6 +192,7 @@ public final class IterableInAppMessage : NSObject {
         messageId: String,
         campaignId: String,
         trigger: IterableInAppTrigger = .defaultTrigger,
+        createdAt: Date? = nil,
         expiresAt: Date? = nil,
         content: IterableInAppContent,
         saveToInbox: Bool = false,
@@ -198,6 +202,7 @@ public final class IterableInAppMessage : NSObject {
         self.messageId = messageId
         self.campaignId = campaignId
         self.trigger = trigger
+        self.createdAt = createdAt
         self.expiresAt = expiresAt
         self.content = content
         self.saveToInbox = saveToInbox

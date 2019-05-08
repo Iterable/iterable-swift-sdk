@@ -186,29 +186,29 @@ extension IterableHtmlInAppContent : Codable {
 extension IterableInboxMetadata : Codable {
     enum CodingKeys: String, CodingKey {
         case title
-        case subTitle
+        case subtitle
         case icon
     }
     
     public convenience init(from decoder: Decoder) {
         guard let container = try? decoder.container(keyedBy: CodingKeys.self) else {
             ITBError("Can not decode, returning default")
-            self.init(title: nil, subTitle: nil, icon: nil)
+            self.init(title: nil, subtitle: nil, icon: nil)
             return
         }
         
         
         let title = (try? container.decode(String.self, forKey: .title))
-        let subTitle = (try? container.decode(String.self, forKey: .subTitle))
+        let subtitle = (try? container.decode(String.self, forKey: .subtitle))
         let icon = (try? container.decode(String.self, forKey: .icon))
         
-        self.init(title: title, subTitle: subTitle, icon: icon)
+        self.init(title: title, subtitle: subtitle, icon: icon)
     }
     
     public func encode(to encoder: Encoder) {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try? container.encode(title, forKey: .title)
-        try? container.encode(subTitle, forKey: .subTitle)
+        try? container.encode(subtitle, forKey: .subtitle)
         try? container.encode(icon, forKey: .icon)
     }
 }
@@ -219,6 +219,7 @@ extension IterableInAppMessage : Codable {
         case inboxMetadata
         case messageId
         case campaignId
+        case createdAt
         case expiresAt
         case customPayload
         case didProcessTrigger
@@ -246,6 +247,7 @@ extension IterableInAppMessage : Codable {
         let inboxMetadata = (try? container.decode(IterableInboxMetadata.self, forKey: .inboxMetadata))
         let messageId = (try? container.decode(String.self, forKey: .messageId)) ?? ""
         let campaignId = (try? container.decode(String.self, forKey: .campaignId)) ?? ""
+        let createdAt = (try? container.decode(Date.self, forKey: .createdAt))
         let expiresAt = (try? container.decode(Date.self, forKey: .expiresAt))
         let customPayloadData = try? container.decode(Data.self, forKey: .customPayload)
         let customPayload = IterableInAppMessage.deserializeCustomPayload(withData: customPayloadData)
@@ -259,6 +261,7 @@ extension IterableInAppMessage : Codable {
         self.init(messageId: messageId,
                   campaignId: campaignId,
                   trigger: trigger,
+                  createdAt: createdAt,
                   expiresAt: expiresAt,
                   content: content,
                   saveToInbox: saveToInbox,
@@ -277,6 +280,7 @@ extension IterableInAppMessage : Codable {
         try? container.encode(saveToInbox, forKey: .saveToInbox)
         try? container.encode(messageId, forKey: .messageId)
         try? container.encode(campaignId, forKey: .campaignId)
+        try? container.encode(createdAt, forKey: .createdAt)
         try? container.encode(expiresAt, forKey: .expiresAt)
         try? container.encode(IterableInAppMessage.serialize(customPayload: customPayload), forKey: .customPayload)
         try? container.encode(didProcessTrigger, forKey: .didProcessTrigger)

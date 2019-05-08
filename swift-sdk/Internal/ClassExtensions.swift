@@ -18,6 +18,10 @@ public extension Dictionary where Key == AnyHashable, Value == Any {
     func getStringValue(key: JsonKey, withDefault `default`: String? = nil) -> String? {
         return self[key.rawValue] as? String ?? `default`
     }
+    
+    func getIntValue(key: JsonKey) -> Int? {
+        return self[key.rawValue] as? Int
+    }
 }
 
 public extension Bundle {

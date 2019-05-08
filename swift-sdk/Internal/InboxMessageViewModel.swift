@@ -8,7 +8,7 @@ import Foundation
 
 class InboxMessageViewModel {
     let title: String
-    let subTitle: String?
+    let subtitle: String?
     let imageUrl: String?
     var imageData: Data? = nil
     let createdAt: Date? = nil // Not used at the moment
@@ -17,7 +17,7 @@ class InboxMessageViewModel {
     
     init(message: IterableInAppMessage) {
         self.title = InboxMessageViewModel.getTitle(message: message)
-        self.subTitle = InboxMessageViewModel.getSubTitle(message: message)
+        self.subtitle = InboxMessageViewModel.getSubtitle(message: message)
         self.imageUrl = InboxMessageViewModel.getImageUrl(message: message)
         self.read = message.read
         self.iterableMessage = message
@@ -27,8 +27,8 @@ class InboxMessageViewModel {
         return message.inboxMetadata?.title ?? ""
     }
     
-    private static func getSubTitle(message: IterableInAppMessage) -> String? {
-        return message.inboxMetadata?.subTitle
+    private static func getSubtitle(message: IterableInAppMessage) -> String? {
+        return message.inboxMetadata?.subtitle
     }
     
     private static func getImageUrl(message: IterableInAppMessage) -> String? {

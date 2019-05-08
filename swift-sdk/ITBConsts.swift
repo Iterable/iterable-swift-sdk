@@ -147,7 +147,6 @@ public extension AnyHashable {
     
     static let ITBL_IN_APP_TRIGGER = "trigger"
     static let ITBL_IN_APP_TRIGGER_TYPE = "type"
-    static let ITBL_IN_APP_EXPIRES_AT = "expiresAt"
 
     static let ITBL_IN_APP_CONTENT = "content"
     
@@ -165,8 +164,11 @@ public extension AnyHashable {
 public enum JsonKey : String {
     // Inbox Message
     case inboxTitle = "title"
-    case inboxSubtitle = "subTitle"
+    case inboxSubtitle = "subtitle"
     case inboxIcon = "icon"
+    
+    case inboxExpiresAt = "expiresAt"
+    case inboxCreatedAt = "createdAt"
 }
 
 // These are custom action for "itbl://delete" etc.

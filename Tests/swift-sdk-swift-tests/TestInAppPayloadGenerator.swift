@@ -68,7 +68,7 @@ struct TestInAppPayloadGenerator {
     private static func createOneInAppDict(withHref href: String, index: Int, trigger: IterableInAppTrigger?, expiresAt: Date?) -> [AnyHashable : Any] {
         var dict = createOneInAppDict(withHref: href, index: index)
         if let expiresAt = expiresAt {
-            dict["expiresAt"] = toMillisecondsSinceEpoch(date: expiresAt)
+            dict["expiresAt"] = IterableUtil.int(fromDate: expiresAt)
         }
         if let trigger = trigger {
             dict["trigger"] = trigger.dict
@@ -86,10 +86,6 @@ struct TestInAppPayloadGenerator {
             "campaignId" : getCampaignId(index: index),
             "customPayload" : ["title" : "Product 1 Available", "date" : "2018-11-14T14:00:00:00.32Z"]
         ]
-    }
-    
-    private static func toMillisecondsSinceEpoch(date: Date) -> Int {
-        return Int(date.timeIntervalSince1970 * 1000)
     }
     
     private static func trigger(fromTriggerType triggerType: IterableInAppTriggerType) -> IterableInAppTrigger {
