@@ -5,7 +5,10 @@
 
 import UIKit
 
+@IBDesignable
 open class IterableInboxViewController: UITableViewController {
+    // MARK: Settable properties
+    
     /// If you want to use a custom layout for your Inbox TableViewCell
     /// this is where you should override it. Please note that this assumes
     /// that the xib is present in the main bundle.
@@ -138,11 +141,6 @@ open class IterableInboxViewController: UITableViewController {
         navigationController?.tabBarItem?.badgeValue = badgeValue
     }
     
-    private static func createSectionedValues(fromInboxMessages inboxMessages: [IterableInAppMessage]) -> SectionedValues<Int, InboxMessageViewModel> {
-        let viewModels = inboxMessages.map { InboxMessageViewModel(message: $0) }
-        return SectionedValues([(0, viewModels)])
-    }
-    
     private func configure(cell: IterableInboxCell, forViewModel viewModel: InboxMessageViewModel) {
         cell.titleLbl?.text = viewModel.title
         cell.subtitleLbl?.text = viewModel.subtitle
@@ -167,7 +165,12 @@ open class IterableInboxViewController: UITableViewController {
             cell.iconImageView?.isHidden = true
         }
         
-        cell.createdAtLbl?.isHidden = true
+        if let createdAt = viewModel.createdAt {
+            cell.createdAtLbl?.isHidden = false
+            cell.createdAtLbl?.text = IterableInboxViewController.displayValue(forTime: createdAt)
+        } else {
+            cell.createdAtLbl?.isHidden = true
+        }
     }
 
     private func loadImage(forMessageId messageId: String, fromUrl url: URL) {
@@ -191,5 +194,9 @@ open class IterableInboxViewController: UITableViewController {
         viewModel.imageData = data
 
         tableView.reloadRows(at: [IndexPath(row: row, section: 0)], with: .automatic)
+    }
+    
+    private static func displayValue(forTime date: Date) -> String {
+        return DateFormatter.localizedString(from: date, dateStyle: .medium, timeStyle: .short)
     }
 }
