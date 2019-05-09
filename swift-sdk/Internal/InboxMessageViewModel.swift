@@ -11,7 +11,7 @@ class InboxMessageViewModel {
     let subtitle: String?
     let imageUrl: String?
     var imageData: Data? = nil
-    let createdAt: Date? = nil // Not used at the moment
+    let createdAt: Date?
     let read: Bool
     let iterableMessage: IterableInAppMessage
     
@@ -19,6 +19,7 @@ class InboxMessageViewModel {
         self.title = InboxMessageViewModel.getTitle(message: message)
         self.subtitle = InboxMessageViewModel.getSubtitle(message: message)
         self.imageUrl = InboxMessageViewModel.getImageUrl(message: message)
+        self.createdAt = message.createdAt
         self.read = message.read
         self.iterableMessage = message
     }

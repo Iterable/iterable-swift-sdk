@@ -7,6 +7,8 @@ import UIKit
 
 @IBDesignable
 open class IterableInboxNavigationViewController: UINavigationController {
+    // MARK: Settable properties
+    
     /// If you want to use a custom layout for your Inbox TableViewCell
     /// this is where you should override it. Please note that this assumes
     /// that the xib is present in the main bundle.
