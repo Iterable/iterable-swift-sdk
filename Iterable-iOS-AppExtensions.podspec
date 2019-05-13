@@ -24,7 +24,7 @@ Pod::Spec.new do |s|
                    App Extensions for Rich Push notifications with Iterable SDK
                    DESC
 
-  s.homepage     = "https://iterable.com/"
+  s.homepage     = "https://github.com/Iterable/swift-sdk.git"
 
 
   # ―――  Spec License  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
