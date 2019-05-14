@@ -8,11 +8,6 @@
 
 import Foundation
 
-public enum Result<Value> {
-    case value(Value)
-    case error(Error)
-}
-
 public enum IterableError : Error {
     case general(description: String)
 }
@@ -38,7 +33,7 @@ public class Future<Value> {
         self.successCallback = block
 
         // if a successful result already exists (from constructor), report it
-        if case let Result.value(value)? = result {
+        if case let Result.success(value)? = result {
             successCallback?(value)
         }
         
@@ -49,25 +44,25 @@ public class Future<Value> {
         self.errorCallback = block
         
         // if a failed result already exists (from constructor), report it
-        if case let Result.error(error)? = result {
+        if case let Result.failure(error)? = result {
             errorCallback?(error)
         }
 
         return self
     }
 
-    fileprivate var result: Result<Value>? {
+    fileprivate var result: Result<Value, Error>? {
         // Observe whenever a result is assigned, and report it
         didSet { result.map(report) }
     }
     
     // Report success or error based on result
-    private func report(result: Result<Value>) {
+    private func report(result: Result<Value, Error>) {
         switch result {
-        case .value(let value):
+        case .success(let value):
             successCallback?(value)
             break
-        case .error(let error):
+        case .failure(let error):
             errorCallback?(error)
             break
         }
@@ -118,20 +113,24 @@ public extension Future {
 public class Promise<Value> : Future<Value> {
     public init(value: Value? = nil) {
         super.init()
-        result = value.map(Result.value)
+        if let value = value {
+            result = Result.success(value)
+        } else {
+            result = nil
+        }
     }
     
     public init(error: Error) {
         super.init()
-        result = Result.error(error)
+        result = Result.failure(error)
     }
     
     public func resolve(with value: Value) {
-        result = .value(value)
+        result = .success(value)
     }
     
     public func reject(with error: Error) {
-        result = .error(error)
+        result = .failure(error)
     }
 }
 
