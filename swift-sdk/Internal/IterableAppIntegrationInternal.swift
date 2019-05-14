@@ -147,6 +147,8 @@ struct IterableAppIntegrationInternal {
                     performDefaultNotificationAction(userInfo)
                 }
                 break
+            @unknown default:
+                break
             }
         }
         

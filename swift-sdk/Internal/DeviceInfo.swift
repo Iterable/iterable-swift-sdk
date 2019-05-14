@@ -61,6 +61,8 @@ struct DeviceInfo : Codable {
             return "CarPlay"
         case .unspecified:
             return "Unknown"
+        @unknown default:
+            return "Unknown"
         }
     }
 }
