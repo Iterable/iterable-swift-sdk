@@ -115,7 +115,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
                                              pushServicePlatform: PushServicePlatform,
                                              notificationsEnabled: Bool,
                                              onSuccess: OnSuccessHandler? = nil,
-                                             onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue> {
+                                             onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         guard email != nil || userId != nil else {
             ITBError("Both email and userId are nil")
             onFailure?("Both email and userId are nil", nil)
@@ -389,11 +389,11 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
     }
 
-    @discardableResult func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue> {
+    @discardableResult func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError> {
         return getInAppMessages(count, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "getMessages"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "getMessages"))
     }
 
-    @discardableResult func getInAppMessages(_ count: NSNumber, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) -> Future<SendRequestValue> {
+    @discardableResult func getInAppMessages(_ count: NSNumber, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
         guard email != nil || userId != nil else {
             ITBError("Both email and userId are nil")
             onFailure?("Both email and userId are nil", nil)
@@ -479,15 +479,11 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         return IterableRequestUtil.createPostRequest(forApiEndPoint: .ITBL_ENDPOINT_API, path: path, args: [AnyHashable.ITBL_KEY_API_KEY : apiKey], body: body)
     }
     
-    @discardableResult func sendRequest(_ request: URLRequest, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue> {
+    @discardableResult func sendRequest(_ request: URLRequest, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         return NetworkHelper.sendRequest(request, usingSession: networkSession).onSuccess { (json) in
             onSuccess?(json)
         }.onError { (error) in
-            if let sendError = error as? SendRequestError {
-                onFailure?(sendError.reason, sendError.data)
-            } else {
-                onFailure?("send request failed", nil)
-            }
+            onFailure?(error.reason, error.data)
         }
     }
     
@@ -740,12 +736,8 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         
         NetworkHelper.sendRequest(request, usingSession: networkSession).onSuccess { (json) in
             self.handleDDL(json: json)
-        }.onError { (error) in
-            if let sendError = error as? SendRequestError, let reason = sendError.reason {
-                ITBError(reason)
-            } else {
-                ITBError("failed to send handleDDl request")
-            }
+        }.onError { (sendError) in
+            ITBError(sendError.reason)
         }
     }
     

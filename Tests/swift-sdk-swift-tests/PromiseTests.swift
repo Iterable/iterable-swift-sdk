@@ -41,7 +41,7 @@ class PromiseTests: XCTestCase {
         expectation1.isInverted = true
         let expectation2 = expectation(description: "test map failure")
         
-        let f1: Future<String> = createFailureFuture(withError: MyError(message: "zeeErrorMessage"))
+        let f1: Future<String, Error> = createFailureFuture(withError: MyError(message: "zeeErrorMessage"))
         let f2 = f1.map {$0.count}
         
         f2.onSuccess { (value) in
@@ -86,9 +86,9 @@ class PromiseTests: XCTestCase {
         expectation1.isInverted = true
         let expectation2 = expectation(description: "test flatMap failure")
         
-        let f1: Future<String> = createFailureFuture(withError: MyError(message: "zeeErrorMessage"))
+        let f1: Future<String, Error> = createFailureFuture(withError: MyError(message: "zeeErrorMessage"))
         
-        let f2 = f1.flatMap { (firstValue) -> Future<String> in
+        let f2 = f1.flatMap { (firstValue) -> Future<String, Error> in
             return self.createSucessfulFuture(withValue: "zeeString")
         }
         
@@ -113,7 +113,7 @@ class PromiseTests: XCTestCase {
         
         let f1 = createSucessfulFuture(withValue: "zeeString")
         
-        let f2 = f1.flatMap { (firstValue) -> Future<String> in
+        let f2 = f1.flatMap { (firstValue) -> Future<String, Error> in
             return self.createFailureFuture(withError: MyError(message: "zeeErrorMessage"))
         }
         
@@ -135,7 +135,7 @@ class PromiseTests: XCTestCase {
         let expectation2 = expectation(description: "test future init with success, inverted")
         expectation2.isInverted = true
         
-        let f1: Future<String> = Promise<String>(value: "zeeValue")
+        let f1: Future<String, Error> = Promise<String, Error>(value: "zeeValue")
         
         f1.onSuccess { (value) in
             XCTAssertEqual(value, "zeeValue")
@@ -153,7 +153,7 @@ class PromiseTests: XCTestCase {
         expectation1.isInverted = true
         let expectation2 = expectation(description: "test future init with failure")
         
-        let f1: Future<String> = Promise<String>(error: MyError(message: "zeeErrorMessage"))
+        let f1: Future<String, Error> = Promise<String, Error>(error: MyError(message: "zeeErrorMessage"))
         
         f1.onSuccess { (value) in
             expectation1.fulfill()
@@ -169,8 +169,8 @@ class PromiseTests: XCTestCase {
     }
 
     
-    private func createSucessfulFuture<T>(withValue value: T) -> Future<T> {
-        let future = Promise<T>()
+    private func createSucessfulFuture<T>(withValue value: T) -> Future<T, Error> {
+        let future = Promise<T, Error>()
 
         DispatchQueue.main.async {
             future.resolve(with: value)
@@ -179,8 +179,8 @@ class PromiseTests: XCTestCase {
         return future
     }
 
-    private func createFailureFuture<T>(withError error: MyError) -> Future<T> {
-        let future = Promise<T>()
+    private func createFailureFuture<T>(withError error: MyError) -> Future<T, Error> {
+        let future = Promise<T, Error>()
         
         DispatchQueue.main.async {
             future.reject(with: error)

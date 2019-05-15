@@ -236,7 +236,7 @@ class MockInAppFetcher : InAppFetcherProtocol {
         }
     }
     
-    func fetch() -> Future<[IterableInAppMessage]> {
+    func fetch() -> Future<[IterableInAppMessage], Error> {
         ITBInfo()
         
         syncCallback?()

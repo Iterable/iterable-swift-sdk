@@ -11,7 +11,7 @@ import UIKit
 
 // This is Internal Struct, no public methods
 struct InAppHelper {
-    static func getInAppMessagesFromServer(internalApi: IterableAPIInternal, number: Int) -> Future<[IterableInAppMessage]> {
+    static func getInAppMessagesFromServer(internalApi: IterableAPIInternal, number: Int) -> Future<[IterableInAppMessage], SendRequestError> {
         return internalApi.getInAppMessages(NSNumber(value: number)).map {
             return InAppMessageParser.parse(payload: $0).compactMap { parseResult in
                 process(parseResult: parseResult, internalApi: internalApi)

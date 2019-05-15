@@ -25,11 +25,11 @@ extension IterableError : LocalizedError {
 // either there is a success with result
 // or there is a failure with error
 // There is no way to set value a result in this class.
-public class Future<Value> {
+public class Future<Value, Failure> where Failure : Error {
     fileprivate var successCallback: ((Value) -> Void)? = nil
-    fileprivate var errorCallback: ((Error) -> Void)? = nil
+    fileprivate var errorCallback: ((Failure) -> Void)? = nil
 
-    @discardableResult public func onSuccess(block: ((Value) -> Void)? = nil) -> Future<Value> {
+    @discardableResult public func onSuccess(block: ((Value) -> Void)? = nil) -> Future<Value, Failure> {
         self.successCallback = block
 
         // if a successful result already exists (from constructor), report it
@@ -40,7 +40,7 @@ public class Future<Value> {
         return self
     }
     
-    @discardableResult public func onError(block: ((Error) -> Void)? = nil) -> Future<Value> {
+    @discardableResult public func onError(block: ((Failure) -> Void)? = nil) -> Future<Value, Failure> {
         self.errorCallback = block
         
         // if a failed result already exists (from constructor), report it
@@ -51,13 +51,13 @@ public class Future<Value> {
         return self
     }
 
-    fileprivate var result: Result<Value, Error>? {
+    fileprivate var result: Result<Value, Failure>? {
         // Observe whenever a result is assigned, and report it
         didSet { result.map(report) }
     }
     
     // Report success or error based on result
-    private func report(result: Result<Value, Error>) {
+    private func report(result: Result<Value, Failure>) {
         switch result {
         case .success(let value):
             successCallback?(value)
@@ -70,8 +70,8 @@ public class Future<Value> {
 }
 
 public extension Future {
-    func flatMap<NextValue>(_ closure: @escaping (Value) -> Future<NextValue>) -> Future<NextValue> {
-        let promise = Promise<NextValue>()
+    func flatMap<NewValue>(_ closure: @escaping (Value) -> Future<NewValue, Failure>) -> Future<NewValue, Failure> {
+        let promise = Promise<NewValue, Failure>()
         
         onSuccess { (value) in
             let future = closure(value)
@@ -85,15 +85,15 @@ public extension Future {
             }
         }
         
-        onError  { error in
+        onError { error in
             promise.reject(with: error)
         }
         
         return promise
     }
 
-    func map<NextValue>(_ closure: @escaping (Value) -> NextValue) -> Future<NextValue> {
-        let promise = Promise<NextValue>()
+    func map<NewValue>(_ closure: @escaping (Value) -> NewValue) -> Future<NewValue, Failure> {
+        let promise = Promise<NewValue, Failure>()
         
         onSuccess { value in
             let nextValue = closure(value)
@@ -106,11 +106,26 @@ public extension Future {
         
         return promise
     }
+
+    func mapFailure<NewFailure>(_ closure: @escaping (Failure) -> NewFailure) -> Future<Value, NewFailure> {
+        let promise = Promise<Value, NewFailure>()
+        
+        onSuccess { value in
+            promise.resolve(with: value)
+        }
+        
+        onError { error in
+            let nextError = closure(error)
+            promise.reject(with: nextError)
+        }
+        
+        return promise
+    }
 }
 
 
 // This class takes the responsibility of setting value for Future
-public class Promise<Value> : Future<Value> {
+public class Promise<Value, Failure> : Future<Value, Failure> where Failure : Error {
     public init(value: Value? = nil) {
         super.init()
         if let value = value {
@@ -120,7 +135,7 @@ public class Promise<Value> : Future<Value> {
         }
     }
     
-    public init(error: Error) {
+    public init(error: Failure) {
         super.init()
         result = Result.failure(error)
     }
@@ -129,7 +144,7 @@ public class Promise<Value> : Future<Value> {
         result = .success(value)
     }
     
-    public func reject(with error: Error) {
+    public func reject(with error: Failure) {
         result = .failure(error)
     }
 }

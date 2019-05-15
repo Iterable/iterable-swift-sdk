@@ -17,8 +17,8 @@ struct SendRequestError : Error {
         self.data = data
     }
     
-    static func createErroredFuture<T>(reason: String? = nil) -> Future<T> {
-        return Promise<T>(error: SendRequestError(reason: reason))
+    static func createErroredFuture<T>(reason: String? = nil) -> Future<T, SendRequestError> {
+        return Promise<T, SendRequestError>(error: SendRequestError(reason: reason))
     }
 }
 
@@ -51,8 +51,8 @@ extension URLSession : NetworkSessionProtocol {
 }
 
 struct NetworkHelper {
-    static func getData(fromUrl url: URL, usingSession networkSession: NetworkSessionProtocol) -> Future<Data> {
-        let promise = Promise<Data>()
+    static func getData(fromUrl url: URL, usingSession networkSession: NetworkSessionProtocol) -> Future<Data, Error> {
+        let promise = Promise<Data, Error>()
         
         networkSession.makeDataRequest(with: url) { (data, response, error) in
             let result = createDataResultFromNetworkResponse(data: data, response: response, error: error)
@@ -71,8 +71,8 @@ struct NetworkHelper {
         return promise
     }
     
-    static func sendRequest(_ request: URLRequest, usingSession networkSession: NetworkSessionProtocol) -> Future<SendRequestValue>  {
-        let promise = Promise<SendRequestValue>()
+    static func sendRequest(_ request: URLRequest, usingSession networkSession: NetworkSessionProtocol) -> Future<SendRequestValue, SendRequestError>  {
+        let promise = Promise<SendRequestValue, SendRequestError>()
         
         networkSession.makeRequest(request) { (data, response, error) in
             let result = createResultFromNetworkResponse(data: data, response: response, error: error)

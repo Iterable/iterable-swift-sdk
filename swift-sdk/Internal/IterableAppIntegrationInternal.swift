@@ -11,13 +11,13 @@ import UserNotifications
 
 // Returns whether notifications are enabled
 protocol NotificationStateProviderProtocol {
-    var notificationsEnabled : Promise<Bool> {get}
+    var notificationsEnabled : Promise<Bool, Error> {get}
     func registerForRemoteNotifications()
 }
 
 struct SystemNotificationStateProvider : NotificationStateProviderProtocol {
-    var notificationsEnabled: Promise<Bool> {
-        let result = Promise<Bool>()
+    var notificationsEnabled: Promise<Bool, Error> {
+        let result = Promise<Bool, Error>()
         
         if #available(iOS 10.0, *) {
             UNUserNotificationCenter.current().getNotificationSettings { settings in
