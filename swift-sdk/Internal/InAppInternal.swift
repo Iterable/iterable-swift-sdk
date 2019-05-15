@@ -8,7 +8,7 @@ import Foundation
 ///
 protocol InAppFetcherProtocol {
     // Fetch from server and sync
-    func fetch() -> Future<[IterableInAppMessage]>
+    func fetch() -> Future<[IterableInAppMessage], Error>
 }
 
 /// For callbacks when silent push notifications arrive
@@ -28,14 +28,13 @@ class InAppFetcher : InAppFetcherProtocol {
         self.internalApi = internalApi
     }
     
-    func fetch() -> Future<[IterableInAppMessage]> {
+    func fetch() -> Future<[IterableInAppMessage], Error> {
         ITBInfo()
         guard let internalApi = internalApi else {
             ITBError("Invalid state: expected InternalApi")
             return Promise(error: IterableError.general(description: "Invalid state: expected InternalApi"))
         }
-
-        return InAppHelper.getInAppMessagesFromServer(internalApi: internalApi, number: numMessages)
+        return InAppHelper.getInAppMessagesFromServer(internalApi: internalApi, number: numMessages).mapFailure {$0}
     }
 
     private weak var internalApi: IterableAPIInternal?

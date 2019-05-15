@@ -17,8 +17,8 @@ struct SendRequestError : Error {
         self.data = data
     }
     
-    static func createErroredFuture<T>(reason: String? = nil) -> Future<T> {
-        return Promise<T>(error: SendRequestError(reason: reason))
+    static func createErroredFuture<T>(reason: String? = nil) -> Future<T, SendRequestError> {
+        return Promise<T, SendRequestError>(error: SendRequestError(reason: reason))
     }
 }
 
@@ -51,17 +51,17 @@ extension URLSession : NetworkSessionProtocol {
 }
 
 struct NetworkHelper {
-    static func getData(fromUrl url: URL, usingSession networkSession: NetworkSessionProtocol) -> Future<Data> {
-        let promise = Promise<Data>()
+    static func getData(fromUrl url: URL, usingSession networkSession: NetworkSessionProtocol) -> Future<Data, Error> {
+        let promise = Promise<Data, Error>()
         
         networkSession.makeDataRequest(with: url) { (data, response, error) in
             let result = createDataResultFromNetworkResponse(data: data, response: response, error: error)
             switch (result) {
-            case .value(let value):
+            case .success(let value):
                 DispatchQueue.main.async {
                     promise.resolve(with: value)
                 }
-            case .error(let error):
+            case .failure(let error):
                 DispatchQueue.main.async {
                     promise.reject(with: error)
                 }
@@ -71,15 +71,15 @@ struct NetworkHelper {
         return promise
     }
     
-    static func sendRequest(_ request: URLRequest, usingSession networkSession: NetworkSessionProtocol) -> Future<SendRequestValue>  {
-        let promise = Promise<SendRequestValue>()
+    static func sendRequest(_ request: URLRequest, usingSession networkSession: NetworkSessionProtocol) -> Future<SendRequestValue, SendRequestError>  {
+        let promise = Promise<SendRequestValue, SendRequestError>()
         
         networkSession.makeRequest(request) { (data, response, error) in
             let result = createResultFromNetworkResponse(data: data, response: response, error: error)
             switch (result) {
-            case .value(let value):
+            case .success(let value):
                 promise.resolve(with: value)
-            case .error(let error):
+            case .failure(let error):
                 promise.reject(with: error)
             }
         }
@@ -87,12 +87,12 @@ struct NetworkHelper {
         return promise
     }
     
-    static func createResultFromNetworkResponse(data: Data?, response: URLResponse?, error: Error?) -> Result<SendRequestValue> {
+    static func createResultFromNetworkResponse(data: Data?, response: URLResponse?, error: Error?) -> Result<SendRequestValue, SendRequestError> {
         if let error = error {
-            return .error(SendRequestError(reason: "\(error.localizedDescription)", data: data))
+            return .failure(SendRequestError(reason: "\(error.localizedDescription)", data: data))
         }
         guard let response = response as? HTTPURLResponse else {
-            return .error(SendRequestError(reason: "No response", data: nil))
+            return .failure(SendRequestError(reason: "No response", data: nil))
         }
         
         let responseCode = response.statusCode
@@ -112,7 +112,7 @@ struct NetworkHelper {
         }
         
         if responseCode == 401 {
-            return .error(SendRequestError(reason: "Invalid API Key", data: data))
+            return .failure(SendRequestError(reason: "Invalid API Key", data: data))
         } else if responseCode >= 400 {
             var reason = "Invalid Request"
             if let jsonDict = json as? [AnyHashable : Any], let msgFromDict = jsonDict["msg"] as? String {
@@ -120,7 +120,7 @@ struct NetworkHelper {
             } else if responseCode >= 500 {
                 reason = "Internal Server Error"
             }
-            return .error(SendRequestError(reason: reason, data: data))
+            return .failure(SendRequestError(reason: reason, data: data))
         } else if responseCode == 200 {
             if let data = data, data.count > 0 {
                 if let jsonError = jsonError {
@@ -128,29 +128,29 @@ struct NetworkHelper {
                     if let stringValue = String(data: data, encoding: .utf8) {
                         reason = "Could not parse json: \(stringValue), error: \(jsonError.localizedDescription)"
                     }
-                    return .error(SendRequestError(reason: reason, data: data))
+                    return .failure(SendRequestError(reason: reason, data: data))
                 } else if let json = json as? [AnyHashable : Any] {
-                    return .value(json)
+                    return .success(json)
                 } else {
-                    return .error(SendRequestError(reason: "Response is not a dictionary", data: data))
+                    return .failure(SendRequestError(reason: "Response is not a dictionary", data: data))
                 }
             } else {
-                return .error(SendRequestError(reason: "No data received", data: data))
+                return .failure(SendRequestError(reason: "No data received", data: data))
             }
         } else {
-            return .error(SendRequestError(reason: "Received non-200 response: \(responseCode)", data: data))
+            return .failure(SendRequestError(reason: "Received non-200 response: \(responseCode)", data: data))
         }
     }
     
-    static func createDataResultFromNetworkResponse(data: Data?, response: URLResponse?, error: Error?) -> Result<Data> {
+    static func createDataResultFromNetworkResponse(data: Data?, response: URLResponse?, error: Error?) -> Result<Data, SendRequestError> {
         if let error = error {
-            return .error(SendRequestError(reason: "\(error.localizedDescription)"))
+            return .failure(SendRequestError(reason: "\(error.localizedDescription)"))
         }
         guard let data = data else {
-            return .error(SendRequestError(reason: "No data"))
+            return .failure(SendRequestError(reason: "No data"))
         }
         
-        return .value(data)
+        return .success(data)
     }
 
 }
