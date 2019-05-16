@@ -229,7 +229,7 @@ class IterableAPITests: XCTestCase {
         }
         
         // only wait for small time, supposed to error out
-        wait(for: [expectation], timeout: 10.0)
+        wait(for: [expectation], timeout: testExpectationTimeout)
     }
 
     func testRegisterToken() {

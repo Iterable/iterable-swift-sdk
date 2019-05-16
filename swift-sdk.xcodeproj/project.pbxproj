@@ -71,6 +71,7 @@
 		AC819186227139230014955E /* SectionedValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC819185227139230014955E /* SectionedValues.swift */; };
 		AC81918822713A110014955E /* Dwifft+UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC81918722713A110014955E /* Dwifft+UIKit.swift */; };
 		AC81918A22713A400014955E /* AbstractDiffCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC81918922713A400014955E /* AbstractDiffCalculator.swift */; };
+		AC845107228DF54E0052BB8F /* ApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC845106228DF54E0052BB8F /* ApiClient.swift */; };
 		AC85A749216D24F4005241AE /* NotificationExtensionSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC85A748216D24F4005241AE /* NotificationExtensionSwiftTests.swift */; };
 		AC87172621A4E47E00FEA369 /* TestInAppPayloadGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */; };
 		AC8874AA22178BD80075B54B /* InAppContentParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8874A922178BD80075B54B /* InAppContentParser.swift */; };
@@ -260,6 +261,7 @@
 		AC819185227139230014955E /* SectionedValues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionedValues.swift; sourceTree = "<group>"; };
 		AC81918722713A110014955E /* Dwifft+UIKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dwifft+UIKit.swift"; sourceTree = "<group>"; };
 		AC81918922713A400014955E /* AbstractDiffCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbstractDiffCalculator.swift; sourceTree = "<group>"; };
+		AC845106228DF54E0052BB8F /* ApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiClient.swift; sourceTree = "<group>"; };
 		AC85A748216D24F4005241AE /* NotificationExtensionSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationExtensionSwiftTests.swift; sourceTree = "<group>"; };
 		AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestInAppPayloadGenerator.swift; sourceTree = "<group>"; };
 		AC8874A922178BD80075B54B /* InAppContentParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppContentParser.swift; sourceTree = "<group>"; };
@@ -554,6 +556,7 @@
 		AC72A0BB20CF4C8C004D7997 /* Internal */ = {
 			isa = PBXGroup;
 			children = (
+				AC845105228DF5360052BB8F /* Api Client */,
 				AC7A525F227BB9B80064D67E /* Initialization */,
 				AC0248062279132400495FB9 /* Dwifft */,
 				AC219C4B225FE2B300B98631 /* UI */,
@@ -617,6 +620,14 @@
 				AC7B144A20D038C400877BFE /* IterableNotificationMetadataTests.m */,
 			);
 			path = "swift-sdk-objc-tests";
+			sourceTree = "<group>";
+		};
+		AC845105228DF5360052BB8F /* Api Client */ = {
+			isa = PBXGroup;
+			children = (
+				AC845106228DF54E0052BB8F /* ApiClient.swift */,
+			);
+			name = "Api Client";
 			sourceTree = "<group>";
 		};
 		AC87172421A4E3FF00FEA369 /* Helper Classes */ = {
@@ -1106,6 +1117,7 @@
 				AC819184227138EF0014955E /* Dwifft.swift in Sources */,
 				AC72A0B620CF4C53004D7997 /* IterableConstants.m in Sources */,
 				AC02480822791E2100495FB9 /* IterableInboxNavigationViewController.swift in Sources */,
+				AC845107228DF54E0052BB8F /* ApiClient.swift in Sources */,
 				AC72A0D120CF4D0B004D7997 /* InAppHelper.swift in Sources */,
 				AC8874AA22178BD80075B54B /* InAppContentParser.swift in Sources */,
 				AC776DA22118B86600C27C27 /* DeviceInfo.swift in Sources */,
