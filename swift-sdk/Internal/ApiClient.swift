@@ -61,6 +61,27 @@ struct ApiClient {
         return send(iterableRequestResult: createUpdateUserRequest(dataFields: dataFields, mergeNestedObjects: mergeNestedObjects))
     }
     
+    func updateEmail(newEmail: String) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createUpdateEmailRequest(newEmail: newEmail))
+    }
+    
+    func createUpdateEmailRequest(newEmail: String) -> Result<IterableRequest, IterableError> {
+        var body: [String : Any] = [
+            AnyHashable.ITBL_KEY_NEW_EMAIL: newEmail
+        ]
+        
+        if let email = auth.email {
+            body[AnyHashable.ITBL_KEY_CURRENT_EMAIL] = email
+        } else if let userId = auth.userId {
+            body[AnyHashable.ITBL_KEY_CURRENT_USER_ID] = userId
+        } else {
+            ITBError("Both email and userId are nil")
+            return .failure(IterableError.general(description: "Both email and userId are nil"))
+        }
+
+        return .success(.post(createPostRequest(path: .ITBL_PATH_UPDATE_EMAIL, body: body)))
+    }
+    
     func createReqisterTokenRequest(hexToken: String,
                                     appName: String,
                                     deviceId: String,
@@ -153,7 +174,7 @@ struct ApiClient {
     }
     
     private func createPostRequest(path: String, body: [AnyHashable : Any]? = nil) -> PostRequest {
-        return PostRequest(path: String.ITBL_PATH_UPDATE_USER,
+        return PostRequest(path: path,
                            args: [AnyHashable.ITBL_KEY_API_KEY : apiKey],
                            body: body)
     }

@@ -151,30 +151,14 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
 
     func updateEmail(_ newEmail: String, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        var args: [String : Any] = [
-            AnyHashable.ITBL_KEY_NEW_EMAIL: newEmail
-        ]
-
-        if let email = email {
-            args[AnyHashable.ITBL_KEY_CURRENT_EMAIL] = email
-        } else if let userId = userId {
-            args[AnyHashable.ITBL_KEY_CURRENT_USER_ID] = userId
-        } else {
-            ITBError("Both email and userId are nil")
-            onFailure?("Both email and userId are nil", nil)
-            return
-        }
-
-        if let request = createPostRequest(forPath: .ITBL_PATH_UPDATE_EMAIL, withBody: args) {
-            sendRequest(request,
-                        onSuccess: { data in
-                            if let _ = self.email {
-                                // we change the email only if we were using email before
-                                self.email = newEmail
-                            }
-                            onSuccess?(data)
-                        },
-                        onFailure: onFailure)
+        createApiClient().updateEmail(newEmail: newEmail).onSuccess { (json) in
+            if let _ = self.email {
+                // we change the email only if we were using email before
+                self.email = newEmail
+            }
+            onSuccess?(json)
+        }.onError { error in
+            onFailure?(error.reason, error.data)
         }
     }
 
