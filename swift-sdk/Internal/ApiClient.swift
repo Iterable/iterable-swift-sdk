@@ -65,6 +65,10 @@ struct ApiClient {
         return send(iterableRequestResult: createUpdateEmailRequest(newEmail: newEmail))
     }
     
+    func track(purchase total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createTrackPurchaseRequest(total, items: items, dataFields: dataFields))
+    }
+    
     func createUpdateEmailRequest(newEmail: String) -> Result<IterableRequest, IterableError> {
         var body: [String : Any] = [
             AnyHashable.ITBL_KEY_NEW_EMAIL: newEmail
@@ -145,6 +149,39 @@ struct ApiClient {
         body[.ITBL_KEY_MERGE_NESTED] = NSNumber(value: mergeNestedObjects)
         addEmailOrUserId(dict: &body)
         return .success(.post(createPostRequest(path: .ITBL_PATH_UPDATE_USER, body: body)))
+    }
+    
+    func createTrackPurchaseRequest(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?) -> Result<IterableRequest, IterableError> {
+        guard auth.email != nil || auth.userId != nil else {
+            ITBError("Both email and userId are nil")
+            return .failure(IterableError.general(description: "Both email and userId are nil"))
+        }
+        
+        var itemsToSerialize = [[AnyHashable : Any]]()
+        for item in items {
+            itemsToSerialize.append(item.toDictionary())
+        }
+        
+        var apiUserDict = [AnyHashable : Any]()
+        addEmailOrUserId(dict: &apiUserDict)
+        
+        let body : [String : Any]
+        if let dataFields = dataFields {
+            body = [
+                AnyHashable.ITBL_KEY_USER: apiUserDict,
+                AnyHashable.ITBL_KEY_ITEMS: itemsToSerialize,
+                AnyHashable.ITBL_KEY_TOTAL: total,
+                AnyHashable.ITBL_KEY_DATA_FIELDS: dataFields
+            ]
+        } else {
+            body = [
+                AnyHashable.ITBL_KEY_USER: apiUserDict,
+                AnyHashable.ITBL_KEY_ITEMS: itemsToSerialize,
+                AnyHashable.ITBL_KEY_TOTAL: total,
+            ]
+        }
+
+        return .success(.post(createPostRequest(path: .ITBL_PATH_COMMERCE_TRACK_PURCHASE, body: body)))
     }
     
     func convertToURLRequest(iterableRequest: IterableRequest) -> URLRequest? {

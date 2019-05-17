@@ -171,39 +171,9 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
 
     func trackPurchase(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        guard email != nil || userId != nil else {
-            ITBError("Both email and userId are nil")
-            onFailure?("Both email and userId are nil", nil)
-            return
-        }
-
-        var itemsToSerialize = [[AnyHashable : Any]]()
-        for item in items {
-            itemsToSerialize.append(item.toDictionary())
-        }
-        
-        var apiUserDict = [AnyHashable : Any]()
-        addEmailOrUserId(args: &apiUserDict)
-        
-        let args : [String : Any]
-        if let dataFields = dataFields {
-            args = [
-                AnyHashable.ITBL_KEY_USER: apiUserDict,
-                AnyHashable.ITBL_KEY_ITEMS: itemsToSerialize,
-                AnyHashable.ITBL_KEY_TOTAL: total,
-                AnyHashable.ITBL_KEY_DATA_FIELDS: dataFields
-            ]
-        } else {
-            args = [
-                AnyHashable.ITBL_KEY_USER: apiUserDict,
-                AnyHashable.ITBL_KEY_ITEMS: itemsToSerialize,
-                AnyHashable.ITBL_KEY_TOTAL: total,
-            ]
-        }
-        
-        if let request = createPostRequest(forPath: .ITBL_PATH_COMMERCE_TRACK_PURCHASE, withBody: args) {
-            sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
-        }
+        IterableAPIInternal.call(successHandler: onSuccess,
+                                 andFailureHandler: onFailure,
+                                 forResult: createApiClient().track(purchase: total, items: items, dataFields: dataFields))
     }
 
     func trackPushOpen(_ userInfo: [AnyHashable : Any]) {
