@@ -69,6 +69,14 @@ struct ApiClient {
         return send(iterableRequestResult: createTrackPurchaseRequest(total, items: items, dataFields: dataFields))
     }
     
+    func track(pushOpen campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createTrackPushOpenRequest(campaignId,
+                                                                      templateId: templateId,
+                                                                      messageId: messageId,
+                                                                      appAlreadyRunning: appAlreadyRunning,
+                                                                      dataFields: dataFields))
+    }
+    
     func createUpdateEmailRequest(newEmail: String) -> Result<IterableRequest, IterableError> {
         var body: [String : Any] = [
             AnyHashable.ITBL_KEY_NEW_EMAIL: newEmail
@@ -184,6 +192,31 @@ struct ApiClient {
         return .success(.post(createPostRequest(path: .ITBL_PATH_COMMERCE_TRACK_PURCHASE, body: body)))
     }
     
+    func createTrackPushOpenRequest(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?) -> Result<IterableRequest, IterableError> {
+        var body = [AnyHashable : Any]()
+        
+        var reqDataFields: [AnyHashable : Any]
+        if let dataFields = dataFields {
+            reqDataFields = dataFields
+        } else {
+            reqDataFields = [:]
+        }
+        reqDataFields["appAlreadyRunning"] = appAlreadyRunning
+        body[.ITBL_KEY_DATA_FIELDS] = reqDataFields
+        
+        addEmailOrUserId(dict: &body, mustExist: false)
+        
+        body[.ITBL_KEY_CAMPAIGN_ID] = campaignId
+        if let templateId = templateId {
+            body[.ITBL_KEY_TEMPLATE_ID] = templateId
+        }
+        if let messageId = messageId {
+            body[.ITBL_KEY_MESSAGE_ID] = messageId
+        }
+
+        return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_PUSH_OPEN, body: body)))
+    }
+
     func convertToURLRequest(iterableRequest: IterableRequest) -> URLRequest? {
         switch (iterableRequest) {
         case .get(let getRequest):

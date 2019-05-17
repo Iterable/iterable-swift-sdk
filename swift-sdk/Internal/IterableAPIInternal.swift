@@ -201,30 +201,13 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
 
     func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        var args = [AnyHashable : Any]()
-
-        var reqDataFields: [AnyHashable : Any]
-        if let dataFields = dataFields {
-            reqDataFields = dataFields
-        } else {
-            reqDataFields = [:]
-        }
-        reqDataFields["appAlreadyRunning"] = appAlreadyRunning
-        args[.ITBL_KEY_DATA_FIELDS] = reqDataFields
-
-        addEmailOrUserId(args: &args, mustExist: false)
-        
-        args[.ITBL_KEY_CAMPAIGN_ID] = campaignId
-        if let templateId = templateId {
-            args[.ITBL_KEY_TEMPLATE_ID] = templateId
-        }
-        if let messageId = messageId {
-            args[.ITBL_KEY_MESSAGE_ID] = messageId
-        }
-
-        if let request = createPostRequest(forPath: .ITBL_PATH_TRACK_PUSH_OPEN, withBody: args) {
-            sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
-        }
+        IterableAPIInternal.call(successHandler: onSuccess,
+                                 andFailureHandler: onFailure,
+                                 forResult: createApiClient().track(pushOpen: campaignId,
+                                                                    templateId: templateId,
+                                                                    messageId: messageId,
+                                                                    appAlreadyRunning: appAlreadyRunning,
+                                                                    dataFields: dataFields))
     }
     
     private func save(pushPayload payload: [AnyHashable : Any]) {
