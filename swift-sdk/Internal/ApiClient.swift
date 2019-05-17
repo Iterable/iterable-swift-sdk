@@ -77,6 +77,14 @@ struct ApiClient {
                                                                       dataFields: dataFields))
     }
     
+    func track(event eventName: String, dataFields: [AnyHashable : Any]?) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createTrackEventRequest(eventName, dataFields: dataFields))
+    }
+
+    func updateSubscriptions(_ emailListIds: [String]?, unsubscribedChannelIds: [String]?, unsubscribedMessageTypeIds: [String]?) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createUpdateSubscriptionsRequest(emailListIds, unsubscribedChannelIds: unsubscribedChannelIds, unsubscribedMessageTypeIds: unsubscribedMessageTypeIds))
+    }
+
     func createUpdateEmailRequest(newEmail: String) -> Result<IterableRequest, IterableError> {
         var body: [String : Any] = [
             AnyHashable.ITBL_KEY_NEW_EMAIL: newEmail
@@ -215,6 +223,39 @@ struct ApiClient {
         }
 
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_PUSH_OPEN, body: body)))
+    }
+
+    func createTrackEventRequest(_ eventName: String, dataFields: [AnyHashable : Any]?) -> Result<IterableRequest, IterableError> {
+        guard auth.email != nil || auth.userId != nil else {
+            ITBError("Both email and userId are nil")
+            return .failure(IterableError.general(description: "Both email and userId are nil"))
+        }
+        
+        var body = [AnyHashable : Any]()
+        addEmailOrUserId(dict: &body)
+        body[.ITBL_KEY_EVENT_NAME] = eventName
+        if let dataFields = dataFields {
+            body[.ITBL_KEY_DATA_FIELDS] = dataFields
+        }
+
+        return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK, body: body)))
+    }
+
+    func createUpdateSubscriptionsRequest(_ emailListIds: [String]?, unsubscribedChannelIds: [String]?, unsubscribedMessageTypeIds: [String]?) -> Result<IterableRequest, IterableError> {
+        var body = [AnyHashable : Any]()
+        addEmailOrUserId(dict: &body)
+        
+        if let emailListIds = emailListIds {
+            body[.ITBL_KEY_EMAIL_LIST_IDS] = emailListIds
+        }
+        if let unsubscribedChannelIds = unsubscribedChannelIds {
+            body[.ITBL_KEY_UNSUB_CHANNEL] = unsubscribedChannelIds
+        }
+        if let unsubscribedMessageTypeIds = unsubscribedMessageTypeIds {
+            body[.ITBL_KEY_UNSUB_MESSAGE] = unsubscribedMessageTypeIds
+        }
+
+        return .success(.post(createPostRequest(path: .ITBL_PATH_UPDATE_SUBSCRIPTIONS, body: body)))
     }
 
     func convertToURLRequest(iterableRequest: IterableRequest) -> URLRequest? {

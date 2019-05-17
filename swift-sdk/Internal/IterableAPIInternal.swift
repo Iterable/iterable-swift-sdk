@@ -232,41 +232,15 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
 
     func track(_ eventName: String, dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        guard email != nil || userId != nil else {
-            ITBError("Both email and userId are nil")
-            onFailure?("Both email and userId are nil", nil)
-            return
-        }
-
-        var args = [AnyHashable : Any]()
-        addEmailOrUserId(args: &args)
-        args[.ITBL_KEY_EVENT_NAME] = eventName
-        if let dataFields = dataFields {
-            args[.ITBL_KEY_DATA_FIELDS] = dataFields
-        }
-        
-        if let request = createPostRequest(forPath: .ITBL_PATH_TRACK, withBody: args) {
-            sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
-        }
+        IterableAPIInternal.call(successHandler: onSuccess,
+                                 andFailureHandler: onFailure,
+                                 forResult: createApiClient().track(event: eventName, dataFields: dataFields))
     }
     
     func updateSubscriptions(_ emailListIds: [String]?, unsubscribedChannelIds: [String]?, unsubscribedMessageTypeIds: [String]?) {
-        var dictionary = [AnyHashable : Any]()
-        addEmailOrUserId(args: &dictionary)
-        
-        if let emailListIds = emailListIds {
-            dictionary[.ITBL_KEY_EMAIL_LIST_IDS] = emailListIds
-        }
-        if let unsubscribedChannelIds = unsubscribedChannelIds {
-            dictionary[.ITBL_KEY_UNSUB_CHANNEL] = unsubscribedChannelIds
-        }
-        if let unsubscribedMessageTypeIds = unsubscribedMessageTypeIds {
-            dictionary[.ITBL_KEY_UNSUB_MESSAGE] = unsubscribedMessageTypeIds
-        }
-        
-        if let request = createPostRequest(forPath: .ITBL_PATH_UPDATE_SUBSCRIPTIONS, withBody: dictionary) {
-            sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "updateSubscriptions"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "updateSubscriptions"))
-        }
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "updateSubscriptions"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "updateSubscriptions"),
+                                 forResult: createApiClient().updateSubscriptions(emailListIds, unsubscribedChannelIds: unsubscribedChannelIds, unsubscribedMessageTypeIds: unsubscribedMessageTypeIds))
     }
 
     @discardableResult func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError> {
