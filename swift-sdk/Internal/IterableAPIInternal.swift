@@ -254,38 +254,22 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
 
     func trackInAppOpen(_ messageId: String) {
-        var args = [AnyHashable : Any]()
-        addEmailOrUserId(args: &args)
-        args[.ITBL_KEY_MESSAGE_ID] = messageId
-        
-        if let request = createPostRequest(forPath: .ITBL_PATH_TRACK_INAPP_OPEN, withBody: args) {
-            sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppOpen"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"))
-        }
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppOpen"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"),
+                                 forResult: createApiClient().track(inAppOpen: messageId))
     }
 
     func trackInAppClick(_ messageId: String, buttonIndex: String) {
-        var args: [AnyHashable : Any] = [
-            .ITBL_KEY_MESSAGE_ID: messageId,
-            .ITBL_IN_APP_BUTTON_INDEX: buttonIndex
-        ]
-        addEmailOrUserId(args: &args)
-        
-        if let request = createPostRequest(forPath: .ITBL_PATH_TRACK_INAPP_CLICK, withBody: args) {
-            sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"))
-        }
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"),
+                                 forResult: createApiClient().track(inAppClick: messageId, buttonIndex: buttonIndex))
     }
 
     
     func trackInAppClick(_ messageId: String, buttonURL: String) {
-        var args: [AnyHashable : Any] = [
-            .ITBL_KEY_MESSAGE_ID: messageId,
-            .ITBL_IN_APP_CLICKED_URL: buttonURL
-        ]
-        addEmailOrUserId(args: &args)
-        
-        if let request = createPostRequest(forPath: .ITBL_PATH_TRACK_INAPP_CLICK, withBody: args) {
-            sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"))
-        }
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"),
+                                 forResult: createApiClient().track(inAppClick: messageId, buttonURL: buttonURL))
     }
 
     func inAppConsume(_ messageId: String) {

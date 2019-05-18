@@ -89,6 +89,18 @@ struct ApiClient {
         return send(iterableRequestResult: createGetInppMessagesRequest(count))
     }
 
+    func track(inAppOpen messageId: String) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createTrackInappOpenRequest(messageId))
+    }
+
+    func track(inAppClick messageId: String, buttonIndex: String) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createTrackInappClickRequest(messageId, buttonIndex: buttonIndex))
+    }
+
+    func track(inAppClick messageId: String, buttonURL: String) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createTrackInappClickRequest(messageId, buttonURL: buttonURL))
+    }
+
     func createUpdateEmailRequest(newEmail: String) -> Result<IterableRequest, IterableError> {
         var body: [String : Any] = [
             AnyHashable.ITBL_KEY_NEW_EMAIL: newEmail
@@ -277,6 +289,34 @@ struct ApiClient {
         addEmailOrUserId(dict: &args)
 
         return .success(.get(createGetRequest(forPath: .ITBL_PATH_GET_INAPP_MESSAGES, withArgs: args as! [String: String])))
+    }
+    
+    func createTrackInappOpenRequest(_ messageId: String) -> Result<IterableRequest, IterableError> {
+        var body = [AnyHashable : Any]()
+        addEmailOrUserId(dict: &body)
+        body[.ITBL_KEY_MESSAGE_ID] = messageId
+
+        return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_OPEN, body: body)))
+    }
+
+    func createTrackInappClickRequest(_ messageId: String, buttonIndex: String) -> Result<IterableRequest, IterableError> {
+        var body: [AnyHashable : Any] = [
+            .ITBL_KEY_MESSAGE_ID: messageId,
+            .ITBL_IN_APP_BUTTON_INDEX: buttonIndex
+        ]
+        addEmailOrUserId(dict: &body)
+
+        return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLICK, body: body)))
+    }
+
+    func createTrackInappClickRequest(_ messageId: String, buttonURL: String) -> Result<IterableRequest, IterableError> {
+        var body: [AnyHashable : Any] = [
+            .ITBL_KEY_MESSAGE_ID: messageId,
+            .ITBL_IN_APP_CLICKED_URL: buttonURL
+        ]
+        addEmailOrUserId(dict: &body)
+        
+        return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLICK, body: body)))
     }
 
     func convertToURLRequest(iterableRequest: IterableRequest) -> URLRequest? {
