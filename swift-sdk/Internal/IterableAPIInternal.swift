@@ -92,7 +92,9 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     } ()
     
     func register(token: Data) {
-        register(token: token, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "registerToken"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "registerToken"))
+        register(token: token,
+                 onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "registerToken"),
+                 onFailure: IterableAPIInternal.defaultOnFailure(identifier: "registerToken"))
     }
 
     func register(token: Data, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
@@ -104,9 +106,19 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         
         // Check notificationsEnabled then call register with enabled/not-not enabled
         notificationStateProvider.notificationsEnabled.onSuccess { (enabled) in
-            self.register(token: token, appName: appName, pushServicePlatform: self.config.pushPlatform, notificationsEnabled: enabled, onSuccess: onSuccess, onFailure: onFailure)
+            self.register(token: token,
+                          appName: appName,
+                          pushServicePlatform: self.config.pushPlatform,
+                          notificationsEnabled: enabled,
+                          onSuccess: onSuccess,
+                          onFailure: onFailure)
         }.onError {(error) in
-            self.register(token: token, appName: appName, pushServicePlatform: self.config.pushPlatform, notificationsEnabled: false, onSuccess: onSuccess, onFailure: onFailure)
+            self.register(token: token,
+                          appName: appName,
+                          pushServicePlatform: self.config.pushPlatform,
+                          notificationsEnabled: false,
+                          onSuccess: onSuccess,
+                          onFailure: onFailure)
         }
     }
 
@@ -448,28 +460,6 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         ITBInfo("sending disableToken request with args \(args)")
         if let request = createPostRequest(forPath: .ITBL_PATH_DISABLE_DEVICE, withBody:args) {
             sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
-        }
-    }
-    
-    private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform) -> String {
-        switch pushServicePlatform {
-        case .production:
-            return .ITBL_KEY_APNS
-        case .sandbox:
-            return .ITBL_KEY_APNS_SANDBOX
-        case .auto:
-            return IterableAPNSUtil.isSandboxAPNS() ? .ITBL_KEY_APNS_SANDBOX : .ITBL_KEY_APNS
-        }
-    }
-    
-    private static func userInterfaceIdiomEnumToString(_ idiom: UIUserInterfaceIdiom) -> String {
-        switch idiom {
-        case .phone:
-            return .ITBL_KEY_PHONE
-        case .pad:
-            return .ITBL_KEY_PAD
-        default:
-            return .ITBL_KEY_UNSPECIFIED
         }
     }
     
