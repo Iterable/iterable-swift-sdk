@@ -248,23 +248,9 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
 
     @discardableResult func getInAppMessages(_ count: NSNumber, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        guard email != nil || userId != nil else {
-            ITBError("Both email and userId are nil")
-            onFailure?("Both email and userId are nil", nil)
-            return SendRequestError.createErroredFuture(reason: "Both email and userId are nil")
-        }
-
-        var args : [AnyHashable : Any] = [
-            AnyHashable.ITBL_KEY_COUNT: count.description,
-            AnyHashable.ITBL_KEY_PLATFORM: String.ITBL_PLATFORM_IOS,
-            AnyHashable.ITBL_KEY_SDK_VERSION: IterableAPI.sdkVersion
-        ]
-
-        addEmailOrUserId(args: &args)
-
-        return createGetRequest(forPath: .ITBL_PATH_GET_INAPP_MESSAGES, withArgs: args as! [String : String]).map {
-            sendRequest($0, onSuccess: onSuccess, onFailure: onFailure)
-        } ?? SendRequestError.createErroredFuture(reason: "Could not create get request for getInApp")
+        return IterableAPIInternal.call(successHandler: onSuccess,
+                                        andFailureHandler: onFailure,
+                                        forResult: createApiClient().getInAppMessages(count))
     }
 
     func trackInAppOpen(_ messageId: String) {

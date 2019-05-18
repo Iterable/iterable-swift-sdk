@@ -85,6 +85,10 @@ struct ApiClient {
         return send(iterableRequestResult: createUpdateSubscriptionsRequest(emailListIds, unsubscribedChannelIds: unsubscribedChannelIds, unsubscribedMessageTypeIds: unsubscribedMessageTypeIds))
     }
 
+    func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createGetInppMessagesRequest(count))
+    }
+
     func createUpdateEmailRequest(newEmail: String) -> Result<IterableRequest, IterableError> {
         var body: [String : Any] = [
             AnyHashable.ITBL_KEY_NEW_EMAIL: newEmail
@@ -258,6 +262,23 @@ struct ApiClient {
         return .success(.post(createPostRequest(path: .ITBL_PATH_UPDATE_SUBSCRIPTIONS, body: body)))
     }
 
+    func createGetInppMessagesRequest(_ count: NSNumber) -> Result<IterableRequest, IterableError> {
+        guard auth.email != nil || auth.userId != nil else {
+            ITBError("Both email and userId are nil")
+            return .failure(IterableError.general(description: "Both email and userId are nil"))
+        }
+        
+        var args : [AnyHashable : Any] = [
+            AnyHashable.ITBL_KEY_COUNT: count.description,
+            AnyHashable.ITBL_KEY_PLATFORM: String.ITBL_PLATFORM_IOS,
+            AnyHashable.ITBL_KEY_SDK_VERSION: IterableAPI.sdkVersion
+        ]
+        
+        addEmailOrUserId(dict: &args)
+
+        return .success(.get(createGetRequest(forPath: .ITBL_PATH_GET_INAPP_MESSAGES, withArgs: args as! [String: String])))
+    }
+
     func convertToURLRequest(iterableRequest: IterableRequest) -> URLRequest? {
         switch (iterableRequest) {
         case .get(let getRequest):
@@ -288,6 +309,13 @@ struct ApiClient {
         return PostRequest(path: path,
                            args: [AnyHashable.ITBL_KEY_API_KEY : apiKey],
                            body: body)
+    }
+
+    private func createGetRequest(forPath path: String, withArgs args: [String : String]) -> GetRequest {
+        var argsWithApiKey = args
+        argsWithApiKey[AnyHashable.ITBL_KEY_API_KEY] = apiKey
+        return GetRequest(path: path,
+                           args: argsWithApiKey)
     }
 
     private func addEmailOrUserId(dict: inout [AnyHashable : Any], mustExist: Bool = true) {
