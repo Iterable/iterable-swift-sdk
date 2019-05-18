@@ -101,6 +101,14 @@ struct ApiClient {
         return send(iterableRequestResult: createTrackInappClickRequest(messageId, buttonURL: buttonURL))
     }
 
+    func inappConsume(messageId: String) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createInappConsumeRequest(messageId))
+    }
+
+    func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createDisableDeviceRequest(forAllUsers: allUsers, hexToken: hexToken))
+    }
+
     func createUpdateEmailRequest(newEmail: String) -> Result<IterableRequest, IterableError> {
         var body: [String : Any] = [
             AnyHashable.ITBL_KEY_NEW_EMAIL: newEmail
@@ -317,6 +325,25 @@ struct ApiClient {
         addEmailOrUserId(dict: &body)
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLICK, body: body)))
+    }
+
+    func createInappConsumeRequest(_ messageId: String) -> Result<IterableRequest, IterableError> {
+        var body: [AnyHashable : Any] = [
+            .ITBL_KEY_MESSAGE_ID: messageId,
+        ]
+        addEmailOrUserId(dict: &body)
+
+        return .success(.post(createPostRequest(path: .ITBL_PATH_INAPP_CONSUME, body: body)))
+    }
+
+    func createDisableDeviceRequest(forAllUsers allUsers: Bool, hexToken: String) -> Result<IterableRequest, IterableError> {
+        var body = [AnyHashable : Any]()
+        body[.ITBL_KEY_TOKEN] = hexToken
+        if !allUsers {
+            addEmailOrUserId(dict: &body, mustExist: false)
+        }
+
+        return .success(.post(createPostRequest(path: .ITBL_PATH_DISABLE_DEVICE, body: body)))
     }
 
     func convertToURLRequest(iterableRequest: IterableRequest) -> URLRequest? {

@@ -285,15 +285,28 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
 
     func inAppConsume(_ messageId: String) {
-        var args: [AnyHashable : Any] = [
-            .ITBL_KEY_MESSAGE_ID: messageId,
-        ]
-        addEmailOrUserId(args: &args)
-        
-        if let request = createPostRequest(forPath: .ITBL_PATH_INAPP_CONSUME, withBody: args) {
-            sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "inAppConsume"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "inAppConsume"))
-        }
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "inappConsume"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "inappConsume"),
+                                 forResult: createApiClient().inappConsume(messageId: messageId))
     }
+
+    private func disableDevice(forAllUsers allUsers: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+        guard let hexToken = hexToken else {
+            ITBError("Device not registered.")
+            onFailure?("Device not registered.", nil)
+            return
+        }
+        guard !(allUsers == false && email == nil && userId == nil) else {
+            ITBError("Emal or userId must be set.")
+            onFailure?("Email or userId must be set.", nil)
+            return
+        }
+        
+        IterableAPIInternal.call(successHandler: onSuccess,
+                                 andFailureHandler: onFailure,
+                                 forResult: createApiClient().disableDevice(forAllUsers: allUsers, hexToken: hexToken))
+    }
+    
 
     func showSystemNotification(_ title: String, body: String, button: String?, callbackBlock: ITEActionBlock?) {
         showSystemNotification(title, body: body, buttonLeft: button, buttonRight: nil, callbackBlock: callbackBlock)
@@ -436,30 +449,6 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
                 toLog += ", got response \(data)"
             }
             ITBError(toLog)
-        }
-    }
-    
-    private func disableDevice(forAllUsers allUsers: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        guard let hexToken = hexToken else {
-            ITBError("Device not registered.")
-            onFailure?("Device not registered.", nil)
-            return
-        }
-        guard !(allUsers == false && email == nil && userId == nil) else {
-            ITBError("Emal or userId must be set.")
-            onFailure?("Email or userId must be set.", nil)
-            return
-        }
-        
-        var args = [AnyHashable : Any]()
-        args[.ITBL_KEY_TOKEN] = hexToken
-        if !allUsers {
-            addEmailOrUserId(args: &args, mustExist: false)
-        }
-        
-        ITBInfo("sending disableToken request with args \(args)")
-        if let request = createPostRequest(forPath: .ITBL_PATH_DISABLE_DEVICE, withBody:args) {
-            sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
         }
     }
     
