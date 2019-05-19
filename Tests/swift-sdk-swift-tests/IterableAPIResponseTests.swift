@@ -165,8 +165,12 @@ class IterableAPIResponseTests: XCTestCase {
     }
     
     private func createApiClient(networkSession: NetworkSessionProtocol) -> ApiClient {
+        class AuthProviderImpl : AuthProvider {
+            let auth: Auth = Auth(userId: nil, email: "user@example.com")
+        }
+        
         return ApiClient(apiKey: "",
-                         auth: Auth(userId: nil, email: "user@example.com"),
+                         authProvider: AuthProviderImpl(),
                          endPoint: .ITBL_ENDPOINT_API,
                          networkSession: networkSession)
     }    

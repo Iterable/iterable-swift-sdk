@@ -7,7 +7,7 @@
 import Foundation
 import UserNotifications
 
-final class IterableAPIInternal : NSObject, PushTrackerProtocol {
+final class IterableAPIInternal : NSObject, PushTrackerProtocol, AuthProvider {
     var apiKey: String
 
     var email: String? {
@@ -87,6 +87,11 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
     }
 
+    // AuthProvider Protocol
+    var auth : Auth {
+        return Auth(userId: userId, email: email)
+    }
+    
     lazy var inAppManager: IterableInAppManagerProtocolInternal = {
         self.dependencyContainer.createInAppManager(config: self.config, internalApi: self)
     } ()
@@ -132,7 +137,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
 
         return IterableAPIInternal.call(successHandler: onSuccess,
                                         andFailureHandler: onFailure,
-                                        forResult: createApiClient().register(hexToken: hexToken!,
+                                        forResult: apiClient.register(hexToken: hexToken!,
                                                                               appName: appName,
                                                                               deviceId: deviceId,
                                                                               sdkVersion: localStorage.sdkVersion,
@@ -159,11 +164,11 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     func updateUser(_ dataFields: [AnyHashable : Any], mergeNestedObjects: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         IterableAPIInternal.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
-                                 forResult: createApiClient().updateUser(dataFields, mergeNestedObjects: mergeNestedObjects))
+                                 forResult: apiClient.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects))
     }
 
     func updateEmail(_ newEmail: String, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        createApiClient().updateEmail(newEmail: newEmail).onSuccess { (json) in
+        apiClient.updateEmail(newEmail: newEmail).onSuccess { (json) in
             if let _ = self.email {
                 // we change the email only if we were using email before
                 self.email = newEmail
@@ -185,7 +190,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     func trackPurchase(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         IterableAPIInternal.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
-                                 forResult: createApiClient().track(purchase: total, items: items, dataFields: dataFields))
+                                 forResult: apiClient.track(purchase: total, items: items, dataFields: dataFields))
     }
 
     func trackPushOpen(_ userInfo: [AnyHashable : Any]) {
@@ -215,7 +220,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         IterableAPIInternal.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
-                                 forResult: createApiClient().track(pushOpen: campaignId,
+                                 forResult: apiClient.track(pushOpen: campaignId,
                                                                     templateId: templateId,
                                                                     messageId: messageId,
                                                                     appAlreadyRunning: appAlreadyRunning,
@@ -246,13 +251,13 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     func track(_ eventName: String, dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         IterableAPIInternal.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
-                                 forResult: createApiClient().track(event: eventName, dataFields: dataFields))
+                                 forResult: apiClient.track(event: eventName, dataFields: dataFields))
     }
     
     func updateSubscriptions(_ emailListIds: [String]?, unsubscribedChannelIds: [String]?, unsubscribedMessageTypeIds: [String]?) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "updateSubscriptions"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "updateSubscriptions"),
-                                 forResult: createApiClient().updateSubscriptions(emailListIds, unsubscribedChannelIds: unsubscribedChannelIds, unsubscribedMessageTypeIds: unsubscribedMessageTypeIds))
+                                 forResult: apiClient.updateSubscriptions(emailListIds, unsubscribedChannelIds: unsubscribedChannelIds, unsubscribedMessageTypeIds: unsubscribedMessageTypeIds))
     }
 
     @discardableResult func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError> {
@@ -262,32 +267,32 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     @discardableResult func getInAppMessages(_ count: NSNumber, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
         return IterableAPIInternal.call(successHandler: onSuccess,
                                         andFailureHandler: onFailure,
-                                        forResult: createApiClient().getInAppMessages(count))
+                                        forResult: apiClient.getInAppMessages(count))
     }
 
     func trackInAppOpen(_ messageId: String) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppOpen"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"),
-                                 forResult: createApiClient().track(inAppOpen: messageId))
+                                 forResult: apiClient.track(inAppOpen: messageId))
     }
 
     func trackInAppClick(_ messageId: String, buttonIndex: String) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"),
-                                 forResult: createApiClient().track(inAppClick: messageId, buttonIndex: buttonIndex))
+                                 forResult: apiClient.track(inAppClick: messageId, buttonIndex: buttonIndex))
     }
 
     
     func trackInAppClick(_ messageId: String, buttonURL: String) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"),
-                                 forResult: createApiClient().track(inAppClick: messageId, buttonURL: buttonURL))
+                                 forResult: apiClient.track(inAppClick: messageId, buttonURL: buttonURL))
     }
 
     func inAppConsume(_ messageId: String) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "inappConsume"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "inappConsume"),
-                                 forResult: createApiClient().inappConsume(messageId: messageId))
+                                 forResult: apiClient.inappConsume(messageId: messageId))
     }
 
     private func disableDevice(forAllUsers allUsers: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
@@ -304,7 +309,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         
         IterableAPIInternal.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
-                                 forResult: createApiClient().disableDevice(forAllUsers: allUsers, hexToken: hexToken))
+                                 forResult: apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken))
     }
     
 
@@ -324,10 +329,6 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         return deeplinkManager.handleUniversalLink(url, urlDelegate: config.urlDelegate, urlOpener: AppUrlOpener())
     }
 
-    private func createApiClient() -> ApiClient {
-        return ApiClient(apiKey: apiKey, auth: Auth(userId: userId, email: email), endPoint: .ITBL_ENDPOINT_API, networkSession: networkSession)
-    }
-    
     @discardableResult private static func call(successHandler onSuccess: OnSuccessHandler? = nil, andFailureHandler onFailure: OnFailureHandler? = nil, forResult result: Future<SendRequestValue, SendRequestError>) -> Future<SendRequestValue, SendRequestError> {
         result.onSuccess { (json) in
             onSuccess?(json)
@@ -359,6 +360,10 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     private var localStorage: LocalStorageProtocol
     
     private var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    
+    private lazy var apiClient: ApiClient = {
+       ApiClient(apiKey: apiKey, authProvider: self, endPoint: .ITBL_ENDPOINT_API, networkSession: networkSession)
+    }()
     
     var networkSession: NetworkSessionProtocol
     

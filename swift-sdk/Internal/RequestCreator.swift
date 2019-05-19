@@ -22,6 +22,9 @@ struct PostRequest {
     let body: [AnyHashable : Any]?
 }
 
+// This is a stateless pure functional class
+// This will create IterableRequest
+// The Api Endpoint and request endpoint is not defined yet
 struct RequestCreator {
     let apiKey: String
     let auth: Auth

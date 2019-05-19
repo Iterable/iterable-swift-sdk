@@ -21,14 +21,16 @@ struct Auth {
     let email: String?
 }
 
-struct ApiClient {
-    let apiKey: String
-    let auth: Auth
-    let endPoint: String
-    let networkSession: NetworkSessionProtocol
+protocol AuthProvider : class {
+    var auth: Auth { get }
+}
 
-    private func createRequestCreator() -> RequestCreator {
-        return RequestCreator(apiKey: apiKey, auth: auth)
+class ApiClient {
+    init(apiKey: String, authProvider: AuthProvider, endPoint: String, networkSession: NetworkSessionProtocol) {
+        self.apiKey = apiKey
+        self.authProvider = authProvider
+        self.endPoint = endPoint
+        self.networkSession = networkSession
     }
     
     func register(hexToken: String,
@@ -122,6 +124,18 @@ struct ApiClient {
         
         return NetworkHelper.sendRequest(urlRequest, usingSession: networkSession)
     }
+    
+    private func createRequestCreator() -> RequestCreator {
+        guard let authProvider = authProvider else {
+            fatalError("authProvider is missing")
+        }
+        return RequestCreator(apiKey: apiKey, auth: authProvider.auth)
+    }
+    
+    private let apiKey: String
+    private weak var authProvider: AuthProvider?
+    private let endPoint: String
+    private let networkSession: NetworkSessionProtocol
 }
 
 
