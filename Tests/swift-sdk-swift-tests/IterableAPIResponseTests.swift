@@ -23,27 +23,25 @@ class IterableAPIResponseTests: XCTestCase {
     func testResponseCode200() {
         let xpectation = expectation(description: "response code 200")
         let networkSession = MockNetworkSession(statusCode: 200)
-        IterableAPI.initializeForTesting(apiKey: "", networkSession: networkSession)
-        let apiInternal = IterableAPI.internalImplementation!
-        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
-        apiInternal.sendRequest(request,
-                                onSuccess: { (result) in
-                                    xpectation.fulfill()
-        },
-                                onFailure: nil)
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
+        
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onSuccess { (json) in
+            xpectation.fulfill()
+        }
+
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
     func testResponseCode200WithNoData() {
         let xpectation = expectation(description: "no data")
         let networkSession = MockNetworkSession(statusCode: 200, data: nil)
-        IterableAPI.initializeForTesting(apiKey: "", networkSession: networkSession)
-        let apiInternal = IterableAPI.internalImplementation!
-        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
-        apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
+        
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { (sendError) in
             xpectation.fulfill()
-            XCTAssert(reason!.lowercased().contains("no data"))
+            XCTAssert(sendError.reason!.lowercased().contains("no data"))
         }
+
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
@@ -51,91 +49,91 @@ class IterableAPIResponseTests: XCTestCase {
         let xpectation = expectation(description: "invalid json")
         let data = "{'''}}".data(using: .utf8)!
         let networkSession = MockNetworkSession(statusCode: 200, data: data)
-        IterableAPI.initializeForTesting(apiKey: "", networkSession: networkSession)
-        let apiInternal = IterableAPI.internalImplementation!
-        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
-        apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
+
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { (sendError) in
             xpectation.fulfill()
-            XCTAssert(reason!.lowercased().contains("could not parse json"))
+            XCTAssert(sendError.reason!.lowercased().contains("could not parse json"))
         }
+        
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
     func testResponseCode400WithoutMessage() { // 400 = bad reqeust
         let xpectation = expectation(description: "400 without message")
         let networkSession = MockNetworkSession(statusCode: 400)
-        IterableAPI.initializeForTesting(apiKey: "", networkSession: networkSession)
-        let apiInternal = IterableAPI.internalImplementation!
-        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
-        apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
+        
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { (sendError) in
             xpectation.fulfill()
-            XCTAssert(reason!.lowercased().contains("invalid request"))
+            XCTAssert(sendError.reason!.lowercased().contains("invalid request"))
         }
+        
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
     func testResponseCode400WitMessage() {
         let xpectation = expectation(description: "400 with message")
         let networkSession = MockNetworkSession(statusCode: 400, json: ["msg" : "Test error"])
-        IterableAPI.initializeForTesting(apiKey: "", networkSession: networkSession)
-        let apiInternal = IterableAPI.internalImplementation!
-        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
-        apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
+        
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { (sendError) in
             xpectation.fulfill()
-            XCTAssert(reason!.lowercased().contains("test error"))
+            XCTAssert(sendError.reason!.lowercased().contains("test error"))
         }
+        
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
     func testResponseCode401() { // 401 = unauthorized
         let xpectation = expectation(description: "401")
         let networkSession = MockNetworkSession(statusCode: 401)
-        IterableAPI.initializeForTesting(apiKey: "", networkSession: networkSession)
-        let apiInternal = IterableAPI.internalImplementation!
-        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
-        apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
+        
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { (sendError) in
             xpectation.fulfill()
-            XCTAssert(reason!.lowercased().contains("invalid api key"))
+            XCTAssert(sendError.reason!.lowercased().contains("invalid api key"))
         }
+        
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
     func testResponseCode500() { // 500 = internal server error
         let xpectation = expectation(description: "500")
         let networkSession = MockNetworkSession(statusCode: 500)
-        IterableAPI.initializeForTesting(apiKey: "", networkSession: networkSession)
-        let apiInternal = IterableAPI.internalImplementation!
-        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
-        apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
+        
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { (sendError) in
             xpectation.fulfill()
-            XCTAssert(reason!.lowercased().contains("internal server error"))
+            XCTAssert(sendError.reason!.lowercased().contains("internal server error"))
         }
+        
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
     func testNon200ResponseCode() { // 302 = redirection
         let xpectation = expectation(description: "non 200")
         let networkSession = MockNetworkSession(statusCode: 302)
-        IterableAPI.initializeForTesting(apiKey: "", networkSession: networkSession)
-        let apiInternal = IterableAPI.internalImplementation!
-        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
-        apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
+        
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { (sendError) in
             xpectation.fulfill()
-            XCTAssert(reason!.lowercased().contains("non-200 response"))
+            XCTAssert(sendError.reason!.lowercased().contains("non-200 response"))
         }
+        
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
     func testNoNetworkResponse() {
         let xpectation = expectation(description: "no network response")
         let networkSession = NoNetworkNetworkSession()
-        IterableAPI.initializeForTesting(apiKey: "", networkSession: networkSession)
-        let apiInternal = IterableAPI.internalImplementation!
-        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
-        apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
+        
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { (sendError) in
             xpectation.fulfill()
-            XCTAssert(reason!.lowercased().contains("nsurlerrordomain"))
+            XCTAssert(sendError.reason!.lowercased().contains("nsurlerrordomain"))
         }
+        
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
@@ -150,14 +148,26 @@ class IterableAPIResponseTests: XCTestCase {
             response.responseTime = 2.0
             return response
         }
-        IterableAPI.initializeForTesting(apiKey: "", networkSession: URLSession(configuration: URLSessionConfiguration.default))
-        let apiInternal = IterableAPI.internalImplementation!
-        var request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
-        request.timeoutInterval = 0.1
-        apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
+        let networkSession = URLSession(configuration: URLSessionConfiguration.default)
+        
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
+        
+        let apiClient = createApiClient(networkSession: networkSession)
+        var urlRequest = apiClient.convertToURLRequest(iterableRequest: iterableRequest)!
+        urlRequest.timeoutInterval = 0.1
+
+        NetworkHelper.sendRequest(urlRequest, usingSession: networkSession).onError { (sendError) in
             xpectation.fulfill()
-            XCTAssert(reason!.lowercased().contains("timed out"))
+            XCTAssert(sendError.reason!.lowercased().contains("timed out"))
         }
+
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
+    
+    private func createApiClient(networkSession: NetworkSessionProtocol) -> ApiClient {
+        return ApiClient(apiKey: "",
+                         auth: Auth(userId: nil, email: "user@example.com"),
+                         endPoint: .ITBL_ENDPOINT_API,
+                         networkSession: networkSession)
+    }    
 }

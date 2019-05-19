@@ -355,7 +355,7 @@ struct ApiClient {
         }
     }
     
-    fileprivate func send(iterableRequestResult result: Result<IterableRequest, IterableError>) -> Future<SendRequestValue, SendRequestError> {
+    func send(iterableRequestResult result: Result<IterableRequest, IterableError>) -> Future<SendRequestValue, SendRequestError> {
         switch result {
         case .success(let iterableRequest):
             return send(iterableRequest: iterableRequest)
@@ -364,7 +364,7 @@ struct ApiClient {
         }
     }
     
-    private func send(iterableRequest: IterableRequest) -> Future<SendRequestValue, SendRequestError> {
+    func send(iterableRequest: IterableRequest) -> Future<SendRequestValue, SendRequestError> {
         guard let urlRequest = convertToURLRequest(iterableRequest: iterableRequest) else {
             return SendRequestError.createErroredFuture()
         }

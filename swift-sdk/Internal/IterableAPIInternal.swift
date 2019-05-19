@@ -324,18 +324,6 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         return deeplinkManager.handleUniversalLink(url, urlDelegate: config.urlDelegate, urlOpener: AppUrlOpener())
     }
 
-    func createPostRequest(forPath path: String, withBody body: [AnyHashable : Any]) -> URLRequest? {
-        return IterableRequestUtil.createPostRequest(forApiEndPoint: .ITBL_ENDPOINT_API, path: path, args: [AnyHashable.ITBL_KEY_API_KEY : apiKey], body: body)
-    }
-    
-    @discardableResult func sendRequest(_ request: URLRequest, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        return NetworkHelper.sendRequest(request, usingSession: networkSession).onSuccess { (json) in
-            onSuccess?(json)
-        }.onError { (error) in
-            onFailure?(error.reason, error.data)
-        }
-    }
-    
     private func createApiClient() -> ApiClient {
         return ApiClient(apiKey: apiKey, auth: Auth(userId: userId, email: email), endPoint: .ITBL_ENDPOINT_API, networkSession: networkSession)
     }
@@ -423,12 +411,6 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         inAppManager.onInAppSyncNeeded()
     }
     
-    private func createGetRequest(forPath path: String, withArgs args: [String : String]) -> URLRequest? {
-        var argsWithApiKey = args
-        argsWithApiKey[AnyHashable.ITBL_KEY_API_KEY] = apiKey
-        return IterableRequestUtil.createGetRequest(forApiEndPoint: .ITBL_ENDPOINT_API, path: path, args: argsWithApiKey)
-    }
-    
     private static func defaultOnSucess(identifier: String) -> OnSuccessHandler {
         return { data in
             if let data = data {
@@ -462,16 +444,6 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         _userId = localStorage.userId
     }
     
-    private func addEmailOrUserId(args: inout [AnyHashable : Any], mustExist: Bool = true) {
-        if let email = email {
-            args[.ITBL_KEY_EMAIL] = email
-        } else if let userId = userId {
-            args[.ITBL_KEY_USER_ID] = userId
-        } else if mustExist {
-            assertionFailure("Either email or userId should be set")
-        }
-    }
-
     // MARK: Initialization
     
     // Package private method. Do not call this directly.
