@@ -72,6 +72,7 @@
 		AC81918822713A110014955E /* Dwifft+UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC81918722713A110014955E /* Dwifft+UIKit.swift */; };
 		AC81918A22713A400014955E /* AbstractDiffCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC81918922713A400014955E /* AbstractDiffCalculator.swift */; };
 		AC845107228DF54E0052BB8F /* ApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC845106228DF54E0052BB8F /* ApiClient.swift */; };
+		AC84510922910A0C0052BB8F /* RequestCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC84510822910A0C0052BB8F /* RequestCreator.swift */; };
 		AC85A749216D24F4005241AE /* NotificationExtensionSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC85A748216D24F4005241AE /* NotificationExtensionSwiftTests.swift */; };
 		AC87172621A4E47E00FEA369 /* TestInAppPayloadGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */; };
 		AC8874AA22178BD80075B54B /* InAppContentParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8874A922178BD80075B54B /* InAppContentParser.swift */; };
@@ -262,6 +263,7 @@
 		AC81918722713A110014955E /* Dwifft+UIKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dwifft+UIKit.swift"; sourceTree = "<group>"; };
 		AC81918922713A400014955E /* AbstractDiffCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbstractDiffCalculator.swift; sourceTree = "<group>"; };
 		AC845106228DF54E0052BB8F /* ApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiClient.swift; sourceTree = "<group>"; };
+		AC84510822910A0C0052BB8F /* RequestCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestCreator.swift; sourceTree = "<group>"; };
 		AC85A748216D24F4005241AE /* NotificationExtensionSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationExtensionSwiftTests.swift; sourceTree = "<group>"; };
 		AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestInAppPayloadGenerator.swift; sourceTree = "<group>"; };
 		AC8874A922178BD80075B54B /* InAppContentParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppContentParser.swift; sourceTree = "<group>"; };
@@ -626,6 +628,7 @@
 			isa = PBXGroup;
 			children = (
 				AC845106228DF54E0052BB8F /* ApiClient.swift */,
+				AC84510822910A0C0052BB8F /* RequestCreator.swift */,
 			);
 			name = "Api Client";
 			sourceTree = "<group>";
@@ -1095,6 +1098,7 @@
 				AC72A0CA20CF4CE2004D7997 /* IterableActionRunner.swift in Sources */,
 				AC72A0CF20CF4CE2004D7997 /* IterableNotificationMetadata.swift in Sources */,
 				ACD6116C2107D004003E7F6B /* NetworkHelper.swift in Sources */,
+				AC84510922910A0C0052BB8F /* RequestCreator.swift in Sources */,
 				ACB8273F22372A5C00DB17D3 /* IterableHtmlMessageViewController.swift in Sources */,
 				AC81918A22713A400014955E /* AbstractDiffCalculator.swift in Sources */,
 				AC684A88222F4FDD00F29749 /* InAppDisplayer.swift in Sources */,
