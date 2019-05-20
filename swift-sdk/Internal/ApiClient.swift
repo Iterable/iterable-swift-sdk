@@ -6,14 +6,37 @@
 
 import Foundation
 
-protocol ApiClientProtocol {
-    @discardableResult func track(event: String, dataFields: [AnyHashable : Any]?) -> Future<SendRequestValue, SendRequestError>
-}
-
-extension ApiClientProtocol {
-    func track(event: String) -> Future<SendRequestValue, SendRequestError> {
-        return track(event: event, dataFields: nil)
-    }
+protocol ApiClientProtocol : class {
+    func register(hexToken: String,
+                  appName: String,
+                  deviceId: String,
+                  sdkVersion: String?,
+                  pushServicePlatform: PushServicePlatform,
+                  notificationsEnabled: Bool) -> Future<SendRequestValue, SendRequestError>
+    
+    func updateUser(_ dataFields: [AnyHashable: Any], mergeNestedObjects: Bool) -> Future<SendRequestValue, SendRequestError>
+    
+    func updateEmail(newEmail: String) -> Future<SendRequestValue, SendRequestError>
+    
+    func track(purchase total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?) -> Future<SendRequestValue, SendRequestError>
+    
+    func track(pushOpen campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?) -> Future<SendRequestValue, SendRequestError>
+    
+    func track(event eventName: String, dataFields: [AnyHashable : Any]?) -> Future<SendRequestValue, SendRequestError>
+    
+    func updateSubscriptions(_ emailListIds: [String]?, unsubscribedChannelIds: [String]?, unsubscribedMessageTypeIds: [String]?) -> Future<SendRequestValue, SendRequestError>
+    
+    func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError>
+    
+    func track(inAppOpen messageId: String) -> Future<SendRequestValue, SendRequestError>
+    
+    func track(inAppClick messageId: String, buttonIndex: String) -> Future<SendRequestValue, SendRequestError>
+    
+    func track(inAppClick messageId: String, buttonURL: String) -> Future<SendRequestValue, SendRequestError>
+    
+    @discardableResult func inappConsume(messageId: String) -> Future<SendRequestValue, SendRequestError>
+    
+    func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Future<SendRequestValue, SendRequestError>
 }
 
 struct Auth {
@@ -25,7 +48,7 @@ protocol AuthProvider : class {
     var auth: Auth { get }
 }
 
-class ApiClient {
+class ApiClient : ApiClientProtocol {
     init(apiKey: String, authProvider: AuthProvider, endPoint: String, networkSession: NetworkSessionProtocol) {
         self.apiKey = apiKey
         self.authProvider = authProvider

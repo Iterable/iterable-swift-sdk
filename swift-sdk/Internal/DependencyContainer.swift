@@ -17,13 +17,13 @@ protocol DependencyContainerProtocol {
     var applicationStateProvider: ApplicationStateProviderProtocol { get }
     var notificationCenter: NotificationCenterProtocol { get }
     
-    func createInAppFetcher(internalApi: IterableAPIInternal) -> InAppFetcherProtocol
+    func createInAppFetcher(apiClient: ApiClientProtocol) -> InAppFetcherProtocol
 }
 
 extension DependencyContainerProtocol {
-    func createInAppManager(config: IterableConfig, internalApi: IterableAPIInternal) -> IterableInAppManagerProtocolInternal {
-        return InAppManager(internalApi: internalApi,
-                            fetcher: createInAppFetcher(internalApi: internalApi),
+    func createInAppManager(config: IterableConfig, apiClient: ApiClientProtocol) -> IterableInAppManagerProtocolInternal {
+        return InAppManager(apiClient: apiClient,
+                            fetcher: createInAppFetcher(apiClient: apiClient),
                             displayer: inAppDisplayer,
                             persister: inAppPersister,
                             inAppDelegate: config.inAppDelegate,
@@ -38,8 +38,8 @@ extension DependencyContainerProtocol {
 }
 
 struct DependencyContainer : DependencyContainerProtocol {
-    func createInAppFetcher(internalApi: IterableAPIInternal) -> InAppFetcherProtocol {
-        return InAppFetcher(internalApi: internalApi)
+    func createInAppFetcher(apiClient: ApiClientProtocol) -> InAppFetcherProtocol {
+        return InAppFetcher(apiClient: apiClient)
     }
     
     let dateProvider: DateProviderProtocol = SystemDateProvider()

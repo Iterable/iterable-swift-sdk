@@ -11,10 +11,10 @@ import UIKit
 
 // This is Internal Struct, no public methods
 struct InAppHelper {
-    static func getInAppMessagesFromServer(internalApi: IterableAPIInternal, number: Int) -> Future<[IterableInAppMessage], SendRequestError> {
-        return internalApi.getInAppMessages(NSNumber(value: number)).map {
+    static func getInAppMessagesFromServer(apiClient: ApiClientProtocol, number: Int) -> Future<[IterableInAppMessage], SendRequestError> {
+        return apiClient.getInAppMessages(NSNumber(value: number)).map {
             return InAppMessageParser.parse(payload: $0).compactMap { parseResult in
-                process(parseResult: parseResult, internalApi: internalApi)
+                process(parseResult: parseResult, apiClient: apiClient)
             }
         }
     }
@@ -91,14 +91,14 @@ struct InAppHelper {
     }
 
     // process each parseResult and consumes failed message, if messageId is present
-    private static func process(parseResult: IterableResult<IterableInAppMessage, InAppMessageParser.ParseError>, internalApi: IterableAPIInternal) -> IterableInAppMessage? {
+    private static func process(parseResult: IterableResult<IterableInAppMessage, InAppMessageParser.ParseError>, apiClient: ApiClientProtocol) -> IterableInAppMessage? {
         switch parseResult {
         case .failure(let parseError):
             switch (parseError) {
             case .parseFailed(reason: let reason, messageId: let messageId):
                 ITBError(reason)
                 if let messageId = messageId {
-                    internalApi.inAppConsume(messageId)
+                    apiClient.inappConsume(messageId: messageId)
                 }
                 return nil
             }

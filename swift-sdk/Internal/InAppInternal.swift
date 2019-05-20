@@ -23,21 +23,21 @@ extension IterableInAppTriggerType {
 }
 
 class InAppFetcher : InAppFetcherProtocol {
-    init(internalApi: IterableAPIInternal) {
+    init(apiClient: ApiClientProtocol) {
         ITBInfo()
-        self.internalApi = internalApi
+        self.apiClient = apiClient
     }
     
     func fetch() -> Future<[IterableInAppMessage], Error> {
         ITBInfo()
-        guard let internalApi = internalApi else {
-            ITBError("Invalid state: expected InternalApi")
+        guard let apiClient = apiClient else {
+            ITBError("Invalid state: expected ApiClient")
             return Promise(error: IterableError.general(description: "Invalid state: expected InternalApi"))
         }
-        return InAppHelper.getInAppMessagesFromServer(internalApi: internalApi, number: numMessages).mapFailure {$0}
+        return InAppHelper.getInAppMessagesFromServer(apiClient: apiClient, number: numMessages).mapFailure {$0}
     }
 
-    private weak var internalApi: IterableAPIInternal?
+    private weak var apiClient: ApiClientProtocol?
     
     deinit {
         ITBInfo()
