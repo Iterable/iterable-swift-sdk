@@ -20,9 +20,8 @@ To install the Iterable Swift SDK using CocoaPods:
 
 - Edit your project's **Podfile** and add the **Iterable-iOS-SDK** pod to 
 your app target.
-- To use media attachments on iOS push notifications while using Iterable's
-SDK, you'll also need to add the **Iterable-iOS-AppExtensions** pod in your 
-project's extension target.
+- If you'll be using media attachments on iOS push notifications, add the 
+**Iterable-iOS-AppExtensions** pod to your project's extension target.
 
 Example **Podfile**:
 
