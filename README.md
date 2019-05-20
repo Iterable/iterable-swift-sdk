@@ -12,7 +12,7 @@ Before you even start with the SDK, you will need to setup Iterable push notific
 
 For more information, see [Getting Started Guide](https://support.iterable.com/hc/en-us/articles/115000315806-Setting-Up-iOS-Push-Notifications). 
  
-## Automatic installation (via CocoaPods)
+# Automatic Installation (via CocoaPods)
 
 Iterable supports [CocoaPods](https://cocoapods.org) for easy installation. 
 If you don't have it yet, please refer to the CocoaPods 
