@@ -14,24 +14,40 @@ For more information, see [Getting Started Guide](https://support.iterable.com/h
  
 # Automatic Installation (via CocoaPods)
 
-Iterable supports [CocoaPods](https://cocoapods.org) for easy installation. If you don't have it yet, please refer to [this document](https://guides.cocoapods.org/using/getting-started.html) to install Cocoapods.
+Iterable supports [CocoaPods](https://cocoapods.org) for easy installation. 
+If you don't have it yet, please refer to the CocoaPods 
+[Getting Started](https://guides.cocoapods.org/using/getting-started.html) 
+guide for installation instructions.
 
-To include the Iterable SDK in your project, edit the `Podfile` and add the Iterable-iOS-SDK pod to your app target:
+To install the Iterable Swift SDK using CocoaPods:
 
+- Edit your project's **Podfile** and add the **Iterable-iOS-SDK** pod to 
+your app target.
+- If you'll be using media attachments on iOS push notifications, add the 
+**Iterable-iOS-AppExtensions** pod to your project's extension target.
+
+Example **Podfile**:
+
+```ruby
+platform :ios, '11.0'
+
+# You must include the following line for both Objective-C and Swift
+# projects. If you cannot use this option for your target, install
+# the Iterable SDK in your project manually
+use_frameworks!
+
+target 'swift-sample-app' do
+  pod 'Iterable-iOS-SDK'
+end
+
+target 'swift-sample-app-notification-extension' do
+  pod 'Iterable-iOS-AppExtensions'
+end
 ```
-pod 'Iterable-iOS-SDK'
-```
 
-If you want to include Iterable Rich Notification Extension you will also need to include the Iterable-iOS-AppExtensions pod to your extension target:
-
-```
-pod 'Iterable-iOS-AppExtensions'
-```
-
-
-Please look at the included sample pod file [HERE](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app/Podfile?raw=true).
-
-Congratulations! You have now imported Iterable SDK into your project! 
+You you must include `use_frameworks!` in your **Podfile**, no matter 
+whether your app is based on Swift or Objective-C. If you cannot use this in 
+your project, install the SDK [manually](#manual-installation).
 
 # Manual Installation
 

@@ -1,6 +1,8 @@
 platform :ios, '11.0'
 
-# Comment the next line if you're not using Swift and don't want to use dynamic frameworks
+# You must include the following line for both Objective-C and Swift
+# projects. If you cannot use this option for your target, install
+# the Iterable SDK in your project manually.
 use_frameworks!
 
 target 'swift-sample-app' do
