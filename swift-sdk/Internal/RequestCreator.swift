@@ -46,7 +46,7 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: .ITBL_PATH_UPDATE_EMAIL, body: body)))
     }
     
-    func createReqisterTokenRequest(hexToken: String,
+    func createRegisterTokenRequest(hexToken: String,
                                     appName: String,
                                     deviceId: String,
                                     sdkVersion: String?,
@@ -202,7 +202,7 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: .ITBL_PATH_UPDATE_SUBSCRIPTIONS, body: body)))
     }
     
-    func createGetInppMessagesRequest(_ count: NSNumber) -> Result<IterableRequest, IterableError> {
+    func createGetInappMessagesRequest(_ count: NSNumber) -> Result<IterableRequest, IterableError> {
         guard auth.email != nil || auth.userId != nil else {
             ITBError("Both email and userId are nil")
             return .failure(IterableError.general(description: "Both email and userId are nil"))

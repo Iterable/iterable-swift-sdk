@@ -62,7 +62,7 @@ class ApiClient : ApiClientProtocol {
                   sdkVersion: String?,
                   pushServicePlatform: PushServicePlatform,
                   notificationsEnabled: Bool) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createReqisterTokenRequest(hexToken: hexToken,
+        return send(iterableRequestResult: createRequestCreator().createRegisterTokenRequest(hexToken: hexToken,
                                                                                              appName: appName,
                                                                                              deviceId: deviceId,
                                                                                              sdkVersion: sdkVersion,
@@ -99,7 +99,7 @@ class ApiClient : ApiClientProtocol {
     }
 
     func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createGetInppMessagesRequest(count))
+        return send(iterableRequestResult: createRequestCreator().createGetInappMessagesRequest(count))
     }
 
     func track(inAppOpen messageId: String) -> Future<SendRequestValue, SendRequestError> {
