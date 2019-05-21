@@ -187,7 +187,9 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
             }
             
             // now process in app messages
-            self.processNextTriggeredMessage()
+            self.scheduleQueue.async {
+                self.processMessages()
+            }
         }
     }
     
@@ -230,7 +232,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
 
         updateMessage(message, didProcessTrigger: true, consumed: shouldConsume)
     }
-    
+
     // This method schedules next triggered message after showing a message
     private func scheduleNextInAppMessage() {
         ITBDebug()
@@ -240,43 +242,89 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
             if waitTimeInterval > 0 {
                 ITBDebug("Need to wait for: \(waitTimeInterval)")
                 self.scheduleQueue.asyncAfter(deadline: .now() + waitTimeInterval) {
-                    self.processNextTriggeredMessage()
+                    self.processMessages()
                 }
             } else {
-                self.processNextTriggeredMessage()
+                self.processMessages()
             }
         }
     }
     
-    private func processNextTriggeredMessage() {
+    private func processMessages()  {
+        ITBDebug()
+        
+        _ = processNextMessage().map { (processResult) -> Void in
+            switch (processResult) {
+            case .show(let message):
+                self.updateMessage(message, didProcessTrigger: true)
+                let consume = !message.saveToInbox
+                DispatchQueue.main.async {
+                    self.showInternal(message: message, consume: consume, callback: nil)
+                }
+            case .skip(let message):
+                self.updateMessage(message, didProcessTrigger: true)
+                self.processMessages()
+            case .wait:
+                break
+            }
+        }
+    }
+
+    enum ProcessNextMessageResult {
+        case show(IterableInAppMessage)
+        case skip(IterableInAppMessage)
+        case wait
+    }
+    
+    private func processNextMessage() -> Future<ProcessNextMessageResult, IterableError> {
         ITBDebug()
         
         guard let message = getFirstProcessableTriggeredMessage() else {
             ITBDebug("No message to process")
-            return
+            return Promise<ProcessNextMessageResult, IterableError>(value: .wait)
         }
         
         ITBDebug("processing message with id: \(message.messageId)")
         
-        // We can only check applicationState from main queue so need to do the following
-        DispatchQueue.main.async {
-            if self.isOkToShowNow(message: message) {
-                self.updateMessage(message, didProcessTrigger: true)
-                
-                if self.inAppDelegate.onNew(message: message) == .show {
-                    ITBDebug("delegate returned show")
-                    let consume = !message.saveToInbox
-                    self.showInternal(message: message, consume: consume, callback: nil)
+        let result = Promise<ProcessNextMessageResult, IterableError>()
+        
+        _ = checkMessage(message).map { (checkMessageResult) -> Void in
+            switch checkMessageResult {
+            case .notReady:
+                result.resolve(with: .wait)
+            case .inAppShowResponse(let inAppShowResponse):
+                if inAppShowResponse == .show {
+                    result.resolve(with: .show(message))
                 } else {
-                    ITBDebug("delegate returned skip, continue processing")
-                    self.scheduleQueue.async {
-                        self.processNextTriggeredMessage()
-                    }
+                    result.resolve(with: .skip(message))
                 }
-            } else {
-                ITBInfo("Cannot show inApp with id: \(message.messageId) now.")
             }
         }
+        
+        return result
+    }
+    
+    enum CheckMessageResult {
+        case inAppShowResponse(InAppShowResponse)
+        case notReady
+    }
+    
+    private func checkMessage(_ message: IterableInAppMessage) -> Future<CheckMessageResult, IterableError> {
+        return canShowMessageNow(message: message).map { (canShow) -> CheckMessageResult in
+            if canShow {
+                return .inAppShowResponse(self.inAppDelegate.onNew(message: message))
+            } else {
+                return .notReady
+            }
+        }
+    }
+
+    private func canShowMessageNow(message: IterableInAppMessage) -> Future<Bool, IterableError> {
+        let result = Promise<Bool, IterableError>()
+        DispatchQueue.main.async {
+            result.resolve(with: self.isOkToShowNow(message: message))
+        }
+        return result
     }
     
     private func getFirstProcessableTriggeredMessage() -> IterableInAppMessage? {
@@ -301,7 +349,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
             persister.persist(self.messagesMap.values)
         }
     }
-    
+
     private func isOkToShowNow(message: IterableInAppMessage) -> Bool {
         guard applicationStateProvider.applicationState == .active else {
             ITBInfo("not active")
