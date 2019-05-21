@@ -190,7 +190,7 @@ IterableAPI.email = @"user@example.com";
 
     iOS apps must request authorization to receive push notifications.
     To do this, they should call the [`requestAuthorization`](https://developer.apple.com/documentation/usernotifications/unusernotificationcenter/1649527-requestauthorization)
-    method on [`UNNotificiationCenter`].
+    method on [`UNNotificiationCenter`](https://developer.apple.com/documentation/usernotifications/unusernotificationcenter).
 
     This will prompt the user for permission to receive push notifications 
     (unless the app has requested permission for provisional notifications, 
