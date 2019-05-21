@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.2.0-dev1
+#### Added
+- Inbox
+	- Brand new inbox functionality. Please see documentation for more details.
+
+
 ## [6.0.8](https://github.com/Iterable/swift-sdk/releases/tag/6.0.8)
 #### Fixed
 - Carthage support with Xcode 10.2
