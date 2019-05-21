@@ -73,7 +73,7 @@ class MockDependencyContainer : DependencyContainerProtocol {
         self.notificationCenter = notificationCenter
     }
     
-    func createInAppFetcher(internalApi: IterableAPIInternal) -> InAppFetcherProtocol {
+    func createInAppFetcher(apiClient: ApiClientProtocol) -> InAppFetcherProtocol {
         return self.inAppFetcher
     }
 }

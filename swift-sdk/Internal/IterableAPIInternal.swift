@@ -7,7 +7,7 @@
 import Foundation
 import UserNotifications
 
-final class IterableAPIInternal : NSObject, PushTrackerProtocol {
+final class IterableAPIInternal : NSObject, PushTrackerProtocol, AuthProvider {
     var apiKey: String
 
     var email: String? {
@@ -87,12 +87,19 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
     }
 
+    // AuthProvider Protocol
+    var auth : Auth {
+        return Auth(userId: userId, email: email)
+    }
+    
     lazy var inAppManager: IterableInAppManagerProtocolInternal = {
-        self.dependencyContainer.createInAppManager(config: self.config, internalApi: self)
+        self.dependencyContainer.createInAppManager(config: self.config, apiClient: self.apiClient)
     } ()
     
     func register(token: Data) {
-        register(token: token, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "registerToken"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "registerToken"))
+        register(token: token,
+                 onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "registerToken"),
+                 onFailure: IterableAPIInternal.defaultOnFailure(identifier: "registerToken"))
     }
 
     func register(token: Data, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
@@ -104,9 +111,19 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         
         // Check notificationsEnabled then call register with enabled/not-not enabled
         notificationStateProvider.notificationsEnabled.onSuccess { (enabled) in
-            self.register(token: token, appName: appName, pushServicePlatform: self.config.pushPlatform, notificationsEnabled: enabled, onSuccess: onSuccess, onFailure: onFailure)
+            self.register(token: token,
+                          appName: appName,
+                          pushServicePlatform: self.config.pushPlatform,
+                          notificationsEnabled: enabled,
+                          onSuccess: onSuccess,
+                          onFailure: onFailure)
         }.onError {(error) in
-            self.register(token: token, appName: appName, pushServicePlatform: self.config.pushPlatform, notificationsEnabled: false, onSuccess: onSuccess, onFailure: onFailure)
+            self.register(token: token,
+                          appName: appName,
+                          pushServicePlatform: self.config.pushPlatform,
+                          notificationsEnabled: false,
+                          onSuccess: onSuccess,
+                          onFailure: onFailure)
         }
     }
 
@@ -116,61 +133,16 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
                                              notificationsEnabled: Bool,
                                              onSuccess: OnSuccessHandler? = nil,
                                              onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        guard email != nil || userId != nil else {
-            ITBError("Both email and userId are nil")
-            onFailure?("Both email and userId are nil", nil)
-            return SendRequestError.createErroredFuture(reason: "Both email and userId are nil")
-        }
-        
         hexToken = (token as NSData).iteHexadecimalString()
-        
-        let device = UIDevice.current
-        let pushServicePlatformString = IterableAPIInternal.pushServicePlatformToString(pushServicePlatform)
-        
-        var dataFields: [String : Any] = [
-            .ITBL_DEVICE_LOCALIZED_MODEL: device.localizedModel,
-            .ITBL_DEVICE_USER_INTERFACE: IterableAPIInternal.userInterfaceIdiomEnumToString(device.userInterfaceIdiom),
-            .ITBL_DEVICE_SYSTEM_NAME: device.systemName,
-            .ITBL_DEVICE_SYSTEM_VERSION: device.systemVersion,
-            .ITBL_DEVICE_MODEL: device.model
-        ]
-        if let identifierForVendor = device.identifierForVendor?.uuidString {
-            dataFields[.ITBL_DEVICE_ID_VENDOR] = identifierForVendor
-        }
-        dataFields[.ITBL_DEVICE_DEVICE_ID] = deviceId
-        if let sdkVersion = localStorage.sdkVersion {
-            dataFields[.ITBL_DEVICE_ITERABLE_SDK_VERSION] = sdkVersion
-        }
-        if let appPackageName = Bundle.main.appPackageName {
-            dataFields[.ITBL_DEVICE_APP_PACKAGE_NAME] = appPackageName
-        }
-        if let appVersion = Bundle.main.appVersion {
-            dataFields[.ITBL_DEVICE_APP_VERSION] = appVersion
-        }
-        if let appBuild = Bundle.main.appBuild {
-            dataFields[.ITBL_DEVICE_APP_BUILD] = appBuild
-        }
-        dataFields[.ITBL_DEVICE_NOTIFICATIONS_ENABLED] = notificationsEnabled
-        
-        let deviceDictionary: [String : Any] = [
-            AnyHashable.ITBL_KEY_TOKEN: hexToken!,
-            AnyHashable.ITBL_KEY_PLATFORM: pushServicePlatformString,
-            AnyHashable.ITBL_KEY_APPLICATION_NAME: appName,
-            AnyHashable.ITBL_KEY_DATA_FIELDS: dataFields
-        ]
-        
-        var args = [AnyHashable : Any]()
-        args[.ITBL_KEY_DEVICE] = deviceDictionary
-        addEmailOrUserId(args: &args)
-        
-        if email == nil && userId != nil {
-            args[.ITBL_KEY_PREFER_USER_ID] = true
-        }
-        
-        ITBInfo("sending registerToken request with args \(args)")
-        return
-            createPostRequest(forPath: .ITBL_PATH_REGISTER_DEVICE_TOKEN, withBody: args)
-                .map {sendRequest($0, onSuccess: onSuccess, onFailure: onFailure)} ?? SendRequestError.createErroredFuture(reason: "Couldn't create register request")
+
+        return IterableAPIInternal.call(successHandler: onSuccess,
+                                        andFailureHandler: onFailure,
+                                        forResult: apiClient.register(hexToken: hexToken!,
+                                                                              appName: appName,
+                                                                              deviceId: deviceId,
+                                                                              sdkVersion: localStorage.sdkVersion,
+                                                                              pushServicePlatform: pushServicePlatform,
+                                                                              notificationsEnabled: notificationsEnabled))
     }
     
     func disableDeviceForCurrentUser() {
@@ -190,48 +162,20 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
     
     func updateUser(_ dataFields: [AnyHashable : Any], mergeNestedObjects: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        guard email != nil || userId != nil else {
-            ITBError("Both email and userId are nil")
-            onFailure?("Both email and userId are nil", nil)
-            return
-        }
-        
-        let mergeNested = NSNumber(value: mergeNestedObjects)
-        var args = [AnyHashable: Any]()
-        args[.ITBL_KEY_DATA_FIELDS] = dataFields
-        args[.ITBL_KEY_MERGE_NESTED] = mergeNested
-        addEmailOrUserId(args: &args)
-
-        if let request = createPostRequest(forPath: .ITBL_PATH_UPDATE_USER, withBody: args) {
-            sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
-        }
+        IterableAPIInternal.call(successHandler: onSuccess,
+                                 andFailureHandler: onFailure,
+                                 forResult: apiClient.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects))
     }
 
     func updateEmail(_ newEmail: String, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        var args: [String : Any] = [
-            AnyHashable.ITBL_KEY_NEW_EMAIL: newEmail
-        ]
-
-        if let email = email {
-            args[AnyHashable.ITBL_KEY_CURRENT_EMAIL] = email
-        } else if let userId = userId {
-            args[AnyHashable.ITBL_KEY_CURRENT_USER_ID] = userId
-        } else {
-            ITBError("Both email and userId are nil")
-            onFailure?("Both email and userId are nil", nil)
-            return
-        }
-
-        if let request = createPostRequest(forPath: .ITBL_PATH_UPDATE_EMAIL, withBody: args) {
-            sendRequest(request,
-                        onSuccess: { data in
-                            if let _ = self.email {
-                                // we change the email only if we were using email before
-                                self.email = newEmail
-                            }
-                            onSuccess?(data)
-                        },
-                        onFailure: onFailure)
+        apiClient.updateEmail(newEmail: newEmail).onSuccess { (json) in
+            if let _ = self.email {
+                // we change the email only if we were using email before
+                self.email = newEmail
+            }
+            onSuccess?(json)
+        }.onError { error in
+            onFailure?(error.reason, error.data)
         }
     }
 
@@ -244,39 +188,9 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
 
     func trackPurchase(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        guard email != nil || userId != nil else {
-            ITBError("Both email and userId are nil")
-            onFailure?("Both email and userId are nil", nil)
-            return
-        }
-
-        var itemsToSerialize = [[AnyHashable : Any]]()
-        for item in items {
-            itemsToSerialize.append(item.toDictionary())
-        }
-        
-        var apiUserDict = [AnyHashable : Any]()
-        addEmailOrUserId(args: &apiUserDict)
-        
-        let args : [String : Any]
-        if let dataFields = dataFields {
-            args = [
-                AnyHashable.ITBL_KEY_USER: apiUserDict,
-                AnyHashable.ITBL_KEY_ITEMS: itemsToSerialize,
-                AnyHashable.ITBL_KEY_TOTAL: total,
-                AnyHashable.ITBL_KEY_DATA_FIELDS: dataFields
-            ]
-        } else {
-            args = [
-                AnyHashable.ITBL_KEY_USER: apiUserDict,
-                AnyHashable.ITBL_KEY_ITEMS: itemsToSerialize,
-                AnyHashable.ITBL_KEY_TOTAL: total,
-            ]
-        }
-        
-        if let request = createPostRequest(forPath: .ITBL_PATH_COMMERCE_TRACK_PURCHASE, withBody: args) {
-            sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
-        }
+        IterableAPIInternal.call(successHandler: onSuccess,
+                                 andFailureHandler: onFailure,
+                                 forResult: apiClient.track(purchase: total, items: items, dataFields: dataFields))
     }
 
     func trackPushOpen(_ userInfo: [AnyHashable : Any]) {
@@ -304,30 +218,13 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
 
     func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        var args = [AnyHashable : Any]()
-
-        var reqDataFields: [AnyHashable : Any]
-        if let dataFields = dataFields {
-            reqDataFields = dataFields
-        } else {
-            reqDataFields = [:]
-        }
-        reqDataFields["appAlreadyRunning"] = appAlreadyRunning
-        args[.ITBL_KEY_DATA_FIELDS] = reqDataFields
-
-        addEmailOrUserId(args: &args, mustExist: false)
-        
-        args[.ITBL_KEY_CAMPAIGN_ID] = campaignId
-        if let templateId = templateId {
-            args[.ITBL_KEY_TEMPLATE_ID] = templateId
-        }
-        if let messageId = messageId {
-            args[.ITBL_KEY_MESSAGE_ID] = messageId
-        }
-
-        if let request = createPostRequest(forPath: .ITBL_PATH_TRACK_PUSH_OPEN, withBody: args) {
-            sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
-        }
+        IterableAPIInternal.call(successHandler: onSuccess,
+                                 andFailureHandler: onFailure,
+                                 forResult: apiClient.track(pushOpen: campaignId,
+                                                                    templateId: templateId,
+                                                                    messageId: messageId,
+                                                                    appAlreadyRunning: appAlreadyRunning,
+                                                                    dataFields: dataFields))
     }
     
     private func save(pushPayload payload: [AnyHashable : Any]) {
@@ -352,41 +249,15 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
 
     func track(_ eventName: String, dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        guard email != nil || userId != nil else {
-            ITBError("Both email and userId are nil")
-            onFailure?("Both email and userId are nil", nil)
-            return
-        }
-
-        var args = [AnyHashable : Any]()
-        addEmailOrUserId(args: &args)
-        args[.ITBL_KEY_EVENT_NAME] = eventName
-        if let dataFields = dataFields {
-            args[.ITBL_KEY_DATA_FIELDS] = dataFields
-        }
-        
-        if let request = createPostRequest(forPath: .ITBL_PATH_TRACK, withBody: args) {
-            sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
-        }
+        IterableAPIInternal.call(successHandler: onSuccess,
+                                 andFailureHandler: onFailure,
+                                 forResult: apiClient.track(event: eventName, dataFields: dataFields))
     }
     
     func updateSubscriptions(_ emailListIds: [String]?, unsubscribedChannelIds: [String]?, unsubscribedMessageTypeIds: [String]?) {
-        var dictionary = [AnyHashable : Any]()
-        addEmailOrUserId(args: &dictionary)
-        
-        if let emailListIds = emailListIds {
-            dictionary[.ITBL_KEY_EMAIL_LIST_IDS] = emailListIds
-        }
-        if let unsubscribedChannelIds = unsubscribedChannelIds {
-            dictionary[.ITBL_KEY_UNSUB_CHANNEL] = unsubscribedChannelIds
-        }
-        if let unsubscribedMessageTypeIds = unsubscribedMessageTypeIds {
-            dictionary[.ITBL_KEY_UNSUB_MESSAGE] = unsubscribedMessageTypeIds
-        }
-        
-        if let request = createPostRequest(forPath: .ITBL_PATH_UPDATE_SUBSCRIPTIONS, withBody: dictionary) {
-            sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "updateSubscriptions"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "updateSubscriptions"))
-        }
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "updateSubscriptions"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "updateSubscriptions"),
+                                 forResult: apiClient.updateSubscriptions(emailListIds, unsubscribedChannelIds: unsubscribedChannelIds, unsubscribedMessageTypeIds: unsubscribedMessageTypeIds))
     }
 
     @discardableResult func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError> {
@@ -394,70 +265,53 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
 
     @discardableResult func getInAppMessages(_ count: NSNumber, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        guard email != nil || userId != nil else {
-            ITBError("Both email and userId are nil")
-            onFailure?("Both email and userId are nil", nil)
-            return SendRequestError.createErroredFuture(reason: "Both email and userId are nil")
-        }
-
-        var args : [AnyHashable : Any] = [
-            AnyHashable.ITBL_KEY_COUNT: count.description,
-            AnyHashable.ITBL_KEY_PLATFORM: String.ITBL_PLATFORM_IOS,
-            AnyHashable.ITBL_KEY_SDK_VERSION: IterableAPI.sdkVersion
-        ]
-
-        addEmailOrUserId(args: &args)
-
-        return createGetRequest(forPath: .ITBL_PATH_GET_INAPP_MESSAGES, withArgs: args as! [String : String]).map {
-            sendRequest($0, onSuccess: onSuccess, onFailure: onFailure)
-        } ?? SendRequestError.createErroredFuture(reason: "Could not create get request for getInApp")
+        return IterableAPIInternal.call(successHandler: onSuccess,
+                                        andFailureHandler: onFailure,
+                                        forResult: apiClient.getInAppMessages(count))
     }
 
     func trackInAppOpen(_ messageId: String) {
-        var args = [AnyHashable : Any]()
-        addEmailOrUserId(args: &args)
-        args[.ITBL_KEY_MESSAGE_ID] = messageId
-        
-        if let request = createPostRequest(forPath: .ITBL_PATH_TRACK_INAPP_OPEN, withBody: args) {
-            sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppOpen"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"))
-        }
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppOpen"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"),
+                                 forResult: apiClient.track(inAppOpen: messageId))
     }
 
     func trackInAppClick(_ messageId: String, buttonIndex: String) {
-        var args: [AnyHashable : Any] = [
-            .ITBL_KEY_MESSAGE_ID: messageId,
-            .ITBL_IN_APP_BUTTON_INDEX: buttonIndex
-        ]
-        addEmailOrUserId(args: &args)
-        
-        if let request = createPostRequest(forPath: .ITBL_PATH_TRACK_INAPP_CLICK, withBody: args) {
-            sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"))
-        }
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"),
+                                 forResult: apiClient.track(inAppClick: messageId, buttonIndex: buttonIndex))
     }
 
     
     func trackInAppClick(_ messageId: String, buttonURL: String) {
-        var args: [AnyHashable : Any] = [
-            .ITBL_KEY_MESSAGE_ID: messageId,
-            .ITBL_IN_APP_CLICKED_URL: buttonURL
-        ]
-        addEmailOrUserId(args: &args)
-        
-        if let request = createPostRequest(forPath: .ITBL_PATH_TRACK_INAPP_CLICK, withBody: args) {
-            sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"))
-        }
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"),
+                                 forResult: apiClient.track(inAppClick: messageId, buttonURL: buttonURL))
     }
 
     func inAppConsume(_ messageId: String) {
-        var args: [AnyHashable : Any] = [
-            .ITBL_KEY_MESSAGE_ID: messageId,
-        ]
-        addEmailOrUserId(args: &args)
-        
-        if let request = createPostRequest(forPath: .ITBL_PATH_INAPP_CONSUME, withBody: args) {
-            sendRequest(request, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "inAppConsume"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "inAppConsume"))
-        }
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "inappConsume"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "inappConsume"),
+                                 forResult: apiClient.inappConsume(messageId: messageId))
     }
+
+    private func disableDevice(forAllUsers allUsers: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+        guard let hexToken = hexToken else {
+            ITBError("Device not registered.")
+            onFailure?("Device not registered.", nil)
+            return
+        }
+        guard !(allUsers == false && email == nil && userId == nil) else {
+            ITBError("Emal or userId must be set.")
+            onFailure?("Email or userId must be set.", nil)
+            return
+        }
+        
+        IterableAPIInternal.call(successHandler: onSuccess,
+                                 andFailureHandler: onFailure,
+                                 forResult: apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken))
+    }
+    
 
     func showSystemNotification(_ title: String, body: String, button: String?, callbackBlock: ITEActionBlock?) {
         showSystemNotification(title, body: body, buttonLeft: button, buttonRight: nil, callbackBlock: callbackBlock)
@@ -475,16 +329,13 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         return deeplinkManager.handleUniversalLink(url, urlDelegate: config.urlDelegate, urlOpener: AppUrlOpener())
     }
 
-    func createPostRequest(forPath path: String, withBody body: [AnyHashable : Any]) -> URLRequest? {
-        return IterableRequestUtil.createPostRequest(forApiEndPoint: .ITBL_ENDPOINT_API, path: path, args: [AnyHashable.ITBL_KEY_API_KEY : apiKey], body: body)
-    }
-    
-    @discardableResult func sendRequest(_ request: URLRequest, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        return NetworkHelper.sendRequest(request, usingSession: networkSession).onSuccess { (json) in
+    @discardableResult private static func call(successHandler onSuccess: OnSuccessHandler? = nil, andFailureHandler onFailure: OnFailureHandler? = nil, forResult result: Future<SendRequestValue, SendRequestError>) -> Future<SendRequestValue, SendRequestError> {
+        result.onSuccess { (json) in
             onSuccess?(json)
         }.onError { (error) in
             onFailure?(error.reason, error.data)
         }
+        return result
     }
     
     // MARK: For Private and Internal Use ========================================>
@@ -509,6 +360,10 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     private var localStorage: LocalStorageProtocol
     
     private var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    
+    private lazy var apiClient: ApiClient = {
+       ApiClient(apiKey: apiKey, authProvider: self, endPoint: .ITBL_ENDPOINT_API, networkSession: networkSession)
+    }()
     
     var networkSession: NetworkSessionProtocol
     
@@ -561,12 +416,6 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         inAppManager.onInAppSyncNeeded()
     }
     
-    private func createGetRequest(forPath path: String, withArgs args: [String : String]) -> URLRequest? {
-        var argsWithApiKey = args
-        argsWithApiKey[AnyHashable.ITBL_KEY_API_KEY] = apiKey
-        return IterableRequestUtil.createGetRequest(forApiEndPoint: .ITBL_ENDPOINT_API, path: path, args: argsWithApiKey)
-    }
-    
     private static func defaultOnSucess(identifier: String) -> OnSuccessHandler {
         return { data in
             if let data = data {
@@ -590,52 +439,6 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
     }
     
-    private func disableDevice(forAllUsers allUsers: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        guard let hexToken = hexToken else {
-            ITBError("Device not registered.")
-            onFailure?("Device not registered.", nil)
-            return
-        }
-        guard !(allUsers == false && email == nil && userId == nil) else {
-            ITBError("Emal or userId must be set.")
-            onFailure?("Email or userId must be set.", nil)
-            return
-        }
-        
-        var args = [AnyHashable : Any]()
-        args[.ITBL_KEY_TOKEN] = hexToken
-        if !allUsers {
-            addEmailOrUserId(args: &args, mustExist: false)
-        }
-        
-        ITBInfo("sending disableToken request with args \(args)")
-        if let request = createPostRequest(forPath: .ITBL_PATH_DISABLE_DEVICE, withBody:args) {
-            sendRequest(request, onSuccess: onSuccess, onFailure: onFailure)
-        }
-    }
-    
-    private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform) -> String {
-        switch pushServicePlatform {
-        case .production:
-            return .ITBL_KEY_APNS
-        case .sandbox:
-            return .ITBL_KEY_APNS_SANDBOX
-        case .auto:
-            return IterableAPNSUtil.isSandboxAPNS() ? .ITBL_KEY_APNS_SANDBOX : .ITBL_KEY_APNS
-        }
-    }
-    
-    private static func userInterfaceIdiomEnumToString(_ idiom: UIUserInterfaceIdiom) -> String {
-        switch idiom {
-        case .phone:
-            return .ITBL_KEY_PHONE
-        case .pad:
-            return .ITBL_KEY_PAD
-        default:
-            return .ITBL_KEY_UNSPECIFIED
-        }
-    }
-    
     private func storeEmailAndUserId() {
         localStorage.email = _email
         localStorage.userId = _userId
@@ -646,16 +449,6 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         _userId = localStorage.userId
     }
     
-    private func addEmailOrUserId(args: inout [AnyHashable : Any], mustExist: Bool = true) {
-        if let email = email {
-            args[.ITBL_KEY_EMAIL] = email
-        } else if let userId = userId {
-            args[.ITBL_KEY_USER_ID] = userId
-        } else if mustExist {
-            assertionFailure("Either email or userId should be set")
-        }
-    }
-
     // MARK: Initialization
     
     // Package private method. Do not call this directly.

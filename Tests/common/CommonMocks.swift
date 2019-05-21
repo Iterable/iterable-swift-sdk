@@ -158,7 +158,7 @@ class MockNetworkSession: NetworkSessionProtocol {
     var callback: ((Data?, URLResponse?, Error?) -> Void)?
     
     var statusCode: Int
-    var data: Data?
+    var data: Data? // This is data returned
     var error: Error?
     
     convenience init(statusCode: Int = 200) {

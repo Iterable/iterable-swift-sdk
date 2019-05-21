@@ -21,7 +21,7 @@ protocol IterableInAppManagerProtocolInternal : IterableInAppManagerProtocol, In
 }
 
 class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
-    init(internalApi: IterableAPIInternal,
+    init(apiClient: ApiClientProtocol,
          fetcher: InAppFetcherProtocol,
          displayer: InAppDisplayerProtocol,
          persister: InAppPersistenceProtocol,
@@ -34,7 +34,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
          dateProvider: DateProviderProtocol,
          retryInterval: Double) {
         ITBInfo()
-        self.internalApi = internalApi
+        self.apiClient = apiClient
         self.fetcher = fetcher
         self.displayer = displayer
         self.persister = persister
@@ -222,7 +222,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         let showed = displayer.showInApp(message: message, withCallback: clickCallback)
         let shouldConsume = showed && consume
         if shouldConsume {
-            internalApi?.inAppConsume(message.messageId)
+            apiClient?.inappConsume(messageId: message.messageId)
         }
         
         // set read
@@ -453,7 +453,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         ITBInfo()
         
         updateMessage(message, didProcessTrigger: true, consumed: true)
-        self.internalApi?.inAppConsume(message.messageId)
+        apiClient?.inappConsume(messageId: message.messageId)
         self.callbackQueue.async {
             self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
         }
@@ -471,7 +471,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         return message.consumed == false && isExpired(message: message, currentDate: currentDate) == false
     }
     
-    private weak var internalApi: IterableAPIInternal?
+    private weak var apiClient: ApiClientProtocol?
     private var fetcher: InAppFetcherProtocol // this is mutable because we need to set internalApi
     private let displayer: InAppDisplayerProtocol
     private let inAppDelegate: IterableInAppDelegate
