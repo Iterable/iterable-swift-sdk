@@ -186,9 +186,47 @@ IterableAPI.email = @"user@example.com";
 
 ### Sending push notifications
 
-See Apple's [UserNotifications framework](https://developer.apple.com/documentation/usernotifications) document for information about how to register for remote notifications.
+1. Request authorization and register for remote notifications
 
-1. Send a remote notification token to Iterable
+    iOS apps must request authorization to receive push notifications.
+    To do this, they should call the [`requestAuthorization`](https://developer.apple.com/documentation/usernotifications/unusernotificationcenter/1649527-requestauthorization)
+    method on [`UNNotificiationCenter`].
+
+    This will prompt the user for permission to receive push notifications 
+    (unless the app has requested permission for provisional notifications, 
+    which are delivered silently and don't require the user's permission).
+
+    For example:
+
+    *Swift*
+
+    ```swift
+    UNUserNotificationCenter.current().requestAuthorization(options:[.alert, .badge, .sound]) { (success, error) in
+        // ...
+    }
+    ```
+
+    *Objective-C*
+
+    ```objc
+    UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
+    [center requestAuthorizationWithOptions: (UNAuthorizationOptionAlert + UNAuthorizationOptionBadge + UNAuthorizationOptionSound)
+       completionHandler:^(BOOL granted, NSError * _Nullable error) {
+       // ...
+    }];
+    ```
+
+    By default, if you have set `IterableAPI.email` or `IterableAPI.userId`
+    (as described above), the SDK will then register the app for remote 
+    notifications automatically.
+
+    For more information about setting iOS apps up to receive push 
+    notifications, take a look at the following documents from Apple:
+    
+    - [UserNotifications framework](https://developer.apple.com/documentation/usernotifications)
+    - [Asking Permission to Use Notifications](https://developer.apple.com/documentation/usernotifications/asking_permission_to_use_notifications)
+
+2. Send a remote notification token to Iterable
 
     To send push notifications to your app, you will have to first send the application's remote notification token to Iterable.
 
@@ -210,7 +248,7 @@ See Apple's [UserNotifications framework](https://developer.apple.com/documentat
     }
     ```
 
-2. Handle push notifications
+3. Handle push notifications
 
     When the user taps on a push notification or one of its action buttons, the system calls the `UNUserNotificationCenterDelegate` object's [userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:](https://developer.apple.com/documentation/usernotifications/unusernotificationcenterdelegate/1649501-usernotificationcenter?language=swift). In this method, call `IterableAppIntegration` with the same parameters to track push open event and perform the associated action (see below for custom action and URL delegates).
         
@@ -234,7 +272,7 @@ See Apple's [UserNotifications framework](https://developer.apple.com/documentat
 
     Congratulations! You can now send remote push notifications to your device from Iterable. Please note that you can't send push notifications until you set the userId or email. Please see sample applications to see a reference implementation.
 
-3. Rich push notifications
+4. Rich push notifications
 
     Push notifications may contain media attachments with images, animated gifs or video, and action buttons. For this to work within your app, you must create a Notification Service Extension. For more information, read [Rich Push Notifications in iOS 10 and Android - Media Attachments](https://support.iterable.com/hc/articles/115003982203-Rich-Push-Notifications-in-iOS-10-and-Android-Media-Attachments).   
 
