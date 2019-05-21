@@ -101,14 +101,14 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
             return nil
         }
         
-        let clickCallback = { (url: URL?) -> Void in
+        let result = Promise<URL, IterableError>()
+        result.onSuccess { (url) in
             ITBInfo()
-            
             // in addition perform action or url delegate task
             self.handle(clickedUrl: url, forMessage: message)
         }
         let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
-                                                            callback: clickCallback,
+                                                            result: result,
                                                             trackParams: IterableNotificationMetadata.metadata(fromInAppOptions: message.messageId),
                                                             isModal: false)
         let viewController = IterableHtmlMessageViewController(parameters: parameters)
@@ -192,7 +192,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
             }
         }
     }
-    
+
     // This must be called from MainThread
     private func showInternal(message: IterableInAppMessage,
                               consume: Bool,
@@ -203,11 +203,13 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
             ITBError("This must be called from the main thread")
             return
         }
+
+        if displayer.canShow(message: message) == false {
+            // Can't show message now
+            return
+        }
         
-        // This is called when the user clicks on a link in the inAPP
-        let clickCallback = { (url: URL?) in
-            ITBInfo()
-            
+        displayer.showInApp(message: message).onSuccess { (url)  in
             // call the client callback, if present
             _ = callback?(url)
             
@@ -219,18 +221,16 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
             
             // check if we need to process more inApps
             self.scheduleNextInAppMessage()
-        }
-        
-        let showed = displayer.showInApp(message: message, withCallback: clickCallback)
-        let shouldConsume = showed && consume
-        if shouldConsume {
-            apiClient?.inappConsume(messageId: message.messageId)
+
+            if consume {
+                self.apiClient?.inappConsume(messageId: message.messageId)
+            }
         }
         
         // set read
         set(read: true, forMessage: message)
-
-        updateMessage(message, didProcessTrigger: true, consumed: shouldConsume)
+        
+        updateMessage(message, didProcessTrigger: true, consumed: consume)
     }
 
     // This method schedules next triggered message after showing a message

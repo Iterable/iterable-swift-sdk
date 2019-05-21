@@ -17,18 +17,18 @@ class IterableHtmlMessageViewController: UIViewController {
     struct Parameters {
         let html: String
         let padding: UIEdgeInsets
-        let callback: ITBURLCallback?
+        let result: Promise<URL, IterableError>
         let trackParams: IterableNotificationMetadata?
         let isModal: Bool
         
         init(html: String,
              padding: UIEdgeInsets = .zero,
-             callback: ITBURLCallback? = nil,
+             result: Promise<URL, IterableError> = Promise<URL, IterableError>(),
              trackParams: IterableNotificationMetadata? = nil,
              isModal: Bool) {
             self.html = html
             self.padding = IterableHtmlMessageViewController.padding(fromPadding: padding)
-            self.callback = callback
+            self.result = result
             self.trackParams = trackParams
             self.isModal = isModal
         }
@@ -45,6 +45,7 @@ class IterableHtmlMessageViewController: UIViewController {
      Loads the view and sets up the webView
      */
     override func loadView() {
+        ITBInfo()
         super.loadView()
         
         location = HtmlContentParser.location(fromPadding: parameters.padding)
@@ -70,6 +71,7 @@ class IterableHtmlMessageViewController: UIViewController {
      Tracks an inApp open and layouts the webview
      */
     override func viewDidLoad() {
+        ITBInfo()
         super.viewDidLoad()
         
         if let trackParams = parameters.trackParams, let messageId = trackParams.messageId {
@@ -178,13 +180,13 @@ extension IterableHtmlMessageViewController : UIWebViewDelegate {
         
         if parameters.isModal {
             dismiss(animated: false) { [weak self, destinationUrl] in
-                _ = self?.parameters.callback?(url)
+                self?.parameters.result.resolve(with: url)
                 if let trackParams = self?.parameters.trackParams, let messageId = trackParams.messageId {
                     IterableAPI.track(inAppClick: messageId, buttonURL: destinationUrl)
                 }
             }
         } else {
-            _ = parameters.callback?(url)
+            parameters.result.resolve(with: url)
             if let trackParams = parameters.trackParams, let messageId = trackParams.messageId {
                 IterableAPI.track(inAppClick: messageId, buttonURL: destinationUrl)
             }

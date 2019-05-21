@@ -127,10 +127,13 @@ class InAppParsingTests: XCTestCase {
     }
     
     func testDoNotShowMultipleTimes() {
-        let shownFirstTime = InAppDisplayer.showIterableHtmlMessage("", callbackBlock: nil)
-        let shownSecondTime = InAppDisplayer.showIterableHtmlMessage("", callbackBlock: nil)
-        XCTAssertTrue(shownFirstTime)
-        XCTAssertFalse(shownSecondTime)
+        let expectation1 = expectation(description: "error on second time")
+        InAppDisplayer.showIterableHtmlMessage("")
+        InAppDisplayer.showIterableHtmlMessage("").onError { (_) in
+            expectation1.fulfill()
+        }
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
     func testGetBackgroundAlpha() {

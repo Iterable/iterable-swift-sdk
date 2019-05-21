@@ -187,7 +187,7 @@ class InboxTests: XCTestCase {
         let mockInAppFetcher = MockInAppFetcher()
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _) in
+        mockInAppDisplayer.onShow.onSuccess { _ in
             expectation1.fulfill()
             // now click and url in the message
             mockInAppDisplayer.click(url: URL(string: "https://someurl.com")!)
@@ -507,7 +507,7 @@ class InboxTests: XCTestCase {
         let mockInAppFetcher = MockInAppFetcher()
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _) in
+        mockInAppDisplayer.onShow.onSuccess { _ in
             expectation1.fulfill()
             // now click and url in the message
             mockInAppDisplayer.click(url: URL(string: "https://someurl.com")!)

@@ -273,6 +273,13 @@ class MockInAppFetcher : InAppFetcherProtocol {
 }
 
 class MockInAppDisplayer : InAppDisplayerProtocol {
+    // when a message is shown this is called back
+    var onShow: Promise<IterableInAppMessage, IterableError> = Promise<IterableInAppMessage, IterableError>()
+    
+    func canShow(message: IterableInAppMessage) -> Bool {
+        return !isShowingInApp()
+    }
+    
     func isShowingInApp() -> Bool {
         return showing
     }
@@ -283,25 +290,34 @@ class MockInAppDisplayer : InAppDisplayerProtocol {
         }
         
         showing = true
-        actionCallback = callback
-        onShowCallback?(message, callback)
         return true
     }
 
-    var onShowCallback:  ((IterableInAppMessage, ITBURLCallback?) -> Void)?
+    // This is not resolved until a url is clicked.
+    func showInApp(message: IterableInAppMessage) -> Future<URL, IterableError> {
+        guard showing == false else {
+            onShow.reject(with: IterableError.general(description: "showing something else"))
+            return Promise<URL, IterableError>(error: IterableError.general(description: "showing something else"))
+        }
+
+        result = Promise<URL, IterableError>()
+
+        showing = true
+
+        onShow.resolve(with: message)
+
+        return result
+    }
     
     // Mimics clicking a url
     func click(url: URL) {
         ITBInfo()
         showing = false
-        
-        actionCallback?(url)
+        result.resolve(with: url)
     }
-
-    private var actionCallback: ITBURLCallback?
     
+    private var result = Promise<URL, IterableError>()
     private var showing = false
-    
 }
 
 class MockInAppDelegate : IterableInAppDelegate {
