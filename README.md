@@ -199,15 +199,15 @@ IterableAPI.email = @"user@example.com";
     For example:
 
     *Swift*
-
+    
     ```swift
     UNUserNotificationCenter.current().requestAuthorization(options:[.alert, .badge, .sound]) { (success, error) in
         // ...
     }
     ```
-
+    
     *Objective-C*
-
+    
     ```objc
     UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
     [center requestAuthorizationWithOptions: (UNAuthorizationOptionAlert + UNAuthorizationOptionBadge + UNAuthorizationOptionSound)
@@ -215,11 +215,11 @@ IterableAPI.email = @"user@example.com";
        // ...
     }];
     ```
-
+    
     By default, if you have set `IterableAPI.email` or `IterableAPI.userId`
     (as described above), the SDK will then register the app for remote 
     notifications automatically.
-
+    
     For more information about setting iOS apps up to receive push 
     notifications, take a look at the following documents from Apple:
     
