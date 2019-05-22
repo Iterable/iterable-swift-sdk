@@ -64,7 +64,6 @@
 		AC7B143F20D02D8700877BFE /* IterableSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2263DF20CF49B8009800EB /* IterableSDK.framework */; };
 		AC7B144F20D038C400877BFE /* CommerceItemTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AC7B144720D038C400877BFE /* CommerceItemTests.m */; };
 		AC7B145220D038C400877BFE /* IterableNotificationMetadataTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AC7B144A20D038C400877BFE /* IterableNotificationMetadataTests.m */; };
-		AC7B145320D038C400877BFE /* IterableAPIObjCTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AC7B144B20D038C400877BFE /* IterableAPIObjCTests.m */; };
 		AC819184227138EF0014955E /* Dwifft.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC819183227138E60014955E /* Dwifft.swift */; };
 		AC819186227139230014955E /* SectionedValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC819185227139230014955E /* SectionedValues.swift */; };
 		AC81918822713A110014955E /* Dwifft+UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC81918722713A110014955E /* Dwifft+UIKit.swift */; };
@@ -253,7 +252,6 @@
 		AC7B143E20D02D8700877BFE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AC7B144720D038C400877BFE /* CommerceItemTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CommerceItemTests.m; sourceTree = "<group>"; };
 		AC7B144A20D038C400877BFE /* IterableNotificationMetadataTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IterableNotificationMetadataTests.m; sourceTree = "<group>"; };
-		AC7B144B20D038C400877BFE /* IterableAPIObjCTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IterableAPIObjCTests.m; sourceTree = "<group>"; };
 		AC819183227138E60014955E /* Dwifft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dwifft.swift; sourceTree = "<group>"; };
 		AC819185227139230014955E /* SectionedValues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionedValues.swift; sourceTree = "<group>"; };
 		AC81918722713A110014955E /* Dwifft+UIKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dwifft+UIKit.swift"; sourceTree = "<group>"; };
@@ -611,7 +609,6 @@
 			isa = PBXGroup;
 			children = (
 				AC2C667C20D2FCDF00D46CC9 /* Helper Files */,
-				AC7B144B20D038C400877BFE /* IterableAPIObjCTests.m */,
 				AC7B144720D038C400877BFE /* CommerceItemTests.m */,
 				AC7B144A20D038C400877BFE /* IterableNotificationMetadataTests.m */,
 			);
@@ -1160,7 +1157,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC995F9B2166EEB60099A184 /* CommonMocks.swift in Sources */,
-				AC7B145320D038C400877BFE /* IterableAPIObjCTests.m in Sources */,
 				AC7B145220D038C400877BFE /* IterableNotificationMetadataTests.m in Sources */,
 				ACFCA72720EAEC3200BFB277 /* Mocks.swift in Sources */,
 				AC995F9F2167E9FD0099A184 /* CommonExtensions.swift in Sources */,

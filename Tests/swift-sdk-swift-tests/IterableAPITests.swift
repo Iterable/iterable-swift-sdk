@@ -101,6 +101,19 @@ class IterableAPITests: XCTestCase {
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
     
+    func testEmailUserIdPersistence() {
+        IterableAPI.initializeForTesting()
+        
+        IterableAPI.email = IterableAPITests.email
+        XCTAssertEqual(IterableAPI.email, IterableAPITests.email)
+        XCTAssertNil(IterableAPI.userId)
+        
+        let userId = "testUserId"
+        IterableAPI.userId = userId
+        XCTAssertEqual(IterableAPI.userId, userId)
+        XCTAssertNil(IterableAPI.email)
+    }
+    
     func testUpdateUser() {
         let expectation = XCTestExpectation(description: "testUpdateUser")
         
@@ -529,7 +542,7 @@ class IterableAPITests: XCTestCase {
             expectation1.fulfill()
         }
         let config = IterableConfig()
-        IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
+        IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         IterableAPI.email = "user@example.com"
         IterableAPI.get(inAppMessages: 1)
         wait(for: [expectation1], timeout: testExpectationTimeout)
@@ -540,7 +553,7 @@ class IterableAPITests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
 
         let config = IterableConfig()
-        IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
+        IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         IterableAPI.email = "user@example.com"
         IterableAPI.get(
             inAppMessages: 1,
@@ -570,7 +583,7 @@ class IterableAPITests: XCTestCase {
         
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
-        IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
+        IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         IterableAPI.email = "user@example.com"
         networkSession.callback = {(_,_,_) in
             let expectedQueryParams = [

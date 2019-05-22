@@ -82,7 +82,7 @@ public extension String {
     static let ITBL_DEEPLINK_IDENTIFIER = "/a/[a-zA-Z0-9]+"
 }
 
-// Decvice Dictionary
+// Device Dictionary
 public extension String {
     static let ITBL_DEVICE_LOCALIZED_MODEL = "localizedModel"
     static let ITBL_DEVICE_ID_VENDOR = "identifierForVendor"
