@@ -45,8 +45,6 @@
 		AC7125EF20D4579E0043BBC1 /* IterableConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */; };
 		AC72A0B520CF4C49004D7997 /* IterableConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = AC72A0B120CF4C32004D7997 /* IterableConstants.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AC72A0B620CF4C53004D7997 /* IterableConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0B420CF4C32004D7997 /* IterableConstants.m */; };
-		AC72A0B920CF4C79004D7997 /* NSData+Conversion.h in Headers */ = {isa = PBXBuildFile; fileRef = AC72A0B320CF4C32004D7997 /* NSData+Conversion.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		AC72A0BA20CF4C83004D7997 /* NSData+Conversion.m in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0AF20CF4C31004D7997 /* NSData+Conversion.m */; };
 		AC72A0C720CF4CE2004D7997 /* CommerceItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C120CF4CB8004D7997 /* CommerceItem.swift */; };
 		AC72A0C820CF4CE2004D7997 /* ITBConsts.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0BE20CF4CB8004D7997 /* ITBConsts.swift */; };
 		AC72A0C920CF4CE2004D7997 /* IterableAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0BF20CF4CB8004D7997 /* IterableAction.swift */; };
@@ -234,9 +232,7 @@
 		AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableConfig.swift; sourceTree = "<group>"; };
 		AC72A0AA20CF4BEB004D7997 /* InAppHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppHelper.swift; sourceTree = "<group>"; };
 		AC72A0AD20CF4C16004D7997 /* IterableUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableUtil.swift; sourceTree = "<group>"; };
-		AC72A0AF20CF4C31004D7997 /* NSData+Conversion.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSData+Conversion.m"; sourceTree = "<group>"; };
 		AC72A0B120CF4C32004D7997 /* IterableConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IterableConstants.h; sourceTree = "<group>"; };
-		AC72A0B320CF4C32004D7997 /* NSData+Conversion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSData+Conversion.h"; sourceTree = "<group>"; };
 		AC72A0B420CF4C32004D7997 /* IterableConstants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IterableConstants.m; sourceTree = "<group>"; };
 		AC72A0BD20CF4C98004D7997 /* IterableDeeplinkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableDeeplinkManager.swift; sourceTree = "<group>"; };
 		AC72A0BE20CF4CB8004D7997 /* ITBConsts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ITBConsts.swift; sourceTree = "<group>"; };
@@ -549,8 +545,6 @@
 			children = (
 				AC72A0B120CF4C32004D7997 /* IterableConstants.h */,
 				AC72A0B420CF4C32004D7997 /* IterableConstants.m */,
-				AC72A0B320CF4C32004D7997 /* NSData+Conversion.h */,
-				AC72A0AF20CF4C31004D7997 /* NSData+Conversion.m */,
 			);
 			name = "Objective C";
 			sourceTree = "<group>";
@@ -756,7 +750,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC72A0B520CF4C49004D7997 /* IterableConstants.h in Headers */,
-				AC72A0B920CF4C79004D7997 /* NSData+Conversion.h in Headers */,
 				AC2263F020CF49B8009800EB /* IterableSDK.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1090,7 +1083,6 @@
 				ACE6888D2228B86C00A95E5E /* InAppInternal.swift in Sources */,
 				AC72A0CD20CF4CE2004D7997 /* IterableAppIntegration.swift in Sources */,
 				AC72A0CE20CF4CE2004D7997 /* IterableAttributionInfo.swift in Sources */,
-				AC72A0BA20CF4C83004D7997 /* NSData+Conversion.m in Sources */,
 				ACA8D1A321910C66001B1332 /* IterableMessaging.swift in Sources */,
 				AC72A0D420CF4D19004D7997 /* IterableDeeplinkManager.swift in Sources */,
 				AC684A86222EF75C00F29749 /* InAppMessageParser.swift in Sources */,
