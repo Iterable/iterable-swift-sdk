@@ -182,11 +182,9 @@ IterableAPI.email = "user@example.com"
 IterableAPI.email = @"user@example.com";
 ```
 
-:::tip NOTE
 Whenever the app sets `IterableAPI.email` or `IterableAPI.userId`, the SDK 
 registers the device with Apple, retrieving a token that is stored
 on the user's Iterable profile.
-:::
     
 ## Using the SDK
 
