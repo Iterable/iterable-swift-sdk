@@ -143,4 +143,3 @@ class DeeplinkTests: XCTestCase {
         return values.take(2).map { "\($0[0])=\($0[1])" }.joined(separator: ";,")
     }
 }
-

@@ -24,7 +24,7 @@ extension Dictionary where Key == AnyHashable {
     }
 }
 
-class MockDependencyContainer : DependencyContainerProtocol {
+class MockDependencyContainer: DependencyContainerProtocol {
     let dateProvider: DateProviderProtocol
     let networkSession: NetworkSessionProtocol
     let notificationStateProvider: NotificationStateProviderProtocol

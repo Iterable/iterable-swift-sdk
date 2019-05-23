@@ -80,7 +80,6 @@ struct TestUtils {
         
         return abs(date1.timeIntervalSinceReferenceDate - date2.timeIntervalSinceReferenceDate) < 0.001
     }
-
     
     private static func validateQueryParameters(inUrlComponents urlComponents: URLComponents, queryParams: [(name:String, value:String)]) {
         queryParams.forEach { (name, value) in

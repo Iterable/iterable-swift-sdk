@@ -1206,7 +1206,6 @@ class InAppTests: XCTestCase {
             
         }
     }
-    
 }
 
 extension IterableInAppTrigger {

@@ -10,7 +10,7 @@ import UserNotifications
 @testable import IterableSDK
 
 // Note: This is used only by swift tests. So can't put this in Common
-class MockNotificationStateProvider : NotificationStateProviderProtocol {
+class MockNotificationStateProvider: NotificationStateProviderProtocol {
     var notificationsEnabled: Promise<Bool, Error> {
         let promise = Promise<Bool, Error>()
         DispatchQueue.main.async {
