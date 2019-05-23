@@ -190,7 +190,9 @@ on the user's Iterable profile.
     
 ## Using the SDK
 
-### Sending push notifications
+### Push notifications
+
+To work with push notifications, follow these steps:
 
 1. Request authorization to receive push notifications
 
@@ -322,12 +324,23 @@ on the user's Iterable profile.
     @end
 
     ```
+
+5. Disabling push notifications to a device
+
+    When a user logs out, you typically want to disable push notifications to
+    that user/device. Do this by calling `disableDeviceForCurrentUser`. This
+    only works if you have previously called `registerToken`.
     
-### Deep linking
+    In order to re-enable push notifications to that device, simply call
+    `registerToken` as usual when the user logs back in.
 
-Deep linking allows a uniform resource identifier (URI) to link to a specific location within your mobile app, rather than simply launching the app.
+### Deep links
 
-#### Handling links from push notifications
+A deep link is a URI that links to a specific location within your mobile 
+app. The following sections describe how to work with deep links using
+Iterable's iOS SDK.
+
+#### Push notification deep links
     
 Push notifications and action buttons may have `openUrl` actions attached to them. When a URL is specified, the SDK first calls the `urlDelegate` object specified on your `IterableConfig` object. You can use this delegate to handle `openUrl` actions the same way as you handle normal deep links. If the delegate is not set or if it returns `false` (the default), the SDK will open the URL with Safari. If, upon receiving a deep link, you want to navigate to a specific view controller in your app, do so in the `urlDelegate`. 
     
@@ -372,7 +385,7 @@ func handle(iterableURL url: URL, inContext context: IterableActionContext) -> B
 }
 ```
         
-#### Handling email links
+#### Email deep links
     
 For Universal Links to work with email link rewriting, [set up an **apple-app-site-association** file](https://support.iterable.com/hc/articles/115000440206-Setting-up-iOS-Universal-Links) in your Iterable project. 
 
@@ -400,7 +413,7 @@ func application(_ application: UIApplication, continue userActivity: NSUserActi
 }
 ```
 
-### Deferred deep linking
+#### Deferred deep linking
 
 [Deferred deep linking](https://en.wikipedia.org/wiki/Deferred_deep_linking) allows a user who does not have a specific app installed to:
 
@@ -411,8 +424,6 @@ func application(_ application: UIApplication, continue userActivity: NSUserActi
 As the name implies, the deep link is _deferred_ until the app has been installed. 
 
 After tapping a deep link in an email from an Iterable campaign, users without the associated app will be directed to the App Store to install it. If the app uses the Iterable iOS SDK and has deferred deep linking enabled, the content associated with the deep link will load on first launch.
-
-#### Enabling deferred deep linking
 
 Set `IterableConfig.checkForDeferredDeeplink = true` to enable deferred deep linking for IterableSDK.
     
@@ -561,19 +572,15 @@ config.customActionDelegate = YourCustomActionDelegate()
 
 To customize the time delay between successive in-app messages (default value of 30 seconds), set `IterableConfig.inAppDisplayInterval` to an appropriate value (in seconds). 
 
-### Tracking custom events
+### Custom events
 
 Track custom events by calling `IterableAPI.track(event:...)`.
     
-### Updating user fields
+### User fields
 
 Modify user fields by calling `IterableAPI.updateUser`. You also call `updateEmail` and `updateSubscriptions`.
     
-### Disabling push notifications to a device
 
-When a user logs out, you typically want to disable push notifications to that user/device. Do this by calling `disableDeviceForCurrentUser`. This only works if you have previously called `registerToken`.
-    
-In order to re-enable push notifications to that device, simply call `registerToken` as usual when the user logs back in.
     
 ### Uninstall tracking
 
