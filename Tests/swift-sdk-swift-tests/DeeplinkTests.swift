@@ -77,7 +77,7 @@ class DeeplinkTests: XCTestCase {
         
         let config = IterableConfig()
         config.urlDelegate = mockUrlDelegate
-        IterableAPI.initializeForObjcTesting(config: config)
+        IterableAPI.initializeForTesting(config: config)
         
         IterableAPI.handle(universalLink: URL(string: iterableRewriteURL)!)
         

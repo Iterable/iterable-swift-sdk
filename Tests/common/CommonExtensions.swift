@@ -24,21 +24,6 @@ extension Dictionary where Key == AnyHashable {
     }
 }
 
-// Used only by ojbc tests. Remove after converting to Swift.
-extension IterableAPI {
-    @objc public static func initializeForObjcTesting() {
-        IterableAPI.initializeForTesting()
-    }
-
-    @objc public static func initializeForObjcTesting(apiKey: String) {
-        IterableAPI.initializeForTesting(apiKey: apiKey)
-    }
-
-    @objc public static func initializeForObjcTesting(config: IterableConfig) {
-        IterableAPI.initializeForTesting(config: config)
-    }
-}
-
 class MockDependencyContainer : DependencyContainerProtocol {
     let dateProvider: DateProviderProtocol
     let networkSession: NetworkSessionProtocol
