@@ -270,7 +270,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         }
     }
 
-    enum ProcessNextMessageResult {
+    private enum ProcessNextMessageResult {
         case show(IterableInAppMessage)
         case skip(IterableInAppMessage)
         case wait
@@ -304,7 +304,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         return result
     }
     
-    enum CheckMessageResult {
+    private enum CheckMessageResult {
         case inAppShowResponse(InAppShowResponse)
         case notReady
     }
