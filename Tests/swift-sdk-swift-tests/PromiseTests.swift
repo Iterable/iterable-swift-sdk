@@ -9,7 +9,7 @@ import XCTest
 @testable import IterableSDK
 
 class PromiseTests: XCTestCase {
-    struct MyError : Error, CustomStringConvertible {
+    struct MyError: Error, CustomStringConvertible {
         let message: String
         
         var description: String {
