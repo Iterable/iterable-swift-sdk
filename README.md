@@ -181,20 +181,27 @@ IterableAPI.email = "user@example.com"
 ```objc
 IterableAPI.email = @"user@example.com";
 ```
+
+:::tip NOTE
+Whenever the app sets `IterableAPI.email` or `IterableAPI.userId`, the SDK 
+registers the device with Apple, retrieving a token that is stored
+on the user's Iterable profile.
+:::
     
 ## Using the SDK
 
 ### Sending push notifications
 
-1. Request authorization and register for remote notifications
+1. Request authorization to receive push notifications
 
-    iOS apps must request authorization to receive push notifications.
-    To do this, they should call the [`requestAuthorization`](https://developer.apple.com/documentation/usernotifications/unusernotificationcenter/1649527-requestauthorization)
-    method on [`UNNotificiationCenter`](https://developer.apple.com/documentation/usernotifications/unusernotificationcenter).
+    iOS apps must request authorization to receive push notifications that
+    interact with the user (through alerts, sounds, or icon badging).
 
-    This will prompt the user for permission to receive push notifications 
-    (unless the app has requested permission for provisional notifications, 
-    which are delivered silently and don't require the user's permission).
+    To request authorization, Apple provides the [`requestAuthorization`](https://developer.apple.com/documentation/usernotifications/unusernotificationcenter/1649527-requestauthorization)
+    method on [`UNNotificationCenter`](https://developer.apple.com/documentation/usernotifications/unusernotificationcenter).
+
+    Calling this method will prompt the user for permission to receive push
+    notifications that involve user interaction.
 
     For example:
 
@@ -215,11 +222,7 @@ IterableAPI.email = @"user@example.com";
        // ...
     }];
     ```
-    
-    By default, if you have set `IterableAPI.email` or `IterableAPI.userId`
-    (as described above), the SDK will then register the app for remote 
-    notifications automatically.
-    
+
     For more information about setting iOS apps up to receive push 
     notifications, take a look at the following documents from Apple:
     
