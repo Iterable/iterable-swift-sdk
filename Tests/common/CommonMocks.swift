@@ -4,8 +4,6 @@
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
-//import XCTest
-
 import Foundation
 import UserNotifications
 

@@ -4,13 +4,11 @@
 //
 
 import XCTest
-
 import OHHTTPStubs
 
 @testable import IterableSDK
 
 class DeeplinkTests: XCTestCase {
-
     override func setUp() {
         super.setUp()
 

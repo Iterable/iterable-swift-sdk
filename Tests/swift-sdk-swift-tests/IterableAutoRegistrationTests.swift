@@ -135,5 +135,4 @@ class IterableAutoRegistrationTests: XCTestCase {
         // only wait for small time, supposed to error out
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-    
 }
