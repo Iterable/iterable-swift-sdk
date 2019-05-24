@@ -108,7 +108,7 @@ extension IterableInAppTrigger {
     }
 }
 
-extension IterableInAppTrigger : Codable {
+extension IterableInAppTrigger: Codable {
     enum CodingKeys: String, CodingKey {
         case data
     }
@@ -145,7 +145,7 @@ extension IterableInAppTrigger : Codable {
     }
 }
 
-extension IterableHtmlInAppContent : Codable {
+extension IterableHtmlInAppContent: Codable {
     enum CodingKeys: String, CodingKey {
         case edgeInsets
         case backgroundAlpha
@@ -182,8 +182,7 @@ extension IterableHtmlInAppContent : Codable {
     }
 }
 
-
-extension IterableInboxMetadata : Codable {
+extension IterableInboxMetadata: Codable {
     enum CodingKeys: String, CodingKey {
         case title
         case subtitle
@@ -213,7 +212,7 @@ extension IterableInboxMetadata : Codable {
     }
 }
 
-extension IterableInAppMessage : Codable {
+extension IterableInAppMessage: Codable {
     enum CodingKeys: String, CodingKey {
         case saveToInbox
         case inboxMetadata
@@ -297,7 +296,7 @@ extension IterableInAppMessage : Codable {
         return IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
     }
     
-    private static func serialize(customPayload: [AnyHashable : Any]?) -> Data? {
+    private static func serialize(customPayload: [AnyHashable: Any]?) -> Data? {
         guard let customPayload = customPayload else {
             return nil
         }
@@ -351,7 +350,7 @@ protocol InAppPersistenceProtocol {
 }
 
 
-class InAppFilePersister : InAppPersistenceProtocol {
+class InAppFilePersister: InAppPersistenceProtocol {
     init(filename: String = "itbl_inapp", ext: String = "json") {
         self.filename = filename
         self.ext = ext
@@ -413,5 +412,4 @@ struct FileHelper {
         }
         try? FileManager.default.removeItem(at: url)
     }
-
 }

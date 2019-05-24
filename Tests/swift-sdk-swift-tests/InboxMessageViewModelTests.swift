@@ -25,9 +25,7 @@ class InboxMessageViewModelTests: XCTestCase {
         let msg = IterableInAppMessage(messageId: "939fi9kj92kd",
                                        campaignId: "45820",
                                        createdAt: testCreationDate,
-                                       content: IterableHtmlInAppContent(edgeInsets: .zero,
-                                                                         backgroundAlpha: 0,
-                                                                         html: ""),
+                                       content: createDefaultContent(),
                                        inboxMetadata: metadata)
         msg.read = true
         
@@ -43,15 +41,11 @@ class InboxMessageViewModelTests: XCTestCase {
     func testHasher() {
         let msg1 = IterableInAppMessage(messageId: "939fi9kj92kd",
                                         campaignId: "45820",
-                                        content: IterableHtmlInAppContent(edgeInsets: .zero,
-                                                                          backgroundAlpha: 0,
-                                                                          html: ""))
+                                        content: createDefaultContent())
         
         let msg2 = IterableInAppMessage(messageId: "89rjg839g24h",
                                         campaignId: "29486",
-                                        content: IterableHtmlInAppContent(edgeInsets: .zero,
-                                                                          backgroundAlpha: 0,
-                                                                          html: ""))
+                                        content: createDefaultContent())
         
         let inboxMsg1 = InboxMessageViewModel(message: msg1)
         let inboxMsg1Dupe = InboxMessageViewModel(message: msg1)
@@ -71,15 +65,11 @@ class InboxMessageViewModelTests: XCTestCase {
     func testEquatable() {
         let msg1 = IterableInAppMessage(messageId: "939fi9kj92kd",
                                         campaignId: "45820",
-                                        content: IterableHtmlInAppContent(edgeInsets: .zero,
-                                                                          backgroundAlpha: 0,
-                                                                          html: ""))
+                                        content: createDefaultContent())
         
         let msg2 = IterableInAppMessage(messageId: "89rjg839g24h",
                                         campaignId: "29486",
-                                        content: IterableHtmlInAppContent(edgeInsets: .zero,
-                                                                          backgroundAlpha: 0,
-                                                                          html: ""))
+                                        content: createDefaultContent())
         
         let inboxMsg1 = InboxMessageViewModel(message: msg1)
         let inboxMsg1Dupe = InboxMessageViewModel(message: msg1)
@@ -92,5 +82,9 @@ class InboxMessageViewModelTests: XCTestCase {
         XCTAssertFalse(inboxMsg1 == inboxMsg1Read)
         
         XCTAssertFalse(inboxMsg1 == inboxMsg2)
+    }
+    
+    private func createDefaultContent() -> IterableInAppContent {
+        return IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
     }
 }

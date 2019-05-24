@@ -13,7 +13,7 @@ enum InAppContentParseResult {
 }
 
 struct InAppContentParser {
-    static func parse(contentDict: [AnyHashable : Any]) -> InAppContentParseResult {
+    static func parse(contentDict: [AnyHashable: Any]) -> InAppContentParseResult {
         let contentType: IterableInAppContentType
         if let contentTypeStr = contentDict[.ITBL_IN_APP_CONTENT_TYPE] as? String {
             contentType = IterableInAppContentType.from(string: contentTypeStr)
