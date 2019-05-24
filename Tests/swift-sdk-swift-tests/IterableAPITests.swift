@@ -24,6 +24,12 @@ class IterableAPITests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
     }
+    
+    func testInitialize() {
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey)
+        
+        XCTAssertEqual(IterableAPI.internalImplementation?.apiKey, IterableAPITests.apiKey)
+    }
 
     func testTrackEventWithNoEmailOrUser() {
         let eventName = "MyCustomEvent"
