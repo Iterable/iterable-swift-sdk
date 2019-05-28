@@ -166,6 +166,30 @@ class PromiseTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
         wait(for: [expectation2], timeout: testExpectationTimeout)
     }
+
+    func testMultiValues() {
+        let expectation1 = expectation(description: "test future init with success")
+        expectation1.expectedFulfillmentCount = 3
+
+        let f1 = createSucessfulFuture(withValue: true)
+
+        f1.onSuccess { (val) in
+            XCTAssertTrue(val)
+            expectation1.fulfill()
+        }
+        
+        f1.onSuccess { (val) in
+            XCTAssertTrue(val)
+            expectation1.fulfill()
+        }
+        
+        f1.onSuccess { (val) in
+            XCTAssertTrue(val)
+            expectation1.fulfill()
+        }
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
     
     private func createSucessfulFuture<T>(withValue value: T) -> Future<T, Error> {
         let future = Promise<T, Error>()

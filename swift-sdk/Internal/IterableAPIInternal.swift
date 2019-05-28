@@ -413,7 +413,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol, AuthProvider {
             notificationStateProvider.registerForRemoteNotifications()
         }
         
-        inAppManager.onInAppSyncNeeded()
+        _ = inAppManager.onInAppSyncNeeded()
     }
     
     private static func defaultOnSucess(identifier: String) -> OnSuccessHandler {

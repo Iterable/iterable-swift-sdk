@@ -241,7 +241,7 @@ class MockInAppFetcher: InAppFetcherProtocol {
         return Promise(value: messagesMap.values)
     }
     
-    func mockMessagesAvailableFromServer(messages: [IterableInAppMessage], completion: (() -> ())? = nil) {
+    @discardableResult func mockMessagesAvailableFromServer(messages: [IterableInAppMessage]) -> Future<Bool, Error> {
         ITBInfo()
         
         messagesMap = OrderedDictionary<String, IterableInAppMessage>()
@@ -250,22 +250,21 @@ class MockInAppFetcher: InAppFetcherProtocol {
             messagesMap[$0.messageId] = $0
         }
 
-        (IterableAPI.inAppManager as! IterableInAppManagerProtocolInternal).onInAppSyncNeeded()
+        let result = Promise<Bool, Error>()
 
-        if let completion = completion {
-            DispatchQueue.main.asyncAfter(deadline: .now() + queueFinishTimeInterval) {
-                completion()
-            }
+        (IterableAPI.inAppManager as! IterableInAppManagerProtocolInternal).onInAppSyncNeeded().onSuccess { (_) in
+            result.resolve(with: true)
         }
+
+        return result
     }
     
-    func mockInAppPayloadFromServer(_ payload: [AnyHashable: Any], completion: (() -> ())? = nil) {
+    @discardableResult func mockInAppPayloadFromServer(_ payload: [AnyHashable : Any]) -> Future<Bool, Error> {
         ITBInfo()
-        mockMessagesAvailableFromServer(messages: InAppTestHelper.inAppMessages(fromPayload: payload), completion: completion)
+        return mockMessagesAvailableFromServer(messages: InAppTestHelper.inAppMessages(fromPayload: payload))
     }
 
     private var messagesMap = OrderedDictionary<String, IterableInAppMessage>()
-    private let queueFinishTimeInterval: TimeInterval = 1.0
 }
 
 class MockInAppDisplayer : InAppDisplayerProtocol {
@@ -282,12 +281,12 @@ class MockInAppDisplayer : InAppDisplayerProtocol {
             onShow.reject(with: IterableError.general(description: "showing something else"))
             return .notShown("showing something else")
         }
-
+        
         result = Promise<URL, IterableError>()
+        
+        self.showing = true
 
-        showing = true
-
-        onShow.resolve(with: message)
+        self.onShow.resolve(with: message)
 
         return .shown(result)
     }

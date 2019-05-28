@@ -89,7 +89,7 @@ class ViewController: UIViewController {
                                          inAppFetcher: mockInAppFetcher,
                                          inAppDisplayer: InAppDisplayer())
 
-        mockInAppFetcher.mockInAppPayloadFromServer(payload) {
+        mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { _ in
             let message = IterableAPI.inAppManager.getMessages()[0]
             
             IterableAPI.inAppManager.show(message: message, consume: true) { (url) in
@@ -120,7 +120,7 @@ class ViewController: UIViewController {
                                          inAppFetcher: mockInAppFetcher,
                                          inAppDisplayer: InAppDisplayer())
         
-        mockInAppFetcher.mockInAppPayloadFromServer(payload) {
+        mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { _ in
             let message = IterableAPI.inAppManager.getMessages()[0]
             
             IterableAPI.inAppManager.show(message: message, consume: true) { (url) in
@@ -218,7 +218,7 @@ class ViewController: UIViewController {
                                          inAppDisplayer: InAppDisplayer(),
                                          urlOpener: mockUrlOpener)
 
-        mockInAppFetcher.mockMessagesAvailableFromServer(messages: [message]) {
+        mockInAppFetcher.mockMessagesAvailableFromServer(messages: [message]).onSuccess { _ in
             let viewController = IterableInboxViewController(style: .plain)
             self.present(viewController, animated: true) {
                 ITBInfo("Presented Inbox")

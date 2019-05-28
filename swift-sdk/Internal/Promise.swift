@@ -26,29 +26,33 @@ extension IterableError : LocalizedError {
 // or there is a failure with error
 // There is no way to set value a result in this class.
 public class Future<Value, Failure> where Failure : Error {
-    fileprivate var successCallback: ((Value) -> Void)? = nil
-    fileprivate var errorCallback: ((Failure) -> Void)? = nil
+    fileprivate var successCallbacks = [(Value) -> Void]()
+    fileprivate var errorCallbacks = [(Failure) -> Void]()
 
-    @discardableResult public func onSuccess(block: ((Value) -> Void)? = nil) -> Future<Value, Failure> {
-        self.successCallback = block
+    @discardableResult public func onSuccess(block: @escaping ((Value) -> Void)) -> Future<Value, Failure> {
+        self.successCallbacks.append(block)
 
         // if a successful result already exists (from constructor), report it
         if case let Result.success(value)? = result {
-            successCallback?(value)
+            successCallbacks.forEach { $0(value) }
         }
         
         return self
     }
     
-    @discardableResult public func onError(block: ((Failure) -> Void)? = nil) -> Future<Value, Failure> {
-        self.errorCallback = block
+    @discardableResult public func onError(block: @escaping ((Failure) -> Void)) -> Future<Value, Failure> {
+        self.errorCallbacks.append(block)
         
         // if a failed result already exists (from constructor), report it
         if case let Result.failure(error)? = result {
-            errorCallback?(error)
+            errorCallbacks.forEach { $0(error) }
         }
 
         return self
+    }
+    
+    public func isResolved() -> Bool {
+        return result != nil
     }
 
     fileprivate var result: Result<Value, Failure>? {
@@ -60,11 +64,9 @@ public class Future<Value, Failure> where Failure : Error {
     private func report(result: Result<Value, Failure>) {
         switch result {
         case .success(let value):
-            successCallback?(value)
-            break
+            successCallbacks.forEach { $0(value) }
         case .failure(let error):
-            errorCallback?(error)
-            break
+            errorCallbacks.forEach { $0(error) }
         }
     }
 }
