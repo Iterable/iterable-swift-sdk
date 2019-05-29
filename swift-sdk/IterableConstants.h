@@ -24,7 +24,7 @@ typedef void (^OnSuccessHandler)(NSDictionary * _Nullable data);
 typedef void (^OnFailureHandler)(NSString * _Nullable reason, NSData *_Nullable data);
 
 /* Swift equivalents (for when ready to move to 100% Swift */
-//typealias ITEActionBlock = (String?) -> Void
-//typealias ITBURLCallback = (URL?) -> Void
-//typealias OnSuccessHandler = (_ data: Dictionary<AnyHashable, Any>?) -> Void
-//typealias OnFailureHandler = (_ reason: String?, _ data: Data?) -> Void
+// typealias ITEActionBlock = (String?) -> Void
+// typealias ITBURLCallback = (URL?) -> Void
+// typealias OnSuccessHandler = (_ data: Dictionary<AnyHashable, Any>?) -> Void
+// typealias OnFailureHandler = (_ reason: String?, _ data: Data?) -> Void
