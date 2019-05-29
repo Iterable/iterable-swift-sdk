@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [6.0.8](https://github.com/Iterable/swift-sdk/releases/tag/6.0.8)
 #### Fixed
+- set preferUserId to true when using updateUser using userId
+
+## [6.0.8](https://github.com/Iterable/swift-sdk/releases/tag/6.0.8)
+#### Fixed
 - Carthage support with Xcode 10.2
 
 ## [6.0.7](https://github.com/Iterable/swift-sdk/releases/tag/6.0.7)
