@@ -550,7 +550,6 @@
 				AC2C668620D3435700D46CC9 /* IterableActionRunnerTests.swift */,
 				AC64626A2140AACF0046E1BD /* IterableAPIResponseTests.swift */,
 				ACD6116D21080564003E7F6B /* IterableAPITests.swift */,
-				55B37FC5229752DD0042F13A /* OrderedDictionaryTests.swift */,
 				AC89661D2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift */,
 				AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */,
 				AC776DA3211A17C700C27C27 /* IterableRequestUtilTests.swift */,
@@ -558,6 +557,7 @@
 				ACED4C00213F50B30055A497 /* LoggingTests.swift */,
 				AC2C668320D3370600D46CC9 /* Mocks.swift */,
 				55B37FC32297135F0042F13A /* NotificationMetadataTests.swift */,
+				55B37FC5229752DD0042F13A /* OrderedDictionaryTests.swift */,
 				ACEDF41E2183C436000B9BFE /* PromiseTests.swift */,
 			);
 			path = "swift-sdk-swift-tests";
