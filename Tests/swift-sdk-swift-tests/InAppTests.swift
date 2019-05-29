@@ -378,16 +378,17 @@ class InAppTests: XCTestCase {
         
         let payload = """
             {"inAppMessages":
-            [
-            {
-            "saveToInbox": true,
-            "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'\(iterableDeleteUrl)'>Click Here</a>"},
-            "trigger": {"type": "immediate"},
-            "messageId": "message0",
-            "campaignId": "campaign1",
-            "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
-            },
-            ]
+                [
+                    {
+                        "saveToInbox": true,
+                        "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'\(iterableDeleteUrl)'>Click Here</a>"},
+                        "trigger": {"type": "immediate"},
+                        "messageId": "message0",
+                        "campaignId": "campaign1",
+                        "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+                    },
+                ]
+            
             }
             """.toJsonDict()
         
@@ -424,16 +425,16 @@ class InAppTests: XCTestCase {
         
         let payload = """
             {"inAppMessages":
-            [
-            {
-            "saveToInbox": true,
-            "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'\(iterableDismissUrl)'>Click Here</a>"},
-            "trigger": {"type": "immediate"},
-            "messageId": "message0",
-            "campaignId": "campaign1",
-            "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
-            },
-            ]
+                [
+                    {
+                        "saveToInbox": true,
+                        "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'\(iterableDismissUrl)'>Click Here</a>"},
+                        "trigger": {"type": "immediate"},
+                        "messageId": "message0",
+                        "campaignId": "campaign1",
+                        "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+                    },
+                ]
             }
             """.toJsonDict()
         mockInAppFetcher.mockInAppPayloadFromServer(payload) {
@@ -809,49 +810,50 @@ class InAppTests: XCTestCase {
     
     func testFilePersistence() {
         let createdAt = Date()
-        let expiresAt = createdAt.addingTimeInterval(60*60*24)
+        let expiresAt = createdAt.addingTimeInterval(60 * 60 * 24)
         let payload = """
-            {"inAppMessages":
-            [
-            {
-            "saveToInbox": false,
-            "content": {"type": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site1.com\'>Click Here</a>", "payload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}},
-            "trigger": {"type": "event", "details": "some event details"},
-            "messageId": "message1",
-            "createdAt": \(IterableUtil.int(fromDate: createdAt)),
-            "expiresAt": \(IterableUtil.int(fromDate: expiresAt)),
-            "campaignId": "campaign1",
-            "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
-            },
-            {
-            "saveToInbox": true,
-            "content": {"type": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
-            "trigger": {"type": "immediate"},
-            "messageId": "message2",
-            "createdAt": 1550605745142,
-            "expiresAt": 1657258509185,
-            "campaignId": "campaign2",
-            "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
-            },
-            {
-            "content": {"inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site3.com\'>Click Here</a>"},
-            "trigger": {"type": "never"},
-            "messageId": "message3",
-            "campaignId": "campaign3",
-            "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
-            },
-            {
-            "content": {"inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site4.com\'>Click Here</a>"},
-            "trigger": {"type": "newEventType", "nested": {"var1": "val1"}},
-            "messageId": "message4",
-            "createdAt": 1550605745142,
-            "expiresAt": 1657258509185,
-            "campaignId": "campaign4",
-            "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
-            }
-            ]
-            }
-            """.toJsonDict()
+        {"inAppMessages":
+        [
+        {
+        "saveToInbox": false,
+        "content": {"type": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site1.com\'>Click Here</a>", "payload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}},
+        "trigger": {"type": "event", "details": "some event details"},
+        "messageId": "message1",
+        "createdAt": \(IterableUtil.int(fromDate: createdAt)),
+        "expiresAt": \(IterableUtil.int(fromDate: expiresAt)),
+        "campaignId": "campaign1",
+        "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+        },
+        {
+        "saveToInbox": true,
+        "content": {"type": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+        "trigger": {"type": "immediate"},
+        "messageId": "message2",
+        "createdAt": 1550605745142,
+        "expiresAt": 1657258509185,
+        "campaignId": "campaign2",
+        "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+        },
+        {
+        "content": {"inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site3.com\'>Click Here</a>"},
+        "trigger": {"type": "never"},
+        "messageId": "message3",
+        "campaignId": "campaign3",
+        "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+        },
+        {
+        "content": {"inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site4.com\'>Click Here</a>"},
+        "trigger": {"type": "newEventType", "nested": {"var1": "val1"}},
+        "messageId": "message4",
+        "createdAt": 1550605745142,
+        "expiresAt": 1657258509185,
+        "campaignId": "campaign4",
+        "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+        }
+        ]
+        }
+        """.toJsonDict()
+        
         let messages = InAppTestHelper.inAppMessages(fromPayload: payload)
         messages[0].read = true
         TestUtils.validateEqual(date1: messages[0].createdAt, date2: createdAt)
@@ -953,11 +955,11 @@ class InAppTests: XCTestCase {
         let notification = """
         {
             "itbl" : {
-                "messageId" : "background_notification",
-                "isGhostPush" : true
+                "messageId": "background_notification",
+                "isGhostPush": true
             },
-            "notificationType" : "InAppRemove",
-            "messageId" : "messageId"
+            "notificationType": "InAppRemove",
+            "messageId": "messageId"
         }
         """.toJsonDict()
         
@@ -976,11 +978,11 @@ class InAppTests: XCTestCase {
         let notification = """
         {
             "itbl" : {
-                "messageId" : "background_notification",
-                "isGhostPush" : true
+                "messageId": "background_notification",
+                "isGhostPush": true
             },
-            "notificationType" : "InAppUpdate",
-            "messageId" : "messageId"
+            "notificationType": "InAppUpdate",
+            "messageId": "messageId"
         }
         """.toJsonDict()
         
@@ -1007,12 +1009,12 @@ class InAppTests: XCTestCase {
         
         let notification = """
         {
-            "itbl" : {
-                "messageId" : "background_notification",
-                "isGhostPush" : true
+            "itbl": {
+                "messageId": "background_notification",
+                "isGhostPush": true
             },
-            "notificationType" : "InAppRemove",
-            "messageId" : "messageId"
+            "notificationType": "InAppRemove",
+            "messageId": "messageId"
         }
         """.toJsonDict()
         
@@ -1041,14 +1043,14 @@ class InAppTests: XCTestCase {
         let expectation1 = expectation(description: "testInboxChangedIsCalledWhenInAppIsRemovedInServer")
         
         let notification = """
-        {
-            "itbl" : {
-                "messageId" : "background_notification",
-                "isGhostPush" : true
-            },
-            "notificationType" : "InAppRemove",
-            "messageId" : "messageId"
-        }
+            {
+                "itbl" : {
+                    "messageId" : "background_notification",
+                    "isGhostPush" : true
+                },
+                "notificationType" : "InAppRemove",
+                "messageId" : "messageId"
+            }
         """.toJsonDict()
         
         let mockNotificationCenter = MockNotificationCenter()
