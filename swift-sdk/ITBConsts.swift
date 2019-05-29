@@ -50,6 +50,7 @@ public extension AnyHashable {
     static let ITBL_KEY_MESSAGE_ID = "messageId"
     static let ITBL_KEY_NEW_EMAIL = "newEmail"
     static let ITBL_KEY_PLATFORM = "platform"
+    static let ITBL_KEY_PACKAGE_NAME = "packageName"
     static let ITBL_KEY_SDK_VERSION = "SDKVersion"
     static let ITBL_KEY_TOKEN = "token"
     static let ITBL_KEY_TEMPLATE_ID = "templateId"

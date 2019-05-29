@@ -538,6 +538,7 @@ class IterableAPITests: XCTestCase {
                 (name: AnyHashable.ITBL_KEY_COUNT, value: 1.description),
                 (name: AnyHashable.ITBL_KEY_PLATFORM, value: .ITBL_PLATFORM_IOS),
                 (name: AnyHashable.ITBL_KEY_SDK_VERSION, value: IterableAPI.sdkVersion),
+                (name: AnyHashable.ITBL_KEY_PACKAGE_NAME, value: Bundle.main.appPackageName!),
             ]
             TestUtils.validate(request: networkSession.request!,
                                requestType: .get,

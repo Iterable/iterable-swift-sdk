@@ -220,6 +220,10 @@ struct RequestCreator {
                                         AnyHashable.ITBL_KEY_PLATFORM: String.ITBL_PLATFORM_IOS,
                                         AnyHashable.ITBL_KEY_SDK_VERSION: IterableAPI.sdkVersion]
         
+        if let packageName = Bundle.main.appPackageName {
+            args[AnyHashable.ITBL_KEY_PACKAGE_NAME] = packageName
+        }
+
         addEmailOrUserId(dict: &args)
         
         return .success(.get(createGetRequest(forPath: .ITBL_PATH_GET_INAPP_MESSAGES, withArgs: args as! [String: String])))
