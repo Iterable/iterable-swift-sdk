@@ -22,66 +22,66 @@ class InboxMessageViewModelTests: XCTestCase {
                                              subtitle: subtitle,
                                              icon: icon)
         
-        let msg = IterableInAppMessage(messageId: "939fi9kj92kd",
-                                       campaignId: "45820",
-                                       createdAt: testCreationDate,
-                                       content: createDefaultContent(),
-                                       inboxMetadata: metadata)
-        msg.read = true
+        let message = IterableInAppMessage(messageId: "939fi9kj92kd",
+                                           campaignId: "45820",
+                                           createdAt: testCreationDate,
+                                           content: createDefaultContent(),
+                                           inboxMetadata: metadata)
+        message.read = true
         
-        let inboxMsg = InboxMessageViewModel(message: msg)
+        let inboxMessageViewModel = InboxMessageViewModel(message: message)
         
-        XCTAssertEqual(inboxMsg.title, title)
-        XCTAssertEqual(inboxMsg.subtitle, subtitle)
-        XCTAssertEqual(inboxMsg.imageUrl, icon)
-        XCTAssertEqual(inboxMsg.createdAt, testCreationDate)
-        XCTAssertTrue(inboxMsg.read)
+        XCTAssertEqual(inboxMessageViewModel.title, title)
+        XCTAssertEqual(inboxMessageViewModel.subtitle, subtitle)
+        XCTAssertEqual(inboxMessageViewModel.imageUrl, icon)
+        XCTAssertEqual(inboxMessageViewModel.createdAt, testCreationDate)
+        XCTAssertTrue(inboxMessageViewModel.read)
     }
     
     func testHasher() {
-        let msg1 = IterableInAppMessage(messageId: "939fi9kj92kd",
-                                        campaignId: "45820",
-                                        content: createDefaultContent())
+        let message1 = IterableInAppMessage(messageId: "939fi9kj92kd",
+                                            campaignId: "45820",
+                                            content: createDefaultContent())
         
-        let msg2 = IterableInAppMessage(messageId: "89rjg839g24h",
-                                        campaignId: "29486",
-                                        content: createDefaultContent())
+        let message2 = IterableInAppMessage(messageId: "89rjg839g24h",
+                                            campaignId: "29486",
+                                            content: createDefaultContent())
         
-        let inboxMsg1 = InboxMessageViewModel(message: msg1)
-        let inboxMsg1Dupe = InboxMessageViewModel(message: msg1)
-        let inboxMsg2 = InboxMessageViewModel(message: msg2)
+        let inboxMessageViewModel1 = InboxMessageViewModel(message: message1)
+        let inboxMessageViewModel1Dupe = InboxMessageViewModel(message: message1)
+        let inboxMessageViewModel2 = InboxMessageViewModel(message: message2)
         
-        let dict = [inboxMsg1: "value"]
+        let dict = [inboxMessageViewModel1: "value"]
         
-        XCTAssertEqual(dict[inboxMsg1Dupe], "value")
+        XCTAssertEqual(dict[inboxMessageViewModel1Dupe], "value")
         
-        msg1.read = true
-        let inboxMsg1Read = InboxMessageViewModel(message: msg1)
-        XCTAssertNil(dict[inboxMsg1Read])
+        message1.read = true
+        let inboxMessageViewModel1Read = InboxMessageViewModel(message: message1)
+        XCTAssertNil(dict[inboxMessageViewModel1Read])
         
-        XCTAssertNil(dict[inboxMsg2])
+        XCTAssertNil(dict[inboxMessageViewModel2])
     }
     
     func testEquatable() {
-        let msg1 = IterableInAppMessage(messageId: "939fi9kj92kd",
-                                        campaignId: "45820",
-                                        content: createDefaultContent())
+        let message1 = IterableInAppMessage(messageId: "939fi9kj92kd",
+                                            campaignId: "45820",
+                                            content: createDefaultContent())
         
-        let msg2 = IterableInAppMessage(messageId: "89rjg839g24h",
-                                        campaignId: "29486",
-                                        content: createDefaultContent())
+        let message2 = IterableInAppMessage(messageId: "89rjg839g24h",
+                                            campaignId: "29486",
+                                            content: createDefaultContent())
         
-        let inboxMsg1 = InboxMessageViewModel(message: msg1)
-        let inboxMsg1Dupe = InboxMessageViewModel(message: msg1)
-        let inboxMsg2 = InboxMessageViewModel(message: msg2)
+        let inboxMessageViewModel1 = InboxMessageViewModel(message: message1)
+        let inboxMessageViewModel1Dupe = InboxMessageViewModel(message: message1)
+        let inboxMessageViewModel2 = InboxMessageViewModel(message: message2)
         
-        XCTAssertTrue(inboxMsg1 == inboxMsg1Dupe)
+        XCTAssertTrue(inboxMessageViewModel1 == inboxMessageViewModel1Dupe)
         
-        msg1.read = true
-        let inboxMsg1Read = InboxMessageViewModel(message: msg1)
-        XCTAssertFalse(inboxMsg1 == inboxMsg1Read)
+        message1.read = true
+        let inboxMessageViewModel1Read = InboxMessageViewModel(message: message1)
+        XCTAssertFalse(inboxMessageViewModel1 == inboxMessageViewModel1Read)
         
-        XCTAssertFalse(inboxMsg1 == inboxMsg2)
+        XCTAssertFalse(inboxMessageViewModel1 == inboxMessageViewModel2)
     }
     
     private func createDefaultContent() -> IterableInAppContent {
