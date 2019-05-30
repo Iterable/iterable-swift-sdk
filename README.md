@@ -109,7 +109,7 @@ IterableAppExtensions.framework
 
     - By default, the SDK handles deep links with the the URL delegate
     assigned to `IterableConfig`. Follow the instructions in 
-    [Deep Linking](#deep-linking) to migrate any existing URL handling code 
+    [Deep Links](#deep-links) to migrate any existing URL handling code 
     to this new API.
 
 ## Sample projects
@@ -360,8 +360,15 @@ combination.
 
 ### Push notifications
 
-When the user taps on a push notification or one of its action buttons, the system calls the `UNUserNotificationCenterDelegate` object's [userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:](https://developer.apple.com/documentation/usernotifications/unusernotificationcenterdelegate/1649501-usernotificationcenter?language=swift) method. In this method, call `IterableAppIntegration` with the same parameters to track a push open event and perform the associated action (see below for custom action and URL delegates).
-        
+When the user taps on a push notification or one of its action buttons, the
+system calls the `UNUserNotificationCenterDelegate` object's
+[userNotificationCenter(_:didReceive:withCompletionHandler:)](https://developer.apple.com/documentation/usernotifications/unusernotificationcenterdelegate/1649501-usernotificationcenter?language=swift)
+method. 
+
+From this method, call the `userNotificationCenter(_:didReceive:withCompletionHandler:)`
+method on `IterableAppIntegration`. This tracks a push open event and 
+performs the associated action.
+
 *Swift*
     
 ```swift
@@ -378,7 +385,7 @@ public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceiv
 }
 ```
 
-See the app delegate in the [example app](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app/swift-sample-app/AppDelegate.swift).
+For more information, see the app delegate in the [example app](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app/swift-sample-app/AppDelegate.swift).
 
 ### Deep links
 
@@ -433,9 +440,16 @@ func handle(iterableURL url: URL, inContext context: IterableActionContext) -> B
         
 #### Email deep links
     
-For Universal Links to work with email link rewriting, [set up an **apple-app-site-association** file](https://support.iterable.com/hc/articles/115000440206-Setting-up-iOS-Universal-Links) in your Iterable project. 
+For Universal Links to work with email link rewriting, 
+[set up an **apple-app-site-association** file](https://support.iterable.com/hc/articles/115000440206-Setting-up-iOS-Universal-Links)
+in your Iterable project.
 
-When a user clicks a link in an email, the SDK will call the [application:continueUserActivity:restorationHandler:](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623072-application?language=swift) method of your `UIApplicationDelegate`. If you already have an Iterable `urlDelegate` defined (see [Handling Links from Push Notifications](#handling-links-from-push-notifications), the same handler can be used for email deep links by calling `handleUniversalLink:`.
+When a user clicks a link in an email, the SDK will call the
+[application(_:continue:restorationHandler:)](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623072-application?language=swift)
+method of your `UIApplicationDelegate`. If you already have an Iterable
+`urlDelegate` defined (see [Handling Links from Push Notifications](#push-notification-deep-links), 
+the same handler can be used for email deep links by calling 
+`handle(universalLink:)`).
 
 *Swift*
     
@@ -471,11 +485,12 @@ As the name implies, the deep link is _deferred_ until the app has been installe
 
 After tapping a deep link in an email from an Iterable campaign, users without the associated app will be directed to the App Store to install it. If the app uses the Iterable iOS SDK and has deferred deep linking enabled, the content associated with the deep link will load on first launch.
 
-Set `IterableConfig.checkForDeferredDeeplink = true` to enable deferred deep linking for IterableSDK.
-    
+Set `IterableConfig.checkForDeferredDeeplink` to `true` to enable deferred
+deep linking with the Iterable iOS SDK.
+
 ### In-app messages
 
-In-app messages are handled via silent push messages from the server. When your application receives a silent push, call the Iterable iOS SDK in your AppDelegate, as follows:
+In-app messages are handled via silent push messages from the server. When your application receives a silent push, call the Iterable iOS SDK in your app delegate, as follows:
 
 *Swift*
 
@@ -496,7 +511,7 @@ func application(_ application: UIApplication, didReceiveRemoteNotification user
 
 #### Default behavior
 
-By default, when an in-app message arrives from the server, the SDK automatically shows it if the app is in the foreground. If an in-app message is already showing when the new message arrives, the new in-app message will be shown 30 seconds after the currently displayed in-app message closes (see [how to change this default value](#Changing-the-display-interval-between-in-app-messages)). Once an in-app message is shown, it will be "consumed" from the server queue and removed from the local queue as well. There is no need to write any code to get this default behavior. 
+By default, when an in-app message arrives from the server, the SDK automatically shows it if the app is in the foreground. If an in-app message is already showing when the new message arrives, the new in-app message will be shown 30 seconds after the currently displayed in-app message closes (see [how to change this default value](#changing-the-display-interval-between-in-app-messages)). Once an in-app message is shown, it will be "consumed" from the server queue and removed from the local queue as well. There is no need to write any code to get this default behavior. 
 
 #### Overriding whether to show or skip a particular in-app message
 
@@ -620,11 +635,20 @@ To customize the time delay between successive in-app messages (default value of
 
 ### Custom events
 
-Track custom events by calling `IterableAPI.track(event:...)`.
+To track custom events, use the following methods on `IterableAPI`:
+
+- `track(event:)`
+- `track(event:dataFields:)`
+- `track(event:dataFields:onSuccess:onFailure:)`
     
 ### User fields
 
-Modify user fields by calling `IterableAPI.updateUser`. You also call `updateEmail` and `updateSubscriptions`.
+To update an Iterable's user profile fields, use the following methods on
+`IterableAPI`:
+
+- `updateUser(_:mergeNestedObjects:onSuccess:onFailure:)` 
+- `updateEmail(_:onSuccess:onFailure:)`
+- `updateSubscriptions(_:unsubscribedChannelIds:unsubscribedMessageTypeIds:)`
     
 ### Uninstall tracking
 
