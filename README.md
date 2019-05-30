@@ -125,8 +125,8 @@ Follow these instructions to configure the Iterable iOS SDK:
 
 ### 1. Import the IterableSDK module
 
-To use the **IterableSDK** module, you must import it. Import it in the top 
-of your Swift or Obective-C files. For example:
+To use the **IterableSDK** module, import it at the top of your Objective-C
+or Swift files:
 
 *Swift*
 
@@ -276,7 +276,7 @@ For more information, take a look at the following documents from Apple:
 - [UserNotifications framework](https://developer.apple.com/documentation/usernotifications)
 - [Asking Permission to Use Notifications](https://developer.apple.com/documentation/usernotifications/asking_permission_to_use_notifications)
 
-### 7. (Optional) Support rich push notifications
+### 7. (Optional) Configure support for rich push notifications
 
 For push notifications to contain images, animated GIFs, video, or action
 buttons, you must create a Notification Service Extension. For more 
