@@ -48,12 +48,8 @@ project, install the SDK [manually](#manual-installation).
 
 ## Manual installation
 
-Attached to the release, you will find two framework bundles. 
-
-```
-IterableSDK.framework 
-IterableAppExtensions.framework
-```    
+Attached to the release, you will find two framework bundles: 
+**IterableSDK.framework** and **IterableAppExtensions.framework**.
     
 1. In Xcode, choose the target for your app. Now, add the **IterableSDK.framework** to the **Embedded Binaries** section. If you want to use an Iterable Rich Notification Extension, you will have to add **IterableAppExtensions.framework** to the embedded binaries section as well.
 
