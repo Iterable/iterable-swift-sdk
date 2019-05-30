@@ -189,8 +189,8 @@ one of thes values.
 
 ### 4. Fetch a device token from Apple
 
-In order for Iterable to send push notifications to an iOS device, it must
-know the unique token assigned to that device by Apple. 
+For Iterable to send push notifications to an iOS device, it must know the
+unique token assigned to that device by Apple.
 
 Iterable uses silent push notifications to tell iOS apps when to fetch
 new in-app messages from the server. Because of this, your app must register
