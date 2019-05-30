@@ -249,9 +249,10 @@ steps in this section.
 
 iOS apps must receive user permission to display push notification alerts,
 play push notification sounds, or update icon badges based on push 
-notifications. Calling Apple's [`requestAuthorization`](https://developer.apple.com/documentation/usernotifications/unusernotificationcenter/1649527-requestauthorization)
+notifications. If you are planning to send these types of push notifications,
+call Apple's [`requestAuthorization`](https://developer.apple.com/documentation/usernotifications/unusernotificationcenter/1649527-requestauthorization)
 method on [`UNNotificationCenter`](https://developer.apple.com/documentation/usernotifications/unusernotificationcenter). 
-will prompt the user for these permissions.
+to prompt the user for these permissions.
 
 *Swift*
 
@@ -336,7 +337,7 @@ With Objective-C, use delegation:
 
 ```
 
-### 6. Disable push notifications (when necessary)
+### 6. Disable push notifications when necessary
 
 When a new user logs in to your app on the same device that a previous user
 had been using, you'll typically want to disable push notifications to the
@@ -346,10 +347,10 @@ If `IterableConfig.autoPushRegistration` is `true` (the default value), the
 SDK automatically disables push notifications to the previous user when you 
 provide a new value for `IterableAPI.email` or `IterableAPI.userId`.
 
-If `IterableConfig.autoPushRegistration` is false, or if you need to disable
-push notifications for a user before a new user logs in to your app, manually
-call `IterableAPI.disableDeviceForCurrentUser()`. That this method only works 
-if you have previously called `IterableAPI.register(token:)`.
+If `IterableConfig.autoPushRegistration` is `false`, or if you need to
+disable push notifications for a user before a new user logs in to your app,
+manually call `IterableAPI.disableDeviceForCurrentUser()`. This method only 
+works if you have previously called `IterableAPI.register(token:)`.
 
 If the previous user logs back in later, call `IterableAPI.register(token:)` 
 to again register that user for push notifications on that app/device
