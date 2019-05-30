@@ -48,7 +48,7 @@ project, install the SDK [manually](#manual-installation).
 
 ## Manual installation
 
-Attached to the release you will find two framework bundles. 
+Attached to the release, you will find two framework bundles. 
 
 ```
 IterableSDK.framework 
@@ -119,13 +119,14 @@ For sample projects, look at the following repositories:
 - [Swift sample project](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app?raw=true)
 - [Objective-C sample project](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/objc-sample-app?raw=true)
 
-## Initializing the SDK
+## Configuring the SDK
 
-Follow these instructions to use the Iterable iOS SDK:
+Follow these instructions to configure the Iterable iOS SDK:
 
-### 1. Import IterableSDK module in your project
+### 1. Import the IterableSDK module
 
-You need to import the **IterableSDK** module in order to use it. Import it in the top of your Swift or Obective-C files as shown below:
+To use the **IterableSDK** module, you must import it. Import it in the top 
+of your Swift or Obective-C files. For example:
 
 *Swift*
 
@@ -143,9 +144,11 @@ import IterableSDK
 @import IterableSDK;
 ```
 
-### 2. Initialize the API with API key
+### 2. Set an API key
     
-In your app delegate, on application launch in the `application:didFinishLaunchingWithOptions:` method, initialize the Iterable SDK:
+In the `application:didFinishLaunchingWithOptions:` method of your app 
+delegate, call `initialize(apiKey:launchOptions:config:)`, passing in your 
+Iterable API key:
     
 *Swift*
     
@@ -163,11 +166,10 @@ config.pushIntegrationName = @"<your-iterable-push-integration-name>";
 [IterableAPI initializeWithApiKey:@"<your-api-key>" launchOptions:launchOptions config:config]
 ```
 
-For more information, read Iterable's [Setting up iOS Push Notifications](https://support.iterable.com/hc/articles/115000315806-Setting-Up-iOS-Push-Notifications) guide.
-    
-### 3. Set userId or email
+### 3. Set a userId or email
 
-Once you know the email or userId of the user, set the value.
+Once you have an email address or user ID for your app's current user, set
+`IterableAPI.email` or `IterableAPI.userId`. For example:
 
 > &#x26A0; Don't specify both email and userId in the same session, as they will be treated as different users by the SDK. Only use one type of identifier, email or userId, to identify the user.
 *Swift*
@@ -182,155 +184,200 @@ IterableAPI.email = "user@example.com"
 IterableAPI.email = @"user@example.com";
 ```
 
-Whenever the app sets `IterableAPI.email` or `IterableAPI.userId`, the SDK 
-registers the device with Apple, retrieving a token that is stored
-on the user's Iterable profile.
+Your app will not be able to receive push notifications until you set 
+one of thes values.
+
+### 4. Fetch a device token from Apple
+
+In order for Iterable to send push notifications to an iOS device, it must
+know the unique token assigned to that device by Apple. 
+
+Iterable uses silent push notifications to tell iOS apps when to fetch
+new in-app messages from the server. Because of this, your app must register
+for remote notifications with Apple even if you do not plan to send it any
+push notifications.
+
+`IterableConfig.autoPushRegistration` determines whether or not the SDK will:
+
+- Automatically register for a device token when the the SDK is given a new 
+email address or user ID.
+- Disable the device token for the previous user when a new user logs in.
+
+If `IterableConfig.autoPushRegistration` is `true` (the default value):
+
+- Setting `IterableAPI.email` or `IterableAPI.userId` causes the SDK to 
+automatically call the [`registerForRemoteNotifications()`](https://developer.apple.com/documentation/uikit/uiapplication/1623078-registerforremotenotifications)
+method on `UIApplication` and pass the resulting device token to the
+[`application(_:didRegisterForRemoteNotificationsWithDeviceToken:)`](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622958-application)
+method on the app delegate.
+
+If `IterableConfig.autoPushRegistration` is `false`:
+
+- After setting `IterableAPI.email` or `IterableAPI.userId`, you must 
+manually call the [`registerForRemoteNotifications()`](https://developer.apple.com/documentation/uikit/uiapplication/1623078-registerforremotenotifications)
+method on `UIApplication`. This will fetch the device token from Apple and 
+pass it to the [`application(_:didRegisterForRemoteNotificationsWithDeviceToken:)`](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622958-application)
+method on the app delegate.
+
+### 5. Send the device token to Iterable
+
+To send the device token to Iterable and save it on the current user's
+profile, call `IterableAPI.register(token:)` from the 
+[`application(_:didRegisterForRemoteNotificationsWithDeviceToken:)`](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622958-application)
+method on `UIApplicationDelegate`. For example:
+
+*Swift*
+        
+```swift
+func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+    IterableAPI.register(token: deviceToken)
+}
+```
     
+*Objective-C*
+        
+```objc
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    [IterableAPI registerToken:deviceToken];
+}
+```
+
+### 6. (Optional) Request authorization to display push notifications
+
+If you are planning to send push notifications to your app, complete the 
+steps in this section.
+
+iOS apps must receive user permission to display push notification alerts,
+play push notification sounds, or update icon badges based on push 
+notifications. Calling Apple's [`requestAuthorization`](https://developer.apple.com/documentation/usernotifications/unusernotificationcenter/1649527-requestauthorization)
+method on [`UNNotificationCenter`](https://developer.apple.com/documentation/usernotifications/unusernotificationcenter). 
+will prompt the user for these permissions.
+
+*Swift*
+
+```swift
+UNUserNotificationCenter.current().requestAuthorization(options:[.alert, .badge, .sound]) { (success, error) in
+    // ...
+}
+```
+
+*Objective-C*
+
+```objc
+UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
+[center requestAuthorizationWithOptions: (UNAuthorizationOptionAlert + UNAuthorizationOptionBadge + UNAuthorizationOptionSound)
+   completionHandler:^(BOOL granted, NSError * _Nullable error) {
+   // ...
+}];
+```
+
+For more information, take a look at the following documents from Apple:
+
+- [UserNotifications framework](https://developer.apple.com/documentation/usernotifications)
+- [Asking Permission to Use Notifications](https://developer.apple.com/documentation/usernotifications/asking_permission_to_use_notifications)
+
+### 7. (Optional) Support rich push notifications
+
+For push notifications to contain images, animated GIFs, video, or action
+buttons, you must create a Notification Service Extension. For more 
+information, read [Rich Push Notifications in iOS 10 and Android - Media Attachments](https://support.iterable.com/hc/articles/115003982203-Rich-Push-Notifications-in-iOS-10-and-Android-Media-Attachments).
+
+The Iterable iOS SDK provides a Notification Service Extension implementation 
+that handles media attachments and action buttons. To use it:
+
+- Include **Iterable-iOS-AppExtensions** in your **Podfile**, as explained 
+above.
+- Create a new target of type **Notification Service Extension** in your 
+Xcode project.
+- If you are calling Iterable SDK from Swift, edit the `NotificationService`
+class (auto-generated by Xcode) so that it extends 
+`ITBNotificationServiceExtension`.
+- If you are using Objective-C, use delegation instead of inheritance.
+
+For example:
+
+*Swift*
+
+With Swift, use inheritance:
+
+```swift
+import UserNotifications
+import IterableAppExtensions
+
+class NotificationService: ITBNotificationServiceExtension {
+}
+```
+
+*Objective-C* 
+
+With Objective-C, use delegation:
+
+```objc
+// File: NotificationService.m 
+#import "NotificationService.h"
+
+@import IterableAppExtensions;
+
+@interface NotificationService ()
+
+@property (nonatomic, strong) ITBNotificationServiceExtension *baseExtension;
+@end
+
+@implementation NotificationService
+- (void)didReceiveNotificationRequest:(UNNotificationRequest *)request withContentHandler:(void (^)(UNNotificationContent * _Nonnull))contentHandler {
+    self.baseExtension = [[ITBNotificationServiceExtension alloc] init];
+    [self.baseExtension didReceiveNotificationRequest:request withContentHandler:contentHandler];
+}
+
+- (void)serviceExtensionTimeWillExpire {
+    [self.baseExtension serviceExtensionTimeWillExpire];
+}
+@end
+
+```
+
+### 6. Disable push notifications (when necessary)
+
+When a new user logs in to your app on the same device that a previous user
+had been using, you'll typically want to disable push notifications to the
+previous user (for that app/device combination only). 
+
+If `IterableConfig.autoPushRegistration` is `true` (the default value), the 
+SDK automatically disables push notifications to the previous user when you 
+provide a new value for `IterableAPI.email` or `IterableAPI.userId`.
+
+If `IterableConfig.autoPushRegistration` is false, or if you need to disable
+push notifications for a user before a new user logs in to your app, manually
+call `IterableAPI.disableDeviceForCurrentUser()`. That this method only works 
+if you have previously called `IterableAPI.register(token:)`.
+
+If the previous user logs back in later, call `IterableAPI.register(token:)` 
+to again register that user for push notifications on that app/device
+combination.
+
 ## Using the SDK
 
 ### Push notifications
 
-To work with push notifications, follow these steps:
-
-1. Request authorization to receive push notifications
-
-    iOS apps must request authorization to receive push notifications that
-    interact with the user (through alerts, sounds, or icon badging).
-
-    To request authorization, Apple provides the [`requestAuthorization`](https://developer.apple.com/documentation/usernotifications/unusernotificationcenter/1649527-requestauthorization)
-    method on [`UNNotificationCenter`](https://developer.apple.com/documentation/usernotifications/unusernotificationcenter).
-
-    Calling this method will prompt the user for permission to receive push
-    notifications that involve user interaction.
-
-    For example:
-
-    *Swift*
-    
-    ```swift
-    UNUserNotificationCenter.current().requestAuthorization(options:[.alert, .badge, .sound]) { (success, error) in
-        // ...
-    }
-    ```
-    
-    *Objective-C*
-    
-    ```objc
-    UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
-    [center requestAuthorizationWithOptions: (UNAuthorizationOptionAlert + UNAuthorizationOptionBadge + UNAuthorizationOptionSound)
-       completionHandler:^(BOOL granted, NSError * _Nullable error) {
-       // ...
-    }];
-    ```
-
-    For more information about setting iOS apps up to receive push 
-    notifications, take a look at the following documents from Apple:
-    
-    - [UserNotifications framework](https://developer.apple.com/documentation/usernotifications)
-    - [Asking Permission to Use Notifications](https://developer.apple.com/documentation/usernotifications/asking_permission_to_use_notifications)
-
-2. Send a remote notification token to Iterable
-
-    To send push notifications to your app, you will have to first send the application's remote notification token to Iterable.
-
-    In your `AppDelegate`, in the [application:didRegisterForRemoteNotificationsWithDeviceToken:](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622958-application) method, send the token to Iterable.
-
-    *Swift*
+When the user taps on a push notification or one of its action buttons, the system calls the `UNUserNotificationCenterDelegate` object's [userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:](https://developer.apple.com/documentation/usernotifications/unusernotificationcenterdelegate/1649501-usernotificationcenter?language=swift) method. In this method, call `IterableAppIntegration` with the same parameters to track a push open event and perform the associated action (see below for custom action and URL delegates).
         
-    ```swift
-    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        IterableAPI.register(token: deviceToken)
-    }
-    ```
+*Swift*
     
-    *Objective-C*
-        
-    ```objc
-    - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-        [IterableAPI registerToken:deviceToken];
-    }
-    ```
+```swift
+public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+    IterableAppIntegration.userNotificationCenter(center, didReceive: response, withCompletionHandler: completionHandler)
+}
+```
 
-3. Handle push notifications
-
-    When the user taps on a push notification or one of its action buttons, the system calls the `UNUserNotificationCenterDelegate` object's [userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:](https://developer.apple.com/documentation/usernotifications/unusernotificationcenterdelegate/1649501-usernotificationcenter?language=swift). In this method, call `IterableAppIntegration` with the same parameters to track push open event and perform the associated action (see below for custom action and URL delegates).
-        
-    *Swift*
-        
-    ```swift
-    public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        IterableAppIntegration.userNotificationCenter(center, didReceive: response, withCompletionHandler: completionHandler)
-    }
-    ```
+*Objective-C*
     
-    *Objective-C*
-        
-    ```objc
-    - (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
-        [IterableAppIntegration userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
-    }
-    ```
+```objc
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
+    [IterableAppIntegration userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
+}
+```
 
-    See the app delegate in the [example app](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app/swift-sample-app/AppDelegate.swift).
-
-    Congratulations! You can now send remote push notifications to your device from Iterable. Please note that you can't send push notifications until you set the userId or email. Please see sample applications to see a reference implementation.
-
-4. Rich push notifications
-
-    Push notifications may contain media attachments with images, animated gifs or video, and action buttons. For this to work within your app, you must create a Notification Service Extension. For more information, read [Rich Push Notifications in iOS 10 and Android - Media Attachments](https://support.iterable.com/hc/articles/115003982203-Rich-Push-Notifications-in-iOS-10-and-Android-Media-Attachments).   
-
-    The Iterable iOS SDK provides an implementation that handles media attachments and action buttons:
-
-    1. Include `Iterable-iOS-AppExtensions` in your **Podfile** as explained above.
-    2. Create a new target of type notification service extension in your Xcode project/solution.
-    3. If you are calling Iterable SDK from Swift, all you need to do is inherit the `NotificationService` class (auto generated by Xcode) from the `ITBNotificationServiceExtension` class. If you are using Objective-C, you will have to delegate to the provided implementation. See the example below:
-
-    *Swift*
-
-    ```swift
-    import UserNotifications
-    import IterableAppExtensions
-
-    class NotificationService: ITBNotificationServiceExtension {
-    }
-    ```
-
-    *Objective-C* 
-
-    In Objective-C, use delegation instead of inheritance:
-
-    ```objc
-    // File: NotificationService.m 
-    #import "NotificationService.h"
-
-    @import IterableAppExtensions;
-
-    @interface NotificationService ()
-
-    @property (nonatomic, strong) ITBNotificationServiceExtension *baseExtension;
-    @end
-
-    @implementation NotificationService
-    - (void)didReceiveNotificationRequest:(UNNotificationRequest *)request withContentHandler:(void (^)(UNNotificationContent * _Nonnull))contentHandler {
-        self.baseExtension = [[ITBNotificationServiceExtension alloc] init];
-        [self.baseExtension didReceiveNotificationRequest:request withContentHandler:contentHandler];
-    }
-
-    - (void)serviceExtensionTimeWillExpire {
-        [self.baseExtension serviceExtensionTimeWillExpire];
-    }
-    @end
-
-    ```
-
-5. Disabling push notifications to a device
-
-    When a user logs out, you typically want to disable push notifications to
-    that user/device. Do this by calling `disableDeviceForCurrentUser`. This
-    only works if you have previously called `registerToken`.
-    
-    In order to re-enable push notifications to that device, simply call
-    `registerToken` as usual when the user logs back in.
+See the app delegate in the [example app](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app/swift-sample-app/AppDelegate.swift).
 
 ### Deep links
 
@@ -577,8 +624,6 @@ Track custom events by calling `IterableAPI.track(event:...)`.
 ### User fields
 
 Modify user fields by calling `IterableAPI.updateUser`. You also call `updateEmail` and `updateSubscriptions`.
-    
-
     
 ### Uninstall tracking
 
