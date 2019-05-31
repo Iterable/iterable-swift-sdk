@@ -448,7 +448,7 @@ class InAppTests: XCTestCase {
         let customActionScheme = "itbl"
         let customActionName = "my_custom_action"
         let expectation1 = expectation(description: "verify custom action is called, customActionScheme: \(customActionScheme), customActionName: \(customActionName)")
-        verifyCustomActionIsCalled(expectation: expectation1,
+        verifyCustomActionIsCalled(expectation1: expectation1,
                                    customActionScheme: customActionScheme,
                                    customActionName: customActionName)
         wait(for: [expectation1], timeout: testExpectationTimeout)
@@ -458,7 +458,7 @@ class InAppTests: XCTestCase {
         let customActionScheme = "action"
         let customActionName = "my_custom_action"
         let expectation1 = expectation(description: "verify custom action is called, customActionScheme: \(customActionScheme), customActionName: \(customActionName)")
-        verifyCustomActionIsCalled(expectation: expectation1,
+        verifyCustomActionIsCalled(expectation1: expectation1,
                                    customActionScheme: customActionScheme,
                                    customActionName: customActionName)
         wait(for: [expectation1], timeout: testExpectationTimeout)
@@ -594,6 +594,7 @@ class InAppTests: XCTestCase {
     }
     
     func testMoveToForegroundSyncInterval() {
+        let expectation0 = expectation(description: "first time when messages are obtained")
         let expectation1 = expectation(description: "do not sync because app is not in foreground")
         expectation1.isInverted = true
         let expectation2 = expectation(description: "sync first time when moving to foreground")
@@ -608,6 +609,7 @@ class InAppTests: XCTestCase {
         
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShow.onSuccess { _ in
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: 1)) // need to call so future is resolved
             expectation1.fulfill() // expectation1 should not be fulfilled within timeout (inverted)
             expectation2.fulfill()
         }
@@ -627,7 +629,10 @@ class InAppTests: XCTestCase {
             notificationCenter: mockNotificationCenter
         )
         
-        mockInAppFetcher.mockInAppPayloadFromServer(payload)
+        mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { _ in
+            expectation0.fulfill()
+        }
+        wait(for: [expectation0], timeout: testExpectationTimeout)
         
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
         
@@ -643,7 +648,7 @@ class InAppTests: XCTestCase {
         }
         mockNotificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
         wait(for: [expectation3], timeout: testExpectationTimeoutForInverted)
-        
+
         // now move to foreground outside of interval
         mockDateProvider.currentDate = mockDateProvider.currentDate.addingTimeInterval(1000.0)
         mockInAppFetcher.syncCallback = {
@@ -1166,7 +1171,9 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
-    fileprivate func verifyCustomActionIsCalled(expectation: XCTestExpectation, customActionScheme: String, customActionName: String) {
+    fileprivate func verifyCustomActionIsCalled(expectation1: XCTestExpectation, customActionScheme: String, customActionName: String) {
+        let expectation2 = expectation(description: "correct number of messages")
+        
         let mockInAppFetcher = MockInAppFetcher()
         
         let customActionUrl = "\(customActionScheme)://\(customActionName)"
@@ -1178,7 +1185,7 @@ class InAppTests: XCTestCase {
         let mockCustomActionDelegate = MockCustomActionDelegate(returnValue: true)
         mockCustomActionDelegate.callback = {(actionName, context) in
             XCTAssertEqual(actionName, customActionName)
-            expectation.fulfill()
+            expectation1.fulfill()
         }
         
         let config = IterableConfig()
@@ -1208,7 +1215,10 @@ class InAppTests: XCTestCase {
         mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { _ in
             let messages = IterableAPI.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 1)
+            expectation2.fulfill()
         }
+        
+        wait(for: [expectation2], timeout: testExpectationTimeout)
     }
 }
 

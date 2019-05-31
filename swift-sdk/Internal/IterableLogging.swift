@@ -32,7 +32,7 @@ public class DefaultLogDelegate: IterableLogDelegate {
 /// Will log everything
 public class AllLogDelegate: IterableLogDelegate {
     public func log(level: LogLevel = .info, message: String) {
-        let markedMessage = IterableLogUtil.markedMessage(level: level, message: "\(Thread.current): \(message)") //kkk
+        let markedMessage = IterableLogUtil.markedMessage(level: level, message: message)
         print(markedMessage)
     }
 }

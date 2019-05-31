@@ -212,8 +212,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
                     self.finishSync(inboxChanged: mergeMessagesResult.inboxChanged)
 
                     result.resolve(with: true)
-              }
-                
+                }
             } else {
                 self.messagesMap = mergeMessagesResult.messagesMap
 
