@@ -365,7 +365,6 @@ class InAppFilePersister: InAppPersistenceProtocol {
     }
     
     func persist(_ messages: [IterableInAppMessage]) {
-        
         guard let encoded = try? JSONEncoder().encode(messages) else {
             return
         }
