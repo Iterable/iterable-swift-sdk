@@ -66,7 +66,7 @@ extension IterableInAppContentType {
 
 // This is needed because String(describing: ...) returns wrong
 // value for this enum when it is exposed to Objective C
-extension IterableInAppTriggerType : CustomStringConvertible {
+extension IterableInAppTriggerType: CustomStringConvertible {
     public var description: String {
         switch self {
         case .event:
@@ -99,12 +99,12 @@ extension IterableInAppTrigger {
     static let defaultTrigger = IterableInAppTrigger(dict: createDefaultTriggerDict())
     static let undefinedTrigger = IterableInAppTrigger(dict: createUndefinedTriggerDict())
 
-    private static func createDefaultTriggerDict() -> [AnyHashable : Any] {
-        return [.ITBL_IN_APP_TRIGGER_TYPE : String(describing: IterableInAppTriggerType.defaultTriggerType)]
+    private static func createDefaultTriggerDict() -> [AnyHashable: Any] {
+        return [.ITBL_IN_APP_TRIGGER_TYPE: String(describing: IterableInAppTriggerType.defaultTriggerType)]
     }
     
-    private static func createUndefinedTriggerDict() -> [AnyHashable : Any] {
-        return [.ITBL_IN_APP_TRIGGER_TYPE : String(describing: IterableInAppTriggerType.undefinedTriggerType)]
+    private static func createUndefinedTriggerDict() -> [AnyHashable: Any] {
+        return [.ITBL_IN_APP_TRIGGER_TYPE: String(describing: IterableInAppTriggerType.undefinedTriggerType)]
     }
 }
 
@@ -119,18 +119,17 @@ extension IterableInAppTrigger: Codable {
             return
         }
 
-        guard let data = (try? container.decode(Data.self, forKey: .data)) else {
+        guard let data = try? container.decode(Data.self, forKey: .data) else {
             self.init(dict: IterableInAppTrigger.createDefaultTriggerDict())
             return
         }
 
         do {
-            if let dict = try JSONSerialization.jsonObject(with: data, options: []) as? [AnyHashable : Any] {
+            if let dict = try JSONSerialization.jsonObject(with: data, options: []) as? [AnyHashable: Any] {
                 self.init(dict: dict)
             } else {
                 self.init(dict: IterableInAppTrigger.createDefaultTriggerDict())
             }
-            
         } catch (let error) {
             ITBError(error.localizedDescription)
             self.init(dict: IterableInAppTrigger.createDefaultTriggerDict())
@@ -171,7 +170,7 @@ extension IterableHtmlInAppContent: Codable {
         try? container.encode(htmlContent.backgroundAlpha, forKey: .backgroundAlpha)
         try? container.encode(htmlContent.html, forKey: .html)
     }
-
+    
     public convenience init(from decoder: Decoder) {
         let htmlContent = IterableHtmlInAppContent.htmlContent(from: decoder)
         self.init(edgeInsets: htmlContent.edgeInsets, backgroundAlpha: htmlContent.backgroundAlpha, html: htmlContent.html)
@@ -195,7 +194,6 @@ extension IterableInboxMetadata: Codable {
             self.init(title: nil, subtitle: nil, icon: nil)
             return
         }
-        
         
         let title = (try? container.decode(String.self, forKey: .title))
         let subtitle = (try? container.decode(String.self, forKey: .subtitle))
@@ -235,10 +233,10 @@ extension IterableInAppMessage: Codable {
     public convenience init(from decoder: Decoder) {
         guard let container = try? decoder.container(keyedBy: CodingKeys.self) else {
             ITBError("Can not decode, returning default")
+            
             self.init(messageId: "",
                       campaignId: "",
-                      content: IterableInAppMessage.createDefaultContent()
-                      )
+                      content: IterableInAppMessage.createDefaultContent())
             return
         }
         
@@ -285,6 +283,7 @@ extension IterableInAppMessage: Codable {
         try? container.encode(didProcessTrigger, forKey: .didProcessTrigger)
         try? container.encode(consumed, forKey: .consumed)
         try? container.encode(read, forKey: .read)
+        
         if let inboxMetadata = inboxMetadata {
             try? container.encode(inboxMetadata, forKey: .inboxMetadata)
         }
@@ -304,13 +303,14 @@ extension IterableInAppMessage: Codable {
         return try? JSONSerialization.data(withJSONObject: customPayload, options: [])
     }
     
-    private static func deserializeCustomPayload(withData data: Data?) -> [AnyHashable : Any]? {
+    private static func deserializeCustomPayload(withData data: Data?) -> [AnyHashable: Any]? {
         guard let data = data else {
             return nil
         }
         
         let deserialized = try? JSONSerialization.jsonObject(with: data, options: [])
-        return (deserialized as? [AnyHashable : Any])
+        
+        return deserialized as? [AnyHashable: Any]
     }
     
     private static func decodeContent(from container: KeyedDecodingContainer<IterableInAppMessage.CodingKeys>) -> IterableInAppContent {
@@ -319,7 +319,7 @@ extension IterableInAppMessage: Codable {
             return createDefaultContent()
         }
         
-        let contentType = (try? contentContainer.decode(String.self, forKey: .type)).map{ IterableInAppContentType.from(string: $0) } ?? .html
+        let contentType = (try? contentContainer.decode(String.self, forKey: .type)).map { IterableInAppContentType.from(string: $0) } ?? .html
         
         switch contentType {
         case .html:
@@ -348,7 +348,6 @@ protocol InAppPersistenceProtocol {
     func persist(_ messages: [IterableInAppMessage])
     func clear()
 }
-
 
 class InAppFilePersister: InAppPersistenceProtocol {
     init(filename: String = "itbl_inapp", ext: String = "json") {
@@ -402,6 +401,7 @@ struct FileHelper {
         guard let url = getUrl(filename: filename, ext: ext) else {
             return nil
         }
+        
         return try? Data(contentsOf: url)
     }
     
@@ -409,6 +409,7 @@ struct FileHelper {
         guard let url = getUrl(filename: filename, ext: ext) else {
             return
         }
+        
         try? FileManager.default.removeItem(at: url)
     }
 }

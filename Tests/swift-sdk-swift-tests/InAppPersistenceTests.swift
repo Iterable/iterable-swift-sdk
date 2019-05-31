@@ -48,6 +48,4 @@ class InAppPersistenceTests: XCTestCase {
         XCTAssertEqual(inboxMetadata.subtitle, decodedInboxMetadata.subtitle)
         XCTAssertEqual(inboxMetadata.icon, decodedInboxMetadata.icon)
     }
-    
-    
 }
