@@ -36,7 +36,7 @@ extension UIEdgeInsets {
 
 // This is needed because String(describing: ...) returns wrong
 // value for this enum when it is exposed to Objective C
-extension IterableInAppContentType : CustomStringConvertible {
+extension IterableInAppContentType: CustomStringConvertible {
     public var description: String {
         switch self {
         case .html:
@@ -272,7 +272,7 @@ extension IterableInAppMessage: Codable {
 
     public func encode(to encoder: Encoder) {
         var container = encoder.container(keyedBy: CodingKeys.self)
-
+        
         try? container.encode(trigger, forKey: .trigger)
         try? container.encode(saveToInbox, forKey: .saveToInbox)
         try? container.encode(messageId, forKey: .messageId)

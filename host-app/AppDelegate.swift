@@ -51,15 +51,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 }
 
-extension AppDelegate : IterableCustomActionDelegate {
+extension AppDelegate: IterableCustomActionDelegate {
     func handle(iterableCustomAction action: IterableAction, inContext context: IterableActionContext) -> Bool {
         ITBInfo("handleCustomAction: \(action)")
-        NotificationCenter.default.post(name: .handleIterableCustomAction, object: nil, userInfo: ["name" : action.type])
+        NotificationCenter.default.post(name: .handleIterableCustomAction, object: nil, userInfo: ["name": action.type])
         return true
     }
 }
 
-extension AppDelegate : IterableURLDelegate {
+extension AppDelegate: IterableURLDelegate {
     func handle(iterableURL url: URL, inContext context: IterableActionContext) -> Bool {
         ITBInfo("handleUrl: \(url)")
         if url.absoluteString == "https://www.google.com" {
@@ -67,7 +67,7 @@ extension AppDelegate : IterableURLDelegate {
             return false
         } else {
             // I am handling this
-            NotificationCenter.default.post(name: .handleIterableUrl, object: nil, userInfo: ["url" : url.absoluteString])
+            NotificationCenter.default.post(name: .handleIterableUrl, object: nil, userInfo: ["url": url.absoluteString])
             return true
         }
     }

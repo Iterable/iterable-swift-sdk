@@ -6,9 +6,9 @@
 
 import Foundation
 
-typealias SendRequestValue = [AnyHashable : Any]
+typealias SendRequestValue = [AnyHashable: Any]
 
-struct SendRequestError : Error {
+struct SendRequestError: Error {
     let reason: String?
     let data: Data?
     
@@ -22,7 +22,7 @@ struct SendRequestError : Error {
     }
 }
 
-extension SendRequestError : LocalizedError {
+extension SendRequestError: LocalizedError {
     var localizedDescription: String {
         return reason ?? ""
     }
@@ -34,11 +34,12 @@ protocol NetworkSessionProtocol {
     func makeDataRequest(with url: URL, completionHandler: @escaping CompletionHandler)
 }
 
-extension URLSession : NetworkSessionProtocol {
+extension URLSession: NetworkSessionProtocol {
     func makeRequest(_ request: URLRequest, completionHandler: @escaping CompletionHandler) {
         let task = dataTask(with: request) { (data, response, error) in
             completionHandler(data, response, error)
         }
+        
         task.resume()
     }
 
@@ -46,6 +47,7 @@ extension URLSession : NetworkSessionProtocol {
         let task = dataTask(with: url) { (data, response, error) in
             completionHandler(data, response, error)
         }
+        
         task.resume()
     }
 }
@@ -56,6 +58,7 @@ struct NetworkHelper {
         
         networkSession.makeDataRequest(with: url) { (data, response, error) in
             let result = createDataResultFromNetworkResponse(data: data, response: response, error: error)
+            
             switch (result) {
             case .success(let value):
                 DispatchQueue.main.async {
@@ -76,6 +79,7 @@ struct NetworkHelper {
         
         networkSession.makeRequest(request) { (data, response, error) in
             let result = createResultFromNetworkResponse(data: data, response: response, error: error)
+            
             switch (result) {
             case .success(let value):
                 promise.resolve(with: value)
@@ -91,6 +95,7 @@ struct NetworkHelper {
         if let error = error {
             return .failure(SendRequestError(reason: "\(error.localizedDescription)", data: data))
         }
+        
         guard let response = response as? HTTPURLResponse else {
             return .failure(SendRequestError(reason: "No response", data: nil))
         }
@@ -115,11 +120,12 @@ struct NetworkHelper {
             return .failure(SendRequestError(reason: "Invalid API Key", data: data))
         } else if responseCode >= 400 {
             var reason = "Invalid Request"
-            if let jsonDict = json as? [AnyHashable : Any], let msgFromDict = jsonDict["msg"] as? String {
+            if let jsonDict = json as? [AnyHashable: Any], let msgFromDict = jsonDict["msg"] as? String {
                 reason = msgFromDict
             } else if responseCode >= 500 {
                 reason = "Internal Server Error"
             }
+            
             return .failure(SendRequestError(reason: reason, data: data))
         } else if responseCode == 200 {
             if let data = data, data.count > 0 {
@@ -128,8 +134,9 @@ struct NetworkHelper {
                     if let stringValue = String(data: data, encoding: .utf8) {
                         reason = "Could not parse json: \(stringValue), error: \(jsonError.localizedDescription)"
                     }
+                    
                     return .failure(SendRequestError(reason: reason, data: data))
-                } else if let json = json as? [AnyHashable : Any] {
+                } else if let json = json as? [AnyHashable: Any] {
                     return .success(json)
                 } else {
                     return .failure(SendRequestError(reason: "Response is not a dictionary", data: data))
@@ -146,11 +153,11 @@ struct NetworkHelper {
         if let error = error {
             return .failure(SendRequestError(reason: "\(error.localizedDescription)"))
         }
+        
         guard let data = data else {
             return .failure(SendRequestError(reason: "No data"))
         }
         
         return .success(data)
     }
-
 }

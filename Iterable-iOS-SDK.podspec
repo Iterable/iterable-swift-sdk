@@ -46,7 +46,11 @@ Pod::Spec.new do |s|
   #  Specify a social_media_url where others can refer to, for example a twitter
   #  profile URL.
   #
-  s.author             = { "Ilya Brin" => "ilya@iterable.com" }
+
+  s.author       = { "Tapash Majumder" => "tapash@iterable.com",
+                     "Victor Babenko" => "victor@iterable.com",
+                     "Jay Kim" => "jay.kim@iterable.com",
+                     "David Truong" => "dt@iterable.com" }
 
   # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
@@ -72,7 +76,7 @@ Pod::Spec.new do |s|
   #  Not including the public_header_files will make all headers public.
   #
 
-  s.source_files  = "swift-sdk/**/*.{h,m,swift}"
+  s.source_files = "swift-sdk/**/*.{h,m,swift}"
 
   s.resources = ['swift-sdk/Resources/**/*.{storyboard,xib,xcassets}']
 
