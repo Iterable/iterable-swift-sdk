@@ -15,11 +15,11 @@ struct TestUtils {
         case post
     }
     
-    static func validate(request: URLRequest, requestType: RequestType? = nil, apiEndPoint:String, path: String, queryParams: [(name: String, value:String)]? = nil) {
+    static func validate(request: URLRequest, requestType: RequestType? = nil, apiEndPoint:String, path: String, queryParams: [(name: String, value: String)]? = nil) {
         if let requestType = requestType {
             XCTAssertEqual(requestType == .get ? .ITBL_KEY_GET : .ITBL_KEY_POST, request.httpMethod)
         }
-
+        
         XCTAssertTrue(request.url!.absoluteString.hasPrefix(IterableRequestUtil.pathCombine(paths: [apiEndPoint, path])), "request: \(request.url!.absoluteString), apiEndPoint: \(apiEndPoint), path: \(path)")
         
         if let queryParams = queryParams {
@@ -28,23 +28,23 @@ struct TestUtils {
         }
     }
     
-    static func validateElementPresent<T:Equatable>(withName name: String, andValue value: T, inDictionary dict: [AnyHashable : Any]) {
+    static func validateElementPresent<T: Equatable>(withName name: String, andValue value: T, inDictionary dict: [AnyHashable: Any]) {
         XCTAssertEqual(dict[name] as? T, value)
     }
-
-    static func validateElementNotPresent(withName name: String, inDictionary dict: [AnyHashable : Any]) {
+    
+    static func validateElementNotPresent(withName name: String, inDictionary dict: [AnyHashable: Any]) {
         XCTAssertNil(dict[name])
     }
-
-    static func validateMatch<T:Equatable>(keyPath: KeyPath, value: T, inDictionary dict: [String : Any], message: String? = nil) {
+    
+    static func validateMatch<T:Equatable>(keyPath: KeyPath, value: T, inDictionary dict: [String: Any], message: String? = nil) {
         if let message = message {
             XCTAssertEqual(dict[keyPath: keyPath] as? T, value, message)
         } else {
             XCTAssertEqual(dict[keyPath: keyPath] as? T, value)
         }
     }
-
-    static func validateExists<T:Equatable>(keyPath: KeyPath, type: T.Type, inDictionary dict: [String : Any], message: String? = nil) {
+    
+    static func validateExists<T:Equatable>(keyPath: KeyPath, type: T.Type, inDictionary dict: [String: Any], message: String? = nil) {
         if let message = message {
             XCTAssertNotNil(dict[keyPath: keyPath] as? T, message)
         } else {
@@ -55,12 +55,12 @@ struct TestUtils {
     static func getTestUserDefaults() -> UserDefaults {
         return TestHelper.getTestUserDefaults()
     }
-
+    
     static func clearTestUserDefaults() {
         return TestHelper.clearTestUserDefaults()
     }
     
-    static func areEqual(dict1: [AnyHashable : Any], dict2: [AnyHashable : Any]) -> Bool {
+    static func areEqual(dict1: [AnyHashable: Any], dict2: [AnyHashable: Any]) -> Bool {
         return NSDictionary(dictionary: dict1).isEqual(to: dict2)
     }
     
@@ -74,6 +74,7 @@ struct TestUtils {
         guard let date1 = date1 else {
             return date2 == nil
         }
+        
         guard let date2 = date2 else {
             return false
         }
@@ -81,7 +82,7 @@ struct TestUtils {
         return abs(date1.timeIntervalSinceReferenceDate - date2.timeIntervalSinceReferenceDate) < 0.001
     }
     
-    private static func validateQueryParameters(inUrlComponents urlComponents: URLComponents, queryParams: [(name:String, value:String)]) {
+    private static func validateQueryParameters(inUrlComponents urlComponents: URLComponents, queryParams: [(name: String, value: String)]) {
         queryParams.forEach { (name, value) in
             validateQueryParameter(inUrlComponents: urlComponents, withName: name, andValue: value)
         }
@@ -110,7 +111,7 @@ struct KeyPath {
         self.segments = segments
     }
     
-    var isEmpty : Bool {
+    var isEmpty: Bool {
         return segments.isEmpty
     }
     
@@ -132,7 +133,7 @@ extension String: StringKey {
     }
 }
 
-extension Dictionary where Key : StringKey {
+extension Dictionary where Key: StringKey {
     subscript(keyPath keyPath: KeyPath) -> Any? {
         get {
             switch keyPath.firstAndRest() {
