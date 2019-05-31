@@ -37,21 +37,18 @@ class InboxMessageViewModel {
     }
 }
 
-extension InboxMessageViewModel : Hashable {
+extension InboxMessageViewModel: Hashable {
     func hash(into hasher: inout Hasher) {
         hasher.combine(self.iterableMessage.messageId)
         hasher.combine(self.read)
     }
 }
 
-extension InboxMessageViewModel : Equatable {
+extension InboxMessageViewModel: Equatable {
     static func == (lhs: InboxMessageViewModel, rhs: InboxMessageViewModel) -> Bool {
-        guard lhs.iterableMessage.messageId == rhs.iterableMessage.messageId else {
-            return false
-        }
-        guard lhs.read == rhs.read else {
-            return false
-        }
+        guard lhs.iterableMessage.messageId == rhs.iterableMessage.messageId else { return false }
+        guard lhs.read == rhs.read else { return false }
+        
         return true
     }
 }

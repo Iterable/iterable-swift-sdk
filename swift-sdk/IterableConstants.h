@@ -9,8 +9,6 @@
 
 @end
 
-#define ITERABLE_INBOX_CHANGED_NOTIFICATION_NAME @"itbl_inbox_changed"
-
 typedef void (^ITEActionBlock)(NSString *_Nullable);
 
 typedef void (^ITBURLCallback)(NSURL *_Nullable);
@@ -24,3 +22,9 @@ typedef void (^OnSuccessHandler)(NSDictionary * _Nullable data);
  The prototype for the completion handler block that gets called when an Iterable call fails
  */
 typedef void (^OnFailureHandler)(NSString * _Nullable reason, NSData *_Nullable data);
+
+/* Swift equivalents (for when ready to move to 100% Swift */
+// typealias ITEActionBlock = (String?) -> Void
+// typealias ITBURLCallback = (URL?) -> Void
+// typealias OnSuccessHandler = (_ data: Dictionary<AnyHashable, Any>?) -> Void
+// typealias OnFailureHandler = (_ reason: String?, _ data: Data?) -> Void

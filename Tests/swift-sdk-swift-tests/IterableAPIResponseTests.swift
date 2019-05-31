@@ -5,21 +5,11 @@
 //
 
 import XCTest
-
 import OHHTTPStubs
 
 @testable import IterableSDK
 
 class IterableAPIResponseTests: XCTestCase {
-    
-    override func setUp() {
-        super.setUp()
-    }
-    
-    override func tearDown() {
-        super.tearDown()
-    }
-    
     func testResponseCode200() {
         let xpectation = expectation(description: "response code 200")
         let networkSession = MockNetworkSession(statusCode: 200)

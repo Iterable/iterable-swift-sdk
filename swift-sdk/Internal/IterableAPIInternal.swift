@@ -133,7 +133,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol, AuthProvider {
                                              notificationsEnabled: Bool,
                                              onSuccess: OnSuccessHandler? = nil,
                                              onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        hexToken = (token as NSData).iteHexadecimalString()
+        hexToken = token.hexString()
 
         return IterableAPIInternal.call(successHandler: onSuccess,
                                         andFailureHandler: onFailure,

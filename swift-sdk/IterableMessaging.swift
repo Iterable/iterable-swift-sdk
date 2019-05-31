@@ -54,7 +54,7 @@ public extension Notification.Name {
 }
 
 @objcMembers
-open class DefaultInAppDelegate : IterableInAppDelegate {
+open class DefaultInAppDelegate: IterableInAppDelegate {
     public init() {}
     
     /// By default, every single inApp will be shown as soon as it is available.
@@ -66,7 +66,7 @@ open class DefaultInAppDelegate : IterableInAppDelegate {
 }
 
 @objc
-public enum IterableInAppContentType : Int, Codable {
+public enum IterableInAppContentType: Int, Codable {
     case html
     case alert
     case banner
@@ -78,7 +78,7 @@ public protocol IterableInAppContent {
 }
 
 @objcMembers
-public final class IterableHtmlInAppContent : NSObject, IterableInAppContent {
+public final class IterableHtmlInAppContent: NSObject, IterableInAppContent {
     public let type = IterableInAppContentType.html
     
     /// Edge insets

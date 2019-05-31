@@ -11,7 +11,7 @@ import UserNotifications
 
 @testable import IterableSDK
 
-class MockDateProvider : DateProviderProtocol {
+class MockDateProvider: DateProviderProtocol {
     var currentDate = Date()
 }
 

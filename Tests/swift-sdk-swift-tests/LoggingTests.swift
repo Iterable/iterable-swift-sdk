@@ -5,20 +5,10 @@
 //
 
 import XCTest
+
 @testable import IterableSDK
 
 class LoggingTests: XCTestCase {
-    
-    override func setUp() {
-        super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-    
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
-    }
-
     func testLogging() {
         let expectation1 = expectation(description: "debug message")
         let expectation2 = expectation(description: "info message")

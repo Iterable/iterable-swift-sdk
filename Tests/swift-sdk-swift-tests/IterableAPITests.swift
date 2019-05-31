@@ -24,6 +24,12 @@ class IterableAPITests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
     }
+    
+    func testInitialize() {
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey)
+        
+        XCTAssertEqual(IterableAPI.internalImplementation?.apiKey, IterableAPITests.apiKey)
+    }
 
     func testTrackEventWithNoEmailOrUser() {
         let eventName = "MyCustomEvent"
@@ -99,6 +105,19 @@ class IterableAPITests: XCTestCase {
             onFailure: {(reason, data) in expectation.fulfill()})
         
         wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+    
+    func testEmailUserIdPersistence() {
+        IterableAPI.initializeForTesting()
+        
+        IterableAPI.email = IterableAPITests.email
+        XCTAssertEqual(IterableAPI.email, IterableAPITests.email)
+        XCTAssertNil(IterableAPI.userId)
+        
+        let userId = "testUserId"
+        IterableAPI.userId = userId
+        XCTAssertEqual(IterableAPI.userId, userId)
+        XCTAssertNil(IterableAPI.email)
     }
     
     func testUpdateUser() {
@@ -192,7 +211,6 @@ class IterableAPITests: XCTestCase {
         
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
-
     
     func testRegisterTokenNilAppName() {
         let expectation = XCTestExpectation(description: "testRegisterToken")
@@ -246,7 +264,7 @@ class IterableAPITests: XCTestCase {
             TestUtils.validateElementPresent(withName: "email", andValue: "user@example.com", inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath("device.applicationName"), value: "my-push-integration", inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath("device.platform"), value: String.ITBL_KEY_APNS_SANDBOX, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("device.token"), value: (token as NSData).iteHexadecimalString(), inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("device.token"), value: token.hexString(), inDictionary: body)
 
             // more device fields
             let appPackageName = "iterable.host-app"
@@ -306,7 +324,7 @@ class IterableAPITests: XCTestCase {
             IterableAPI.disableDeviceForCurrentUser(withOnSuccess: { (json) in
                 let body = networkSession.getRequestBody() as! [String : Any]
                 TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_DISABLE_DEVICE, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
-                TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOKEN, andValue: (token as NSData).iteHexadecimalString(), inDictionary: body)
+                TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOKEN, andValue: token.hexString(), inDictionary: body)
                 TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_EMAIL, andValue: "user@example.com", inDictionary: body)
                 expectation.fulfill()
             }) { (errorMessage, data) in
@@ -333,7 +351,7 @@ class IterableAPITests: XCTestCase {
             networkSession.callback = {(_, _, _) in
                 let body = networkSession.getRequestBody() as! [String : Any]
                 TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_DISABLE_DEVICE, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
-                TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOKEN, andValue: (token as NSData).iteHexadecimalString(), inDictionary: body)
+                TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOKEN, andValue: token.hexString(), inDictionary: body)
                 TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_EMAIL, andValue: "user@example.com", inDictionary: body)
                 expectation.fulfill()
             }
@@ -358,7 +376,7 @@ class IterableAPITests: XCTestCase {
             IterableAPI.disableDeviceForAllUsers(withOnSuccess: { (json) in
                 let body = networkSession.getRequestBody() as! [String : Any]
                 TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_DISABLE_DEVICE, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
-                TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOKEN, andValue: (token as NSData).iteHexadecimalString(), inDictionary: body)
+                TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOKEN, andValue: token.hexString(), inDictionary: body)
                 TestUtils.validateElementNotPresent(withName: AnyHashable.ITBL_KEY_EMAIL, inDictionary: body)
                 TestUtils.validateElementNotPresent(withName: AnyHashable.ITBL_KEY_USER_ID, inDictionary: body)
                 expectation.fulfill()
@@ -386,7 +404,7 @@ class IterableAPITests: XCTestCase {
             networkSession.callback = {(_, _, _) in
                 let body = networkSession.getRequestBody() as! [String : Any]
                 TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_DISABLE_DEVICE, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAPITests.apiKey)])
-                TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOKEN, andValue: (token as NSData).iteHexadecimalString(), inDictionary: body)
+                TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOKEN, andValue: token.hexString(), inDictionary: body)
                 TestUtils.validateElementNotPresent(withName: AnyHashable.ITBL_KEY_EMAIL, inDictionary: body)
                 TestUtils.validateElementNotPresent(withName: AnyHashable.ITBL_KEY_USER_ID, inDictionary: body)
                 expectation.fulfill()
@@ -529,7 +547,7 @@ class IterableAPITests: XCTestCase {
             expectation1.fulfill()
         }
         let config = IterableConfig()
-        IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
+        IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         IterableAPI.email = "user@example.com"
         IterableAPI.get(inAppMessages: 1)
         wait(for: [expectation1], timeout: testExpectationTimeout)
@@ -540,7 +558,7 @@ class IterableAPITests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
 
         let config = IterableConfig()
-        IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
+        IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         IterableAPI.email = "user@example.com"
         IterableAPI.get(
             inAppMessages: 1,
@@ -570,7 +588,7 @@ class IterableAPITests: XCTestCase {
         
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
-        IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
+        IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         IterableAPI.email = "user@example.com"
         networkSession.callback = {(_,_,_) in
             let expectedQueryParams = [
