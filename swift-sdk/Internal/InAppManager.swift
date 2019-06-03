@@ -204,33 +204,33 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
             return
         }
 
-        if displayer.canShow(message: message) == false {
-            // Can't show message now
-            return
-        }
-        
-        displayer.showInApp(message: message).onSuccess { (url)  in
-            // call the client callback, if present
-            _ = callback?(url)
+        switch displayer.showInApp(message: message) {
+        case .notShown(let reason):
+            ITBError("Could not show message: \(reason)")
+        case .shown(let futureClickedURL):
+            // set read
+            set(read: true, forMessage: message)
             
-            // in addition perform action or url delegate task
-            self.handle(clickedUrl: url, forMessage: message)
-            
-            // set the dismiss time
-            self.lastDismissedTime = self.dateProvider.currentDate
-            
-            // check if we need to process more inApps
-            self.scheduleNextInAppMessage()
+            updateMessage(message, didProcessTrigger: true, consumed: consume)
 
-            if consume {
-                self.apiClient?.inappConsume(messageId: message.messageId)
+            futureClickedURL.onSuccess { url in
+                // call the client callback, if present
+                _ = callback?(url)
+                
+                // in addition perform action or url delegate task
+                self.handle(clickedUrl: url, forMessage: message)
+                
+                // set the dismiss time"
+                self.lastDismissedTime = self.dateProvider.currentDate
+                
+                // check if we need to process more inApps
+                self.scheduleNextInAppMessage()
+                
+                if consume {
+                    self.apiClient?.inappConsume(messageId: message.messageId)
+                }
             }
         }
-        
-        // set read
-        set(read: true, forMessage: message)
-        
-        updateMessage(message, didProcessTrigger: true, consumed: consume)
     }
 
     // This method schedules next triggered message after showing a message

@@ -276,28 +276,15 @@ class MockInAppDisplayer : InAppDisplayerProtocol {
     // when a message is shown this is called back
     var onShow: Promise<IterableInAppMessage, IterableError> = Promise<IterableInAppMessage, IterableError>()
     
-    func canShow(message: IterableInAppMessage) -> Bool {
-        return !isShowingInApp()
-    }
-    
     func isShowingInApp() -> Bool {
         return showing
     }
-    
-    func showInApp(message: IterableInAppMessage, withCallback callback: ITBURLCallback?) -> Bool {
-        if showing {
-            return false
-        }
-        
-        showing = true
-        return true
-    }
 
     // This is not resolved until a url is clicked.
-    func showInApp(message: IterableInAppMessage) -> Future<URL, IterableError> {
+    func showInApp(message: IterableInAppMessage) -> ShowResult {
         guard showing == false else {
             onShow.reject(with: IterableError.general(description: "showing something else"))
-            return Promise<URL, IterableError>(error: IterableError.general(description: "showing something else"))
+            return .notShown("showing something else")
         }
 
         result = Promise<URL, IterableError>()
@@ -306,7 +293,7 @@ class MockInAppDisplayer : InAppDisplayerProtocol {
 
         onShow.resolve(with: message)
 
-        return result
+        return .shown(result)
     }
     
     // Mimics clicking a url

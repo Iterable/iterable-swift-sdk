@@ -6,48 +6,29 @@
 
 import Foundation
 
+enum ShowResult {
+    case shown(Future<URL, IterableError>)
+    case notShown(String)
+}
+
 protocol InAppDisplayerProtocol {
     func isShowingInApp() -> Bool
-    /// Boolean returning whether we can show this message.
-    func canShow(message: IterableInAppMessage) -> Bool
     /// Shows an IterableMessage.
     /// - parameter message: The Iterable message to show
-    /// - returns: A Future representing the url clicked by the user.
-    func showInApp(message: IterableInAppMessage) -> Future<URL, IterableError>
+    /// - returns: A Future representing the url clicked by the user or
+    /// `.notShown` with reason if the message could not be shown.
+    func showInApp(message: IterableInAppMessage) -> ShowResult
 }
 
 class InAppDisplayer : InAppDisplayerProtocol {
-    func canShow(message: IterableInAppMessage) -> Bool {
-        return InAppDisplayer.canShow(message: message)
-    }
-    
     func isShowingInApp() -> Bool {
         return InAppDisplayer.isShowingIterableMessage()
     }
     
-    func showInApp(message: IterableInAppMessage) -> Future<URL, IterableError> {
+    func showInApp(message: IterableInAppMessage) -> ShowResult {
         return InAppDisplayer.show(iterableMessage: message)
     }
     
-    static func canShow(message: IterableInAppMessage) -> Bool {
-        guard let topViewController = getTopViewController() else {
-            ITBError("Could not find top view controller")
-            return false
-        }
-        
-        if topViewController is IterableHtmlMessageViewController {
-            ITBError("Skipping the in-app notification. Another notification is already being displayed.")
-            return false
-        }
-        
-        guard let _ = message.content as? IterableHtmlInAppContent else {
-            ITBError("Invalid content type")
-            return false
-        }
-
-        return true
-    }
-
     /**
      Creates and shows a HTML InApp Notification with trackParameters, backgroundColor with callback handler
      
@@ -62,14 +43,12 @@ class InAppDisplayer : InAppDisplayerProtocol {
     @discardableResult static func showIterableHtmlMessage(_ htmlString: String,
                                                            trackParams: IterableNotificationMetadata? = nil,
                                                            backgroundAlpha: Double = 0,
-                                                           padding: UIEdgeInsets = .zero) -> Future<URL, IterableError> {
+                                                           padding: UIEdgeInsets = .zero) -> ShowResult {
         guard let topViewController = getTopViewController() else {
-            ITBError("No top ViewController.")
-            return Promise<URL, IterableError>(error: IterableError.general(description: "No top ViewController."))
+            return .notShown("No top ViewController.")
         }
         if topViewController is IterableHtmlMessageViewController {
-            ITBError("Skipping the in-app notification. Another notification is already being displayed.")
-            return Promise<URL, IterableError>(error: IterableError.general(description: "Skipping the in-app notification. Another notification is already being displayed."))
+            return .notShown("Skipping the in-app notification. Another notification is already being displayed.")
         }
         
         let result = Promise<URL, IterableError>()
@@ -86,7 +65,7 @@ class InAppDisplayer : InAppDisplayerProtocol {
         baseNotification.modalPresentationStyle = .overCurrentContext
         
         topViewController.present(baseNotification, animated: false)
-        return result
+        return .shown(result)
     }
 
     static func showSystemNotification(_ title: String,
@@ -133,10 +112,9 @@ class InAppDisplayer : InAppDisplayerProtocol {
         return topViewController
     }
     
-    @discardableResult fileprivate static func show(iterableMessage: IterableInAppMessage) -> Future<URL, IterableError> {
+    @discardableResult fileprivate static func show(iterableMessage: IterableInAppMessage) -> ShowResult {
         guard let content = iterableMessage.content as? IterableHtmlInAppContent else {
-            ITBError("Invalid content type")
-            return Promise<URL, IterableError>(error: IterableError.general(description: "Invalid content type"))
+            return .notShown("Invalid content type")
         }
         
         let notificationMetadata = IterableNotificationMetadata.metadata(fromInAppOptions: iterableMessage.messageId)
