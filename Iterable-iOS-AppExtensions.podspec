@@ -47,7 +47,10 @@ Pod::Spec.new do |s|
   #  profile URL.
   #
 
-  s.author             = { "Ilya Brin" => "ilya@iterable.com" }
+  s.author      = { "Tapash Majumder" => "tapash@iterable.com",
+                    "Victor Babenko" => "victor@iterable.com",
+                    "Jay Kim" => "jay.kim@iterable.com",
+                    "David Truong" => "dt@iterable.com" }
 
   # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #

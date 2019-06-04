@@ -50,7 +50,7 @@ class IterableAutoRegistrationTests: XCTestCase {
                 expectation3.fulfill()
                 TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_DISABLE_DEVICE, queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAutoRegistrationTests.apiKey)])
                 let body = networkSession.getRequestBody() as! [String : Any]
-                TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOKEN, andValue: (token as NSData).iteHexadecimalString(), inDictionary: body)
+                TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOKEN, andValue: token.hexString(), inDictionary: body)
                 TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_EMAIL, andValue: "user1@example.com", inDictionary: body)
             }
             
@@ -135,5 +135,4 @@ class IterableAutoRegistrationTests: XCTestCase {
         // only wait for small time, supposed to error out
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-    
 }

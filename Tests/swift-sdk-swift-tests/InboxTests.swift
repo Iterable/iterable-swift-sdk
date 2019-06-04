@@ -11,15 +11,6 @@ import XCTest
 @testable import IterableSDK
 
 class InboxTests: XCTestCase {
-
-    override func setUp() {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
     func testInboxOrdering() {
         let expectation1 = expectation(description: "testInboxOrdering")
         let mockInAppFetcher = MockInAppFetcher()
@@ -79,7 +70,7 @@ class InboxTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-
+    
     func testSetRead() {
         let expectation1 = expectation(description: "testSetRead")
         let mockInAppFetcher = MockInAppFetcher()
@@ -130,7 +121,7 @@ class InboxTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-
+    
     func testRemove() {
         let expectation1 = expectation(description: "testRemove")
         let mockInAppFetcher = MockInAppFetcher()
@@ -177,7 +168,7 @@ class InboxTests: XCTestCase {
        
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-
+    
     func testShowInboxMessage() {
         let expectation1 = expectation(description: "testShowInboxMessage")
         let expectation2 = expectation(description: "Unread count decrements after showing")
@@ -246,7 +237,7 @@ class InboxTests: XCTestCase {
 
         wait(for: [expectation1, expectation2, expectation3], timeout: testExpectationTimeout)
     }
-
+    
     func testInboxNewMessagesCallback() {
         let expectation1 = expectation(description: "testInboxNewMessagesCallback")
         expectation1.expectedFulfillmentCount = 2
@@ -327,7 +318,7 @@ class InboxTests: XCTestCase {
 
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-
+    
     func testInboxChangedCalledOnInitialization() {
         let expectation1 = expectation(description: "verify on inbox changed is called")
 
@@ -376,7 +367,6 @@ class InboxTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
         persister.clear()
     }
-
     
     func testInboxAndInAppCallbacksTogether() {
         let expectation1 = expectation(description: "call inbox callback")

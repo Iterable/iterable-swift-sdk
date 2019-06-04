@@ -9,7 +9,7 @@ import XCTest
 @testable import IterableSDK
 
 class PromiseTests: XCTestCase {
-    struct MyError : Error, CustomStringConvertible {
+    struct MyError: Error, CustomStringConvertible {
         let message: String
         
         var description: String {
@@ -56,7 +56,6 @@ class PromiseTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
         wait(for: [expectation2], timeout: testExpectationTimeout)
     }
-
     
     func testFlatMap() {
         let expectation1 = expectation(description: "test flatMap")
@@ -167,7 +166,6 @@ class PromiseTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
         wait(for: [expectation2], timeout: testExpectationTimeout)
     }
-
     
     private func createSucessfulFuture<T>(withValue value: T) -> Future<T, Error> {
         let future = Promise<T, Error>()
@@ -189,4 +187,3 @@ class PromiseTests: XCTestCase {
         return future
     }
 }
-

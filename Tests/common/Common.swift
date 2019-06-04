@@ -25,7 +25,7 @@ struct TestHelper {
 }
 
 struct InAppTestHelper {
-    static func inAppMessages(fromPayload payload: [AnyHashable : Any]) -> [IterableInAppMessage] {
+    static func inAppMessages(fromPayload payload: [AnyHashable: Any]) -> [IterableInAppMessage] {
         return InAppMessageParser.parse(payload: payload).compactMap(parseResultToOptionalMessage)
     }
     

@@ -7,6 +7,7 @@
 //
 
 import XCTest
+
 @testable import IterableSDK
 
 class DeferredDeeplinkTests: XCTestCase {

@@ -9,19 +9,10 @@ import XCTest
 @testable import IterableSDK
 
 class InAppTests: XCTestCase {
-
-    override func setUp() {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
     func testAutoShowInAppSingle() {
         let expectation1 = expectation(description: "testAutoShowInAppSingle")
         let expectation2 = expectation(description: "Count decrements after showing")
-
+        
         let mockInAppFetcher = MockInAppFetcher()
         
         let mockInAppDisplayer = MockInAppDisplayer()
@@ -50,7 +41,7 @@ class InAppTests: XCTestCase {
         
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
     }
-
+    
     // skip the inApp in inAppDelegate
     func testAutoShowInAppSingleOverride() {
         let expectation1 = expectation(description: "testAutoShowInAppSingleOverride")
@@ -74,22 +65,22 @@ class InAppTests: XCTestCase {
         )
         
         mockInAppFetcher.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1))
-
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
             XCTAssertEqual(IterableAPI.inAppManager.getMessages()[0].didProcessTrigger, true)
         }
-
+        
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
     }
-
+    
     func testAutoShowInAppMultipleWithOrdering() {
         let expectation0 = expectation(description: "testAutoShowInAppMultiple")
         expectation0.expectedFulfillmentCount = 3 // three times
         let expectation1 = expectation(description: "testAutoShowInAppMultiple, first")
         let expectation2 = expectation(description: "testAutoShowInAppMultiple, second")
         let expectation3 = expectation(description: "testAutoShowInAppMultiple, third")
-
+        
         let mockInAppFetcher = MockInAppFetcher()
         
         let mockInAppDisplayer = MockInAppDisplayer()
@@ -118,7 +109,7 @@ class InAppTests: XCTestCase {
         let config = IterableConfig()
         config.urlDelegate = urlDelegate
         config.inAppDisplayInterval = 1.0
-
+        
         IterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
@@ -129,12 +120,12 @@ class InAppTests: XCTestCase {
         let payload = TestInAppPayloadGenerator.createPayloadWithUrl(indices: indices)
         
         mockInAppFetcher.mockInAppPayloadFromServer(payload)
-
+        
         wait(for: [expectation0, expectation1, expectation2, expectation3], timeout: testExpectationTimeout)
-
+        
         XCTAssertEqual(callOrder, indices)
     }
-
+    
     func testAutoShowInAppMultipleOverride() {
         let expectation1 = expectation(description: "testAutoShowInAppMultipleOverride")
         expectation1.isInverted = true
@@ -159,7 +150,7 @@ class InAppTests: XCTestCase {
             inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer
         )
-
+        
         mockInAppFetcher.mockInAppPayloadFromServer(payload)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
@@ -168,12 +159,12 @@ class InAppTests: XCTestCase {
             XCTAssertEqual(Set(messages.map { $0.didProcessTrigger }), Set([true, true, true]))
             expectation2.fulfill()
         }
-
+        
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
-
+        
         wait(for: [expectation2], timeout: testExpectationTimeout)
     }
-
+    
     // inApp is shown and url is opened when link is clicked
     func testAutoShowInAppOpenUrlByDefault() {
         let expectation1 = expectation(description: "testAutoShowInAppOpenUrlByDefault")
@@ -192,16 +183,16 @@ class InAppTests: XCTestCase {
         }
         
         IterableAPI.initializeForTesting(
-                                 inAppFetcher: mockInAppFetcher,
-                                 inAppDisplayer: mockInAppDisplayer,
-                                 urlOpener: mockUrlOpener
+            inAppFetcher: mockInAppFetcher,
+            inAppDisplayer: mockInAppDisplayer,
+            urlOpener: mockUrlOpener
         )
         
         mockInAppFetcher.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1))
-
+        
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-
+    
     // override in url delegate
     // inApp is shown but does not open external url
     func testAutoShowInAppUrlDelegateOverride() {
@@ -234,7 +225,7 @@ class InAppTests: XCTestCase {
         )
         
         mockInAppFetcher.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1))
-
+        
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
     }
     
@@ -265,7 +256,7 @@ class InAppTests: XCTestCase {
             inAppDisplayer: mockInAppDisplayer,
             urlOpener: mockUrlOpener
         )
-
+        
         mockInAppFetcher.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1)) {
             let messages = IterableAPI.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 1)
@@ -278,11 +269,11 @@ class InAppTests: XCTestCase {
         
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
     }
-
+    
     func testShowInAppWithNoConsume() {
         let expectation1 = expectation(description: "testShowInAppWithNoConsume")
         let expectation2 = expectation(description: "url opened")
-
+        
         let mockInAppFetcher = MockInAppFetcher()
         
         let mockInAppDisplayer = MockInAppDisplayer()
@@ -390,19 +381,20 @@ class InAppTests: XCTestCase {
         )
         
         let payload = """
-        {"inAppMessages":
-        [
-            {
-                "saveToInbox": true,
-                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'\(iterableDeleteUrl)'>Click Here</a>"},
-                "trigger": {"type": "immediate"},
-                "messageId": "message0",
-                "campaignId": "campaign1",
-                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
-            },
-        ]
-        }
-        """.toJsonDict()
+            {"inAppMessages":
+                [
+                    {
+                        "saveToInbox": true,
+                        "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'\(iterableDeleteUrl)'>Click Here</a>"},
+                        "trigger": {"type": "immediate"},
+                        "messageId": "message0",
+                        "campaignId": "campaign1",
+                        "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+                    },
+                ]
+            
+            }
+            """.toJsonDict()
         
         mockInAppFetcher.mockInAppPayloadFromServer(payload) {
             let messages = IterableAPI.inAppManager.getMessages()
@@ -412,7 +404,7 @@ class InAppTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-
+    
     func testShowInAppWithIterableCustomActionDismiss() {
         let expectation1 = expectation(description: "custom action dismiss called")
         
@@ -436,19 +428,19 @@ class InAppTests: XCTestCase {
         )
         
         let payload = """
-        {"inAppMessages":
-        [
-            {
-                "saveToInbox": true,
-                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'\(iterableDismissUrl)'>Click Here</a>"},
-                "trigger": {"type": "immediate"},
-                "messageId": "message0",
-                "campaignId": "campaign1",
-                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
-            },
-        ]
-        }
-        """.toJsonDict()
+            {"inAppMessages":
+                [
+                    {
+                        "saveToInbox": true,
+                        "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'\(iterableDismissUrl)'>Click Here</a>"},
+                        "trigger": {"type": "immediate"},
+                        "messageId": "message0",
+                        "campaignId": "campaign1",
+                        "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+                    },
+                ]
+            }
+            """.toJsonDict()
         mockInAppFetcher.mockInAppPayloadFromServer(payload) {
             let messages = IterableAPI.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 1)
@@ -457,7 +449,7 @@ class InAppTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-
+    
     func testShowInAppWithCustomActionBackwardCompatibility() {
         let customActionScheme = "itbl"
         let customActionName = "my_custom_action"
@@ -467,7 +459,7 @@ class InAppTests: XCTestCase {
                                    customActionName: customActionName)
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-
+    
     func testShowInAppWithCustomAction1() {
         let customActionScheme = "action"
         let customActionName = "my_custom_action"
@@ -477,7 +469,7 @@ class InAppTests: XCTestCase {
                                    customActionName: customActionName)
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-
+    
     // Check that onNew is called just once if the messageId is same.
     func testOnNewNotCalledMultipleTimes() {
         let expectation1 = expectation(description: "testOnNewNotCalledMultipleTimes")
@@ -502,7 +494,7 @@ class InAppTests: XCTestCase {
         
         // Send second message with same id.
         mockInAppFetcher.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1))
-
+        
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
@@ -514,7 +506,7 @@ class InAppTests: XCTestCase {
         
         let config = IterableConfig()
         config.inAppDelegate = mockInAppDelegate
-
+        
         IterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher
@@ -562,14 +554,14 @@ class InAppTests: XCTestCase {
         mockInAppFetcher.mockInAppPayloadFromServer(payload)
         
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
-
+        
     }
-
+    
     func testInAppShowWhenMovesToForeground() {
         let expectation1 = expectation(description: "do not show when in background")
         expectation1.isInverted = true
         let expectation2 = expectation(description: "show when moves to foreground")
-
+        
         let payload = TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1)
         
         let mockInAppFetcher = MockInAppFetcher()
@@ -606,7 +598,7 @@ class InAppTests: XCTestCase {
         
         wait(for: [expectation2], timeout: testExpectationTimeout)
     }
-
+    
     func testMoveToForegroundSyncInterval() {
         let expectation1 = expectation(description: "do not sync because app is not in foreground")
         expectation1.isInverted = true
@@ -648,9 +640,9 @@ class InAppTests: XCTestCase {
         mockDateProvider.currentDate = mockDateProvider.currentDate.addingTimeInterval(1000.0)
         mockApplicationStateProvider.applicationState = .active
         mockNotificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
-
+        
         wait(for: [expectation2], timeout: testExpectationTimeout)
-
+        
         // now move to foreground within interval
         mockInAppFetcher.syncCallback = {
             expectation3.fulfill()
@@ -666,16 +658,15 @@ class InAppTests: XCTestCase {
         mockNotificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
         wait(for: [expectation4], timeout: testExpectationTimeout)
     }
-
     
     func testDontShowMessageWithinRetryInterval() {
         let expectation1 = expectation(description: "show first message")
         let expectation2 = expectation(description: "don't show second message within interval")
         expectation2.isInverted = true
         let expectation3 = expectation(description: "show third message after retry interval")
-
+        
         let retryInterval = 2.0
-
+        
         let mockInAppFetcher = MockInAppFetcher()
         
         let mockInAppDisplayer = MockInAppDisplayer()
@@ -709,12 +700,12 @@ class InAppTests: XCTestCase {
         messageNumber = 1
         mockInAppFetcher.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: 1...messageNumber))
         wait(for: [expectation1], timeout: testExpectationTimeout)
-
+        
         // second message payload, should not be shown
         messageNumber = 2
         mockInAppFetcher.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: 1...messageNumber))
         wait(for: [expectation2], timeout: retryInterval)
-
+        
         // After retryInternval, the third should show
         messageNumber = 3
         wait(for: [expectation3], timeout: testExpectationTimeout)
@@ -723,7 +714,7 @@ class InAppTests: XCTestCase {
     func testRemoveMessages() {
         let expectation1 = expectation(description: "testRemoveMessages1")
         let expectation2 = expectation(description: "testRemoveMessages2")
-
+        
         let mockInAppFetcher = MockInAppFetcher()
         
         let mockInAppDisplayer = MockInAppDisplayer()
@@ -731,7 +722,7 @@ class InAppTests: XCTestCase {
             expectation2.fulfill()
             mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: 1))
         }
-
+        
         IterableAPI.initializeForTesting(
             inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer
@@ -744,7 +735,7 @@ class InAppTests: XCTestCase {
         // First one will be shown automatically, so we have two left now
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
         XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 2)
-
+        
         // now remove 1, there should be 1 left
         IterableAPI.inAppManager.remove(message: IterableAPI.inAppManager.getMessages()[0])
         XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
@@ -804,7 +795,7 @@ class InAppTests: XCTestCase {
         mockInAppFetcher.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1]))
         mockInAppFetcher.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 3]))
         mockInAppFetcher.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 3, 2]))
-
+        
         wait(for: [expectation0, expectation1, expectation2, expectation3], timeout: testExpectationTimeout)
         
         XCTAssertEqual(callOrder, [1, 3, 2])
@@ -820,53 +811,53 @@ class InAppTests: XCTestCase {
         XCTAssertGreaterThan(g2, interval)
         XCTAssertGreaterThan(g3, interval)
     }
-
     
     func testFilePersistence() {
         let createdAt = Date()
-        let expiresAt = createdAt.addingTimeInterval(60*60*24)
+        let expiresAt = createdAt.addingTimeInterval(60 * 60 * 24)
         let payload = """
         {"inAppMessages":
         [
-            {
-                "saveToInbox": false,
-                "content": {"type": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site1.com\'>Click Here</a>", "payload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}},
-                "trigger": {"type": "event", "details": "some event details"},
-                "messageId": "message1",
-                "createdAt": \(IterableUtil.int(fromDate: createdAt)),
-                "expiresAt": \(IterableUtil.int(fromDate: expiresAt)),
-                "campaignId": "campaign1",
-                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
-            },
-            {
-                "saveToInbox": true,
-                "content": {"type": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
-                "trigger": {"type": "immediate"},
-                "messageId": "message2",
-                "createdAt": 1550605745142,
-                "expiresAt": 1657258509185,
-                "campaignId": "campaign2",
-                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
-            },
-            {
-                "content": {"inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site3.com\'>Click Here</a>"},
-                "trigger": {"type": "never"},
-                "messageId": "message3",
-                "campaignId": "campaign3",
-                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
-            },
-            {
-                "content": {"inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site4.com\'>Click Here</a>"},
-                "trigger": {"type": "newEventType", "nested": {"var1": "val1"}},
-                "messageId": "message4",
-                "createdAt": 1550605745142,
-                "expiresAt": 1657258509185,
-                "campaignId": "campaign4",
-                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
-            }
+        {
+        "saveToInbox": false,
+        "content": {"type": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site1.com\'>Click Here</a>", "payload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}},
+        "trigger": {"type": "event", "details": "some event details"},
+        "messageId": "message1",
+        "createdAt": \(IterableUtil.int(fromDate: createdAt)),
+        "expiresAt": \(IterableUtil.int(fromDate: expiresAt)),
+        "campaignId": "campaign1",
+        "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+        },
+        {
+        "saveToInbox": true,
+        "content": {"type": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+        "trigger": {"type": "immediate"},
+        "messageId": "message2",
+        "createdAt": 1550605745142,
+        "expiresAt": 1657258509185,
+        "campaignId": "campaign2",
+        "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+        },
+        {
+        "content": {"inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site3.com\'>Click Here</a>"},
+        "trigger": {"type": "never"},
+        "messageId": "message3",
+        "campaignId": "campaign3",
+        "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+        },
+        {
+        "content": {"inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site4.com\'>Click Here</a>"},
+        "trigger": {"type": "newEventType", "nested": {"var1": "val1"}},
+        "messageId": "message4",
+        "createdAt": 1550605745142,
+        "expiresAt": 1657258509185,
+        "campaignId": "campaign4",
+        "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+        }
         ]
         }
         """.toJsonDict()
+        
         let messages = InAppTestHelper.inAppMessages(fromPayload: payload)
         messages[0].read = true
         TestUtils.validateEqual(date1: messages[0].createdAt, date2: createdAt)
@@ -879,14 +870,14 @@ class InAppTests: XCTestCase {
         XCTAssertEqual((obtained[3]).trigger.type, IterableInAppTriggerType.never)
         let dict = (obtained[3]).trigger.dict as! [String : Any]
         TestUtils.validateMatch(keyPath: KeyPath("nested.var1"), value: "val1", inDictionary: dict, message: "Expected to find val1 in persisted dictionary")
-
+        
         persister.clear()
     }
     
     func testFilePersisterInitial() {
         let persister = InAppFilePersister()
         persister.clear()
-
+        
         let read = persister.getMessages()
         XCTAssertEqual(read.count, 0)
     }
@@ -930,15 +921,15 @@ class InAppTests: XCTestCase {
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 3)
             expectation1.fulfill()
         }
-    
+        
         wait(for: [expectation1], timeout: testExpectationTimeout)
-
+        
         IterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
             inAppPersister: InAppFilePersister()
         )
-
+        
         XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 3)
     }
     
@@ -953,7 +944,7 @@ class InAppTests: XCTestCase {
             "messageId" : "messageId"
         }
         """
-
+        
         let notification = try! JSONSerialization.jsonObject(with: json.data(using: .utf8)!, options: []) as! [AnyHashable : Any]
         
         if case let NotificationInfo.silentPush(silentPush) = NotificationHelper.inspect(notification: notification) {
@@ -963,16 +954,16 @@ class InAppTests: XCTestCase {
             XCTFail()
         }
     }
-
+    
     func testParseSilentPushNotificationParsing2() {
         let notification = """
         {
             "itbl" : {
-                "messageId" : "background_notification",
-                "isGhostPush" : true
+                "messageId": "background_notification",
+                "isGhostPush": true
             },
-            "notificationType" : "InAppRemove",
-            "messageId" : "messageId"
+            "notificationType": "InAppRemove",
+            "messageId": "messageId"
         }
         """.toJsonDict()
         
@@ -991,14 +982,14 @@ class InAppTests: XCTestCase {
         let notification = """
         {
             "itbl" : {
-                "messageId" : "background_notification",
-                "isGhostPush" : true
+                "messageId": "background_notification",
+                "isGhostPush": true
             },
-            "notificationType" : "InAppUpdate",
-            "messageId" : "messageId"
+            "notificationType": "InAppUpdate",
+            "messageId": "messageId"
         }
         """.toJsonDict()
-
+        
         let mockInAppFetcher = MockInAppFetcher()
         mockInAppFetcher.syncCallback = {
             expectation1.fulfill()
@@ -1016,18 +1007,18 @@ class InAppTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-
+    
     func testRemoveIsCalled() {
         let expectation1 = expectation(description: "testRemoveIsCalled")
         
         let notification = """
         {
-            "itbl" : {
-                "messageId" : "background_notification",
-                "isGhostPush" : true
+            "itbl": {
+                "messageId": "background_notification",
+                "isGhostPush": true
             },
-            "notificationType" : "InAppRemove",
-            "messageId" : "messageId"
+            "notificationType": "InAppRemove",
+            "messageId": "messageId"
         }
         """.toJsonDict()
         
@@ -1045,25 +1036,25 @@ class InAppTests: XCTestCase {
         }
         
         let mockInAppManager = MockInAppManager(expectation: expectation1)
-
+        
         let appIntegration = IterableAppIntegrationInternal(tracker: MockPushTracker(), inAppNotifiable: mockInAppManager)
         appIntegration.application(MockApplicationStateProvider(applicationState: .background), didReceiveRemoteNotification: notification, fetchCompletionHandler: nil)
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-
+    
     func testInboxChangedIsCalledWhenInAppIsRemovedInServer() {
         let expectation1 = expectation(description: "testInboxChangedIsCalledWhenInAppIsRemovedInServer")
         
         let notification = """
-        {
-            "itbl" : {
-                "messageId" : "background_notification",
-                "isGhostPush" : true
-            },
-            "notificationType" : "InAppRemove",
-            "messageId" : "messageId"
-        }
+            {
+                "itbl" : {
+                    "messageId" : "background_notification",
+                    "isGhostPush" : true
+                },
+                "notificationType" : "InAppRemove",
+                "messageId" : "messageId"
+            }
         """.toJsonDict()
         
         let mockNotificationCenter = MockNotificationCenter()
@@ -1077,7 +1068,7 @@ class InAppTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-
+    
     func testSyncIsCalledOnLogin() {
         let expectation1 = expectation(description: "testSyncIsCalledOnLogin")
         expectation1.expectedFulfillmentCount = 2 // once on initialization
@@ -1114,7 +1105,7 @@ class InAppTests: XCTestCase {
             TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 2, triggerType: .immediate),
             TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 3, triggerType: .never),
             TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 4, triggerType: .immediate),
-        ]]
+            ]]
         
         let mockInAppFetcher = MockInAppFetcher()
         let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
@@ -1156,11 +1147,11 @@ class InAppTests: XCTestCase {
         IterableAPI.initializeForTesting(config: config,
                                          dateProvider: mockDateProvider,
                                          inAppFetcher: mockInAppFetcher)
-
+        
         let message = IterableInAppMessage(messageId: "messageId",
                                            campaignId: "campaignId",
                                            expiresAt: mockDateProvider.currentDate.addingTimeInterval(1.0 * 60.0), // one minute from now
-                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "<html></html>"))
+            content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "<html></html>"))
         mockInAppFetcher.mockMessagesAvailableFromServer(messages: [message]) {
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
             
@@ -1169,7 +1160,7 @@ class InAppTests: XCTestCase {
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
             expectation1.fulfill()
         }
-
+        
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
@@ -1219,7 +1210,6 @@ class InAppTests: XCTestCase {
             
         }
     }
-    
 }
 
 extension IterableInAppTrigger {
@@ -1231,9 +1221,9 @@ extension IterableInAppTrigger {
 extension IterableHtmlInAppContent {
     public override var description: String {
         return IterableUtil.describe("type", type,
-                        "edgeInsets", edgeInsets,
-                        "backgroundAlpha", backgroundAlpha,
-                        "html", html, pairSeparator: " = ", separator: ", ")
+                                     "edgeInsets", edgeInsets,
+                                     "backgroundAlpha", backgroundAlpha,
+                                     "html", html, pairSeparator: " = ", separator: ", ")
     }
 }
 
@@ -1249,16 +1239,16 @@ extension IterableInboxMetadata {
 extension IterableInAppMessage {
     public override var description: String {
         return IterableUtil.describe("messageId", messageId,
-                        "campaignId", campaignId,
-                        "saveToInbox", saveToInbox,
-                        "inboxMetadata", inboxMetadata ?? "nil",
-                        "trigger", trigger,
-                        "createdAt", createdAt ?? "nil",
-                        "expiresAt", expiresAt ?? "nil",
-                        "content", content,
-                        "didProcessTrigger", didProcessTrigger,
-                        "consumed", consumed,
-                        "read", read,
-                        pairSeparator: " = ", separator: "\n")
+                                     "campaignId", campaignId,
+                                     "saveToInbox", saveToInbox,
+                                     "inboxMetadata", inboxMetadata ?? "nil",
+                                     "trigger", trigger,
+                                     "createdAt", createdAt ?? "nil",
+                                     "expiresAt", expiresAt ?? "nil",
+                                     "content", content,
+                                     "didProcessTrigger", didProcessTrigger,
+                                     "consumed", consumed,
+                                     "read", read,
+                                     pairSeparator: " = ", separator: "\n")
     }
 }

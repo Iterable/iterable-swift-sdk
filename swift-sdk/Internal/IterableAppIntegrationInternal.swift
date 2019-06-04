@@ -11,11 +11,11 @@ import UserNotifications
 
 // Returns whether notifications are enabled
 protocol NotificationStateProviderProtocol {
-    var notificationsEnabled : Promise<Bool, Error> {get}
+    var notificationsEnabled: Promise<Bool, Error> {get}
     func registerForRemoteNotifications()
 }
 
-struct SystemNotificationStateProvider : NotificationStateProviderProtocol {
+struct SystemNotificationStateProvider: NotificationStateProviderProtocol {
     var notificationsEnabled: Promise<Bool, Error> {
         let result = Promise<Bool, Error>()
         
@@ -48,14 +48,14 @@ struct SystemNotificationStateProvider : NotificationStateProviderProtocol {
 
 @available(iOS 10.0, *)
 public protocol NotificationResponseProtocol {
-    var userInfo: [AnyHashable : Any] {get}
+    var userInfo: [AnyHashable: Any] {get}
     var actionIdentifier: String {get}
     var textInputResponse: UNTextInputNotificationResponse? {get}
 }
 
 @available(iOS 10.0, *)
-struct UserNotificationResponse : NotificationResponseProtocol {
-    var userInfo: [AnyHashable : Any] {
+struct UserNotificationResponse: NotificationResponseProtocol {
+    var userInfo: [AnyHashable: Any] {
         return response.notification.request.content.userInfo
     }
     
@@ -75,21 +75,21 @@ struct UserNotificationResponse : NotificationResponseProtocol {
 }
 
 /// Abstraction of PushTacking
-@objc public protocol PushTrackerProtocol : class {
-    @objc var lastPushPayload: [AnyHashable : Any]? {get}
-    @objc func trackPushOpen(_ userInfo: [AnyHashable : Any])
-    @objc func trackPushOpen(_ userInfo: [AnyHashable : Any], dataFields: [AnyHashable : Any]?)
-    @objc func trackPushOpen(_ userInfo: [AnyHashable : Any], dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?)
-    @objc func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?)
-    @objc func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?)
+@objc public protocol PushTrackerProtocol: class {
+    @objc var lastPushPayload: [AnyHashable: Any]? {get}
+    @objc func trackPushOpen(_ userInfo: [AnyHashable: Any])
+    @objc func trackPushOpen(_ userInfo: [AnyHashable: Any], dataFields: [AnyHashable: Any]?)
+    @objc func trackPushOpen(_ userInfo: [AnyHashable: Any], dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?)
+    @objc func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?)
+    @objc func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?)
 }
 
 /// Abstraction of applicationState
-@objc public protocol ApplicationStateProviderProtocol : class {
+@objc public protocol ApplicationStateProviderProtocol: class {
     @objc var applicationState: UIApplication.State {get}
 }
 
-extension UIApplication : ApplicationStateProviderProtocol {
+extension UIApplication: ApplicationStateProviderProtocol {
 }
 
 struct IterableAppIntegrationInternal {
@@ -120,7 +120,7 @@ struct IterableAppIntegrationInternal {
      * - parameter completionHandler: Completion handler passed from the original call. Iterable will call the completion handler
      * automatically if you pass one. If you handle completionHandler in the app code, pass a nil value to this argument.
      */
-    func application(_ application: ApplicationStateProviderProtocol, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: ((UIBackgroundFetchResult)->Void)?) {
+    func application(_ application: ApplicationStateProviderProtocol, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: ((UIBackgroundFetchResult) -> Void)?) {
         ITBInfo()
         if case let NotificationInfo.silentPush(silentPush) = NotificationHelper.inspect(notification: userInfo) {
             switch silentPush.notificationType {
@@ -164,7 +164,7 @@ struct IterableAppIntegrationInternal {
      * automatically if you pass one. If you handle completionHandler in the app code, pass a nil value to this argument.
      */
     @available(iOS 10.0, *)
-    func userNotificationCenter(_ center: UNUserNotificationCenter?, didReceive response: NotificationResponseProtocol, withCompletionHandler completionHandler: (()->Void)?) {
+    func userNotificationCenter(_ center: UNUserNotificationCenter?, didReceive response: NotificationResponseProtocol, withCompletionHandler completionHandler: (() -> Void)?) {
         ITBInfo()
         let userInfo = response.userInfo
         // Ignore the notification if we've already processed it from launchOptions while initializing SDK
@@ -199,7 +199,7 @@ struct IterableAppIntegrationInternal {
     }
 
     @available(iOS 10.0, *)
-    private static func createIterableAction(actionIdentifier: String, userText: String?, userInfo: [AnyHashable : Any], iterableElement itbl: [AnyHashable : Any]) -> IterableAction? {
+    private static func createIterableAction(actionIdentifier: String, userText: String?, userInfo: [AnyHashable: Any], iterableElement itbl: [AnyHashable: Any]) -> IterableAction? {
         var action: IterableAction? = nil
         
         if actionIdentifier == UNNotificationDefaultActionIdentifier {
@@ -220,31 +220,33 @@ struct IterableAppIntegrationInternal {
         return action
     }
     
-    private static func createDefaultAction(userInfo: [AnyHashable: Any], iterableElement itbl: [AnyHashable : Any])  -> IterableAction? {
-        if let defaultActionConfig = itbl[.ITBL_PAYLOAD_DEFAULT_ACTION] as? [AnyHashable : Any] {
+    private static func createDefaultAction(userInfo: [AnyHashable: Any], iterableElement itbl: [AnyHashable: Any])  -> IterableAction? {
+        if let defaultActionConfig = itbl[.ITBL_PAYLOAD_DEFAULT_ACTION] as? [AnyHashable: Any] {
             return IterableAction.action(fromDictionary: defaultActionConfig)
         } else {
             return IterableAppIntegrationInternal.legacyDefaultActionFromPayload(userInfo: userInfo)
         }
     }
     
-    private static func findButtonActionConfig(actionIdentifier: String, iterableElement itbl: [AnyHashable : Any]) -> [AnyHashable : Any]? {
-        guard let buttons = itbl[.ITBL_PAYLOAD_ACTION_BUTTONS] as? [[AnyHashable : Any]] else {
+    private static func findButtonActionConfig(actionIdentifier: String, iterableElement itbl: [AnyHashable: Any]) -> [AnyHashable: Any]? {
+        guard let buttons = itbl[.ITBL_PAYLOAD_ACTION_BUTTONS] as? [[AnyHashable: Any]] else {
             return nil
         }
+        
         let foundButton = buttons.first { (button) -> Bool in
             guard let buttonIdentifier = button[.ITBL_BUTTON_IDENTIFIER] as? String else {
                 return false
             }
+            
             return buttonIdentifier == actionIdentifier
         }
         
-        return foundButton?[.ITBL_BUTTON_ACTION] as? [AnyHashable : Any]
+        return foundButton?[.ITBL_BUTTON_ACTION] as? [AnyHashable: Any]
     }
     
     @available(iOS 10.0, *)
-    private static func createIterableDataFields(actionIdentifier: String, userText: String?) -> [AnyHashable : Any] {
-        var dataFields = [AnyHashable : Any]()
+    private static func createIterableDataFields(actionIdentifier: String, userText: String?) -> [AnyHashable: Any] {
+        var dataFields = [AnyHashable: Any]()
         
         if actionIdentifier == UNNotificationDefaultActionIdentifier {
             dataFields[AnyHashable.ITBL_KEY_ACTION_IDENTIFIER] = String.ITBL_VALUE_DEFAULT_PUSH_OPEN_ACTION_ID
@@ -261,14 +263,14 @@ struct IterableAppIntegrationInternal {
         return dataFields
     }
     
-    func performDefaultNotificationAction(_ userInfo: [AnyHashable : Any]) {
+    func performDefaultNotificationAction(_ userInfo: [AnyHashable: Any]) {
         // Ignore the notification if we've already processed it from launchOptions while initializing SDK
-        guard !alreadyTracked(userInfo: userInfo) else{
+        guard !alreadyTracked(userInfo: userInfo) else {
             return
         }
         
         // Track push open
-        let dataFields = [AnyHashable.ITBL_KEY_ACTION_IDENTIFIER : String.ITBL_VALUE_DEFAULT_PUSH_OPEN_ACTION_ID]
+        let dataFields = [AnyHashable.ITBL_KEY_ACTION_IDENTIFIER: String.ITBL_VALUE_DEFAULT_PUSH_OPEN_ACTION_ID]
         tracker.trackPushOpen(userInfo, dataFields: dataFields)
         
         guard let itbl = IterableAppIntegrationInternal.itblValue(fromUserInfo: userInfo) else {
@@ -286,22 +288,24 @@ struct IterableAppIntegrationInternal {
         }
     }
     
-    private func alreadyTracked(userInfo: [AnyHashable : Any]) -> Bool {
+    private func alreadyTracked(userInfo: [AnyHashable: Any]) -> Bool {
         guard let lastPushPayload = tracker.lastPushPayload else {
             return false
         }
+        
         return NSDictionary(dictionary: lastPushPayload).isEqual(to: userInfo)
     }
     
     // Normally itblValue would be the value stored in "itbl" key inside of userInfo.
     // But it is possible to save them at root level for debugging purpose.
-    private static func itblValue(fromUserInfo userInfo: [AnyHashable : Any]) -> [AnyHashable : Any]? {
-        let itbl = userInfo[.ITBL_PAYLOAD_METADATA] as? [AnyHashable : Any]
+    private static func itblValue(fromUserInfo userInfo: [AnyHashable: Any]) -> [AnyHashable: Any]? {
+        let itbl = userInfo[.ITBL_PAYLOAD_METADATA] as? [AnyHashable: Any]
         
         #if DEBUG
         guard let value = itbl else {
             return nil
         }
+        
         if value[.ITBL_PAYLOAD_DEFAULT_ACTION] == nil && value[.ITBL_PAYLOAD_ACTION_BUTTONS] == nil {
             return userInfo
         }
@@ -312,7 +316,7 @@ struct IterableAppIntegrationInternal {
 
     // Normally default action would be stored in key "itbl/"defaultAction"
     // In legacy templates it gets saved in the key "url"
-    private static func legacyDefaultActionFromPayload(userInfo: [AnyHashable : Any]) -> IterableAction? {
+    private static func legacyDefaultActionFromPayload(userInfo: [AnyHashable: Any]) -> IterableAction? {
         if let deeplinkUrl = userInfo[.ITBL_PAYLOAD_DEEP_LINK_URL] as? String {
             return IterableAction.actionOpenUrl(fromUrlString: deeplinkUrl)
         } else {

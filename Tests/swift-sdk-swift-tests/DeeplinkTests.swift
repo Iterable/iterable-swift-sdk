@@ -4,13 +4,11 @@
 //
 
 import XCTest
-
 import OHHTTPStubs
 
 @testable import IterableSDK
 
 class DeeplinkTests: XCTestCase {
-
     override func setUp() {
         super.setUp()
 
@@ -79,7 +77,7 @@ class DeeplinkTests: XCTestCase {
         
         let config = IterableConfig()
         config.urlDelegate = mockUrlDelegate
-        IterableAPI.initializeForObjcTesting(config: config)
+        IterableAPI.initializeForTesting(config: config)
         
         IterableAPI.handle(universalLink: URL(string: iterableRewriteURL)!)
         
@@ -145,4 +143,3 @@ class DeeplinkTests: XCTestCase {
         return values.take(2).map { "\($0[0])=\($0[1])" }.joined(separator: ";,")
     }
 }
-
