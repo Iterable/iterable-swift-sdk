@@ -11,7 +11,18 @@ import XCTest
 @testable import IterableSDK
 
 class IterableInboxViewControllerTests: XCTestCase {
-    
+    func testInitializers() {
+        let inboxViewController1 = IterableInboxViewController()
+        XCTAssertNil(inboxViewController1.navigationController?.tabBarItem.badgeValue)
+        
+        let inboxViewController2 = IterableInboxViewController(nibName: nil, bundle: nil)
+        XCTAssertNil(inboxViewController2.navigationController?.tabBarItem.badgeValue)
+        
+        let inboxViewController3 = IterableInboxViewController(style: .plain)
+        XCTAssertNil(inboxViewController3.navigationController?.tabBarItem.badgeValue)
+        
+        // decoder initializer test here
+    }
     
     func testOnInboxChangedNotification() {
         let mockInAppFetcher = MockInAppFetcher()
@@ -32,6 +43,9 @@ class IterableInboxViewControllerTests: XCTestCase {
             
             XCTAssertEqual(inboxViewController.navigationController?.tabBarItem.badgeValue, "\(messages.count)")
         }
+        
+        // either: "remove" message1 and test for nil again
+        // or add a couple more messages to test for what the count is
     }
     
     
