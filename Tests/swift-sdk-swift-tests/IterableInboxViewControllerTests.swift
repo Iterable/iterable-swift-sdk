@@ -21,7 +21,12 @@ class IterableInboxViewControllerTests: XCTestCase {
         let inboxViewController3 = IterableInboxViewController(style: .plain)
         XCTAssertNil(inboxViewController3.navigationController?.tabBarItem.badgeValue)
         
-        // decoder initializer test here
+        guard let inboxViewController4 = IterableInboxViewController(coder: NSKeyedUnarchiver(forReadingWith: Data())) else {
+            XCTFail()
+            return
+        }
+        
+        XCTAssertNil(inboxViewController4.navigationController?.tabBarItem.badgeValue)
     }
     
     func testOnInboxChangedNotification() {
