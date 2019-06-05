@@ -14,7 +14,7 @@ class IterableInboxNavigationViewControllerTests: XCTestCase {
     func testInitWithNoRootViewController() {
         let inboxNavigationVC = IterableInboxNavigationViewController()
         
-        XCTAssertTrue(inboxNavigationVC.viewControllers.count > 0)
+        XCTAssertNotNil(inboxNavigationVC.viewControllers[0] as? IterableInboxViewController)
     }
     
     func testCustomCellNibName() {
@@ -25,5 +25,13 @@ class IterableInboxNavigationViewControllerTests: XCTestCase {
         inboxNavigationVC.cellNibName = cellNibName
         
         XCTAssertEqual((inboxNavigationVC.viewControllers[0] as? IterableInboxViewController)?.cellNibName, cellNibName)
+    }
+    
+    func testDoneButtonPressed() {
+//        let inboxNavigationVC = IterableInboxNavigationViewController()
+//        
+//        if let doneAction = inboxNavigationVC.navigationItem.rightBarButtonItem?.action {
+//            perform(doneAction)
+//        }
     }
 }
