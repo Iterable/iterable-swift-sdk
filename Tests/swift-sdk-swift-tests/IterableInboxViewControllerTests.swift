@@ -44,6 +44,7 @@ class IterableInboxViewControllerTests: XCTestCase {
         mockInAppFetcher.mockMessagesAvailableFromServer(messages: messages) {
             XCTAssertNil(inboxViewController.navigationController?.tabBarItem.badgeValue)
             
+            // on Travis CI, this notification post does not complete fast enough before the condition checker
             NotificationCenter.default.post(name: .iterableInboxChanged, object: nil)
             
             XCTAssertEqual(inboxViewController.navigationController?.tabBarItem.badgeValue, "\(messages.count)")

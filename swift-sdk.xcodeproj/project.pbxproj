@@ -552,7 +552,6 @@
 		AC7B142C20D02CE200877BFE /* swift-sdk-swift-tests */ = {
 			isa = PBXGroup;
 			children = (
-				5585DF8E22A73390000A32B9 /* IterableInboxViewControllerTests.swift */,
 				AC87172421A4E3FF00FEA369 /* Helper Classes */,
 				00B6FACF210E8B10007535CF /* Test Files */,
 				00B6FACB210E8484007535CF /* APNSUtilTests.swift */,
@@ -568,6 +567,8 @@
 				AC64626A2140AACF0046E1BD /* IterableAPIResponseTests.swift */,
 				ACD6116D21080564003E7F6B /* IterableAPITests.swift */,
 				AC89661D2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift */,
+				5585DF8C22A729DF000A32B9 /* IterableInboxNavigationViewControllerTests.swift */,
+				5585DF8E22A73390000A32B9 /* IterableInboxViewControllerTests.swift */,
 				AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */,
 				AC776DA3211A17C700C27C27 /* IterableRequestUtilTests.swift */,
 				ACE34AB4213776CB00691224 /* LocalStorageTests.swift */,
@@ -643,7 +644,6 @@
 			children = (
 				ACC87765215C20B50097E29B /* UITests.swift */,
 				ACC87767215C20B50097E29B /* Info.plist */,
-				5585DF8C22A729DF000A32B9 /* IterableInboxNavigationViewControllerTests.swift */,
 			);
 			path = "ui-tests";
 			sourceTree = "<group>";
