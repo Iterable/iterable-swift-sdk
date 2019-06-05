@@ -101,17 +101,16 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
             return nil
         }
         
-        let result = Promise<URL, IterableError>()
-        result.onSuccess { (url) in
+        let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
+                                                            trackParams: IterableNotificationMetadata.metadata(fromInAppOptions: message.messageId),
+                                                            isModal: false)
+        let createResult = IterableHtmlMessageViewController.create(parameters: parameters)
+        let viewController = createResult.viewController
+        createResult.futureClickedURL.onSuccess { (url) in
             ITBInfo()
             // in addition perform action or url delegate task
             self.handle(clickedUrl: url, forMessage: message)
         }
-        let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
-                                                            result: result,
-                                                            trackParams: IterableNotificationMetadata.metadata(fromInAppOptions: message.messageId),
-                                                            isModal: false)
-        let viewController = IterableHtmlMessageViewController(parameters: parameters)
         viewController.navigationItem.title = message.inboxMetadata?.title
         return viewController
     }

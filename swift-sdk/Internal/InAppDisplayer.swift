@@ -51,21 +51,19 @@ class InAppDisplayer : InAppDisplayerProtocol {
             return .notShown("Skipping the in-app notification. Another notification is already being displayed.")
         }
         
-        let result = Promise<URL, IterableError>()
-        
         let parameters = IterableHtmlMessageViewController.Parameters(html: htmlString,
                                                                       padding: padding,
-                                                                      result: result,
                                                                       trackParams: trackParams,
                                                                       isModal: true)
-        let baseNotification = IterableHtmlMessageViewController(parameters: parameters)
+        let createResult = IterableHtmlMessageViewController.create(parameters: parameters)
+        let baseNotification =  createResult.viewController
         
         topViewController.definesPresentationContext = true
         baseNotification.view.backgroundColor = UIColor(white: 0, alpha: CGFloat(backgroundAlpha))
         baseNotification.modalPresentationStyle = .overCurrentContext
         
         topViewController.present(baseNotification, animated: false)
-        return .shown(result)
+        return .shown(createResult.futureClickedURL)
     }
 
     static func showSystemNotification(_ title: String,
