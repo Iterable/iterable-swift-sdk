@@ -47,6 +47,13 @@ open class IterableInboxViewController: UITableViewController {
         // for the empty rows.
         tableView.tableFooterView = UIView()
         
+        if #available(iOS 10.0, *) {
+            let refreshControl = UIRefreshControl()
+            refreshControl.attributedTitle = NSAttributedString(string: "Fetching new in-app messages")
+            refreshControl.addTarget(self, action: #selector(handleRefreshControl), for: .valueChanged)
+            tableView.refreshControl = refreshControl
+        }
+        
         registerTableViewCell()
     }
 
@@ -139,6 +146,17 @@ open class IterableInboxViewController: UITableViewController {
         let unreadCount = IterableAPI.inAppManager.getUnreadInboxMessagesCount()
         let badgeValue = unreadCount == 0 ? nil : "\(unreadCount)"
         navigationController?.tabBarItem?.badgeValue = badgeValue
+    }
+    
+    @available(iOS 10.0, *)
+    @objc private func handleRefreshControl() {
+        ITBInfo()
+        
+        if let inAppManager = IterableAPI.inAppManager as? InAppManager {
+            inAppManager.onInAppSyncNeeded()
+        }
+        
+        tableView.refreshControl?.endRefreshing()
     }
     
     private func configure(cell: IterableInboxCell, forViewModel viewModel: InboxMessageViewModel) {
