@@ -16,12 +16,11 @@ class InAppTests: XCTestCase {
         let mockInAppFetcher = MockInAppFetcher()
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _) in
+        mockInAppDisplayer.onShow.onSuccess { _ in
             // 1 message is present when showing
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
-            expectation1.fulfill()
-            // now click the inApp
             mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: 1))
+            expectation1.fulfill()
         }
         
         let mockUrlDelegate = MockUrlDelegate(returnValue: true)
@@ -51,9 +50,9 @@ class InAppTests: XCTestCase {
         let mockInAppFetcher = MockInAppFetcher()
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _) in
-            expectation1.fulfill()
+        mockInAppDisplayer.onShow.onSuccess { _ in
             mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: 1))
+            expectation1.fulfill()
         }
         
         let config = IterableConfig()
@@ -85,7 +84,7 @@ class InAppTests: XCTestCase {
         let mockInAppFetcher = MockInAppFetcher()
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(message, _) in
+        mockInAppDisplayer.onShow.onSuccess {(message) in
             mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: TestInAppPayloadGenerator.index(fromCampaignId: message.campaignId)))
             expectation0.fulfill()
         }
@@ -137,7 +136,8 @@ class InAppTests: XCTestCase {
         let mockInAppFetcher = MockInAppFetcher()
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _) in
+        mockInAppDisplayer.onShow.onSuccess { _ in
+            mockInAppDisplayer.click(url: URL(string: "https://somewhere.com")!)
             expectation1.fulfill()
         }
         
@@ -177,7 +177,7 @@ class InAppTests: XCTestCase {
         }
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _) in
+        mockInAppDisplayer.onShow.onSuccess { _ in
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
             mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: 1))
         }
@@ -209,9 +209,9 @@ class InAppTests: XCTestCase {
         }
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _) in
-            XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
+        mockInAppDisplayer.onShow.onSuccess { _ in
             mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: 1))
+            XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
         }
         
         let mockUrlDelegate = MockUrlDelegate(returnValue: true)
@@ -236,7 +236,7 @@ class InAppTests: XCTestCase {
         let mockInAppFetcher = MockInAppFetcher()
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _) in
+        mockInAppDisplayer.onShow.onSuccess { _ in
             mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: 1))
         }
         
@@ -277,16 +277,16 @@ class InAppTests: XCTestCase {
         let mockInAppFetcher = MockInAppFetcher()
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _) in
+        mockInAppDisplayer.onShow.onSuccess { _ in
             mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: 1))
         }
         
         let mockUrlOpener = MockUrlOpener { (url) in
             XCTAssertEqual(url, TestInAppPayloadGenerator.getClickedUrl(index: 1))
+            
             let messages = IterableAPI.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 1)
             XCTAssertEqual(messages[0].didProcessTrigger, true)
-            
             expectation2.fulfill()
         }
         
@@ -319,7 +319,7 @@ class InAppTests: XCTestCase {
         let mockInAppFetcher = MockInAppFetcher()
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _) in
+        mockInAppDisplayer.onShow.onSuccess { _ in
             mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getCustomActionUrl(index: 1))
         }
         
@@ -361,14 +361,18 @@ class InAppTests: XCTestCase {
         
         let iterableDeleteUrl = "iterable://delete"
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _) in
-            mockInAppDisplayer.click(url: URL(string: iterableDeleteUrl)!)
-            XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
-            expectation1.fulfill()
+        mockInAppDisplayer.onShow.onSuccess { _ in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+                mockInAppDisplayer.click(url: URL(string: iterableDeleteUrl)!)
+                
+                XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
+                expectation1.fulfill()
+            })
         }
         
         let config = IterableConfig()
         config.inAppDelegate = MockInAppDelegate(showInApp: .show)
+        config.logDelegate = AllLogDelegate()
         
         IterableAPI.initializeForTesting(
             config: config,
@@ -408,7 +412,7 @@ class InAppTests: XCTestCase {
         
         let iterableDismissUrl = "iterable://dismiss"
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _) in
+        mockInAppDisplayer.onShow.onSuccess { _ in
             mockInAppDisplayer.click(url: URL(string: iterableDismissUrl)!)
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
             expectation1.fulfill()
@@ -529,7 +533,7 @@ class InAppTests: XCTestCase {
         let mockInAppFetcher = MockInAppFetcher()
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _) in
+        mockInAppDisplayer.onShow.onSuccess { _ in
             expectation1.fulfill()
         }
         
@@ -564,7 +568,7 @@ class InAppTests: XCTestCase {
         let mockDateProvider = MockDateProvider()
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _) in
+        mockInAppDisplayer.onShow.onSuccess { _ in
             expectation1.fulfill() // expectation1 should not be fulfilled within timeout (inverted)
             expectation2.fulfill()
         }
@@ -609,7 +613,7 @@ class InAppTests: XCTestCase {
         let mockDateProvider = MockDateProvider()
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _) in
+        mockInAppDisplayer.onShow.onSuccess { _ in
             expectation1.fulfill() // expectation1 should not be fulfilled within timeout (inverted)
             expectation2.fulfill()
         }
@@ -667,7 +671,7 @@ class InAppTests: XCTestCase {
         
         let mockInAppDisplayer = MockInAppDisplayer()
         var messageNumber = -1
-        mockInAppDisplayer.onShowCallback = {(_, _) in
+        mockInAppDisplayer.onShow.onSuccess { _ in
             if messageNumber == 1 {
                 expectation1.fulfill()
                 mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: messageNumber))
@@ -714,7 +718,7 @@ class InAppTests: XCTestCase {
         let mockInAppFetcher = MockInAppFetcher()
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _) in
+        mockInAppDisplayer.onShow.onSuccess { _ in
             expectation2.fulfill()
             mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: 1))
         }
@@ -751,7 +755,7 @@ class InAppTests: XCTestCase {
         let mockInAppFetcher = MockInAppFetcher()
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(message, _) in
+        mockInAppDisplayer.onShow.onSuccess {(message) in
             mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: TestInAppPayloadGenerator.index(fromCampaignId: message.campaignId)))
             expectation0.fulfill()
         }
@@ -1165,7 +1169,7 @@ class InAppTests: XCTestCase {
         
         let customActionUrl = "\(customActionScheme)://\(customActionName)"
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _) in
+        mockInAppDisplayer.onShow.onSuccess { _ in
             mockInAppDisplayer.click(url: URL(string: customActionUrl)!)
         }
         

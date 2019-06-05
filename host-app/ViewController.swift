@@ -63,13 +63,11 @@ class ViewController: UIViewController {
         let html = """
             <a href="http://website/resource#something">Click Me</a>
         """
-        InAppDisplayer.showIterableHtmlMessage(html) { (url) in
-            guard let url = url else {
-                ITBError("Could not find url")
-                return
+        if case let ShowResult.shown(futureClickedUrl) = InAppDisplayer.showIterableHtmlMessage(html) {
+            futureClickedUrl.onSuccess { url in
+                ITBInfo("callback: \(url)")
+                self.statusLbl.text = url.absoluteString
             }
-            ITBInfo("callback: \(url)")
-            self.statusLbl.text = url.absoluteString
         }
     }
     

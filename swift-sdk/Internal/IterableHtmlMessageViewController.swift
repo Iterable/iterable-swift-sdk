@@ -17,18 +17,15 @@ class IterableHtmlMessageViewController: UIViewController {
     struct Parameters {
         let html: String
         let padding: UIEdgeInsets
-        let callback: ITBURLCallback?
         let trackParams: IterableNotificationMetadata?
         let isModal: Bool
         
         init(html: String,
              padding: UIEdgeInsets = .zero,
-             callback: ITBURLCallback? = nil,
              trackParams: IterableNotificationMetadata? = nil,
              isModal: Bool) {
             self.html = html
             self.padding = IterableHtmlMessageViewController.padding(fromPadding: padding)
-            self.callback = callback
             self.trackParams = trackParams
             self.isModal = isModal
         }
@@ -36,7 +33,18 @@ class IterableHtmlMessageViewController: UIViewController {
 
     init(parameters: Parameters) {
         self.parameters = parameters
+        self.futureClickedURL = Promise<URL, IterableError>()
         super.init(nibName: nil, bundle: nil)
+    }
+    
+    struct CreateResult {
+        let viewController: IterableHtmlMessageViewController
+        let futureClickedURL: Future<URL, IterableError>
+    }
+    
+    static func create(parameters: Parameters) -> CreateResult {
+        let viewController = IterableHtmlMessageViewController(parameters: parameters)
+        return CreateResult(viewController: viewController, futureClickedURL: viewController.futureClickedURL)
     }
     
     override var prefersStatusBarHidden: Bool {return parameters.isModal}
@@ -45,6 +53,7 @@ class IterableHtmlMessageViewController: UIViewController {
      Loads the view and sets up the webView
      */
     override func loadView() {
+        ITBInfo()
         super.loadView()
         
         location = HtmlContentParser.location(fromPadding: parameters.padding)
@@ -70,6 +79,7 @@ class IterableHtmlMessageViewController: UIViewController {
      Tracks an inApp open and layouts the webview
      */
     override func viewDidLoad() {
+        ITBInfo()
         super.viewDidLoad()
         
         if let trackParams = parameters.trackParams, let messageId = trackParams.messageId {
@@ -88,11 +98,12 @@ class IterableHtmlMessageViewController: UIViewController {
 
     required init?(coder aDecoder: NSCoder) {
         self.parameters = aDecoder.decodeObject(forKey: "input") as? Parameters ?? Parameters(html: "", isModal: false)
-
+        self.futureClickedURL = Promise<URL, IterableError>()
         super.init(coder: aDecoder)
     }
 
     private var parameters: Parameters
+    private let futureClickedURL: Promise<URL, IterableError>
     private var webView: UIWebView?
     private var location: IterableMessageLocation = .full
     private var loaded = false
@@ -178,13 +189,13 @@ extension IterableHtmlMessageViewController : UIWebViewDelegate {
         
         if parameters.isModal {
             dismiss(animated: false) { [weak self, destinationUrl] in
-                _ = self?.parameters.callback?(url)
+                self?.futureClickedURL.resolve(with: url)
                 if let trackParams = self?.parameters.trackParams, let messageId = trackParams.messageId {
                     IterableAPI.track(inAppClick: messageId, buttonURL: destinationUrl)
                 }
             }
         } else {
-            _ = parameters.callback?(url)
+            futureClickedURL.resolve(with: url)
             if let trackParams = parameters.trackParams, let messageId = trackParams.messageId {
                 IterableAPI.track(inAppClick: messageId, buttonURL: destinationUrl)
             }

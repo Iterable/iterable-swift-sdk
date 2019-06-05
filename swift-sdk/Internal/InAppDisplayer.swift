@@ -6,14 +6,18 @@
 
 import Foundation
 
+enum ShowResult {
+    case shown(Future<URL, IterableError>)
+    case notShown(String)
+}
+
 protocol InAppDisplayerProtocol {
     func isShowingInApp() -> Bool
-
     /// Shows an IterableMessage.
     /// - parameter message: The Iterable message to show
-    /// - parameter callback: the code to execute when user clicks on a link or button on the message.
-    /// - returns: A Bool indicating whether the message was opened.
-    func showInApp(message: IterableInAppMessage, withCallback callback: ITBURLCallback?) -> Bool
+    /// - returns: A Future representing the url clicked by the user or
+    /// `.notShown` with reason if the message could not be shown.
+    func showInApp(message: IterableInAppMessage) -> ShowResult
 }
 
 class InAppDisplayer : InAppDisplayerProtocol {
@@ -21,8 +25,8 @@ class InAppDisplayer : InAppDisplayerProtocol {
         return InAppDisplayer.isShowingIterableMessage()
     }
     
-    func showInApp(message: IterableInAppMessage, withCallback callback: ITBURLCallback?) -> Bool {
-        return InAppDisplayer.show(iterableMessage: message, withCallback: callback)
+    func showInApp(message: IterableInAppMessage) -> ShowResult {
+        return InAppDisplayer.show(iterableMessage: message)
     }
     
     /**
@@ -31,41 +35,37 @@ class InAppDisplayer : InAppDisplayerProtocol {
      - parameters:
      - htmlString:      The NSString containing the dialog HTML
      - trackParams:     The track params for the notification
-     - callbackBlock:   The callback to send after a button on the notification is clicked
      - backgroundAlpha: The background alpha behind the notification
      - padding:         The padding around the notification
      - returns:
-     true if IterableInAppHTMLViewController was shown.
+     A future representing the URL clicked by the user
      */
     @discardableResult static func showIterableHtmlMessage(_ htmlString: String,
                                                            trackParams: IterableNotificationMetadata? = nil,
                                                            backgroundAlpha: Double = 0,
-                                                           padding: UIEdgeInsets = .zero,
-                                                           callbackBlock: ITBURLCallback?
-        ) -> Bool {
+                                                           padding: UIEdgeInsets = .zero) -> ShowResult {
         guard let topViewController = getTopViewController() else {
-            return false
+            return .notShown("No top ViewController.")
         }
         if topViewController is IterableHtmlMessageViewController {
-            ITBError("Skipping the in-app notification. Another notification is already being displayed.")
-            return false
+            return .notShown("Skipping the in-app notification. Another notification is already being displayed.")
         }
         
         let parameters = IterableHtmlMessageViewController.Parameters(html: htmlString,
-                                                             padding: padding,
-                                                             callback: callbackBlock,
-                                                             trackParams: trackParams,
-                                                             isModal: true)
-        let baseNotification = IterableHtmlMessageViewController(parameters: parameters)
+                                                                      padding: padding,
+                                                                      trackParams: trackParams,
+                                                                      isModal: true)
+        let createResult = IterableHtmlMessageViewController.create(parameters: parameters)
+        let baseNotification =  createResult.viewController
         
         topViewController.definesPresentationContext = true
         baseNotification.view.backgroundColor = UIColor(white: 0, alpha: CGFloat(backgroundAlpha))
         baseNotification.modalPresentationStyle = .overCurrentContext
         
         topViewController.present(baseNotification, animated: false)
-        return true
+        return .shown(createResult.futureClickedURL)
     }
-    
+
     static func showSystemNotification(_ title: String,
                                                body: String,
                                                buttonLeft: String?,
@@ -110,10 +110,9 @@ class InAppDisplayer : InAppDisplayerProtocol {
         return topViewController
     }
     
-    @discardableResult fileprivate static func show(iterableMessage: IterableInAppMessage, withCallback callback:ITBURLCallback?) -> Bool {
+    @discardableResult fileprivate static func show(iterableMessage: IterableInAppMessage) -> ShowResult {
         guard let content = iterableMessage.content as? IterableHtmlInAppContent else {
-            ITBError("Invalid content type")
-            return false
+            return .notShown("Invalid content type")
         }
         
         let notificationMetadata = IterableNotificationMetadata.metadata(fromInAppOptions: iterableMessage.messageId)
@@ -121,10 +120,9 @@ class InAppDisplayer : InAppDisplayerProtocol {
         return showIterableHtmlMessage(content.html,
                                        trackParams: notificationMetadata,
                                        backgroundAlpha: content.backgroundAlpha,
-                                       padding: content.edgeInsets,
-                                       callbackBlock: callback)
+                                       padding: content.edgeInsets)
     }
-    
+
     /**
      Creates and adds an alert action button to an alertController
      
