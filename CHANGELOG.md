@@ -2,7 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [6.0.9](https://github.com/Iterable/swift-sdk/releases/tag/6.0.8)
+## [6.0.10](https://github.com/Iterable/swift-sdk/releases/tag/6.0.10)
+#### Fixed
+- updateEmail function now works with userId
+
+## [6.0.9](https://github.com/Iterable/swift-sdk/releases/tag/6.0.9)
 #### Fixed
 - set preferUserId to true when using updateUser using userId
 
