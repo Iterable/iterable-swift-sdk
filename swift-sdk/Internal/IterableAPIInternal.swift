@@ -418,6 +418,9 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             AnyHashable.ITBL_KEY_PLATFORM: String.ITBL_PLATFORM_IOS,
             AnyHashable.ITBL_KEY_SDK_VERSION: IterableAPI.sdkVersion
         ]
+        if let packageName = Bundle.main.appPackageName {
+            args[AnyHashable.ITBL_KEY_PACKAGE_NAME] = packageName
+        }
 
         addEmailOrUserId(args: &args)
 
