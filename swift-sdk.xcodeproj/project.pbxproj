@@ -12,6 +12,8 @@
 		00B6FACE210E88ED007535CF /* prod-1.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 00B6FACD210E874D007535CF /* prod-1.mobileprovision */; };
 		00B6FAD1210E8D90007535CF /* dev-1.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */; };
 		00CB31B621096129004ACDEC /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CB31B4210960C4004ACDEC /* TestUtils.swift */; };
+		5585DF8D22A729DF000A32B9 /* IterableInboxNavigationViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5585DF8C22A729DF000A32B9 /* IterableInboxNavigationViewControllerTests.swift */; };
+		5585DF8F22A73390000A32B9 /* IterableInboxViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5585DF8E22A73390000A32B9 /* IterableInboxViewControllerTests.swift */; };
 		55B37FC1229620D20042F13A /* CommerceItemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B37FC0229620D20042F13A /* CommerceItemTests.swift */; };
 		55B37FC42297135F0042F13A /* NotificationMetadataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B37FC32297135F0042F13A /* NotificationMetadataTests.swift */; };
 		55B37FC6229752DD0042F13A /* OrderedDictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B37FC5229752DD0042F13A /* OrderedDictionaryTests.swift */; };
@@ -180,6 +182,8 @@
 		00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = "dev-1.mobileprovision"; sourceTree = "<group>"; };
 		00CB31B4210960C4004ACDEC /* TestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtils.swift; sourceTree = "<group>"; };
 		0BDA0B537E9398A298EEBD89 /* Pods-swift-sdk-objc-tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-swift-sdk-objc-tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-swift-sdk-objc-tests/Pods-swift-sdk-objc-tests.debug.xcconfig"; sourceTree = "<group>"; };
+		5585DF8C22A729DF000A32B9 /* IterableInboxNavigationViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = IterableInboxNavigationViewControllerTests.swift; path = "Tests/swift-sdk-swift-tests/IterableInboxNavigationViewControllerTests.swift"; sourceTree = SOURCE_ROOT; };
+		5585DF8E22A73390000A32B9 /* IterableInboxViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxViewControllerTests.swift; sourceTree = "<group>"; };
 		55B37FC0229620D20042F13A /* CommerceItemTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommerceItemTests.swift; sourceTree = "<group>"; };
 		55B37FC32297135F0042F13A /* NotificationMetadataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationMetadataTests.swift; sourceTree = "<group>"; };
 		55B37FC5229752DD0042F13A /* OrderedDictionaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderedDictionaryTests.swift; sourceTree = "<group>"; };
@@ -548,6 +552,7 @@
 		AC7B142C20D02CE200877BFE /* swift-sdk-swift-tests */ = {
 			isa = PBXGroup;
 			children = (
+				5585DF8E22A73390000A32B9 /* IterableInboxViewControllerTests.swift */,
 				AC87172421A4E3FF00FEA369 /* Helper Classes */,
 				00B6FACF210E8B10007535CF /* Test Files */,
 				00B6FACB210E8484007535CF /* APNSUtilTests.swift */,
@@ -638,6 +643,7 @@
 			children = (
 				ACC87765215C20B50097E29B /* UITests.swift */,
 				ACC87767215C20B50097E29B /* Info.plist */,
+				5585DF8C22A729DF000A32B9 /* IterableInboxNavigationViewControllerTests.swift */,
 			);
 			path = "ui-tests";
 			sourceTree = "<group>";
@@ -1046,10 +1052,12 @@
 				ACA8D1A921965B7D001B1332 /* InAppTests.swift in Sources */,
 				00B6FACC210E8484007535CF /* APNSUtilTests.swift in Sources */,
 				AC995F9A2166EEB50099A184 /* CommonMocks.swift in Sources */,
+				5585DF8F22A73390000A32B9 /* IterableInboxViewControllerTests.swift in Sources */,
 				007960EE213F8B2300C53A6A /* DeferredDeeplinkTests.swift in Sources */,
 				ACED4C01213F50B30055A497 /* LoggingTests.swift in Sources */,
 				55B37FC42297135F0042F13A /* NotificationMetadataTests.swift in Sources */,
 				55B37FC822975A840042F13A /* InboxMessageViewModelTests.swift in Sources */,
+				5585DF8D22A729DF000A32B9 /* IterableInboxNavigationViewControllerTests.swift in Sources */,
 				55B37FC1229620D20042F13A /* CommerceItemTests.swift in Sources */,
 				AC776DA4211A17C700C27C27 /* IterableRequestUtilTests.swift in Sources */,
 				ACE34AB5213776CB00691224 /* LocalStorageTests.swift in Sources */,
