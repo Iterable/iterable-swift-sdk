@@ -92,6 +92,7 @@
 		ACA8D1A921965B7D001B1332 /* InAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA8D1A821965B7D001B1332 /* InAppTests.swift */; };
 		ACA8D1AB21966555001B1332 /* InAppManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA8D1AA21966555001B1332 /* InAppManager.swift */; };
 		ACB8273F22372A5C00DB17D3 /* IterableHtmlMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB8273E22372A5C00DB17D3 /* IterableHtmlMessageViewController.swift */; };
+		ACC51A6B22A879070095E81F /* EmptyInAppManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4B039122A8743F0043185B /* EmptyInAppManager.swift */; };
 		ACC87766215C20B50097E29B /* UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC87765215C20B50097E29B /* UITests.swift */; };
 		ACC8776D215C23CC0097E29B /* IterableSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2263DF20CF49B8009800EB /* IterableSDK.framework */; };
 		ACC8776E215C23CC0097E29B /* IterableSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AC2263DF20CF49B8009800EB /* IterableSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -990,6 +991,7 @@
 				ACA8D1A321910C66001B1332 /* IterableMessaging.swift in Sources */,
 				AC4B039622A8743F0043185B /* InAppManager+Functions.swift in Sources */,
 				AC72A0D420CF4D19004D7997 /* IterableDeeplinkManager.swift in Sources */,
+				ACC51A6B22A879070095E81F /* EmptyInAppManager.swift in Sources */,
 				AC684A86222EF75C00F29749 /* InAppMessageParser.swift in Sources */,
 				AC72A0C920CF4CE2004D7997 /* IterableAction.swift in Sources */,
 				AC72A0CA20CF4CE2004D7997 /* IterableActionRunner.swift in Sources */,

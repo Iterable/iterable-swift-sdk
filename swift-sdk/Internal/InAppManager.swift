@@ -242,6 +242,22 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         handleShowMessage(fromProcessMessagesResult: processMessagesResult)
     }
     
+    private func getMessagesMap(fromProcessMessagesResult processMessagesResult: ProcessMessagesResult) -> OrderedDictionary<String, IterableInAppMessage> {
+        switch processMessagesResult {
+        case .noShow(messagesMap: let messagesMap):
+            return messagesMap
+        case .show(message: _, messagesMap: let messagesMap):
+            return messagesMap
+        }
+    }
+    
+    // Not a pure function.
+    private func handleShowMessage(fromProcessMessagesResult processMessagesResult: ProcessMessagesResult) {
+        if case let ProcessMessagesResult.show(message: message, messagesMap: _) = processMessagesResult {
+            self.show(message: message, consume: !message.saveToInbox)
+        }
+    }
+    
     private func processMessages(messagesMap: OrderedDictionary<String, IterableInAppMessage>) -> Future<ProcessMessagesResult, Error> {
         let result = Promise<ProcessMessagesResult, Error>()
         syncQueue.async {
