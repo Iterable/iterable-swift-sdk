@@ -220,7 +220,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     // Not a pure function. This has side effect of showing the message
     private func onMessagesProcessed(_ processMessagesResult: ProcessMessagesResult) {
         self.messagesMap = getMessagesMap(fromProcessMessagesResult: processMessagesResult)
-        handleShowMessage(fromProcessMessagesResult: processMessagesResult)
+        showMessage(fromProcessMessagesResult: processMessagesResult)
     }
     
     private func getMessagesMap(fromProcessMessagesResult processMessagesResult: ProcessMessagesResult) -> OrderedDictionary<String, IterableInAppMessage> {
@@ -233,7 +233,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     }
     
     // Not a pure function.
-    private func handleShowMessage(fromProcessMessagesResult processMessagesResult: ProcessMessagesResult) {
+    private func showMessage(fromProcessMessagesResult processMessagesResult: ProcessMessagesResult) {
         if case let ProcessMessagesResult.show(message: message, messagesMap: _) = processMessagesResult {
             self.show(message: message, consume: !message.saveToInbox)
         }
@@ -495,8 +495,10 @@ extension InAppManager : InAppNotifiable {
             } else {
                 self.syncResult = self.synchronize()
             }
-            self.syncResult?.onSuccess { _ in
-                result.resolve(with: true)
+            self.syncResult?.onSuccess { success in
+                result.resolve(with: success)
+            }.onError { error in
+                result.reject(with: error)
             }
         }
         return result
