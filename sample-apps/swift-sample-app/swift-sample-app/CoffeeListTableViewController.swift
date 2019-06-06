@@ -45,7 +45,7 @@ class CoffeeListTableViewController: UITableViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        if let _ = IterableAPI.email {
+        if LoginViewController.checkIterableEmailOrUserId().eitherPresent {
             loginOutBarButton.title = "Logout"
         } else {
             loginOutBarButton.title = "Login"
