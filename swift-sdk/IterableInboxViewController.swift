@@ -153,7 +153,7 @@ open class IterableInboxViewController: UITableViewController {
         ITBInfo()
         
         if let inAppManager = IterableAPI.inAppManager as? InAppManager {
-            _ = inAppManager.onInAppSyncNeeded()
+            _ = inAppManager.scheduleSync()
         }
         
         tableView.refreshControl?.endRefreshing()

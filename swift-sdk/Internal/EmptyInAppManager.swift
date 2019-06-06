@@ -39,7 +39,7 @@ class EmptyInAppManager : IterableInAppManagerProtocolInternal {
         return 0
     }
     
-    func onInAppSyncNeeded() -> Future<Bool, Error> {
+    func scheduleSync() -> Future<Bool, Error> {
         return Promise<Bool, Error>(value: true)
     }
     

@@ -167,25 +167,6 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         }
     }
 
-    private func scheduleSync() -> Future<Bool, Error> {
-        let result = Promise<Bool, Error>()
-        self.syncQueue.async {
-            if let syncResult = self.syncResult {
-                if syncResult.isResolved() {
-                    self.syncResult = self.synchronize()
-                } else {
-                    self.syncResult = syncResult.flatMap { _ in self.synchronize() }
-                }
-            } else {
-                self.syncResult = self.synchronize()
-            }
-            self.syncResult?.onSuccess { _ in
-                result.resolve(with: true)
-            }
-        }
-        return result
-    }
-    
     private func synchronize() -> Future<Bool, Error> {
         ITBInfo()
         return
@@ -500,9 +481,25 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
 }
 
 extension InAppManager : InAppNotifiable {
-    func onInAppSyncNeeded() -> Future<Bool, Error> {
+    func scheduleSync() -> Future<Bool, Error> {
         ITBInfo()
-        return scheduleSync()
+        
+        let result = Promise<Bool, Error>()
+        self.syncQueue.async {
+            if let syncResult = self.syncResult {
+                if syncResult.isResolved() {
+                    self.syncResult = self.synchronize()
+                } else {
+                    self.syncResult = syncResult.flatMap { _ in self.synchronize() }
+                }
+            } else {
+                self.syncResult = self.synchronize()
+            }
+            self.syncResult?.onSuccess { _ in
+                result.resolve(with: true)
+            }
+        }
+        return result
     }
     
     // from server side

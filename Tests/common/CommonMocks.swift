@@ -252,7 +252,7 @@ class MockInAppFetcher: InAppFetcherProtocol {
 
         let result = Promise<Bool, Error>()
 
-        (IterableAPI.inAppManager as! IterableInAppManagerProtocolInternal).onInAppSyncNeeded().onSuccess { (_) in
+        (IterableAPI.inAppManager as! IterableInAppManagerProtocolInternal).scheduleSync().onSuccess { (_) in
             result.resolve(with: true)
         }
 
