@@ -81,6 +81,8 @@ class IterableInboxViewControllerTests: XCTestCase {
             let inboxViewController = IterableInboxViewController(style: .plain)
             _ = inboxViewController.view
             
+            sleep(1)
+            
             XCTAssertEqual(inboxViewController.navigationController?.tabBarItem.badgeValue, "\(messages.count)")
             
             guard let cell = inboxViewController.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? IterableInboxCell else {

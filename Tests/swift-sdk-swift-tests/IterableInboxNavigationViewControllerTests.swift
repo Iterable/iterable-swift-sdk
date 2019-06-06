@@ -17,6 +17,15 @@ class IterableInboxNavigationViewControllerTests: XCTestCase {
         XCTAssertNotNil(inboxNavigationVC.viewControllers[0] as? IterableInboxViewController)
     }
     
+    func testInitWithCoder() {
+        guard let inboxNavigationVC = IterableInboxNavigationViewController(coder: NSKeyedUnarchiver(forReadingWith: Data())) else {
+            XCTFail()
+            return
+        }
+        
+        XCTAssertNil(inboxNavigationVC.navigationController?.tabBarItem.badgeValue)
+    }
+    
     func testCustomCellNibName() {
         let inboxNavigationVC = IterableInboxNavigationViewController()
         
@@ -25,13 +34,5 @@ class IterableInboxNavigationViewControllerTests: XCTestCase {
         inboxNavigationVC.cellNibName = cellNibName
         
         XCTAssertEqual((inboxNavigationVC.viewControllers[0] as? IterableInboxViewController)?.cellNibName, cellNibName)
-    }
-    
-    func testDoneButtonPressed() {
-//        let inboxNavigationVC = IterableInboxNavigationViewController()
-//        
-//        if let doneAction = inboxNavigationVC.navigationItem.rightBarButtonItem?.action {
-//            perform(doneAction)
-//        }
     }
 }
