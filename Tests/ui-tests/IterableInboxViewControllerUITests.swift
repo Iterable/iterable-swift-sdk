@@ -8,6 +8,8 @@
 
 import XCTest
 
+@testable import IterableSDK
+
 class IterableInboxViewControllerUITests: XCTestCase {
     private static var timeout = 15.0
     
@@ -26,5 +28,21 @@ class IterableInboxViewControllerUITests: XCTestCase {
         continueAfterFailure = false
     }
     
+    func testRowSelect() {
+        app.buttons["Show Inbox"].tap()
+        
+        sleep(1)
+        
+//        let inboxTableView = app.tables.element(boundBy: 0)
+        
+        
+        
+//        XCTAssertFalse()
+    }
     
+    
+    
+    private func createDefaultContent() -> IterableInAppContent {
+        return IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
+    }
 }
