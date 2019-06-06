@@ -29,75 +29,7 @@ class IterableInboxViewControllerTests: XCTestCase {
         XCTAssertNil(inboxViewController4.navigationController?.tabBarItem.badgeValue)
     }
     
-//    func testOnInboxChangedNotification() {
-//        let mockInAppFetcher = MockInAppFetcher()
-//
-//        IterableAPI.initializeForTesting(inAppFetcher: mockInAppFetcher)
-//
-//        let inboxViewController = IterableInboxViewController()
-//
-//        var messages: [IterableInAppMessage] = []
-//
-//        let message1 = IterableInAppMessage(messageId: "34g87hg982", campaignId: "23g8jer2ia42d", content: createDefaultContent())
-//        messages.append(message1)
-//
-//        mockInAppFetcher.mockMessagesAvailableFromServer(messages: messages) {
-//            XCTAssertNil(inboxViewController.navigationController?.tabBarItem.badgeValue)
-//
-//            // on Travis CI, this notification post does not complete fast enough before the condition checker
-//            NotificationCenter.default.post(name: .iterableInboxChanged, object: nil)
-//
-//            XCTAssertEqual(inboxViewController.navigationController?.tabBarItem.badgeValue, "\(messages.count)")
-//        }
-//
-//        // either: "remove" message1 and test for nil again
-//        // or add a couple more messages to test for what the count is
+//    private func createDefaultContent() -> IterableInAppContent {
+//        return IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
 //    }
-    
-    func testInboxCellConfiguration() {
-        let mockInAppFetcher = MockInAppFetcher()
-        
-        IterableAPI.initializeForTesting(inAppFetcher: mockInAppFetcher)
-        
-        var messages: [IterableInAppMessage] = []
-        
-        let message1Date = Date()
-        let message1Title = "title test!"
-        let message1Subtitle = "subtitle thing"
-        let message1 = IterableInAppMessage(messageId: "34g87hg982",
-                                            campaignId: "23g8jer2ia42d",
-                                            trigger: .defaultTrigger,
-                                            createdAt: message1Date,
-                                            expiresAt: nil,
-                                            content: createDefaultContent(),
-                                            saveToInbox: true,
-                                            inboxMetadata: IterableInboxMetadata(title: message1Title,
-                                                                                 subtitle: message1Subtitle,
-                                                                                 icon: nil),
-                                            customPayload: nil)
-        messages.append(message1)
-        
-        mockInAppFetcher.mockMessagesAvailableFromServer(messages: messages) {
-            let inboxViewController = IterableInboxViewController(style: .plain)
-            _ = inboxViewController.view
-            
-            sleep(1)
-            
-            XCTAssertEqual(inboxViewController.navigationController?.tabBarItem.badgeValue, "\(messages.count)")
-            
-            guard let cell = inboxViewController.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? IterableInboxCell else {
-                XCTFail("ERROR: Could not find first IterableInboxCell that should be there")
-                return
-            }
-            
-            XCTAssertEqual(cell.titleLbl?.text, message1Title)
-            XCTAssertEqual(cell.subtitleLbl?.text, message1Subtitle)
-            XCTAssertFalse(cell.unreadCircleView?.isHidden ?? true)
-            XCTAssertEqual(cell.createdAtLbl?.text, DateFormatter.localizedString(from: message1Date, dateStyle: .medium, timeStyle: .short))
-        }
-    }
-    
-    private func createDefaultContent() -> IterableInAppContent {
-        return IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
-    }
 }
