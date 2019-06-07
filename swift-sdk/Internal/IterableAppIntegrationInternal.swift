@@ -125,7 +125,7 @@ struct IterableAppIntegrationInternal {
         if case let NotificationInfo.silentPush(silentPush) = NotificationHelper.inspect(notification: userInfo) {
             switch silentPush.notificationType {
             case .update:
-                inAppNotifiable.onInAppSyncNeeded()
+                _ = inAppNotifiable.scheduleSync()
             case .remove:
                 if let messageId = silentPush.messageId {
                     inAppNotifiable.onInAppRemoved(messageId: messageId)

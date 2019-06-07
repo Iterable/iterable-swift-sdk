@@ -60,7 +60,7 @@ class InboxTests: XCTestCase {
         }
         """.toJsonDict()
 
-        mockInAppFetcher.mockInAppPayloadFromServer(payload) {
+        mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { _ in
             let messages = IterableAPI.inAppManager.getInboxMessages()
             XCTAssertEqual(messages.count, 2)
             XCTAssertEqual(messages[0].messageId, "message2")
@@ -105,18 +105,22 @@ class InboxTests: XCTestCase {
         }
         """.toJsonDict()
         
-        mockInAppFetcher.mockInAppPayloadFromServer(payload) {
+        mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { _ in
             let messages = IterableAPI.inAppManager.getInboxMessages()
             XCTAssertEqual(messages.count, 2)
-            IterableAPI.inAppManager.set(read: true, forMessage: messages[1])
-            XCTAssertEqual(messages[0].read, false)
-            XCTAssertEqual(messages[1].read, true)
             
-            let unreadMessages = IterableAPI.inAppManager.getInboxMessages().filter { $0.read == false }
-            XCTAssertEqual(IterableAPI.inAppManager.getUnreadInboxMessagesCount(), 1)
-            XCTAssertEqual(unreadMessages.count, 1)
-            XCTAssertEqual(unreadMessages[0].read, false)
-            expectation1.fulfill()
+            IterableAPI.inAppManager.set(read: true, forMessage: messages[1])
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: {
+                XCTAssertEqual(messages[0].read, false)
+                XCTAssertEqual(messages[1].read, true)
+                
+                let unreadMessages = IterableAPI.inAppManager.getInboxMessages().filter { $0.read == false }
+                XCTAssertEqual(IterableAPI.inAppManager.getUnreadInboxMessagesCount(), 1)
+                XCTAssertEqual(unreadMessages.count, 1)
+                XCTAssertEqual(unreadMessages[0].read, false)
+                expectation1.fulfill()
+            })
         }
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
@@ -156,14 +160,16 @@ class InboxTests: XCTestCase {
         }
         """.toJsonDict()
         
-        mockInAppFetcher.mockInAppPayloadFromServer(payload) {
+        mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { _ in
             let messages = IterableAPI.inAppManager.getInboxMessages()
             XCTAssertEqual(messages.count, 2)
             
             IterableAPI.inAppManager.remove(message: messages[0])
-            let newMessages = IterableAPI.inAppManager.getInboxMessages()
-            XCTAssertEqual(newMessages.count, 1)
-            expectation1.fulfill()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: {
+                let newMessages = IterableAPI.inAppManager.getInboxMessages()
+                XCTAssertEqual(newMessages.count, 1)
+                expectation1.fulfill()
+            })
         }
        
         wait(for: [expectation1], timeout: testExpectationTimeout)
@@ -187,8 +193,10 @@ class InboxTests: XCTestCase {
         let mockUrlDelegate = MockUrlDelegate(returnValue: true)
         mockUrlDelegate.callback = {(url, _) in
             XCTAssertEqual(url.absoluteString, "https://someurl.com")
-            expectation2.fulfill()
-            XCTAssertEqual(IterableAPI.inAppManager.getUnreadInboxMessagesCount(), 1)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: {
+                XCTAssertEqual(IterableAPI.inAppManager.getUnreadInboxMessagesCount(), 1)
+                expectation2.fulfill()
+            })
         }
         let config = IterableConfig()
         config.urlDelegate = mockUrlDelegate
@@ -223,7 +231,7 @@ class InboxTests: XCTestCase {
         }
         """.toJsonDict()
         
-        mockInAppFetcher.mockInAppPayloadFromServer(payload) {
+        mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { _ in
             expectation4.fulfill()
         }
         wait(for: [expectation4], timeout: testExpectationTimeout)
@@ -286,7 +294,7 @@ class InboxTests: XCTestCase {
         }
         """.toJsonDict()
         
-        mockInAppFetcher.mockInAppPayloadFromServer(payload) {
+        mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { _ in
             expectation2.fulfill()
         }
         wait(for: [expectation2], timeout: testExpectationTimeout)
@@ -438,7 +446,7 @@ class InboxTests: XCTestCase {
         }
         """.toJsonDict()
         
-        mockInAppFetcher.mockInAppPayloadFromServer(payload) {
+        mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { _ in
             expectation3.fulfill()
         }
         wait(for: [expectation3], timeout: testExpectationTimeout)
@@ -482,7 +490,7 @@ class InboxTests: XCTestCase {
         }
         """.toJsonDict()
         
-        mockInAppFetcher.mockInAppPayloadFromServer(payload2) {
+        mockInAppFetcher.mockInAppPayloadFromServer(payload2).onSuccess { _ in
             expectation4.fulfill()
         }
         
@@ -506,9 +514,11 @@ class InboxTests: XCTestCase {
         let mockUrlDelegate = MockUrlDelegate(returnValue: true)
         mockUrlDelegate.callback = {(url, _) in
             XCTAssertEqual(url.absoluteString, "https://someurl.com")
-            expectation2.fulfill()
-            XCTAssertEqual(IterableAPI.inAppManager.getUnreadInboxMessagesCount(), 0)
-            XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 2)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: {
+                XCTAssertEqual(IterableAPI.inAppManager.getUnreadInboxMessagesCount(), 0)
+                XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 2)
+                expectation2.fulfill()
+            })
         }
         let config = IterableConfig()
         config.urlDelegate = mockUrlDelegate
@@ -543,7 +553,7 @@ class InboxTests: XCTestCase {
         }
         """.toJsonDict()
         
-        mockInAppFetcher.mockInAppPayloadFromServer(payload) {
+        mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { _ in
             expectation3.fulfill()
         }
         wait(for: [expectation3, expectation1, expectation2], timeout: testExpectationTimeout)
