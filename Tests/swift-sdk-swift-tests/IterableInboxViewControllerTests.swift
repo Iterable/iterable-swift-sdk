@@ -13,20 +13,20 @@ import XCTest
 class IterableInboxViewControllerTests: XCTestCase {
     func testInitializers() {
         let inboxViewController1 = IterableInboxViewController()
-        XCTAssertNil(inboxViewController1.navigationController?.tabBarItem.badgeValue)
+        XCTAssertEqual(inboxViewController1.tableView.numberOfSections, 1)
         
         let inboxViewController2 = IterableInboxViewController(nibName: nil, bundle: nil)
-        XCTAssertNil(inboxViewController2.navigationController?.tabBarItem.badgeValue)
+        XCTAssertEqual(inboxViewController2.tableView.numberOfSections, 1)
         
         let inboxViewController3 = IterableInboxViewController(style: .plain)
-        XCTAssertNil(inboxViewController3.navigationController?.tabBarItem.badgeValue)
+        XCTAssertEqual(inboxViewController3.tableView.numberOfSections, 1)
         
         guard let inboxViewController4 = IterableInboxViewController(coder: NSKeyedUnarchiver(forReadingWith: Data())) else {
             XCTFail()
             return
         }
         
-        XCTAssertNil(inboxViewController4.navigationController?.tabBarItem.badgeValue)
+        XCTAssertEqual(inboxViewController4.tableView.numberOfSections, 1)
     }
     
 //    private func createDefaultContent() -> IterableInAppContent {
