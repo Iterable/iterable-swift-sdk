@@ -94,10 +94,10 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     override open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let iterableMessage = viewModel.message(atRow: indexPath.row).iterableMessage
+        let message = viewModel.message(atRow: indexPath.row)
         
-        if let viewController = IterableAPI.inAppManager.createInboxMessageViewController(for: iterableMessage) {
-            IterableAPI.inAppManager.set(read: true, forMessage: iterableMessage)
+        if let viewController = viewModel.createInboxMessageViewController(forMessage: message) {
+            viewModel.set(read: true, forMessage: message)
             navigationController?.pushViewController(viewController, animated: true)
         }
     }

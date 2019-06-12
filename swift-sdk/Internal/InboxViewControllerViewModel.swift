@@ -18,6 +18,8 @@ protocol InboxViewControllerViewModelProtocol {
     var unreadCount: Int { get }
     func message(atRow row: Int) -> InboxMessageViewModel
     func remove(atRow row: Int)
+    func set(read: Bool, forMessage message: InboxMessageViewModel)
+    func createInboxMessageViewController(forMessage message: InboxMessageViewModel) -> UIViewController?
     func refresh() -> Future<Bool, Error> // Talks to the server and refreshes
     // this works hand in hand with listener.onViewModelChanged.
     // Internal model can't be changed until the view begins update.
@@ -56,12 +58,20 @@ class InboxViewControllerViewModel : InboxViewControllerViewModelProtocol {
         IterableAPI.inAppManager.remove(message: messages[row].iterableMessage)
     }
     
+    func set(read: Bool, forMessage message: InboxMessageViewModel) {
+        IterableAPI.inAppManager.set(read: true, forMessage: message.iterableMessage)
+    }
+    
     func refresh() -> Future<Bool, Error> {
         guard let inAppManager = IterableAPI.inAppManager as? InAppManager else {
             return Promise(error: IterableError.general(description: "Did not find inAppManager"))
         }
         
         return inAppManager.scheduleSync()
+    }
+    
+    func createInboxMessageViewController(forMessage message: InboxMessageViewModel) -> UIViewController? {
+        return IterableAPI.inAppManager.createInboxMessageViewController(for: message.iterableMessage)
     }
     
     func beganUpdates() {
