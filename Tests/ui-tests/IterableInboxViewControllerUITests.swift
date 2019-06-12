@@ -24,25 +24,42 @@ class IterableInboxViewControllerUITests: XCTestCase {
         return IterableInboxViewControllerUITests.application
     }
     
+    let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+    
     override func setUp() {
         continueAfterFailure = false
     }
     
-    func testRowSelect() {
-        app.buttons["Show Inbox"].tap()
-        
-        sleep(1)
-        
-//        let inboxTableView = app.tables.element(boundBy: 0)
-        
-        
-        
-//        XCTAssertFalse()
+    override func tearDown() {
+        app.launch()
     }
     
+    func testMessageDeleteButton() {
+        app.buttons["Show Inbox"].tap()
+        
+        sleep(2)
+        
+        let firstCell = app.tables.cells.firstMatch
+        
+        firstCell.swipeLeft()
+        
+        app.tables.buttons["Delete"].tap()
+        
+        XCTAssertFalse(firstCell.exists)
+    }
     
-    
-    private func createDefaultContent() -> IterableInAppContent {
-        return IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
+    func testMesageDeleteSwipe() {
+        app.buttons["Show Inbox"].tap()
+        
+        sleep(2)
+        
+        let firstCell = app.tables.cells.firstMatch
+        
+        let startPoint = firstCell.coordinate(withNormalizedOffset: CGVector(dx: 1.0, dy: 0.0))
+        let endPoint = firstCell.coordinate(withNormalizedOffset: .zero)
+        
+        startPoint.press(forDuration: 0, thenDragTo: endPoint)
+        
+        XCTAssertFalse(firstCell.exists)
     }
 }
