@@ -12,24 +12,12 @@ import XCTest
 
 class IterableInboxViewControllerTests: XCTestCase {
     func testInitializers() {
-        let inboxViewController1 = IterableInboxViewController()
-        XCTAssertEqual(inboxViewController1.tableView.numberOfSections, 1)
+        XCTAssertNotNil(IterableInboxViewController())
         
-        let inboxViewController2 = IterableInboxViewController(nibName: nil, bundle: nil)
-        XCTAssertEqual(inboxViewController2.tableView.numberOfSections, 1)
+        XCTAssertNotNil(IterableInboxViewController(nibName: nil, bundle: nil))
         
-        let inboxViewController3 = IterableInboxViewController(style: .plain)
-        XCTAssertEqual(inboxViewController3.tableView.numberOfSections, 1)
+        XCTAssertNotNil(IterableInboxViewController(style: .plain))
         
-        guard let inboxViewController4 = IterableInboxViewController(coder: NSKeyedUnarchiver(forReadingWith: Data())) else {
-            XCTFail()
-            return
-        }
-        
-        XCTAssertEqual(inboxViewController4.tableView.numberOfSections, 1)
+        XCTAssertNotNil(IterableInboxViewController(coder: NSKeyedUnarchiver(forReadingWith: Data())))
     }
-    
-//    private func createDefaultContent() -> IterableInAppContent {
-//        return IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
-//    }
 }
