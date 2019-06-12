@@ -41,6 +41,7 @@
 		AC387DE9229873B2005214A9 /* Operations+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC387DE8229873B2005214A9 /* Operations+Extensions.swift */; };
 		AC3C10F9213F46A900A9B839 /* IterableLogging.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3C10F8213F46A900A9B839 /* IterableLogging.swift */; };
 		AC3DD9C82142F3650046F886 /* ClassExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3DD9C72142F3650046F886 /* ClassExtensions.swift */; };
+		AC4095A422B18B9D006EF67C /* InboxViewControllerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4095A322B18B9D006EF67C /* InboxViewControllerViewModel.swift */; };
 		AC426CC4211B5497002EDBE8 /* ServerResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC426CC3211B5497002EDBE8 /* ServerResponse.swift */; };
 		AC4B039622A8743F0043185B /* InAppManager+Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4B039322A8743F0043185B /* InAppManager+Functions.swift */; };
 		AC64626B2140AACF0046E1BD /* IterableAPIResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC64626A2140AACF0046E1BD /* IterableAPIResponseTests.swift */; };
@@ -213,6 +214,7 @@
 		AC387DE8229873B2005214A9 /* Operations+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Operations+Extensions.swift"; sourceTree = "<group>"; };
 		AC3C10F8213F46A900A9B839 /* IterableLogging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableLogging.swift; sourceTree = "<group>"; };
 		AC3DD9C72142F3650046F886 /* ClassExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassExtensions.swift; sourceTree = "<group>"; };
+		AC4095A322B18B9D006EF67C /* InboxViewControllerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewControllerViewModel.swift; sourceTree = "<group>"; };
 		AC426CC3211B5497002EDBE8 /* ServerResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerResponse.swift; sourceTree = "<group>"; };
 		AC4B039122A8743F0043185B /* EmptyInAppManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyInAppManager.swift; sourceTree = "<group>"; };
 		AC4B039322A8743F0043185B /* InAppManager+Functions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "InAppManager+Functions.swift"; sourceTree = "<group>"; };
@@ -387,6 +389,7 @@
 			isa = PBXGroup;
 			children = (
 				AC219C4C225FE4C000B98631 /* InboxMessageViewModel.swift */,
+				AC4095A322B18B9D006EF67C /* InboxViewControllerViewModel.swift */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -1013,6 +1016,7 @@
 				AC219C4D225FE4C000B98631 /* InboxMessageViewModel.swift in Sources */,
 				AC72A0C820CF4CE2004D7997 /* ITBConsts.swift in Sources */,
 				AC2B79F721E6A38900A59080 /* NotificationHelper.swift in Sources */,
+				AC4095A422B18B9D006EF67C /* InboxViewControllerViewModel.swift in Sources */,
 				AC7A5261227BB9D10064D67E /* DependencyContainer.swift in Sources */,
 				AC776DA6211A1B8A00C27C27 /* IterableRequestUtil.swift in Sources */,
 				ACEDF41D2183C2EC000B9BFE /* Promise.swift in Sources */,
