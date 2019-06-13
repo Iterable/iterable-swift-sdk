@@ -196,6 +196,7 @@ extension IterableInboxViewController : InboxViewControllerViewModelDelegate {
             }
         }
         tableView.endUpdates()
+        viewModel.endedUpdates()
     }
     
 }

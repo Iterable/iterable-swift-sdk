@@ -24,6 +24,7 @@ protocol InboxViewControllerViewModelProtocol {
     // this works hand in hand with listener.onViewModelChanged.
     // Internal model can't be changed until the view begins update.
     func beganUpdates()
+    func endedUpdates()
 }
 
 class InboxViewControllerViewModel : InboxViewControllerViewModelProtocol {
@@ -31,7 +32,6 @@ class InboxViewControllerViewModel : InboxViewControllerViewModelProtocol {
     
     init() {
         ITBInfo()
-        
         NotificationCenter.default.addObserver(self, selector: #selector(onInboxChanged(notification:)), name: .iterableInboxChanged, object: nil)
     }
     
@@ -76,6 +76,9 @@ class InboxViewControllerViewModel : InboxViewControllerViewModelProtocol {
     
     func beganUpdates() {
         messages = newMessages
+    }
+    
+    func endedUpdates() {
     }
     
     private func loadImageIfNecessary(_ message: InboxMessageViewModel) {
