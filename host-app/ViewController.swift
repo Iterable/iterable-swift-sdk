@@ -219,9 +219,11 @@ class ViewController: UIViewController {
                                          urlOpener: mockUrlOpener)
 
         mockInAppFetcher.mockMessagesAvailableFromServer(messages: [message]).onSuccess { _ in
-            let viewController = IterableInboxViewController(style: .plain)
-            self.present(viewController, animated: true) {
-                ITBInfo("Presented Inbox")
+            DispatchQueue.main.async {
+                let viewController = IterableInboxViewController(style: .plain)
+                self.present(viewController, animated: true) {
+                    ITBInfo("Presented Inbox")
+                }
             }
         }
     }
