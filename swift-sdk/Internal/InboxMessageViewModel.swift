@@ -24,6 +24,16 @@ class InboxMessageViewModel {
         self.iterableMessage = message
     }
     
+    func hasValidImageUrl() -> Bool {
+        guard let imageUrlString = imageUrl else {
+            return false
+        }
+        guard let _ = URL(string: imageUrlString) else {
+            return false
+        }
+        return true
+    }
+    
     private static func getTitle(message: IterableInAppMessage) -> String {
         return message.inboxMetadata?.title ?? ""
     }
