@@ -32,6 +32,9 @@ class InboxViewControllerViewModel : InboxViewControllerViewModelProtocol {
     
     init() {
         ITBInfo()
+        if let _ = IterableAPI.internalImplementation {
+            messages = IterableAPI.inAppManager.getInboxMessages().map { InboxMessageViewModel(message: $0) }
+        }
         NotificationCenter.default.addObserver(self, selector: #selector(onInboxChanged(notification:)), name: .iterableInboxChanged, object: nil)
     }
     
