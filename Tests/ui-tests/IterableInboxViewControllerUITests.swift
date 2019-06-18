@@ -30,11 +30,9 @@ class IterableInboxViewControllerUITests: XCTestCase {
         continueAfterFailure = false
     }
     
-    override func tearDown() {
-        app.launch()
-    }
-    
     func testMessageDeleteButton() {
+        app.launch()
+        
         app.buttons["Show Inbox"].tap()
         
         let firstCell = app.tables.cells.firstMatch
@@ -47,6 +45,8 @@ class IterableInboxViewControllerUITests: XCTestCase {
     }
     
     func testMesageDeleteSwipe() {
+        app.launch()
+        
         app.buttons["Show Inbox"].tap()
         
         let firstCell = app.tables.cells.firstMatch
