@@ -11,7 +11,8 @@ import XCTest
 class InAppTests: XCTestCase {
     func testAutoShowInAppSingle() {
         let expectation1 = expectation(description: "testAutoShowInAppSingle")
-        let expectation2 = expectation(description: "Count decrements after showing")
+        let expectation2 = expectation(description: "count decrements after showing")
+        let expectation3 = expectation(description: "message count is not 0")
         
         let mockInAppFetcher = MockInAppFetcher()
         
@@ -38,15 +39,18 @@ class InAppTests: XCTestCase {
         mockInAppFetcher.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1)).onSuccess { _ in
             // first message has been processed by now
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
+            expectation3.fulfill()
         }
         
-        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
+        wait(for: [expectation1, expectation2, expectation3], timeout: testExpectationTimeout)
     }
     
     // skip the inApp in inAppDelegate
     func testAutoShowInAppSingleOverride() {
         let expectation1 = expectation(description: "testAutoShowInAppSingleOverride")
         expectation1.isInverted = true
+        
+        let expectation2 = expectation(description: "message count is not 1 or did not process")
         
         let mockInAppFetcher = MockInAppFetcher()
         
@@ -68,9 +72,13 @@ class InAppTests: XCTestCase {
         mockInAppFetcher.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1)).onSuccess { (_) in
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
             XCTAssertEqual(IterableAPI.inAppManager.getMessages()[0].didProcessTrigger, true)
+            
+            expectation2.fulfill()
         }
         
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
+        
+        wait(for: [expectation2], timeout: testExpectationTimeout)
     }
     
     func testAutoShowInAppMultipleWithOrdering() {
