@@ -15,7 +15,6 @@ class IterableInboxViewControllerUITests: XCTestCase {
     
     static var application: XCUIApplication = {
         let app = XCUIApplication()
-        app.launch()
         return app
     }()
     
