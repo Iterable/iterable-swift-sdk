@@ -6,7 +6,6 @@
 
 import XCTest
 
-
 class UITests: XCTestCase {
     private static var timeout = 15.0
 

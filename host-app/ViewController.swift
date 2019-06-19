@@ -213,7 +213,6 @@ class ViewController: UIViewController {
         let mockInAppFetcher = MockInAppFetcher()
         IterableAPI.initializeForTesting(apiKey: "apiKey",
                                          config: config,
-                                         networkSession: MockNetworkSession(),
                                          inAppFetcher: mockInAppFetcher,
                                          inAppDisplayer: InAppDisplayer(),
                                          urlOpener: mockUrlOpener)
