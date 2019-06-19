@@ -492,7 +492,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
     }
 
     func createPostRequest(forPath path: String, withBody body: [AnyHashable : Any]) -> URLRequest? {
-        return IterableRequestUtil.createPostRequest(forApiEndPoint: .ITBL_ENDPOINT_API, path: path, args: [AnyHashable.ITBL_KEY_API_KEY : apiKey], body: body)
+        return IterableRequestUtil.createPostRequest(forApiEndPoint: .ITBL_ENDPOINT_API, path: path, args: [AnyHashable.ITBL_HEADER_API_KEY: apiKey], body: body)
     }
     
     @discardableResult func sendRequest(_ request: URLRequest, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue> {
@@ -783,7 +783,10 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             return
         }
         
-        guard let request = IterableRequestUtil.createPostRequest(forApiEndPoint: .ITBL_ENDPOINT_LINKS, path: .ITBL_PATH_DDL_MATCH, args: [AnyHashable.ITBL_KEY_API_KEY : apiKey], body: DeviceInfo.createDeviceInfo()) else {
+        guard let request = IterableRequestUtil.createPostRequest(forApiEndPoint: .ITBL_ENDPOINT_LINKS,
+                                                                  path: .ITBL_PATH_DDL_MATCH,
+                                                                  args: [AnyHashable.ITBL_HEADER_API_KEY: apiKey],
+                                                                  body: DeviceInfo.createDeviceInfo()) else {
             ITBError("Could not create request")
             return
         }
