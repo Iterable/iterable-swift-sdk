@@ -34,8 +34,10 @@ public extension String {
 
 // Keys
 public extension AnyHashable {
-    static let ITBL_HEADER_API_KEY = "Api-Key"
     static let ITBL_KEY_API_KEY = "api_key"
+    static let ITBL_HEADER_API_KEY = "Api-Key"
+    static let ITBL_HEADER_SDK_VERSION = "SDK-Version"
+    static let ITBL_HEADER_SDK_PLATFORM = "SDK-Platform"
     static let ITBL_KEY_APPLICATION_NAME = "applicationName"
     static let ITBL_KEY_CAMPAIGN_ID = "campaignId"
     static let ITBL_KEY_COUNT = "count"
