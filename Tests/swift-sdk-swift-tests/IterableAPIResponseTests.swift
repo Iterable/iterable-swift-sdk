@@ -11,11 +11,14 @@ import OHHTTPStubs
 @testable import IterableSDK
 
 class IterableAPIResponseTests: XCTestCase {
-    func testPlatformAndVersionHeader() {
-        let networkSession = MockNetworkSession(statusCode: 200)
-        let apiInternal = IterableAPIInternal.initializeForTesting(apiKey: "", networkSession: networkSession)
+    func testPlatformAndVersionHeaderInGetRequest() {
+        let request = IterableRequestUtil.createGetRequest(forApiEndPoint: .ITBL_ENDPOINT_API,
+                                                           path: "",
+                                                           args: [AnyHashable.ITBL_KEY_API_KEY: "api_key_here"])!
         
-        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
+        XCTAssertEqual(request.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_PLATFORM), .ITBL_PLATFORM_IOS)
+        XCTAssertEqual(request.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_VERSION), IterableAPI.sdkVersion)
+    }
         
         XCTAssertEqual(request.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_PLATFORM), .ITBL_PLATFORM_IOS)
         XCTAssertEqual(request.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_VERSION), IterableAPI.sdkVersion)
