@@ -19,6 +19,12 @@ class IterableAPIResponseTests: XCTestCase {
         XCTAssertEqual(request.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_PLATFORM), .ITBL_PLATFORM_IOS)
         XCTAssertEqual(request.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_VERSION), IterableAPI.sdkVersion)
     }
+    
+    func testPlatformAndVersionHeaderInPostRequest() {
+        let request = IterableRequestUtil.createPostRequest(forApiEndPoint: .ITBL_ENDPOINT_API,
+                                                            path: "",
+                                                            args: [AnyHashable.ITBL_HEADER_API_KEY: "api_key_here"],
+                                                            body: [:])!
         
         XCTAssertEqual(request.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_PLATFORM), .ITBL_PLATFORM_IOS)
         XCTAssertEqual(request.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_VERSION), IterableAPI.sdkVersion)
