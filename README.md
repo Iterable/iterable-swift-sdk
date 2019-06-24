@@ -13,6 +13,29 @@ Before you even start with the SDK, you will need to set up Iterable push notifi
 
 For more information, read Iterable's [Setting up iOS Push Notifications](https://support.iterable.com/hc/articles/115000315806-Setting-Up-iOS-Push-Notifications) guide.
  
+## Automatic installation (via Carthage)
+
+Iterable supports [Carthage](https://github.com/Carthage/Carthage) for easy installation. If you don't have it yet, please refer to the [Installing Carthage](https://github.com/Carthage/Carthage#installing-carthage) section for installation instructions.
+
+To install the Iterable Swift SDK using Carthage:
+
+- Edit your project's **Cartfile** to add the Swift SDK as a dependency: `github "Iterable/swift-sdk" ~> 6.1.0`
+- Run `carthage update`
+- If you'll be using media attachments on iOS push notifications, these instructions include installing the `IterableAppExtensions` framework, otherwise you can ignore it for the proceeding steps.
+- Drag `IterableSDK.framework` and `IterableAppExtensions.framework` from `Carthage/Build/iOS` into the project
+- Inside the **Build Phases** section of your project file, click the **+** icon, and select **New Run Script Phase**
+- In the shell scripting section, add the command: `/usr/local/bin/carthage copy-frameworks`
+- In the **Input Files** section, add the paths to the frameworks:
+```
+$(SRCROOT)/Carthage/Build/iOS/IterableSDK.framework
+$(SRCROOT)/Carthage/Build/iOS/IterableAppExtensions.framework
+```
+- In the **Output Files** section, add the paths to copied frameworks:
+```
+$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/IterableSDK.framework
+$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/IterableAppExtensions.framework
+```
+
 ## Automatic installation (via CocoaPods)
 
 Iterable supports [CocoaPods](https://cocoapods.org) for easy installation. If you don't have it yet, please refer to the CocoaPods [Getting Started](https://guides.cocoapods.org/using/getting-started.html) guide for installation instructions.
