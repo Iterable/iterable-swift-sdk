@@ -49,27 +49,26 @@ add the following command:
     ```
     /usr/local/bin/carthage copy-frameworks
     ```
-
-5. Drag **IterableSDK.framework** from **&lt;Xcode project directory&gt;/Carthage/Build/iOS** 
-into the project, making sure to add it to your app's target.
-
-6. In the **Input Files** section, click **+** and add the following path:
+5. In the **Input Files** section, click **+** and add the following path:
 
     ```
     $(SRCROOT)/Carthage/Build/iOS/IterableSDK.framework
     ```
 
-7. In the **Output Files** section, add the path to copied framework:
+6. In the **Output Files** section, add the path to copied framework:
 
     ```
     $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/IterableSDK.framework
     ```
 
+7. Drag **IterableSDK.framework** from **&lt;Xcode project directory&gt;/Carthage/Build/iOS** 
+into the project, making sure to add it to your app's target.
+
 8. If your app will be using push notifications that contain media
 attachments (images, etc.), repeat steps 5 through 7, substituting
 **IterableAppExtensions.framework** for **IterableSDK.framework**.
 
-    In this case, in step 5, add **IterableAppExtensions.framework** to your
+    In this case, in step 7, add **IterableAppExtensions.framework** to your
     project's Notification Service Extension target instead of the app
     target.
 
