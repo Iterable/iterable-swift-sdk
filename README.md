@@ -55,7 +55,7 @@ add the following command:
     $(SRCROOT)/Carthage/Build/iOS/IterableSDK.framework
     ```
 
-6. In the **Output Files** section, add the path to copied framework:
+6. In the **Output Files** section, add the path to the copied framework:
 
     ```
     $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/IterableSDK.framework
