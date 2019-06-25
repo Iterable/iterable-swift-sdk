@@ -67,10 +67,9 @@ When prompted by Xcode, add the framework to your app's target.
 
 8. If your app will be using push notifications that contain media
 attachments (images, etc.), repeat steps 6 through 8, substituting
-**IterableAppExtensions.framework** for **IterableSDK.framework**.
-
-    In step 7, add **IterableAppExtensions.framework** to your project's
-    Notification Service Extension target (instead of the app target).
+**IterableAppExtensions.framework** for **IterableSDK.framework**. In step 7, 
+add **IterableAppExtensions.framework** to your project's Notification
+Service Extension target (instead of the app target).
 
 For more information, take a look at the [Carthage](https://github.com/Carthage/Carthage)
 documentation.
@@ -119,7 +118,7 @@ Then, follow these steps:
     your app is based on Swift or Objective-C. If your project cannot use 
     this option, install the SDK [manually](#manual-installation).
 
-4. In the terminal, run the following command to install the SDK (and app 
+3. In the terminal, run the following command to install the SDK (and app 
 extensions, if necessary):
 
     ```
