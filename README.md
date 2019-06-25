@@ -69,9 +69,8 @@ When prompted by Xcode, add the framework to your app's target.
 attachments (images, etc.), repeat steps 6 through 8, substituting
 **IterableAppExtensions.framework** for **IterableSDK.framework**.
 
-    In this case, in step 7, add **IterableAppExtensions.framework** to your
-    project's Notification Service Extension target instead of the app
-    target.
+    In step 7, add **IterableAppExtensions.framework** to your project's
+    Notification Service Extension target (instead of the app target).
 
 For more information, take a look at the [Carthage](https://github.com/Carthage/Carthage)
 documentation.
