@@ -43,8 +43,8 @@ following command:
 Click the **+** icon and select **New Run Script Phase**. A **Run Script** 
 section will appear.
 
-4. In the **Run Script** section, in the input below the **Shell** input,
-add the following command: 
+4. In the **Run Script** section, below the **Shell** input, add the 
+following command: 
 
     ```
     /usr/local/bin/carthage copy-frameworks
