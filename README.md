@@ -62,7 +62,8 @@ following command:
     ```
 
 7. Drag **IterableSDK.framework** from **&lt;Xcode project directory&gt;/Carthage/Build/iOS** 
-into the project, making sure to add it to your app's target.
+into the open project in Xcode. When prompted by Xcode, add the framework
+to your app's target.
 
 8. If your app will be using push notifications that contain media
 attachments (images, etc.), repeat steps 5 through 7, substituting
