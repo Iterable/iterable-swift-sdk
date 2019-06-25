@@ -32,42 +32,42 @@ directory as your Xcode project.
     github "Iterable/swift-sdk" ~> 6.1.0
     ```
 
-2. In the terminal, in the same directory as your **Cartfile**, run the 
+3. In the terminal, in the same directory as your **Cartfile**, run the 
 following command:
 
     ```
     carthage update
     ```
 
-3. In Xcode, navigate to the **Build Phases** section for your app's target.
+4. In Xcode, navigate to the **Build Phases** section for your app's target.
 Click the **+** icon and select **New Run Script Phase**. A **Run Script** 
 section will appear.
 
-4. In the **Run Script** section, below the **Shell** input, add the 
+5. In the **Run Script** section, below the **Shell** input, add the 
 following command: 
 
     ```
     /usr/local/bin/carthage copy-frameworks
     ```
-5. In the **Input Files** section, click **+** and add the following path:
+6. In the **Input Files** section, click **+** and add the following path:
 
     ```
     $(SRCROOT)/Carthage/Build/iOS/IterableSDK.framework
     ```
 
-6. In the **Output Files** section, add the path to the copied framework:
+7. In the **Output Files** section, add the path to the copied framework:
 
     ```
     $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/IterableSDK.framework
     ```
 
-7. Add **&lt;Xcode project directory&gt;/Carthage/Build/iOS/IterableSDK.framework** 
+8. Add **&lt;Xcode project directory&gt;/Carthage/Build/iOS/IterableSDK.framework** 
 to your Xcode project by dragging it into the Xcode Project Navigator.
 When prompted by Xcode, add the framework to your app's target.
 
-8. If your app will be using push notifications that contain media
+9. If your app will be using push notifications that contain media
 attachments (images, etc.), repeat steps 6 through 8, substituting
-**IterableAppExtensions.framework** for **IterableSDK.framework**. In step 7, 
+**IterableAppExtensions.framework** for **IterableSDK.framework**. In step 8, 
 add **IterableAppExtensions.framework** to your project's Notification
 Service Extension target (instead of the app target).
 
