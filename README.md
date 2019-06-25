@@ -9,68 +9,129 @@ The Iterable iOS SDK is a Swift implementation of an iOS client for Iterable, fo
 
 ## Before starting
 
-Before you even start with the SDK, you will need to set up Iterable push notifications for your app.
+Before starting with the SDK, you will need to set up Iterable push notifications for your app.
 
 For more information, read Iterable's [Setting up iOS Push Notifications](https://support.iterable.com/hc/articles/115000315806-Setting-Up-iOS-Push-Notifications) guide.
+
+## Installing with a dependency manager
+
+Iterable's iOS SDK can be installed using [Carthage](https://github.com/Carthage/Carthage) 
+or [CocoaPods](https://cocoapods.org/).
  
-## Automatic installation (via Carthage)
+### Carthage
 
-Iterable supports [Carthage](https://github.com/Carthage/Carthage) for easy installation. If you don't have it yet, please refer to the [Installing Carthage](https://github.com/Carthage/Carthage#installing-carthage) section for installation instructions.
+To use Carthage to install Iterable's iOS SDK, first [install Carthage](https://github.com/Carthage/Carthage#installing-carthage).
+Then, follow these steps:
 
-To install the Iterable Swift SDK using Carthage:
+1. If it does not yet exist, create a file named **Cartfile** in the same 
+directory as your Xcode project.
 
-- Edit your project's **Cartfile** to add the Swift SDK as a dependency: `github "Iterable/swift-sdk" ~> 6.1.0`
-- Run `carthage update`
-- If you'll be using media attachments on iOS push notifications, these instructions include installing the `IterableAppExtensions` framework, otherwise you can ignore it for the proceeding steps.
-- Drag `IterableSDK.framework` and `IterableAppExtensions.framework` from `Carthage/Build/iOS` into the project
-- Inside the **Build Phases** section of your project file, click the **+** icon, and select **New Run Script Phase**
-- In the shell scripting section, add the command: `/usr/local/bin/carthage copy-frameworks`
-- In the **Input Files** section, add the paths to the frameworks:
-```
-$(SRCROOT)/Carthage/Build/iOS/IterableSDK.framework
-$(SRCROOT)/Carthage/Build/iOS/IterableAppExtensions.framework
-```
-- In the **Output Files** section, add the paths to copied frameworks:
-```
-$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/IterableSDK.framework
-$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/IterableAppExtensions.framework
-```
+2. Edit **Cartfile**, adding the following line:
 
-## Automatic installation (via CocoaPods)
+    ```
+    github "Iterable/swift-sdk" ~> 6.1.0
+    ```
 
-Iterable supports [CocoaPods](https://cocoapods.org) for easy installation. If you don't have it yet, please refer to the CocoaPods [Getting Started](https://guides.cocoapods.org/using/getting-started.html) guide for installation instructions.
+2. In the terminal, in the same directory as your **Cartfile**, run the 
+following command:
 
-To install the Iterable Swift SDK using CocoaPods:
+    ```
+    carthage update
+    ```
 
-- Edit your project's **Podfile** and add the **Iterable-iOS-SDK** pod to 
-your app target.
-- If you'll be using media attachments on iOS push notifications, add the 
-**Iterable-iOS-AppExtensions** pod to your project's extension target.
+3. In Xcode, navigate to the **Build Phases** section for your app's target.
+Click the **+** icon and select **New Run Script Phase**. A **Run Script** 
+section will appear.
 
-Example **Podfile**:
+4. In the **Run Script** section, below the **Shell** input, add the 
+following command: 
 
-```ruby
-platform :ios, '11.0'
+    ```
+    /usr/local/bin/carthage copy-frameworks
+    ```
+5. In the **Input Files** section, click **+** and add the following path:
 
-# You must include the following line for both Objective-C and Swift
-# projects. If you cannot use this option for your target, install
-# the Iterable SDK in your project manually
-use_frameworks!
+    ```
+    $(SRCROOT)/Carthage/Build/iOS/IterableSDK.framework
+    ```
 
-target 'swift-sample-app' do
-  pod 'Iterable-iOS-SDK'
-end
+6. In the **Output Files** section, add the path to the copied framework:
 
-target 'swift-sample-app-notification-extension' do
-  pod 'Iterable-iOS-AppExtensions'
-end
-```
+    ```
+    $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/IterableSDK.framework
+    ```
 
-You you must include `use_frameworks!` in your **Podfile**, no matter if
-your app is based on Swift or Objective-C. If you cannot use this in your 
-project, install the SDK [manually](#manual-installation).
+7. Add **&lt;Xcode project directory&gt;/Carthage/Build/iOS/IterableSDK.framework** 
+to your Xcode project by dragging it into the Xcode Project Navigator.
+When prompted by Xcode, add the framework to your app's target.
 
-## Manual installation
+8. If your app will be using push notifications that contain media
+attachments (images, etc.), repeat steps 6 through 8, substituting
+**IterableAppExtensions.framework** for **IterableSDK.framework**. In step 7, 
+add **IterableAppExtensions.framework** to your project's Notification
+Service Extension target (instead of the app target).
+
+For more information, take a look at the [Carthage](https://github.com/Carthage/Carthage)
+documentation.
+
+### CocoaPods 
+
+To use CocoaPods to install Iterable's iOS SDK, first [install CocoaPods](https://guides.cocoapods.org/using/getting-started.html).
+Then, follow these steps:
+
+1. If your project does not yet have a **Podfile**, create one.
+
+    - In the terminal, navigate to the directory containing your project's
+    .xcodeproj file 
+    - Run the following command:
+
+        ```
+        pod init
+        ```
+
+2. Edit your project's **Podfile**.
+
+    - Add the **Iterable-iOS-SDK** pod to your projec's app target. 
+
+    - If your app will receive push notifications containing media
+    attachments (images, etc.), add the **Iterable-iOS-AppExtensions** pod to 
+    your project's Notification Service Extension target.
+
+    After these changes, your **Podfile** should look similar to the 
+    following:
+
+    ```ruby
+    platform :ios, '11.0'
+
+    use_frameworks!
+
+    target 'swift-sample-app' do
+    pod 'Iterable-iOS-SDK'
+    end
+
+    target 'swift-sample-app-notification-extension' do
+    pod 'Iterable-iOS-AppExtensions'
+    end
+    ```
+
+    You must include `use_frameworks!` in your **Podfile**, no matter if
+    your app is based on Swift or Objective-C. If your project cannot use 
+    this option, install the SDK [manually](#manual-installation).
+
+3. In the terminal, run the following command to install the SDK (and app 
+extensions, if necessary):
+
+    ```
+    pod install
+    ```
+
+    This will create an .xcworkspace file. To open your project in Xcode,
+    use this file instead of the .xcodeproj file.
+
+For more information, take a look at the [CocoaPods](https://cocoapods.org/)
+documentation.
+
+## Installing manually
 
 Attached to the release, you will find two framework bundles: 
 **IterableSDK.framework** and **IterableAppExtensions.framework**.
