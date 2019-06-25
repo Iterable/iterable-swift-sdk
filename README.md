@@ -66,7 +66,7 @@ to your Xcode project by dragging it into the Xcode Project Navigator.
 When prompted by Xcode, add the framework to your app's target.
 
 8. If your app will be using push notifications that contain media
-attachments (images, etc.), repeat steps 5 through 7, substituting
+attachments (images, etc.), repeat steps 6 through 8, substituting
 **IterableAppExtensions.framework** for **IterableSDK.framework**.
 
     In this case, in step 7, add **IterableAppExtensions.framework** to your
