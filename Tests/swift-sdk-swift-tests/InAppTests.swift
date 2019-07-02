@@ -1228,50 +1228,6 @@ class InAppTests: XCTestCase {
         
         wait(for: [expectation2], timeout: testExpectationTimeout)
     }
-    
-    fileprivate func verifyCustomActionIsCalled(expectation: XCTestExpectation, customActionScheme: String, customActionName: String) {
-        let mockInAppSynchronizer = MockInAppSynchronizer()
-        
-        let customActionUrl = "\(customActionScheme)://\(customActionName)"
-        let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShowCallback = {(_, _) in
-            mockInAppDisplayer.click(url: URL(string: customActionUrl)!)
-        }
-        
-        let mockCustomActionDelegate = MockCustomActionDelegate(returnValue: true)
-        mockCustomActionDelegate.callback = {(actionName, context) in
-            XCTAssertEqual(actionName, customActionName)
-            expectation.fulfill()
-        }
-        
-        let config = IterableConfig()
-        config.inAppDelegate = MockInAppDelegate(showInApp: .show)
-        config.customActionDelegate = mockCustomActionDelegate
-        
-        IterableAPI.initializeForTesting(
-            config: config,
-            inAppSynchronizer: mockInAppSynchronizer,
-            inAppDisplayer: mockInAppDisplayer
-        )
-        
-        let payload = """
-            {"inAppMessages":
-            [
-            {
-            "saveToInbox": true,
-            "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'\(customActionUrl)'>Click Here</a>"},
-            "trigger": {"type": "immediate"},
-            "messageId": "message0",
-            "campaignId": "campaign1",
-            "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
-            },
-            ]
-            }
-            """.toJsonDict()
-        
-        mockInAppSynchronizer.mockInAppPayloadFromServer(payload)
-    }
-    
 }
 
 extension IterableInAppTrigger {
