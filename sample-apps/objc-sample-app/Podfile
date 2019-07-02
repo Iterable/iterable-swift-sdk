@@ -1,13 +1,14 @@
 platform :ios, '11.0'
 
-# Comment the next line if you're not using Swift and don't want to use dynamic frameworks
+# You must include the following line for both Objective-C and Swift
+# projects. If you cannot use this option for your target, install
+# the Iterable SDK in your project manually.
 use_frameworks!
-swift_version = '4.0'
 
 target 'objc-sample-app' do
-  pod 'Iterable-iOS-SDK', :path => '../../../swift-sdk'
+  pod 'Iterable-iOS-SDK'
 end
 
 target 'objc-sample-app-notification-extension' do
-  pod 'Iterable-iOS-AppExtensions', :path => '../../../swift-sdk'
+  pod 'Iterable-iOS-AppExtensions'
 end

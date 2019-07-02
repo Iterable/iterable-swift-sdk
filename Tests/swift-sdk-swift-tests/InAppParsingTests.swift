@@ -146,7 +146,7 @@ class InAppParsingTests: XCTestCase {
                                requestType: .post,
                                apiEndPoint: .ITBL_ENDPOINT_API,
                                path: .ITBL_PATH_TRACK_INAPP_CLICK,
-                               queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: InAppParsingTests.apiKey),
+                               queryParams: [(name: AnyHashable.ITBL_HEADER_API_KEY, value: InAppHelperTests.apiKey),
                 ])
             let body = networkSession.getRequestBody() as! [String : Any]
             TestUtils.validateMatch(keyPath: KeyPath("messageId"), value: messageId, inDictionary: body)
@@ -171,7 +171,7 @@ class InAppParsingTests: XCTestCase {
                                requestType: .post,
                                apiEndPoint: .ITBL_ENDPOINT_API,
                                path: .ITBL_PATH_TRACK_INAPP_CLICK,
-                               queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: InAppParsingTests.apiKey),
+                               queryParams: [(name: AnyHashable.ITBL_HEADER_API_KEY, value: InAppHelperTests.apiKey),
                                              ])
             let body = networkSession.getRequestBody() as! [String : Any]
             TestUtils.validateMatch(keyPath: KeyPath("messageId"), value: messageId, inDictionary: body)
@@ -195,7 +195,7 @@ class InAppParsingTests: XCTestCase {
                                requestType: .post,
                                apiEndPoint: .ITBL_ENDPOINT_API,
                                path: .ITBL_PATH_TRACK_INAPP_OPEN,
-                               queryParams: [(name: AnyHashable.ITBL_KEY_API_KEY, value: InAppParsingTests.apiKey),
+                               queryParams: [(name: AnyHashable.ITBL_HEADER_API_KEY, value: InAppHelperTests.apiKey),
                                              ])
             let body = networkSession.getRequestBody() as! [String : Any]
             TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_MESSAGE_ID), value: messageId, inDictionary: body)

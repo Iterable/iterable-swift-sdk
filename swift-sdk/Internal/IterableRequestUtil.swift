@@ -24,6 +24,8 @@ struct IterableRequestUtil {
         
         var request = URLRequest(url: url)
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue(.ITBL_PLATFORM_IOS, forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_PLATFORM)
+        request.setValue(IterableAPI.sdkVersion, forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_VERSION)
         request.httpMethod = .ITBL_KEY_POST
         request.httpBody = body
         return request
@@ -33,7 +35,10 @@ struct IterableRequestUtil {
         guard let url = getUrlComponents(forApiEndPoint: apiEndPoint, path: path, args: args)?.url else {
             return nil
         }
+        
         var request = URLRequest(url: url)
+        request.setValue(.ITBL_PLATFORM_IOS, forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_PLATFORM)
+        request.setValue(IterableAPI.sdkVersion, forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_VERSION)
         request.httpMethod = .ITBL_KEY_GET
         return request
     }
