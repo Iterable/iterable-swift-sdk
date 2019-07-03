@@ -123,7 +123,7 @@ class IterableAPITests: XCTestCase {
     func testUpdateUserWithEmail() {
         let expectation = XCTestExpectation(description: "testUpdateUserWithEmail")
         
-        let networkSession = MockNetworkSession(statusCode: 200)
+        let networkSession = MockNetworkSession()
         IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
         IterableAPI.email = IterableAPITests.email
         let dataFields: Dictionary<String, String> = ["var1" : "val1", "var2" : "val2"]
@@ -150,7 +150,7 @@ class IterableAPITests: XCTestCase {
         let expectation = XCTestExpectation(description: "testUpdateUserWithUserId")
         
         let userId = UUID().uuidString
-        let networkSession = MockNetworkSession(statusCode: 200)
+        let networkSession = MockNetworkSession()
         IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
         IterableAPI.userId = userId
         let dataFields: Dictionary<String, String> = ["var1" : "val1", "var2" : "val2"]

@@ -137,7 +137,7 @@ class InAppParsingTests: XCTestCase {
         let messageId = "message1"
         let buttonUrl = "http://somewhere.com"
         let expectation1 = expectation(description: "track in app click")
-
+        
         let networkSession = MockNetworkSession(statusCode: 200)
         IterableAPI.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
         IterableAPI.userId = InAppParsingTests.userId
@@ -526,7 +526,6 @@ class InAppParsingTests: XCTestCase {
         let url = URL(string: "applewebdata://")!
         XCTAssertNil(InAppHelper.parse(inAppUrl: url))
     }
-
     
     func testCallbackUrlParsingAppleWebdataScheme2() {
         let url = URL(string: "applewebdata://this-is-uuid/the-real-url")!

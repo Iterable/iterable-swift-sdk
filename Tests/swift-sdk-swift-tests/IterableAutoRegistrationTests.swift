@@ -96,13 +96,13 @@ class IterableAutoRegistrationTests: XCTestCase {
         let expectation1 = expectation(description: "do not call register for remote")
         expectation1.isInverted = true
         
-        let networkSession = MockNetworkSession(statusCode: 200)
+        let networkSession = MockNetworkSession()
         let config = IterableConfig()
         config.pushIntegrationName = "my-push-integration"
         config.autoPushRegistration = false
         let notificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: expectation1)
         
-        IterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey, config:config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+        IterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey, config: config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
         IterableAPI.email = "user1@example.com"
         let token = "zeeToken".data(using: .utf8)!
         networkSession.callback = {(_, _, _) in
