@@ -7,28 +7,35 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Inbox
 	- Brand new inbox functionality. Please see documentation for more details.
 
+## 6.1.0
+#### Changed
+- In this version we have changed the way we use in-app notifications. In-app messages are now being sent asynchronously and your code can control the order and time in which an in-app notification will be shown. There is no need to poll for new in-app messages. Please refer to the **in-app messages** section of README file for how to use in-app messages. If you are already using in-app messages, please refer to [migration guide](https://github.com/iterable/swift-sdk##migrating-from-a-version-prior-to-610) section of README file.
 
-## [6.0.8](https://github.com/Iterable/swift-sdk/releases/tag/6.0.8)
+## 6.1.0-beta4
+#### Changed
+- Url scheme `iterable://` is reserved for Iterable internal actions. In an earlier beta version, the reserved url scheme was `itbl://` but we are not using that now. `itbl://` scheme is only there for backward compatibility and should not be used.
+- Url scheme `action://` is for user custom actions.
+
+## 6.1.0-beta3
+#### Changed
+- Increase number of in-app messages fetched from the server to 100.
+
+## 6.1.0-beta2
+#### Added
+- Support for `action://your-custom-action-name` URL scheme for calling custom actions 
+	- For example, to have `IterableCustomActionDelegate` call a custom `buyCoffee` action when a user taps on an in-app message's **Buy** button.
+- Support for reserved `itbl://sdk-custom-action` scheme for SDK internal actions.
+	- URL scheme `itbl://sdk-custom-action` is reserved for internal SDK actions. Do not use it for custom actions. 
+	- For example, future versions of the SDK may allow buttons to call href `itbl://delete` to delete an in-app message.
+
 #### Fixed
 - Carthage support with Xcode 10.2
-
-## [6.0.7](https://github.com/Iterable/swift-sdk/releases/tag/6.0.7)
-#### Fixed
 - XCode 10.2 Warnings
 - URL Query parameters encoding bug
-
-## [6.0.6](https://github.com/Iterable/swift-sdk/releases/tag/6.0.6)
-#### Added
-- Update to Swift 4.2
-
-## [6.0.5](https://github.com/Iterable/swift-sdk/releases/tag/6.0.5)
-#### Fixed
-- Carthage support
 
 ## 6.1.0-beta1
 #### Added
 - We have improved the in-app messaging implementation significantly. 
-
 	- The SDK now maintains a local queue and keep it in sync with the server-side queue automatically.
 	- Iterable servers now notify apps via silent push messages whenever the in-app message queue is updated.
 	- In-app messages are shown by default whenever they arrive.
@@ -43,6 +50,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 #### Fixed
 - nothing yet
+
+## [6.0.8](https://github.com/Iterable/swift-sdk/releases/tag/6.0.8)
+#### Fixed
+- Carthage support with Xcode 10.2
 
 ## [6.0.4](https://github.com/Iterable/swift-sdk/releases/tag/6.0.4)
 #### Added

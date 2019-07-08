@@ -27,8 +27,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let config = IterableConfig()
         config.customActionDelegate = self
         config.urlDelegate = self
-        config.pushIntegrationName = "swift-sample-app"
-        config.sandboxPushIntegrationName = "swift-sample-app"
+        config.pushIntegrationName = "iOSDemoAppProd"
+        config.sandboxPushIntegrationName = "iOSDemoAppDev"
         // Replace with your api key and email here.
         IterableAPI.initialize(apiKey: iterableApiKey,
                                launchOptions:launchOptions,
@@ -67,8 +67,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         //ITBL:
-        if IterableAPI.email == nil {
-            let alert = UIAlertController(title: "Please Login", message: "You must set 'IterableAPI.email' before receiving push notifications from Iterable.", preferredStyle: .alert)
+        if !LoginViewController.checkIterableEmailOrUserId().eitherPresent {
+            let alert = UIAlertController(title: "Please Login", message: "You must set 'IterableAPI.email or IterableAPI.userId' before receiving push notifications from Iterable.", preferredStyle: .alert)
             let action = UIAlertAction(title: "OK", style: .default) { (action) in
                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
                 let vc = storyboard.instantiateViewController(withIdentifier: "LoginNavController")

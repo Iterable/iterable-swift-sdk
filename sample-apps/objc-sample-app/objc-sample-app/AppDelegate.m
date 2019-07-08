@@ -98,7 +98,6 @@ NSString *iterableApiKey = @""; // set iterable api key here
 
 #pragma mark - Url handling
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler {
-
     //ITBL:
     NSURL *url = userActivity.webpageURL;
     if (url == nil) {

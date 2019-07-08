@@ -19,8 +19,8 @@ UNIVERSAL_OUTPUTFOLDER=${BUILD_DIR}/${CONFIGURATION}-universal
 mkdir -p "${UNIVERSAL_OUTPUTFOLDER}"
 
 # Step 1. Build Device and Simulator versions
-xcodebuild -target "${TARGET}" ONLY_ACTIVE_ARCH=NO -configuration ${CONFIGURATION} -sdk iphoneos  BUILD_DIR="${BUILD_DIR}" BUILD_ROOT="${BUILD_DIR}" clean build
-xcodebuild -target "${TARGET}" -configuration ${CONFIGURATION} -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO BUILD_DIR="${BUILD_DIR}" BUILD_ROOT="${BUILD_DIR}" clean build
+xcodebuild -target "${TARGET}" ONLY_ACTIVE_ARCH=NO -configuration ${CONFIGURATION} -sdk iphoneos  BUILD_DIR="${BUILD_DIR}" BUILD_ROOT="${BUILD_DIR}" BITCODE_GENERATION_MODE=bitcode clean build 
+xcodebuild -target "${TARGET}" -configuration ${CONFIGURATION} -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO BUILD_DIR="${BUILD_DIR}" BUILD_ROOT="${BUILD_DIR}" BITCODE_GENERATION_MODE=bitcode clean build
 
 # Step 2. Copy the framework structure (from iphoneos build) to the universal folder
 cp -R "${BUILD_DIR}/${CONFIGURATION}-iphoneos/${MODULE_NAME}.framework" "${UNIVERSAL_OUTPUTFOLDER}/"
@@ -33,6 +33,15 @@ fi
 
 # Step 4. Create universal binary file using lipo and place the combined executable in the copied framework directory
 lipo -create -output "${UNIVERSAL_OUTPUTFOLDER}/${MODULE_NAME}.framework/${MODULE_NAME}" "${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${MODULE_NAME}.framework/${MODULE_NAME}" "${BUILD_DIR}/${CONFIGURATION}-iphoneos/${MODULE_NAME}.framework/${MODULE_NAME}"
+
+# Step 4.5 Xcode10.2 Fix IterableSDK-Swift.h
+# Workaround for known issue in Xcode 10.2: https://developer.apple.com/documentation/xcode_release_notes/xcode_10_2_release_notes#3136806
+# Merge the simulator and device headers for the now-merged framework.
+DEVICE_HEADER_PATH="${BUILD_DIR}/${CONFIGURATION}-iphoneos/${MODULE_NAME}.framework/Headers/${MODULE_NAME}-Swift.h"
+SIMULATOR_HEADER_PATH="${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${MODULE_NAME}.framework/Headers/${MODULE_NAME}-Swift.h"
+OUTPUT_HEADER_PATH="${UNIVERSAL_OUTPUTFOLDER}/${MODULE_NAME}.framework/Headers/${MODULE_NAME}-Swift.h"
+cat "${DEVICE_HEADER_PATH}" > "${OUTPUT_HEADER_PATH}"
+cat "${SIMULATOR_HEADER_PATH}" >> "${OUTPUT_HEADER_PATH}"
 
 # Step 5. Convenience step to copy the framework to the build directory
 cp -R "${UNIVERSAL_OUTPUTFOLDER}/${MODULE_NAME}.framework" "${BUILD_DIR}"

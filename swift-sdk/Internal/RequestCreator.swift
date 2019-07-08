@@ -114,6 +114,10 @@ struct RequestCreator {
         body[.ITBL_KEY_MERGE_NESTED] = NSNumber(value: mergeNestedObjects)
         addEmailOrUserId(dict: &body)
         
+        if auth.email == nil && auth.userId != nil {
+            body[.ITBL_KEY_PREFER_USER_ID] = true
+        }
+        
         return .success(.post(createPostRequest(path: .ITBL_PATH_UPDATE_USER, body: body)))
     }
     
@@ -276,7 +280,7 @@ struct RequestCreator {
     
     private func createPostRequest(path: String, body: [AnyHashable: Any]? = nil) -> PostRequest {
         return PostRequest(path: path,
-                           args: [AnyHashable.ITBL_KEY_API_KEY: apiKey],
+                           args: [AnyHashable.ITBL_HEADER_API_KEY: apiKey],
                            body: body)
     }
     
