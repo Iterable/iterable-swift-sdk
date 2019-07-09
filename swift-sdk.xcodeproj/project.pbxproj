@@ -460,16 +460,16 @@
 		AC2263FA20CF4B84009800EB /* InApp */ = {
 			isa = PBXGroup;
 			children = (
-				AC72A0AA20CF4BEB004D7997 /* InAppHelper.swift */,
-				ACA8D1AA21966555001B1332 /* InAppManager.swift */,
-				ACE6888C2228B86C00A95E5E /* InAppInternal.swift */,
-				AC03094A21E532470003A288 /* InAppPersistence.swift */,
-				AC684A85222EF75C00F29749 /* InAppMessageParser.swift */,
+				AC4B039122A8743F0043185B /* EmptyInAppManager.swift */,
 				AC8874A922178BD80075B54B /* InAppContentParser.swift */,
 				AC684A87222F4FDD00F29749 /* InAppDisplayer.swift */,
-				ACB8273E22372A5C00DB17D3 /* IterableHtmlMessageViewController.swift */,
+				AC72A0AA20CF4BEB004D7997 /* InAppHelper.swift */,
+				ACE6888C2228B86C00A95E5E /* InAppInternal.swift */,
+				ACA8D1AA21966555001B1332 /* InAppManager.swift */,
 				AC4B039322A8743F0043185B /* InAppManager+Functions.swift */,
-				AC4B039122A8743F0043185B /* EmptyInAppManager.swift */,
+				AC684A85222EF75C00F29749 /* InAppMessageParser.swift */,
+				AC03094A21E532470003A288 /* InAppPersistence.swift */,
+				ACB8273E22372A5C00DB17D3 /* IterableHtmlMessageViewController.swift */,
 			);
 			name = InApp;
 			sourceTree = "<group>";

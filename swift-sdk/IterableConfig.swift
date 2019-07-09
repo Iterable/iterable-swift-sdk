@@ -37,7 +37,7 @@ import Foundation
 /**
  * This protocol allows you to override default behavior when new in-app messages arrive.
  */
-@objc public protocol IterableInAppDelegate : class {
+@objc public protocol IterableInAppDelegate: class {
     /**
      * This method is called when new in-app message is available.
      * The default behavior is to `show` if you don't override this method.
@@ -50,7 +50,7 @@ import Foundation
 /**
  * Lowest level that will be logged. By default the LogLevel is set to LogLevel.info.
  */
-@objc public enum LogLevel : Int {
+@objc public enum LogLevel: Int {
     case debug = 1
     case info
     case error
@@ -71,7 +71,7 @@ import Foundation
 /**
  Enum representing push platform; apple push notification service, production vs sandbox
  */
-@objc public enum PushServicePlatform : Int {
+@objc public enum PushServicePlatform: Int {
     /** The sandbox push service */
     case sandbox
     /** The production push service */
@@ -84,7 +84,7 @@ import Foundation
  Iterable Configuration Object. Use this when initializing the API.
  */
 @objcMembers
-public class IterableConfig : NSObject {
+public class IterableConfig: NSObject {
     /**
      * Push integration name – used for token registration.
      * Make sure the name of this integration matches the one set up in Iterable console.

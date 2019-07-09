@@ -80,9 +80,11 @@ struct MessagesProcessor {
         if let didProcessTrigger = didProcessTrigger {
             toUpdate.didProcessTrigger = didProcessTrigger
         }
+        
         if let consumed = consumed {
             toUpdate.consumed = consumed
         }
+        
         self.messagesMap.updateValue(toUpdate, forKey: message.messageId)
     }
     
@@ -123,8 +125,10 @@ struct MessagesObtainedHandler {
             if $0.saveToInbox == true {
                 inboxCount += 1
             }
+            
             messagesMap.removeValue(forKey: $0.messageId)
         }
+        
         return inboxCount
     }
     
@@ -148,6 +152,7 @@ struct MessagesObtainedHandler {
                 messagesMap[message.messageId] = message
             }
         }
+        
         return inboxCount
     }
     

@@ -12,7 +12,7 @@ protocol NotificationCenterProtocol {
     func post(name: Notification.Name, object: Any?, userInfo: [AnyHashable : Any]?)
 }
 
-extension NotificationCenter : NotificationCenterProtocol {
+extension NotificationCenter: NotificationCenterProtocol {
 }
 
 // This is internal. Do not expose
@@ -480,7 +480,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     private let moveToForegroundSyncInterval: Double = 1.0 * 60.0 // don't sync within sixty seconds
 }
 
-extension InAppManager : InAppNotifiable {
+extension InAppManager: InAppNotifiable {
     func scheduleSync() -> Future<Bool, Error> {
         ITBInfo()
         
@@ -519,4 +519,3 @@ extension InAppManager : InAppNotifiable {
         }
     }
 }
-

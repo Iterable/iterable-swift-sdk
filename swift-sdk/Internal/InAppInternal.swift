@@ -22,7 +22,7 @@ extension IterableInAppTriggerType {
     static let undefinedTriggerType = IterableInAppTriggerType.never // undefined is what we select if payload has new trigger type
 }
 
-class InAppFetcher : InAppFetcherProtocol {
+class InAppFetcher: InAppFetcherProtocol {
     init(apiClient: ApiClientProtocol) {
         ITBInfo()
         self.apiClient = apiClient
@@ -30,13 +30,15 @@ class InAppFetcher : InAppFetcherProtocol {
     
     func fetch() -> Future<[IterableInAppMessage], Error> {
         ITBInfo()
+        
         guard let apiClient = apiClient else {
             ITBError("Invalid state: expected ApiClient")
             return Promise(error: IterableError.general(description: "Invalid state: expected InternalApi"))
         }
+        
         return InAppHelper.getInAppMessagesFromServer(apiClient: apiClient, number: numMessages).mapFailure {$0}
     }
-
+    
     private weak var apiClient: ApiClientProtocol?
     
     deinit {

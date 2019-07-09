@@ -8,7 +8,6 @@
 
 import UIKit
 
-
 // This is Internal Struct, no public methods
 struct InAppHelper {
     static func getInAppMessagesFromServer(apiClient: ApiClientProtocol, number: Int) -> Future<[IterableInAppMessage], SendRequestError> {
@@ -31,7 +30,7 @@ struct InAppHelper {
             ITBError("Request url contains an invalid scheme: \(url)")
             return nil
         }
-
+        
         switch scheme {
         case .applewebdata:
             ITBError("Request url contains an invalid scheme: \(url)")
@@ -59,6 +58,7 @@ struct InAppHelper {
             guard let name = url.scheme else {
                 return nil
             }
+            
             if let scheme = UrlScheme(rawValue: name.lowercased()) {
                 return scheme
             } else {
@@ -73,10 +73,12 @@ struct InAppHelper {
         guard let host = url.host else {
             return nil
         }
+        
         let urlArray = url.absoluteString.components(separatedBy: host)
         guard urlArray.count > 1 else {
             return nil
         }
+        
         let urlPath = urlArray[1]
         return dropLeadingSlashes(str: urlPath)
     }
@@ -89,7 +91,7 @@ struct InAppHelper {
         let prefix = scheme + "://"
         return String(urlString.dropFirst(prefix.count))
     }
-
+    
     // process each parseResult and consumes failed message, if messageId is present
     private static func process(parseResult: IterableResult<IterableInAppMessage, InAppMessageParser.ParseError>, apiClient: ApiClientProtocol) -> IterableInAppMessage? {
         switch parseResult {

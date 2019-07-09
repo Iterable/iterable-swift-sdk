@@ -55,12 +55,15 @@ struct HtmlContentParser {
         if let topPadding = dict[PADDING_TOP] {
             padding.top = CGFloat(decodePadding(topPadding))
         }
+        
         if let leftPadding = dict[PADDING_LEFT] {
             padding.left = CGFloat(decodePadding(leftPadding))
         }
+        
         if let rightPadding = dict[PADDING_RIGHT] {
             padding.right = CGFloat(decodePadding(rightPadding))
         }
+        
         if let bottomPadding = dict[PADDING_BOTTOM] {
             padding.bottom = CGFloat(decodePadding(bottomPadding))
         }
@@ -95,7 +98,7 @@ struct HtmlContentParser {
      @discussion Passes back -1 for Auto expanded padding
      */
     static func decodePadding(_ value: Any?) -> Int {
-        guard let dict = value as? [AnyHashable : Any] else {
+        guard let dict = value as? [AnyHashable: Any] else {
             return 0
         }
         
@@ -110,7 +113,7 @@ struct HtmlContentParser {
         }
     }
     
-    static func getBackgroundAlpha(fromInAppSettings settings: [AnyHashable : Any]?) -> Double {
+    static func getBackgroundAlpha(fromInAppSettings settings: [AnyHashable: Any]?) -> Double {
         guard let settings = settings else {
             return 0
         }
@@ -132,7 +135,7 @@ struct HtmlContentParser {
     private static let IN_APP_PERCENTAGE = "percentage"
 }
 
-extension HtmlContentParser : ContentFromJsonParser {
+extension HtmlContentParser: ContentFromJsonParser {
     fileprivate static func tryCreate(from json: [AnyHashable : Any]) -> InAppContentParseResult {
         guard let html = json[.ITBL_IN_APP_HTML] as? String else {
             return .failure(reason: "no html")

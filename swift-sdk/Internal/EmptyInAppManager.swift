@@ -6,7 +6,7 @@
 
 import Foundation
 
-class EmptyInAppManager : IterableInAppManagerProtocolInternal {
+class EmptyInAppManager: IterableInAppManagerProtocolInternal {
     func start() {
     }
     
@@ -50,4 +50,3 @@ class EmptyInAppManager : IterableInAppManagerProtocolInternal {
         return true
     }
 }
-

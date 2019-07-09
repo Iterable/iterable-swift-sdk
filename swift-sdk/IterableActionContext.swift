@@ -8,7 +8,7 @@
 
 import Foundation
 
-@objc public enum IterableActionSource : Int {
+@objc public enum IterableActionSource: Int {
     case push
     case universalLink
     case inApp
@@ -16,7 +16,7 @@ import Foundation
 
 @objc
 @objcMembers
-public class IterableActionContext : NSObject {
+public class IterableActionContext: NSObject {
     public let action: IterableAction
     public let source: IterableActionSource
 
@@ -25,4 +25,3 @@ public class IterableActionContext : NSObject {
         self.source = source
     }
 }
-

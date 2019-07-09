@@ -7,7 +7,7 @@
 import Foundation
 import UserNotifications
 
-final class IterableAPIInternal : NSObject, PushTrackerProtocol, AuthProvider {
+final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     var apiKey: String
 
     var email: String? {
@@ -88,7 +88,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol, AuthProvider {
     }
 
     // AuthProvider Protocol
-    var auth : Auth {
+    var auth: Auth {
         return Auth(userId: userId, email: email)
     }
     
@@ -161,7 +161,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol, AuthProvider {
         disableDevice(forAllUsers: true, onSuccess: onSuccess, onFailure: onFailure)
     }
     
-    func updateUser(_ dataFields: [AnyHashable : Any], mergeNestedObjects: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func updateUser(_ dataFields: [AnyHashable: Any], mergeNestedObjects: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         IterableAPIInternal.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
                                  forResult: apiClient.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects))
@@ -183,28 +183,28 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol, AuthProvider {
         trackPurchase(total, items: items, dataFields: nil)
     }
 
-    func trackPurchase(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?) {
+    func trackPurchase(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) {
         trackPurchase(total, items: items, dataFields: dataFields, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackPurchase"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPurchase"))
     }
 
-    func trackPurchase(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func trackPurchase(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         IterableAPIInternal.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
                                  forResult: apiClient.track(purchase: total, items: items, dataFields: dataFields))
     }
 
-    func trackPushOpen(_ userInfo: [AnyHashable : Any]) {
+    func trackPushOpen(_ userInfo: [AnyHashable: Any]) {
         trackPushOpen(userInfo, dataFields: nil)
     }
     
-    func trackPushOpen(_ userInfo: [AnyHashable : Any], dataFields: [AnyHashable : Any]?) {
+    func trackPushOpen(_ userInfo: [AnyHashable: Any], dataFields: [AnyHashable: Any]?) {
         trackPushOpen(userInfo,
                       dataFields: dataFields,
                       onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackPushOpen"),
                       onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPushOpen"))
     }
 
-    func trackPushOpen(_ userInfo: [AnyHashable : Any], dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func trackPushOpen(_ userInfo: [AnyHashable: Any], dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         save(pushPayload: userInfo)
         if let metadata = IterableNotificationMetadata.metadata(fromLaunchOptions: userInfo), metadata.isRealCampaignNotification() {
             trackPushOpen(metadata.campaignId, templateId: metadata.templateId, messageId: metadata.messageId, appAlreadyRunning: false, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
@@ -213,7 +213,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
 
-    func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?) {
+    func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?) {
         trackPushOpen(campaignId, templateId: templateId, messageId: messageId, appAlreadyRunning: appAlreadyRunning, dataFields: dataFields, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackPushOpen"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPushOpen"))
     }
 
@@ -227,7 +227,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol, AuthProvider {
                                                                     dataFields: dataFields))
     }
     
-    private func save(pushPayload payload: [AnyHashable : Any]) {
+    private func save(pushPayload payload: [AnyHashable: Any]) {
         let expiration = Calendar.current.date(byAdding: .hour,
                                                value: .ITBL_USER_DEFAULTS_PAYLOAD_EXPIRATION_HOURS,
                                                to: dateProvider.currentDate)
@@ -244,11 +244,11 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol, AuthProvider {
         track(eventName, dataFields: nil)
     }
 
-    func track(_ eventName: String, dataFields: [AnyHashable : Any]?) {
+    func track(_ eventName: String, dataFields: [AnyHashable: Any]?) {
         track(eventName, dataFields: dataFields, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "track"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "track"))
     }
 
-    func track(_ eventName: String, dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func track(_ eventName: String, dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         IterableAPIInternal.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
                                  forResult: apiClient.track(event: eventName, dataFields: dataFields))

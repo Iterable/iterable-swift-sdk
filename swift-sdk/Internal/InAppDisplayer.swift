@@ -20,7 +20,7 @@ protocol InAppDisplayerProtocol {
     func showInApp(message: IterableInAppMessage) -> ShowResult
 }
 
-class InAppDisplayer : InAppDisplayerProtocol {
+class InAppDisplayer: InAppDisplayerProtocol {
     func isShowingInApp() -> Bool {
         return InAppDisplayer.isShowingIterableMessage()
     }
@@ -47,6 +47,7 @@ class InAppDisplayer : InAppDisplayerProtocol {
         guard let topViewController = getTopViewController() else {
             return .notShown("No top ViewController.")
         }
+        
         if topViewController is IterableHtmlMessageViewController {
             return .notShown("Skipping the in-app notification. Another notification is already being displayed.")
         }
@@ -80,6 +81,7 @@ class InAppDisplayer : InAppDisplayerProtocol {
         if let buttonLeft = buttonLeft {
             addAlertActionButton(alertController: alertController, keyString: buttonLeft, callbackBlock: callbackBlock)
         }
+        
         if let buttonRight = buttonRight {
             addAlertActionButton(alertController: alertController, keyString: buttonRight, callbackBlock: callbackBlock)
         }
@@ -92,6 +94,7 @@ class InAppDisplayer : InAppDisplayerProtocol {
             ITBError("Must be called from main thread")
             return false
         }
+        
         guard let topViewController = getTopViewController() else {
             return false
         }
@@ -103,10 +106,12 @@ class InAppDisplayer : InAppDisplayerProtocol {
         guard let rootViewController = IterableUtil.rootViewController else {
             return nil
         }
+        
         var topViewController = rootViewController
         while (topViewController.presentedViewController != nil) {
             topViewController = topViewController.presentedViewController!
         }
+        
         return topViewController
     }
     

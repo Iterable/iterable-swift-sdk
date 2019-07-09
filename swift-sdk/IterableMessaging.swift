@@ -100,7 +100,7 @@ public final class IterableHtmlInAppContent: NSObject, IterableInAppContent {
 }
 
 @objcMembers
-public final class IterableInboxMetadata : NSObject {
+public final class IterableInboxMetadata: NSObject {
     public let title: String?
     public let subtitle: String?
     public let icon: String?
@@ -128,7 +128,7 @@ public final class IterableInboxMetadata : NSObject {
 }
 
 @objcMembers
-public final class IterableInAppTrigger : NSObject {
+public final class IterableInAppTrigger: NSObject {
     public let type: IterableInAppTriggerType
     
     // internal
@@ -148,7 +148,7 @@ public final class IterableInAppTrigger : NSObject {
 
 /// A message is comprised of content and whether this message was skipped.
 @objcMembers
-public final class IterableInAppMessage : NSObject {
+public final class IterableInAppMessage: NSObject {
     /// the id for the inApp message
     public let messageId: String
 

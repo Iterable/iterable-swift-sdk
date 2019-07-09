@@ -10,7 +10,7 @@ import Foundation
     @objc var currentDate: Date { get }
 }
 
-public class SystemDateProvider : DateProviderProtocol {
+public class SystemDateProvider: DateProviderProtocol {
     public init() {}
     
     public var currentDate: Date {

@@ -11,7 +11,7 @@ import Foundation
 /**
  `IterableNotificationMetadata` represents the metadata in an Iterable push notification
  */
-@objc public class IterableNotificationMetadata : NSObject {
+@objc public class IterableNotificationMetadata: NSObject {
     /**
      The campaignId of this notification
      */
@@ -38,7 +38,7 @@ import Foundation
      
      - warning:   `metadataFromLaunchOptions` will return `nil` if `userInfo` isn't an Iterable notification
      */
-    @objc public static func metadata(fromLaunchOptions userInfo: [AnyHashable : Any]) -> IterableNotificationMetadata? {
+    @objc public static func metadata(fromLaunchOptions userInfo: [AnyHashable: Any]) -> IterableNotificationMetadata? {
         guard NotificationHelper.isValidIterableNotification(userInfo: userInfo) else {
             return nil
         }
@@ -53,7 +53,7 @@ import Foundation
      
      - returns:    an instance of `IterableNotificationMetadata` with the messageId set
      */
-    @objc public static func metadata(fromInAppOptions messageId:String) -> IterableNotificationMetadata {
+    @objc public static func metadata(fromInAppOptions messageId: String) -> IterableNotificationMetadata {
         return IterableNotificationMetadata(fromInAppOptions: messageId)
     }
 
@@ -82,7 +82,7 @@ import Foundation
 
     // MARK: Internal and Private
     
-    private init(fromLaunchOptions userInfo: [AnyHashable : Any]) {
+    private init(fromLaunchOptions userInfo: [AnyHashable: Any]) {
         let notificationInfo = NotificationHelper.inspect(notification: userInfo)
         switch notificationInfo {
         case .iterable(let iterableNotification):
