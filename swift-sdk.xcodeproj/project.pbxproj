@@ -385,8 +385,8 @@
 			isa = PBXGroup;
 			children = (
 				AC219C4E225FEDBD00B98631 /* IterableInboxCell.swift */,
-				AC219C48225FD7EB00B98631 /* IterableInboxViewController.swift */,
 				AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */,
+				AC219C48225FD7EB00B98631 /* IterableInboxViewController.swift */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -429,21 +429,21 @@
 		AC2263E120CF49B8009800EB /* swift-sdk */ = {
 			isa = PBXGroup;
 			children = (
-				AC44C0EB22615F8100E0641D /* Resources */,
 				AC72A0BB20CF4C8C004D7997 /* Internal */,
 				AC72A0AE20CF4C1E004D7997 /* Objective C */,
+				AC44C0EB22615F8100E0641D /* Resources */,
 				AC2263F920CF4B63009800EB /* Supporting Files */,
 				AC219C4A225FD7F900B98631 /* UI */,
-				AC6FDD8720F4372E005D811E /* IterableAPI.swift */,
+				AC72A0C120CF4CB8004D7997 /* CommerceItem.swift */,
 				AC72A0BE20CF4CB8004D7997 /* ITBConsts.swift */,
 				AC72A0BF20CF4CB8004D7997 /* IterableAction.swift */,
 				ACF560E720E55A6B000AAC23 /* IterableActionContext.swift */,
-				AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */,
-				AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */,
-				AC72A0C220CF4CB8004D7997 /* IterableNotificationMetadata.swift */,
-				AC72A0C120CF4CB8004D7997 /* CommerceItem.swift */,
+				AC6FDD8720F4372E005D811E /* IterableAPI.swift */,
 				AC72A0C620CF4CB9004D7997 /* IterableAppIntegration.swift */,
+				AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */,
+				AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */,
 				ACA8D1A221910C66001B1332 /* IterableMessaging.swift */,
+				AC72A0C220CF4CB8004D7997 /* IterableNotificationMetadata.swift */,
 			);
 			path = "swift-sdk";
 			sourceTree = "<group>";
@@ -451,8 +451,8 @@
 		AC2263F920CF4B63009800EB /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				AC2263E220CF49B8009800EB /* IterableSDK.h */,
 				AC2263E320CF49B8009800EB /* Info.plist */,
+				AC2263E220CF49B8009800EB /* IterableSDK.h */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -524,24 +524,24 @@
 		AC72A0BB20CF4C8C004D7997 /* Internal */ = {
 			isa = PBXGroup;
 			children = (
-				AC845105228DF5360052BB8F /* Api Client */,
-				AC7A525F227BB9B80064D67E /* Initialization */,
+				AC845105228DF5360052BB8F /* API Client */,
 				AC0248062279132400495FB9 /* Dwifft */,
-				AC219C4B225FE2B300B98631 /* UI */,
-				AC3C10F7213F43AC00A9B839 /* Logging */,
-				ACE34AB121376ACB00691224 /* Local Storage */,
 				AC426CC5211B5527002EDBE8 /* Fp */,
 				AC2263FA20CF4B84009800EB /* InApp */,
+				AC7A525F227BB9B80064D67E /* Initialization */,
+				ACE34AB121376ACB00691224 /* Local Storage */,
+				AC3C10F7213F43AC00A9B839 /* Logging */,
+				AC219C4B225FE2B300B98631 /* UI */,
 				AC72A0AC20CF4C08004D7997 /* Util */,
-				AC72A0C520CF4CB9004D7997 /* IterableAPIInternal.swift */,
-				AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */,
-				AC72A0BD20CF4C98004D7997 /* IterableDeeplinkManager.swift */,
 				AC2C667D20D3111900D46CC9 /* DateProvider.swift */,
+				AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */,
+				AC72A0C520CF4CB9004D7997 /* IterableAPIInternal.swift */,
 				AC2C668120D32F2800D46CC9 /* IterableAppIntegrationInternal.swift */,
+				AC72A0BD20CF4C98004D7997 /* IterableDeeplinkManager.swift */,
 				ACD6116B2107D004003E7F6B /* NetworkHelper.swift */,
-				ACEDF41C2183C2EC000B9BFE /* Promise.swift */,
 				AC2B79F621E6A38900A59080 /* NotificationHelper.swift */,
 				AC387DE8229873B2005214A9 /* Operations+Extensions.swift */,
+				ACEDF41C2183C2EC000B9BFE /* Promise.swift */,
 			);
 			path = Internal;
 			sourceTree = "<group>";
@@ -586,13 +586,13 @@
 			path = "swift-sdk-swift-tests";
 			sourceTree = "<group>";
 		};
-		AC845105228DF5360052BB8F /* Api Client */ = {
+		AC845105228DF5360052BB8F /* API Client */ = {
 			isa = PBXGroup;
 			children = (
 				AC845106228DF54E0052BB8F /* ApiClient.swift */,
 				AC84510822910A0C0052BB8F /* RequestCreator.swift */,
 			);
-			name = "Api Client";
+			name = "API Client";
 			sourceTree = "<group>";
 		};
 		AC87172421A4E3FF00FEA369 /* Helper Classes */ = {
