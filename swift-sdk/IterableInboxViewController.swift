@@ -9,14 +9,15 @@ import UIKit
 open class IterableInboxViewController: UITableViewController {
     // MARK: Settable properties
     
-    /// If you want to use a custom layout for your Inbox TableViewCell
+    /// If you want to use a custom layout for your inbox TableViewCell
     /// this is where you should override it. Please note that this assumes
-    /// that the xib is present in the main bundle.
+    /// that the XIB is present in the main bundle.
     @IBInspectable public var cellNibName: String? = nil
     
     /// You can change insertion/deletion animations here.
-    public var insertionAnimation = UITableView.RowAnimation.automatic, deletionAnimation = UITableView.RowAnimation.automatic
-
+    public var insertionAnimation = UITableView.RowAnimation.automatic
+    public var deletionAnimation = UITableView.RowAnimation.automatic
+    
     // MARK: Initializers
     public override init(style: UITableView.Style) {
         ITBInfo()
@@ -42,7 +43,7 @@ open class IterableInboxViewController: UITableViewController {
     override open func viewDidLoad() {
         ITBInfo()
         super.viewDidLoad()
-
+        
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = UITableView.automaticDimension
         
@@ -59,32 +60,32 @@ open class IterableInboxViewController: UITableViewController {
         
         registerTableViewCell()
     }
-
+    
     // MARK: - Table view data source
     override open func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
-
+    
     override open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return viewModel.numMessages
     }
-
+    
     override open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "inboxCell", for: indexPath) as? IterableInboxCell else {
             fatalError("Please make sure that an the nib: \(cellNibName!) is present in the main bundle")
         }
-
+        
         configure(cell: cell, forMessage:viewModel.message(atRow: indexPath.row))
-
+        
         return cell
     }
-
+    
     // Override to support conditional editing of the table view.
     override open func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         // Return false if you do not want the specified item to be editable.
         return true
     }
-
+    
     // Override to support editing the table view.
     override open func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
@@ -101,7 +102,7 @@ open class IterableInboxViewController: UITableViewController {
             navigationController?.pushViewController(viewController, animated: true)
         }
     }
-
+    
     var viewModel: InboxViewControllerViewModelProtocol
     
     private let iterableCellNibName = "IterableInboxCell"
@@ -121,7 +122,7 @@ open class IterableInboxViewController: UITableViewController {
     @available(iOS 10.0, *)
     @objc private func handleRefreshControl() {
         ITBInfo()
-
+        
         _ = viewModel.refresh()
         
         tableView.refreshControl?.endRefreshing()
@@ -133,18 +134,18 @@ open class IterableInboxViewController: UITableViewController {
         cell.unreadCircleView?.isHidden = message.read
         
         cell.iconImageView?.clipsToBounds = true
-
+        
         if message.hasValidImageUrl() {
             cell.iconContainerView?.isHidden = false
             cell.iconImageView?.isHidden = false
-
+            
             if let data = message.imageData {
                 cell.iconImageView?.backgroundColor = nil
                 cell.iconImageView?.image = UIImage(data: data)
             } else {
                 cell.iconImageView?.backgroundColor = UIColor(hex: "EEEEEE") // loading image
                 cell.iconImageView?.image = nil
-             }
+            }
         } else {
             cell.iconContainerView?.isHidden = true
             cell.iconImageView?.isHidden = true
@@ -163,21 +164,32 @@ open class IterableInboxViewController: UITableViewController {
     }
 }
 
-extension IterableInboxViewController : InboxViewControllerViewModelDelegate {
-    // Must be called on Main Thread
+extension IterableInboxViewController: InboxViewControllerViewModelDelegate {
+    // Must be called on main thread
     func onViewModelChanged(diff: [SectionedDiffStep<Int, InboxMessageViewModel>]) {
         ITBInfo()
-
+        
+//        guard Thread.isMainThread else {
+//            ITBError("Must be called from main thread")
+//            return false
+//        }
+        
         updateTableView(diff: diff)
         updateUnreadBadgeCount()
     }
-
-    // Must be called on Main Thread
+    
+    // Must be called on main thread
     func onImageLoaded(forRow row: Int) {
         ITBInfo()
+        
+//        guard Thread.isMainThread else {
+//            ITBError("Must be called from main thread")
+//            return false
+//        }
+        
         tableView.reloadRows(at: [IndexPath(row: row, section: 0)], with: .automatic)
     }
-
+    
     private func updateUnreadBadgeCount() {
         let unreadCount = viewModel.unreadCount
         let badgeValue = unreadCount == 0 ? nil : "\(unreadCount)"
@@ -187,6 +199,7 @@ extension IterableInboxViewController : InboxViewControllerViewModelDelegate {
     private func updateTableView(diff: [SectionedDiffStep<Int, InboxMessageViewModel>]) {
         tableView.beginUpdates()
         viewModel.beganUpdates()
+        
         for result in diff {
             switch result {
             case let .delete(section, row, _): tableView.deleteRows(at: [IndexPath(row: row, section: section)], with: self.deletionAnimation)
@@ -195,8 +208,8 @@ extension IterableInboxViewController : InboxViewControllerViewModelDelegate {
             case let .sectionInsert(section, _): tableView.insertSections(IndexSet(integer: section), with: self.insertionAnimation)
             }
         }
+        
         tableView.endUpdates()
         viewModel.endedUpdates()
     }
-    
 }
