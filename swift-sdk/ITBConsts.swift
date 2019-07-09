@@ -165,7 +165,7 @@ public extension AnyHashable {
     static let ITBL_IN_APP_INBOX_METADATA = "inboxMetadata"
 }
 
-public enum JsonKey : String {
+public enum JsonKey: String {
     // Inbox Message
     case inboxTitle = "title"
     case inboxSubtitle = "subtitle"
@@ -176,7 +176,7 @@ public enum JsonKey : String {
 }
 
 // These are custom action for "iterable://delete" etc.
-public enum IterableCustomActionName : String, CaseIterable {
+public enum IterableCustomActionName: String, CaseIterable {
     case dismiss
     case delete
 }
