@@ -15,12 +15,14 @@ enum NotificationInfo {
 struct ITBLNotificationInfo {
     let campaignId: NSNumber
     let templateId: NSNumber?
+    let contentId: NSNumber?
     let messageId: String?
     let isGhostPush: Bool
     
-    init(campaignId: NSNumber, templateId: NSNumber?, messageId: String?, isGhostPush: Bool) {
+    init(campaignId: NSNumber, templateId: NSNumber?, contentId: NSNumber?, messageId: String?, isGhostPush: Bool) {
         self.campaignId = campaignId
         self.templateId = templateId
+        self.contentId = contentId
         self.messageId = messageId
         self.isGhostPush = isGhostPush
     }
@@ -28,15 +30,17 @@ struct ITBLNotificationInfo {
     static func parse(itblElement: [AnyHashable: Any], isGhostPush: Bool) -> ITBLNotificationInfo {
         let campaignId = itblElement[Keys.campaignId.rawValue] as? NSNumber ?? NSNumber(value: 0)
         let templateId = itblElement[Keys.templateId.rawValue] as? NSNumber
+        let contentId = itblElement[Keys.contentId.rawValue] as? NSNumber
         let messageId = itblElement[Keys.messageId.rawValue] as? String
 
-        return ITBLNotificationInfo(campaignId: campaignId, templateId: templateId, messageId: messageId, isGhostPush: isGhostPush)
+        return ITBLNotificationInfo(campaignId: campaignId, templateId: templateId, contentId: contentId, messageId: messageId, isGhostPush: isGhostPush)
     }
     
     enum Keys: String {
         case messageId
         case templateId
         case campaignId
+        case contentId
         case isGhostPush
     }
 }
@@ -86,22 +90,17 @@ struct NotificationHelper {
         }
     }
   
-    static func isValidIterableNotification(userInfo: [AnyHashable : Any]) -> Bool {
-        guard let itblElement = userInfo[Keys.itbl.rawValue] as? [AnyHashable : Any] else {
+    static func isValidIterableNotification(userInfo: [AnyHashable: Any]) -> Bool {
+        guard let itblElement = userInfo[Keys.itbl.rawValue] as? [AnyHashable: Any] else {
             return false
         }
-        guard isValidCampaignId(itblElement[ITBLNotificationInfo.Keys.campaignId.rawValue]) else {
-            return false
-        }
-        guard let _ = itblElement[ITBLNotificationInfo.Keys.templateId.rawValue] as? NSNumber else {
-            return false
-        }
-        guard let _ = itblElement[ITBLNotificationInfo.Keys.messageId.rawValue] as? NSString else {
-            return false
-        }
-        guard let _ = itblElement[ITBLNotificationInfo.Keys.isGhostPush.rawValue] as? NSNumber else {
-            return false
-        }
+        
+        guard isValidCampaignId(itblElement[ITBLNotificationInfo.Keys.campaignId.rawValue]) else { return false }
+        
+        guard let _ = itblElement[ITBLNotificationInfo.Keys.templateId.rawValue] as? NSNumber else { return false }
+        guard let _ = itblElement[ITBLNotificationInfo.Keys.contentId.rawValue] as? NSNumber else { return false }
+        guard let _ = itblElement[ITBLNotificationInfo.Keys.messageId.rawValue] as? NSString else { return false }
+        guard let _ = itblElement[ITBLNotificationInfo.Keys.isGhostPush.rawValue] as? NSNumber else { return false }
         
         return true
     }

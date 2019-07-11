@@ -28,11 +28,11 @@ protocol ApiClientProtocol: class {
     
     func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError>
     
-    func track(inAppOpen messageId: String) -> Future<SendRequestValue, SendRequestError>
+    func track(inAppOpen messageId: String, contentId: String) -> Future<SendRequestValue, SendRequestError>
     
-    func track(inAppClick messageId: String, buttonIndex: String) -> Future<SendRequestValue, SendRequestError>
+    func track(inAppClick messageId: String, contentId: String, buttonIndex: String) -> Future<SendRequestValue, SendRequestError>
     
-    func track(inAppClick messageId: String, buttonURL: String) -> Future<SendRequestValue, SendRequestError>
+    func track(inAppClick messageId: String, contentId: String, buttonURL: String) -> Future<SendRequestValue, SendRequestError>
     
     @discardableResult func inAppConsume(messageId: String) -> Future<SendRequestValue, SendRequestError>
     
@@ -48,12 +48,13 @@ protocol AuthProvider: class {
     var auth: Auth { get }
 }
 
-class ApiClient : ApiClientProtocol {
-    init(apiKey: String, authProvider: AuthProvider, endPoint: String, networkSession: NetworkSessionProtocol) {
+class ApiClient: ApiClientProtocol {
+    init(apiKey: String, authProvider: AuthProvider, endPoint: String, networkSession: NetworkSessionProtocol, deviceId: String) {
         self.apiKey = apiKey
         self.authProvider = authProvider
         self.endPoint = endPoint
         self.networkSession = networkSession
+        self.deviceId = deviceId
     }
     
     func register(hexToken: String,
@@ -99,19 +100,19 @@ class ApiClient : ApiClientProtocol {
     }
 
     func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createGetInappMessagesRequest(count))
+        return send(iterableRequestResult: createRequestCreator().createGetInAppMessagesRequest(count))
     }
 
-    func track(inAppOpen messageId: String) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createTrackInappOpenRequest(messageId))
+    func track(inAppOpen messageId: String, contentId: String) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createTrackInAppOpenRequest(messageId, contentId: contentId, deviceId: deviceId))
     }
 
-    func track(inAppClick messageId: String, buttonIndex: String) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createTrackInappClickRequest(messageId, buttonIndex: buttonIndex))
+    func track(inAppClick messageId: String, contentId: String, buttonIndex: String) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(messageId, contentId: contentId, deviceId: deviceId, buttonIndex: buttonIndex))
     }
 
-    func track(inAppClick messageId: String, buttonURL: String) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createTrackInappClickRequest(messageId, buttonURL: buttonURL))
+    func track(inAppClick messageId: String, contentId: String, buttonURL: String) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(messageId, contentId: contentId, deviceId: deviceId, buttonURL: buttonURL))
     }
 
     func inAppConsume(messageId: String) -> Future<SendRequestValue, SendRequestError> {
@@ -160,4 +161,5 @@ class ApiClient : ApiClientProtocol {
     private weak var authProvider: AuthProvider?
     private let endPoint: String
     private let networkSession: NetworkSessionProtocol
+    private let deviceId: String
 }

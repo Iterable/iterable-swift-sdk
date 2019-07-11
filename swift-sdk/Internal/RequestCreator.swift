@@ -214,7 +214,7 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: .ITBL_PATH_UPDATE_SUBSCRIPTIONS, body: body)))
     }
     
-    func createGetInappMessagesRequest(_ count: NSNumber) -> Result<IterableRequest, IterableError> {
+    func createGetInAppMessagesRequest(_ count: NSNumber) -> Result<IterableRequest, IterableError> {
         guard auth.email != nil || auth.userId != nil else {
             ITBError("Both email and userId are nil")
             return .failure(IterableError.general(description: "Both email and userId are nil"))
@@ -233,28 +233,37 @@ struct RequestCreator {
         return .success(.get(createGetRequest(forPath: .ITBL_PATH_GET_INAPP_MESSAGES, withArgs: args as! [String: String])))
     }
     
-    func createTrackInappOpenRequest(_ messageId: String) -> Result<IterableRequest, IterableError> {
-        var body = [AnyHashable: Any]()
-        addEmailOrUserId(dict: &body)
+    func createTrackInAppOpenRequest(_ messageId: String, contentId: String, deviceId: String) -> Result<IterableRequest, IterableError> {
+        var body: [AnyHashable: Any] = [:]
+        
         body[.ITBL_KEY_MESSAGE_ID] = messageId
+        body[.ITBL_KEY_CONTENT_ID] = contentId
+        addEmailOrUserId(dict: &body)
+        addMessageContext(dict: &body, deviceInfo: getDeviceInfo(deviceId))
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_OPEN, body: body)))
     }
     
-    func createTrackInappClickRequest(_ messageId: String, buttonIndex: String) -> Result<IterableRequest, IterableError> {
-        var body: [AnyHashable: Any] = [.ITBL_KEY_MESSAGE_ID: messageId,
-                                        .ITBL_IN_APP_BUTTON_INDEX: buttonIndex]
+    func createTrackInAppClickRequest(_ messageId: String, contentId: String, deviceId: String, buttonIndex: String) -> Result<IterableRequest, IterableError> {
+        var body: [AnyHashable: Any] = [:]
         
+        body[.ITBL_KEY_MESSAGE_ID] = messageId
+        body[.ITBL_IN_APP_BUTTON_INDEX] = buttonIndex
+        body[.ITBL_KEY_CONTENT_ID] = contentId
         addEmailOrUserId(dict: &body)
+        addMessageContext(dict: &body, deviceInfo: getDeviceInfo(deviceId))
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLICK, body: body)))
     }
     
-    func createTrackInappClickRequest(_ messageId: String, buttonURL: String) -> Result<IterableRequest, IterableError> {
-        var body: [AnyHashable: Any] = [.ITBL_KEY_MESSAGE_ID: messageId,
-                                        .ITBL_IN_APP_CLICKED_URL: buttonURL]
+    func createTrackInAppClickRequest(_ messageId: String, contentId: String, deviceId: String, buttonURL: String) -> Result<IterableRequest, IterableError> {
+        var body: [AnyHashable: Any] = [:]
         
+        body[.ITBL_KEY_MESSAGE_ID] = messageId
+        body[.ITBL_IN_APP_CLICKED_URL] = buttonURL
+        body[.ITBL_KEY_CONTENT_ID] = contentId
         addEmailOrUserId(dict: &body)
+        addMessageContext(dict: &body, deviceInfo: getDeviceInfo(deviceId))
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLICK, body: body)))
     }
@@ -299,6 +308,19 @@ struct RequestCreator {
         } else if mustExist {
             assertionFailure("Either email or userId should be set")
         }
+    }
+    
+    private func addMessageContext(dict: inout [AnyHashable: Any], deviceInfo: [AnyHashable: Any]) {
+        dict["messageContext"] = [AnyHashable.ITBL_IN_APP_SAVE_TO_INBOX: "", //bool
+                                  "silentInbox": "", //bool
+                                  "location": "", //in-app/inbox
+                                  String.ITBL_DEVICE_INFO_KEY: deviceInfo]
+    }
+    
+    private func getDeviceInfo(_ deviceId: String) -> [AnyHashable: Any] {
+        return [String.ITBL_DEVICE_DEVICE_ID: deviceId,
+                AnyHashable.ITBL_KEY_PLATFORM: String.ITBL_PLATFORM_IOS,
+                String.ITBL_DEVICE_APP_PACKAGE_NAME: Bundle.main.appPackageName ?? ""]
     }
     
     private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform) -> String {
