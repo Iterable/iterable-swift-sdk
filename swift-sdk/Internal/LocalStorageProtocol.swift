@@ -13,6 +13,6 @@ protocol LocalStorageProtocol {
     var sdkVersion: String? {get set}
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo?
     func save(attributionInfo: IterableAttributionInfo?, withExpiration expiration: Date?)
-    func getPayload(currentDate: Date) -> [AnyHashable : Any]?
+    func getPayload(currentDate: Date) -> [AnyHashable: Any]?
     func save(payload: [AnyHashable : Any]?, withExpiration: Date?)
 }

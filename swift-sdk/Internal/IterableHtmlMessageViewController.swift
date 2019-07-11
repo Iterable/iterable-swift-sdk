@@ -30,7 +30,7 @@ class IterableHtmlMessageViewController: UIViewController {
             self.isModal = isModal
         }
     }
-
+    
     init(parameters: Parameters) {
         self.parameters = parameters
         self.futureClickedURL = Promise<URL, IterableError>()
@@ -73,7 +73,6 @@ class IterableHtmlMessageViewController: UIViewController {
         view.addSubview(webView)
         self.webView = webView
     }
-
     
     /**
      Tracks an inApp open and layouts the webview
@@ -95,19 +94,19 @@ class IterableHtmlMessageViewController: UIViewController {
             resizeWebView(webView)
         }
     }
-
+    
     required init?(coder aDecoder: NSCoder) {
         self.parameters = aDecoder.decodeObject(forKey: "input") as? Parameters ?? Parameters(html: "", isModal: false)
         self.futureClickedURL = Promise<URL, IterableError>()
         super.init(coder: aDecoder)
     }
-
+    
     private var parameters: Parameters
     private let futureClickedURL: Promise<URL, IterableError>
     private var webView: UIWebView?
     private var location: IterableMessageLocation = .full
     private var loaded = false
-
+    
     /**
      Resizes the webview based upon the insetPadding if the html is finished loading
      
@@ -117,6 +116,7 @@ class IterableHtmlMessageViewController: UIViewController {
         guard loaded else {
             return
         }
+        
         guard location != .full else {
             webView?.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
             return
@@ -146,11 +146,10 @@ class IterableHtmlMessageViewController: UIViewController {
             center.y = view.frame.height - webViewHeight
         case .center,.full: break
         }
+        
         center.x = resizeCenterX;
         aWebView.center = center;
     }
-
-    
     
     private static func padding(fromPadding padding: UIEdgeInsets) -> UIEdgeInsets {
         var insetPadding = padding
@@ -159,9 +158,9 @@ class IterableHtmlMessageViewController: UIViewController {
             insetPadding.left = 0
             insetPadding.right = 0
         }
+        
         return insetPadding
     }
-    
 }
 
 extension IterableHtmlMessageViewController : UIWebViewDelegate {
@@ -176,10 +175,11 @@ extension IterableHtmlMessageViewController : UIWebViewDelegate {
         guard navigationType == .linkClicked, let url = request.url else {
             return true
         }
+        
         guard let parsed = InAppHelper.parse(inAppUrl: url) else {
             return true
         }
-
+        
         let destinationUrl: String
         if case let InAppHelper.InAppClickedUrl.localResource(name) = parsed {
             destinationUrl = name

@@ -37,7 +37,7 @@ extension DependencyContainerProtocol {
     }
 }
 
-struct DependencyContainer : DependencyContainerProtocol {
+struct DependencyContainer: DependencyContainerProtocol {
     func createInAppFetcher(apiClient: ApiClientProtocol) -> InAppFetcherProtocol {
         return InAppFetcher(apiClient: apiClient)
     }

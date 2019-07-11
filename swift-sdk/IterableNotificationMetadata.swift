@@ -12,23 +12,11 @@ import Foundation
  `IterableNotificationMetadata` represents the metadata in an Iterable push notification
  */
 @objc public class IterableNotificationMetadata: NSObject {
-    /**
-     The campaignId of this notification
-     */
     @objc public var campaignId: NSNumber = NSNumber(value: 0)
-    /**
-     The templateId of this notification
-     */
     @objc public var templateId: NSNumber? = nil
-    /**
-     The messageId of this notification
-     */
     @objc public var messageId: String? = nil
-    /**
-     Whether this notification is a ghost push
-     */
     @objc public var isGhostPush: Bool = false
-
+    
     /**
      Creates an `IterableNotificationMetadata` from a push payload
      
@@ -74,16 +62,16 @@ import Foundation
     }
     
     /**
-     - returns: `true` if this is a non-ghost, non-proof, non-test real send. `false` otherwisel
+     - returns: `true` if this is a non-ghost, non-proof, non-test real send. `false` otherwise
      */
     @objc public func isRealCampaignNotification() -> Bool {
         return !(isGhostPush || isProof() || isTestPush())
     }
 
     // MARK: Internal and Private
-    
     private init(fromLaunchOptions userInfo: [AnyHashable: Any]) {
         let notificationInfo = NotificationHelper.inspect(notification: userInfo)
+        
         switch notificationInfo {
         case .iterable(let iterableNotification):
             self.campaignId = iterableNotification.campaignId

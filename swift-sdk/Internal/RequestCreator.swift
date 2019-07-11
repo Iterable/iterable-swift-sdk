@@ -259,7 +259,7 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLICK, body: body)))
     }
     
-    func createInappConsumeRequest(_ messageId: String) -> Result<IterableRequest, IterableError> {
+    func createInAppConsumeRequest(_ messageId: String) -> Result<IterableRequest, IterableError> {
         var body: [AnyHashable: Any] = [.ITBL_KEY_MESSAGE_ID: messageId]
         
         addEmailOrUserId(dict: &body)

@@ -25,7 +25,7 @@ protocol IterableInAppManagerProtocolInternal : IterableInAppManagerProtocol, In
     func start()
 }
 
-class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
+class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     init(apiClient: ApiClientProtocol,
          fetcher: InAppFetcherProtocol,
          displayer: InAppDisplayerProtocol,
@@ -99,15 +99,17 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         }
         
         let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
-                                                            trackParams: IterableNotificationMetadata.metadata(fromInAppOptions: message.messageId),
-                                                            isModal: false)
+                                                                      trackParams: IterableNotificationMetadata.metadata(fromInAppOptions: message.messageId),
+                                                                      isModal: false)
         let createResult = IterableHtmlMessageViewController.create(parameters: parameters)
         let viewController = createResult.viewController
+        
         createResult.futureClickedURL.onSuccess { (url) in
             ITBInfo()
             // in addition perform action or url delegate task
             self.handle(clickedUrl: url, forMessage: message)
         }
+        
         viewController.navigationItem.title = message.inboxMetadata?.title
         return viewController
     }
@@ -282,7 +284,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
                 self.scheduleNextInAppMessage()
                 
                 if consume {
-                    self.apiClient?.inappConsume(messageId: message.messageId)
+                    self.apiClient?.inAppConsume(messageId: message.messageId)
                 }
             }
         }
@@ -324,9 +326,9 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
     }
 
     private func updateMessageSync(_ message: IterableInAppMessage,
-                                                  read: Bool? = nil,
-                                                  didProcessTrigger: Bool? = nil,
-                                                  consumed: Bool? = nil) {
+                                   read: Bool? = nil,
+                                   didProcessTrigger: Bool? = nil,
+                                   consumed: Bool? = nil) {
         ITBDebug()
         let toUpdate = message
         if let read = read {
@@ -436,7 +438,7 @@ class InAppManager : NSObject, IterableInAppManagerProtocolInternal {
         ITBInfo()
         
         updateMessage(message, didProcessTrigger: true, consumed: true)
-        apiClient?.inappConsume(messageId: message.messageId)
+        apiClient?.inAppConsume(messageId: message.messageId)
         self.callbackQueue.async {
             self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
         }
