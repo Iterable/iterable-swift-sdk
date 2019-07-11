@@ -51,6 +51,7 @@ public extension AnyHashable {
     static let ITBL_KEY_ITEMS = "items"
     static let ITBL_KEY_MERGE_NESTED = "mergeNestedObjects"
     static let ITBL_KEY_MESSAGE_ID = "messageId"
+    static let ITBL_KEY_CONTENT_ID = "contentId"
     static let ITBL_KEY_NEW_EMAIL = "newEmail"
     static let ITBL_KEY_PLATFORM = "platform"
     static let ITBL_KEY_PACKAGE_NAME = "packageName"
@@ -88,6 +89,8 @@ public extension String {
 
 // Device Dictionary
 public extension String {
+    static let ITBL_DEVICE_INFO_KEY = "deviceInfo"
+    
     static let ITBL_DEVICE_LOCALIZED_MODEL = "localizedModel"
     static let ITBL_DEVICE_ID_VENDOR = "identifierForVendor"
     static let ITBL_DEVICE_MODEL = "model"

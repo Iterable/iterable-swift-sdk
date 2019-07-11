@@ -14,6 +14,7 @@ import Foundation
 @objc public class IterableNotificationMetadata: NSObject {
     @objc public var campaignId: NSNumber = NSNumber(value: 0)
     @objc public var templateId: NSNumber? = nil
+    @objc public var contentId: NSNumber? = nil
     @objc public var messageId: String? = nil
     @objc public var isGhostPush: Bool = false
     
@@ -44,7 +45,6 @@ import Foundation
     @objc public static func metadata(fromInAppOptions messageId: String) -> IterableNotificationMetadata {
         return IterableNotificationMetadata(fromInAppOptions: messageId)
     }
-
     
     //MARK: Utility functions
     /**
@@ -76,6 +76,7 @@ import Foundation
         case .iterable(let iterableNotification):
             self.campaignId = iterableNotification.campaignId
             self.templateId = iterableNotification.templateId
+            self.contentId = iterableNotification.contentId
             self.messageId = iterableNotification.messageId
             self.isGhostPush = iterableNotification.isGhostPush
             break

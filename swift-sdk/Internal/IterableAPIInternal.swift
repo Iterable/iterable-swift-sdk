@@ -363,7 +363,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     private var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     
     private lazy var apiClient: ApiClient = {
-       ApiClient(apiKey: apiKey, authProvider: self, endPoint: .ITBL_ENDPOINT_API, networkSession: networkSession)
+       ApiClient(apiKey: apiKey, authProvider: self, endPoint: .ITBL_ENDPOINT_API, networkSession: networkSession, deviceId: deviceId)
     }()
     
     var networkSession: NetworkSessionProtocol
