@@ -99,7 +99,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         }
         
         let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
-                                                                      trackParams: IterableNotificationMetadata.metadata(fromInAppOptions: message.messageId),
+                                                                      trackParams: IterableInAppMessageMetadata.metadata(fromInAppOptions: message.messageId),
                                                                       isModal: false)
         let createResult = IterableHtmlMessageViewController.create(parameters: parameters)
         let viewController = createResult.viewController
@@ -277,7 +277,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
                 // in addition perform action or url delegate task
                 self.handle(clickedUrl: url, forMessage: message)
                 
-                // set the dismiss time"
+                // set the dismiss time
                 self.lastDismissedTime = self.dateProvider.currentDate
                 
                 // check if we need to process more inApps

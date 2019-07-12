@@ -233,35 +233,35 @@ struct RequestCreator {
         return .success(.get(createGetRequest(forPath: .ITBL_PATH_GET_INAPP_MESSAGES, withArgs: args as! [String: String])))
     }
     
-    func createTrackInAppOpenRequest(_ messageId: String, contentId: String, deviceId: String) -> Result<IterableRequest, IterableError> {
+    func createTrackInAppOpenRequest(_ messageId: String, deviceId: String) -> Result<IterableRequest, IterableError> {
         var body: [AnyHashable: Any] = [:]
         
         body[.ITBL_KEY_MESSAGE_ID] = messageId
-        body[.ITBL_KEY_CONTENT_ID] = contentId
+        
         addEmailOrUserId(dict: &body)
         addMessageContext(dict: &body, deviceInfo: getDeviceInfo(deviceId))
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_OPEN, body: body)))
     }
     
-    func createTrackInAppClickRequest(_ messageId: String, contentId: String, deviceId: String, buttonIndex: String) -> Result<IterableRequest, IterableError> {
+    func createTrackInAppClickRequest(_ messageId: String, deviceId: String, buttonIndex: String) -> Result<IterableRequest, IterableError> {
         var body: [AnyHashable: Any] = [:]
         
         body[.ITBL_KEY_MESSAGE_ID] = messageId
         body[.ITBL_IN_APP_BUTTON_INDEX] = buttonIndex
-        body[.ITBL_KEY_CONTENT_ID] = contentId
+        
         addEmailOrUserId(dict: &body)
         addMessageContext(dict: &body, deviceInfo: getDeviceInfo(deviceId))
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLICK, body: body)))
     }
     
-    func createTrackInAppClickRequest(_ messageId: String, contentId: String, deviceId: String, buttonURL: String) -> Result<IterableRequest, IterableError> {
+    func createTrackInAppClickRequest(_ messageId: String, deviceId: String, buttonURL: String) -> Result<IterableRequest, IterableError> {
         var body: [AnyHashable: Any] = [:]
         
         body[.ITBL_KEY_MESSAGE_ID] = messageId
         body[.ITBL_IN_APP_CLICKED_URL] = buttonURL
-        body[.ITBL_KEY_CONTENT_ID] = contentId
+        
         addEmailOrUserId(dict: &body)
         addMessageContext(dict: &body, deviceInfo: getDeviceInfo(deviceId))
         
@@ -311,16 +311,23 @@ struct RequestCreator {
     }
     
     private func addMessageContext(dict: inout [AnyHashable: Any], deviceInfo: [AnyHashable: Any]) {
-        dict["messageContext"] = [AnyHashable.ITBL_IN_APP_SAVE_TO_INBOX: "", //bool
+        dict["messageContext"] = [.ITBL_IN_APP_SAVE_TO_INBOX: "", //bool
                                   "silentInbox": "", //bool
                                   "location": "", //in-app/inbox
                                   String.ITBL_DEVICE_INFO_KEY: deviceInfo]
     }
     
     private func getDeviceInfo(_ deviceId: String) -> [AnyHashable: Any] {
-        return [String.ITBL_DEVICE_DEVICE_ID: deviceId,
-                AnyHashable.ITBL_KEY_PLATFORM: String.ITBL_PLATFORM_IOS,
-                String.ITBL_DEVICE_APP_PACKAGE_NAME: Bundle.main.appPackageName ?? ""]
+        var info: [AnyHashable: Any] = [:]
+        
+        info[String.ITBL_DEVICE_DEVICE_ID] = deviceId
+        info[AnyHashable.ITBL_KEY_PLATFORM] = String.ITBL_PLATFORM_IOS
+        
+        if let appPackageName = Bundle.main.appPackageName {
+            info[String.ITBL_DEVICE_APP_PACKAGE_NAME] = appPackageName
+        }
+        
+        return info
     }
     
     private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform) -> String {

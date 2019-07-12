@@ -41,7 +41,7 @@ class NotificationMetadataTests: XCTestCase {
         ]
         
         for payload in invalidPayloads {
-            XCTAssertNil(IterableNotificationMetadata.metadata(fromLaunchOptions: payload))
+            XCTAssertNil(IterablePushNotificationMetadata.metadata(fromLaunchOptions: payload))
         }
     }
     
@@ -54,7 +54,7 @@ class NotificationMetadataTests: XCTestCase {
                                 "isGhostPush": true,
                                 "messageId": "39580285"]]
         
-        let metadata = IterableNotificationMetadata.metadata(fromLaunchOptions: payload)!
+        let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: payload)!
         
         XCTAssertEqual(metadata.campaignId, campaignId)
         XCTAssertEqual(metadata.templateId, templateId)
@@ -74,7 +74,7 @@ class NotificationMetadataTests: XCTestCase {
                                 "isGhostPush": false,
                                 "messageId": "94589291"]]
         
-        let metadata = IterableNotificationMetadata.metadata(fromLaunchOptions: payload)!
+        let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: payload)!
         
         XCTAssertEqual(metadata.campaignId, campaignId)
         XCTAssertEqual(metadata.templateId, templateId)
@@ -94,7 +94,7 @@ class NotificationMetadataTests: XCTestCase {
                                 "isGhostPush": false,
                                 "messageId":"53082983"]]
         
-        let metadata = IterableNotificationMetadata.metadata(fromLaunchOptions: payload)!
+        let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: payload)!
         
         XCTAssertEqual(metadata.campaignId, campaignId)
         XCTAssertEqual(metadata.templateId, templateId)
@@ -113,7 +113,7 @@ class NotificationMetadataTests: XCTestCase {
                                 "isGhostPush": false,
                                 "messageId": "983479527"]]
         
-        let metadata = IterableNotificationMetadata.metadata(fromLaunchOptions: payload)!
+        let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: payload)!
         
         XCTAssertEqual(metadata.campaignId, campaignId)
         XCTAssertEqual(metadata.templateId, templateId)
@@ -133,7 +133,7 @@ class NotificationMetadataTests: XCTestCase {
                                 "isGhostPush": false,
                                 "messageId": "2938706098"]]
         
-        let metadata = IterableNotificationMetadata.metadata(fromLaunchOptions: payload)!
+        let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: payload)!
         
         XCTAssertEqual(metadata.campaignId, NSNumber(value: campaignId))
         XCTAssertEqual(metadata.templateId ?? nil, NSNumber(value: templateId))
