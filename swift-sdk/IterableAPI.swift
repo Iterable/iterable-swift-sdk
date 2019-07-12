@@ -326,7 +326,7 @@ public final class IterableAPI : NSObject {
      - parameter eventName:   Name of the event
      - parameter dataFields:  A `Dictionary` containing any additional information to save along with the event
      */
-    @objc(track:dataFields:) public static func track(event eventName: String, dataFields: [AnyHashable : Any]?) {
+    @objc(track:dataFields:) public static func track(event eventName: String, dataFields: [AnyHashable: Any]?) {
         internalImplementation?.track(eventName, dataFields: dataFields)
     }
     

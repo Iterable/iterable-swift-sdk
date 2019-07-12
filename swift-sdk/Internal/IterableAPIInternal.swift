@@ -206,13 +206,13 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
 
     func trackPushOpen(_ userInfo: [AnyHashable: Any], dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         save(pushPayload: userInfo)
-        if let metadata = IterableNotificationMetadata.metadata(fromLaunchOptions: userInfo), metadata.isRealCampaignNotification() {
+        if let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: userInfo), metadata.isRealCampaignNotification() {
             trackPushOpen(metadata.campaignId, templateId: metadata.templateId, messageId: metadata.messageId, appAlreadyRunning: false, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
         } else {
             onFailure?("Not tracking push open - payload is not an Iterable notification, or a test/proof/ghost push", nil)
         }
     }
-
+    
     func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?) {
         trackPushOpen(campaignId, templateId: templateId, messageId: messageId, appAlreadyRunning: appAlreadyRunning, dataFields: dataFields, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackPushOpen"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPushOpen"))
     }
@@ -233,7 +233,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                                to: dateProvider.currentDate)
         localStorage.save(payload: payload, withExpiration: expiration)
         
-        if let metadata = IterableNotificationMetadata.metadata(fromLaunchOptions: payload) {
+        if let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: payload) {
             if let templateId = metadata.templateId, let messageId = metadata.messageId {
                 attributionInfo = IterableAttributionInfo(campaignId: metadata.campaignId, templateId: templateId, messageId: messageId)
             }
@@ -281,7 +281,6 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"),
                                  forResult: apiClient.track(inAppClick: messageId, buttonIndex: buttonIndex))
     }
-
     
     func trackInAppClick(_ messageId: String, buttonURL: String) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"),
@@ -312,7 +311,6 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  andFailureHandler: onFailure,
                                  forResult: apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken))
     }
-    
 
     func showSystemNotification(_ title: String, body: String, button: String?, callbackBlock: ITEActionBlock?) {
         showSystemNotification(title, body: body, buttonLeft: button, buttonRight: nil, callbackBlock: callbackBlock)

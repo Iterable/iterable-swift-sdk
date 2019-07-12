@@ -41,7 +41,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
      A future representing the URL clicked by the user
      */
     @discardableResult static func showIterableHtmlMessage(_ htmlString: String,
-                                                           trackParams: IterableNotificationMetadata? = nil,
+                                                           trackParams: IterableInAppMessageMetadata? = nil,
                                                            backgroundAlpha: Double = 0,
                                                            padding: UIEdgeInsets = .zero) -> ShowResult {
         guard let topViewController = getTopViewController() else {
@@ -120,7 +120,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
             return .notShown("Invalid content type")
         }
         
-        let notificationMetadata = IterableNotificationMetadata.metadata(fromInAppOptions: iterableMessage.messageId)
+        let notificationMetadata = IterableInAppMessageMetadata.metadata(fromInAppOptions: iterableMessage.messageId)
         
         return showIterableHtmlMessage(content.html,
                                        trackParams: notificationMetadata,

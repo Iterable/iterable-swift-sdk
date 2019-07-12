@@ -51,7 +51,6 @@ public extension AnyHashable {
     static let ITBL_KEY_ITEMS = "items"
     static let ITBL_KEY_MERGE_NESTED = "mergeNestedObjects"
     static let ITBL_KEY_MESSAGE_ID = "messageId"
-    static let ITBL_KEY_CONTENT_ID = "contentId"
     static let ITBL_KEY_NEW_EMAIL = "newEmail"
     static let ITBL_KEY_PLATFORM = "platform"
     static let ITBL_KEY_PACKAGE_NAME = "packageName"

@@ -17,12 +17,12 @@ class IterableHtmlMessageViewController: UIViewController {
     struct Parameters {
         let html: String
         let padding: UIEdgeInsets
-        let trackParams: IterableNotificationMetadata?
+        let trackParams: IterableInAppMessageMetadata?
         let isModal: Bool
         
         init(html: String,
              padding: UIEdgeInsets = .zero,
-             trackParams: IterableNotificationMetadata? = nil,
+             trackParams: IterableInAppMessageMetadata? = nil,
              isModal: Bool) {
             self.html = html
             self.padding = IterableHtmlMessageViewController.padding(fromPadding: padding)

@@ -722,7 +722,7 @@ class IterableAPITests: XCTestCase {
     func testTrackPushOpen() {
         let expectation1 = expectation(description: "trackPushOpen")
         let messageId = UUID().uuidString
-        let userInfo: [AnyHashable : Any] = [
+        let userInfo: [AnyHashable: Any] = [
             "itbl": [
                 "campaignId": 1234,
                 "templateId": 4321,
@@ -741,7 +741,7 @@ class IterableAPITests: XCTestCase {
                                networkSession: networkSession)
         networkSession.callback = {(_, _, _) in
             TestUtils.validate(request: networkSession.request!, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_TRACK)
-            let body = networkSession.getRequestBody() as! [String : Any]
+            let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMatch(keyPath: KeyPath("campaignId"), value: 1234, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath("templateId"), value: 4321, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath("messageId"), value: messageId, inDictionary: body)
