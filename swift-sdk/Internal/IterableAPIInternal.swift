@@ -270,19 +270,19 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                         forResult: apiClient.getInAppMessages(count))
     }
     
-    func trackInAppOpen(_ messageId: String, saveToInbox: Bool, trigger: String?, location: String?) {
+    func trackInAppOpen(_ messageId: String, saveToInbox: Bool?, trigger: String?, location: String?) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppOpen"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"),
                                  forResult: apiClient.track(inAppOpen: messageId, saveToInbox: saveToInbox, trigger: trigger, location: location))
     }
 
-    func trackInAppClick(_ messageId: String, saveToInbox: Bool, trigger: String?, location: String?, buttonIndex: String) {
+    func trackInAppClick(_ messageId: String, saveToInbox: Bool?, trigger: String?, location: String?, buttonIndex: String) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"),
                                  forResult: apiClient.track(inAppClick: messageId, saveToInbox: saveToInbox, trigger: trigger, location: location, buttonIndex: buttonIndex))
     }
     
-    func trackInAppClick(_ messageId: String, saveToInbox: Bool, trigger: String?, location: String?, buttonURL: String) {
+    func trackInAppClick(_ messageId: String, saveToInbox: Bool?, trigger: String?, location: String?, buttonURL: String) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"),
                                  forResult: apiClient.track(inAppClick: messageId, saveToInbox: saveToInbox, trigger: trigger, location: location, buttonURL: buttonURL))
