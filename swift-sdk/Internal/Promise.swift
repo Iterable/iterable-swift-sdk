@@ -8,11 +8,11 @@
 
 import Foundation
 
-public enum IterableError : Error {
+public enum IterableError: Error {
     case general(description: String)
 }
 
-extension IterableError : LocalizedError {
+extension IterableError: LocalizedError {
     public var localizedDescription: String {
         switch self {
         case .general(let description):

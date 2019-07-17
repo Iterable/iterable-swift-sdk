@@ -9,41 +9,25 @@
 import Foundation
 
 @objc public class IterableInAppMessageMetadata: IterableNotificationMetadata {
-    //add RequestCreator fields here
-    //trigger
-    //saveToInbox
-    //location (?)
-    
-    @objc public static func metadata(fromLaunchOptions userInfo: [AnyHashable: Any]) -> IterableInAppMessageMetadata? {
-        guard NotificationHelper.isValidIterableNotification(userInfo: userInfo) else {
-            return nil
-        }
-        
-        return IterableInAppMessageMetadata(fromLaunchOptions: userInfo)
-    }
+    @objc public var trigger: String? = nil
+    @objc public var saveToInbox: Bool = false
+    @objc public var location: String? = nil
     
     @objc public static func metadata(fromInAppOptions messageId: String) -> IterableInAppMessageMetadata {
         return IterableInAppMessageMetadata(fromInAppOptions: messageId)
     }
     
-    //
+    @objc public static func metadata(from inAppMessage: IterableInAppMessage, location: String? = nil) -> IterableInAppMessageMetadata {
+        return IterableInAppMessageMetadata(from: inAppMessage, location: location)
+    }
     
-    private init(fromLaunchOptions userInfo: [AnyHashable: Any]) {
+    private init(from message: IterableInAppMessage, location: String? = nil) {
         super.init()
         
-        let notificationInfo = NotificationHelper.inspect(notification: userInfo)
-        
-        switch notificationInfo {
-        case .iterable(let iterableNotification):
-            self.campaignId = iterableNotification.campaignId
-            self.templateId = iterableNotification.templateId
-            self.messageId = iterableNotification.messageId
-            break
-        case .nonIterable:
-            break
-        case .silentPush:
-            break
-        }
+        self.messageId = message.messageId
+        self.trigger = message.trigger.description
+        self.saveToInbox = message.saveToInbox
+        self.location = location
     }
     
     private init(fromInAppOptions messageId: String) {
@@ -60,9 +44,7 @@ import Foundation
      Creates an `IterableNotificationMetadata` from a push payload
      
      - parameter userInfo:  The notification payload
-     
      - returns:    an instance of `IterableNotificationMetadata` with the specified properties; `nil` if this isn't an Iterable notification
-     
      - warning:   `metadataFromLaunchOptions` will return `nil` if `userInfo` isn't an Iterable notification
      */
     @objc public static func metadata(fromLaunchOptions userInfo: [AnyHashable: Any]) -> IterablePushNotificationMetadata? {
@@ -93,17 +75,11 @@ import Foundation
         }
     }
     
-    /**
-     - returns: `true` if this is a non-ghost, non-proof, non-test real send. `false` otherwise
-     */
     @objc public func isRealCampaignNotification() -> Bool {
         return !(isGhostPush || isProof() || isTestPush())
     }
 }
 
-/**
- `IterableNotificationMetadata` represents the metadata in an Iterable push notification
- */
 @objc public class IterableNotificationMetadata: NSObject {
     @objc public var campaignId: NSNumber = NSNumber(value: 0)
     @objc public var templateId: NSNumber? = nil

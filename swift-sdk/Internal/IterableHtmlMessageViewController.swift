@@ -6,7 +6,7 @@
 
 import UIKit
 
-enum IterableMessageLocation : Int {
+enum IterableMessageLocation: Int {
     case full
     case top
     case center
@@ -47,7 +47,7 @@ class IterableHtmlMessageViewController: UIViewController {
         return CreateResult(viewController: viewController, futureClickedURL: viewController.futureClickedURL)
     }
     
-    override var prefersStatusBarHidden: Bool {return parameters.isModal}
+    override var prefersStatusBarHidden: Bool { return parameters.isModal }
     
     /**
      Loads the view and sets up the webView
@@ -81,8 +81,8 @@ class IterableHtmlMessageViewController: UIViewController {
         ITBInfo()
         super.viewDidLoad()
         
-        if let trackParams = parameters.trackParams, let messageId = trackParams.messageId {
-            IterableAPI.track(inAppOpen: messageId)
+        if let trackParams = parameters.trackParams {
+            IterableAPI.track(inAppOpen: trackParams)
         }
         
         webView?.layoutSubviews()
@@ -163,7 +163,7 @@ class IterableHtmlMessageViewController: UIViewController {
     }
 }
 
-extension IterableHtmlMessageViewController : UIWebViewDelegate {
+extension IterableHtmlMessageViewController: UIWebViewDelegate {
     func webViewDidFinishLoad(_ webView: UIWebView) {
         loaded = true
         if let myWebview = self.webView {
@@ -191,12 +191,22 @@ extension IterableHtmlMessageViewController : UIWebViewDelegate {
             dismiss(animated: false) { [weak self, destinationUrl] in
                 self?.futureClickedURL.resolve(with: url)
                 if let trackParams = self?.parameters.trackParams, let messageId = trackParams.messageId {
+                    //add "location" param here?
+                    
+                    print("jay \(trackParams.saveToInbox)")
+                    print("jay \(trackParams.trigger)")
+                    
                     IterableAPI.track(inAppClick: messageId, buttonURL: destinationUrl)
                 }
             }
         } else {
             futureClickedURL.resolve(with: url)
             if let trackParams = parameters.trackParams, let messageId = trackParams.messageId {
+                //add "location" param here?
+                
+                print("jay \(trackParams.saveToInbox)")
+                print("jay \(trackParams.trigger)")
+                
                 IterableAPI.track(inAppClick: messageId, buttonURL: destinationUrl)
             }
             navigationController?.popViewController(animated: true)

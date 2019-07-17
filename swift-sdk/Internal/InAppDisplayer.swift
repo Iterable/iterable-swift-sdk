@@ -120,14 +120,14 @@ class InAppDisplayer: InAppDisplayerProtocol {
             return .notShown("Invalid content type")
         }
         
-        let notificationMetadata = IterableInAppMessageMetadata.metadata(fromInAppOptions: iterableMessage.messageId)
+        let notificationMetadata = IterableInAppMessageMetadata.metadata(from: iterableMessage, location: "inApp")
         
         return showIterableHtmlMessage(content.html,
                                        trackParams: notificationMetadata,
                                        backgroundAlpha: content.backgroundAlpha,
                                        padding: content.edgeInsets)
     }
-
+    
     /**
      Creates and adds an alert action button to an alertController
      

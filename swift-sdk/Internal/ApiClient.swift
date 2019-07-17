@@ -106,6 +106,10 @@ class ApiClient: ApiClientProtocol {
     func track(inAppOpen messageId: String) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppOpenRequest(messageId, deviceId: deviceId))
     }
+    
+    func track(inAppOpen metadata: IterableInAppMessageMetadata) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createTrackInAppOpenRequest(metadata: metadata, deviceId: deviceId))
+    }
 
     func track(inAppClick messageId: String, buttonIndex: String) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(messageId, deviceId: deviceId, buttonIndex: buttonIndex))
