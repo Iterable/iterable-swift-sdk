@@ -401,7 +401,15 @@ public final class IterableAPI : NSObject {
      Tracks a InAppOpen event with custom completion blocks
      - parameter messageId:       The messageId of the notification
      */
-    @objc(trackInAppOpen:saveToInbox:trigger:location:) public static func track(inAppOpen messageId: String, saveToInbox: Bool = false, trigger: String?, location: String?) {
+    @objc(trackInAppOpen:) public static func track(inAppOpen messageId: String) {
+        internalImplementation?.trackInAppOpen(messageId, saveToInbox: false, trigger: nil, location: nil)
+    }
+    
+    @objc(trackInAppOpen:saveToInbox:trigger:location:) public static func track(inAppOpen messageId: String, saveToInbox: Bool, trigger: String?, location: String?) {
+        internalImplementation?.trackInAppOpen(messageId, saveToInbox: saveToInbox, trigger: trigger, location: location)
+    }
+    
+    public static func track(inAppOpen messageId: String, saveToInbox: Bool?, trigger: String?, location: String?) {
         internalImplementation?.trackInAppOpen(messageId, saveToInbox: saveToInbox, trigger: trigger, location: location)
     }
     
@@ -411,7 +419,15 @@ public final class IterableAPI : NSObject {
      - parameter messageId:       The messageId of the notification
      - parameter buttonIndex:     The index of the button that was clicked
      */
-    @objc(trackInAppClick:saveToInbox:trigger:location:buttonIndex:) public static func track(inAppClick messageId: String, saveToInbox: Bool = false, trigger: String?, location: String?, buttonIndex: String) {
+    @objc(trackInAppClick:buttonIndex:) public static func track(inAppClick messageId: String, buttonIndex: String) {
+        internalImplementation?.trackInAppClick(messageId, saveToInbox: false, trigger: nil, location: nil, buttonIndex: buttonIndex)
+    }
+    
+    @objc(trackInAppClick:saveToInbox:trigger:location:buttonIndex:) public static func track(inAppClick messageId: String, saveToInbox: Bool, trigger: String?, location: String?, buttonIndex: String) {
+        internalImplementation?.trackInAppClick(messageId, saveToInbox: saveToInbox, trigger: trigger, location: location, buttonIndex: buttonIndex)
+    }
+    
+    public static func track(inAppClick messageId: String, saveToInbox: Bool?, trigger: String?, location: String?, buttonIndex: String) {
         internalImplementation?.trackInAppClick(messageId, saveToInbox: saveToInbox, trigger: trigger, location: location, buttonIndex: buttonIndex)
     }
     
@@ -421,7 +437,15 @@ public final class IterableAPI : NSObject {
      - parameter messageId:       The messageId of the notification
      - parameter buttonURL:     The url of the button that was clicked
      */
+    @objc(trackInAppClick:buttonURL:) public static func track(inAppClick messageId: String, buttonURL: String) {
+        internalImplementation?.trackInAppClick(messageId, saveToInbox: false, trigger: nil, location: nil, buttonURL: buttonURL)
+    }
+    
     @objc(trackInAppClick:saveToInbox:trigger:location:buttonURL:) public static func track(inAppClick messageId: String, saveToInbox: Bool = false, trigger: String?, location: String?, buttonURL: String) {
+        internalImplementation?.trackInAppClick(messageId, saveToInbox: saveToInbox, trigger: trigger, location: location, buttonURL: buttonURL)
+    }
+    
+    public static func track(inAppClick messageId: String, saveToInbox: Bool?, trigger: String?, location: String?, buttonURL: String) {
         internalImplementation?.trackInAppClick(messageId, saveToInbox: saveToInbox, trigger: trigger, location: location, buttonURL: buttonURL)
     }
     
