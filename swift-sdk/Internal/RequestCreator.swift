@@ -233,52 +233,37 @@ struct RequestCreator {
         return .success(.get(createGetRequest(forPath: .ITBL_PATH_GET_INAPP_MESSAGES, withArgs: args as! [String: String])))
     }
     
-    func createTrackInAppOpenRequest(_ messageId: String, deviceId: String) -> Result<IterableRequest, IterableError> {
+    func createTrackInAppOpenRequest(_ messageId: String, saveToInbox: Bool?, trigger: String?, location: String?, deviceId: String) -> Result<IterableRequest, IterableError> {
         var body: [AnyHashable: Any] = [:]
         
         body[.ITBL_KEY_MESSAGE_ID] = messageId
         
         addEmailOrUserId(dict: &body)
-//        addMessageContext(dict: &body, deviceInfo: getDeviceInfo(deviceId))
+        addMessageContext(dict: &body, saveToInbox: saveToInbox, trigger: trigger, location: location, deviceId: deviceId)
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_OPEN, body: body)))
     }
     
-    func createTrackInAppOpenRequest(metadata: IterableInAppMessageMetadata, deviceId: String) -> Result<IterableRequest, IterableError> {
-        guard let messageId = metadata.messageId else { return .failure(IterableError.general(description: "no messageId")) }
-        guard let trigger = metadata.trigger else { return .failure(IterableError.general(description: "no trigger")) }
-        guard let location = metadata.location else { return .failure(IterableError.general(description: "no location")) }
-        
-        var body: [AnyHashable: Any] = [:]
-        
-        body[.ITBL_KEY_MESSAGE_ID] = messageId
-        
-        addEmailOrUserId(dict: &body)
-        addMessageContext(dict: &body, saveToInbox: metadata.saveToInbox, trigger: trigger, location: location, deviceInfo: getDeviceInfo(deviceId))
-        
-        return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_OPEN, body: body)))
-    }
-    
-    func createTrackInAppClickRequest(_ messageId: String, deviceId: String, buttonIndex: String) -> Result<IterableRequest, IterableError> {
+    func createTrackInAppClickRequest(_ messageId: String, saveToInbox: Bool?, trigger: String?, location: String?, deviceId: String, buttonIndex: String) -> Result<IterableRequest, IterableError> {
         var body: [AnyHashable: Any] = [:]
         
         body[.ITBL_KEY_MESSAGE_ID] = messageId
         body[.ITBL_IN_APP_BUTTON_INDEX] = buttonIndex
         
         addEmailOrUserId(dict: &body)
-//        addMessageContext(dict: &body, deviceInfo: getDeviceInfo(deviceId))
+        addMessageContext(dict: &body, saveToInbox: saveToInbox, trigger: trigger, location: location, deviceId: deviceId)
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLICK, body: body)))
     }
     
-    func createTrackInAppClickRequest(_ messageId: String, deviceId: String, buttonURL: String) -> Result<IterableRequest, IterableError> {
+    func createTrackInAppClickRequest(_ messageId: String, saveToInbox: Bool?, trigger: String?, location: String?, deviceId: String, buttonURL: String) -> Result<IterableRequest, IterableError> {
         var body: [AnyHashable: Any] = [:]
         
         body[.ITBL_KEY_MESSAGE_ID] = messageId
         body[.ITBL_IN_APP_CLICKED_URL] = buttonURL
         
         addEmailOrUserId(dict: &body)
-//        addMessageContext(dict: &body, deviceInfo: getDeviceInfo(deviceId))
+        addMessageContext(dict: &body, saveToInbox: saveToInbox, trigger: trigger, location: location, deviceId: deviceId)
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLICK, body: body)))
     }
@@ -325,11 +310,22 @@ struct RequestCreator {
         }
     }
     
-    private func addMessageContext(dict: inout [AnyHashable: Any], saveToInbox: Bool, trigger: String, location: String, deviceInfo: [AnyHashable: Any]) {
-        dict["messageContext"] = [.ITBL_IN_APP_SAVE_TO_INBOX: saveToInbox,
-                                  "trigger": trigger,
-                                  "location": location,
-                                  String.ITBL_DEVICE_INFO_KEY: deviceInfo]
+    private func addMessageContext(dict: inout [AnyHashable: Any], saveToInbox: Bool? = false, trigger: String? = nil, location: String? = nil, deviceId: String) {
+        var context: [AnyHashable: Any] = [:]
+        
+        context[.ITBL_IN_APP_SAVE_TO_INBOX] = saveToInbox
+        
+        if let trigger = trigger {
+            context[.ITBL_IN_APP_TRIGGER] = trigger
+        }
+        
+        if let location = location {
+            context[.ITBL_IN_APP_LOCATION] = location
+        }
+        
+        context[String.ITBL_DEVICE_INFO_KEY] = getDeviceInfo(deviceId)
+        
+        dict["messageContext"] = context
     }
     
     private func getDeviceInfo(_ deviceId: String) -> [AnyHashable: Any] {
