@@ -96,7 +96,7 @@ public extension String {
     static let ITBL_DEVICE_SYSTEM_NAME = "systemName"
     static let ITBL_DEVICE_SYSTEM_VERSION = "systemVersion"
     static let ITBL_DEVICE_USER_INTERFACE = "userInterfaceIdiom"
-
+    
     static let ITBL_DEVICE_DEVICE_ID = "deviceId"
     static let ITBL_DEVICE_APP_PACKAGE_NAME = "appPackageName"
     static let ITBL_DEVICE_APP_VERSION = "appVersion"

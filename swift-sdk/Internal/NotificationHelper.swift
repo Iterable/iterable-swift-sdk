@@ -29,8 +29,11 @@ struct ITBLNotificationInfo {
         let campaignId = itblElement[Keys.campaignId.rawValue] as? NSNumber ?? NSNumber(value: 0)
         let templateId = itblElement[Keys.templateId.rawValue] as? NSNumber
         let messageId = itblElement[Keys.messageId.rawValue] as? String
-
-        return ITBLNotificationInfo(campaignId: campaignId, templateId: templateId, messageId: messageId, isGhostPush: isGhostPush)
+        
+        return ITBLNotificationInfo(campaignId: campaignId,
+                                    templateId: templateId,
+                                    messageId: messageId,
+                                    isGhostPush: isGhostPush)
     }
     
     enum Keys: String {

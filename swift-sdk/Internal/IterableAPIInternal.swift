@@ -269,11 +269,17 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                         andFailureHandler: onFailure,
                                         forResult: apiClient.getInAppMessages(count))
     }
-
+    
     func trackInAppOpen(_ messageId: String) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppOpen"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"),
                                  forResult: apiClient.track(inAppOpen: messageId))
+    }
+    
+    func trackInAppOpen(metadata: IterableInAppMessageMetadata) {
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppOpen"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"),
+                                 forResult: apiClient.track(inAppOpen: metadata))
     }
 
     func trackInAppClick(_ messageId: String, buttonIndex: String) {
@@ -319,7 +325,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     func showSystemNotification(_ title: String, body: String, buttonLeft: String?, buttonRight:String?, callbackBlock: ITEActionBlock?) {
         InAppDisplayer.showSystemNotification(title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
     }
-
+    
     func getAndTrackDeeplink(webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {
         deeplinkManager.getAndTrackDeeplink(webpageURL: webpageURL, callbackBlock: callbackBlock)
     }

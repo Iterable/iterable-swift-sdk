@@ -405,6 +405,10 @@ public final class IterableAPI : NSObject {
         internalImplementation?.trackInAppOpen(messageId)
     }
     
+    @objc(trackInAppOpenWithMetadata:) public static func track(inAppOpen metadata: IterableInAppMessageMetadata) {
+        internalImplementation?.trackInAppOpen(metadata: metadata)
+    }
+    
     /**
      Tracks a inAppClick event
      

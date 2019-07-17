@@ -24,7 +24,7 @@ struct PostRequest {
 
 // This is a stateless pure functional class
 // This will create IterableRequest
-// The Api Endpoint and request endpoint is not defined yet
+// The API Endpoint and request endpoint is not defined yet
 struct RequestCreator {
     let apiKey: String
     let auth: Auth
@@ -239,7 +239,22 @@ struct RequestCreator {
         body[.ITBL_KEY_MESSAGE_ID] = messageId
         
         addEmailOrUserId(dict: &body)
-        addMessageContext(dict: &body, deviceInfo: getDeviceInfo(deviceId))
+//        addMessageContext(dict: &body, deviceInfo: getDeviceInfo(deviceId))
+        
+        return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_OPEN, body: body)))
+    }
+    
+    func createTrackInAppOpenRequest(metadata: IterableInAppMessageMetadata, deviceId: String) -> Result<IterableRequest, IterableError> {
+        guard let messageId = metadata.messageId else { return .failure(IterableError.general(description: "no messageId")) }
+        guard let trigger = metadata.trigger else { return .failure(IterableError.general(description: "no trigger")) }
+        guard let location = metadata.location else { return .failure(IterableError.general(description: "no location")) }
+        
+        var body: [AnyHashable: Any] = [:]
+        
+        body[.ITBL_KEY_MESSAGE_ID] = messageId
+        
+        addEmailOrUserId(dict: &body)
+        addMessageContext(dict: &body, saveToInbox: metadata.saveToInbox, trigger: trigger, location: location, deviceInfo: getDeviceInfo(deviceId))
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_OPEN, body: body)))
     }
@@ -251,7 +266,7 @@ struct RequestCreator {
         body[.ITBL_IN_APP_BUTTON_INDEX] = buttonIndex
         
         addEmailOrUserId(dict: &body)
-        addMessageContext(dict: &body, deviceInfo: getDeviceInfo(deviceId))
+//        addMessageContext(dict: &body, deviceInfo: getDeviceInfo(deviceId))
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLICK, body: body)))
     }
@@ -263,7 +278,7 @@ struct RequestCreator {
         body[.ITBL_IN_APP_CLICKED_URL] = buttonURL
         
         addEmailOrUserId(dict: &body)
-        addMessageContext(dict: &body, deviceInfo: getDeviceInfo(deviceId))
+//        addMessageContext(dict: &body, deviceInfo: getDeviceInfo(deviceId))
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLICK, body: body)))
     }
@@ -310,10 +325,10 @@ struct RequestCreator {
         }
     }
     
-    private func addMessageContext(dict: inout [AnyHashable: Any], deviceInfo: [AnyHashable: Any]) {
-        dict["messageContext"] = [.ITBL_IN_APP_SAVE_TO_INBOX: "", //bool
-                                  "silentInbox": "", //bool
-                                  "location": "", //in-app/inbox
+    private func addMessageContext(dict: inout [AnyHashable: Any], saveToInbox: Bool, trigger: String, location: String, deviceInfo: [AnyHashable: Any]) {
+        dict["messageContext"] = [.ITBL_IN_APP_SAVE_TO_INBOX: saveToInbox,
+                                  "trigger": trigger,
+                                  "location": location,
                                   String.ITBL_DEVICE_INFO_KEY: deviceInfo]
     }
     
