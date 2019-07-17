@@ -81,8 +81,11 @@ class IterableHtmlMessageViewController: UIViewController {
         ITBInfo()
         super.viewDidLoad()
         
-        if let trackParams = parameters.trackParams {
-            IterableAPI.track(inAppOpen: trackParams)
+        if let trackParams = parameters.trackParams, let messageId = trackParams.messageId {
+            IterableAPI.track(inAppOpen: messageId,
+                              saveToInbox: trackParams.saveToInbox,
+                              trigger: trackParams.trigger,
+                              location: trackParams.location)
         }
         
         webView?.layoutSubviews()
@@ -191,24 +194,23 @@ extension IterableHtmlMessageViewController: UIWebViewDelegate {
             dismiss(animated: false) { [weak self, destinationUrl] in
                 self?.futureClickedURL.resolve(with: url)
                 if let trackParams = self?.parameters.trackParams, let messageId = trackParams.messageId {
-                    //add "location" param here?
-                    
-                    print("jay \(trackParams.saveToInbox)")
-                    print("jay \(trackParams.trigger)")
-                    
-                    IterableAPI.track(inAppClick: messageId, buttonURL: destinationUrl)
+                    IterableAPI.track(inAppClick: messageId,
+                                      saveToInbox: trackParams.saveToInbox,
+                                      trigger: trackParams.trigger,
+                                      location: trackParams.location,
+                                      buttonURL: destinationUrl)
                 }
             }
         } else {
             futureClickedURL.resolve(with: url)
             if let trackParams = parameters.trackParams, let messageId = trackParams.messageId {
-                //add "location" param here?
-                
-                print("jay \(trackParams.saveToInbox)")
-                print("jay \(trackParams.trigger)")
-                
-                IterableAPI.track(inAppClick: messageId, buttonURL: destinationUrl)
+                IterableAPI.track(inAppClick: messageId,
+                                  saveToInbox: trackParams.saveToInbox,
+                                  trigger: trackParams.trigger,
+                                  location: trackParams.location,
+                                  buttonURL: destinationUrl)
             }
+            
             navigationController?.popViewController(animated: true)
         }
         

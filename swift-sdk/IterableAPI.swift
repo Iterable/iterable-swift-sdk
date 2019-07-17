@@ -401,12 +401,8 @@ public final class IterableAPI : NSObject {
      Tracks a InAppOpen event with custom completion blocks
      - parameter messageId:       The messageId of the notification
      */
-    @objc(trackInAppOpen:) public static func track(inAppOpen messageId: String) {
-        internalImplementation?.trackInAppOpen(messageId)
-    }
-    
-    @objc(trackInAppOpenWithMetadata:) public static func track(inAppOpen metadata: IterableInAppMessageMetadata) {
-        internalImplementation?.trackInAppOpen(metadata: metadata)
+    @objc(trackInAppOpen:saveToInbox:trigger:location:) public static func track(inAppOpen messageId: String, saveToInbox: Bool = false, trigger: String?, location: String?) {
+        internalImplementation?.trackInAppOpen(messageId, saveToInbox: saveToInbox, trigger: trigger, location: location)
     }
     
     /**
@@ -415,8 +411,8 @@ public final class IterableAPI : NSObject {
      - parameter messageId:       The messageId of the notification
      - parameter buttonIndex:     The index of the button that was clicked
      */
-    @objc(trackInAppClick:buttonIndex:) public static func track(inAppClick messageId: String, buttonIndex: String) {
-        internalImplementation?.trackInAppClick(messageId, buttonIndex: buttonIndex)
+    @objc(trackInAppClick:saveToInbox:trigger:location:buttonIndex:) public static func track(inAppClick messageId: String, saveToInbox: Bool = false, trigger: String?, location: String?, buttonIndex: String) {
+        internalImplementation?.trackInAppClick(messageId, saveToInbox: saveToInbox, trigger: trigger, location: location, buttonIndex: buttonIndex)
     }
     
     /**
@@ -425,8 +421,8 @@ public final class IterableAPI : NSObject {
      - parameter messageId:       The messageId of the notification
      - parameter buttonURL:     The url of the button that was clicked
      */
-    @objc(trackInAppClick:buttonURL:) public static func track(inAppClick messageId: String, buttonURL: String) {
-        internalImplementation?.trackInAppClick(messageId, buttonURL: buttonURL)
+    @objc(trackInAppClick:saveToInbox:trigger:location:buttonURL:) public static func track(inAppClick messageId: String, saveToInbox: Bool = false, trigger: String?, location: String?, buttonURL: String) {
+        internalImplementation?.trackInAppClick(messageId, saveToInbox: saveToInbox, trigger: trigger, location: location, buttonURL: buttonURL)
     }
     
     /**

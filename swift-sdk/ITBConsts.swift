@@ -146,6 +146,9 @@ public extension AnyHashable {
 
 //In-App Constants
 public extension AnyHashable {
+    static let ITBL_IN_APP_LOCATION_IN_APP = "in-app"
+    static let ITBL_IN_APP_LOCATION_INBOX = "inbox"
+    
     static let ITBL_IN_APP_CLICKED_URL = "clickedUrl"
     
     static let ITBL_IN_APP_BUTTON_INDEX = "buttonIndex"
@@ -163,6 +166,7 @@ public extension AnyHashable {
     static let ITBL_IN_APP_DISPLAY_SETTINGS = "inAppDisplaySettings"
     static let ITBL_IN_APP_CUSTOM_PAYLOAD = "customPayload"
     static let ITBL_IN_APP_SAVE_TO_INBOX = "saveToInbox"
+    static let ITBL_IN_APP_LOCATION = "location"
     static let ITBL_IN_APP_CONTENT_TYPE = "type"
     static let ITBL_IN_APP_INBOX_METADATA = "inboxMetadata"
 }

@@ -13,7 +13,7 @@ import Foundation
     @objc public var saveToInbox: Bool = false
     @objc public var location: String? = nil
     
-    @objc public static func metadata(fromInAppOptions messageId: String) -> IterableInAppMessageMetadata {
+    @objc public static func metadata(fromInAppOptions messageId: String, trigger: String? = nil, saveToInbox: Bool = false, location: String? = nil) -> IterableInAppMessageMetadata {
         return IterableInAppMessageMetadata(fromInAppOptions: messageId)
     }
     
@@ -30,10 +30,13 @@ import Foundation
         self.location = location
     }
     
-    private init(fromInAppOptions messageId: String) {
+    private init(fromInAppOptions messageId: String, trigger: String? = nil, saveToInbox: Bool = false, location: String? = nil) {
         super.init()
         
         self.messageId = messageId
+        self.trigger = trigger
+        self.saveToInbox = saveToInbox
+        self.location = location
     }
 }
 
