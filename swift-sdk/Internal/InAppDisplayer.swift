@@ -68,10 +68,10 @@ class InAppDisplayer: InAppDisplayerProtocol {
     }
 
     static func showSystemNotification(_ title: String,
-                                               body: String,
-                                               buttonLeft: String?,
-                                               buttonRight: String?,
-                                               callbackBlock: ITEActionBlock?) {
+                                       body: String,
+                                       buttonLeft: String?,
+                                       buttonRight: String?,
+                                       callbackBlock: ITEActionBlock?) {
         guard let topViewController = getTopViewController() else {
             return
         }
@@ -142,7 +142,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
             alertController.dismiss(animated: false)
             callbackBlock?(keyString)
         }
+        
         alertController.addAction(button)
     }
 }
-

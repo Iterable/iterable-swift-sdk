@@ -25,15 +25,15 @@ struct ITBLNotificationInfo {
         self.isGhostPush = isGhostPush
     }
     
-    static func parse(itblElement : [AnyHashable : Any], isGhostPush: Bool) -> ITBLNotificationInfo {
+    static func parse(itblElement: [AnyHashable: Any], isGhostPush: Bool) -> ITBLNotificationInfo {
         let campaignId = itblElement[Keys.campaignId.rawValue] as? NSNumber ?? NSNumber(value: 0)
         let templateId = itblElement[Keys.templateId.rawValue] as? NSNumber
         let messageId = itblElement[Keys.messageId.rawValue] as? String
 
         return ITBLNotificationInfo(campaignId: campaignId, templateId: templateId, messageId: messageId, isGhostPush: isGhostPush)
     }
-
-    enum Keys : String {
+    
+    enum Keys: String {
         case messageId
         case templateId
         case campaignId
@@ -67,10 +67,10 @@ struct ITBLSilentPushNotificationInfo {
 
 struct NotificationHelper {
     static func inspect(notification: [AnyHashable : Any]) -> NotificationInfo {
-        guard let itblElement = notification[Keys.itbl.rawValue] as? [AnyHashable : Any] else {
+        guard let itblElement = notification[Keys.itbl.rawValue] as? [AnyHashable: Any] else {
             return NotificationInfo.nonIterable
         }
-
+        
         if let isGhostPush = itblElement[ITBLNotificationInfo.Keys.isGhostPush.rawValue] as? Bool {
             if isGhostPush == true {
                 if let silentPush = ITBLSilentPushNotificationInfo.parse(notification: notification) {
@@ -81,7 +81,6 @@ struct NotificationHelper {
             } else {
                 return .iterable(ITBLNotificationInfo.parse(itblElement: itblElement, isGhostPush: isGhostPush))
             }
-            
         } else {
             return .iterable(ITBLNotificationInfo.parse(itblElement: itblElement, isGhostPush: false))
         }
@@ -112,6 +111,7 @@ struct NotificationHelper {
         guard let campaignId = campaignId else {
             return true
         }
+        
         if let _ = campaignId as? NSNumber {
             return true
         } else {
@@ -125,7 +125,3 @@ struct NotificationHelper {
         case messageId
     }
 }
-
-
-
-

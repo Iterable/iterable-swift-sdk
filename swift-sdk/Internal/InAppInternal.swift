@@ -5,7 +5,6 @@
 
 import Foundation
 
-///
 protocol InAppFetcherProtocol {
     // Fetch from server and sync
     func fetch() -> Future<[IterableInAppMessage], Error>

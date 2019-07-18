@@ -8,7 +8,7 @@
 import Foundation
 
 /// `show` to show the inApp otherwise `skip` to skip.
-@objc public enum InAppShowResponse : Int {
+@objc public enum InAppShowResponse: Int {
     case show
     case skip
 }
@@ -17,16 +17,16 @@ import Foundation
 public protocol IterableInAppManagerProtocol {
     /// - returns: A list of all in-app messages
     @objc(getMessages) func getMessages() -> [IterableInAppMessage]
-
+    
     /// - returns: A list of all inbox messages
     @objc(getInboxMessages) func getInboxMessages() -> [IterableInAppMessage]
-
+    
     /// - returns: A count of unread inbox messages
     @objc(getUnreadInboxMessagesCount) func getUnreadInboxMessagesCount() -> Int
-
+    
     /// - parameter message: The message to show.
     @objc(showMessage:) func show(message: IterableInAppMessage)
-
+    
     /// - parameter message: The message to show.
     /// - parameter consume: Set to true to consume the event from the server queue if the message is shown. This should be default.
     /// - parameter callback: block of code to execute once the user clicks on a link or button in the in-app notification.
@@ -35,11 +35,11 @@ public protocol IterableInAppManagerProtocol {
     
     /// - parameter message: The message to remove.
     @objc(removeMessage:) func remove(message: IterableInAppMessage)
-
+    
     /// - parameter read: Whether this inbox message was read
     /// - parameter message: The inbox message
     @objc(setRead:forMessage:) func set(read: Bool, forMessage message: IterableInAppMessage)
-
+    
     /// This will create a ViewController which displays an inbox message.
     /// This ViewController would typically be pushed into the navigation stack.
     /// - parameter message: The message to show.
@@ -89,10 +89,9 @@ public final class IterableHtmlInAppContent: NSObject, IterableInAppContent {
     public let html: String
     
     // Internal
-    init(
-        edgeInsets: UIEdgeInsets,
-        backgroundAlpha: Double,
-        html: String) {
+    init(edgeInsets: UIEdgeInsets,
+         backgroundAlpha: Double,
+         html: String) {
         self.edgeInsets = edgeInsets
         self.backgroundAlpha = backgroundAlpha
         self.html = html
@@ -106,11 +105,9 @@ public final class IterableInboxMetadata: NSObject {
     public let icon: String?
     
     // Internal
-    init(
-        title: String? = nil,
-        subtitle: String? = nil,
-        icon: String? = nil
-        ) {
+    init(title: String? = nil,
+         subtitle: String? = nil,
+         icon: String? = nil) {
         self.title = title
         self.subtitle = subtitle
         self.icon = icon
@@ -124,23 +121,21 @@ public final class IterableInboxMetadata: NSObject {
     case immediate
     case event
     case never
-
 }
 
 @objcMembers
 public final class IterableInAppTrigger: NSObject {
     public let type: IterableInAppTriggerType
     
-    // internal
-    let dict: [AnyHashable : Any]
+    // Internal
+    let dict: [AnyHashable: Any]
     
     // Internal
-    init(dict: [AnyHashable : Any]) {
+    init(dict: [AnyHashable: Any]) {
         self.dict = dict
         if let typeString = dict[.ITBL_IN_APP_TRIGGER_TYPE] as? String {
             self.type = IterableInAppTriggerType.from(string: typeString)
         } else {
-            // if trigger type is not present in payload
             self.type = IterableInAppTriggerType.immediate
         }
     }
@@ -151,7 +146,7 @@ public final class IterableInAppTrigger: NSObject {
 public final class IterableInAppMessage: NSObject {
     /// the id for the inApp message
     public let messageId: String
-
+    
     /// the campaign id for this message
     public let campaignId: String
     
@@ -160,7 +155,7 @@ public final class IterableInAppMessage: NSObject {
     
     /// when was this message created
     public let createdAt: Date?
-
+    
     /// when to expire this in-app, nil means do not expire
     public let expiresAt: Date?
     
@@ -174,8 +169,8 @@ public final class IterableInAppMessage: NSObject {
     public let inboxMetadata: IterableInboxMetadata?
     
     /// Custom Payload for this message.
-    public let customPayload: [AnyHashable : Any]?
-
+    public let customPayload: [AnyHashable: Any]?
+    
     /// Whether we have processed the trigger for this message.
     /// Note: This is internal and not public
     internal var didProcessTrigger = false
@@ -183,22 +178,20 @@ public final class IterableInAppMessage: NSObject {
     /// Mark this message to be removed from server queue.
     /// Note: This is internal and not public
     internal var consumed: Bool = false
-
+    
     /// Whether this inbox message has been read
     public internal(set) var read: Bool = false
-
+    
     // Internal, don't let others create
-    init(
-        messageId: String,
-        campaignId: String,
-        trigger: IterableInAppTrigger = .defaultTrigger,
-        createdAt: Date? = nil,
-        expiresAt: Date? = nil,
-        content: IterableInAppContent,
-        saveToInbox: Bool = false,
-        inboxMetadata: IterableInboxMetadata? = nil,
-        customPayload: [AnyHashable : Any]? = nil
-        ) {
+    init(messageId: String,
+         campaignId: String,
+         trigger: IterableInAppTrigger = .defaultTrigger,
+         createdAt: Date? = nil,
+         expiresAt: Date? = nil,
+         content: IterableInAppContent,
+         saveToInbox: Bool = false,
+         inboxMetadata: IterableInboxMetadata? = nil,
+         customPayload: [AnyHashable: Any]? = nil) {
         self.messageId = messageId
         self.campaignId = campaignId
         self.trigger = trigger

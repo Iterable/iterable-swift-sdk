@@ -72,11 +72,11 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    var lastPushPayload: [AnyHashable : Any]? {
+    var lastPushPayload: [AnyHashable: Any]? {
         return localStorage.getPayload(currentDate: dateProvider.currentDate)
     }
     
-    var attributionInfo : IterableAttributionInfo? {
+    var attributionInfo: IterableAttributionInfo? {
         get {
             return localStorage.getAttributionInfo(currentDate: dateProvider.currentDate)
         } set {
@@ -134,15 +134,15 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                              onSuccess: OnSuccessHandler? = nil,
                                              onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         hexToken = token.hexString()
-
+        
         return IterableAPIInternal.call(successHandler: onSuccess,
                                         andFailureHandler: onFailure,
                                         forResult: apiClient.register(hexToken: hexToken!,
-                                                                              appName: appName,
-                                                                              deviceId: deviceId,
-                                                                              sdkVersion: localStorage.sdkVersion,
-                                                                              pushServicePlatform: pushServicePlatform,
-                                                                              notificationsEnabled: notificationsEnabled))
+                                                                      appName: appName,
+                                                                      deviceId: deviceId,
+                                                                      sdkVersion: localStorage.sdkVersion,
+                                                                      pushServicePlatform: pushServicePlatform,
+                                                                      notificationsEnabled: notificationsEnabled))
     }
     
     func disableDeviceForCurrentUser() {
@@ -221,10 +221,10 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         IterableAPIInternal.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
                                  forResult: apiClient.track(pushOpen: campaignId,
-                                                                    templateId: templateId,
-                                                                    messageId: messageId,
-                                                                    appAlreadyRunning: appAlreadyRunning,
-                                                                    dataFields: dataFields))
+                                                            templateId: templateId,
+                                                            messageId: messageId,
+                                                            appAlreadyRunning: appAlreadyRunning,
+                                                            dataFields: dataFields))
     }
     
     private func save(pushPayload payload: [AnyHashable: Any]) {
@@ -290,9 +290,9 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }
 
     func inAppConsume(_ messageId: String) {
-        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "inappConsume"),
-                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "inappConsume"),
-                                 forResult: apiClient.inappConsume(messageId: messageId))
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "inAppConsume"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "inAppConsume"),
+                                 forResult: apiClient.inAppConsume(messageId: messageId))
     }
 
     private func disableDevice(forAllUsers allUsers: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
@@ -301,6 +301,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             onFailure?("Device not registered.", nil)
             return
         }
+        
         guard !(allUsers == false && email == nil && userId == nil) else {
             ITBError("Emal or userId must be set.")
             onFailure?("Email or userId must be set.", nil)

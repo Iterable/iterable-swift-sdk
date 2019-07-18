@@ -100,7 +100,7 @@ struct InAppHelper {
             case .parseFailed(reason: let reason, messageId: let messageId):
                 ITBError(reason)
                 if let messageId = messageId {
-                    apiClient.inappConsume(messageId: messageId)
+                    apiClient.inAppConsume(messageId: messageId)
                 }
                 return nil
             }

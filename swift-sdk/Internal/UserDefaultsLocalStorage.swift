@@ -124,7 +124,7 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
         }
     }
     
-    private func save<T:Codable>(codable: T?, withKey key: LocalStorageKey, andExpiration expiration: Date? = nil) throws {
+    private func save<T: Codable>(codable: T?, withKey key: LocalStorageKey, andExpiration expiration: Date? = nil) throws {
         if let value = codable {
             let data = try JSONEncoder().encode(value)
             try save(data: data, withKey: key, andExpiration: expiration)

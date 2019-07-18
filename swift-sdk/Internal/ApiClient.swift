@@ -6,7 +6,7 @@
 
 import Foundation
 
-protocol ApiClientProtocol : class {
+protocol ApiClientProtocol: class {
     func register(hexToken: String,
                   appName: String,
                   deviceId: String,
@@ -18,11 +18,11 @@ protocol ApiClientProtocol : class {
     
     func updateEmail(newEmail: String) -> Future<SendRequestValue, SendRequestError>
     
-    func track(purchase total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?) -> Future<SendRequestValue, SendRequestError>
+    func track(purchase total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError>
     
-    func track(pushOpen campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?) -> Future<SendRequestValue, SendRequestError>
+    func track(pushOpen campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError>
     
-    func track(event eventName: String, dataFields: [AnyHashable : Any]?) -> Future<SendRequestValue, SendRequestError>
+    func track(event eventName: String, dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError>
     
     func updateSubscriptions(_ emailListIds: [String]?, unsubscribedChannelIds: [String]?, unsubscribedMessageTypeIds: [String]?) -> Future<SendRequestValue, SendRequestError>
     
@@ -34,7 +34,7 @@ protocol ApiClientProtocol : class {
     
     func track(inAppClick messageId: String, buttonURL: String) -> Future<SendRequestValue, SendRequestError>
     
-    @discardableResult func inappConsume(messageId: String) -> Future<SendRequestValue, SendRequestError>
+    @discardableResult func inAppConsume(messageId: String) -> Future<SendRequestValue, SendRequestError>
     
     func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Future<SendRequestValue, SendRequestError>
 }
@@ -44,7 +44,7 @@ struct Auth {
     let email: String?
 }
 
-protocol AuthProvider : class {
+protocol AuthProvider: class {
     var auth: Auth { get }
 }
 
@@ -78,19 +78,19 @@ class ApiClient : ApiClientProtocol {
         return send(iterableRequestResult: createRequestCreator().createUpdateEmailRequest(newEmail: newEmail))
     }
     
-    func track(purchase total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?) -> Future<SendRequestValue, SendRequestError> {
+    func track(purchase total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createTrackPurchaseRequest(total, items: items, dataFields: dataFields))
     }
     
-    func track(pushOpen campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?) -> Future<SendRequestValue, SendRequestError> {
+    func track(pushOpen campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createTrackPushOpenRequest(campaignId,
-                                                                      templateId: templateId,
-                                                                      messageId: messageId,
-                                                                      appAlreadyRunning: appAlreadyRunning,
-                                                                      dataFields: dataFields))
+                                                                                             templateId: templateId,
+                                                                                             messageId: messageId,
+                                                                                             appAlreadyRunning: appAlreadyRunning,
+                                                                                             dataFields: dataFields))
     }
     
-    func track(event eventName: String, dataFields: [AnyHashable : Any]?) -> Future<SendRequestValue, SendRequestError> {
+    func track(event eventName: String, dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createTrackEventRequest(eventName, dataFields: dataFields))
     }
 
@@ -114,8 +114,8 @@ class ApiClient : ApiClientProtocol {
         return send(iterableRequestResult: createRequestCreator().createTrackInappClickRequest(messageId, buttonURL: buttonURL))
     }
 
-    func inappConsume(messageId: String) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createInappConsumeRequest(messageId))
+    func inAppConsume(messageId: String) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createInAppConsumeRequest(messageId))
     }
 
     func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Future<SendRequestValue, SendRequestError> {
@@ -152,6 +152,7 @@ class ApiClient : ApiClientProtocol {
         guard let authProvider = authProvider else {
             fatalError("authProvider is missing")
         }
+        
         return RequestCreator(apiKey: apiKey, auth: authProvider.auth)
     }
     
