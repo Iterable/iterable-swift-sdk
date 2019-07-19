@@ -10,12 +10,12 @@ public typealias UrlHandler = (URL) -> Bool
 public typealias CustomActionHandler = (String) -> Bool
 
 /// handles opening of Urls
-@objc public protocol UrlOpenerProtocol : class {
+@objc public protocol UrlOpenerProtocol: class {
     @objc func open(url: URL)
 }
 
 /// Default app opener. Defers to UIApplication open
-public class AppUrlOpener : UrlOpenerProtocol {
+public class AppUrlOpener: UrlOpenerProtocol {
     public init() {}
     
     public func open(url: URL) {

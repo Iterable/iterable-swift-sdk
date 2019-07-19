@@ -5,7 +5,7 @@
 //  Copyright © 2016 Iterable. All rights reserved.
 //
 
-@interface IterableConstants : NSObject
+@interface IterableConstants: NSObject
 
 @end
 

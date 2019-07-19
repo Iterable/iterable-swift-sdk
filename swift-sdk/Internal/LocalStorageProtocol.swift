@@ -14,5 +14,5 @@ protocol LocalStorageProtocol {
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo?
     func save(attributionInfo: IterableAttributionInfo?, withExpiration expiration: Date?)
     func getPayload(currentDate: Date) -> [AnyHashable: Any]?
-    func save(payload: [AnyHashable : Any]?, withExpiration: Date?)
+    func save(payload: [AnyHashable: Any]?, withExpiration: Date?)
 }

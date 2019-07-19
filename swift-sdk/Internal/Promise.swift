@@ -25,13 +25,13 @@ extension IterableError: LocalizedError {
 // either there is a success with result
 // or there is a failure with error
 // There is no way to set value a result in this class.
-public class Future<Value, Failure> where Failure : Error {
+public class Future<Value, Failure> where Failure: Error {
     fileprivate var successCallbacks = [(Value) -> Void]()
     fileprivate var errorCallbacks = [(Failure) -> Void]()
-
+    
     @discardableResult public func onSuccess(block: @escaping ((Value) -> Void)) -> Future<Value, Failure> {
         self.successCallbacks.append(block)
-
+        
         // if a successful result already exists (from constructor), report it
         if case let Result.success(value)? = result {
             successCallbacks.forEach { $0(value) }
@@ -47,14 +47,14 @@ public class Future<Value, Failure> where Failure : Error {
         if case let Result.failure(error)? = result {
             errorCallbacks.forEach { $0(error) }
         }
-
+        
         return self
     }
     
     public func isResolved() -> Bool {
         return result != nil
     }
-
+    
     fileprivate var result: Result<Value, Failure>? {
         // Observe whenever a result is assigned, and report it
         didSet { result.map(report) }
@@ -93,7 +93,7 @@ public extension Future {
         
         return promise
     }
-
+    
     func map<NewValue>(_ closure: @escaping (Value) -> NewValue) -> Future<NewValue, Failure> {
         let promise = Promise<NewValue, Failure>()
         
@@ -108,7 +108,7 @@ public extension Future {
         
         return promise
     }
-
+    
     func mapFailure<NewFailure>(_ closure: @escaping (Failure) -> NewFailure) -> Future<Value, NewFailure> {
         let promise = Promise<Value, NewFailure>()
         
@@ -127,7 +127,7 @@ public extension Future {
 
 
 // This class takes the responsibility of setting value for Future
-public class Promise<Value, Failure> : Future<Value, Failure> where Failure : Error {
+public class Promise<Value, Failure>: Future<Value, Failure> where Failure: Error {
     public init(value: Value? = nil) {
         super.init()
         if let value = value {
@@ -150,4 +150,5 @@ public class Promise<Value, Failure> : Future<Value, Failure> where Failure : Er
         result = .failure(error)
     }
 }
+
 

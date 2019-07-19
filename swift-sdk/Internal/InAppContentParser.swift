@@ -20,7 +20,7 @@ struct InAppContentParser {
         } else {
             contentType = .html
         }
-
+        
         return contentParser(forContentType: contentType).tryCreate(from: contentDict)
     }
     
@@ -35,7 +35,7 @@ struct InAppContentParser {
 }
 
 fileprivate protocol ContentFromJsonParser {
-    static func tryCreate(from json: [AnyHashable : Any]) -> InAppContentParseResult
+    static func tryCreate(from json: [AnyHashable: Any]) -> InAppContentParseResult
 }
 
 struct HtmlContentParser {
@@ -46,7 +46,7 @@ struct HtmlContentParser {
      
      - returns: the UIEdgeInset
      */
-    static func getPadding(fromInAppSettings settings: [AnyHashable : Any]?) -> UIEdgeInsets {
+    static func getPadding(fromInAppSettings settings: [AnyHashable: Any]?) -> UIEdgeInsets {
         guard let dict = settings else {
             return UIEdgeInsets.zero
         }
@@ -124,7 +124,7 @@ struct HtmlContentParser {
             return 0
         }
     }
-
+    
     private static let PADDING_TOP = "top"
     private static let PADDING_LEFT = "left"
     private static let PADDING_BOTTOM = "bottom"
@@ -136,7 +136,7 @@ struct HtmlContentParser {
 }
 
 extension HtmlContentParser: ContentFromJsonParser {
-    fileprivate static func tryCreate(from json: [AnyHashable : Any]) -> InAppContentParseResult {
+    fileprivate static func tryCreate(from json: [AnyHashable: Any]) -> InAppContentParseResult {
         guard let html = json[.ITBL_IN_APP_HTML] as? String else {
             return .failure(reason: "no html")
         }
@@ -144,10 +144,10 @@ extension HtmlContentParser: ContentFromJsonParser {
             return .failure(reason: "No href tag found in in-app html payload \(html)")
         }
         
-        let inAppDisplaySettings = json[.ITBL_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable : Any]
+        let inAppDisplaySettings = json[.ITBL_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable: Any]
         let backgroundAlpha = getBackgroundAlpha(fromInAppSettings: inAppDisplaySettings)
         let edgeInsets = getPadding(fromInAppSettings: inAppDisplaySettings)
-
+        
         return .success(content: IterableHtmlInAppContent(edgeInsets: edgeInsets, backgroundAlpha: backgroundAlpha, html: html))
     }
 }

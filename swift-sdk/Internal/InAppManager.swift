@@ -9,7 +9,7 @@ import Foundation
 protocol NotificationCenterProtocol {
     func addObserver(_ observer: Any, selector: Selector, name: Notification.Name?, object: Any?)
     func removeObserver(_ observer: Any)
-    func post(name: Notification.Name, object: Any?, userInfo: [AnyHashable : Any]?)
+    func post(name: Notification.Name, object: Any?, userInfo: [AnyHashable: Any]?)
 }
 
 extension NotificationCenter: NotificationCenterProtocol {
@@ -21,7 +21,7 @@ protocol InAppDisplayChecker {
     func isOkToShowNow(message: IterableInAppMessage) -> Bool
 }
 
-protocol IterableInAppManagerProtocolInternal : IterableInAppManagerProtocol, InAppNotifiable, InAppDisplayChecker {
+protocol IterableInAppManagerProtocolInternal: IterableInAppManagerProtocol, InAppNotifiable, InAppDisplayChecker {
     func start()
 }
 
@@ -422,7 +422,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         if let parsedUrl = URL(string: urlOrAction), let _ = parsedUrl.scheme {
             return IterableAction.actionOpenUrl(fromUrlString: urlOrAction)
         } else {
-            return IterableAction.action(fromDictionary: ["type" : urlOrAction])
+            return IterableAction.action(fromDictionary: ["type": urlOrAction])
         }
     }
     

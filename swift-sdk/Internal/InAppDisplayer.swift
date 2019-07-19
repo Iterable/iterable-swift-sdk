@@ -66,7 +66,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
         topViewController.present(baseNotification, animated: false)
         return .shown(createResult.futureClickedURL)
     }
-
+    
     static func showSystemNotification(_ title: String,
                                        body: String,
                                        buttonLeft: String?,

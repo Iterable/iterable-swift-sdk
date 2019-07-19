@@ -6,7 +6,7 @@
 
 import Foundation
 
-protocol InboxViewControllerViewModelDelegate : class {
+protocol InboxViewControllerViewModelDelegate: class {
     // All these methods should be called on the main thread
     func onViewModelChanged(diff: [SectionedDiffStep<Int, InboxMessageViewModel>])
     func onImageLoaded(forRow row: Int)
@@ -27,7 +27,7 @@ protocol InboxViewControllerViewModelProtocol {
     func endedUpdates()
 }
 
-class InboxViewControllerViewModel : InboxViewControllerViewModelProtocol {
+class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     weak var delegate: InboxViewControllerViewModelDelegate?
     
     init() {

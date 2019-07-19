@@ -5,7 +5,7 @@
 
 import Foundation
 
-struct ServerResponse : Codable {
+struct ServerResponse: Codable {
     let isMatch: Bool
     let destinationUrl: String?
     let campaignId: String?

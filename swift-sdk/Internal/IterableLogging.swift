@@ -19,7 +19,7 @@ public class DefaultLogDelegate: IterableLogDelegate {
         guard level.rawValue >= minLogLevel.rawValue else {
             return
         }
-
+        
         let markedMessage = IterableLogUtil.markedMessage(level: level, message: message)
         if #available(iOS 10.0, *) {
             os_log("%@", log: OSLog.default, type: OSLogType.error, markedMessage)
@@ -87,7 +87,7 @@ struct IterableLogUtil {
             return "💚"
         }
     }
-
+    
     private static func formatLogMessage(message: String?, file: String, method: String, line: Int, date: Date) -> String {
         let fileUrl = NSURL(fileURLWithPath: file)
         let fileToDisplay = fileUrl.deletingPathExtension!.lastPathComponent
