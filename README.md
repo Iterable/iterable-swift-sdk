@@ -140,7 +140,7 @@ Attached to the release, you will find two framework bundles:
 
     ![Linking](https://github.com/Iterable/swift-sdk/blob/master/images/embedded-binaries.png?raw=true)
 
-2. If you want to use an Iterable Rich Notifiation Extension, you will need to add **IterableAppExtension.framework** to **Linked Frameworks and Libraries** section of your **app extension** target (not app target). Please note that you will have to add the **IterableAppExtension.framework** bundle to **both** the app target (step 1) and app extension target (step 2) of your project. In the app target, it goes in the **Embedded Binaries** section and in app extension target it goes in the **Linked Frameworks and Libraries** section.
+2. If you want to use an Iterable Rich Notification Extension, you will need to add **IterableAppExtension.framework** to **Linked Frameworks and Libraries** section of your **app extension** target (not app target). Please note that you will have to add the **IterableAppExtension.framework** bundle to **both** the app target (step 1) and app extension target (step 2) of your project. In the app target, it goes in the **Embedded Binaries** section and in app extension target it goes in the **Linked Frameworks and Libraries** section.
 
     ![Linking](https://github.com/Iterable/swift-sdk/blob/master/images/app-extension-linked-framework.png?raw=true)
 
@@ -178,7 +178,7 @@ Attached to the release, you will find two framework bundles:
     Iterable-defined actions handled by the SDK and the `action://` URL
     scheme for custom actions handled by the mobile application's custom
     action handler. For more details, see 
-    [Handling in-app message buttons and links](#handling-in-app-message-buttons-and-links). .
+    [Handling in-app message buttons and links](#handling-in-app-message-buttons-and-links).
 
     - If you are currently using the `itbl://` URL scheme for custom actions,
     the SDK will still pass these actions to the custom action handler.
@@ -219,7 +219,7 @@ import IterableSDK
 
 *Objective-C*
 
-```
+```objc
 // In AppDelegate.m file
 // and any other file where you are using IterableSDK
 @import IterableSDK;
