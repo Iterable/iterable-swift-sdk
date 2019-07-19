@@ -115,7 +115,7 @@ class IterableHtmlMessageViewController: UIViewController {
      
      - parameter: aWebView the webview
      */
-    private func resizeWebView(_ aWebView :UIWebView) {
+    private func resizeWebView(_ aWebView: UIWebView) {
         guard loaded else {
             return
         }

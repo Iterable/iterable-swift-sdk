@@ -47,7 +47,7 @@ struct InAppHelper {
         }
     }
     
-    private enum UrlScheme : String {
+    private enum UrlScheme: String {
         case applewebdata = "applewebdata"
         case iterable = "iterable"
         case action = "action"

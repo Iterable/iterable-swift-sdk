@@ -67,7 +67,7 @@ struct UserNotificationResponse: NotificationResponseProtocol {
         return response as? UNTextInputNotificationResponse
     }
     
-    private let response : UNNotificationResponse
+    private let response: UNNotificationResponse
     
     init(response: UNNotificationResponse) {
         self.response = response

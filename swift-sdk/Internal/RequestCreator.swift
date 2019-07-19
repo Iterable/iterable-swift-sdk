@@ -227,7 +227,7 @@ struct RequestCreator {
         if let packageName = Bundle.main.appPackageName {
             args[AnyHashable.ITBL_KEY_PACKAGE_NAME] = packageName
         }
-
+        
         addEmailOrUserId(dict: &args)
         
         return .success(.get(createGetRequest(forPath: .ITBL_PATH_GET_INAPP_MESSAGES, withArgs: args as! [String: String])))

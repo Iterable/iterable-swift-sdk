@@ -9,15 +9,15 @@
 import Foundation
 
 struct IterableRequestUtil {
-    static func createPostRequest(forApiEndPoint apiEndPoint:String, path: String, args: [String : String]? = nil, body: [AnyHashable : Any]? = nil) -> URLRequest? {
+    static func createPostRequest(forApiEndPoint apiEndPoint: String, path: String, args: [String: String]? = nil, body: [AnyHashable: Any]? = nil) -> URLRequest? {
         return createPostRequest(forApiEndPoint: apiEndPoint, path: path, args: args, body: dictToJsonData(body))
     }
-
-    static func createPostRequest<T:Encodable>(forApiEndPoint apiEndPoint:String, path: String, args: [String : String]? = nil, body: T) -> URLRequest? {
+    
+    static func createPostRequest<T: Encodable>(forApiEndPoint apiEndPoint:String, path: String, args: [String: String]? = nil, body: T) -> URLRequest? {
         return createPostRequest(forApiEndPoint: apiEndPoint, path: path, args: args, body: try? JSONEncoder().encode(body))
     }
-
-    static func createPostRequest(forApiEndPoint apiEndPoint:String, path: String, args: [String : String]? = nil, body: Data? = nil) -> URLRequest? {
+    
+    static func createPostRequest(forApiEndPoint apiEndPoint: String, path: String, args: [String: String]? = nil, body: Data? = nil) -> URLRequest? {
         guard let url = getUrlComponents(forApiEndPoint: apiEndPoint, path:path, args: args)?.url else {
             return nil
         }
@@ -28,10 +28,11 @@ struct IterableRequestUtil {
         request.setValue(IterableAPI.sdkVersion, forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_VERSION)
         request.httpMethod = .ITBL_KEY_POST
         request.httpBody = body
+        
         return request
     }
     
-    static func createGetRequest(forApiEndPoint apiEndPoint:String, path: String, args: [String : String]? = nil) -> URLRequest? {
+    static func createGetRequest(forApiEndPoint apiEndPoint: String, path: String, args: [String: String]? = nil) -> URLRequest? {
         guard let url = getUrlComponents(forApiEndPoint: apiEndPoint, path: path, args: args)?.url else {
             return nil
         }
@@ -42,25 +43,28 @@ struct IterableRequestUtil {
         request.httpMethod = .ITBL_KEY_GET
         return request
     }
-
-    private static func getUrlComponents(forApiEndPoint apiEndPoint:String, path: String, args: [String : String]? = nil) -> URLComponents? {
+    
+    private static func getUrlComponents(forApiEndPoint apiEndPoint: String, path: String, args: [String: String]? = nil) -> URLComponents? {
         let endPointCombined = pathCombine(path1: apiEndPoint, path2: path)
+        
         guard var components = URLComponents(string: "\(endPointCombined)") else {
             return nil
         }
-
+        
         if let args = args {
             components.queryItems = args.map { URLQueryItem(name: $0.key, value: $0.value) }
         }
+        
         components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
-
+        
         return components
     }
     
-    static func dictToJsonData(_ dict: [AnyHashable : Any]?) -> Data? {
+    static func dictToJsonData(_ dict: [AnyHashable: Any]?) -> Data? {
         guard let dict = dict else {
             return nil
         }
+        
         return try? JSONSerialization.data(withJSONObject: dict, options: [])
     }
     

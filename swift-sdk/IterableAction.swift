@@ -28,7 +28,7 @@ import Foundation
      * Additional data, its content depends on the action type
      */
     @objc public var data: String?
-
+    
     /** The text response typed by the user */
     @objc public var userInput: String?
     
@@ -41,16 +41,16 @@ import Foundation
      * - parameter dictionary: Dictionary containing action data
      * - returns: `IterableAction` instance
      */
-    @objc(actionFromDictionary:) public static func action(fromDictionary dictionary: [AnyHashable : Any]) -> IterableAction? {
+    @objc(actionFromDictionary:) public static func action(fromDictionary dictionary: [AnyHashable: Any]) -> IterableAction? {
         return IterableAction(withDictionary: dictionary)
     }
     
     @objc(actionOpenUrl:) public static func actionOpenUrl(fromUrlString: String) -> IterableAction? {
-        return IterableAction(withDictionary: ["type" : IterableAction.actionTypeOpenUrl, "data" : fromUrlString])
+        return IterableAction(withDictionary: ["type": IterableAction.actionTypeOpenUrl, "data": fromUrlString])
     }
-
+    
     // Private
-    private init?(withDictionary dictionary: [AnyHashable : Any]) {
+    private init?(withDictionary dictionary: [AnyHashable: Any]) {
         guard let typeFromDict = dictionary["type"] as? String else {
             return nil
         }

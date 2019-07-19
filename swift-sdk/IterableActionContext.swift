@@ -19,7 +19,7 @@ import Foundation
 public class IterableActionContext: NSObject {
     public let action: IterableAction
     public let source: IterableActionSource
-
+    
     public init(action: IterableAction, source: IterableActionSource) {
         self.action = action
         self.source = source

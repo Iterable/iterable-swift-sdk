@@ -11,17 +11,17 @@ import Foundation
 struct IterableAPNSUtil {
     static func isSandboxAPNS() -> Bool {
         #if targetEnvironment(simulator)
-            return isSandboxAPNS(mobileProvision: mobileProvision, isSimulator: true)
+        return isSandboxAPNS(mobileProvision: mobileProvision, isSimulator: true)
         #else
-            return isSandboxAPNS(mobileProvision: mobileProvision, isSimulator: false)
+        return isSandboxAPNS(mobileProvision: mobileProvision, isSimulator: false)
         #endif
     }
-
-    private static var mobileProvision: [AnyHashable : Any] = {
+    
+    private static var mobileProvision: [AnyHashable: Any] = {
         readMobileProvision()
     }()
-
-    private static func readMobileProvision() -> [AnyHashable : Any] {
+    
+    private static func readMobileProvision() -> [AnyHashable: Any] {
         guard let provisioningPath = Bundle.main.path(forResource: "embedded", ofType: "mobileprovision") else {
             ITBError("resource not found")
             return [:]
@@ -30,7 +30,7 @@ struct IterableAPNSUtil {
         return readMobileProvision(fromPath: provisioningPath)
     }
     
-    static func isSandboxAPNS(mobileProvision: [AnyHashable : Any], isSimulator: Bool) -> Bool {
+    static func isSandboxAPNS(mobileProvision: [AnyHashable: Any], isSimulator: Bool) -> Bool {
         if mobileProvision.count == 0 {
             // mobileprovision file not found; default to production on devices and sandbox on simulator
             if isSimulator {
@@ -40,7 +40,7 @@ struct IterableAPNSUtil {
             }
         } else {
             if
-                let entitlements = mobileProvision["Entitlements"] as? [AnyHashable : Any],
+                let entitlements = mobileProvision["Entitlements"] as? [AnyHashable: Any],
                 let apsEnv = entitlements["aps-environment"] as? String {
                 return apsEnv == "development"
             }
@@ -48,8 +48,8 @@ struct IterableAPNSUtil {
         
         return false
     }
-
-    static func readMobileProvision(fromPath path: String) -> [AnyHashable : Any] {
+    
+    static func readMobileProvision(fromPath path: String) -> [AnyHashable: Any] {
         guard let asciiString = try? String(contentsOfFile: path, encoding: .ascii) else {
             ITBError("Could not read file: \(path)")
             return [:]
@@ -67,13 +67,13 @@ struct IterableAPNSUtil {
             return [:]
         }
         
-        if let propertyList = deserialized as? [AnyHashable : Any] {
+        if let propertyList = deserialized as? [AnyHashable: Any] {
             return propertyList
         } else {
             return [:]
         }
     }
-
+    
     private static func scan(string: String, begin:String, end: String) -> String? {
         let scanner = Scanner(string: string)
         var buffer: NSString?

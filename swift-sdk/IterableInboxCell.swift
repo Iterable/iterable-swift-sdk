@@ -13,16 +13,16 @@ import UIKit
 open class IterableInboxCell: UITableViewCell {
     /// A "dot" view showing that the message is unread
     @IBOutlet weak open var unreadCircleView: UIView?
-
+    
     /// The title label
     @IBOutlet weak open var titleLbl: UILabel?
-
+    
     /// The sub title label
     @IBOutlet weak open var subtitleLbl: UILabel?
     
     /// This shows the time when the message was created
     @IBOutlet weak open var createdAtLbl: UILabel?
-
+    
     /// This is the container view for the icon image.
     /// You may or may not set it.
     /// Set this outlet if you have the icon inside a container view
@@ -32,12 +32,12 @@ open class IterableInboxCell: UITableViewCell {
     
     /// This is the icon image
     @IBOutlet weak open var iconImageView: UIImageView?
-
+    
     override open func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
     }
-
+    
     // override this to show unreadCircle color when highlighted
     // otherwise the background color is not correct.
     open override func setHighlighted(_ highlighted: Bool, animated: Bool) {
@@ -50,3 +50,4 @@ open class IterableInboxCell: UITableViewCell {
         }
     }
 }
+

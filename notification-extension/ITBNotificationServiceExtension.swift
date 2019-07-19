@@ -9,7 +9,6 @@
 import UserNotifications
 
 @objc open class ITBNotificationServiceExtension: UNNotificationServiceExtension {
-
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
     
@@ -20,10 +19,11 @@ import UserNotifications
         //IMPORTANT: need to add this to the documentation
         bestAttemptContent?.categoryIdentifier = getCategory(fromContent: request.content)
 
-        guard let itblDictionary = request.content.userInfo[.ITBL_PAYLOAD_METADATA] as? [AnyHashable : Any] else {
+        guard let itblDictionary = request.content.userInfo[.ITBL_PAYLOAD_METADATA] as? [AnyHashable: Any] else {
             if let bestAttemptContent = bestAttemptContent {
                 contentHandler(bestAttemptContent)
             }
+            
             return
         }
         
@@ -40,58 +40,56 @@ import UserNotifications
     @objc override open func serviceExtensionTimeWillExpire() {
         // Called just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
-        if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
+        if let contentHandler = contentHandler, let bestAttemptContent = bestAttemptContent {
             contentHandler(bestAttemptContent)
         }
     }
 
-    private func loadAttachment(itblDictionary: [AnyHashable : Any]) -> Bool {
-        guard let attachmentUrlString = itblDictionary[.ITBL_PAYLOAD_ATTACHMENT_URL] as? String else {
-            return false
-        }
-        guard let url = URL(string: attachmentUrlString) else {
-            return false
-        }
-        
+    private func loadAttachment(itblDictionary: [AnyHashable: Any]) -> Bool {
+        guard let attachmentUrlString = itblDictionary[.ITBL_PAYLOAD_ATTACHMENT_URL] as? String else { return false }
+        guard let url = URL(string: attachmentUrlString) else { return false }
         
         let downloadTask = URLSession.shared.downloadTask(with: url, completionHandler: {[weak self] (location, response, error) in
-            guard let strongSelf = self else {
-                return
-                
-            }
+            guard let strongSelf = self else { return }
+            
             if error == nil, let response = response, let responseUrl = response.url, let location = location {
                 let tempDirectoryUrl = FileManager.default.temporaryDirectory
                 var attachmentIdString = UUID().uuidString + responseUrl.lastPathComponent
                 if let suggestedFilename = response.suggestedFilename {
                     attachmentIdString = UUID().uuidString + suggestedFilename
                 }
+                
                 var attachment: UNNotificationAttachment? = nil
                 let tempFileUrl = tempDirectoryUrl.appendingPathComponent(attachmentIdString)
                 do {
                     try FileManager.default.moveItem(at: location, to: tempFileUrl)
                     attachment = try UNNotificationAttachment(identifier: attachmentIdString, url: tempFileUrl, options: nil)
-                }
-                catch { /* TODO FileManager or attachment error */ }
+                } catch { /* TODO FileManager or attachment error */ }
+                
                 if let attachment = attachment, let bestAttemptContent = strongSelf.bestAttemptContent, let contentHandler = strongSelf.contentHandler {
                     bestAttemptContent.attachments.append(attachment)
                     contentHandler(bestAttemptContent)
                 }
             }
+                
             else { /* TODO handle download error */ }
         })
+        
         downloadTask.resume()
         return true
     }
     
     private func getCategory(fromContent content: UNNotificationContent) -> String {
         if content.categoryIdentifier.count == 0 {
-            guard let itblDictionary = content.userInfo[.ITBL_PAYLOAD_METADATA] as? [AnyHashable : Any] else {
+            guard let itblDictionary = content.userInfo[.ITBL_PAYLOAD_METADATA] as? [AnyHashable: Any] else {
                 return ""
             }
+            
             guard let messageId = itblDictionary[.ITBL_PAYLOAD_MESSAGE_ID] as? String else {
                 return ""
             }
-            var actionButtons: [[AnyHashable : Any]] = []
+            
+            var actionButtons: [[AnyHashable: Any]] = []
             if let actionButtonsFromITBLPayload = itblDictionary[.ITBL_PAYLOAD_ACTION_BUTTONS] as? [[AnyHashable : Any]] {
                 actionButtons = actionButtonsFromITBLPayload
             } else {
@@ -128,20 +126,23 @@ import UserNotifications
         guard let identifier = buttonDictionary[.ITBL_BUTTON_IDENTIFIER] as? String else {
             return nil
         }
+        
         guard let title = buttonDictionary[.ITBL_BUTTON_TITLE] as? String else {
             return nil
         }
+        
         let buttonType = getButtonType(buttonDictionary: buttonDictionary)
         var openApp = true
         if let openAppFromDict = buttonDictionary[.ITBL_BUTTON_OPEN_APP] as? NSNumber {
             openApp = openAppFromDict.boolValue
         }
+        
         var requiresUnlock = false
         if let requiresUnlockFromDict = buttonDictionary[.ITBL_BUTTON_REQUIRES_UNLOCK] as? NSNumber {
             requiresUnlock = requiresUnlockFromDict.boolValue
         }
         
-        var actionOptions : UNNotificationActionOptions = []
+        var actionOptions: UNNotificationActionOptions = []
         if buttonType == IterableButtonTypeDestructive {
             actionOptions.insert(.destructive)
         }
@@ -168,7 +169,7 @@ import UserNotifications
         }
     }
     
-    private func getButtonType(buttonDictionary: [AnyHashable : Any]) -> String {
+    private func getButtonType(buttonDictionary: [AnyHashable: Any]) -> String {
         guard let buttonType = buttonDictionary[.ITBL_BUTTON_TYPE] as? String else {
             return IterableButtonTypeDefault
         }

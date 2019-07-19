@@ -8,16 +8,16 @@
 
 import Foundation
 
-struct DeviceInfo : Codable {
+struct DeviceInfo: Codable {
     let mobileDeviceType = MobileDeviceType.iOS
     let deviceFp: DeviceFp
     
-    enum MobileDeviceType : String, Codable {
+    enum MobileDeviceType: String, Codable {
         case iOS
         case Android
     }
     
-    struct DeviceFp : Codable {
+    struct DeviceFp: Codable {
         let userInterfaceIdiom: String
         let screenWidth: String
         let screenHeight: String
@@ -66,4 +66,3 @@ struct DeviceInfo : Codable {
         }
     }
 }
-

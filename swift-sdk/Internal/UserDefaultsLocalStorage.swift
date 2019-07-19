@@ -74,9 +74,9 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
         guard let encodedEnvelope = userDefaults.value(forKey: key.value) as? Data else {
             return nil
         }
-        let envelope = try JSONDecoder().decode(Envelope.self, from: encodedEnvelope)
         
-        let decoded = try JSONSerialization.jsonObject(with: envelope.payload, options: []) as? [AnyHashable : Any]
+        let envelope = try JSONDecoder().decode(Envelope.self, from: encodedEnvelope)
+        let decoded = try JSONSerialization.jsonObject(with: envelope.payload, options: []) as? [AnyHashable: Any]
         
         if UserDefaultsLocalStorage.isExpired(expiration: envelope.expiration, currentDate: currentDate) {
             return nil

@@ -39,7 +39,7 @@ open class IterableInboxNavigationViewController: UINavigationController {
     override open func viewDidLoad() {
         ITBInfo()
         super.viewDidLoad()
-
+        
         // Add "Done" button if this view is being presented by another view controller
         // We have to do the following asynchronously because
         // self.presentingViewController is not set yet.
@@ -55,7 +55,7 @@ open class IterableInboxNavigationViewController: UINavigationController {
             }
         }
     }
-
+    
     /// Do not use this
     private override init(rootViewController: UIViewController) {
         ITBInfo()
