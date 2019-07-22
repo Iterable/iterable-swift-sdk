@@ -575,6 +575,7 @@ class IterableAPITests: XCTestCase {
                                queryParams: expectedQueryParams)
             expectation1.fulfill()
         }
+        
         let config = IterableConfig()
         IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         IterableAPI.email = "user@example.com"
@@ -589,24 +590,21 @@ class IterableAPITests: XCTestCase {
         let config = IterableConfig()
         IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         IterableAPI.email = "user@example.com"
-        IterableAPI.get(
-            inAppMessages: 1,
-            onSuccess: {(_) in
-                let expectedQueryParams = [
-                    (name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAPITests.apiKey),
-                    (name: AnyHashable.ITBL_KEY_COUNT, value: 1.description),
-                    (name: AnyHashable.ITBL_KEY_PLATFORM, value: .ITBL_PLATFORM_IOS),
-                    (name: AnyHashable.ITBL_KEY_SDK_VERSION, value: IterableAPI.sdkVersion),
-                    ]
-                TestUtils.validate(request: networkSession.request!,
-                                   requestType: .get,
-                                   apiEndPoint: .ITBL_ENDPOINT_API,
-                                   path: .ITBL_PATH_GET_INAPP_MESSAGES,
-                                   queryParams: expectedQueryParams)
-                expectation1.fulfill()
+        
+        IterableAPI.get(inAppMessages: 1,
+                        onSuccess: { (_) in
+                            let expectedQueryParams = [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAPITests.apiKey),
+                                                       (name: AnyHashable.ITBL_KEY_COUNT, value: 1.description),
+                                                       (name: AnyHashable.ITBL_KEY_PLATFORM, value: .ITBL_PLATFORM_IOS),
+                                                       (name: AnyHashable.ITBL_KEY_SDK_VERSION, value: IterableAPI.sdkVersion)]
+                            TestUtils.validate(request: networkSession.request!,
+                                               requestType: .get,
+                                               apiEndPoint: .ITBL_ENDPOINT_API,
+                                               path: .ITBL_PATH_GET_INAPP_MESSAGES,
+                                               queryParams: expectedQueryParams)
+                            expectation1.fulfill()
         },
-            onFailure:nil
-        )
+                        onFailure: nil)
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
