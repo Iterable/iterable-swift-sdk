@@ -9,11 +9,11 @@
 import Foundation
 
 @objc public class IterableInAppMessageMetadata: IterableNotificationMetadata {
-    @objc public var trigger: String? = nil
     @objc public var saveToInbox: Bool = false
+    @objc public var silentInbox: Bool = false
     @objc public var location: String? = nil
     
-    @objc public static func metadata(fromInAppOptions messageId: String, trigger: String? = nil, saveToInbox: Bool = false, location: String? = nil) -> IterableInAppMessageMetadata {
+    @objc public static func metadata(fromInAppOptions messageId: String, saveToInbox: Bool = false, silentInbox: Bool = false, location: String? = nil) -> IterableInAppMessageMetadata {
         return IterableInAppMessageMetadata(fromInAppOptions: messageId)
     }
     
@@ -25,17 +25,17 @@ import Foundation
         super.init()
         
         self.messageId = message.messageId
-        self.trigger = message.trigger.description
         self.saveToInbox = message.saveToInbox
+        self.silentInbox = message.saveToInbox && message.trigger.type == .never
         self.location = location
     }
     
-    private init(fromInAppOptions messageId: String, trigger: String? = nil, saveToInbox: Bool = false, location: String? = nil) {
+    private init(fromInAppOptions messageId: String, saveToInbox: Bool = false, silentInbox: Bool = false, location: String? = nil) {
         super.init()
         
         self.messageId = messageId
-        self.trigger = trigger
         self.saveToInbox = saveToInbox
+        self.silentInbox = silentInbox
         self.location = location
     }
 }
