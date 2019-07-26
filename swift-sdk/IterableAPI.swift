@@ -402,15 +402,15 @@ public final class IterableAPI : NSObject {
      - parameter messageId:       The messageId of the notification
      */
     @objc(trackInAppOpen:) public static func track(inAppOpen messageId: String) {
-        internalImplementation?.trackInAppOpen(messageId, saveToInbox: false, trigger: nil, location: nil)
+        internalImplementation?.trackInAppOpen(messageId, saveToInbox: false, silentInbox: false, location: nil)
     }
     
-    @objc(trackInAppOpen:saveToInbox:trigger:location:) public static func track(inAppOpen messageId: String, saveToInbox: Bool, trigger: String?, location: String?) {
-        internalImplementation?.trackInAppOpen(messageId, saveToInbox: saveToInbox, trigger: trigger, location: location)
+    @objc(trackInAppOpen:saveToInbox:silentInbox:location:) public static func track(inAppOpen messageId: String, saveToInbox: Bool, silentInbox: Bool, location: String?) {
+        internalImplementation?.trackInAppOpen(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location)
     }
     
-    public static func track(inAppOpen messageId: String, saveToInbox: Bool?, trigger: String?, location: String?) {
-        internalImplementation?.trackInAppOpen(messageId, saveToInbox: saveToInbox, trigger: trigger, location: location)
+    public static func track(inAppOpen messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?) {
+        internalImplementation?.trackInAppOpen(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location)
     }
     
     /**
@@ -420,15 +420,15 @@ public final class IterableAPI : NSObject {
      - parameter buttonIndex:     The index of the button that was clicked
      */
     @objc(trackInAppClick:buttonIndex:) public static func track(inAppClick messageId: String, buttonIndex: String) {
-        internalImplementation?.trackInAppClick(messageId, saveToInbox: false, trigger: nil, location: nil, buttonIndex: buttonIndex)
+        internalImplementation?.trackInAppClick(messageId, saveToInbox: false, silentInbox: false, location: nil, buttonIndex: buttonIndex)
     }
     
-    @objc(trackInAppClick:saveToInbox:trigger:location:buttonIndex:) public static func track(inAppClick messageId: String, saveToInbox: Bool, trigger: String?, location: String?, buttonIndex: String) {
-        internalImplementation?.trackInAppClick(messageId, saveToInbox: saveToInbox, trigger: trigger, location: location, buttonIndex: buttonIndex)
+    @objc(trackInAppClick:saveToInbox:silentInbox:location:buttonIndex:) public static func track(inAppClick messageId: String, saveToInbox: Bool, silentInbox: Bool, location: String?, buttonIndex: String) {
+        internalImplementation?.trackInAppClick(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, buttonIndex: buttonIndex)
     }
     
-    public static func track(inAppClick messageId: String, saveToInbox: Bool?, trigger: String?, location: String?, buttonIndex: String) {
-        internalImplementation?.trackInAppClick(messageId, saveToInbox: saveToInbox, trigger: trigger, location: location, buttonIndex: buttonIndex)
+    public static func track(inAppClick messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, buttonIndex: String) {
+        internalImplementation?.trackInAppClick(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, buttonIndex: buttonIndex)
     }
     
     /**
@@ -438,15 +438,15 @@ public final class IterableAPI : NSObject {
      - parameter buttonURL:     The url of the button that was clicked
      */
     @objc(trackInAppClick:buttonURL:) public static func track(inAppClick messageId: String, buttonURL: String) {
-        internalImplementation?.trackInAppClick(messageId, saveToInbox: false, trigger: nil, location: nil, buttonURL: buttonURL)
+        internalImplementation?.trackInAppClick(messageId, saveToInbox: false, silentInbox: false, location: nil, buttonURL: buttonURL)
     }
     
-    @objc(trackInAppClick:saveToInbox:trigger:location:buttonURL:) public static func track(inAppClick messageId: String, saveToInbox: Bool = false, trigger: String?, location: String?, buttonURL: String) {
-        internalImplementation?.trackInAppClick(messageId, saveToInbox: saveToInbox, trigger: trigger, location: location, buttonURL: buttonURL)
+    @objc(trackInAppClick:saveToInbox:silentInbox:location:buttonURL:) public static func track(inAppClick messageId: String, saveToInbox: Bool = false, silentInbox: Bool = false, location: String?, buttonURL: String) {
+        internalImplementation?.trackInAppClick(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, buttonURL: buttonURL)
     }
     
-    public static func track(inAppClick messageId: String, saveToInbox: Bool?, trigger: String?, location: String?, buttonURL: String) {
-        internalImplementation?.trackInAppClick(messageId, saveToInbox: saveToInbox, trigger: trigger, location: location, buttonURL: buttonURL)
+    public static func track(inAppClick messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, buttonURL: String) {
+        internalImplementation?.trackInAppClick(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, buttonURL: buttonURL)
     }
     
     /**
