@@ -28,9 +28,9 @@ protocol ApiClientProtocol: class {
     
     func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError>
     
-    func track(inAppOpen messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?) -> Future<SendRequestValue, SendRequestError>
+    func track(inAppOpen messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError>
     
-    func track(inAppClick messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, clickedUrl: String) -> Future<SendRequestValue, SendRequestError>
+    func track(inAppClick messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, clickedUrl: String, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError>
     
     @discardableResult func inAppConsume(messageId: String) -> Future<SendRequestValue, SendRequestError>
     
@@ -47,12 +47,11 @@ protocol AuthProvider: class {
 }
 
 class ApiClient: ApiClientProtocol {
-    init(apiKey: String, authProvider: AuthProvider, endPoint: String, networkSession: NetworkSessionProtocol, deviceMetadata: DeviceMetadata) {
+    init(apiKey: String, authProvider: AuthProvider, endPoint: String, networkSession: NetworkSessionProtocol) {
         self.apiKey = apiKey
         self.authProvider = authProvider
         self.endPoint = endPoint
         self.networkSession = networkSession
-        self.deviceMetadata = deviceMetadata
     }
     
     func register(hexToken: String,
@@ -63,7 +62,7 @@ class ApiClient: ApiClientProtocol {
                   notificationsEnabled: Bool) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createRegisterTokenRequest(hexToken: hexToken,
                                                                                              appName: appName,
-                                                                                             deviceId: deviceMetadata.deviceId,
+                                                                                             deviceId: deviceId,
                                                                                              sdkVersion: sdkVersion,
                                                                                              pushServicePlatform: pushServicePlatform,
                                                                                              notificationsEnabled: notificationsEnabled))
@@ -101,11 +100,11 @@ class ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: createRequestCreator().createGetInAppMessagesRequest(count))
     }
     
-    func track(inAppOpen messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?) -> Future<SendRequestValue, SendRequestError> {
+    func track(inAppOpen messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppOpenRequest(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, deviceMetadata: deviceMetadata))
     }
     
-    func track(inAppClick messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, clickedUrl: String) -> Future<SendRequestValue, SendRequestError> {
+    func track(inAppClick messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, clickedUrl: String, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, deviceMetadata: deviceMetadata, clickedUrl: clickedUrl))
     }
     
@@ -154,6 +153,5 @@ class ApiClient: ApiClientProtocol {
     private let apiKey: String
     private weak var authProvider: AuthProvider?
     private let endPoint: String
-    private let networkSession: NetworkSessionProtocol    
-    private var deviceMetadata: DeviceMetadata
+    private let networkSession: NetworkSessionProtocol
 }

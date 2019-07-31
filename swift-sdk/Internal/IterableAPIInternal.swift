@@ -285,13 +285,13 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     func trackInAppOpen(_ messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppOpen"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"),
-                                 forResult: apiClient.track(inAppOpen: messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location))
+                                 forResult: apiClient.track(inAppOpen: messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, deviceMetadata: deviceMetadata))
     }
     
     func trackInAppClick(_ messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, clickedUrl: String) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"),
-                                 forResult: apiClient.track(inAppClick: messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, clickedUrl: clickedUrl))
+                                 forResult: apiClient.track(inAppClick: messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, clickedUrl: clickedUrl, deviceMetadata: deviceMetadata))
     }
 
     func inAppConsume(_ messageId: String) {
@@ -367,7 +367,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     private var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     
     private lazy var apiClient: ApiClient = {
-       ApiClient(apiKey: apiKey, authProvider: self, endPoint: .ITBL_ENDPOINT_API, networkSession: networkSession, deviceMetadata: deviceMetadata)
+       ApiClient(apiKey: apiKey, authProvider: self, endPoint: .ITBL_ENDPOINT_API, networkSession: networkSession)
     }()
     
     var networkSession: NetworkSessionProtocol

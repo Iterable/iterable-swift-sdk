@@ -184,7 +184,6 @@ class IterableAPIResponseTests: XCTestCase {
         return ApiClient(apiKey: "",
                          authProvider: AuthProviderImpl(),
                          endPoint: .ITBL_ENDPOINT_API,
-                         networkSession: networkSession,
-                         deviceMetadata: DeviceMetadata(deviceId: "", platform: "", appPackageName: ""))
+                         networkSession: networkSession)
     }    
 }
