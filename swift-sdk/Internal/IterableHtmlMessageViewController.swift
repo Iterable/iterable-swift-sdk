@@ -198,7 +198,7 @@ extension IterableHtmlMessageViewController: UIWebViewDelegate {
                                       saveToInbox: trackParams.saveToInbox,
                                       silentInbox: trackParams.silentInbox,
                                       location: trackParams.location,
-                                      buttonURL: destinationUrl)
+                                      clickedUrl: destinationUrl)
                 }
             }
         } else {
@@ -208,7 +208,7 @@ extension IterableHtmlMessageViewController: UIWebViewDelegate {
                                   saveToInbox: trackParams.saveToInbox,
                                   silentInbox: trackParams.silentInbox,
                                   location: trackParams.location,
-                                  buttonURL: destinationUrl)
+                                  clickedUrl: destinationUrl)
             }
             
             navigationController?.popViewController(animated: true)
