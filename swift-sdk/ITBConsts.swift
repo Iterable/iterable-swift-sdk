@@ -88,13 +88,15 @@ public extension String {
 
 // Device Dictionary
 public extension String {
+    static let ITBL_DEVICE_INFO_KEY = "deviceInfo"
+    
     static let ITBL_DEVICE_LOCALIZED_MODEL = "localizedModel"
     static let ITBL_DEVICE_ID_VENDOR = "identifierForVendor"
     static let ITBL_DEVICE_MODEL = "model"
     static let ITBL_DEVICE_SYSTEM_NAME = "systemName"
     static let ITBL_DEVICE_SYSTEM_VERSION = "systemVersion"
     static let ITBL_DEVICE_USER_INTERFACE = "userInterfaceIdiom"
-
+    
     static let ITBL_DEVICE_DEVICE_ID = "deviceId"
     static let ITBL_DEVICE_APP_PACKAGE_NAME = "appPackageName"
     static let ITBL_DEVICE_APP_VERSION = "appVersion"
@@ -144,6 +146,12 @@ public extension AnyHashable {
 
 //In-App Constants
 public extension AnyHashable {
+    static let ITBL_IN_APP_LOCATION_IN_APP = "in-app"
+    static let ITBL_IN_APP_LOCATION_INBOX = "inbox"
+    
+    static let ITBL_IN_APP_SILENT_INBOX = "silentInbox"
+    static let ITBL_IN_APP_MESSAGE_CONTEXT = "messageContext"
+    
     static let ITBL_IN_APP_CLICKED_URL = "clickedUrl"
     
     static let ITBL_IN_APP_BUTTON_INDEX = "buttonIndex"
@@ -161,6 +169,7 @@ public extension AnyHashable {
     static let ITBL_IN_APP_DISPLAY_SETTINGS = "inAppDisplaySettings"
     static let ITBL_IN_APP_CUSTOM_PAYLOAD = "customPayload"
     static let ITBL_IN_APP_SAVE_TO_INBOX = "saveToInbox"
+    static let ITBL_IN_APP_LOCATION = "location"
     static let ITBL_IN_APP_CONTENT_TYPE = "type"
     static let ITBL_IN_APP_INBOX_METADATA = "inboxMetadata"
 }

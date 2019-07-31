@@ -9,7 +9,7 @@
 import Foundation
 import UserNotifications
 
-@objc public class IterableAppIntegration : NSObject {
+@objc public class IterableAppIntegration: NSObject {
     /**
      * This method handles incoming Iterable notifications and actions for iOS < 10.
      * This also handles 'silent push' notifications for all iOS versions.
@@ -20,7 +20,9 @@ import UserNotifications
      * - parameter completionHandler: Completion handler passed from the original call. Iterable will call the completion handler
      * automatically if you pass one. If you handle completionHandler in the app code, pass a nil value to this argument.
      */
-    @objc public static func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: ((UIBackgroundFetchResult)->Void)?) {
+    @objc public static func application(_ application: UIApplication,
+                                         didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+                                         fetchCompletionHandler completionHandler: ((UIBackgroundFetchResult) -> Void)?) {
         ITBInfo()
         implementation?.application(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: completionHandler)
     }

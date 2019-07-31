@@ -8,7 +8,7 @@
 
 import Foundation
 
-class IterableDeeplinkManager : NSObject {
+class IterableDeeplinkManager: NSObject {
     /**
      Tracks a link click and passes the redirected URL to the callback
      
@@ -119,7 +119,7 @@ class IterableDeeplinkManager : NSObject {
     private var deeplinkMessageId: String?
 }
 
-extension IterableDeeplinkManager : URLSessionDelegate , URLSessionTaskDelegate {
+extension IterableDeeplinkManager: URLSessionDelegate , URLSessionTaskDelegate {
     /**
      Delegate handler when a redirect occurs. Stores a reference to the redirect url and does not execute the redirect.
      - parameters:
@@ -132,7 +132,7 @@ extension IterableDeeplinkManager : URLSessionDelegate , URLSessionTaskDelegate 
     public func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) {
         deeplinkLocation = request.url
         
-        guard let headerFields = response.allHeaderFields as? [String : String] else {
+        guard let headerFields = response.allHeaderFields as? [String: String] else {
             return
         }
         guard let url = response.url else {

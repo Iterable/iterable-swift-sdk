@@ -29,8 +29,11 @@ struct ITBLNotificationInfo {
         let campaignId = itblElement[Keys.campaignId.rawValue] as? NSNumber ?? NSNumber(value: 0)
         let templateId = itblElement[Keys.templateId.rawValue] as? NSNumber
         let messageId = itblElement[Keys.messageId.rawValue] as? String
-
-        return ITBLNotificationInfo(campaignId: campaignId, templateId: templateId, messageId: messageId, isGhostPush: isGhostPush)
+        
+        return ITBLNotificationInfo(campaignId: campaignId,
+                                    templateId: templateId,
+                                    messageId: messageId,
+                                    isGhostPush: isGhostPush)
     }
     
     enum Keys: String {
@@ -44,13 +47,13 @@ struct ITBLNotificationInfo {
 struct ITBLSilentPushNotificationInfo {
     let notificationType: ITBLSilentPushNotificationType
     let messageId: String?
-
-    enum ITBLSilentPushNotificationType : String, Codable {
+    
+    enum ITBLSilentPushNotificationType: String, Codable {
         case remove = "InAppRemove"
         case update = "InAppUpdate"
     }
     
-    static func parse(notification: [AnyHashable : Any]) -> ITBLSilentPushNotificationInfo? {
+    static func parse(notification: [AnyHashable: Any]) -> ITBLSilentPushNotificationInfo? {
         guard let notificationType = notification[Keys.notificationType.rawValue] as? String, let silentPushNotificationType = ITBLSilentPushNotificationType(rawValue: notificationType) else {
             return nil
         }
@@ -58,7 +61,7 @@ struct ITBLSilentPushNotificationInfo {
         let silentPushNotificationInfo = ITBLSilentPushNotificationInfo(notificationType: silentPushNotificationType, messageId: notification[Keys.messageId.rawValue] as? String)
         return silentPushNotificationInfo
     }
-
+    
     private enum Keys: String {
         case notificationType
         case messageId
@@ -66,7 +69,7 @@ struct ITBLSilentPushNotificationInfo {
 }
 
 struct NotificationHelper {
-    static func inspect(notification: [AnyHashable : Any]) -> NotificationInfo {
+    static func inspect(notification: [AnyHashable: Any]) -> NotificationInfo {
         guard let itblElement = notification[Keys.itbl.rawValue] as? [AnyHashable: Any] else {
             return NotificationInfo.nonIterable
         }
@@ -85,27 +88,21 @@ struct NotificationHelper {
             return .iterable(ITBLNotificationInfo.parse(itblElement: itblElement, isGhostPush: false))
         }
     }
-  
-    static func isValidIterableNotification(userInfo: [AnyHashable : Any]) -> Bool {
-        guard let itblElement = userInfo[Keys.itbl.rawValue] as? [AnyHashable : Any] else {
-            return false
-        }
-        guard isValidCampaignId(itblElement[ITBLNotificationInfo.Keys.campaignId.rawValue]) else {
-            return false
-        }
-        guard let _ = itblElement[ITBLNotificationInfo.Keys.templateId.rawValue] as? NSNumber else {
-            return false
-        }
-        guard let _ = itblElement[ITBLNotificationInfo.Keys.messageId.rawValue] as? NSString else {
-            return false
-        }
-        guard let _ = itblElement[ITBLNotificationInfo.Keys.isGhostPush.rawValue] as? NSNumber else {
+    
+    static func isValidIterableNotification(userInfo: [AnyHashable: Any]) -> Bool {
+        guard let itblElement = userInfo[Keys.itbl.rawValue] as? [AnyHashable: Any] else {
             return false
         }
         
+        guard isValidCampaignId(itblElement[ITBLNotificationInfo.Keys.campaignId.rawValue]) else { return false }
+        
+        guard let _ = itblElement[ITBLNotificationInfo.Keys.templateId.rawValue] as? NSNumber else { return false }
+        guard let _ = itblElement[ITBLNotificationInfo.Keys.messageId.rawValue] as? NSString else { return false }
+        guard let _ = itblElement[ITBLNotificationInfo.Keys.isGhostPush.rawValue] as? NSNumber else { return false }
+        
         return true
     }
-
+    
     private static func isValidCampaignId(_ campaignId: Any?) -> Bool {
         // campaignId doesn't have to be there (because of proofs)
         guard let campaignId = campaignId else {
@@ -118,10 +115,11 @@ struct NotificationHelper {
             return false
         }
     }
-
+    
     private enum Keys: String {
         case itbl
         case notificationType
         case messageId
     }
 }
+

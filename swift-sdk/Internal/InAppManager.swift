@@ -9,7 +9,7 @@ import Foundation
 protocol NotificationCenterProtocol {
     func addObserver(_ observer: Any, selector: Selector, name: Notification.Name?, object: Any?)
     func removeObserver(_ observer: Any)
-    func post(name: Notification.Name, object: Any?, userInfo: [AnyHashable : Any]?)
+    func post(name: Notification.Name, object: Any?, userInfo: [AnyHashable: Any]?)
 }
 
 extension NotificationCenter: NotificationCenterProtocol {
@@ -21,7 +21,7 @@ protocol InAppDisplayChecker {
     func isOkToShowNow(message: IterableInAppMessage) -> Bool
 }
 
-protocol IterableInAppManagerProtocolInternal : IterableInAppManagerProtocol, InAppNotifiable, InAppDisplayChecker {
+protocol IterableInAppManagerProtocolInternal: IterableInAppManagerProtocol, InAppNotifiable, InAppDisplayChecker {
     func start()
 }
 
@@ -99,7 +99,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         }
         
         let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
-                                                                      trackParams: IterableNotificationMetadata.metadata(fromInAppOptions: message.messageId),
+                                                                      trackParams: IterableInAppMessageMetadata.metadata(from: message, location: AnyHashable.ITBL_IN_APP_LOCATION_INBOX),
                                                                       isModal: false)
         let createResult = IterableHtmlMessageViewController.create(parameters: parameters)
         let viewController = createResult.viewController
@@ -277,7 +277,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
                 // in addition perform action or url delegate task
                 self.handle(clickedUrl: url, forMessage: message)
                 
-                // set the dismiss time"
+                // set the dismiss time
                 self.lastDismissedTime = self.dateProvider.currentDate
                 
                 // check if we need to process more inApps
@@ -422,7 +422,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         if let parsedUrl = URL(string: urlOrAction), let _ = parsedUrl.scheme {
             return IterableAction.actionOpenUrl(fromUrlString: urlOrAction)
         } else {
-            return IterableAction.action(fromDictionary: ["type" : urlOrAction])
+            return IterableAction.action(fromDictionary: ["type": urlOrAction])
         }
     }
     

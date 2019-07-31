@@ -6,7 +6,7 @@
 
 import UIKit
 
-enum IterableMessageLocation : Int {
+enum IterableMessageLocation: Int {
     case full
     case top
     case center
@@ -17,12 +17,12 @@ class IterableHtmlMessageViewController: UIViewController {
     struct Parameters {
         let html: String
         let padding: UIEdgeInsets
-        let trackParams: IterableNotificationMetadata?
+        let trackParams: IterableInAppMessageMetadata?
         let isModal: Bool
         
         init(html: String,
              padding: UIEdgeInsets = .zero,
-             trackParams: IterableNotificationMetadata? = nil,
+             trackParams: IterableInAppMessageMetadata? = nil,
              isModal: Bool) {
             self.html = html
             self.padding = IterableHtmlMessageViewController.padding(fromPadding: padding)
@@ -47,7 +47,7 @@ class IterableHtmlMessageViewController: UIViewController {
         return CreateResult(viewController: viewController, futureClickedURL: viewController.futureClickedURL)
     }
     
-    override var prefersStatusBarHidden: Bool {return parameters.isModal}
+    override var prefersStatusBarHidden: Bool { return parameters.isModal }
     
     /**
      Loads the view and sets up the webView
@@ -82,7 +82,10 @@ class IterableHtmlMessageViewController: UIViewController {
         super.viewDidLoad()
         
         if let trackParams = parameters.trackParams, let messageId = trackParams.messageId {
-            IterableAPI.track(inAppOpen: messageId)
+            IterableAPI.track(inAppOpen: messageId,
+                              saveToInbox: trackParams.saveToInbox,
+                              silentInbox: trackParams.silentInbox,
+                              location: trackParams.location)
         }
         
         webView?.layoutSubviews()
@@ -112,7 +115,7 @@ class IterableHtmlMessageViewController: UIViewController {
      
      - parameter: aWebView the webview
      */
-    private func resizeWebView(_ aWebView :UIWebView) {
+    private func resizeWebView(_ aWebView: UIWebView) {
         guard loaded else {
             return
         }
@@ -163,7 +166,7 @@ class IterableHtmlMessageViewController: UIViewController {
     }
 }
 
-extension IterableHtmlMessageViewController : UIWebViewDelegate {
+extension IterableHtmlMessageViewController: UIWebViewDelegate {
     func webViewDidFinishLoad(_ webView: UIWebView) {
         loaded = true
         if let myWebview = self.webView {
@@ -191,14 +194,23 @@ extension IterableHtmlMessageViewController : UIWebViewDelegate {
             dismiss(animated: false) { [weak self, destinationUrl] in
                 self?.futureClickedURL.resolve(with: url)
                 if let trackParams = self?.parameters.trackParams, let messageId = trackParams.messageId {
-                    IterableAPI.track(inAppClick: messageId, buttonURL: destinationUrl)
+                    IterableAPI.track(inAppClick: messageId,
+                                      saveToInbox: trackParams.saveToInbox,
+                                      silentInbox: trackParams.silentInbox,
+                                      location: trackParams.location,
+                                      clickedUrl: destinationUrl)
                 }
             }
         } else {
             futureClickedURL.resolve(with: url)
             if let trackParams = parameters.trackParams, let messageId = trackParams.messageId {
-                IterableAPI.track(inAppClick: messageId, buttonURL: destinationUrl)
+                IterableAPI.track(inAppClick: messageId,
+                                  saveToInbox: trackParams.saveToInbox,
+                                  silentInbox: trackParams.silentInbox,
+                                  location: trackParams.location,
+                                  clickedUrl: destinationUrl)
             }
+            
             navigationController?.popViewController(animated: true)
         }
         

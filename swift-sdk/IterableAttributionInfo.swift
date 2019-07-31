@@ -6,8 +6,8 @@
 
 import Foundation
 
-@objc public class IterableAttributionInfo : NSObject, Codable {
-    private enum Keys : String {
+@objc public class IterableAttributionInfo: NSObject, Codable {
+    private enum Keys: String {
         case campaignId
         case templateId
         case messageId
@@ -53,4 +53,3 @@ import Foundation
 func ==(lhs: IterableAttributionInfo, rhs: IterableAttributionInfo) -> Bool {
     return lhs.campaignId == rhs.campaignId && lhs.templateId == rhs.templateId && lhs.messageId == rhs.messageId
 }
-

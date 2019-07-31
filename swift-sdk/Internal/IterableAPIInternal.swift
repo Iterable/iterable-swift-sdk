@@ -7,6 +7,12 @@
 import Foundation
 import UserNotifications
 
+struct DeviceMetadata: Codable {
+    let deviceId: String
+    let platform: String
+    let appPackageName: String
+}
+
 final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     var apiKey: String
 
@@ -54,6 +60,12 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             localStorage.deviceId = value
             return value
         }
+    }
+    
+    var deviceMetadata: DeviceMetadata {
+        return DeviceMetadata(deviceId: deviceId,
+                              platform: .ITBL_PLATFORM_IOS,
+                              appPackageName: Bundle.main.appPackageName ?? "")
     }
     
     weak var urlDelegate: IterableURLDelegate? {
@@ -206,18 +218,18 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
 
     func trackPushOpen(_ userInfo: [AnyHashable: Any], dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         save(pushPayload: userInfo)
-        if let metadata = IterableNotificationMetadata.metadata(fromLaunchOptions: userInfo), metadata.isRealCampaignNotification() {
+        if let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: userInfo), metadata.isRealCampaignNotification() {
             trackPushOpen(metadata.campaignId, templateId: metadata.templateId, messageId: metadata.messageId, appAlreadyRunning: false, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
         } else {
             onFailure?("Not tracking push open - payload is not an Iterable notification, or a test/proof/ghost push", nil)
         }
     }
-
+    
     func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?) {
         trackPushOpen(campaignId, templateId: templateId, messageId: messageId, appAlreadyRunning: appAlreadyRunning, dataFields: dataFields, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackPushOpen"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPushOpen"))
     }
 
-    func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         IterableAPIInternal.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
                                  forResult: apiClient.track(pushOpen: campaignId,
@@ -233,7 +245,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                                to: dateProvider.currentDate)
         localStorage.save(payload: payload, withExpiration: expiration)
         
-        if let metadata = IterableNotificationMetadata.metadata(fromLaunchOptions: payload) {
+        if let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: payload) {
             if let templateId = metadata.templateId, let messageId = metadata.messageId {
                 attributionInfo = IterableAttributionInfo(campaignId: metadata.campaignId, templateId: templateId, messageId: messageId)
             }
@@ -269,24 +281,17 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                         andFailureHandler: onFailure,
                                         forResult: apiClient.getInAppMessages(count))
     }
-
-    func trackInAppOpen(_ messageId: String) {
+    
+    func trackInAppOpen(_ messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppOpen"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"),
-                                 forResult: apiClient.track(inAppOpen: messageId))
+                                 forResult: apiClient.track(inAppOpen: messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, deviceMetadata: deviceMetadata))
     }
-
-    func trackInAppClick(_ messageId: String, buttonIndex: String) {
-        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"),
-                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"),
-                                 forResult: apiClient.track(inAppClick: messageId, buttonIndex: buttonIndex))
-    }
-
     
-    func trackInAppClick(_ messageId: String, buttonURL: String) {
+    func trackInAppClick(_ messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, clickedUrl: String) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"),
-                                 forResult: apiClient.track(inAppClick: messageId, buttonURL: buttonURL))
+                                 forResult: apiClient.track(inAppClick: messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, clickedUrl: clickedUrl, deviceMetadata: deviceMetadata))
     }
 
     func inAppConsume(_ messageId: String) {
@@ -312,7 +317,6 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  andFailureHandler: onFailure,
                                  forResult: apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken))
     }
-    
 
     func showSystemNotification(_ title: String, body: String, button: String?, callbackBlock: ITEActionBlock?) {
         showSystemNotification(title, body: body, buttonLeft: button, buttonRight: nil, callbackBlock: callbackBlock)
@@ -321,7 +325,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     func showSystemNotification(_ title: String, body: String, buttonLeft: String?, buttonRight:String?, callbackBlock: ITEActionBlock?) {
         InAppDisplayer.showSystemNotification(title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
     }
-
+    
     func getAndTrackDeeplink(webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {
         deeplinkManager.getAndTrackDeeplink(webpageURL: webpageURL, callbackBlock: callbackBlock)
     }
@@ -502,7 +506,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         guard let launchOptions = launchOptions else {
             return
         }
-        if let remoteNotificationPayload = launchOptions[UIApplication.LaunchOptionsKey.remoteNotification] as? [AnyHashable : Any] {
+        if let remoteNotificationPayload = launchOptions[UIApplication.LaunchOptionsKey.remoteNotification] as? [AnyHashable: Any] {
             if let _ = IterableUtil.rootViewController {
                 // we are ready
                 IterableAppIntegration.implementation?.performDefaultNotificationAction(remoteNotificationPayload)
@@ -538,7 +542,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    private func handleDDL(json: [AnyHashable : Any]) {
+    private func handleDDL(json: [AnyHashable: Any]) {
         if let serverResponse = try? JSONDecoder().decode(ServerResponse.self, from: JSONSerialization.data(withJSONObject: json, options: [])),
             serverResponse.isMatch,
             let destinationUrlString = serverResponse.destinationUrl {

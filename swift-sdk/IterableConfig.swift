@@ -31,7 +31,7 @@ import Foundation
      * - parameter context:  Metadata containing the original action and the source: push or universal link.
      * - returns: Boolean value. Reserved for future use.
      */
-    @objc(handleIterableCustomAction:context:) func handle(iterableCustomAction action:IterableAction, inContext context: IterableActionContext) -> Bool
+    @objc(handleIterableCustomAction:context:) func handle(iterableCustomAction action: IterableAction, inContext context: IterableActionContext) -> Bool
 }
 
 /**

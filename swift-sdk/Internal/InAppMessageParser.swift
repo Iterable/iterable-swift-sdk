@@ -122,10 +122,10 @@ struct InAppMessageParser {
     private static func parseTime(withKey key: JsonKey, fromJson json: [AnyHashable: Any]) -> Date? {
         return json.getIntValue(key: key).map(IterableUtil.date(fromInt:))
     }
-
+    
     private static func parseTrigger(fromTriggerElement element: [AnyHashable: Any]?) -> IterableInAppTrigger {
         guard let element = element else {
-            return .defaultTrigger // if element is missing return default which is immediate
+            return .defaultTrigger
         }
         
         return IterableInAppTrigger(dict: element)

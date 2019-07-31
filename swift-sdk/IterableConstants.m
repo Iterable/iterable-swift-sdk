@@ -9,6 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "IterableConstants.h"
 
-@implementation IterableConstants : NSObject
+@implementation IterableConstants: NSObject
 
 @end

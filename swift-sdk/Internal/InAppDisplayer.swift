@@ -41,7 +41,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
      A future representing the URL clicked by the user
      */
     @discardableResult static func showIterableHtmlMessage(_ htmlString: String,
-                                                           trackParams: IterableNotificationMetadata? = nil,
+                                                           trackParams: IterableInAppMessageMetadata? = nil,
                                                            backgroundAlpha: Double = 0,
                                                            padding: UIEdgeInsets = .zero) -> ShowResult {
         guard let topViewController = getTopViewController() else {
@@ -66,7 +66,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
         topViewController.present(baseNotification, animated: false)
         return .shown(createResult.futureClickedURL)
     }
-
+    
     static func showSystemNotification(_ title: String,
                                        body: String,
                                        buttonLeft: String?,
@@ -120,14 +120,14 @@ class InAppDisplayer: InAppDisplayerProtocol {
             return .notShown("Invalid content type")
         }
         
-        let notificationMetadata = IterableNotificationMetadata.metadata(fromInAppOptions: iterableMessage.messageId)
+        let notificationMetadata = IterableInAppMessageMetadata.metadata(from: iterableMessage, location: AnyHashable.ITBL_IN_APP_LOCATION_IN_APP)
         
         return showIterableHtmlMessage(content.html,
                                        trackParams: notificationMetadata,
                                        backgroundAlpha: content.backgroundAlpha,
                                        padding: content.edgeInsets)
     }
-
+    
     /**
      Creates and adds an alert action button to an alertController
      
