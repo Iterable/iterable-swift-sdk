@@ -8,14 +8,10 @@
 
 import Foundation
 
-@objc public class IterableInAppMessageMetadata: IterableNotificationMetadata {
-    @objc public var saveToInbox: Bool = false
-    @objc public var silentInbox: Bool = false
-    @objc public var location: String? = nil
-    
-    @objc public static func metadata(fromInAppOptions messageId: String, saveToInbox: Bool = false, silentInbox: Bool = false, location: String? = nil) -> IterableInAppMessageMetadata {
-        return IterableInAppMessageMetadata(fromInAppOptions: messageId)
-    }
+@objc class IterableInAppMessageMetadata: IterableNotificationMetadata {
+    @objc var saveToInbox: Bool = false
+    @objc var silentInbox: Bool = false
+    @objc var location: String? = nil
     
     @objc public static func metadata(from inAppMessage: IterableInAppMessage, location: String? = nil) -> IterableInAppMessageMetadata {
         return IterableInAppMessageMetadata(from: inAppMessage, location: location)
@@ -24,24 +20,17 @@ import Foundation
     private init(from message: IterableInAppMessage, location: String? = nil) {
         super.init()
         
+        self.campaignId = NSNumber(value: (Int(message.campaignId) ?? 0))
         self.messageId = message.messageId
+        
         self.saveToInbox = message.saveToInbox
         self.silentInbox = message.saveToInbox && message.trigger.type == .never
         self.location = location
     }
-    
-    private init(fromInAppOptions messageId: String, saveToInbox: Bool = false, silentInbox: Bool = false, location: String? = nil) {
-        super.init()
-        
-        self.messageId = messageId
-        self.saveToInbox = saveToInbox
-        self.silentInbox = silentInbox
-        self.location = location
-    }
 }
 
-@objc public class IterablePushNotificationMetadata: IterableNotificationMetadata {
-    @objc public var isGhostPush: Bool = false
+@objc class IterablePushNotificationMetadata: IterableNotificationMetadata {
+    @objc var isGhostPush: Bool = false
     
     /**
      Creates an `IterableNotificationMetadata` from a push payload
@@ -83,10 +72,10 @@ import Foundation
     }
 }
 
-@objc public class IterableNotificationMetadata: NSObject {
-    @objc public var campaignId: NSNumber = NSNumber(value: 0)
-    @objc public var templateId: NSNumber? = nil
-    @objc public var messageId: String? = nil
+@objc class IterableNotificationMetadata: NSObject {
+    @objc var campaignId: NSNumber = NSNumber(value: 0)
+    @objc var templateId: NSNumber? = nil
+    @objc var messageId: String? = nil
     
     @objc public func isProof() -> Bool {
         return campaignId.intValue == 0 && templateId?.intValue != 0
