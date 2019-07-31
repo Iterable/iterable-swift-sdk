@@ -25,6 +25,7 @@ public extension String {
     static let ITBL_PATH_TRACK = "events/track"
     static let ITBL_PATH_TRACK_INAPP_CLICK = "events/trackInAppClick"
     static let ITBL_PATH_TRACK_INAPP_OPEN = "events/trackInAppOpen"
+    static let ITBL_PATH_TRACK_INAPP_DELIVER = "events/trackInAppDeliver"
     static let ITBL_PATH_TRACK_PUSH_OPEN = "events/trackPushOpen"
     static let ITBL_PATH_UPDATE_USER = "users/update"
     static let ITBL_PATH_UPDATE_EMAIL = "users/updateEmail"
