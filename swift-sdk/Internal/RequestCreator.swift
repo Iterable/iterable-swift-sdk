@@ -313,7 +313,7 @@ struct RequestCreator {
         
         context[String.ITBL_DEVICE_INFO_KEY] = translateDeviceMetadata(metadata: deviceMetadata)
         
-        dict["messageContext"] = context
+        dict[.ITBL_IN_APP_MESSAGE_CONTEXT] = context
     }
     
     private func translateDeviceMetadata(metadata: DeviceMetadata) -> [AnyHashable: Any] {

@@ -150,6 +150,7 @@ public extension AnyHashable {
     static let ITBL_IN_APP_LOCATION_INBOX = "inbox"
     
     static let ITBL_IN_APP_SILENT_INBOX = "silentInbox"
+    static let ITBL_IN_APP_MESSAGE_CONTEXT = "messageContext"
     
     static let ITBL_IN_APP_CLICKED_URL = "clickedUrl"
     
