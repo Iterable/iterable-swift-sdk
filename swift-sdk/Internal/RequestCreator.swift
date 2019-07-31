@@ -233,25 +233,25 @@ struct RequestCreator {
         return .success(.get(createGetRequest(forPath: .ITBL_PATH_GET_INAPP_MESSAGES, withArgs: args as! [String: String])))
     }
     
-    func createTrackInAppOpenRequest(_ messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, deviceId: String) -> Result<IterableRequest, IterableError> {
+    func createTrackInAppOpenRequest(_ messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, deviceMetadata: DeviceMetadata) -> Result<IterableRequest, IterableError> {
         var body: [AnyHashable: Any] = [:]
         
         body[.ITBL_KEY_MESSAGE_ID] = messageId
         
         addEmailOrUserId(dict: &body)
-        addMessageContext(dict: &body, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, deviceId: deviceId)
+        addMessageContext(dict: &body, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, deviceMetadata: deviceMetadata)
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_OPEN, body: body)))
     }
     
-    func createTrackInAppClickRequest(_ messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, deviceId: String, buttonURL: String) -> Result<IterableRequest, IterableError> {
+    func createTrackInAppClickRequest(_ messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, deviceMetadata: DeviceMetadata, buttonURL: String) -> Result<IterableRequest, IterableError> {
         var body: [AnyHashable: Any] = [:]
         
         body[.ITBL_KEY_MESSAGE_ID] = messageId
         body[.ITBL_IN_APP_CLICKED_URL] = buttonURL
         
         addEmailOrUserId(dict: &body)
-        addMessageContext(dict: &body, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, deviceId: deviceId)
+        addMessageContext(dict: &body, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, deviceMetadata: deviceMetadata)
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLICK, body: body)))
     }
@@ -298,7 +298,7 @@ struct RequestCreator {
         }
     }
     
-    private func addMessageContext(dict: inout [AnyHashable: Any], saveToInbox: Bool? = false, silentInbox: Bool? = false, location: String? = nil, deviceId: String) {
+    private func addMessageContext(dict: inout [AnyHashable: Any], saveToInbox: Bool? = false, silentInbox: Bool? = false, location: String? = nil, deviceMetadata: DeviceMetadata) {
         var context: [AnyHashable: Any] = [:]
         
         context[.ITBL_IN_APP_SAVE_TO_INBOX] = saveToInbox
@@ -311,22 +311,19 @@ struct RequestCreator {
             context[.ITBL_IN_APP_LOCATION] = location
         }
         
-        context[String.ITBL_DEVICE_INFO_KEY] = getDeviceInfo(deviceId)
+        context[String.ITBL_DEVICE_INFO_KEY] = translateDeviceMetadata(metadata: deviceMetadata)
         
         dict["messageContext"] = context
     }
     
-    private func getDeviceInfo(_ deviceId: String) -> [AnyHashable: Any] {
-        var info: [AnyHashable: Any] = [:]
+    private func translateDeviceMetadata(metadata: DeviceMetadata) -> [AnyHashable: Any] {
+        var body: [AnyHashable: Any] = [:]
         
-        info[String.ITBL_DEVICE_DEVICE_ID] = deviceId
-        info[AnyHashable.ITBL_KEY_PLATFORM] = String.ITBL_PLATFORM_IOS
+        body[String.ITBL_DEVICE_DEVICE_ID] = metadata.deviceId
+        body[AnyHashable.ITBL_KEY_PLATFORM] = metadata.platform
+        body[String.ITBL_DEVICE_APP_PACKAGE_NAME] = metadata.appPackageName
         
-        if let appPackageName = Bundle.main.appPackageName {
-            info[String.ITBL_DEVICE_APP_PACKAGE_NAME] = appPackageName
-        }
-        
-        return info
+        return body
     }
     
     private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform) -> String {

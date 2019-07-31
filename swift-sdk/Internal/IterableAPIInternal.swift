@@ -7,6 +7,12 @@
 import Foundation
 import UserNotifications
 
+struct DeviceMetadata: Codable {
+    let deviceId: String
+    let platform: String
+    let appPackageName: String
+}
+
 final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     var apiKey: String
 
@@ -54,6 +60,12 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             localStorage.deviceId = value
             return value
         }
+    }
+    
+    var deviceMetadata: DeviceMetadata {
+        return DeviceMetadata(deviceId: deviceId,
+                              platform: .ITBL_PLATFORM_IOS,
+                              appPackageName: Bundle.main.appPackageName ?? "")
     }
     
     weak var urlDelegate: IterableURLDelegate? {
@@ -355,7 +367,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     private var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     
     private lazy var apiClient: ApiClient = {
-       ApiClient(apiKey: apiKey, authProvider: self, endPoint: .ITBL_ENDPOINT_API, networkSession: networkSession, deviceId: deviceId)
+       ApiClient(apiKey: apiKey, authProvider: self, endPoint: .ITBL_ENDPOINT_API, networkSession: networkSession, deviceMetadata: deviceMetadata)
     }()
     
     var networkSession: NetworkSessionProtocol
