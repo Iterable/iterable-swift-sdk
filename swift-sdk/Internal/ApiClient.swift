@@ -30,8 +30,6 @@ protocol ApiClientProtocol: class {
     
     func track(inAppOpen messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?) -> Future<SendRequestValue, SendRequestError>
     
-    func track(inAppClick messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, buttonIndex: String) -> Future<SendRequestValue, SendRequestError>
-    
     func track(inAppClick messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, buttonURL: String) -> Future<SendRequestValue, SendRequestError>
     
     @discardableResult func inAppConsume(messageId: String) -> Future<SendRequestValue, SendRequestError>
@@ -105,10 +103,6 @@ class ApiClient: ApiClientProtocol {
     
     func track(inAppOpen messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppOpenRequest(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, deviceId: deviceId))
-    }
-    
-    func track(inAppClick messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, buttonIndex: String) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, deviceId: deviceId, buttonIndex: buttonIndex))
     }
     
     func track(inAppClick messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, buttonURL: String) -> Future<SendRequestValue, SendRequestError> {

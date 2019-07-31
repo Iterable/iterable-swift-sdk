@@ -158,31 +158,6 @@ class InAppParsingTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
-    func testTrackInAppClickWithButtonIndex() {
-        let messageId = "message1"
-        let buttonIndex = "1"
-        let expectation1 = expectation(description: "track in app click")
-        
-        let networkSession = MockNetworkSession(statusCode: 200)
-        IterableAPI.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
-        IterableAPI.email = InAppParsingTests.email
-        networkSession.callback = {(_, _, _) in
-            TestUtils.validate(request: networkSession.request!,
-                               requestType: .post,
-                               apiEndPoint: .ITBL_ENDPOINT_API,
-                               path: .ITBL_PATH_TRACK_INAPP_CLICK,
-                               queryParams: [(name: AnyHashable.ITBL_HEADER_API_KEY, value: InAppParsingTests.apiKey),
-                                             ])
-            let body = networkSession.getRequestBody() as! [String : Any]
-            TestUtils.validateMatch(keyPath: KeyPath("messageId"), value: messageId, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("buttonIndex"), value: buttonIndex, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("email"), value: InAppParsingTests.email, inDictionary: body)
-            expectation1.fulfill()
-        }
-        IterableAPI.track(inAppClick: messageId, buttonIndex: buttonIndex)
-        wait(for: [expectation1], timeout: testExpectationTimeout)
-    }
-
     func testTrackInAppOpen() {
         let messageId = "message1"
         let expectation1 = expectation(description: "track in app open")

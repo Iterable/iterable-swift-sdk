@@ -417,24 +417,6 @@ public final class IterableAPI: NSObject {
      Tracks a inAppClick event
      
      - parameter messageId:       The messageId of the notification
-     - parameter buttonIndex:     The index of the button that was clicked
-     */
-    @objc(trackInAppClick:buttonIndex:) public static func track(inAppClick messageId: String, buttonIndex: String) {
-        internalImplementation?.trackInAppClick(messageId, saveToInbox: false, silentInbox: false, location: nil, buttonIndex: buttonIndex)
-    }
-    
-    @objc(trackInAppClick:saveToInbox:silentInbox:location:buttonIndex:) public static func track(inAppClick messageId: String, saveToInbox: Bool, silentInbox: Bool, location: String?, buttonIndex: String) {
-        internalImplementation?.trackInAppClick(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, buttonIndex: buttonIndex)
-    }
-    
-    public static func track(inAppClick messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, buttonIndex: String) {
-        internalImplementation?.trackInAppClick(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, buttonIndex: buttonIndex)
-    }
-    
-    /**
-     Tracks a inAppClick event
-     
-     - parameter messageId:       The messageId of the notification
      - parameter buttonURL:     The url of the button that was clicked
      */
     @objc(trackInAppClick:buttonURL:) public static func track(inAppClick messageId: String, buttonURL: String) {
