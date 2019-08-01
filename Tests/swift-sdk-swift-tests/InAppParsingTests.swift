@@ -183,7 +183,7 @@ class InAppParsingTests: XCTestCase {
     
     func testTrackInAppDelivery() {
         let messageId = "message1"
-        let expectation1 = expectation(description: "track inAppDeliver event")
+        let expectation1 = expectation(description: "track inAppDelivery event")
         
         let networkSession = MockNetworkSession(statusCode: 200)
         IterableAPI.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
@@ -193,20 +193,20 @@ class InAppParsingTests: XCTestCase {
             TestUtils.validate(request: networkSession.request!,
                                requestType: .post,
                                apiEndPoint: .ITBL_ENDPOINT_API,
-                               path: .ITBL_PATH_TRACK_INAPP_DELIVER,
+                               path: .ITBL_PATH_TRACK_INAPP_DELIVERY,
                                queryParams: [(name: AnyHashable.ITBL_HEADER_API_KEY, value: InAppParsingTests.apiKey)])
             
             let body = networkSession.getRequestBody() as! [String: Any]
             
             TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_MESSAGE_ID), value: messageId, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_EMAIL), value: InAppParsingTests.email, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("\(AnyHashable.ITBL_IN_APP_MESSAGE_CONTEXT).\(AnyHashable.ITBL_IN_APP_SAVE_TO_INBOX)"), value: 1, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("\(AnyHashable.ITBL_IN_APP_MESSAGE_CONTEXT).\(AnyHashable.ITBL_IN_APP_SILENT_INBOX)"), value: 1, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("\(AnyHashable.ITBL_IN_APP_MESSAGE_CONTEXT).\(AnyHashable.ITBL_IN_APP_SAVE_TO_INBOX)"), value: true, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("\(AnyHashable.ITBL_IN_APP_MESSAGE_CONTEXT).\(AnyHashable.ITBL_IN_APP_SILENT_INBOX)"), value: true, inDictionary: body)
             
             expectation1.fulfill()
         }
         
-        IterableAPI.track(inAppDeliver: messageId, saveToInbox: true, silentInbox: true)
+        IterableAPI.track(inAppDelivery: messageId, saveToInbox: true, silentInbox: true)
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }

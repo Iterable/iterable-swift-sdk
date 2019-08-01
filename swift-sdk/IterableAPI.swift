@@ -432,18 +432,18 @@ public final class IterableAPI: NSObject {
     }
     
     /**
-     Tracks an InAppDeliver event
+     Tracks an InAppDelivery event
      */
-    @objc(trackInAppDeliver:) public static func track(inAppDeliver messageId: String) {
-        internalImplementation?.trackInAppDeliver(messageId, saveToInbox: nil, silentInbox: nil)
+    @objc(trackInAppDelivery:) public static func track(inAppDelivery messageId: String) {
+        internalImplementation?.trackInAppDelivery(messageId, saveToInbox: nil, silentInbox: nil)
     }
     
-    @objc(trackInAppDeliver:saveToInbox:silentInbox:) public static func track(inAppDeliver messageId: String, saveToInbox: Bool = false, silentInbox: Bool = false) {
-        internalImplementation?.trackInAppDeliver(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox)
+    @objc(trackInAppDelivery:saveToInbox:silentInbox:) public static func track(inAppDelivery messageId: String, saveToInbox: Bool = false, silentInbox: Bool = false) {
+        internalImplementation?.trackInAppDelivery(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox)
     }
     
-    public static func track(inAppDelivered messageId: String, saveToInbox: Bool?, silentInbox: Bool?) {
-        internalImplementation?.trackInAppDeliver(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox)
+    public static func track(inAppDelivery messageId: String, saveToInbox: Bool?, silentInbox: Bool?) {
+        internalImplementation?.trackInAppDelivery(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox)
     }
     
     /**
