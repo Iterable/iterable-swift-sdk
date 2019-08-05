@@ -9,17 +9,6 @@ import XCTest
 @testable import IterableSDK
 
 class IterableRequestUtilTests: XCTestCase {
-    
-    override func setUp() {
-        super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-    
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
-    }
-    
     func testDictToJsonData() {
         let args: [AnyHashable : Any] = [
             "email": "ilya@iterable.com",
@@ -71,7 +60,7 @@ class IterableRequestUtilTests: XCTestCase {
         let path = "path"
         let args = ["arg1" : "value1", "arg2" : "value2"]
         let body = ["var1" : "val1", "var2" : "val2"]
-        let request = IterableRequestUtil.createPostRequest(forApiEndPoint: apiEndPoint, path: path, args: args, body: body)!
+        let request = IterableRequestUtil.createPostRequest(forApiEndPoint: apiEndPoint, path: path, apiKey: "api_key_here", args: args, body: body)!
         
         let queryParams = [
             (name: "arg1", value: "value1"),

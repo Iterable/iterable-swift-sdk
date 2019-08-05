@@ -58,14 +58,14 @@ struct IterableRequestUtil {
         return components
     }
     
-    private static func dictToJsonData(_ dict: [AnyHashable : Any]?) -> Data? {
+    static func dictToJsonData(_ dict: [AnyHashable : Any]?) -> Data? {
         guard let dict = dict else {
             return nil
         }
         return try? JSONSerialization.data(withJSONObject: dict, options: [])
     }
     
-    private static func pathCombine(paths: [String]) -> String {
+    static func pathCombine(paths: [String]) -> String {
         return paths.reduce("", pathCombine)
     }
     
