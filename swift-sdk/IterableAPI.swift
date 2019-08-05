@@ -432,17 +432,9 @@ public final class IterableAPI: NSObject {
     }
     
     /**
-     Tracks an InAppDelivery event
+     Tracks an InAppDelivery event (internal use)
      */
-    @objc(trackInAppDelivery:) public static func track(inAppDelivery messageId: String) {
-        internalImplementation?.trackInAppDelivery(messageId, saveToInbox: nil, silentInbox: nil)
-    }
-    
-    @objc(trackInAppDelivery:saveToInbox:silentInbox:) public static func track(inAppDelivery messageId: String, saveToInbox: Bool = false, silentInbox: Bool = false) {
-        internalImplementation?.trackInAppDelivery(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox)
-    }
-    
-    public static func track(inAppDelivery messageId: String, saveToInbox: Bool?, silentInbox: Bool?) {
+    static func track(inAppDelivery messageId: String, saveToInbox: Bool?, silentInbox: Bool?) {
         internalImplementation?.trackInAppDelivery(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox)
     }
     
