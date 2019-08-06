@@ -149,7 +149,12 @@ struct MessagesObtainedHandler {
                 if message.saveToInbox == true {
                     inboxCount += 1
                 }
+                
                 messagesMap[message.messageId] = message
+                
+                IterableAPI.track(inAppDelivery: message.messageId,
+                                  saveToInbox: message.saveToInbox,
+                                  silentInbox: message.saveToInbox && message.trigger.type == .never)
             }
         }
         
