@@ -75,4 +75,22 @@ class IterableRequestUtilTests: XCTestCase {
         TestUtils.validateElementPresent(withName: "var1", andValue: "val1", inDictionary: bodyFromRequest)
         TestUtils.validateElementPresent(withName: "var2", andValue: "val2", inDictionary: bodyFromRequest)
     }
+    
+    func testPostRequestHeaderValidity() {
+        let apiKey = "api_key_here"
+        
+        guard let request = IterableRequestUtil.createPostRequest(forApiEndPoint: .ITBL_ENDPOINT_API, path: "path", apiKey: apiKey, args: nil, body: [:]) else {
+            XCTFail("request creation failed")
+            return
+        }
+        
+        guard let headers = request.allHTTPHeaderFields else {
+            XCTFail("request had no header fields")
+            return
+        }
+        
+        XCTAssertEqual(headers[AnyHashable.ITBL_HEADER_SDK_PLATFORM], .ITBL_PLATFORM_IOS)
+        XCTAssertEqual(headers[AnyHashable.ITBL_HEADER_SDK_VERSION], IterableAPI.sdkVersion)
+        XCTAssertEqual(headers[AnyHashable.ITBL_HEADER_API_KEY], apiKey)
+    }
 }
