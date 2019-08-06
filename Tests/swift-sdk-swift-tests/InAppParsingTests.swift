@@ -206,7 +206,17 @@ class InAppParsingTests: XCTestCase {
             expectation1.fulfill()
         }
         
-        IterableAPI.track(inAppDelivery: messageId, saveToInbox: true, silentInbox: true)
+        let message = IterableInAppMessage(messageId: messageId,
+                                           campaignId: "",
+                                           trigger: IterableInAppTrigger(dict: [.ITBL_IN_APP_TRIGGER_TYPE: "never"]),
+                                           createdAt: nil,
+                                           expiresAt: nil,
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
+                                           saveToInbox: true,
+                                           inboxMetadata: nil,
+                                           customPayload: nil)
+        
+        IterableAPI.track(inAppDelivery: message)
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }

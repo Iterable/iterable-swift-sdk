@@ -434,8 +434,8 @@ public final class IterableAPI: NSObject {
     /**
      Tracks an InAppDelivery event (internal use)
      */
-    static func track(inAppDelivery messageId: String, saveToInbox: Bool?, silentInbox: Bool?) {
-        internalImplementation?.trackInAppDelivery(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox)
+    static func track(inAppDelivery message: IterableInAppMessage) {
+        internalImplementation?.trackInAppDelivery(message)
     }
     
     /**
