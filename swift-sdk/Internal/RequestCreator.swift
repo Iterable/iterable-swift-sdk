@@ -256,6 +256,17 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLICK, body: body)))
     }
     
+    func createTrackInAppDeliveryRequest(_ messageId: String, saveToInbox: Bool?, silentInbox: Bool?, deviceMetadata: DeviceMetadata) -> Result<IterableRequest, IterableError> {
+        var body: [AnyHashable: Any] = [:]
+        
+        body[.ITBL_KEY_MESSAGE_ID] = messageId
+        
+        addEmailOrUserId(dict: &body)
+        addMessageContext(dict: &body, saveToInbox: saveToInbox, silentInbox: silentInbox, deviceMetadata: deviceMetadata)
+        
+        return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_DELIVERY, body: body)))
+    }
+    
     func createInAppConsumeRequest(_ messageId: String) -> Result<IterableRequest, IterableError> {
         var body: [AnyHashable: Any] = [.ITBL_KEY_MESSAGE_ID: messageId]
         
