@@ -49,7 +49,7 @@ class IterableAPITests: XCTestCase {
         IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
         IterableAPI.email = IterableAPITests.email
         IterableAPI.track(event: eventName, dataFields: nil, onSuccess: { (json) in
-            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_TRACK, queryParams: [(name: AnyHashable.ITBL_HEADER_API_KEY, IterableAPITests.apiKey)])
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_TRACK, queryParams: [])
             let body = networkSession.getRequestBody()
             TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_EVENT_NAME, andValue: eventName, inDictionary: body)
             TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_EMAIL, andValue: IterableAPITests.email, inDictionary: body)
@@ -76,7 +76,7 @@ class IterableAPITests: XCTestCase {
         IterableAPI.track(event: eventName, dataFields: ["key1" : "value1", "key2" : "value2"])
         
         networkSession.callback = {(_, _, _) in
-            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_TRACK, queryParams: [(name: AnyHashable.ITBL_HEADER_API_KEY, IterableAPITests.apiKey)])
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_TRACK, queryParams: [])
             let body = networkSession.getRequestBody()
             TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_EVENT_NAME, andValue: eventName, inDictionary: body)
             TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_EMAIL, andValue: IterableAPITests.email, inDictionary: body)
@@ -128,7 +128,7 @@ class IterableAPITests: XCTestCase {
         IterableAPI.email = IterableAPITests.email
         let dataFields: Dictionary<String, String> = ["var1" : "val1", "var2" : "val2"]
         IterableAPI.updateUser(dataFields, mergeNestedObjects: true, onSuccess: {(json) in
-            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_UPDATE_USER, queryParams: [(name: AnyHashable.ITBL_HEADER_API_KEY, IterableAPITests.apiKey)])
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_UPDATE_USER, queryParams: [])
             let body = networkSession.getRequestBody()
             TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_EMAIL, andValue: IterableAPITests.email, inDictionary: body)
             TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_MERGE_NESTED, andValue: true, inDictionary: body)
@@ -155,7 +155,7 @@ class IterableAPITests: XCTestCase {
         IterableAPI.userId = userId
         let dataFields: Dictionary<String, String> = ["var1" : "val1", "var2" : "val2"]
         IterableAPI.updateUser(dataFields, mergeNestedObjects: true, onSuccess: {(json) in
-            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_UPDATE_USER, queryParams: [(name: AnyHashable.ITBL_HEADER_API_KEY, IterableAPITests.apiKey)])
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_UPDATE_USER, queryParams: [])
             let body = networkSession.getRequestBody()
             TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_USER_ID, andValue: userId, inDictionary: body)
             TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_PREFER_USER_ID, andValue: true, inDictionary: body)
@@ -187,7 +187,7 @@ class IterableAPITests: XCTestCase {
                                                        requestType: .post,
                                                        apiEndPoint: .ITBL_ENDPOINT_API,
                                                        path: .ITBL_PATH_UPDATE_EMAIL,
-                                                       queryParams: [(name: AnyHashable.ITBL_HEADER_API_KEY, value: IterableAPITests.apiKey)])
+                                                       queryParams: [])
                                     let body = networkSession.getRequestBody()
                                     TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_NEW_EMAIL, andValue: newEmail, inDictionary: body)
                                     TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_CURRENT_EMAIL, andValue: IterableAPITests.email, inDictionary: body)
@@ -220,7 +220,7 @@ class IterableAPITests: XCTestCase {
                                                        requestType: .post,
                                                        apiEndPoint: .ITBL_ENDPOINT_API,
                                                        path: .ITBL_PATH_UPDATE_EMAIL,
-                                                       queryParams: [(name: AnyHashable.ITBL_HEADER_API_KEY, value: IterableAPITests.apiKey)])
+                                                       queryParams: [])
                                     let body = networkSession.getRequestBody()
                                     TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_NEW_EMAIL, andValue: newEmail, inDictionary: body)
                                     TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_CURRENT_USER_ID, andValue: currentUserId, inDictionary: body)
@@ -351,7 +351,7 @@ class IterableAPITests: XCTestCase {
             networkSession.callback = nil
             IterableAPI.disableDeviceForCurrentUser(withOnSuccess: { (json) in
                 let body = networkSession.getRequestBody() as! [String : Any]
-                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_DISABLE_DEVICE, queryParams: [(name: AnyHashable.ITBL_HEADER_API_KEY, value: IterableAPITests.apiKey)])
+                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_DISABLE_DEVICE, queryParams: [])
                 TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOKEN, andValue: token.hexString(), inDictionary: body)
                 TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_EMAIL, andValue: "user@example.com", inDictionary: body)
                 expectation.fulfill()
@@ -378,7 +378,7 @@ class IterableAPITests: XCTestCase {
         networkSession.callback = {(_, _, _) in
             networkSession.callback = {(_, _, _) in
                 let body = networkSession.getRequestBody() as! [String : Any]
-                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_DISABLE_DEVICE, queryParams: [(name: AnyHashable.ITBL_HEADER_API_KEY, value: IterableAPITests.apiKey)])
+                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_DISABLE_DEVICE, queryParams: [])
                 TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOKEN, andValue: token.hexString(), inDictionary: body)
                 TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_EMAIL, andValue: "user@example.com", inDictionary: body)
                 expectation.fulfill()
@@ -403,7 +403,7 @@ class IterableAPITests: XCTestCase {
             networkSession.callback = nil
             IterableAPI.disableDeviceForAllUsers(withOnSuccess: { (json) in
                 let body = networkSession.getRequestBody() as! [String : Any]
-                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_DISABLE_DEVICE, queryParams: [(name: AnyHashable.ITBL_HEADER_API_KEY, value: IterableAPITests.apiKey)])
+                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_DISABLE_DEVICE, queryParams: [])
                 TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOKEN, andValue: token.hexString(), inDictionary: body)
                 TestUtils.validateElementNotPresent(withName: AnyHashable.ITBL_KEY_EMAIL, inDictionary: body)
                 TestUtils.validateElementNotPresent(withName: AnyHashable.ITBL_KEY_USER_ID, inDictionary: body)
@@ -431,7 +431,7 @@ class IterableAPITests: XCTestCase {
         networkSession.callback = {(_, _, _) in
             networkSession.callback = {(_, _, _) in
                 let body = networkSession.getRequestBody() as! [String : Any]
-                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_DISABLE_DEVICE, queryParams: [(name: AnyHashable.ITBL_HEADER_API_KEY, value: IterableAPITests.apiKey)])
+                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_DISABLE_DEVICE, queryParams: [])
                 TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOKEN, andValue: token.hexString(), inDictionary: body)
                 TestUtils.validateElementNotPresent(withName: AnyHashable.ITBL_KEY_EMAIL, inDictionary: body)
                 TestUtils.validateElementNotPresent(withName: AnyHashable.ITBL_KEY_USER_ID, inDictionary: body)
@@ -475,7 +475,7 @@ class IterableAPITests: XCTestCase {
         
         IterableAPI.track(purchase: 10.55, items: [], dataFields: nil, onSuccess: { (json) in
             let body = networkSession.getRequestBody() as! [String : Any]
-            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_COMMERCE_TRACK_PURCHASE, queryParams: [(name: AnyHashable.ITBL_HEADER_API_KEY, value: IterableAPITests.apiKey)])
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_COMMERCE_TRACK_PURCHASE, queryParams: [])
             TestUtils.validateMatch(keyPath: KeyPath("\(AnyHashable.ITBL_KEY_USER).\(AnyHashable.ITBL_KEY_USER_ID)"), value: "zeeUserId", inDictionary: body)
             TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOTAL, andValue: 10.55, inDictionary: body)
 
@@ -505,7 +505,7 @@ class IterableAPITests: XCTestCase {
         
         IterableAPI.track(purchase: total, items: items, dataFields: nil, onSuccess: { (json) in
             let body = networkSession.getRequestBody() as! [String : Any]
-            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_COMMERCE_TRACK_PURCHASE, queryParams: [(name: AnyHashable.ITBL_HEADER_API_KEY, value: IterableAPITests.apiKey)])
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_COMMERCE_TRACK_PURCHASE, queryParams: [])
             TestUtils.validateMatch(keyPath: KeyPath("\(AnyHashable.ITBL_KEY_USER).\(AnyHashable.ITBL_KEY_EMAIL)"), value: "user@example.com", inDictionary: body)
             TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOTAL, andValue: total, inDictionary: body)
             let itemsElement = body[AnyHashable.ITBL_KEY_ITEMS] as! [[AnyHashable : Any]]
@@ -541,7 +541,7 @@ class IterableAPITests: XCTestCase {
         
         networkSession.callback = {(_, _, _) in
             let body = networkSession.getRequestBody() as! [String : Any]
-            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_COMMERCE_TRACK_PURCHASE, queryParams: [(name: AnyHashable.ITBL_HEADER_API_KEY, value: IterableAPITests.apiKey)])
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_COMMERCE_TRACK_PURCHASE, queryParams: [])
             TestUtils.validateMatch(keyPath: KeyPath("\(AnyHashable.ITBL_KEY_USER).\(AnyHashable.ITBL_KEY_EMAIL)"), value: "user@example.com", inDictionary: body)
             TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOTAL, andValue: total, inDictionary: body)
             let itemsElement = body[AnyHashable.ITBL_KEY_ITEMS] as! [[AnyHashable : Any]]
@@ -618,14 +618,11 @@ class IterableAPITests: XCTestCase {
         IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         IterableAPI.email = "user@example.com"
         networkSession.callback = {(_,_,_) in
-            let expectedQueryParams = [
-                (name: AnyHashable.ITBL_HEADER_API_KEY, value: IterableAPITests.apiKey),
-                ]
             TestUtils.validate(request: networkSession.request!,
                                requestType: .post,
                                apiEndPoint: .ITBL_ENDPOINT_API,
                                path: .ITBL_PATH_INAPP_CONSUME,
-                               queryParams: expectedQueryParams)
+                               queryParams: [])
             TestUtils.validateElementPresent(withName: "messageId", andValue: messageId, inDictionary: networkSession.getRequestBody())
             expectation1.fulfill()
         }
@@ -645,7 +642,7 @@ class IterableAPITests: XCTestCase {
                                requestType: .post,
                                apiEndPoint: .ITBL_ENDPOINT_API,
                                path: .ITBL_PATH_UPDATE_SUBSCRIPTIONS,
-                               queryParams: [(name: AnyHashable.ITBL_HEADER_API_KEY, value: IterableAPITests.apiKey)])
+                               queryParams: [])
             
             let body = networkSession.getRequestBody() as! [String : Any]
             TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_EMAIL_LIST_IDS), value: emailListIds, inDictionary: body)

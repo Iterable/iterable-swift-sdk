@@ -9,16 +9,16 @@
 import Foundation
 
 struct IterableRequestUtil {
-    static func createPostRequest(forApiEndPoint apiEndPoint: String, path: String, args: [String: String]? = nil, body: [AnyHashable: Any]? = nil) -> URLRequest? {
-        return createPostRequest(forApiEndPoint: apiEndPoint, path: path, args: args, body: dictToJsonData(body))
+    static func createPostRequest(forApiEndPoint apiEndPoint: String, path: String, apiKey: String, args: [String: String]? = nil, body: [AnyHashable: Any]? = nil) -> URLRequest? {
+        return createPostRequest(forApiEndPoint: apiEndPoint, path: path, apiKey: apiKey, args: args, body: dictToJsonData(body))
     }
     
-    static func createPostRequest<T: Encodable>(forApiEndPoint apiEndPoint:String, path: String, args: [String: String]? = nil, body: T) -> URLRequest? {
-        return createPostRequest(forApiEndPoint: apiEndPoint, path: path, args: args, body: try? JSONEncoder().encode(body))
+    static func createPostRequest<T: Encodable>(forApiEndPoint apiEndPoint: String, path: String, apiKey: String, args: [String: String]? = nil, body: T) -> URLRequest? {
+        return createPostRequest(forApiEndPoint: apiEndPoint, path: path, apiKey: apiKey, args: args, body: try? JSONEncoder().encode(body))
     }
     
-    static func createPostRequest(forApiEndPoint apiEndPoint: String, path: String, args: [String: String]? = nil, body: Data? = nil) -> URLRequest? {
-        guard let url = getUrlComponents(forApiEndPoint: apiEndPoint, path:path, args: args)?.url else {
+    static func createPostRequest(forApiEndPoint apiEndPoint: String, path: String, apiKey: String, args: [String: String]? = nil, body: Data? = nil) -> URLRequest? {
+        guard let url = getUrlComponents(forApiEndPoint: apiEndPoint, path: path, args: args)?.url else {
             return nil
         }
         
@@ -26,6 +26,7 @@ struct IterableRequestUtil {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue(.ITBL_PLATFORM_IOS, forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_PLATFORM)
         request.setValue(IterableAPI.sdkVersion, forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_VERSION)
+        request.setValue(apiKey, forHTTPHeaderField: AnyHashable.ITBL_HEADER_API_KEY)
         request.httpMethod = .ITBL_KEY_POST
         request.httpBody = body
         
