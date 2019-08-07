@@ -127,7 +127,7 @@ class ApiClient: ApiClientProtocol {
         case .get(let getRequest):
             return IterableRequestUtil.createGetRequest(forApiEndPoint: endPoint, path: getRequest.path, args: getRequest.args)
         case .post(let postRequest):
-            return IterableRequestUtil.createPostRequest(forApiEndPoint: endPoint, path: postRequest.path, args: postRequest.args, body: postRequest.body)
+            return IterableRequestUtil.createPostRequest(forApiEndPoint: endPoint, path: postRequest.path, apiKey: apiKey, args: postRequest.args, body: postRequest.body)
         }
     }
     
