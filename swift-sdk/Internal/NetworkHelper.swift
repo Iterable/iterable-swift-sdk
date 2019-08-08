@@ -36,15 +36,15 @@ protocol NetworkSessionProtocol {
 
 extension URLSession: NetworkSessionProtocol {
     func makeRequest(_ request: URLRequest, completionHandler: @escaping CompletionHandler) {
-        let task = dataTask(with: request) { (data, response, error) in
+        let task = dataTask(with: request) { data, response, error in
             completionHandler(data, response, error)
         }
         
         task.resume()
     }
-
+    
     func makeDataRequest(with url: URL, completionHandler: @escaping CompletionHandler) {
-        let task = dataTask(with: url) { (data, response, error) in
+        let task = dataTask(with: url) { data, response, error in
             completionHandler(data, response, error)
         }
         
@@ -56,15 +56,15 @@ struct NetworkHelper {
     static func getData(fromUrl url: URL, usingSession networkSession: NetworkSessionProtocol) -> Future<Data, Error> {
         let promise = Promise<Data, Error>()
         
-        networkSession.makeDataRequest(with: url) { (data, response, error) in
+        networkSession.makeDataRequest(with: url) { data, response, error in
             let result = createDataResultFromNetworkResponse(data: data, response: response, error: error)
             
-            switch (result) {
-            case .success(let value):
+            switch result {
+            case let .success(value):
                 DispatchQueue.main.async {
                     promise.resolve(with: value)
                 }
-            case .failure(let error):
+            case let .failure(error):
                 DispatchQueue.main.async {
                     promise.reject(with: error)
                 }
@@ -74,20 +74,20 @@ struct NetworkHelper {
         return promise
     }
     
-    static func sendRequest(_ request: URLRequest, usingSession networkSession: NetworkSessionProtocol) -> Future<SendRequestValue, SendRequestError>  {
+    static func sendRequest(_ request: URLRequest, usingSession networkSession: NetworkSessionProtocol) -> Future<SendRequestValue, SendRequestError> {
         let promise = Promise<SendRequestValue, SendRequestError>()
         
-        networkSession.makeRequest(request) { (data, response, error) in
+        networkSession.makeRequest(request) { data, response, error in
             let result = createResultFromNetworkResponse(data: data, response: response, error: error)
             
-            switch (result) {
-            case .success(let value):
+            switch result {
+            case let .success(value):
                 promise.resolve(with: value)
-            case .failure(let error):
+            case let .failure(error):
                 promise.reject(with: error)
             }
         }
-            
+        
         return promise
     }
     
@@ -103,12 +103,12 @@ struct NetworkHelper {
         let responseCode = response.statusCode
         
         let json: Any?
-        var jsonError: Error? = nil
+        var jsonError: Error?
         
         if let data = data, data.count > 0 {
             do {
                 json = try JSONSerialization.jsonObject(with: data, options: [])
-            } catch let error {
+            } catch {
                 jsonError = error
                 json = nil
             }
@@ -149,7 +149,7 @@ struct NetworkHelper {
         }
     }
     
-    static func createDataResultFromNetworkResponse(data: Data?, response: URLResponse?, error: Error?) -> Result<Data, SendRequestError> {
+    static func createDataResultFromNetworkResponse(data: Data?, response _: URLResponse?, error: Error?) -> Result<Data, SendRequestError> {
         if let error = error {
             return .failure(SendRequestError(reason: "\(error.localizedDescription)"))
         }

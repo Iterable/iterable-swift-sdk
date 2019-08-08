@@ -14,8 +14,8 @@ class LoggingTests: XCTestCase {
         let expectation2 = expectation(description: "info message")
         let expectation3 = expectation(description: "error message")
         
-        class LogDelegate : IterableLogDelegate {
-            var callback: ((LogLevel, String) -> Void)? = nil
+        class LogDelegate: IterableLogDelegate {
+            var callback: ((LogLevel, String) -> Void)?
             
             func log(level: LogLevel, message: String) {
                 callback?(level, message)
@@ -27,14 +27,14 @@ class LoggingTests: XCTestCase {
         let errorMessage = UUID().uuidString
         
         let logDelegate = LogDelegate()
-        logDelegate.callback = { (logLevel, message) in
-            if logLevel == .debug && message.contains(debugMessage) {
+        logDelegate.callback = { logLevel, message in
+            if logLevel == .debug, message.contains(debugMessage) {
                 expectation1.fulfill()
             }
-            if logLevel == .info && message.contains(infoMessage) {
+            if logLevel == .info, message.contains(infoMessage) {
                 expectation2.fulfill()
             }
-            if logLevel == .error && message.contains(errorMessage) {
+            if logLevel == .error, message.contains(errorMessage) {
                 expectation3.fulfill()
             }
         }
@@ -43,9 +43,9 @@ class LoggingTests: XCTestCase {
         IterableAPI.initializeForTesting(apiKey: "apiKey", config: config)
         
         ITBDebug(debugMessage)
-
+        
         ITBInfo(infoMessage)
-
+        
         ITBError(errorMessage)
         
         wait(for: [expectation1, expectation2, expectation3], timeout: 10.0)

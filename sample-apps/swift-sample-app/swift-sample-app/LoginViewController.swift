@@ -17,14 +17,14 @@ class LoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Do any additional setup after loading the view.
         switch LoginViewController.checkIterableEmailOrUserId() {
-        case .email(let email):
+        case let .email(email):
             emailAddressTextField.text = email
             emailAddressTextField.isEnabled = false
             logInOutButton.setTitle("Logout", for: .normal)
-        case .userId(let userId):
+        case let .userId(userId):
             userIdTextField.text = userId
             userIdTextField.isEnabled = false
             logInOutButton.setTitle("Logout", for: .normal)
@@ -36,8 +36,8 @@ class LoginViewController: UIViewController {
             logInOutButton.setTitle("Login", for: .normal)
         }
     }
-
-    @IBAction func loginInOutButtonTapped(_ sender: UIButton) {
+    
+    @IBAction func loginInOutButtonTapped(_: UIButton) {
         switch LoginViewController.checkIterableEmailOrUserId() {
         case .email:
             // logout
@@ -61,7 +61,7 @@ class LoginViewController: UIViewController {
         case userId(String)
         case none
         
-        var eitherPresent : Bool {
+        var eitherPresent: Bool {
             switch self {
             case .email, .userId:
                 return true
@@ -70,7 +70,7 @@ class LoginViewController: UIViewController {
             }
         }
     }
-
+    
     class func checkIterableEmailOrUserId() -> IterableEmailOrUserIdCheckResult {
         if let email = IterableAPI.email {
             return .email(email)
@@ -81,8 +81,7 @@ class LoginViewController: UIViewController {
         }
     }
     
-    @IBAction func doneButtonTapped(_ sender: UIBarButtonItem) {
+    @IBAction func doneButtonTapped(_: UIBarButtonItem) {
         presentingViewController?.dismiss(animated: true)
     }
-    
 }

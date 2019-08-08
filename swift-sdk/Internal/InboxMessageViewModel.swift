@@ -10,18 +10,18 @@ class InboxMessageViewModel {
     let title: String
     let subtitle: String?
     let imageUrl: String?
-    var imageData: Data? = nil
+    var imageData: Data?
     let createdAt: Date?
     let read: Bool
     let iterableMessage: IterableInAppMessage
     
     init(message: IterableInAppMessage) {
-        self.title = InboxMessageViewModel.getTitle(message: message)
-        self.subtitle = InboxMessageViewModel.getSubtitle(message: message)
-        self.imageUrl = InboxMessageViewModel.getImageUrl(message: message)
-        self.createdAt = message.createdAt
-        self.read = message.read
-        self.iterableMessage = message
+        title = InboxMessageViewModel.getTitle(message: message)
+        subtitle = InboxMessageViewModel.getSubtitle(message: message)
+        imageUrl = InboxMessageViewModel.getImageUrl(message: message)
+        createdAt = message.createdAt
+        read = message.read
+        iterableMessage = message
     }
     
     func hasValidImageUrl() -> Bool {
@@ -49,8 +49,8 @@ class InboxMessageViewModel {
 
 extension InboxMessageViewModel: Hashable {
     func hash(into hasher: inout Hasher) {
-        hasher.combine(self.iterableMessage.messageId)
-        hasher.combine(self.read)
+        hasher.combine(iterableMessage.messageId)
+        hasher.combine(read)
     }
 }
 

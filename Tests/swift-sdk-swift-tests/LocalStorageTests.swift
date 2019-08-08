@@ -19,7 +19,7 @@ class LocalStorageTests: XCTestCase {
         XCTAssertEqual(localStorage.userId, userId)
         XCTAssertEqual(localStorage.email, email)
     }
-
+    
     func testDDLChecked() throws {
         var localStorage = UserDefaultsLocalStorage(userDefaults: TestUtils.getTestUserDefaults())
         localStorage.ddlChecked = true
@@ -28,7 +28,7 @@ class LocalStorageTests: XCTestCase {
         localStorage.ddlChecked = false
         XCTAssertFalse(localStorage.ddlChecked)
     }
-
+    
     func testAttributionInfo() throws {
         let mockDateProvider = MockDateProvider()
         let localStorage = UserDefaultsLocalStorage(userDefaults: TestUtils.getTestUserDefaults())
@@ -38,18 +38,18 @@ class LocalStorageTests: XCTestCase {
         localStorage.save(attributionInfo: attributionInfo, withExpiration: expiration)
         // 23 hours, not expired, still present
         mockDateProvider.currentDate = Calendar.current.date(byAdding: Calendar.Component.hour, value: 23, to: currentDate)!
-        let fromLocalStorage:IterableAttributionInfo = localStorage.getAttributionInfo(currentDate: mockDateProvider.currentDate)!
+        let fromLocalStorage: IterableAttributionInfo = localStorage.getAttributionInfo(currentDate: mockDateProvider.currentDate)!
         XCTAssert(fromLocalStorage == attributionInfo)
-
+        
         mockDateProvider.currentDate = Calendar.current.date(byAdding: Calendar.Component.hour, value: 25, to: currentDate)!
-        let fromLocalStorage2:IterableAttributionInfo? = localStorage.getAttributionInfo(currentDate: mockDateProvider.currentDate)
+        let fromLocalStorage2: IterableAttributionInfo? = localStorage.getAttributionInfo(currentDate: mockDateProvider.currentDate)
         XCTAssertNil(fromLocalStorage2)
     }
     
     func testPayload() throws {
         let mockDateProvider = MockDateProvider()
         let localStorage = UserDefaultsLocalStorage(userDefaults: TestUtils.getTestUserDefaults())
-        let payload: [AnyHashable : Any] = [
+        let payload: [AnyHashable: Any] = [
             "email": "ilya@iterable.com",
             "device": [
                 "token": "foo",
@@ -62,20 +62,20 @@ class LocalStorageTests: XCTestCase {
                     "identifierForVendor": "ham",
                     "systemName": "iterable",
                     "systemVersion": "is",
-                    "model": "awesome"
-                ]
-            ]
+                    "model": "awesome",
+                ],
+            ],
         ]
         let currentDate = Date()
         let expiration = Calendar.current.date(byAdding: Calendar.Component.hour, value: 24, to: currentDate)!
         localStorage.save(payload: payload, withExpiration: expiration)
         // 23 hours, not expired, still present
         mockDateProvider.currentDate = Calendar.current.date(byAdding: Calendar.Component.hour, value: 23, to: currentDate)!
-        let fromLocalStorage:[AnyHashable : Any] = localStorage.getPayload(currentDate: mockDateProvider.currentDate)!
+        let fromLocalStorage: [AnyHashable: Any] = localStorage.getPayload(currentDate: mockDateProvider.currentDate)!
         XCTAssertTrue(NSDictionary(dictionary: payload).isEqual(to: fromLocalStorage))
         
         mockDateProvider.currentDate = Calendar.current.date(byAdding: Calendar.Component.hour, value: 25, to: currentDate)!
-        let fromLocalStorage2:[AnyHashable : Any]? = localStorage.getPayload(currentDate: mockDateProvider.currentDate)
+        let fromLocalStorage2: [AnyHashable: Any]? = localStorage.getPayload(currentDate: mockDateProvider.currentDate)
         XCTAssertNil(fromLocalStorage2)
     }
     
@@ -85,7 +85,7 @@ class LocalStorageTests: XCTestCase {
         localStorage.deviceId = deviceId
         XCTAssertEqual(localStorage.deviceId, deviceId)
     }
-
+    
     func testSdkVersion() {
         var localStorage = UserDefaultsLocalStorage(userDefaults: TestUtils.getTestUserDefaults())
         let sdkVersion = "6.0.2"

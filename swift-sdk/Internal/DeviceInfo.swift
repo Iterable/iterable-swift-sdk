@@ -40,14 +40,14 @@ struct DeviceInfo: Codable {
         let secondsFromGMT = TimeZone.current.secondsFromGMT()
         let timezoneOffsetMinutes = (-1.0 * Float(secondsFromGMT) / 60.0)
         return DeviceFp(userInterfaceIdiom: getUserInterfaceIdiom(),
-                          screenWidth: String(Float(screen.bounds.width)),
-                          screenHeight: String(Float(screen.bounds.height)),
-                          screenScale: String(Float(screen.scale)),
-                          version: device.systemVersion,
-                          timezoneOffsetMinutes: String(timezoneOffsetMinutes),
-                          language: Locale.current.identifier)
+                        screenWidth: String(Float(screen.bounds.width)),
+                        screenHeight: String(Float(screen.bounds.height)),
+                        screenScale: String(Float(screen.scale)),
+                        version: device.systemVersion,
+                        timezoneOffsetMinutes: String(timezoneOffsetMinutes),
+                        language: Locale.current.identifier)
     }
-
+    
     /// Returns UserInterfaceIdiom as String to be passed to server
     private static func getUserInterfaceIdiom() -> String {
         switch UI_USER_INTERFACE_IDIOM() {

@@ -35,7 +35,7 @@ class InAppFetcher: InAppFetcherProtocol {
             return Promise(error: IterableError.general(description: "Invalid state: expected InternalApi"))
         }
         
-        return InAppHelper.getInAppMessagesFromServer(apiClient: apiClient, number: numMessages).mapFailure {$0}
+        return InAppHelper.getInAppMessagesFromServer(apiClient: apiClient, number: numMessages).mapFailure { $0 }
     }
     
     private weak var apiClient: ApiClientProtocol?

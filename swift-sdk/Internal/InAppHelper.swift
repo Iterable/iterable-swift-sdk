@@ -12,7 +12,7 @@ import UIKit
 struct InAppHelper {
     static func getInAppMessagesFromServer(apiClient: ApiClientProtocol, number: Int) -> Future<[IterableInAppMessage], SendRequestError> {
         return apiClient.getInAppMessages(NSNumber(value: number)).map {
-            return InAppMessageParser.parse(payload: $0).compactMap { parseResult in
+            InAppMessageParser.parse(payload: $0).compactMap { parseResult in
                 process(parseResult: parseResult, apiClient: apiClient)
             }
         }
@@ -48,10 +48,10 @@ struct InAppHelper {
     }
     
     private enum UrlScheme: String {
-        case applewebdata = "applewebdata"
-        case iterable = "iterable"
-        case action = "action"
-        case itbl = "itbl" // this is for backward compatibility and should be handled just like action://
+        case applewebdata
+        case iterable
+        case action
+        case itbl // this is for backward compatibility and should be handled just like action://
         case other
         
         fileprivate static func from(url: URL) -> UrlScheme? {
@@ -84,7 +84,7 @@ struct InAppHelper {
     }
     
     private static func dropLeadingSlashes(str: String) -> String {
-        return String(str.drop { $0 == "/"})
+        return String(str.drop { $0 == "/" })
     }
     
     private static func dropScheme(urlString: String, scheme: String) -> String {
@@ -95,16 +95,16 @@ struct InAppHelper {
     // process each parseResult and consumes failed message, if messageId is present
     private static func process(parseResult: IterableResult<IterableInAppMessage, InAppMessageParser.ParseError>, apiClient: ApiClientProtocol) -> IterableInAppMessage? {
         switch parseResult {
-        case .failure(let parseError):
-            switch (parseError) {
-            case .parseFailed(reason: let reason, messageId: let messageId):
+        case let .failure(parseError):
+            switch parseError {
+            case let .parseFailed(reason: reason, messageId: messageId):
                 ITBError(reason)
                 if let messageId = messageId {
                     apiClient.inAppConsume(messageId: messageId)
                 }
                 return nil
             }
-        case .success(let val):
+        case let .success(val):
             return val
         }
     }

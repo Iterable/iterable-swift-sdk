@@ -7,10 +7,9 @@
 import Foundation
 
 class EmptyInAppManager: IterableInAppManagerProtocolInternal {
-    func start() {
-    }
+    func start() {}
     
-    func createInboxMessageViewController(for message: IterableInAppMessage) -> UIViewController? {
+    func createInboxMessageViewController(for _: IterableInAppMessage) -> UIViewController? {
         ITBError("Can't create VC")
         return nil
     }
@@ -23,17 +22,13 @@ class EmptyInAppManager: IterableInAppManagerProtocolInternal {
         return []
     }
     
-    func show(message: IterableInAppMessage) {
-    }
+    func show(message _: IterableInAppMessage) {}
     
-    func show(message: IterableInAppMessage, consume: Bool, callback: ITBURLCallback?) {
-    }
+    func show(message _: IterableInAppMessage, consume _: Bool, callback _: ITBURLCallback?) {}
     
-    func remove(message: IterableInAppMessage) {
-    }
+    func remove(message _: IterableInAppMessage) {}
     
-    func set(read: Bool, forMessage message: IterableInAppMessage) {
-    }
+    func set(read _: Bool, forMessage _: IterableInAppMessage) {}
     
     func getUnreadInboxMessagesCount() -> Int {
         return 0
@@ -43,10 +38,9 @@ class EmptyInAppManager: IterableInAppManagerProtocolInternal {
         return Promise<Bool, Error>(value: true)
     }
     
-    func onInAppRemoved(messageId: String) {
-    }
+    func onInAppRemoved(messageId _: String) {}
     
-    func isOkToShowNow(message: IterableInAppMessage) -> Bool {
+    func isOkToShowNow(message _: IterableInAppMessage) -> Bool {
         return true
     }
 }

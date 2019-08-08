@@ -21,7 +21,7 @@ class InboxTests: XCTestCase {
             config: config,
             inAppFetcher: mockInAppFetcher
         )
-       
+        
         let payload = """
         {"inAppMessages":
         [
@@ -59,7 +59,7 @@ class InboxTests: XCTestCase {
         ]
         }
         """.toJsonDict()
-
+        
         mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { _ in
             let messages = IterableAPI.inAppManager.getInboxMessages()
             XCTAssertEqual(messages.count, 2)
@@ -111,7 +111,7 @@ class InboxTests: XCTestCase {
             
             IterableAPI.inAppManager.set(read: true, forMessage: messages[1])
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                 XCTAssertEqual(messages[0].read, false)
                 XCTAssertEqual(messages[1].read, true)
                 
@@ -120,7 +120,7 @@ class InboxTests: XCTestCase {
                 XCTAssertEqual(unreadMessages.count, 1)
                 XCTAssertEqual(unreadMessages[0].read, false)
                 expectation1.fulfill()
-            })
+            }
         }
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
@@ -165,13 +165,13 @@ class InboxTests: XCTestCase {
             XCTAssertEqual(messages.count, 2)
             
             IterableAPI.inAppManager.remove(message: messages[0])
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                 let newMessages = IterableAPI.inAppManager.getInboxMessages()
                 XCTAssertEqual(newMessages.count, 1)
                 expectation1.fulfill()
-            })
+            }
         }
-       
+        
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
@@ -191,12 +191,12 @@ class InboxTests: XCTestCase {
         }
         
         let mockUrlDelegate = MockUrlDelegate(returnValue: true)
-        mockUrlDelegate.callback = {(url, _) in
+        mockUrlDelegate.callback = { url, _ in
             XCTAssertEqual(url.absoluteString, "https://someurl.com")
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                 XCTAssertEqual(IterableAPI.inAppManager.getUnreadInboxMessagesCount(), 1)
                 expectation2.fulfill()
-            })
+            }
         }
         let config = IterableConfig()
         config.urlDelegate = mockUrlDelegate
@@ -207,7 +207,7 @@ class InboxTests: XCTestCase {
             inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer
         )
-
+        
         let payload = """
         {"inAppMessages":
         [
@@ -238,11 +238,11 @@ class InboxTests: XCTestCase {
         XCTAssertEqual(IterableAPI.inAppManager.getUnreadInboxMessagesCount(), 2)
         
         let messages = IterableAPI.inAppManager.getInboxMessages()
-        IterableAPI.inAppManager.show(message: messages[0], consume: false) { (clickedUrl) in
+        IterableAPI.inAppManager.show(message: messages[0], consume: false) { clickedUrl in
             XCTAssertEqual(clickedUrl!.absoluteString, "https://someurl.com")
             expectation3.fulfill()
         }
-
+        
         wait(for: [expectation1, expectation2, expectation3], timeout: testExpectationTimeout)
     }
     
@@ -298,7 +298,7 @@ class InboxTests: XCTestCase {
             expectation2.fulfill()
         }
         wait(for: [expectation2], timeout: testExpectationTimeout)
-
+        
         let payload2 = """
         {"inAppMessages":
         [
@@ -323,13 +323,13 @@ class InboxTests: XCTestCase {
         """.toJsonDict()
         
         mockInAppFetcher.mockInAppPayloadFromServer(payload2)
-
+        
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
     func testInboxChangedCalledOnInitialization() {
         let expectation1 = expectation(description: "verify on inbox changed is called")
-
+        
         let payload = """
         {"inAppMessages":
         [
@@ -348,7 +348,7 @@ class InboxTests: XCTestCase {
         let persister = InAppFilePersister()
         persister.clear()
         persister.persist(messages)
-
+        
         let config = IterableConfig()
         let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
         
@@ -358,7 +358,7 @@ class InboxTests: XCTestCase {
             XCTAssertEqual(messages.count, 1)
             expectation1.fulfill()
         }
-
+        
         config.inAppDelegate = mockInAppDelegate
         config.logDelegate = AllLogDelegate()
         
@@ -370,7 +370,6 @@ class InboxTests: XCTestCase {
             inAppPersister: persister,
             notificationCenter: mockNotificationCenter
         )
-
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
         persister.clear()
@@ -388,7 +387,7 @@ class InboxTests: XCTestCase {
         
         var inAppCallbackCount = 0
         let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
-        mockInAppDelegate.onNewMessageCallback = {(message) in
+        mockInAppDelegate.onNewMessageCallback = { message in
             if inAppCallbackCount == 0 {
                 XCTAssertEqual(message.messageId, "inAppMessage0")
             } else {
@@ -412,7 +411,7 @@ class InboxTests: XCTestCase {
             expectation1.fulfill()
             inboxCallbackCount += 1
         }
-
+        
         let config = IterableConfig()
         config.inAppDelegate = mockInAppDelegate
         config.logDelegate = AllLogDelegate()
@@ -450,7 +449,7 @@ class InboxTests: XCTestCase {
             expectation3.fulfill()
         }
         wait(for: [expectation3], timeout: testExpectationTimeout)
-
+        
         let payload2 = """
         {"inAppMessages":
         [
@@ -512,13 +511,13 @@ class InboxTests: XCTestCase {
         }
         
         let mockUrlDelegate = MockUrlDelegate(returnValue: true)
-        mockUrlDelegate.callback = {(url, _) in
+        mockUrlDelegate.callback = { url, _ in
             XCTAssertEqual(url.absoluteString, "https://someurl.com")
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                 XCTAssertEqual(IterableAPI.inAppManager.getUnreadInboxMessagesCount(), 0)
                 XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 2)
                 expectation2.fulfill()
-            })
+            }
         }
         let config = IterableConfig()
         config.urlDelegate = mockUrlDelegate

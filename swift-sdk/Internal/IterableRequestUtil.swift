@@ -79,7 +79,7 @@ struct IterableRequestUtil {
             result.removeLast()
         }
         // result has no ending slashes, add one if needed
-        if !result.isEmpty && !path2.isEmpty && !path2.hasPrefix("/") {
+        if !result.isEmpty, !path2.isEmpty, !path2.hasPrefix("/") {
             result.append("/")
         }
         result.append(path2)

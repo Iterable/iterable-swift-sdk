@@ -6,8 +6,7 @@
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
-import UserNotifications
 import IterableAppExtensions
+import UserNotifications
 
-class NotificationService: ITBNotificationServiceExtension {
-}
+class NotificationService: ITBNotificationServiceExtension {}

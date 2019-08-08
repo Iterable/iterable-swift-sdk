@@ -3,9 +3,9 @@
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
-import XCTest
 import Foundation
 import UserNotifications
+import XCTest
 
 @testable import IterableSDK
 
@@ -22,7 +22,7 @@ class MockNotificationStateProvider: NotificationStateProviderProtocol {
     func registerForRemoteNotifications() {
         expectation?.fulfill()
     }
-
+    
     init(enabled: Bool, expectation: XCTestExpectation? = nil) {
         self.enabled = enabled
         self.expectation = expectation

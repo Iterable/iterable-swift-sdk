@@ -34,7 +34,7 @@ struct InAppContentParser {
     }
 }
 
-fileprivate protocol ContentFromJsonParser {
+private protocol ContentFromJsonParser {
     static func tryCreate(from json: [AnyHashable: Any]) -> InAppContentParseResult
 }
 
@@ -77,11 +77,11 @@ struct HtmlContentParser {
      - returns: the location as an INAPP_NOTIFICATION_TYPE
      */
     static func location(fromPadding padding: UIEdgeInsets) -> IterableMessageLocation {
-        if padding.top == 0 && padding.bottom == 0 {
+        if padding.top == 0, padding.bottom == 0 {
             return .full
-        } else if padding.top == 0 && padding.bottom < 0 {
+        } else if padding.top == 0, padding.bottom < 0 {
             return .top
-        } else if padding.top < 0 && padding.bottom == 0 {
+        } else if padding.top < 0, padding.bottom == 0 {
             return .bottom
         } else {
             return .center

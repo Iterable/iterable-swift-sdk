@@ -106,11 +106,11 @@ public class IterableConfig: NSObject {
     
     /// Handles Iterable actions of type 'openUrl'
     public weak var urlDelegate: IterableURLDelegate?
-
+    
     /// How to handle IterableActions which are other than 'openUrl'
     public weak var customActionDelegate: IterableCustomActionDelegate?
     
-    /// When set to true, IterableSDK will automatically register and deregister 
+    /// When set to true, IterableSDK will automatically register and deregister
     /// notification tokens.
     public var autoPushRegistration = true
     
@@ -131,7 +131,7 @@ public class IterableConfig: NSObject {
     /// By default, every single inApp will be shown as soon as it is available.
     /// If more than 1 inApp is available, we show the first.
     public var inAppDelegate: IterableInAppDelegate = DefaultInAppDelegate()
-
+    
     /// How many seconds to wait before showing the next inApp, if there are more than one present
     public var inAppDisplayInterval: Double = 30.0
 }

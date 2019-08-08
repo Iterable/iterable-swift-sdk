@@ -8,15 +8,15 @@ import XCTest
 
 class UITests: XCTestCase {
     private static var timeout = 15.0
-
+    
     static var application: XCUIApplication = {
         let app = XCUIApplication()
         app.launch()
         return app
     }()
     
-    static var monitor: NSObjectProtocol? = nil
-
+    static var monitor: NSObjectProtocol?
+    
     // shortcut calculated property
     private var app: XCUIApplication {
         return UITests.application
@@ -26,15 +26,15 @@ class UITests: XCTestCase {
     
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.
-
+        
         // In UI tests it is usually best to stop immediately when a failure occurs.
         continueAfterFailure = false
-
+        
         // UI tests must launch the application that they test. Doing this in setup will make sure it happens for each test method.
         
         // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
     }
-
+    
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
@@ -54,7 +54,7 @@ class UITests: XCTestCase {
         
         let button = SpringBoardNotification(springboard: springboard).buttonOpenSafari
         button.tap()
-
+        
         // Give some time to open
         sleep(1)
         
@@ -65,7 +65,7 @@ class UITests: XCTestCase {
         // launch this app again for other tests
         app.launch()
     }
-
+    
     func testSendNotificationOpenDeeplink() {
         allowNotificationsIfNeeded()
         
@@ -87,7 +87,7 @@ class UITests: XCTestCase {
         
         waitForElementToAppear(app.staticTexts["https://www.myuniqueurl.com"])
     }
-
+    
     func testSendNotificationCustomAction() {
         allowNotificationsIfNeeded()
         
@@ -109,29 +109,29 @@ class UITests: XCTestCase {
         
         waitForElementToAppear(app.staticTexts["MyUniqueCustomAction"])
     }
-
+    
     func testShowSystemNotification() {
         // Tap the Left Button
         app.buttons["Show System Notification#1"].tap()
-
+        
         let alert = app.alerts.element
         waitForElementToAppear(alert)
         
         XCTAssertTrue(alert.staticTexts["Zee Title"].exists)
         XCTAssertTrue(alert.staticTexts["Zee Body"].exists)
-
+        
         app.buttons["Left Button"].tap()
-
+        
         waitForElementToAppear(app.staticTexts["Left Button"])
-
+        
         app.buttons["Show System Notification#1"].tap()
         waitForElementToAppear(alert)
-
+        
         // Tap the Right Button
         app.buttons["Right Button"].tap()
         waitForElementToAppear(app.staticTexts["Right Button"])
     }
-
+    
     func testShowSystemNotification2() {
         // Tap the Left Button
         app.buttons["Show System Notification#2"].tap()
@@ -146,31 +146,31 @@ class UITests: XCTestCase {
         
         waitForElementToAppear(app.staticTexts["Zee Button"])
     }
-
+    
     func testShowInApp1() {
         inAppTest(buttonName: "Show InApp#1", linkName: "Click Me", expectedCallbackUrl: "http://website/resource#something")
     }
-
+    
     // Full Screen
     func testShowInApp2() {
         inAppTest(buttonName: "Show InApp#2", linkName: "Click Here", expectedCallbackUrl: "https://www.google.com/q=something")
     }
-
+    
     // Center and Padding
     func testShowInApp3() {
         inAppTest(buttonName: "Show InApp#3", linkName: "Click Here", expectedCallbackUrl: "https://www.google.com/q=something")
     }
-
+    
     // Full Screen
     func testShowInApp4() {
         inAppTest(buttonName: "Show InApp#4", linkName: "Click Me", expectedCallbackUrl: "http://website/resource#something")
     }
-
+    
     // Full Screen
     func testShowInApp5() {
         inAppTest(buttonName: "Show InApp#5", linkName: "Click Me", expectedCallbackUrl: "http://website/resource#something")
     }
-
+    
     private func inAppTest(buttonName: String, linkName: String, expectedCallbackUrl: String) {
         // tap the inApp button
         app.buttons[buttonName].tap()
@@ -180,14 +180,14 @@ class UITests: XCTestCase {
         waitForElementToAppear(clickMe)
         clickMe.tap()
         
-        let callbackUrl = self.app.staticTexts[expectedCallbackUrl]
+        let callbackUrl = app.staticTexts[expectedCallbackUrl]
         waitForElementToAppear(callbackUrl)
     }
-
+    
     private func waitForElementToAppear(_ element: XCUIElement, fail: Bool = true) {
         let exists = element.waitForExistence(timeout: UITests.timeout)
         
-        if fail && !exists {
+        if fail, !exists {
             XCTFail("expected element: \(element)")
         }
     }
@@ -214,13 +214,12 @@ struct SpringBoardNotification {
     var buttonOpenSafari: XCUIElement {
         return springboard.buttons["Open Safari"].firstMatch
     }
-
+    
     var buttonOpenDeeplink: XCUIElement {
         return springboard.buttons["Open Deeplink"].firstMatch
     }
-
+    
     var buttonCustomAction: XCUIElement {
         return springboard.buttons["Custom Action"].firstMatch
     }
 }
-

@@ -11,7 +11,7 @@ import Foundation
 @objc class IterableInAppMessageMetadata: IterableNotificationMetadata {
     @objc var saveToInbox: Bool = false
     @objc var silentInbox: Bool = false
-    @objc var location: String? = nil
+    @objc var location: String?
     
     @objc public static func metadata(from inAppMessage: IterableInAppMessage, location: String? = nil) -> IterableInAppMessageMetadata {
         return IterableInAppMessageMetadata(from: inAppMessage, location: location)
@@ -20,11 +20,11 @@ import Foundation
     private init(from message: IterableInAppMessage, location: String? = nil) {
         super.init()
         
-        self.campaignId = NSNumber(value: (Int(message.campaignId) ?? 0))
-        self.messageId = message.messageId
+        campaignId = NSNumber(value: Int(message.campaignId) ?? 0)
+        messageId = message.messageId
         
-        self.saveToInbox = message.saveToInbox
-        self.silentInbox = message.saveToInbox && message.trigger.type == .never
+        saveToInbox = message.saveToInbox
+        silentInbox = message.saveToInbox && message.trigger.type == .never
         self.location = location
     }
 }
@@ -53,17 +53,15 @@ import Foundation
         let notificationInfo = NotificationHelper.inspect(notification: userInfo)
         
         switch notificationInfo {
-        case .iterable(let iterableNotification):
-            self.campaignId = iterableNotification.campaignId
-            self.templateId = iterableNotification.templateId
-            self.messageId = iterableNotification.messageId
-            self.isGhostPush = iterableNotification.isGhostPush
-            break
+        case let .iterable(iterableNotification):
+            campaignId = iterableNotification.campaignId
+            templateId = iterableNotification.templateId
+            messageId = iterableNotification.messageId
+            isGhostPush = iterableNotification.isGhostPush
         case .nonIterable:
             break
         case .silentPush:
-            self.isGhostPush = true
-            break
+            isGhostPush = true
         }
     }
     
@@ -74,8 +72,8 @@ import Foundation
 
 @objc class IterableNotificationMetadata: NSObject {
     @objc var campaignId: NSNumber = NSNumber(value: 0)
-    @objc var templateId: NSNumber? = nil
-    @objc var messageId: String? = nil
+    @objc var templateId: NSNumber?
+    @objc var messageId: String?
     
     @objc public func isProof() -> Bool {
         return campaignId.intValue == 0 && templateId?.intValue != 0

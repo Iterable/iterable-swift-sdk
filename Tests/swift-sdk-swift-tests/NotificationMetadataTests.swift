@@ -13,31 +13,31 @@ import XCTest
 class NotificationMetadataTests: XCTestCase {
     func testInvalidPayloads() {
         let invalidPayloads: [[AnyHashable: Any]] = [
-            //no "itbl"
+            // no "itbl"
             [:],
             
-            //no "isGhostPush"
+            // no "isGhostPush"
             ["itbl": ["campaignId": 0,
                       "templateId": 0]],
             
-            //no "templateId"
+            // no "templateId"
             ["itbl": ["campaignId": 0,
                       "isGhostPush": false]],
             
-            //"campaignId" not a number
+            // "campaignId" not a number
             ["itbl": ["campaignId": "hello campaignId :)",
                       "templateId": 0,
                       "isGhostPush": false]],
             
-            //"templateId" not a number
+            // "templateId" not a number
             ["itbl": ["campaignId": 0,
                       "templateId": "hello templateId :)",
                       "isGhostPush": false]],
             
-            //"isGhostPush" not a number
+            // "isGhostPush" not a number
             ["itbl": ["campaignId": 0,
                       "templateId": 0,
-                      "isGhostPush": "hahahhahhahaha"]]
+                      "isGhostPush": "hahahhahhahaha"]],
         ]
         
         for payload in invalidPayloads {
@@ -92,7 +92,7 @@ class NotificationMetadataTests: XCTestCase {
         let payload = ["itbl": ["campaignId": campaignId,
                                 "templateId": templateId,
                                 "isGhostPush": false,
-                                "messageId":"53082983"]]
+                                "messageId": "53082983"]]
         
         let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: payload)!
         

@@ -15,7 +15,7 @@ public extension Array {
 }
 
 public extension Dictionary where Key == AnyHashable, Value == Any {
-    func getStringValue(key: JsonKey, withDefault `default`: String? = nil) -> String? {
+    func getStringValue(key: JsonKey, withDefault default: String? = nil) -> String? {
         return self[key.rawValue] as? String ?? `default`
     }
     
@@ -52,9 +52,9 @@ public extension UIColor {
             return nil
         }
         
-        let r = Float(((int & 0xFF0000) >> 16)) / 255.0
-        let g = Float(((int & 0x00FF00) >> 8)) / 255.0
-        let b = Float(((int & 0x0000FF) >> 0)) / 255.0
+        let r = Float((int & 0xFF0000) >> 16) / 255.0
+        let g = Float((int & 0x00FF00) >> 8) / 255.0
+        let b = Float((int & 0x0000FF) >> 0) / 255.0
         
         self.init(red: CGFloat(r), green: CGFloat(g), blue: CGFloat(b), alpha: 1.0)
     }

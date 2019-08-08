@@ -4,8 +4,8 @@
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
-import XCTest
 import OHHTTPStubs
+import XCTest
 
 @testable import IterableSDK
 
@@ -35,10 +35,10 @@ class IterableAPIResponseTests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
         
-        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onSuccess { (json) in
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onSuccess { _ in
             xpectation.fulfill()
         }
-
+        
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
@@ -47,11 +47,11 @@ class IterableAPIResponseTests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200, data: nil)
         let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
         
-        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { (sendError) in
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { sendError in
             xpectation.fulfill()
             XCTAssert(sendError.reason!.lowercased().contains("no data"))
         }
-
+        
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
@@ -60,8 +60,8 @@ class IterableAPIResponseTests: XCTestCase {
         let data = "{'''}}".data(using: .utf8)!
         let networkSession = MockNetworkSession(statusCode: 200, data: data)
         let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
-
-        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { (sendError) in
+        
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { sendError in
             xpectation.fulfill()
             XCTAssert(sendError.reason!.lowercased().contains("could not parse json"))
         }
@@ -74,7 +74,7 @@ class IterableAPIResponseTests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 400)
         let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
         
-        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { (sendError) in
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { sendError in
             xpectation.fulfill()
             XCTAssert(sendError.reason!.lowercased().contains("invalid request"))
         }
@@ -84,10 +84,10 @@ class IterableAPIResponseTests: XCTestCase {
     
     func testResponseCode400WitMessage() {
         let xpectation = expectation(description: "400 with message")
-        let networkSession = MockNetworkSession(statusCode: 400, json: ["msg" : "Test error"])
+        let networkSession = MockNetworkSession(statusCode: 400, json: ["msg": "Test error"])
         let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
         
-        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { (sendError) in
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { sendError in
             xpectation.fulfill()
             XCTAssert(sendError.reason!.lowercased().contains("test error"))
         }
@@ -100,7 +100,7 @@ class IterableAPIResponseTests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 401)
         let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
         
-        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { (sendError) in
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { sendError in
             xpectation.fulfill()
             XCTAssert(sendError.reason!.lowercased().contains("invalid api key"))
         }
@@ -113,7 +113,7 @@ class IterableAPIResponseTests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 500)
         let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
         
-        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { (sendError) in
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { sendError in
             xpectation.fulfill()
             XCTAssert(sendError.reason!.lowercased().contains("internal server error"))
         }
@@ -126,7 +126,7 @@ class IterableAPIResponseTests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 302)
         let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
         
-        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { (sendError) in
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { sendError in
             xpectation.fulfill()
             XCTAssert(sendError.reason!.lowercased().contains("non-200 response"))
         }
@@ -139,7 +139,7 @@ class IterableAPIResponseTests: XCTestCase {
         let networkSession = NoNetworkNetworkSession()
         let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
         
-        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { (sendError) in
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { sendError in
             xpectation.fulfill()
             XCTAssert(sendError.reason!.lowercased().contains("nsurlerrordomain"))
         }
@@ -153,9 +153,9 @@ class IterableAPIResponseTests: XCTestCase {
         let responseTime = 2.0
         let timeout = 0.1
         
-        OHHTTPStubs.stubRequests(passingTest: { (request) -> Bool in
-            return true
-        }) { (request) -> OHHTTPStubsResponse in
+        OHHTTPStubs.stubRequests(passingTest: { (_) -> Bool in
+            true
+        }) { (_) -> OHHTTPStubsResponse in
             let response = OHHTTPStubsResponse(data: try! JSONSerialization.data(withJSONObject: [:], options: []), statusCode: 200, headers: nil)
             response.requestTime = 0.0
             response.responseTime = responseTime
@@ -168,12 +168,12 @@ class IterableAPIResponseTests: XCTestCase {
         let apiClient = createApiClient(networkSession: networkSession)
         var urlRequest = apiClient.convertToURLRequest(iterableRequest: iterableRequest)!
         urlRequest.timeoutInterval = timeout
-
-        NetworkHelper.sendRequest(urlRequest, usingSession: networkSession).onError { (sendError) in
+        
+        NetworkHelper.sendRequest(urlRequest, usingSession: networkSession).onError { sendError in
             xpectation.fulfill()
             XCTAssert(sendError.reason!.lowercased().contains("timed out"))
         }
-
+        
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
@@ -186,5 +186,5 @@ class IterableAPIResponseTests: XCTestCase {
                          authProvider: AuthProviderImpl(),
                          endPoint: .ITBL_ENDPOINT_API,
                          networkSession: networkSession)
-    }    
+    }
 }

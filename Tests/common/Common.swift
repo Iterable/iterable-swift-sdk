@@ -33,7 +33,7 @@ struct InAppTestHelper {
         switch result {
         case .failure:
             return nil
-        case .success(let message):
+        case let .success(message):
             return message
         }
     }

@@ -27,7 +27,7 @@ struct MockNotificationResponse: NotificationResponseProtocol {
 @objcMembers
 public class MockUrlDelegate: NSObject, IterableURLDelegate {
     // returnValue = true if we handle the url, else false
-    private override convenience init() {
+    private convenience override init() {
         self.init(returnValue: false)
     }
     
@@ -35,10 +35,10 @@ public class MockUrlDelegate: NSObject, IterableURLDelegate {
         self.returnValue = returnValue
     }
     
-    private (set) var returnValue: Bool
-    private (set) var url: URL?
-    private (set) var context: IterableActionContext?
-    var callback: ((URL, IterableActionContext) -> Void)? = nil
+    private(set) var returnValue: Bool
+    private(set) var url: URL?
+    private(set) var context: IterableActionContext?
+    var callback: ((URL, IterableActionContext) -> Void)?
     
     public func handle(iterableURL url: URL, inContext context: IterableActionContext) -> Bool {
         self.url = url
@@ -51,7 +51,7 @@ public class MockUrlDelegate: NSObject, IterableURLDelegate {
 @objcMembers
 public class MockCustomActionDelegate: NSObject, IterableCustomActionDelegate {
     // returnValue is reserved for future, don't rely on this
-    private override convenience init() {
+    private convenience override init() {
         self.init(returnValue: false)
     }
     
@@ -59,10 +59,10 @@ public class MockCustomActionDelegate: NSObject, IterableCustomActionDelegate {
         self.returnValue = returnValue
     }
     
-    private (set) var returnValue: Bool
-    private (set) var action: IterableAction?
-    private (set) var context: IterableActionContext?
-    var callback: ((String, IterableActionContext) -> Void)? = nil
+    private(set) var returnValue: Bool
+    private(set) var action: IterableAction?
+    private(set) var context: IterableActionContext?
+    var callback: ((String, IterableActionContext) -> Void)?
     
     public func handle(iterableCustomAction action: IterableAction, inContext context: IterableActionContext) -> Bool {
         self.action = action
@@ -73,15 +73,15 @@ public class MockCustomActionDelegate: NSObject, IterableCustomActionDelegate {
 }
 
 @objcMembers
-public class MockUrlOpener : NSObject, UrlOpenerProtocol {
-    @objc var ios10OpenedUrl: URL?
-    @objc var preIos10openedUrl: URL?
-    var callback: ((URL) -> Void)? = nil
+public class MockUrlOpener: NSObject, UrlOpenerProtocol {
+    var ios10OpenedUrl: URL?
+    var preIos10openedUrl: URL?
+    var callback: ((URL) -> Void)?
     
     public init(callback: ((URL) -> Void)? = nil) {
         self.callback = callback
     }
-        
+    
     public func open(url: URL) {
         callback?(url)
         if #available(iOS 10.0, *) {
@@ -130,7 +130,7 @@ public class MockPushTracker: NSObject, PushTrackerProtocol {
         self.campaignId = campaignId
         self.templateId = templateId
         self.messageId = messageId
-        self.appAlreadyRunnnig = appAlreadyRunning
+        appAlreadyRunnnig = appAlreadyRunning
         self.dataFields = dataFields
         self.onSuccess = onSuccess
         self.onFailure = onFailure
@@ -138,7 +138,7 @@ public class MockPushTracker: NSObject, PushTrackerProtocol {
 }
 
 @objc public class MockApplicationStateProvider: NSObject, ApplicationStateProviderProtocol {
-    private override convenience init() {
+    private convenience override init() {
         self.init(applicationState: .active)
     }
     
@@ -164,7 +164,7 @@ class MockNetworkSession: NetworkSessionProtocol {
                   error: nil)
     }
     
-    convenience init(statusCode: Int, json: [AnyHashable : Any], error: Error? = nil) {
+    convenience init(statusCode: Int, json: [AnyHashable: Any], error: Error? = nil) {
         self.init(statusCode: statusCode,
                   data: json.toJsonData(),
                   error: error)
@@ -201,7 +201,7 @@ class MockNetworkSession: NetworkSessionProtocol {
     }
     
     static func json(fromData data: Data) -> [AnyHashable: Any] {
-        return try! JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable : Any]
+        return try! JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
     }
 }
 
@@ -213,7 +213,7 @@ class NoNetworkNetworkSession: NetworkSessionProtocol {
             completionHandler(try! JSONSerialization.data(withJSONObject: [:], options: []), response, error)
         }
     }
-
+    
     func makeDataRequest(with url: URL, completionHandler: @escaping NetworkSessionProtocol.CompletionHandler) {
         DispatchQueue.main.async {
             let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: [:])
@@ -237,7 +237,7 @@ class MockInAppFetcher: InAppFetcherProtocol {
         ITBInfo()
         
         syncCallback?()
-
+        
         return Promise(value: messagesMap.values)
     }
     
@@ -249,32 +249,32 @@ class MockInAppFetcher: InAppFetcherProtocol {
         messages.forEach {
             messagesMap[$0.messageId] = $0
         }
-
+        
         let result = Promise<Bool, Error>()
-
-        (IterableAPI.inAppManager as! IterableInAppManagerProtocolInternal).scheduleSync().onSuccess { (_) in
+        
+        (IterableAPI.inAppManager as! IterableInAppManagerProtocolInternal).scheduleSync().onSuccess { _ in
             result.resolve(with: true)
         }
-
+        
         return result
     }
     
-    @discardableResult func mockInAppPayloadFromServer(_ payload: [AnyHashable : Any]) -> Future<Bool, Error> {
+    @discardableResult func mockInAppPayloadFromServer(_ payload: [AnyHashable: Any]) -> Future<Bool, Error> {
         ITBInfo()
         return mockMessagesAvailableFromServer(messages: InAppTestHelper.inAppMessages(fromPayload: payload))
     }
-
+    
     private var messagesMap = OrderedDictionary<String, IterableInAppMessage>()
 }
 
-class MockInAppDisplayer : InAppDisplayerProtocol {
+class MockInAppDisplayer: InAppDisplayerProtocol {
     // when a message is shown this is called back
     var onShow: Promise<IterableInAppMessage, IterableError> = Promise<IterableInAppMessage, IterableError>()
     
     func isShowingInApp() -> Bool {
         return showing
     }
-
+    
     // This is not resolved until a url is clicked.
     func showInApp(message: IterableInAppMessage) -> ShowResult {
         guard showing == false else {
@@ -284,10 +284,10 @@ class MockInAppDisplayer : InAppDisplayerProtocol {
         
         result = Promise<URL, IterableError>()
         
-        self.showing = true
-
-        self.onShow.resolve(with: message)
-
+        showing = true
+        
+        onShow.resolve(with: message)
+        
         return .shown(result)
     }
     
@@ -318,28 +318,26 @@ class MockInAppDelegate: IterableInAppDelegate {
 }
 
 class MockNotificationCenter: NotificationCenterProtocol {
-    func addObserver(_ observer: Any, selector: Selector, name: Notification.Name?, object: Any?) {
+    func addObserver(_ observer: Any, selector: Selector, name: Notification.Name?, object _: Any?) {
         observers.append(Observer(observer: observer as! NSObject, notificationName: name!, selector: selector))
     }
     
-    func removeObserver(_ observer: Any) {
-        
-    }
+    func removeObserver(_: Any) {}
     
-    func post(name: Notification.Name, object: Any?, userInfo: [AnyHashable: Any]?) {
-        _ = observers.filter( { $0.notificationName == name } ).map {
+    func post(name: Notification.Name, object _: Any?, userInfo _: [AnyHashable: Any]?) {
+        _ = observers.filter { $0.notificationName == name }.map {
             _ = $0.observer.perform($0.selector, with: Notification(name: name))
         }
     }
     
     func addCallback(forNotification notification: Notification.Name, callback: @escaping () -> Void) {
-        class CallbackClass : NSObject {
+        class CallbackClass: NSObject {
             let callback: () -> Void
             init(callback: @escaping () -> Void) {
                 self.callback = callback
             }
             
-            @objc func onNotification(notification: Notification) {
+            @objc func onNotification(notification _: Notification) {
                 callback()
             }
         }
@@ -347,7 +345,7 @@ class MockNotificationCenter: NotificationCenterProtocol {
         let callbackClass = CallbackClass(callback: callback)
         addObserver(callbackClass, selector: #selector(callbackClass.onNotification(notification:)), name: notification, object: self)
     }
-
+    
     private class Observer: NSObject {
         let observer: NSObject
         let notificationName: Notification.Name

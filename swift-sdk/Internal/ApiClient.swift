@@ -123,19 +123,19 @@ class ApiClient: ApiClientProtocol {
     }
     
     func convertToURLRequest(iterableRequest: IterableRequest) -> URLRequest? {
-        switch (iterableRequest) {
-        case .get(let getRequest):
+        switch iterableRequest {
+        case let .get(getRequest):
             return IterableRequestUtil.createGetRequest(forApiEndPoint: endPoint, path: getRequest.path, args: getRequest.args)
-        case .post(let postRequest):
+        case let .post(postRequest):
             return IterableRequestUtil.createPostRequest(forApiEndPoint: endPoint, path: postRequest.path, apiKey: apiKey, args: postRequest.args, body: postRequest.body)
         }
     }
     
     func send(iterableRequestResult result: Result<IterableRequest, IterableError>) -> Future<SendRequestValue, SendRequestError> {
         switch result {
-        case .success(let iterableRequest):
+        case let .success(iterableRequest):
             return send(iterableRequest: iterableRequest)
-        case .failure(let iterableError):
+        case let .failure(iterableError):
             return SendRequestError.createErroredFuture(reason: iterableError.localizedDescription)
         }
     }
