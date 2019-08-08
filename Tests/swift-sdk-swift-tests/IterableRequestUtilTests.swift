@@ -10,7 +10,7 @@ import XCTest
 
 class IterableRequestUtilTests: XCTestCase {
     func testDictToJsonData() {
-        let args: [AnyHashable : Any] = [
+        let args: [AnyHashable: Any] = [
             "email": "ilya@iterable.com",
             "device": [
                 "token": "foo",
@@ -23,20 +23,20 @@ class IterableRequestUtilTests: XCTestCase {
                     "identifierForVendor": "ham",
                     "systemName": "iterable",
                     "systemVersion": "is",
-                    "model": "awesome"
-                ]
-            ]
+                    "model": "awesome",
+                ],
+            ],
         ]
         
         let data = IterableRequestUtil.dictToJsonData(args)!
-        let jsonObject = try! JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable : Any]
+        let jsonObject = try! JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
         XCTAssertTrue(NSDictionary(dictionary: args).isEqual(to: jsonObject))
     }
     
     func testGetRequest() {
         let apiEndPoint = "https://somewhere.com/"
         let path = "path"
-        let args = ["arg1" : "value1", "arg2" : "value2"]
+        let args = ["arg1": "value1", "arg2": "value2"]
         let request = IterableRequestUtil.createGetRequest(forApiEndPoint: apiEndPoint, path: path, args: args)!
         
         let queryParams = [
@@ -49,7 +49,7 @@ class IterableRequestUtilTests: XCTestCase {
     func testGetRequestWithPlusSignInEmail() {
         let apiEndPoint = "https://somewhere.com/"
         let path = "path"
-        let args = ["email" : "user+1@somewhere.com"]
+        let args = ["email": "user+1@somewhere.com"]
         let request = IterableRequestUtil.createGetRequest(forApiEndPoint: apiEndPoint, path: path, args: args)!
         let requestString = String(describing: request)
         XCTAssertEqual(requestString, "https://somewhere.com/path?email=user%2B1@somewhere.com")
@@ -58,8 +58,8 @@ class IterableRequestUtilTests: XCTestCase {
     func testPostRequest() {
         let apiEndPoint = "https://somewhere.com/"
         let path = "path"
-        let args = ["arg1" : "value1", "arg2" : "value2"]
-        let body = ["var1" : "val1", "var2" : "val2"]
+        let args = ["arg1": "value1", "arg2": "value2"]
+        let body = ["var1": "val1", "var2": "val2"]
         let request = IterableRequestUtil.createPostRequest(forApiEndPoint: apiEndPoint, path: path, apiKey: "api_key_here", args: args, body: body)!
         
         let queryParams = [
@@ -70,7 +70,7 @@ class IterableRequestUtilTests: XCTestCase {
         
         let bodyData = request.httpBody!
         
-        let bodyFromRequest = try! JSONSerialization.jsonObject(with: bodyData, options: []) as! [AnyHashable : Any]
+        let bodyFromRequest = try! JSONSerialization.jsonObject(with: bodyData, options: []) as! [AnyHashable: Any]
         
         TestUtils.validateElementPresent(withName: "var1", andValue: "val1", inDictionary: bodyFromRequest)
         TestUtils.validateElementPresent(withName: "var2", andValue: "val2", inDictionary: bodyFromRequest)

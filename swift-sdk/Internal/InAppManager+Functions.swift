@@ -23,11 +23,11 @@ struct MessagesProcessor {
     
     mutating func processMessages() -> ProcessMessagesResult {
         ITBDebug()
-        switch (processNextMessage()) {
-        case .show(let message):
+        switch processNextMessage() {
+        case let .show(message):
             updateMessage(message, didProcessTrigger: true, consumed: !message.saveToInbox)
             return .show(message: message, messagesMap: messagesMap)
-        case .skip(let message):
+        case let .skip(message):
             updateMessage(message, didProcessTrigger: true)
             return processMessages()
         case .none, .wait:
@@ -85,7 +85,7 @@ struct MessagesProcessor {
             toUpdate.consumed = consumed
         }
         
-        self.messagesMap.updateValue(toUpdate, forKey: message.messageId)
+        messagesMap.updateValue(toUpdate, forKey: message.messageId)
     }
     
     private let inAppDelegate: IterableInAppDelegate
@@ -108,13 +108,13 @@ struct MessagesObtainedHandler {
     
     mutating func handle() -> MergeMessagesResult {
         // Remove messages that are no present in server
-        let deletedInboxCount = self.removeDeletedMessages(messagesFromServer: messages)
+        let deletedInboxCount = removeDeletedMessages(messagesFromServer: messages)
         
         // add new ones
-        let addedInboxCount = self.addNewMessages(messagesFromServer: messages)
+        let addedInboxCount = addNewMessages(messagesFromServer: messages)
         
         return MergeMessagesResult(inboxChanged: deletedInboxCount + addedInboxCount > 0,
-                                            messagesMap: self.messagesMap)
+                                   messagesMap: messagesMap)
     }
     
     // return count of deleted inbox messages
@@ -134,7 +134,7 @@ struct MessagesObtainedHandler {
     
     // given `messages` coming for server, find messages that need to be removed
     private func getRemovedMessages(messagesFromServer messages: [IterableInAppMessage]) -> [IterableInAppMessage] {
-        return messagesMap.values.reduce(into: [IterableInAppMessage]()) { (result, message) in
+        return messagesMap.values.reduce(into: [IterableInAppMessage]()) { result, message in
             if !messages.contains(where: { $0.messageId == message.messageId }) {
                 result.append(message)
             }

@@ -4,8 +4,8 @@
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
-import XCTest
 import Foundation
+import XCTest
 
 @testable import IterableSDK
 
@@ -36,7 +36,7 @@ struct TestUtils {
         XCTAssertNil(dict[name])
     }
     
-    static func validateMatch<T:Equatable>(keyPath: KeyPath, value: T, inDictionary dict: [String: Any], message: String? = nil) {
+    static func validateMatch<T: Equatable>(keyPath: KeyPath, value: T, inDictionary dict: [String: Any], message: String? = nil) {
         if let message = message {
             XCTAssertEqual(dict[keyPath: keyPath] as? T, value, message)
         } else {
@@ -44,7 +44,7 @@ struct TestUtils {
         }
     }
     
-    static func validateExists<T:Equatable>(keyPath: KeyPath, type: T.Type, inDictionary dict: [String: Any], message: String? = nil) {
+    static func validateExists<T: Equatable>(keyPath: KeyPath, type _: T.Type, inDictionary dict: [String: Any], message: String? = nil) {
         if let message = message {
             XCTAssertNotNil(dict[keyPath: keyPath] as? T, message)
         } else {
@@ -83,7 +83,7 @@ struct TestUtils {
     }
     
     private static func validateQueryParameters(inUrlComponents urlComponents: URLComponents, queryParams: [(name: String, value: String)]) {
-        queryParams.forEach { (name, value) in
+        queryParams.forEach { name, value in
             validateQueryParameter(inUrlComponents: urlComponents, withName: name, andValue: value)
         }
     }
@@ -96,7 +96,7 @@ struct TestUtils {
     private static func findQueryItem(inUrlComponents urlComponents: URLComponents, withName name: String) -> URLQueryItem {
         return urlComponents.queryItems!.first { (queryItem) -> Bool in
             queryItem.name == name
-            }!
+        }!
     }
 }
 
@@ -135,20 +135,18 @@ extension String: StringKey {
 
 extension Dictionary where Key: StringKey {
     subscript(keyPath keyPath: KeyPath) -> Any? {
-        get {
-            switch keyPath.firstAndRest() {
-            case nil:
+        switch keyPath.firstAndRest() {
+        case nil:
+            return nil
+        case let (first, rest)? where rest.isEmpty:
+            // nothing else left
+            return self[Key(string: first)]
+        case let (first, rest)?:
+            let key = Key(string: first)
+            if let value = self[key] as? [Key: Any] {
+                return value[keyPath: rest]
+            } else {
                 return nil
-            case let (first, rest)? where rest.isEmpty:
-                // nothing else left
-                return self[Key(string: first)]
-            case let (first, rest)?:
-                let key = Key(string: first)
-                if let value = self[key] as? [Key: Any] {
-                    return value[keyPath: rest]
-                } else {
-                    return nil
-                }
             }
         }
     }

@@ -63,7 +63,7 @@ struct RequestCreator {
             .ITBL_DEVICE_USER_INTERFACE: RequestCreator.userInterfaceIdiomEnumToString(device.userInterfaceIdiom),
             .ITBL_DEVICE_SYSTEM_NAME: device.systemName,
             .ITBL_DEVICE_SYSTEM_VERSION: device.systemVersion,
-            .ITBL_DEVICE_MODEL: device.model
+            .ITBL_DEVICE_MODEL: device.model,
         ]
         
         if let identifierForVendor = device.identifierForVendor?.uuidString {
@@ -94,14 +94,14 @@ struct RequestCreator {
             AnyHashable.ITBL_KEY_TOKEN: hexToken,
             AnyHashable.ITBL_KEY_PLATFORM: pushServicePlatformString,
             AnyHashable.ITBL_KEY_APPLICATION_NAME: appName,
-            AnyHashable.ITBL_KEY_DATA_FIELDS: dataFields
+            AnyHashable.ITBL_KEY_DATA_FIELDS: dataFields,
         ]
         
         var body = [AnyHashable: Any]()
         body[.ITBL_KEY_DEVICE] = deviceDictionary
         addEmailOrUserId(dict: &body)
         
-        if auth.email == nil && auth.userId != nil {
+        if auth.email == nil, auth.userId != nil {
             body[.ITBL_KEY_PREFER_USER_ID] = true
         }
         
@@ -114,7 +114,7 @@ struct RequestCreator {
         body[.ITBL_KEY_MERGE_NESTED] = NSNumber(value: mergeNestedObjects)
         addEmailOrUserId(dict: &body)
         
-        if auth.email == nil && auth.userId != nil {
+        if auth.email == nil, auth.userId != nil {
             body[.ITBL_KEY_PREFER_USER_ID] = true
         }
         

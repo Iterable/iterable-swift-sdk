@@ -57,7 +57,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
                                                                       trackParams: trackParams,
                                                                       isModal: true)
         let createResult = IterableHtmlMessageViewController.create(parameters: parameters)
-        let baseNotification =  createResult.viewController
+        let baseNotification = createResult.viewController
         
         topViewController.definesPresentationContext = true
         baseNotification.view.backgroundColor = UIColor(white: 0, alpha: CGFloat(backgroundAlpha))
@@ -108,7 +108,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
         }
         
         var topViewController = rootViewController
-        while (topViewController.presentedViewController != nil) {
+        while topViewController.presentedViewController != nil {
             topViewController = topViewController.presentedViewController!
         }
         
@@ -138,7 +138,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
      - remarks:            passes the string of the button clicked to the callbackBlock
      */
     private static func addAlertActionButton(alertController: UIAlertController, keyString: String, callbackBlock: ITEActionBlock?) {
-        let button = UIAlertAction(title: keyString, style: .default) { (action) in
+        let button = UIAlertAction(title: keyString, style: .default) { _ in
             alertController.dismiss(animated: false)
             callbackBlock?(keyString)
         }

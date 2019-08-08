@@ -52,7 +52,7 @@ import UIKit
             "id": id,
             "name": name,
             "price": price,
-            "quantity": quantity
+            "quantity": quantity,
         ]
     }
 }

@@ -122,4 +122,3 @@ struct NotificationHelper {
         case messageId
     }
 }
-

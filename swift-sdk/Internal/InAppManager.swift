@@ -12,8 +12,7 @@ protocol NotificationCenterProtocol {
     func post(name: Notification.Name, object: Any?, userInfo: [AnyHashable: Any]?)
 }
 
-extension NotificationCenter: NotificationCenterProtocol {
-}
+extension NotificationCenter: NotificationCenterProtocol {}
 
 // This is internal. Do not expose
 
@@ -54,12 +53,12 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         
         super.init()
         
-        self.initializeMessagesMap()
-
+        initializeMessagesMap()
+        
         self.notificationCenter.addObserver(self,
-                                       selector: #selector(onAppEnteredForeground(notification:)),
-                                       name: UIApplication.didBecomeActiveNotification,
-                                       object: nil)
+                                            selector: #selector(onAppEnteredForeground(notification:)),
+                                            name: UIApplication.didBecomeActiveNotification,
+                                            object: nil)
     }
     
     deinit {
@@ -69,8 +68,8 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     
     func start() {
         ITBInfo()
-        if self.messagesMap.values.filter({$0.saveToInbox == true}).count > 0 {
-            self.callbackQueue.async {
+        if messagesMap.values.filter({ $0.saveToInbox == true }).count > 0 {
+            callbackQueue.async {
                 self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
             }
         }
@@ -80,12 +79,12 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     func getMessages() -> [IterableInAppMessage] {
         ITBInfo()
         
-        return Array(self.messagesMap.values.filter { InAppManager.isValid(message: $0, currentDate: self.dateProvider.currentDate)})
+        return Array(messagesMap.values.filter { InAppManager.isValid(message: $0, currentDate: self.dateProvider.currentDate) })
     }
     
     func getInboxMessages() -> [IterableInAppMessage] {
         ITBInfo()
-        return Array(self.messagesMap.values.filter { InAppManager.isValid(message: $0, currentDate: self.dateProvider.currentDate) && $0.saveToInbox == true})
+        return Array(messagesMap.values.filter { InAppManager.isValid(message: $0, currentDate: self.dateProvider.currentDate) && $0.saveToInbox == true })
     }
     
     func getUnreadInboxMessagesCount() -> Int {
@@ -104,7 +103,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         let createResult = IterableHtmlMessageViewController.create(parameters: parameters)
         let viewController = createResult.viewController
         
-        createResult.futureClickedURL.onSuccess { (url) in
+        createResult.futureClickedURL.onSuccess { url in
             ITBInfo()
             // in addition perform action or url delegate task
             self.handle(clickedUrl: url, forMessage: message)
@@ -121,7 +120,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     
     func show(message: IterableInAppMessage, consume: Bool = true, callback: ITBURLCallback? = nil) {
         ITBInfo()
-
+        
         // This is public (via public protocol implementation), so make sure we call from Main Thread
         DispatchQueue.main.async {
             _ = self.showInternal(message: message, consume: consume, callback: callback)
@@ -130,11 +129,11 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     
     func remove(message: IterableInAppMessage) {
         ITBInfo()
-
+        
         removePrivate(message: message)
     }
     
-    func set(read: Bool, forMessage message: IterableInAppMessage) {
+    func set(read _: Bool, forMessage message: IterableInAppMessage) {
         updateMessage(message, read: true).onSuccess { _ in
             self.callbackQueue.async {
                 self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
@@ -159,7 +158,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         return true
     }
     
-    @objc private func onAppEnteredForeground(notification: Notification) {
+    @objc private func onAppEnteredForeground(notification _: Notification) {
         ITBInfo()
         let waitTime = InAppManager.getWaitTimeInterval(fromLastTime: lastSyncTime, currentTime: dateProvider.currentDate, gap: moveToForegroundSyncInterval)
         if waitTime <= 0 {
@@ -168,39 +167,39 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
             ITBInfo("can't sync now, need to wait: \(waitTime)")
         }
     }
-
+    
     private func synchronize() -> Future<Bool, Error> {
         ITBInfo()
         return
             fetcher.fetch()
-                .map { self.mergeMessages($0) }
-                .flatMap { self.processMergedMessages($0) }
+            .map { self.mergeMessages($0) }
+            .flatMap { self.processMergedMessages($0) }
     }
     
     // messages are new messages coming from the server
     // This function
     private func mergeMessages(_ messages: [IterableInAppMessage]) -> MergeMessagesResult {
-        var messagesObtainedHandler = MessagesObtainedHandler(messagesMap: self.messagesMap, messages: messages)
+        var messagesObtainedHandler = MessagesObtainedHandler(messagesMap: messagesMap, messages: messages)
         return messagesObtainedHandler.handle()
     }
-
+    
     private func processMergedMessages(_ mergeMessagesResult: MergeMessagesResult) -> Future<Bool, Error> {
         let result = Promise<Bool, Error>()
         DispatchQueue.main.async {
             // we can only check on main thread
             if self.applicationStateProvider.applicationState == .active {
-                self.processMessages(messagesMap: mergeMessagesResult.messagesMap).onSuccess { (processMessagesResult) in
+                self.processMessages(messagesMap: mergeMessagesResult.messagesMap).onSuccess { processMessagesResult in
                     self.onMessagesProcessed(processMessagesResult)
-
+                    
                     self.finishSync(inboxChanged: mergeMessagesResult.inboxChanged)
-
+                    
                     result.resolve(with: true)
                 }
             } else {
                 self.messagesMap = mergeMessagesResult.messagesMap
-
+                
                 self.finishSync(inboxChanged: mergeMessagesResult.inboxChanged)
-
+                
                 result.resolve(with: true)
             }
         }
@@ -210,24 +209,24 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     private func finishSync(inboxChanged: Bool) {
         ITBInfo()
         if inboxChanged {
-            self.callbackQueue.async {
+            callbackQueue.async {
                 self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
             }
         }
         
-        self.persister.persist(self.messagesMap.values)
-        self.lastSyncTime = self.dateProvider.currentDate
+        persister.persist(messagesMap.values)
+        lastSyncTime = dateProvider.currentDate
     }
     
     // Not a pure function. This has side effect of showing the message
     private func onMessagesProcessed(_ processMessagesResult: ProcessMessagesResult) {
-        self.messagesMap = getMessagesMap(fromProcessMessagesResult: processMessagesResult)
+        messagesMap = getMessagesMap(fromProcessMessagesResult: processMessagesResult)
         showMessage(fromProcessMessagesResult: processMessagesResult)
     }
     
     private func getMessagesMap(fromProcessMessagesResult processMessagesResult: ProcessMessagesResult) -> OrderedDictionary<String, IterableInAppMessage> {
         switch processMessagesResult {
-        case .noShow(messagesMap: let messagesMap):
+        case let .noShow(messagesMap: messagesMap):
             return messagesMap
         case .show(message: _, messagesMap: let messagesMap):
             return messagesMap
@@ -255,21 +254,21 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
                               consume: Bool,
                               callback: ITBURLCallback? = nil) {
         ITBInfo()
-
+        
         guard Thread.isMainThread else {
             ITBError("This must be called from the main thread")
             return
         }
-
+        
         switch displayer.showInApp(message: message) {
-        case .notShown(let reason):
+        case let .notShown(reason):
             ITBError("Could not show message: \(reason)")
-        case .shown(let futureClickedURL):
+        case let .shown(futureClickedURL):
             // set read
             set(read: true, forMessage: message)
             
             updateMessage(message, didProcessTrigger: true, consumed: consume)
-
+            
             futureClickedURL.onSuccess { url in
                 // call the client callback, if present
                 _ = callback?(url)
@@ -293,11 +292,11 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     // This method schedules next triggered message after showing a message
     private func scheduleNextInAppMessage() {
         ITBDebug()
-
-        let waitTimeInterval = self.getInAppShowingWaitTimeInterval()
+        
+        let waitTimeInterval = getInAppShowingWaitTimeInterval()
         if waitTimeInterval > 0 {
             ITBDebug("Need to wait for: \(waitTimeInterval)")
-            self.scheduleQueue.asyncAfter(deadline: .now() + waitTimeInterval) {
+            scheduleQueue.asyncAfter(deadline: .now() + waitTimeInterval) {
                 self.scheduleNextInAppMessage()
             }
         } else {
@@ -324,7 +323,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         }
         return result
     }
-
+    
     private func updateMessageSync(_ message: IterableInAppMessage,
                                    read: Bool? = nil,
                                    didProcessTrigger: Bool? = nil,
@@ -340,10 +339,10 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         if let consumed = consumed {
             toUpdate.consumed = consumed
         }
-        self.messagesMap.updateValue(toUpdate, forKey: message.messageId)
-        self.persister.persist(self.messagesMap.values)
+        messagesMap.updateValue(toUpdate, forKey: message.messageId)
+        persister.persist(messagesMap.values)
     }
-
+    
     // How long do we have to wait before showing the message
     // > 0 means wait, otherwise we are good to show
     private func getInAppShowingWaitTimeInterval() -> TimeInterval {
@@ -373,17 +372,14 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
             return
         }
         
-        switch (inAppClickedUrl) {
-        case .iterableCustomAction(name: let iterableCustomActionName):
+        switch inAppClickedUrl {
+        case let .iterableCustomAction(name: iterableCustomActionName):
             handleIterableCustomAction(name: iterableCustomActionName, forMessage: message)
-            break
-        case .customAction(name: let customActionName):
+        case let .customAction(name: customActionName):
             handleUrlOrAction(urlOrAction: customActionName)
-            break
-        case .localResource(name: let localResourceName):
+        case let .localResource(name: localResourceName):
             handleUrlOrAction(urlOrAction: localResourceName)
-            break
-        case .regularUrl(_):
+        case .regularUrl:
             handleUrlOrAction(urlOrAction: theUrl.absoluteString)
         }
     }
@@ -392,11 +388,10 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         guard let iterableCustomActionName = IterableCustomActionName(rawValue: name) else {
             return
         }
-
+        
         switch iterableCustomActionName {
         case .delete:
             remove(message: message)
-            break
         case .dismiss:
             break
         }
@@ -432,18 +427,18 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
             messagesMap[message.messageId] = message
         }
     }
-
+    
     // From client side
     private func removePrivate(message: IterableInAppMessage) {
         ITBInfo()
         
         updateMessage(message, didProcessTrigger: true, consumed: true)
         apiClient?.inAppConsume(messageId: message.messageId)
-        self.callbackQueue.async {
+        callbackQueue.async {
             self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
         }
     }
-
+    
     private static func isExpired(message: IterableInAppMessage, currentDate: Date) -> Bool {
         guard let expiresAt = message.expiresAt else {
             return false
@@ -470,7 +465,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     private var messagesMap = OrderedDictionary<String, IterableInAppMessage>() // This is mutable
     private let dateProvider: DateProviderProtocol
     private let retryInterval: TimeInterval // in seconds, if a message is already showing how long to wait?
-    private var lastDismissedTime: Date? = nil
+    private var lastDismissedTime: Date?
     
     private let updateQueue = DispatchQueue(label: "UpdateQueue")
     private let scheduleQueue = DispatchQueue(label: "ScheduleQueue")
@@ -478,7 +473,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     private let syncQueue = DispatchQueue(label: "SyncQueue")
     
     private var syncResult: Future<Bool, Error>?
-    private var lastSyncTime: Date? = nil
+    private var lastSyncTime: Date?
     private let moveToForegroundSyncInterval: Double = 1.0 * 60.0 // don't sync within sixty seconds
 }
 
@@ -487,7 +482,7 @@ extension InAppManager: InAppNotifiable {
         ITBInfo()
         
         let result = Promise<Bool, Error>()
-        self.syncQueue.async {
+        syncQueue.async {
             if let syncResult = self.syncResult {
                 if syncResult.isResolved() {
                     self.syncResult = self.synchronize()
@@ -511,12 +506,12 @@ extension InAppManager: InAppNotifiable {
         ITBInfo()
         
         updateQueue.async {
-            if let _ = self.messagesMap.filter({$0.key == messageId}).first {
+            if let _ = self.messagesMap.filter({ $0.key == messageId }).first {
                 self.messagesMap.removeValue(forKey: messageId)
                 self.persister.persist(self.messagesMap.values)
             }
         }
-        self.callbackQueue.async {
+        callbackQueue.async {
             self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
         }
     }

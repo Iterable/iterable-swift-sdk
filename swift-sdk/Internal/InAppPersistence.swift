@@ -98,7 +98,7 @@ extension IterableInAppTriggerType {
 extension IterableInAppTrigger {
     static let defaultTrigger = IterableInAppTrigger(dict: createDefaultTriggerDict())
     static let undefinedTrigger = IterableInAppTrigger(dict: createUndefinedTriggerDict())
-
+    
     private static func createDefaultTriggerDict() -> [AnyHashable: Any] {
         return [.ITBL_IN_APP_TRIGGER_TYPE: String(describing: IterableInAppTriggerType.defaultTriggerType)]
     }
@@ -118,19 +118,19 @@ extension IterableInAppTrigger: Codable {
             self.init(dict: IterableInAppTrigger.createDefaultTriggerDict())
             return
         }
-
+        
         guard let data = try? container.decode(Data.self, forKey: .data) else {
             self.init(dict: IterableInAppTrigger.createDefaultTriggerDict())
             return
         }
-
+        
         do {
             if let dict = try JSONSerialization.jsonObject(with: data, options: []) as? [AnyHashable: Any] {
                 self.init(dict: dict)
             } else {
                 self.init(dict: IterableInAppTrigger.createDefaultTriggerDict())
             }
-        } catch (let error) {
+        } catch {
             ITBError(error.localizedDescription)
             self.init(dict: IterableInAppTrigger.createDefaultTriggerDict())
         }
@@ -251,7 +251,7 @@ extension IterableInAppMessage: Codable {
         let didProcessTrigger = (try? container.decode(Bool.self, forKey: .didProcessTrigger)) ?? false
         let consumed = (try? container.decode(Bool.self, forKey: .consumed)) ?? false
         let read = (try? container.decode(Bool.self, forKey: .read)) ?? false
-
+        
         let trigger = (try? container.decode(IterableInAppTrigger.self, forKey: .trigger)) ?? .undefinedTrigger
         let content = IterableInAppMessage.decodeContent(from: container)
         
@@ -269,7 +269,7 @@ extension IterableInAppMessage: Codable {
         self.consumed = consumed
         self.read = read
     }
-
+    
     public func encode(to encoder: Encoder) {
         var container = encoder.container(keyedBy: CodingKeys.self)
         
@@ -287,7 +287,7 @@ extension IterableInAppMessage: Codable {
         if let inboxMetadata = inboxMetadata {
             try? container.encode(inboxMetadata, forKey: .inboxMetadata)
         }
-
+        
         IterableInAppMessage.encode(content: content, inContainer: &container)
     }
     
@@ -359,7 +359,7 @@ class InAppFilePersister: InAppPersistenceProtocol {
         guard let data = FileHelper.read(filename: filename, ext: ext) else {
             return []
         }
-
+        
         return (try? JSONDecoder().decode([IterableInAppMessage].self, from: data)) ?? []
     }
     

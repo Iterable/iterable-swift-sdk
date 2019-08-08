@@ -11,7 +11,7 @@ import UserNotifications
 
 // Returns whether notifications are enabled
 protocol NotificationStateProviderProtocol {
-    var notificationsEnabled: Promise<Bool, Error> {get}
+    var notificationsEnabled: Promise<Bool, Error> { get }
     func registerForRemoteNotifications()
 }
 
@@ -38,7 +38,7 @@ struct SystemNotificationStateProvider: NotificationStateProviderProtocol {
         
         return result
     }
-
+    
     func registerForRemoteNotifications() {
         DispatchQueue.main.async {
             UIApplication.shared.registerForRemoteNotifications()
@@ -48,9 +48,9 @@ struct SystemNotificationStateProvider: NotificationStateProviderProtocol {
 
 @available(iOS 10.0, *)
 public protocol NotificationResponseProtocol {
-    var userInfo: [AnyHashable: Any] {get}
-    var actionIdentifier: String {get}
-    var textInputResponse: UNTextInputNotificationResponse? {get}
+    var userInfo: [AnyHashable: Any] { get }
+    var actionIdentifier: String { get }
+    var textInputResponse: UNTextInputNotificationResponse? { get }
 }
 
 @available(iOS 10.0, *)
@@ -76,7 +76,7 @@ struct UserNotificationResponse: NotificationResponseProtocol {
 
 /// Abstraction of PushTacking
 @objc public protocol PushTrackerProtocol: class {
-    @objc var lastPushPayload: [AnyHashable: Any]? {get}
+    @objc var lastPushPayload: [AnyHashable: Any]? { get }
     @objc func trackPushOpen(_ userInfo: [AnyHashable: Any])
     @objc func trackPushOpen(_ userInfo: [AnyHashable: Any], dataFields: [AnyHashable: Any]?)
     @objc func trackPushOpen(_ userInfo: [AnyHashable: Any], dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?)
@@ -86,11 +86,10 @@ struct UserNotificationResponse: NotificationResponseProtocol {
 
 /// Abstraction of applicationState
 @objc public protocol ApplicationStateProviderProtocol: class {
-    @objc var applicationState: UIApplication.State {get}
+    @objc var applicationState: UIApplication.State { get }
 }
 
-extension UIApplication: ApplicationStateProviderProtocol {
-}
+extension UIApplication: ApplicationStateProviderProtocol {}
 
 struct IterableAppIntegrationInternal {
     private let tracker: PushTrackerProtocol
@@ -98,7 +97,7 @@ struct IterableAppIntegrationInternal {
     private let customActionDelegate: IterableCustomActionDelegate?
     private let urlOpener: UrlOpenerProtocol?
     private let inAppNotifiable: InAppNotifiable
-
+    
     init(tracker: PushTrackerProtocol,
          urlDelegate: IterableURLDelegate? = nil,
          customActionDelegate: IterableCustomActionDelegate? = nil,
@@ -164,7 +163,7 @@ struct IterableAppIntegrationInternal {
      * automatically if you pass one. If you handle completionHandler in the app code, pass a nil value to this argument.
      */
     @available(iOS 10.0, *)
-    func userNotificationCenter(_ center: UNUserNotificationCenter?, didReceive response: NotificationResponseProtocol, withCompletionHandler completionHandler: (() -> Void)?) {
+    func userNotificationCenter(_: UNUserNotificationCenter?, didReceive response: NotificationResponseProtocol, withCompletionHandler completionHandler: (() -> Void)?) {
         ITBInfo()
         let userInfo = response.userInfo
         // Ignore the notification if we've already processed it from launchOptions while initializing SDK
@@ -176,10 +175,10 @@ struct IterableAppIntegrationInternal {
             completionHandler?()
             return
         }
-
+        
         let dataFields = IterableAppIntegrationInternal.createIterableDataFields(actionIdentifier: response.actionIdentifier, userText: response.textInputResponse?.userText)
         let action = IterableAppIntegrationInternal.createIterableAction(actionIdentifier: response.actionIdentifier, userText: response.textInputResponse?.userText, userInfo: userInfo, iterableElement: itbl)
-
+        
         // Track push open
         if let _ = dataFields[.ITBL_KEY_ACTION_IDENTIFIER] { // i.e., if action is not dismiss
             tracker.trackPushOpen(userInfo, dataFields: dataFields)
@@ -194,13 +193,13 @@ struct IterableAppIntegrationInternal {
                                          customActionHandler: IterableUtil.customActionHandler(fromCustomActionDelegate: customActionDelegate, inContext: context),
                                          urlOpener: urlOpener)
         }
-
+        
         completionHandler?()
     }
-
+    
     @available(iOS 10.0, *)
     private static func createIterableAction(actionIdentifier: String, userText: String?, userInfo: [AnyHashable: Any], iterableElement itbl: [AnyHashable: Any]) -> IterableAction? {
-        var action: IterableAction? = nil
+        var action: IterableAction?
         
         if actionIdentifier == UNNotificationDefaultActionIdentifier {
             action = createDefaultAction(userInfo: userInfo, iterableElement: itbl)
@@ -216,11 +215,11 @@ struct IterableAppIntegrationInternal {
         if let userText = userText {
             action?.userInput = userText
         }
-
+        
         return action
     }
     
-    private static func createDefaultAction(userInfo: [AnyHashable: Any], iterableElement itbl: [AnyHashable: Any])  -> IterableAction? {
+    private static func createDefaultAction(userInfo: [AnyHashable: Any], iterableElement itbl: [AnyHashable: Any]) -> IterableAction? {
         if let defaultActionConfig = itbl[.ITBL_PAYLOAD_DEFAULT_ACTION] as? [AnyHashable: Any] {
             return IterableAction.action(fromDictionary: defaultActionConfig)
         } else {
@@ -259,7 +258,7 @@ struct IterableAppIntegrationInternal {
         if let userText = userText {
             dataFields[.ITBL_KEY_USER_TEXT] = userText
         }
-
+        
         return dataFields
     }
     
@@ -276,7 +275,7 @@ struct IterableAppIntegrationInternal {
         guard let itbl = IterableAppIntegrationInternal.itblValue(fromUserInfo: userInfo) else {
             return
         }
-
+        
         // Execute the action
         if let action = IterableAppIntegrationInternal.createDefaultAction(userInfo: userInfo, iterableElement: itbl) {
             let context = IterableActionContext(action: action, source: .push)
@@ -302,18 +301,18 @@ struct IterableAppIntegrationInternal {
         let itbl = userInfo[.ITBL_PAYLOAD_METADATA] as? [AnyHashable: Any]
         
         #if DEBUG
-        guard let value = itbl else {
-            return nil
-        }
-        
-        if value[.ITBL_PAYLOAD_DEFAULT_ACTION] == nil && value[.ITBL_PAYLOAD_ACTION_BUTTONS] == nil {
-            return userInfo
-        }
+            guard let value = itbl else {
+                return nil
+            }
+            
+            if value[.ITBL_PAYLOAD_DEFAULT_ACTION] == nil, value[.ITBL_PAYLOAD_ACTION_BUTTONS] == nil {
+                return userInfo
+            }
         #endif
         
         return itbl
     }
-
+    
     // Normally default action would be stored in key "itbl/"defaultAction"
     // In legacy templates it gets saved in the key "url"
     private static func legacyDefaultActionFromPayload(userInfo: [AnyHashable: Any]) -> IterableAction? {

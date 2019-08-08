@@ -31,7 +31,7 @@ public protocol IterableInAppManagerProtocol {
     /// - parameter consume: Set to true to consume the event from the server queue if the message is shown. This should be default.
     /// - parameter callback: block of code to execute once the user clicks on a link or button in the in-app notification.
     ///   Note that this callback is called in addition to calling `IterableCustomActionDelegate` or `IterableUrlDelegate` on the button action.
-    @objc(showMessage:consume:callbackBlock:) func show(message: IterableInAppMessage, consume: Bool, callback:ITBURLCallback?)
+    @objc(showMessage:consume:callbackBlock:) func show(message: IterableInAppMessage, consume: Bool, callback: ITBURLCallback?)
     
     /// - parameter message: The message to remove.
     @objc(removeMessage:) func remove(message: IterableInAppMessage)
@@ -59,7 +59,7 @@ open class DefaultInAppDelegate: IterableInAppDelegate {
     
     /// By default, every single inApp will be shown as soon as it is available.
     /// If more than 1 inApp is available, we show the first showable one.
-    open func onNew(message: IterableInAppMessage) -> InAppShowResponse {
+    open func onNew(message _: IterableInAppMessage) -> InAppShowResponse {
         ITBInfo()
         return .show
     }
@@ -74,7 +74,7 @@ public enum IterableInAppContentType: Int, Codable {
 
 @objc
 public protocol IterableInAppContent {
-    var type: IterableInAppContentType {get}
+    var type: IterableInAppContentType { get }
 }
 
 @objcMembers
@@ -134,9 +134,9 @@ public final class IterableInAppTrigger: NSObject {
     init(dict: [AnyHashable: Any]) {
         self.dict = dict
         if let typeString = dict[.ITBL_IN_APP_TRIGGER_TYPE] as? String {
-            self.type = IterableInAppTriggerType.from(string: typeString)
+            type = IterableInAppTriggerType.from(string: typeString)
         } else {
-            self.type = IterableInAppTriggerType.immediate
+            type = IterableInAppTriggerType.immediate
         }
     }
 }

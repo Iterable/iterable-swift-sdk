@@ -33,7 +33,7 @@ import Foundation
     @objc public var userInput: String?
     
     @objc public func isOpenUrl() -> Bool {
-        return self.type == IterableAction.actionTypeOpenUrl
+        return type == IterableAction.actionTypeOpenUrl
     }
     
     /**
@@ -54,7 +54,7 @@ import Foundation
         guard let typeFromDict = dictionary["type"] as? String else {
             return nil
         }
-        self.type = typeFromDict
-        self.data = dictionary["data"] as? String
+        type = typeFromDict
+        data = dictionary["data"] as? String
     }
 }

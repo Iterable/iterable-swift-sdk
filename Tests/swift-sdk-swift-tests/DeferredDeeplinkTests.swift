@@ -12,7 +12,7 @@ import XCTest
 
 class DeferredDeeplinkTests: XCTestCase {
     private static let apiKey = "zeeApiKey"
-
+    
     override func setUp() {
         super.setUp()
         TestUtils.clearTestUserDefaults()
@@ -26,19 +26,19 @@ class DeferredDeeplinkTests: XCTestCase {
     func testCallCheckForDDL() {
         let expectation = XCTestExpectation(description: "callCheckForDDL")
         
-        let json: [AnyHashable : Any] = [
-            "isMatch" : true,
-            "destinationUrl" : "zeeDestinationUrl",
-            "campaignId" : "1",
-            "templateId" : "1",
-            "messageId" : "1"
+        let json: [AnyHashable: Any] = [
+            "isMatch": true,
+            "destinationUrl": "zeeDestinationUrl",
+            "campaignId": "1",
+            "templateId": "1",
+            "messageId": "1",
         ]
         let networkSession = MockNetworkSession(statusCode: 200, json: json)
-
+        
         let config = IterableConfig()
         config.checkForDeferredDeeplink = true
         let urlDelegate = MockUrlDelegate(returnValue: true)
-        urlDelegate.callback = {(url, context) in
+        urlDelegate.callback = { url, _ in
             TestUtils.validate(request: networkSession.request!, apiEndPoint: .ITBL_ENDPOINT_LINKS, path: .ITBL_PATH_DDL_MATCH)
             expectation.fulfill()
             XCTAssertEqual(url.absoluteString, "zeeDestinationUrl")
@@ -54,12 +54,12 @@ class DeferredDeeplinkTests: XCTestCase {
         let config2 = IterableConfig()
         config2.checkForDeferredDeeplink = true
         let urlDelegate2 = MockUrlDelegate(returnValue: true)
-        urlDelegate2.callback = {(url, context) in
+        urlDelegate2.callback = { _, _ in
             expectation2.fulfill()
         }
         config.urlDelegate = urlDelegate2
         IterableAPI.initializeForTesting(apiKey: DeferredDeeplinkTests.apiKey, config: config, networkSession: networkSession)
-
+        
         wait(for: [expectation2], timeout: 1.0)
     }
     
@@ -67,15 +67,15 @@ class DeferredDeeplinkTests: XCTestCase {
         let expectation = XCTestExpectation(description: "testDDL No Match")
         expectation.isInverted = true
         
-        let json: [AnyHashable : Any] = [
-            "isMatch" : false,
+        let json: [AnyHashable: Any] = [
+            "isMatch": false,
         ]
         let networkSession = MockNetworkSession(statusCode: 200, json: json)
         
         let config = IterableConfig()
         config.checkForDeferredDeeplink = true
         let urlDelegate = MockUrlDelegate(returnValue: true)
-        urlDelegate.callback = {(url, context) in
+        urlDelegate.callback = { _, _ in
             expectation.fulfill()
         }
         config.urlDelegate = urlDelegate
@@ -83,24 +83,24 @@ class DeferredDeeplinkTests: XCTestCase {
         
         wait(for: [expectation], timeout: 1.0)
     }
-
+    
     func testCheckForDeferredDDLIsSetToFalse() {
         let expectation = XCTestExpectation(description: "testDDL No Match")
         expectation.isInverted = true
         
-        let json: [AnyHashable : Any] = [
-            "isMatch" : true,
-            "destinationUrl" : "zeeDestinationUrl",
-            "campaignId" : "1",
-            "templateId" : "1",
-            "messageId" : "1"
+        let json: [AnyHashable: Any] = [
+            "isMatch": true,
+            "destinationUrl": "zeeDestinationUrl",
+            "campaignId": "1",
+            "templateId": "1",
+            "messageId": "1",
         ]
         let networkSession = MockNetworkSession(statusCode: 200, json: json)
         
         let config = IterableConfig()
         config.checkForDeferredDeeplink = false
         let urlDelegate = MockUrlDelegate(returnValue: true)
-        urlDelegate.callback = {(url, context) in
+        urlDelegate.callback = { _, _ in
             expectation.fulfill()
         }
         config.urlDelegate = urlDelegate

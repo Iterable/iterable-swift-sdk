@@ -15,6 +15,7 @@ public final class IterableAPI: NSObject {
     static let sdkVersion = "6.2.0-dev1"
     
     // MARK: Initialization
+    
     /// You should call this method and not call the init method directly.
     /// - parameter apiKey: Iterable API Key.
     public static func initialize(apiKey: String) {
@@ -44,7 +45,7 @@ public final class IterableAPI: NSObject {
     public static func initialize(apiKey: String,
                                   launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
                                   config: IterableConfig = IterableConfig()) {
-        internalImplementation = IterableAPIInternal(apiKey: apiKey, launchOptions: launchOptions, config:config)
+        internalImplementation = IterableAPIInternal(apiKey: apiKey, launchOptions: launchOptions, config: config)
         internalImplementation?.start()
     }
     
@@ -358,10 +359,10 @@ public final class IterableAPI: NSObject {
         internalImplementation?.updateSubscriptions(emailListIds, unsubscribedChannelIds: unsubscribedChannelIds, unsubscribedMessageTypeIds: unsubscribedMessageTypeIds)
     }
     
-    //MARK: In-App Notifications
+    // MARK: In-App Notifications
+    
     @available(*, unavailable, message: "In-app messages are automatically shown by SDK now. Please check our migration guide here https://github.com/iterable/swift-sdk/#migrating-in-app-messages-from-the-previous-version-of-the-sdk.")
-    public static func spawnInAppNotification(_ callbackBlock: ITEActionBlock?) {
-    }
+    public static func spawnInAppNotification(_: ITEActionBlock?) {}
     
     /**
      Deprecated. Gets the list of InAppMessages from the server.
@@ -508,7 +509,7 @@ public final class IterableAPI: NSObject {
     /// - IterableAPI.inAppManager.getMessages()
     /// - IterableAPI.inappManager.show(message: message, consume: true)
     /// ```
-    @objc public static var inAppManager: IterableInAppManagerProtocol {
+    public static var inAppManager: IterableInAppManagerProtocol {
         guard let internalImplementation = internalImplementation else {
             ITBError("IterableAPI is not initialized yet. InApp will not work now.")
             assertionFailure("IterableAPI is not initialized yet. In-app will not work now.")
@@ -518,7 +519,7 @@ public final class IterableAPI: NSObject {
     }
     
     // MARK: Private and Internal
+    
     static var internalImplementation: IterableAPIInternal?
-    private override init() {super.init()}
+    private override init() { super.init() }
 }
-

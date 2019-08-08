@@ -19,28 +19,29 @@ open class IterableInboxViewController: UITableViewController {
     public var deletionAnimation = UITableView.RowAnimation.automatic
     
     // MARK: Initializers
+    
     public override init(style: UITableView.Style) {
         ITBInfo()
-        self.viewModel = InboxViewControllerViewModel()
+        viewModel = InboxViewControllerViewModel()
         super.init(style: style)
         viewModel.delegate = self
     }
     
     public required init?(coder aDecoder: NSCoder) {
         ITBInfo()
-        self.viewModel = InboxViewControllerViewModel()
+        viewModel = InboxViewControllerViewModel()
         super.init(coder: aDecoder)
         viewModel.delegate = self
     }
     
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         ITBInfo()
-        self.viewModel = InboxViewControllerViewModel()
+        viewModel = InboxViewControllerViewModel()
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         viewModel.delegate = self
     }
     
-    override open func viewDidLoad() {
+    open override func viewDidLoad() {
         ITBInfo()
         super.viewDidLoad()
         
@@ -62,39 +63,40 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     // MARK: - Table view data source
-    override open func numberOfSections(in tableView: UITableView) -> Int {
+    
+    open override func numberOfSections(in _: UITableView) -> Int {
         return 1
     }
     
-    override open func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    open override func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
         return viewModel.numMessages
     }
     
-    override open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    open override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "inboxCell", for: indexPath) as? IterableInboxCell else {
             fatalError("Please make sure that an the nib: \(cellNibName!) is present in the main bundle")
         }
         
-        configure(cell: cell, forMessage:viewModel.message(atRow: indexPath.row))
+        configure(cell: cell, forMessage: viewModel.message(atRow: indexPath.row))
         
         return cell
     }
     
     // Override to support conditional editing of the table view.
-    override open func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+    open override func tableView(_: UITableView, canEditRowAt _: IndexPath) -> Bool {
         // Return false if you do not want the specified item to be editable.
         return true
     }
     
     // Override to support editing the table view.
-    override open func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+    open override func tableView(_: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             // Delete the row from the data source
             viewModel.remove(atRow: indexPath.row)
         }
     }
     
-    override open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    open override func tableView(_: UITableView, didSelectRowAt indexPath: IndexPath) {
         let message = viewModel.message(atRow: indexPath.row)
         
         if let viewController = viewModel.createInboxMessageViewController(forMessage: message) {
@@ -112,7 +114,7 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     private func registerTableViewCell() {
-        let cellNibName = self.cellNibName ?? self.iterableCellNibName
+        let cellNibName = self.cellNibName ?? iterableCellNibName
         let bundle = self.cellNibName == nil ? Bundle(for: IterableInboxViewController.self) : Bundle.main
         
         let nib = UINib(nibName: cellNibName, bundle: bundle)
@@ -202,10 +204,10 @@ extension IterableInboxViewController: InboxViewControllerViewModelDelegate {
         
         for result in diff {
             switch result {
-            case let .delete(section, row, _): tableView.deleteRows(at: [IndexPath(row: row, section: section)], with: self.deletionAnimation)
-            case let .insert(section, row, _): tableView.insertRows(at: [IndexPath(row: row, section: section)], with: self.insertionAnimation)
-            case let .sectionDelete(section, _): tableView.deleteSections(IndexSet(integer: section), with: self.deletionAnimation)
-            case let .sectionInsert(section, _): tableView.insertSections(IndexSet(integer: section), with: self.insertionAnimation)
+            case let .delete(section, row, _): tableView.deleteRows(at: [IndexPath(row: row, section: section)], with: deletionAnimation)
+            case let .insert(section, row, _): tableView.insertRows(at: [IndexPath(row: row, section: section)], with: insertionAnimation)
+            case let .sectionDelete(section, _): tableView.deleteSections(IndexSet(integer: section), with: deletionAnimation)
+            case let .sectionInsert(section, _): tableView.insertSections(IndexSet(integer: section), with: insertionAnimation)
             }
         }
         

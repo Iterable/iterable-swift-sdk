@@ -30,13 +30,13 @@ open class IterableInboxNavigationViewController: UINavigationController {
     }
     
     /// This initializer will be called when initializing from storyboard
-    required public init?(coder aDecoder: NSCoder) {
+    public required init?(coder aDecoder: NSCoder) {
         ITBInfo()
         super.init(coder: aDecoder)
         setup()
     }
     
-    override open func viewDidLoad() {
+    open override func viewDidLoad() {
         ITBInfo()
         super.viewDidLoad()
         
@@ -49,7 +49,7 @@ open class IterableInboxNavigationViewController: UINavigationController {
             }
             if let _ = strongSelf.presentingViewController {
                 let viewController = strongSelf.viewControllers[0]
-                if viewController.navigationItem.leftBarButtonItem == nil && viewController.navigationItem.rightBarButtonItem == nil {
+                if viewController.navigationItem.leftBarButtonItem == nil, viewController.navigationItem.rightBarButtonItem == nil {
                     viewController.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(strongSelf.onDoneTapped))
                 }
             }
@@ -85,7 +85,7 @@ open class IterableInboxNavigationViewController: UINavigationController {
             viewControllers.append(inboxViewController)
         }
         
-        inboxViewController.cellNibName = self.cellNibName
+        inboxViewController.cellNibName = cellNibName
     }
     
     @objc private func onDoneTapped() {

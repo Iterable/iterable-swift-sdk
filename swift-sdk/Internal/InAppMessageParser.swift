@@ -29,7 +29,7 @@ struct InAppMessageParser {
     // This is temporary until we fix the backend to do the right thing.
     // 1. Move 'saveToInbox', to top level from 'customPayload'
     // 2. Move 'type' to 'content' element.
-    //!! Remove when we have backend support
+    //! ! Remove when we have backend support
     private static func preProcessOneJson(fromJson json: [AnyHashable: Any]) -> [AnyHashable: Any] {
         var result = json
         guard var customPayloadDict = json[.ITBL_IN_APP_CUSTOM_PAYLOAD] as? [AnyHashable: Any] else {
@@ -86,10 +86,10 @@ struct InAppMessageParser {
         }
         
         let content: IterableInAppContent
-        switch (InAppContentParser.parse(contentDict: contentDict)) {
-        case .success(let parsedContent):
+        switch InAppContentParser.parse(contentDict: contentDict) {
+        case let .success(parsedContent):
             content = parsedContent
-        case .failure(let reason):
+        case let .failure(reason):
             return .failure(.parseFailed(reason: reason, messageId: messageId))
         }
         

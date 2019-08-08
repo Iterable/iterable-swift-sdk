@@ -14,25 +14,24 @@ let testExpectationTimeoutForInverted = 1.0 // How long to wait when we expect t
 class IterableActionRunnerTests: XCTestCase {
     func testUrlOpenAction() {
         let urlString = "https://example.com"
-        let action = IterableAction.action(fromDictionary: ["type" : "openUrl", "data" : urlString])!
+        let action = IterableAction.action(fromDictionary: ["type": "openUrl", "data": urlString])!
         let context = IterableActionContext(action: action, source: .push)
         let urlOpener = MockUrlOpener()
         let expectation = XCTestExpectation(description: "call UrlHandler")
-        let urlHandler: UrlHandler = {url in
+        let urlHandler: UrlHandler = { url in
             XCTAssertEqual(url.absoluteString, urlString)
             expectation.fulfill()
             return false
         }
         
         let handled = IterableActionRunner.execute(action: action,
-                                     context: context,
-                                     urlHandler: urlHandler,
-                                     urlOpener: urlOpener)
+                                                   context: context,
+                                                   urlHandler: urlHandler,
+                                                   urlOpener: urlOpener)
         
-
         wait(for: [expectation], timeout: testExpectationTimeout)
         XCTAssertTrue(handled)
-
+        
         if #available(iOS 10.0, *) {
             XCTAssertEqual(urlOpener.ios10OpenedUrl?.absoluteString, urlString)
             XCTAssertNil(urlOpener.preIos10openedUrl)
@@ -44,22 +43,21 @@ class IterableActionRunnerTests: XCTestCase {
     
     func testUrlHandlingOverride() {
         let urlString = "https://example.com"
-        let action = IterableAction.action(fromDictionary: ["type" : "openUrl", "data" : urlString])!
+        let action = IterableAction.action(fromDictionary: ["type": "openUrl", "data": urlString])!
         let context = IterableActionContext(action: action, source: .push)
         let urlOpener = MockUrlOpener()
         let expectation = XCTestExpectation(description: "call UrlHandler")
-        let urlHandler: UrlHandler = {url in
+        let urlHandler: UrlHandler = { url in
             XCTAssertEqual(url.absoluteString, urlString)
             expectation.fulfill()
             return true
         }
-
-        let handled = IterableActionRunner.execute(action: action,
-                                     context: context,
-                                     urlHandler: urlHandler,
-                                     urlOpener: urlOpener)
         
-
+        let handled = IterableActionRunner.execute(action: action,
+                                                   context: context,
+                                                   urlHandler: urlHandler,
+                                                   urlOpener: urlOpener)
+        
         wait(for: [expectation], timeout: testExpectationTimeout)
         XCTAssertTrue(handled)
         
@@ -74,29 +72,29 @@ class IterableActionRunnerTests: XCTestCase {
     
     func testCustomAction() {
         let customActionName = "myCustomActionName"
-        let action = IterableAction.action(fromDictionary: ["type" : customActionName])!
+        let action = IterableAction.action(fromDictionary: ["type": customActionName])!
         let context = IterableActionContext(action: action, source: .push)
         let expection = XCTestExpectation(description: "callActionHandler")
-        let customActionHandler: CustomActionHandler = {name in
+        let customActionHandler: CustomActionHandler = { name in
             XCTAssertEqual(name, customActionName)
             expection.fulfill()
             return true
         }
-
+        
         let handled = IterableActionRunner.execute(action: action,
-                                     context: context,
-                                     customActionHandler: customActionHandler)
+                                                   context: context,
+                                                   customActionHandler: customActionHandler)
         
         wait(for: [expection], timeout: testExpectationTimeout)
         XCTAssertTrue(handled)
     }
-
+    
     func testCustomActionOverride() {
         let customActionName = "myCustomActionName"
-        let action = IterableAction.action(fromDictionary: ["type" : customActionName])!
+        let action = IterableAction.action(fromDictionary: ["type": customActionName])!
         let context = IterableActionContext(action: action, source: .push)
         let expection = XCTestExpectation(description: "callActionHandler")
-        let customActionHandler: CustomActionHandler = {name in
+        let customActionHandler: CustomActionHandler = { name in
             XCTAssertEqual(name, customActionName)
             expection.fulfill()
             return false

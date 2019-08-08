@@ -13,7 +13,7 @@ protocol InboxViewControllerViewModelDelegate: class {
 }
 
 protocol InboxViewControllerViewModelProtocol {
-    var delegate: InboxViewControllerViewModelDelegate? { get set}
+    var delegate: InboxViewControllerViewModelDelegate? { get set }
     var numMessages: Int { get }
     var unreadCount: Int { get }
     func message(atRow row: Int) -> InboxMessageViewModel
@@ -61,7 +61,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         IterableAPI.inAppManager.remove(message: messages[row].iterableMessage)
     }
     
-    func set(read: Bool, forMessage message: InboxMessageViewModel) {
+    func set(read _: Bool, forMessage message: InboxMessageViewModel) {
         IterableAPI.inAppManager.set(read: true, forMessage: message.iterableMessage)
     }
     
@@ -81,8 +81,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         messages = newMessages
     }
     
-    func endedUpdates() {
-    }
+    func endedUpdates() {}
     
     private func loadImageIfNecessary(_ message: InboxMessageViewModel) {
         guard let imageUrlString = message.imageUrl, let url = URL(string: imageUrlString) else {
@@ -96,26 +95,25 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     private func loadImage(forMessageId messageId: String, fromUrl url: URL) {
         if let networkSession = IterableAPI.internalImplementation?.networkSession {
-            NetworkHelper.getData(fromUrl: url, usingSession: networkSession).onSuccess {[weak self] in
+            NetworkHelper.getData(fromUrl: url, usingSession: networkSession).onSuccess { [weak self] in
                 self?.setImageData($0, forMessageId: messageId)
-                }.onError {
-                    ITBError($0.localizedDescription)
+            }.onError {
+                ITBError($0.localizedDescription)
             }
         }
     }
     
     private func setImageData(_ data: Data, forMessageId messageId: String) {
-        guard let row = messages.firstIndex (where: { $0.iterableMessage.messageId == messageId }) else {
+        guard let row = messages.firstIndex(where: { $0.iterableMessage.messageId == messageId }) else {
             return
         }
         let message = messages[row]
         message.imageData = data
         
-        self.delegate?.onImageLoaded(forRow: row)
+        delegate?.onImageLoaded(forRow: row)
     }
     
-    
-    @objc private func onInboxChanged(notification: NSNotification) {
+    @objc private func onInboxChanged(notification _: NSNotification) {
         ITBInfo()
         
         let oldSectionedValues = AbstractDiffCalculator<Int, InboxMessageViewModel>.buildSectionedValues(values: messages, sectionIndex: 0)
@@ -123,7 +121,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         let newSectionedValues = AbstractDiffCalculator<Int, InboxMessageViewModel>.buildSectionedValues(values: newMessages, sectionIndex: 0)
         
         let diff = Dwifft.diff(lhs: oldSectionedValues, rhs: newSectionedValues)
-        if (diff.count > 0) {
+        if diff.count > 0 {
             DispatchQueue.main.async { [weak self] in
                 self?.delegate?.onViewModelChanged(diff: diff)
             }
@@ -133,4 +131,3 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     private var messages = [InboxMessageViewModel]()
     private var newMessages = [InboxMessageViewModel]()
 }
-

@@ -33,7 +33,7 @@ class IterableHtmlMessageViewController: UIViewController {
     
     init(parameters: Parameters) {
         self.parameters = parameters
-        self.futureClickedURL = Promise<URL, IterableError>()
+        futureClickedURL = Promise<URL, IterableError>()
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -99,8 +99,8 @@ class IterableHtmlMessageViewController: UIViewController {
     }
     
     required init?(coder aDecoder: NSCoder) {
-        self.parameters = aDecoder.decodeObject(forKey: "input") as? Parameters ?? Parameters(html: "", isModal: false)
-        self.futureClickedURL = Promise<URL, IterableError>()
+        parameters = aDecoder.decodeObject(forKey: "input") as? Parameters ?? Parameters(html: "", isModal: false)
+        futureClickedURL = Promise<URL, IterableError>()
         super.init(coder: aDecoder)
     }
     
@@ -128,30 +128,30 @@ class IterableHtmlMessageViewController: UIViewController {
         // Resizes the frame to match the HTML content with a max of the screen size.
         var frame = aWebView.frame
         frame.size.height = 1
-        aWebView.frame = frame;
+        aWebView.frame = frame
         let fittingSize = aWebView.sizeThatFits(.zero)
         frame.size = fittingSize
         let notificationWidth = 100 - (parameters.padding.left + parameters.padding.right)
         let screenWidth = view.bounds.width
-        frame.size.width = screenWidth*notificationWidth/100
-        frame.size.height = min(frame.height, self.view.bounds.height)
-        aWebView.frame = frame;
+        frame.size.width = screenWidth * notificationWidth / 100
+        frame.size.height = min(frame.height, view.bounds.height)
+        aWebView.frame = frame
         
-        let resizeCenterX = screenWidth*(parameters.padding.left + notificationWidth/2)/100
+        let resizeCenterX = screenWidth * (parameters.padding.left + notificationWidth / 2) / 100
         
         // Position webview
-        var center = self.view.center
-        let webViewHeight = aWebView.frame.height/2
+        var center = view.center
+        let webViewHeight = aWebView.frame.height / 2
         switch location {
         case .top:
             center.y = webViewHeight
         case .bottom:
             center.y = view.frame.height - webViewHeight
-        case .center,.full: break
+        case .center, .full: break
         }
         
-        center.x = resizeCenterX;
-        aWebView.center = center;
+        center.x = resizeCenterX
+        aWebView.center = center
     }
     
     private static func padding(fromPadding padding: UIEdgeInsets) -> UIEdgeInsets {
@@ -167,14 +167,14 @@ class IterableHtmlMessageViewController: UIViewController {
 }
 
 extension IterableHtmlMessageViewController: UIWebViewDelegate {
-    func webViewDidFinishLoad(_ webView: UIWebView) {
+    func webViewDidFinishLoad(_: UIWebView) {
         loaded = true
         if let myWebview = self.webView {
             resizeWebView(myWebview)
         }
     }
     
-    func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebView.NavigationType) -> Bool {
+    func webView(_: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebView.NavigationType) -> Bool {
         guard navigationType == .linkClicked, let url = request.url else {
             return true
         }

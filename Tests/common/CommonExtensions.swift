@@ -10,7 +10,7 @@ import Foundation
 
 extension String {
     func toJsonDict() -> [AnyHashable: Any] {
-        return try! JSONSerialization.jsonObject(with: self.data(using: .utf8)!, options: []) as! [AnyHashable: Any]
+        return try! JSONSerialization.jsonObject(with: data(using: .utf8)!, options: []) as! [AnyHashable: Any]
     }
 }
 
@@ -35,7 +35,7 @@ class MockDependencyContainer: DependencyContainerProtocol {
     let urlOpener: UrlOpenerProtocol
     let applicationStateProvider: ApplicationStateProviderProtocol
     let notificationCenter: NotificationCenterProtocol
-
+    
     init(dateProvider: DateProviderProtocol,
          networkSession: NetworkSessionProtocol,
          notificationStateProvider: NotificationStateProviderProtocol,
@@ -58,8 +58,8 @@ class MockDependencyContainer: DependencyContainerProtocol {
         self.notificationCenter = notificationCenter
     }
     
-    func createInAppFetcher(apiClient: ApiClientProtocol) -> InAppFetcherProtocol {
-        return self.inAppFetcher
+    func createInAppFetcher(apiClient _: ApiClientProtocol) -> InAppFetcherProtocol {
+        return inAppFetcher
     }
 }
 

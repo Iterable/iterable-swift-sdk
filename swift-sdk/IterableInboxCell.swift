@@ -12,28 +12,28 @@ import UIKit
 /// connect the outlets.
 open class IterableInboxCell: UITableViewCell {
     /// A "dot" view showing that the message is unread
-    @IBOutlet weak open var unreadCircleView: UIView?
+    @IBOutlet open weak var unreadCircleView: UIView?
     
     /// The title label
-    @IBOutlet weak open var titleLbl: UILabel?
+    @IBOutlet open weak var titleLbl: UILabel?
     
     /// The sub title label
-    @IBOutlet weak open var subtitleLbl: UILabel?
+    @IBOutlet open weak var subtitleLbl: UILabel?
     
     /// This shows the time when the message was created
-    @IBOutlet weak open var createdAtLbl: UILabel?
+    @IBOutlet open weak var createdAtLbl: UILabel?
     
     /// This is the container view for the icon image.
     /// You may or may not set it.
     /// Set this outlet if you have the icon inside a container view
     /// and you want the container to be set to hidden when icons are not
     /// present for the message.
-    @IBOutlet weak open var iconContainerView: UIView?
+    @IBOutlet open weak var iconContainerView: UIView?
     
     /// This is the icon image
-    @IBOutlet weak open var iconImageView: UIImageView?
+    @IBOutlet open weak var iconImageView: UIImageView?
     
-    override open func awakeFromNib() {
+    open override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
     }
@@ -50,4 +50,3 @@ open class IterableInboxCell: UITableViewCell {
         }
     }
 }
-

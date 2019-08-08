@@ -30,7 +30,7 @@ public extension String {
     static let ITBL_PATH_UPDATE_USER = "users/update"
     static let ITBL_PATH_UPDATE_EMAIL = "users/updateEmail"
     static let ITBL_PATH_UPDATE_SUBSCRIPTIONS = "users/updateSubscriptions"
-    static let ITBL_PATH_DDL_MATCH = "a/matchFp" //DDL = Deferred Deep Linking
+    static let ITBL_PATH_DDL_MATCH = "a/matchFp" // DDL = Deferred Deep Linking
 }
 
 // Keys
@@ -133,7 +133,7 @@ public extension Int {
     static let ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_EXPIRATION_HOURS = 24
 }
 
-//Action Buttons
+// Action Buttons
 public extension AnyHashable {
     static let ITBL_BUTTON_IDENTIFIER = "identifier"
     static let ITBL_BUTTON_TYPE = "buttonType"
@@ -145,7 +145,7 @@ public extension AnyHashable {
     static let ITBL_BUTTON_ACTION = "action"
 }
 
-//In-App Constants
+// In-App Constants
 public extension AnyHashable {
     static let ITBL_IN_APP_LOCATION_IN_APP = "in-app"
     static let ITBL_IN_APP_LOCATION_INBOX = "inbox"
@@ -160,10 +160,10 @@ public extension AnyHashable {
     
     static let ITBL_IN_APP_TRIGGER = "trigger"
     static let ITBL_IN_APP_TRIGGER_TYPE = "type"
-
+    
     static let ITBL_IN_APP_CONTENT = "content"
     
-    //In-App HTML Constants
+    // In-App HTML Constants
     static let ITBL_IN_APP_BACKGROUND_ALPHA = "backgroundAlpha"
     static let ITBL_IN_APP_HTML = "html"
     static let ITBL_IN_APP_HREF = "href"

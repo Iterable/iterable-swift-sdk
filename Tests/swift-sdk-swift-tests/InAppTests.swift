@@ -23,7 +23,7 @@ class InAppTests: XCTestCase {
         }
         
         let mockUrlDelegate = MockUrlDelegate(returnValue: true)
-        mockUrlDelegate.callback = {(_, _) in
+        mockUrlDelegate.callback = { _, _ in
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
             expectation2.fulfill()
         }
@@ -69,7 +69,7 @@ class InAppTests: XCTestCase {
             inAppDisplayer: mockInAppDisplayer
         )
         
-        mockInAppFetcher.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1)).onSuccess { (_) in
+        mockInAppFetcher.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1)).onSuccess { _ in
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
             XCTAssertEqual(IterableAPI.inAppManager.getMessages()[0].didProcessTrigger, true)
             
@@ -91,14 +91,14 @@ class InAppTests: XCTestCase {
         let mockInAppFetcher = MockInAppFetcher()
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShow.onSuccess {(message) in
+        mockInAppDisplayer.onShow.onSuccess { message in
             mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: TestInAppPayloadGenerator.index(fromCampaignId: message.campaignId)))
             expectation0.fulfill()
         }
         
         var callOrder = [Int]()
         let urlDelegate = MockUrlDelegate(returnValue: true)
-        urlDelegate.callback = {(url, _) in
+        urlDelegate.callback = { url, _ in
             if url == TestInAppPayloadGenerator.getClickedUrl(index: 1) {
                 callOrder.append(1)
                 expectation1.fulfill()
@@ -157,7 +157,7 @@ class InAppTests: XCTestCase {
             inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer
         )
-
+        
         mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { _ in
             let messages = IterableAPI.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 3)
@@ -175,7 +175,7 @@ class InAppTests: XCTestCase {
         let expectation1 = expectation(description: "testAutoShowInAppOpenUrlByDefault")
         
         let mockInAppFetcher = MockInAppFetcher()
-        let mockUrlOpener = MockUrlOpener { (url) in
+        let mockUrlOpener = MockUrlOpener { url in
             XCTAssertEqual(url, TestInAppPayloadGenerator.getClickedUrl(index: 1))
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
             expectation1.fulfill()
@@ -204,7 +204,7 @@ class InAppTests: XCTestCase {
         expectation1.isInverted = true
         
         let mockInAppFetcher = MockInAppFetcher()
-        let mockUrlOpener = MockUrlOpener { (url) in
+        let mockUrlOpener = MockUrlOpener { _ in
             expectation1.fulfill()
         }
         
@@ -239,7 +239,7 @@ class InAppTests: XCTestCase {
             mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: 1))
         }
         
-        let mockUrlOpener = MockUrlOpener { (url) in
+        let mockUrlOpener = MockUrlOpener { url in
             XCTAssertEqual(url, TestInAppPayloadGenerator.getClickedUrl(index: 1))
             expectation2.fulfill()
         }
@@ -253,12 +253,12 @@ class InAppTests: XCTestCase {
             inAppDisplayer: mockInAppDisplayer,
             urlOpener: mockUrlOpener
         )
-
+        
         mockInAppFetcher.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1)).onSuccess { _ in
             let messages = IterableAPI.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 1)
             
-            IterableAPI.inAppManager.show(message: messages[0], consume: true) { (clickedUrl) in
+            IterableAPI.inAppManager.show(message: messages[0], consume: true) { clickedUrl in
                 XCTAssertEqual(clickedUrl, TestInAppPayloadGenerator.getClickedUrl(index: 1))
                 expectation1.fulfill()
             }
@@ -278,7 +278,7 @@ class InAppTests: XCTestCase {
             mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: 1))
         }
         
-        let mockUrlOpener = MockUrlOpener { (url) in
+        let mockUrlOpener = MockUrlOpener { url in
             XCTAssertEqual(url, TestInAppPayloadGenerator.getClickedUrl(index: 1))
             
             let messages = IterableAPI.inAppManager.getMessages()
@@ -300,7 +300,7 @@ class InAppTests: XCTestCase {
         mockInAppFetcher.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1)).onSuccess { _ in
             var messages = IterableAPI.inAppManager.getMessages()
             // Now show the first message, but don't consume
-            IterableAPI.inAppManager.show(message: messages[0], consume: false) { (clickedUrl) in
+            IterableAPI.inAppManager.show(message: messages[0], consume: false) { clickedUrl in
                 XCTAssertEqual(clickedUrl, TestInAppPayloadGenerator.getClickedUrl(index: 1))
                 expectation1.fulfill()
             }
@@ -325,10 +325,10 @@ class InAppTests: XCTestCase {
         mockCustomActionDelegate.callback = { customActionName, context in
             XCTAssertEqual(customActionName, TestInAppPayloadGenerator.getCustomActionName(index: 1))
             XCTAssertEqual(context.source, .inApp)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05, execute: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                 XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
                 expectation3.fulfill()
-            })
+            }
             expectation2.fulfill()
         }
         
@@ -346,7 +346,7 @@ class InAppTests: XCTestCase {
             let messages = IterableAPI.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 1, "expected 1 messages here")
             
-            IterableAPI.inAppManager.show(message: messages[0], consume: true) { (customActionUrl) in
+            IterableAPI.inAppManager.show(message: messages[0], consume: true) { customActionUrl in
                 XCTAssertEqual(customActionUrl, TestInAppPayloadGenerator.getCustomActionUrl(index: 1))
                 expectation1.fulfill()
             }
@@ -364,12 +364,12 @@ class InAppTests: XCTestCase {
         let iterableDeleteUrl = "iterable://delete"
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShow.onSuccess { _ in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 mockInAppDisplayer.click(url: URL(string: iterableDeleteUrl)!)
                 
                 XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
                 expectation2.fulfill()
-            })
+            }
         }
         
         let config = IterableConfig()
@@ -479,7 +479,7 @@ class InAppTests: XCTestCase {
         let mockInAppFetcher = MockInAppFetcher()
         
         let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
-        mockInAppDelegate.onNewMessageCallback = {_ in
+        mockInAppDelegate.onNewMessageCallback = { _ in
             // should only be called once
             expectation1.fulfill()
         }
@@ -556,7 +556,6 @@ class InAppTests: XCTestCase {
         mockInAppFetcher.mockInAppPayloadFromServer(payload)
         
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
-        
     }
     
     func testInAppShowWhenMovesToForeground() {
@@ -656,7 +655,7 @@ class InAppTests: XCTestCase {
         }
         mockNotificationCenter.post(name: UIApplication.didBecomeActiveNotification, object: nil, userInfo: nil)
         wait(for: [expectation3], timeout: testExpectationTimeoutForInverted)
-
+        
         // now move to foreground outside of interval
         mockDateProvider.currentDate = mockDateProvider.currentDate.addingTimeInterval(1000.0)
         mockInAppFetcher.syncCallback = {
@@ -705,12 +704,12 @@ class InAppTests: XCTestCase {
         
         // send first message payload
         messageNumber = 1
-        mockInAppFetcher.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: 1...messageNumber))
+        mockInAppFetcher.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: 1 ... messageNumber))
         wait(for: [expectation1], timeout: testExpectationTimeout)
         
         // second message payload, should not be shown
         messageNumber = 2
-        mockInAppFetcher.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: 1...messageNumber))
+        mockInAppFetcher.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: 1 ... messageNumber))
         wait(for: [expectation2], timeout: retryInterval)
         
         // After retryInternval, the third should show
@@ -770,7 +769,7 @@ class InAppTests: XCTestCase {
         let mockInAppFetcher = MockInAppFetcher()
         
         let mockInAppDisplayer = MockInAppDisplayer()
-        mockInAppDisplayer.onShow.onSuccess {(message) in
+        mockInAppDisplayer.onShow.onSuccess { message in
             mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: TestInAppPayloadGenerator.index(fromCampaignId: message.campaignId)))
             expectation0.fulfill()
         }
@@ -778,7 +777,7 @@ class InAppTests: XCTestCase {
         var callOrder = [Int]()
         var callTimes = [Date]()
         let urlDelegate = MockUrlDelegate(returnValue: true)
-        urlDelegate.callback = {(url, _) in
+        urlDelegate.callback = { url, _ in
             if url == TestInAppPayloadGenerator.getClickedUrl(index: 1) {
                 callTimes.append(Date())
                 callOrder.append(1)
@@ -882,8 +881,8 @@ class InAppTests: XCTestCase {
         let obtained = persister.getMessages()
         XCTAssertEqual(messages.description, obtained.description)
         
-        XCTAssertEqual((obtained[3]).trigger.type, IterableInAppTriggerType.never)
-        let dict = (obtained[3]).trigger.dict as! [String : Any]
+        XCTAssertEqual(obtained[3].trigger.type, IterableInAppTriggerType.never)
+        let dict = obtained[3].trigger.dict as! [String: Any]
         TestUtils.validateMatch(keyPath: KeyPath("nested.var1"), value: "val1", inDictionary: dict, message: "Expected to find val1 in persisted dictionary")
         
         persister.clear()
@@ -960,7 +959,7 @@ class InAppTests: XCTestCase {
         }
         """
         
-        let notification = try! JSONSerialization.jsonObject(with: json.data(using: .utf8)!, options: []) as! [AnyHashable : Any]
+        let notification = try! JSONSerialization.jsonObject(with: json.data(using: .utf8)!, options: []) as! [AnyHashable: Any]
         
         if case let NotificationInfo.silentPush(silentPush) = NotificationHelper.inspect(notification: notification) {
             XCTAssertEqual(silentPush.notificationType, .update)
@@ -1037,7 +1036,7 @@ class InAppTests: XCTestCase {
         }
         """.toJsonDict()
         
-        class MockInAppManager : EmptyInAppManager {
+        class MockInAppManager: EmptyInAppManager {
             let expectation: XCTestExpectation
             
             init(expectation: XCTestExpectation) {
@@ -1115,16 +1114,16 @@ class InAppTests: XCTestCase {
         expectation3.isInverted = true
         let expectation4 = expectation(description: "call immediate trigger 2")
         
-        let payload = ["inAppMessages" : [
+        let payload = ["inAppMessages": [
             TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 1, triggerType: .event),
             TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 2, triggerType: .immediate),
             TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 3, triggerType: .never),
             TestInAppPayloadGenerator.createOneInAppDictWithUrl(index: 4, triggerType: .immediate),
-            ]]
+        ]]
         
         let mockInAppFetcher = MockInAppFetcher()
         let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
-        mockInAppDelegate.onNewMessageCallback = {(message) in
+        mockInAppDelegate.onNewMessageCallback = { message in
             if message.messageId == TestInAppPayloadGenerator.getMessageId(index: 1) {
                 expectation1.fulfill()
             } else if message.messageId == TestInAppPayloadGenerator.getMessageId(index: 2) {
@@ -1191,7 +1190,7 @@ class InAppTests: XCTestCase {
         }
         
         let mockCustomActionDelegate = MockCustomActionDelegate(returnValue: true)
-        mockCustomActionDelegate.callback = {(actionName, context) in
+        mockCustomActionDelegate.callback = { actionName, _ in
             XCTAssertEqual(actionName, customActionName)
             expectation1.fulfill()
         }
@@ -1232,7 +1231,7 @@ class InAppTests: XCTestCase {
 
 extension IterableInAppTrigger {
     public override var description: String {
-        return "type: \(self.type)"
+        return "type: \(type)"
     }
 }
 

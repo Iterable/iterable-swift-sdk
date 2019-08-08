@@ -11,9 +11,9 @@ import Foundation
 struct IterableAPNSUtil {
     static func isSandboxAPNS() -> Bool {
         #if targetEnvironment(simulator)
-        return isSandboxAPNS(mobileProvision: mobileProvision, isSimulator: true)
+            return isSandboxAPNS(mobileProvision: mobileProvision, isSimulator: true)
         #else
-        return isSandboxAPNS(mobileProvision: mobileProvision, isSimulator: false)
+            return isSandboxAPNS(mobileProvision: mobileProvision, isSimulator: false)
         #endif
     }
     
@@ -74,16 +74,16 @@ struct IterableAPNSUtil {
         }
     }
     
-    private static func scan(string: String, begin:String, end: String) -> String? {
+    private static func scan(string: String, begin: String, end: String) -> String? {
         let scanner = Scanner(string: string)
         var buffer: NSString?
         guard
             scanner.scanUpTo(begin, into: nil),
             scanner.scanUpTo(end, into: &buffer),
             let plistString = buffer
-            
-            else {
-                return nil
+        
+        else {
+            return nil
         }
         
         return plistString.appending(end)

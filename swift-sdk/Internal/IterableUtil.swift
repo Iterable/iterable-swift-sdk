@@ -64,8 +64,9 @@ enum IterableResult<T, E> {
             }
         }.joined(separator: separator)
     }
-
+    
     // MARK: Helper Utility Functions
+    
     // converts from IterableURLDelegate to UrlHandler
     static func urlHandler(fromUrlDelegate urlDelegate: IterableURLDelegate?, inContext context: IterableActionContext) -> UrlHandler {
         return { url in
@@ -75,9 +76,9 @@ enum IterableResult<T, E> {
     
     // converts from IterableCustomActionDelegate to CustomActionHandler
     static func customActionHandler(fromCustomActionDelegate customActionDelegate: IterableCustomActionDelegate?, inContext context: IterableActionContext) -> CustomActionHandler {
-        return { customActionName in
+        return { _ in
             if let customActionDelegate = customActionDelegate {
-                let _ = customActionDelegate.handle(iterableCustomAction: context.action, inContext: context)
+                _ = customActionDelegate.handle(iterableCustomAction: context.action, inContext: context)
                 return true
             } else {
                 return false

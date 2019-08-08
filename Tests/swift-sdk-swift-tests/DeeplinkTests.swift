@@ -3,18 +3,18 @@
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
-import XCTest
 import OHHTTPStubs
+import XCTest
 
 @testable import IterableSDK
 
 class DeeplinkTests: XCTestCase {
     override func setUp() {
         super.setUp()
-
+        
         IterableAPI.initializeForTesting()
     }
-
+    
     override func tearDown() {
         super.tearDown()
     }
@@ -24,18 +24,18 @@ class DeeplinkTests: XCTestCase {
     
     private let redirectRequest = "https://httpbin.org/redirect-to?url=http://example.com"
     private let exampleUrl = "http://example.com"
-
+    
     func testUniversalDeeplinkRewrite() {
         let expectation1 = expectation(description: "testUniversalDeeplinkRewrite")
         
         let redirectLocation = "https://links.iterable.com/api/docs#!/email"
         let campaignId = 83306
-        let templateId = 124348
+        let templateId = 124_348
         let messageId = "93125f33ba814b13a882358f8e0852e0"
         
         setupRedirectStubResponse(location: redirectLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
         
-        IterableAPI.getAndTrack(deeplink: URL(string: iterableRewriteURL)!) { (redirectUrl) in
+        IterableAPI.getAndTrack(deeplink: URL(string: iterableRewriteURL)!) { redirectUrl in
             XCTAssertEqual(redirectUrl, redirectLocation)
             XCTAssertTrue(Thread.isMainThread)
             expectation1.fulfill()
@@ -49,7 +49,7 @@ class DeeplinkTests: XCTestCase {
         
         setupStubResponse()
         
-        IterableAPI.getAndTrack(deeplink: URL(string: iterableNoRewriteURL)!) { (redirectUrl) in
+        IterableAPI.getAndTrack(deeplink: URL(string: iterableNoRewriteURL)!) { redirectUrl in
             XCTAssertEqual(redirectUrl, self.iterableNoRewriteURL)
             XCTAssertTrue(Thread.isMainThread)
             expectation1.fulfill()
@@ -63,13 +63,13 @@ class DeeplinkTests: XCTestCase {
         
         let redirectLocation = "https://links.iterable.com/api/docs#!/email"
         let campaignId = 83306
-        let templateId = 124348
+        let templateId = 124_348
         let messageId = "93125f33ba814b13a882358f8e0852e0"
         
         setupRedirectStubResponse(location: redirectLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
         
         let mockUrlDelegate = MockUrlDelegate(returnValue: false)
-        mockUrlDelegate.callback = {(url, context) in
+        mockUrlDelegate.callback = { url, context in
             XCTAssertEqual(url.absoluteString, redirectLocation)
             XCTAssertEqual(context.action.type, IterableAction.actionTypeOpenUrl)
             expectation1.fulfill()
@@ -89,12 +89,12 @@ class DeeplinkTests: XCTestCase {
         
         let redirectLocation = "https://links.iterable.com/api/docs#!/email"
         let campaignId = 83306
-        let templateId = 124348
+        let templateId = 124_348
         let messageId = "93125f33ba814b13a882358f8e0852e0"
         
         setupRedirectStubResponse(location: redirectLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
         
-        IterableAPI.getAndTrack(deeplink: URL(string: iterableRewriteURL)!) { (redirectUrl) in
+        IterableAPI.getAndTrack(deeplink: URL(string: iterableRewriteURL)!) { _ in
             XCTAssertEqual(IterableAPI.attributionInfo?.campaignId, NSNumber(value: campaignId))
             XCTAssertEqual(IterableAPI.attributionInfo?.templateId, NSNumber(value: templateId))
             XCTAssertEqual(IterableAPI.attributionInfo?.messageId, messageId)
@@ -111,7 +111,7 @@ class DeeplinkTests: XCTestCase {
         
         setupStubResponse()
         
-        IterableAPI.getAndTrack(deeplink: URL(string: redirectRequest)!) { (redirectUrl) in
+        IterableAPI.getAndTrack(deeplink: URL(string: redirectRequest)!) { redirectUrl in
             XCTAssertNotEqual(redirectUrl, self.exampleUrl)
             XCTAssertEqual(redirectUrl, self.redirectRequest)
             expectation1.fulfill()
@@ -121,24 +121,24 @@ class DeeplinkTests: XCTestCase {
     }
     
     private func setupRedirectStubResponse(location: String, campaignId: Int, templateId: Int, messageId: String) {
-        OHHTTPStubs.stubRequests(passingTest: { (request) -> Bool in
-            return true
-        }) { (request) -> OHHTTPStubsResponse in
-            return OHHTTPStubsResponse(data: try! JSONSerialization.data(withJSONObject: [:], options: []), statusCode: 301, headers: [
-                "Location" : location,
-                "Set-Cookie" : self.createCookieValue(nameValuePairs: "iterableEmailCampaignId", campaignId, "iterableTemplateId", templateId, "iterableMessageId", messageId)
-                ])
+        OHHTTPStubs.stubRequests(passingTest: { (_) -> Bool in
+            true
+        }) { (_) -> OHHTTPStubsResponse in
+            OHHTTPStubsResponse(data: try! JSONSerialization.data(withJSONObject: [:], options: []), statusCode: 301, headers: [
+                "Location": location,
+                "Set-Cookie": self.createCookieValue(nameValuePairs: "iterableEmailCampaignId", campaignId, "iterableTemplateId", templateId, "iterableMessageId", messageId),
+            ])
         }
     }
-
+    
     private func setupStubResponse() {
-        OHHTTPStubs.stubRequests(passingTest: { (request) -> Bool in
-            return true
-        }) { (request) -> OHHTTPStubsResponse in
-            return OHHTTPStubsResponse(data: try! JSONSerialization.data(withJSONObject: [:], options: []), statusCode: 200, headers: nil)
+        OHHTTPStubs.stubRequests(passingTest: { (_) -> Bool in
+            true
+        }) { (_) -> OHHTTPStubsResponse in
+            OHHTTPStubsResponse(data: try! JSONSerialization.data(withJSONObject: [:], options: []), statusCode: 200, headers: nil)
         }
     }
-
+    
     private func createCookieValue(nameValuePairs values: Any...) -> String {
         return values.take(2).map { "\($0[0])=\($0[1])" }.joined(separator: ";,")
     }

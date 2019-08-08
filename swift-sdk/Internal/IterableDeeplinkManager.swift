@@ -18,7 +18,7 @@ class IterableDeeplinkManager: NSObject {
      - remark:            passes the string of the redirected URL to the callback
      */
     func getAndTrackDeeplink(webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {
-        resolve(applinkURL: webpageURL) { (resolvedUrl) in
+        resolve(applinkURL: webpageURL) { resolvedUrl in
             callbackBlock(resolvedUrl?.absoluteString)
         }
     }
@@ -35,14 +35,13 @@ class IterableDeeplinkManager: NSObject {
      */
     func handleUniversalLink(_ url: URL, urlDelegate: IterableURLDelegate?, urlOpener: UrlOpenerProtocol) -> Bool {
         if isIterableDeeplink(url.absoluteString) {
-            resolve(applinkURL: url) { (resolvedUrl) in
+            resolve(applinkURL: url) { resolvedUrl in
                 var resolvedUrlString: String
                 if let resolvedUrl = resolvedUrl {
                     resolvedUrlString = resolvedUrl.absoluteString
                 } else {
                     resolvedUrlString = url.absoluteString
                 }
-                
                 
                 if let action = IterableAction.actionOpenUrl(fromUrlString: resolvedUrlString) {
                     let context = IterableActionContext(action: action, source: .universalLink)
@@ -81,7 +80,7 @@ class IterableDeeplinkManager: NSObject {
         deeplinkMessageId = nil
         
         if isIterableDeeplink(applinkURL.absoluteString) {
-            let trackAndRedirectTask = redirectUrlSession.dataTask(with: applinkURL) {[unowned self] (data, response, error) in
+            let trackAndRedirectTask = redirectUrlSession.dataTask(with: applinkURL) { [unowned self] _, _, error in
                 if let error = error {
                     ITBError("error: \(error.localizedDescription)")
                     callbackBlock(self.deeplinkLocation)
@@ -101,7 +100,7 @@ class IterableDeeplinkManager: NSObject {
             callbackBlock(applinkURL)
         }
     }
-
+    
     private func isIterableDeeplink(_ urlString: String) -> Bool {
         guard let regex = try? NSRegularExpression(pattern: .ITBL_DEEPLINK_IDENTIFIER, options: []) else {
             return false
@@ -110,8 +109,8 @@ class IterableDeeplinkManager: NSObject {
     }
     
     private lazy var redirectUrlSession: URLSession = {
-        return URLSession(configuration: .default, delegate: self, delegateQueue: OperationQueue.main)
-    } ()
+        URLSession(configuration: .default, delegate: self, delegateQueue: OperationQueue.main)
+    }()
     
     private var deeplinkLocation: URL?
     private var deeplinkCampaignId: NSNumber?
@@ -119,7 +118,7 @@ class IterableDeeplinkManager: NSObject {
     private var deeplinkMessageId: String?
 }
 
-extension IterableDeeplinkManager: URLSessionDelegate , URLSessionTaskDelegate {
+extension IterableDeeplinkManager: URLSessionDelegate, URLSessionTaskDelegate {
     /**
      Delegate handler when a redirect occurs. Stores a reference to the redirect url and does not execute the redirect.
      - parameters:
@@ -129,7 +128,7 @@ extension IterableDeeplinkManager: URLSessionDelegate , URLSessionTaskDelegate {
         - request: the request
         - completionHandler: the completionHandler
      */
-    public func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) {
+    public func urlSession(_: URLSession, task _: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) {
         deeplinkLocation = request.url
         
         guard let headerFields = response.allHeaderFields as? [String: String] else {
@@ -138,7 +137,7 @@ extension IterableDeeplinkManager: URLSessionDelegate , URLSessionTaskDelegate {
         guard let url = response.url else {
             return
         }
-
+        
         for cookie in HTTPCookie.cookies(withResponseHeaderFields: headerFields, for: url) {
             if cookie.name == "iterableEmailCampaignId" {
                 deeplinkCampaignId = number(fromString: cookie.value)

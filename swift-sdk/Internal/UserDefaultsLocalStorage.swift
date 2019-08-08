@@ -68,6 +68,7 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
     }
     
     // MARK: Private implementation
+    
     private let userDefaults: UserDefaults
     
     private func dict(withKey key: LocalStorageKey, currentDate: Date) throws -> [AnyHashable: Any]? {
