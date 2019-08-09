@@ -22,6 +22,12 @@ protocol InAppDisplayChecker {
 
 protocol IterableInAppManagerProtocolInternal: IterableInAppManagerProtocol, InAppNotifiable, InAppDisplayChecker {
     func start()
+    /// This will create a ViewController which displays an inbox message.
+    /// This ViewController would typically be pushed into the navigation stack.
+    /// - parameter message: The message to show.
+    /// - parameter inboxMode:
+    /// - returns: UIViewController which displays the message.
+    func createInboxMessageViewController(for message: IterableInAppMessage, withInboxMode inboxMode: IterableInboxViewController.InboxMode) -> UIViewController?
 }
 
 class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
@@ -91,13 +97,14 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         return getInboxMessages().filter { $0.read == false }.count
     }
     
-    func createInboxMessageViewController(for message: IterableInAppMessage) -> UIViewController? {
+    func createInboxMessageViewController(for message: IterableInAppMessage, withInboxMode _: IterableInboxViewController.InboxMode) -> UIViewController? {
         guard let content = message.content as? IterableHtmlInAppContent else {
             ITBError("Invalid Content in message")
             return nil
         }
         
         let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
+                                                                      padding: content.edgeInsets,
                                                                       trackParams: IterableInAppMessageMetadata.metadata(from: message, location: AnyHashable.ITBL_IN_APP_LOCATION_INBOX),
                                                                       isModal: false)
         let createResult = IterableHtmlMessageViewController.create(parameters: parameters)

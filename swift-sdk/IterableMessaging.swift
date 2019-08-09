@@ -39,12 +39,6 @@ public protocol IterableInAppManagerProtocol {
     /// - parameter read: Whether this inbox message was read
     /// - parameter message: The inbox message
     @objc(setRead:forMessage:) func set(read: Bool, forMessage message: IterableInAppMessage)
-    
-    /// This will create a ViewController which displays an inbox message.
-    /// This ViewController would typically be pushed into the navigation stack.
-    /// - parameter message: The message to show.
-    /// - returns: UIViewController which displays the message.
-    @objc(createInboxMessageViewControllerForMessage:) func createInboxMessageViewController(for message: IterableInAppMessage) -> UIViewController?
 }
 
 /// Iterable Notification names

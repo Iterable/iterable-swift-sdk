@@ -9,7 +9,7 @@ import Foundation
 class EmptyInAppManager: IterableInAppManagerProtocolInternal {
     func start() {}
     
-    func createInboxMessageViewController(for _: IterableInAppMessage) -> UIViewController? {
+    func createInboxMessageViewController(for _: IterableInAppMessage, withInboxMode _: IterableInboxViewController.InboxMode) -> UIViewController? {
         ITBError("Can't create VC")
         return nil
     }

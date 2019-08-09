@@ -7,12 +7,20 @@ import UIKit
 
 @IBDesignable
 open class IterableInboxViewController: UITableViewController {
+    public enum InboxMode {
+        case popup
+        case nav
+    }
+    
     // MARK: Settable properties
     
     /// If you want to use a custom layout for your inbox TableViewCell
     /// this is where you should override it. Please note that this assumes
     /// that the XIB is present in the main bundle.
     @IBInspectable public var cellNibName: String? = nil
+    
+    ///
+    public var inboxMode = InboxMode.nav
     
     /// You can change insertion/deletion animations here.
     public var insertionAnimation = UITableView.RowAnimation.automatic
@@ -99,9 +107,13 @@ open class IterableInboxViewController: UITableViewController {
     open override func tableView(_: UITableView, didSelectRowAt indexPath: IndexPath) {
         let message = viewModel.message(atRow: indexPath.row)
         
-        if let viewController = viewModel.createInboxMessageViewController(forMessage: message) {
+        if let viewController = viewModel.createInboxMessageViewController(for: message, withInboxMode: inboxMode) {
             viewModel.set(read: true, forMessage: message)
-            navigationController?.pushViewController(viewController, animated: true)
+            if inboxMode == .nav {
+                navigationController?.pushViewController(viewController, animated: true)
+            } else {
+                fatalError("Popup mode not implemented")
+            }
         }
     }
     

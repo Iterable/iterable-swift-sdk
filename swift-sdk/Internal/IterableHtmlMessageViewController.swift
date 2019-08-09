@@ -191,7 +191,7 @@ extension IterableHtmlMessageViewController: UIWebViewDelegate {
         }
         
         if parameters.isModal {
-            dismiss(animated: false) { [weak self, destinationUrl] in
+            dismiss(animated: true) { [weak self, destinationUrl] in
                 self?.futureClickedURL.resolve(with: url)
                 if let trackParams = self?.parameters.trackParams, let messageId = trackParams.messageId {
                     IterableAPI.track(inAppClick: messageId,
