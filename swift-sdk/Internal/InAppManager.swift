@@ -97,7 +97,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         return getInboxMessages().filter { $0.read == false }.count
     }
     
-    func createInboxMessageViewController(for message: IterableInAppMessage, withInboxMode _: IterableInboxViewController.InboxMode) -> UIViewController? {
+    func createInboxMessageViewController(for message: IterableInAppMessage, withInboxMode inboxMode: IterableInboxViewController.InboxMode) -> UIViewController? {
         guard let content = message.content as? IterableHtmlInAppContent else {
             ITBError("Invalid Content in message")
             return nil
@@ -106,7 +106,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
                                                                       padding: content.edgeInsets,
                                                                       trackParams: IterableInAppMessageMetadata.metadata(from: message, location: AnyHashable.ITBL_IN_APP_LOCATION_INBOX),
-                                                                      isModal: false)
+                                                                      isModal: inboxMode == .popup)
         let createResult = IterableHtmlMessageViewController.create(parameters: parameters)
         let viewController = createResult.viewController
         
