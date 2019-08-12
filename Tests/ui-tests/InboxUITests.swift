@@ -18,7 +18,7 @@ class InboxUITests: XCTestCase {
     
     // shortcut calculated property
     private var app: XCUIApplication {
-        return UITests.application
+        return InboxUITests.application
     }
     
     let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
