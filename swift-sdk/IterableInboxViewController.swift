@@ -19,8 +19,9 @@ open class IterableInboxViewController: UITableViewController {
     /// that the XIB is present in the main bundle.
     @IBInspectable public var cellNibName: String? = nil
     
-    ///
-    public var inboxMode = InboxMode.nav
+    /// Set this mode to `popup` to show a popup when an inbox message is selected in the list.
+    /// Set this mode to `nav` to push inbox message into navigation stack.
+    public var inboxMode = InboxMode.popup
     
     /// You can change insertion/deletion animations here.
     public var insertionAnimation = UITableView.RowAnimation.automatic
@@ -112,7 +113,13 @@ open class IterableInboxViewController: UITableViewController {
             if inboxMode == .nav {
                 navigationController?.pushViewController(viewController, animated: true)
             } else {
-                fatalError("Popup mode not implemented")
+                definesPresentationContext = true
+                viewController.modalPresentationStyle = .overCurrentContext
+                if let rootViewController = IterableUtil.rootViewController {
+                    rootViewController.present(viewController, animated: true)
+                } else {
+                    present(viewController, animated: true)
+                }
             }
         }
     }
