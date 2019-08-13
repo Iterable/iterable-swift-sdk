@@ -20,6 +20,29 @@ open class IterableInboxNavigationViewController: UINavigationController {
         }
     }
     
+    /// This is the title for the Inbox Navigation Bar
+    @IBInspectable public var navTitle: String? = nil {
+        didSet {
+            if let inboxViewController = viewControllers[0] as? IterableInboxViewController {
+                if let navTitle = navTitle {
+                    inboxViewController.navigationItem.title = navTitle
+                }
+            }
+        }
+    }
+    
+    @IBInspectable public var isPopup: Bool = true {
+        didSet {
+            if let inboxViewController = viewControllers[0] as? IterableInboxViewController {
+                if isPopup {
+                    inboxViewController.inboxMode = .popup
+                } else {
+                    inboxViewController.inboxMode = .nav
+                }
+            }
+        }
+    }
+    
     // MARK: Initializers
     
     /// This initializer should be used when initializing from Code.
