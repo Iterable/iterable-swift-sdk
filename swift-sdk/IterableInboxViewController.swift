@@ -71,11 +71,7 @@ open class IterableInboxViewController: UITableViewController {
         registerTableViewCell()
     }
     
-    // MARK: - Table view data source
-    
-    open override func numberOfSections(in _: UITableView) -> Int {
-        return 1
-    }
+    // MARK: - UITableViewDataSource (Required Functions)
     
     open override func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
         return viewModel.numMessages
@@ -91,19 +87,23 @@ open class IterableInboxViewController: UITableViewController {
         return cell
     }
     
-    // Override to support conditional editing of the table view.
+    // MARK: - UITableViewDataSource (Optional Functions)
+    
+    open override func numberOfSections(in _: UITableView) -> Int {
+        return 1
+    }
+    
     open override func tableView(_: UITableView, canEditRowAt _: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
         return true
     }
     
-    // Override to support editing the table view.
     open override func tableView(_: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            // Delete the row from the data source
             viewModel.remove(atRow: indexPath.row)
         }
     }
+    
+    // MARK: - UITableViewDelegate (Optional Functions)
     
     open override func tableView(_: UITableView, didSelectRowAt indexPath: IndexPath) {
         let message = viewModel.message(atRow: indexPath.row)
@@ -186,27 +186,25 @@ open class IterableInboxViewController: UITableViewController {
 }
 
 extension IterableInboxViewController: InboxViewControllerViewModelDelegate {
-    // Must be called on main thread
     func onViewModelChanged(diff: [SectionedDiffStep<Int, InboxMessageViewModel>]) {
         ITBInfo()
         
-//        guard Thread.isMainThread else {
-//            ITBError("Must be called from main thread")
-//            return false
-//        }
+        guard Thread.isMainThread else {
+            ITBError("\(#function) must be called from main thread")
+            return
+        }
         
         updateTableView(diff: diff)
         updateUnreadBadgeCount()
     }
     
-    // Must be called on main thread
     func onImageLoaded(forRow row: Int) {
         ITBInfo()
         
-//        guard Thread.isMainThread else {
-//            ITBError("Must be called from main thread")
-//            return false
-//        }
+        guard Thread.isMainThread else {
+            ITBError("\(#function) must be called from main thread")
+            return
+        }
         
         tableView.reloadRows(at: [IndexPath(row: row, section: 0)], with: .automatic)
     }
