@@ -20,7 +20,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="4iW-QJ-TOw">
-                                <rect key="frame" x="110" y="223.5" width="194" height="410"/>
+                                <rect key="frame" x="110" y="204.5" width="194" height="448"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nrZ-Da-kmk">
                                         <rect key="frame" x="31.5" y="0.0" width="131" height="30"/>
@@ -93,10 +93,17 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oId-8n-egi">
-                                        <rect key="frame" x="43" y="380" width="108" height="30"/>
-                                        <state key="normal" title="Show Inbox Tab"/>
+                                        <rect key="frame" x="19" y="380" width="156" height="30"/>
+                                        <state key="normal" title="Show Popup Inbox Tab"/>
                                         <connections>
-                                            <action selector="showInboxTabTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="SeE-SO-Oy7"/>
+                                            <action selector="showPopupInboxTabTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Mcw-oN-9jK"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HVm-XZ-ah9">
+                                        <rect key="frame" x="27.5" y="418" width="139" height="30"/>
+                                        <state key="normal" title="Show Nav Inbox Tab"/>
+                                        <connections>
+                                            <action selector="showNavInboxTabTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="SrG-hQ-aKw"/>
                                         </connections>
                                     </button>
                                 </subviews>
