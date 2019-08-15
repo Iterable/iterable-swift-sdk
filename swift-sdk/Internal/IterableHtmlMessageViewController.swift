@@ -81,10 +81,10 @@ class IterableHtmlMessageViewController: UIViewController {
         ITBInfo()
         super.viewDidLoad()
         
-        if let trackParams = parameters.trackParams, let messageId = trackParams.messageId {
-            IterableAPI.track(inAppOpen: messageId,
-                              saveToInbox: trackParams.saveToInbox,
-                              silentInbox: trackParams.silentInbox,
+        if let trackParams = parameters.trackParams {
+            IterableAPI.track(inAppOpen: trackParams.message.messageId,
+                              saveToInbox: trackParams.message.saveToInbox,
+                              silentInbox: trackParams.message.silentInbox,
                               location: trackParams.location)
         }
         
@@ -95,6 +95,26 @@ class IterableHtmlMessageViewController: UIViewController {
         super.viewWillLayoutSubviews()
         if let webView = webView {
             resizeWebView(webView)
+        }
+    }
+    
+    open override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        guard let trackParams = parameters.trackParams else {
+            return
+        }
+        
+        if let _ = navigationController, linkClicked == false {
+            IterableAPI.track(inAppClose: trackParams.message,
+                              location: trackParams.location,
+                              source: InAppCloseSource.back.rawValue,
+                              clickedUrl: nil)
+        } else {
+            IterableAPI.track(inAppClose: trackParams.message,
+                              location: trackParams.location,
+                              source: InAppCloseSource.link.rawValue,
+                              clickedUrl: clickedLink)
         }
     }
     
@@ -109,6 +129,8 @@ class IterableHtmlMessageViewController: UIViewController {
     private var webView: UIWebView?
     private var location: IterableMessageLocation = .full
     private var loaded = false
+    private var linkClicked = false
+    private var clickedLink: String?
     
     /**
      Resizes the webview based upon the insetPadding if the html is finished loading
@@ -174,6 +196,16 @@ extension IterableHtmlMessageViewController: UIWebViewDelegate {
         }
     }
     
+    fileprivate func trackInAppClick(destinationUrl: String) {
+        if let trackParams = parameters.trackParams {
+            IterableAPI.track(inAppClick: trackParams.message.messageId,
+                              saveToInbox: trackParams.message.saveToInbox,
+                              silentInbox: trackParams.message.silentInbox,
+                              location: trackParams.location,
+                              clickedUrl: destinationUrl)
+        }
+    }
+    
     func webView(_: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebView.NavigationType) -> Bool {
         guard navigationType == .linkClicked, let url = request.url else {
             return true
@@ -190,26 +222,17 @@ extension IterableHtmlMessageViewController: UIWebViewDelegate {
             destinationUrl = url.absoluteString
         }
         
+        linkClicked = true
+        clickedLink = destinationUrl
+        
         if parameters.isModal {
             dismiss(animated: true) { [weak self, destinationUrl] in
                 self?.futureClickedURL.resolve(with: url)
-                if let trackParams = self?.parameters.trackParams, let messageId = trackParams.messageId {
-                    IterableAPI.track(inAppClick: messageId,
-                                      saveToInbox: trackParams.saveToInbox,
-                                      silentInbox: trackParams.silentInbox,
-                                      location: trackParams.location,
-                                      clickedUrl: destinationUrl)
-                }
+                self?.trackInAppClick(destinationUrl: destinationUrl)
             }
         } else {
             futureClickedURL.resolve(with: url)
-            if let trackParams = parameters.trackParams, let messageId = trackParams.messageId {
-                IterableAPI.track(inAppClick: messageId,
-                                  saveToInbox: trackParams.saveToInbox,
-                                  silentInbox: trackParams.silentInbox,
-                                  location: trackParams.location,
-                                  clickedUrl: destinationUrl)
-            }
+            trackInAppClick(destinationUrl: destinationUrl)
             
             navigationController?.popViewController(animated: true)
         }

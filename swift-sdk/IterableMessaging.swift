@@ -176,6 +176,11 @@ public final class IterableInAppMessage: NSObject {
     /// Whether this inbox message has been read
     public internal(set) var read: Bool = false
     
+    /// Whether this message will be delivered silently to inbox
+    public var silentInbox: Bool {
+        return saveToInbox && trigger.type == .never
+    }
+    
     // Internal, don't let others create
     init(messageId: String,
          campaignId: String,
