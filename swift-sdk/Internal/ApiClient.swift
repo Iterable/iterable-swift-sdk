@@ -33,7 +33,7 @@ protocol ApiClientProtocol: class {
     
     func track(inAppClick messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, clickedUrl: String, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError>
     
-    func track(inAppClose message: IterableInAppMessage, inappMessageContext: InAppMessageContext, source: InAppCloseSource?, clickedUrl: String?) -> Future<SendRequestValue, SendRequestError>
+    func track(inAppClose message: IterableInAppMessage, inAppMessageContext: InAppMessageContext, source: InAppCloseSource?, clickedUrl: String?) -> Future<SendRequestValue, SendRequestError>
     
     func track(inAppDelivery messageId: String, saveToInbox: Bool?, silentInbox: Bool?, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError>
     
@@ -113,8 +113,8 @@ class ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, deviceMetadata: deviceMetadata, clickedUrl: clickedUrl))
     }
     
-    func track(inAppClose message: IterableInAppMessage, inappMessageContext: InAppMessageContext, source: InAppCloseSource?, clickedUrl: String?) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createTrackInAppCloseRequest(message, inappMessageContext: inappMessageContext, source: source, clickedUrl: clickedUrl))
+    func track(inAppClose message: IterableInAppMessage, inAppMessageContext: InAppMessageContext, source: InAppCloseSource?, clickedUrl: String?) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createTrackInAppCloseRequest(message, inAppMessageContext: inAppMessageContext, source: source, clickedUrl: clickedUrl))
     }
     
     func track(inAppDelivery messageId: String, saveToInbox: Bool?, silentInbox: Bool?, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError> {

@@ -61,7 +61,7 @@ public struct InAppMessageContext {
         context.setValue(for: .silentInbox, value: message.saveToInbox && message.trigger.type == .never)
         
         if let location = location {
-            context.setValue(for: .inappLocation, value: location)
+            context.setValue(for: .inAppLocation, value: location)
         }
         
         context.setValue(for: .deviceInfo, value: InAppMessageContext.translateDeviceMetadata(metadata: deviceMetadata))

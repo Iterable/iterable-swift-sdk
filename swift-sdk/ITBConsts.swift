@@ -188,14 +188,14 @@ public enum JsonKey: String, JsonKeyRepresentable {
     case inboxExpiresAt = "expiresAt"
     case inboxCreatedAt = "createdAt"
     
-    case inappMessageContext = "messageContext"
+    case inAppMessageContext = "messageContext"
     
     case saveToInbox
     case silentInbox
-    case inappLocation = "location"
+    case inAppLocation = "location"
     
-    case inappCloseSource = "source"
-    case inappCloseUrl = "url"
+    case inAppCloseSource = "source"
+    case inAppCloseUrl = "url"
     
     case deviceInfo
     case deviceId
