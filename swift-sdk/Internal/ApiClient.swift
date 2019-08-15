@@ -6,6 +6,7 @@
 
 import Foundation
 
+/// Responsible for sending request to server
 protocol ApiClientProtocol: class {
     func register(hexToken: String,
                   appName: String,
@@ -31,6 +32,8 @@ protocol ApiClientProtocol: class {
     func track(inAppOpen messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError>
     
     func track(inAppClick messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, clickedUrl: String, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError>
+    
+    func track(inAppClose message: IterableInAppMessage, inAppMessageContext: InAppMessageContext, source: InAppCloseSource?, clickedUrl: String?) -> Future<SendRequestValue, SendRequestError>
     
     func track(inAppDelivery messageId: String, saveToInbox: Bool?, silentInbox: Bool?, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError>
     
@@ -108,6 +111,10 @@ class ApiClient: ApiClientProtocol {
     
     func track(inAppClick messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, clickedUrl: String, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, deviceMetadata: deviceMetadata, clickedUrl: clickedUrl))
+    }
+    
+    func track(inAppClose message: IterableInAppMessage, inAppMessageContext: InAppMessageContext, source: InAppCloseSource?, clickedUrl: String?) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createTrackInAppCloseRequest(message, inAppMessageContext: inAppMessageContext, source: source, clickedUrl: clickedUrl))
     }
     
     func track(inAppDelivery messageId: String, saveToInbox: Bool?, silentInbox: Bool?, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError> {

@@ -1,32 +1,13 @@
 //
-//  IterableNotificationMetadata.swift
-//  new-ios-sdk
-//
 //  Created by Tapash Majumder on 6/5/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
 import Foundation
 
-@objc class IterableInAppMessageMetadata: IterableNotificationMetadata {
-    @objc var saveToInbox: Bool = false
-    @objc var silentInbox: Bool = false
-    @objc var location: String?
-    
-    @objc public static func metadata(from inAppMessage: IterableInAppMessage, location: String? = nil) -> IterableInAppMessageMetadata {
-        return IterableInAppMessageMetadata(from: inAppMessage, location: location)
-    }
-    
-    private init(from message: IterableInAppMessage, location: String? = nil) {
-        super.init()
-        
-        campaignId = NSNumber(value: Int(message.campaignId) ?? 0)
-        messageId = message.messageId
-        
-        saveToInbox = message.saveToInbox
-        silentInbox = message.saveToInbox && message.trigger.type == .never
-        self.location = location
-    }
+struct IterableInAppMessageMetadata {
+    let message: IterableInAppMessage
+    let location: String?
 }
 
 @objc class IterablePushNotificationMetadata: IterableNotificationMetadata {

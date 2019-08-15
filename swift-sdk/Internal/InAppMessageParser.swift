@@ -120,7 +120,7 @@ struct InAppMessageParser {
     }
     
     private static func parseTime(withKey key: JsonKey, fromJson json: [AnyHashable: Any]) -> Date? {
-        return json.getIntValue(key: key).map(IterableUtil.date(fromInt:))
+        return json.getIntValue(for: key).map(IterableUtil.date(fromInt:))
     }
     
     private static func parseTrigger(fromTriggerElement element: [AnyHashable: Any]?) -> IterableInAppTrigger {
@@ -140,9 +140,9 @@ struct InAppMessageParser {
             return nil
         }
         
-        let title = inboxMetadataDict.getStringValue(key: .inboxTitle)
-        let subtitle = inboxMetadataDict.getStringValue(key: .inboxSubtitle)
-        let icon = inboxMetadataDict.getStringValue(key: .inboxIcon)
+        let title = inboxMetadataDict.getStringValue(for: .inboxTitle)
+        let subtitle = inboxMetadataDict.getStringValue(for: .inboxSubtitle)
+        let icon = inboxMetadataDict.getStringValue(for: .inboxIcon)
         
         return IterableInboxMetadata(title: title, subtitle: subtitle, icon: icon)
     }

@@ -25,6 +25,7 @@ public extension String {
     static let ITBL_PATH_TRACK = "events/track"
     static let ITBL_PATH_TRACK_INAPP_CLICK = "events/trackInAppClick"
     static let ITBL_PATH_TRACK_INAPP_OPEN = "events/trackInAppOpen"
+    static let ITBL_PATH_TRACK_INAPP_CLOSE = "events/trackInAppClose"
     static let ITBL_PATH_TRACK_INAPP_DELIVERY = "events/trackInAppDelivery"
     static let ITBL_PATH_TRACK_PUSH_OPEN = "events/trackPushOpen"
     static let ITBL_PATH_UPDATE_USER = "users/update"
@@ -175,14 +176,65 @@ public extension AnyHashable {
     static let ITBL_IN_APP_INBOX_METADATA = "inboxMetadata"
 }
 
-public enum JsonKey: String {
-    // Inbox Message
+public protocol JsonKeyRepresentable {
+    var jsonKey: String { get }
+}
+
+public enum JsonKey: String, JsonKeyRepresentable {
     case inboxTitle = "title"
     case inboxSubtitle = "subtitle"
     case inboxIcon = "icon"
     
     case inboxExpiresAt = "expiresAt"
     case inboxCreatedAt = "createdAt"
+    
+    case inAppMessageContext = "messageContext"
+    
+    case saveToInbox
+    case silentInbox
+    case inAppLocation = "location"
+    
+    case inAppCloseSource = "source"
+    case inAppCloseUrl = "url"
+    
+    case deviceInfo
+    case deviceId
+    case platform
+    case appPackageName
+    
+    public var jsonKey: String {
+        return rawValue
+    }
+}
+
+public protocol JsonValueRepresentable {
+    var jsonValue: Any { get }
+}
+
+enum InAppLocation: String, JsonValueRepresentable {
+    case inApp = "in-app"
+    case inbox
+    
+    var jsonValue: Any {
+        return rawValue
+    }
+    
+    static func from(_ value: String?) -> InAppLocation? {
+        return value.flatMap(InAppLocation.init(rawValue:))
+    }
+}
+
+enum InAppCloseSource: String, JsonValueRepresentable {
+    case back
+    case link
+    
+    var jsonValue: Any {
+        return rawValue
+    }
+    
+    static func from(_ value: String?) -> InAppCloseSource? {
+        return value.flatMap(InAppCloseSource.init(rawValue:))
+    }
 }
 
 // These are custom action for "iterable://delete" etc.
