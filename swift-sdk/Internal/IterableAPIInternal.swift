@@ -294,7 +294,15 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: apiClient.track(inAppClick: messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, clickedUrl: clickedUrl, deviceMetadata: deviceMetadata))
     }
     
-    func trackInAppClose(_: String, saveToInbox _: Bool = false, silentInbox _: Bool = false, location _: String? = nil, source _: String? = nil, clickedUrl _: String? = nil) {}
+    func trackInAppClose(_ message: IterableInAppMessage, location: String? = nil, source: String? = nil, clickedUrl: String? = nil) {
+        let result = apiClient.track(inAppClose: message,
+                                     inappMessageContext: InAppMessageContext(message: message, location: InAppLocation.from(location), deviceMetadata: deviceMetadata),
+                                     source: InAppCloseSource.from(source),
+                                     clickedUrl: clickedUrl)
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClose"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClose"),
+                                 forResult: result)
+    }
     
     func trackInAppDelivery(_ message: IterableInAppMessage) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppDelivery"),

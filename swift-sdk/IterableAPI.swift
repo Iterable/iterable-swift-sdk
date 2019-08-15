@@ -434,27 +434,23 @@ public final class IterableAPI: NSObject {
     
     /**
      Tracks an InAppClose event
-     
-     - parameter messageId:     The messageId of the notification
-     - parameter clickedUrl:    The url that was clicked to close the in-app
+     - parameter message:       The in-app message
+     - parameter clickedUrl:    The url that was clicked to close the in-app. It will be `nil` when message is closed on clicking `back`.
      */
-    @objc(trackInAppClose:clickedUrl:) public static func track(inAppClose messageId: String, clickedUrl: String?) {
-        internalImplementation?.trackInAppClose(messageId, clickedUrl: clickedUrl)
+    @objc(trackInAppClose:clickedUrl:) public static func track(inAppClose message: IterableInAppMessage, clickedUrl: String?) {
+        internalImplementation?.trackInAppClose(message, clickedUrl: clickedUrl)
     }
     
     /**
      Tracks an InAppClose event
-     
-     - parameter messageId:     The messageId of the notification
-     - parameter clickedUrl:    The url that was clicked to close the in-app
-     - parameter saveToInbox:   Whether the message was also meant to be saved to inbox
-     - parameter silentInbox:   Whether the message was meant to be delivered silently to inbox
+     - parameter message:       The in-app message
+     - parameter clickedUrl:    The url that was clicked to close the in-app. It will be `nil` when message is closed on clicking `back`.
      - parameter location:      Location is `inbox` if the message was shown by clicking a message in inbox. This value is `in-app` otherwise.
      - parameter source:        Source is `back` if back button was clicked to dismiss in-app message. Otherwise source is `link`.
      */
-    @objc(trackInAppClose:saveToInbox:silentInbox:location:source:clickedUrl:)
-    public static func track(inAppClose messageId: String, saveToInbox: Bool = false, silentInbox: Bool = false, location: String?, source: String?, clickedUrl: String?) {
-        internalImplementation?.trackInAppClose(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, source: source, clickedUrl: clickedUrl)
+    @objc(trackInAppClose:location:source:clickedUrl:)
+    public static func track(inAppClose message: IterableInAppMessage, location: String?, source: String?, clickedUrl: String?) {
+        internalImplementation?.trackInAppClose(message, location: location, source: source, clickedUrl: clickedUrl)
     }
     
     /**

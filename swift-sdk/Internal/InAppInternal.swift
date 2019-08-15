@@ -49,21 +49,16 @@ class InAppFetcher: InAppFetcherProtocol {
 }
 
 public struct InAppMessageContext {
-    let saveToInbox: Bool?
-    let silentInbox: Bool?
+    let message: IterableInAppMessage
     let location: InAppLocation?
     let deviceMetadata: DeviceMetadata
     
     func toDictionary() -> [AnyHashable: Any] {
         var context = [AnyHashable: Any]()
         
-        if let saveToInbox = saveToInbox {
-            context.setValue(for: .saveToInbox, value: saveToInbox)
-        }
+        context.setValue(for: .saveToInbox, value: message.saveToInbox)
         
-        if let silentInbox = silentInbox {
-            context.setValue(for: .silentInbox, value: silentInbox)
-        }
+        context.setValue(for: .silentInbox, value: message.saveToInbox && message.trigger.type == .never)
         
         if let location = location {
             context.setValue(for: .inappLocation, value: location)

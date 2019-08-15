@@ -181,7 +181,6 @@ public protocol JsonKeyRepresentable {
 }
 
 public enum JsonKey: String, JsonKeyRepresentable {
-    // Inbox Message
     case inboxTitle = "title"
     case inboxSubtitle = "subtitle"
     case inboxIcon = "icon"
@@ -189,10 +188,12 @@ public enum JsonKey: String, JsonKeyRepresentable {
     case inboxExpiresAt = "expiresAt"
     case inboxCreatedAt = "createdAt"
     
+    case inappMessageContext = "messageContext"
+    
     case saveToInbox
     case silentInbox
-    
     case inappLocation = "location"
+    
     case inappCloseSource = "source"
     case inappCloseUrl = "url"
     
@@ -216,6 +217,23 @@ enum InAppLocation: String, JsonValueRepresentable {
     
     var jsonValue: Any {
         return rawValue
+    }
+    
+    static func from(_ value: String?) -> InAppLocation? {
+        return value.flatMap(InAppLocation.init(rawValue:))
+    }
+}
+
+enum InAppCloseSource: String, JsonValueRepresentable {
+    case back
+    case link
+    
+    var jsonValue: Any {
+        return rawValue
+    }
+    
+    static func from(_ value: String?) -> InAppCloseSource? {
+        return value.flatMap(InAppCloseSource.init(rawValue:))
     }
 }
 
