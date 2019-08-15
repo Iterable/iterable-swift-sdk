@@ -15,12 +15,24 @@ public extension Array {
 }
 
 public extension Dictionary where Key == AnyHashable, Value == Any {
-    func getStringValue(key: JsonKey, withDefault default: String? = nil) -> String? {
-        return self[key.rawValue] as? String ?? `default`
+    func getStringValue(for key: JsonKey, withDefault default: String? = nil) -> String? {
+        return self[key.jsonKey] as? String ?? `default`
     }
     
-    func getIntValue(key: JsonKey) -> Int? {
-        return self[key.rawValue] as? Int
+    func getIntValue(for key: JsonKey) -> Int? {
+        return self[key.jsonKey] as? Int
+    }
+    
+    func getBoolValue(for key: JsonKey) -> Bool? {
+        return self[key.jsonKey] as? Bool
+    }
+    
+    mutating func setValue(for key: JsonKey, value: JsonValueRepresentable) {
+        self[key.jsonKey] = value.jsonValue
+    }
+    
+    mutating func setValue(for key: JsonKey, value: Any) {
+        self[key.jsonKey] = value
     }
 }
 

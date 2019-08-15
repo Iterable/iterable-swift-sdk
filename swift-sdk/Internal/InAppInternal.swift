@@ -47,3 +47,40 @@ class InAppFetcher: InAppFetcherProtocol {
     // how many messages to fetch
     private let numMessages = 100
 }
+
+public struct InAppMessageContext {
+    let saveToInbox: Bool?
+    let silentInbox: Bool?
+    let location: InAppLocation?
+    let deviceMetadata: DeviceMetadata
+    
+    func toDictionary() -> [AnyHashable: Any] {
+        var context = [AnyHashable: Any]()
+        
+        if let saveToInbox = saveToInbox {
+            context.setValue(for: .saveToInbox, value: saveToInbox)
+        }
+        
+        if let silentInbox = silentInbox {
+            context.setValue(for: .silentInbox, value: silentInbox)
+        }
+        
+        if let location = location {
+            context.setValue(for: .inappLocation, value: location)
+        }
+        
+        context.setValue(for: .deviceInfo, value: InAppMessageContext.translateDeviceMetadata(metadata: deviceMetadata))
+        
+        return context
+    }
+    
+    private static func translateDeviceMetadata(metadata: DeviceMetadata) -> [AnyHashable: Any] {
+        var dict = [AnyHashable: Any]()
+        
+        dict.setValue(for: .deviceId, value: metadata.deviceId)
+        dict.setValue(for: .platform, value: metadata.platform)
+        dict.setValue(for: .appPackageName, value: metadata.appPackageName)
+        
+        return dict
+    }
+}
