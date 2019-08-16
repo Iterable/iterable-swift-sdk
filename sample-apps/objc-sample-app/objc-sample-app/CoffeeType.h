@@ -9,7 +9,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-@interface CoffeeType : NSObject
+@interface CoffeeType: NSObject
+
 @property (nonatomic, copy) NSString *name;
 @property (nonatomic) UIImage *image;
 
@@ -19,4 +20,5 @@
 @property(class, readonly, nonatomic) CoffeeType *black;
 
 - (instancetype) initWithName:(NSString *)name andImage:(UIImage *)image;
+
 @end

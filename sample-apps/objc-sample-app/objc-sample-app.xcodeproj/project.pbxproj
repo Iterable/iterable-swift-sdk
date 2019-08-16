@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -158,10 +158,10 @@
 		ACF560C920E3118D000AAC23 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				AC9080CE20E309AF004BC146 /* CoffeeViewController.h */,
-				AC9080CF20E309AF004BC146 /* CoffeeViewController.m */,
 				AC9080CB20E309AF004BC146 /* CoffeeListTableViewController.h */,
 				AC9080CC20E309AF004BC146 /* CoffeeListTableViewController.m */,
+				AC9080CE20E309AF004BC146 /* CoffeeViewController.h */,
+				AC9080CF20E309AF004BC146 /* CoffeeViewController.m */,
 				ACEFDCEC20FFC005009B91A2 /* LoginViewController.h */,
 				ACEFDCED20FFC005009B91A2 /* LoginViewController.m */,
 			);
@@ -352,15 +352,12 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-objc-sample-app/Pods-objc-sample-app-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/Iterable-iOS-SDK/IterableSDK.framework",
-				"${BUILT_PRODUCTS_DIR}/Iterable-iOS-AppExtensions/IterableAppExtensions.framework",
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-objc-sample-app/Pods-objc-sample-app-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IterableSDK.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IterableAppExtensions.framework",
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-objc-sample-app/Pods-objc-sample-app-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;

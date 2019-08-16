@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface DeeplinkHandler : NSObject
+@interface DeeplinkHandler: NSObject
 
 + (BOOL)handleURL:(NSURL *)url;
 

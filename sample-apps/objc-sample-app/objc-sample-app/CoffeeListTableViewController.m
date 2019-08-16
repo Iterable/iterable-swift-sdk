@@ -13,8 +13,10 @@
 @import IterableSDK;
 
 @interface CoffeeListTableViewController ()
+
 @property (nonatomic, strong, readonly) NSArray *coffeeList;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *loginOutBarButton;
+
 @end
 
 @implementation CoffeeListTableViewController
@@ -35,7 +37,7 @@
     
     [self initializeCoffees];
     
-    searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
+    searchController = [[UISearchController alloc] initWithSearchResultsController: nil];
     searchController.searchBar.placeholder = @"Search";
     searchController.delegate = self;
     searchController.searchResultsUpdater = self;
@@ -43,7 +45,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
+    [super viewWillAppear: animated];
     
     if (IterableAPI.email == nil) {
         self.loginOutBarButton.title = @"Login";
@@ -52,14 +54,8 @@
     }
 }
 
-#pragma mark - Table view data source
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
-}
-
+#pragma mark - TableViewDataSource Functions
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-
     return self.coffeeList.count;
 }
 
@@ -74,7 +70,6 @@
 }
 
 #pragma mark - Handlers
-
 - (IBAction)loginOutButtonTapped:(UIBarButtonItem *)sender {
     UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
     UIViewController *vc = [storyboard instantiateViewControllerWithIdentifier:@"LoginNavController"];
@@ -106,6 +101,7 @@
     } else {
         filtering = false;
     }
+    
     [self.tableView reloadData];
 }
 

@@ -31,9 +31,9 @@
         IterableAttributionInfo *attributionInfo = IterableAPI.attributionInfo;
         NSDictionary *dataFields;
         if (attributionInfo != nil) {
-            dataFields = @{@"campaignId" : attributionInfo.campaignId,
-                           @"templateId" : attributionInfo.templateId,
-                           @"messageId" : attributionInfo.messageId
+            dataFields = @{@"campaignId": attributionInfo.campaignId,
+                           @"templateId": attributionInfo.templateId,
+                           @"messageId": attributionInfo.messageId
                            };
         } else {
             dataFields = @{};
