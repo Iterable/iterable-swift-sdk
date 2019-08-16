@@ -219,7 +219,7 @@ class InAppParsingTests: XCTestCase {
                                            inboxMetadata: nil,
                                            customPayload: nil)
         
-        IterableAPI.track(inAppClose: message, location: .inbox, source: "back", clickedUrl: "https://somewhere.com")
+        IterableAPI.track(inAppClose: message, location: .inbox, source: .back, clickedUrl: "https://somewhere.com")
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }

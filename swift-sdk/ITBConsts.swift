@@ -228,16 +228,20 @@ public protocol JsonValueRepresentable {
     }
 }
 
-enum InAppCloseSource: String, JsonValueRepresentable {
+@objc public enum InAppCloseSource: Int, JsonValueRepresentable {
     case back
     case link
+    case unknown
     
-    var jsonValue: Any {
-        return rawValue
-    }
-    
-    static func from(_ value: String?) -> InAppCloseSource? {
-        return value.flatMap(InAppCloseSource.init(rawValue:))
+    public var jsonValue: Any {
+        switch self {
+        case .back:
+            return "back"
+        case .link:
+            return "link"
+        case .unknown:
+            return "unknown"
+        }
     }
 }
 

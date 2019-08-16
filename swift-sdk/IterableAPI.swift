@@ -449,7 +449,7 @@ public final class IterableAPI: NSObject {
      - parameter clickedUrl:    The url that was clicked to close the in-app. It will be `nil` when message is closed on clicking `back`.
      */
     @objc(trackInAppClose:location:source:clickedUrl:)
-    public static func track(inAppClose message: IterableInAppMessage, location: InAppLocation, source: String?, clickedUrl: String?) {
+    public static func track(inAppClose message: IterableInAppMessage, location: InAppLocation, source: InAppCloseSource, clickedUrl: String?) {
         internalImplementation?.trackInAppClose(message, location: location, source: source, clickedUrl: clickedUrl)
     }
     

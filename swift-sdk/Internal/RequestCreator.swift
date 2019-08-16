@@ -256,12 +256,12 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLICK, body: body)))
     }
     
-    func createTrackInAppCloseRequest(_ message: IterableInAppMessage, inAppMessageContext: InAppMessageContext, source: InAppCloseSource?, clickedUrl: String?) -> Result<IterableRequest, IterableError> {
+    func createTrackInAppCloseRequest(_ message: IterableInAppMessage, inAppMessageContext: InAppMessageContext, source: InAppCloseSource, clickedUrl: String?) -> Result<IterableRequest, IterableError> {
         var body = [AnyHashable: Any]()
         
         body[.ITBL_KEY_MESSAGE_ID] = message.messageId
         
-        if let source = source {
+        if source != .unknown {
             body.setValue(for: .inAppCloseSource, value: source)
         }
         

@@ -108,12 +108,12 @@ class IterableHtmlMessageViewController: UIViewController {
         if let _ = navigationController, linkClicked == false {
             IterableAPI.track(inAppClose: trackParams.message,
                               location: trackParams.location,
-                              source: InAppCloseSource.back.rawValue,
+                              source: InAppCloseSource.back,
                               clickedUrl: nil)
         } else {
             IterableAPI.track(inAppClose: trackParams.message,
                               location: trackParams.location,
-                              source: InAppCloseSource.link.rawValue,
+                              source: InAppCloseSource.link,
                               clickedUrl: clickedLink)
         }
     }
