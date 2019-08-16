@@ -11,15 +11,9 @@ import UIKit
 import IterableSDK
 
 class CoffeeListTableViewController: UITableViewController {
-    // Whether we are checking for inAppMessages
-    let checkForInApp = false
-    let inAppCheckInterval = 5.0
-    
     @IBOutlet weak var loginOutBarButton: UIBarButtonItem!
     
-    /**
-     Set this value to show search.
-     */
+    // Set this value to show search.
     var searchTerm: String? {
         didSet {
             if let searchTerm = searchTerm, !searchTerm.isEmpty {
@@ -50,21 +44,6 @@ class CoffeeListTableViewController: UITableViewController {
         } else {
             loginOutBarButton.title = "Login"
         }
-        
-        if checkForInApp {
-            timer = Timer.scheduledTimer(withTimeInterval: inAppCheckInterval, repeats: true) { _ in
-                IterableAPI.spawnInAppNotification { _ in
-                }
-            }
-        }
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        if checkForInApp {
-            timer?.invalidate()
-        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -79,11 +58,7 @@ class CoffeeListTableViewController: UITableViewController {
         }
     }
     
-    // MARK: - Table view data source
-    
-    override func numberOfSections(in _: UITableView) -> Int {
-        return 1
-    }
+    // MARK: - TableViewDataSourceDelegate Functions
     
     override func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
         return filtering ? filteredCoffees.count : coffees.count
