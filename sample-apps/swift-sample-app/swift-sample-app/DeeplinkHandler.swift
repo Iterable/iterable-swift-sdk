@@ -92,7 +92,7 @@ struct DeeplinkHandler {
             guard let queryItems = components.queryItems else {
                 return .coffee(q: nil)
             }
-            guard let index = queryItems.index(where: { $0.name == "q" }) else {
+            guard let index = queryItems.firstIndex(where: { $0.name == "q" }) else {
                 return .coffee(q: nil)
             }
             

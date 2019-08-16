@@ -39,20 +39,18 @@ class LoginViewController: UIViewController {
     
     @IBAction func loginInOutButtonTapped(_: UIButton) {
         switch LoginViewController.checkIterableEmailOrUserId() {
-        case .email:
-            // logout
+        case .email: // logout
             IterableAPI.email = nil
-        case .userId:
-            // logout
+        case .userId: // logout
             IterableAPI.userId = nil
-        case .none:
-            // login
+        case .none: // login
             if let text = emailAddressTextField.text, !text.isEmpty {
                 IterableAPI.email = text
             } else if let text = userIdTextField.text, !text.isEmpty {
                 IterableAPI.userId = text
             }
         }
+        
         presentingViewController?.dismiss(animated: true)
     }
     
