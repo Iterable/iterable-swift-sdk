@@ -7,7 +7,7 @@ import Foundation
 
 struct IterableInAppMessageMetadata {
     let message: IterableInAppMessage
-    let location: String?
+    let location: InAppLocation
 }
 
 @objc class IterablePushNotificationMetadata: IterableNotificationMetadata {

@@ -211,16 +211,20 @@ public protocol JsonValueRepresentable {
     var jsonValue: Any { get }
 }
 
-enum InAppLocation: String, JsonValueRepresentable {
-    case inApp = "in-app"
+@objc public enum InAppLocation: Int, JsonValueRepresentable {
+    case inApp
     case inbox
+    case unknown
     
-    var jsonValue: Any {
-        return rawValue
-    }
-    
-    static func from(_ value: String?) -> InAppLocation? {
-        return value.flatMap(InAppLocation.init(rawValue:))
+    public var jsonValue: Any {
+        switch self {
+        case .inApp:
+            return "in-app"
+        case .inbox:
+            return "inbox"
+        case .unknown:
+            return "unknown"
+        }
     }
 }
 
@@ -234,6 +238,20 @@ enum InAppCloseSource: String, JsonValueRepresentable {
     
     static func from(_ value: String?) -> InAppCloseSource? {
         return value.flatMap(InAppCloseSource.init(rawValue:))
+    }
+}
+
+@objc public enum InAppDeleteSource: Int, JsonKeyRepresentable {
+    case inboxSwipeLeft
+    case deleteButton
+    
+    public var jsonKey: String {
+        switch self {
+        case .inboxSwipeLeft:
+            return "inbox-swipe-left"
+        case .deleteButton:
+            return "delete-button"
+        }
     }
 }
 
