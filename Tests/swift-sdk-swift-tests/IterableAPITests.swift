@@ -631,6 +631,50 @@ class IterableAPITests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
+    func testTrackInAppConsumeWithSource() {
+        let messageId = "message1"
+        let expectation1 = expectation(description: "track inAppClose event")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
+        IterableAPI.email = IterableAPITests.email
+        
+        networkSession.callback = { _, _, _ in
+            TestUtils.validate(request: networkSession.request!,
+                               requestType: .post,
+                               apiEndPoint: .ITBL_ENDPOINT_API,
+                               path: .ITBL_PATH_INAPP_CONSUME,
+                               queryParams: [])
+            
+            let body = networkSession.getRequestBody() as! [String: Any]
+            
+            TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_MESSAGE_ID), value: messageId, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_EMAIL), value: IterableAPITests.email, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("\(AnyHashable.ITBL_IN_APP_MESSAGE_CONTEXT).\(AnyHashable.ITBL_IN_APP_SAVE_TO_INBOX)"), value: true, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("\(AnyHashable.ITBL_IN_APP_MESSAGE_CONTEXT).\(AnyHashable.ITBL_IN_APP_SILENT_INBOX)"), value: true, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("\(AnyHashable.ITBL_IN_APP_MESSAGE_CONTEXT).\(JsonKey.inAppLocation.jsonKey)"), value: "inbox", inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.source.jsonKey)"), value: InAppDeleteSource.deleteButton.jsonValue as! String, inDictionary: body)
+            
+            print(body)
+            
+            expectation1.fulfill()
+        }
+        
+        let message = IterableInAppMessage(messageId: messageId,
+                                           campaignId: "",
+                                           trigger: IterableInAppTrigger(dict: [.ITBL_IN_APP_TRIGGER_TYPE: "never"]),
+                                           createdAt: nil,
+                                           expiresAt: nil,
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
+                                           saveToInbox: true,
+                                           inboxMetadata: nil,
+                                           customPayload: nil)
+        
+        IterableAPI.inAppConsume(message: message, location: .inbox, source: .deleteButton)
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+    
     func testUpdateSubscriptions() {
         let expectation1 = expectation(description: "update subscriptions")
         let emailListIds = ["user1@example.com"]

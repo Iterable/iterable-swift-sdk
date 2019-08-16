@@ -194,8 +194,8 @@ public enum JsonKey: String, JsonKeyRepresentable {
     case silentInbox
     case inAppLocation = "location"
     
-    case inAppCloseSource = "source"
-    case inAppCloseUrl = "url"
+    case source
+    case url
     
     case deviceInfo
     case deviceId
@@ -245,16 +245,19 @@ public protocol JsonValueRepresentable {
     }
 }
 
-@objc public enum InAppDeleteSource: Int, JsonKeyRepresentable {
+@objc public enum InAppDeleteSource: Int, JsonValueRepresentable {
     case inboxSwipeLeft
     case deleteButton
+    case unknown
     
-    public var jsonKey: String {
+    public var jsonValue: Any {
         switch self {
         case .inboxSwipeLeft:
             return "inbox-swipe-left"
         case .deleteButton:
             return "delete-button"
+        case .unknown:
+            return "unknown"
         }
     }
 }

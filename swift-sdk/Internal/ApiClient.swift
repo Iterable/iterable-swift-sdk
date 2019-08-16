@@ -39,6 +39,8 @@ protocol ApiClientProtocol: class {
     
     @discardableResult func inAppConsume(messageId: String) -> Future<SendRequestValue, SendRequestError>
     
+    func inAppConsume(message: IterableInAppMessage, inAppMessageContext: InAppMessageContext, source: InAppDeleteSource) -> Future<SendRequestValue, SendRequestError>
+    
     func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Future<SendRequestValue, SendRequestError>
 }
 
@@ -123,6 +125,10 @@ class ApiClient: ApiClientProtocol {
     
     func inAppConsume(messageId: String) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createInAppConsumeRequest(messageId))
+    }
+    
+    func inAppConsume(message: IterableInAppMessage, inAppMessageContext: InAppMessageContext, source: InAppDeleteSource) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createTrackInAppConsumeRequest(message, inAppMessageContext: inAppMessageContext, source: source))
     }
     
     func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Future<SendRequestValue, SendRequestError> {

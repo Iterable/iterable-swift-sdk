@@ -48,7 +48,7 @@ class InAppFetcher: InAppFetcherProtocol {
     private let numMessages = 100
 }
 
-public struct InAppMessageContext {
+struct InAppMessageContext {
     let message: IterableInAppMessage
     let location: InAppLocation
     let deviceMetadata: DeviceMetadata

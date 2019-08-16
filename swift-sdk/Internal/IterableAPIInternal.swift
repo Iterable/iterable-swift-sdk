@@ -319,6 +319,14 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: apiClient.inAppConsume(messageId: messageId))
     }
     
+    func inAppConsume(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource) {
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "inAppConsumeWithSource"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "inAppConsumeWithSource"),
+                                 forResult: apiClient.inAppConsume(message: message,
+                                                                   inAppMessageContext: InAppMessageContext(message: message, location: location, deviceMetadata: deviceMetadata),
+                                                                   source: source))
+    }
+    
     private func disableDevice(forAllUsers allUsers: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         guard let hexToken = hexToken else {
             ITBError("Device not registered.")

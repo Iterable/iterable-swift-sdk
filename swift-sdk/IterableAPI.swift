@@ -470,6 +470,17 @@ public final class IterableAPI: NSObject {
     }
     
     /**
+     Consumes the notification and removes it from the list of inAppMessages
+     
+     - parameter message:       The Iterable message that is being consumed
+     - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
+     - parameter source:        The source of deletion `.inboxSwipeLeft' or `.deleteButton`. It should `.unknown` if the deletion is not user initiated.
+     */
+    @objc(inAppConsume:location:source:) public static func inAppConsume(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource) {
+        internalImplementation?.inAppConsume(message: message, location: location, source: source)
+    }
+    
+    /**
      Displays a iOS system style notification with one button
      
      - parameters:

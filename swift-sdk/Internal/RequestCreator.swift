@@ -262,11 +262,11 @@ struct RequestCreator {
         body[.ITBL_KEY_MESSAGE_ID] = message.messageId
         
         if source != .unknown {
-            body.setValue(for: .inAppCloseSource, value: source)
+            body.setValue(for: .source, value: source)
         }
         
         if let clickedUrl = clickedUrl {
-            body.setValue(for: .inAppCloseUrl, value: clickedUrl)
+            body.setValue(for: .url, value: clickedUrl)
         }
         
         body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toDictionary())
@@ -289,6 +289,22 @@ struct RequestCreator {
     
     func createInAppConsumeRequest(_ messageId: String) -> Result<IterableRequest, IterableError> {
         var body: [AnyHashable: Any] = [.ITBL_KEY_MESSAGE_ID: messageId]
+        
+        addEmailOrUserId(dict: &body)
+        
+        return .success(.post(createPostRequest(path: .ITBL_PATH_INAPP_CONSUME, body: body)))
+    }
+    
+    func createTrackInAppConsumeRequest(_ message: IterableInAppMessage, inAppMessageContext: InAppMessageContext, source: InAppDeleteSource) -> Result<IterableRequest, IterableError> {
+        var body = [AnyHashable: Any]()
+        
+        body[.ITBL_KEY_MESSAGE_ID] = message.messageId
+        
+        if source != .unknown {
+            body.setValue(for: .source, value: source)
+        }
+        
+        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toDictionary())
         
         addEmailOrUserId(dict: &body)
         
