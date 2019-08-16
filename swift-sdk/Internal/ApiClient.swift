@@ -33,13 +33,13 @@ protocol ApiClientProtocol: class {
     
     func track(inAppClick messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, clickedUrl: String, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError>
     
-    func track(inAppClose message: IterableInAppMessage, inAppMessageContext: InAppMessageContext, source: InAppCloseSource, clickedUrl: String?) -> Future<SendRequestValue, SendRequestError>
+    func track(inAppClose inAppMessageContext: InAppMessageContext, source: InAppCloseSource, clickedUrl: String?) -> Future<SendRequestValue, SendRequestError>
     
     func track(inAppDelivery messageId: String, saveToInbox: Bool?, silentInbox: Bool?, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError>
     
     @discardableResult func inAppConsume(messageId: String) -> Future<SendRequestValue, SendRequestError>
     
-    func inAppConsume(message: IterableInAppMessage, inAppMessageContext: InAppMessageContext, source: InAppDeleteSource) -> Future<SendRequestValue, SendRequestError>
+    func inAppConsume(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource) -> Future<SendRequestValue, SendRequestError>
     
     func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Future<SendRequestValue, SendRequestError>
 }
@@ -115,8 +115,8 @@ class ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, deviceMetadata: deviceMetadata, clickedUrl: clickedUrl))
     }
     
-    func track(inAppClose message: IterableInAppMessage, inAppMessageContext: InAppMessageContext, source: InAppCloseSource, clickedUrl: String?) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createTrackInAppCloseRequest(message, inAppMessageContext: inAppMessageContext, source: source, clickedUrl: clickedUrl))
+    func track(inAppClose inAppMessageContext: InAppMessageContext, source: InAppCloseSource, clickedUrl: String?) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createTrackInAppCloseRequest(inAppMessageContext: inAppMessageContext, source: source, clickedUrl: clickedUrl))
     }
     
     func track(inAppDelivery messageId: String, saveToInbox: Bool?, silentInbox: Bool?, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError> {
@@ -127,8 +127,8 @@ class ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: createRequestCreator().createInAppConsumeRequest(messageId))
     }
     
-    func inAppConsume(message: IterableInAppMessage, inAppMessageContext: InAppMessageContext, source: InAppDeleteSource) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createTrackInAppConsumeRequest(message, inAppMessageContext: inAppMessageContext, source: source))
+    func inAppConsume(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createTrackInAppConsumeRequest(inAppMessageContext: inAppMessageContext, source: source))
     }
     
     func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Future<SendRequestValue, SendRequestError> {

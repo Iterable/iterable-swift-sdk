@@ -53,7 +53,7 @@ struct InAppMessageContext {
     let location: InAppLocation
     let deviceMetadata: DeviceMetadata
     
-    func toDictionary() -> [AnyHashable: Any] {
+    func toMesageContextDictionary() -> [AnyHashable: Any] {
         var context = [AnyHashable: Any]()
         
         context.setValue(for: .saveToInbox, value: message.saveToInbox)
