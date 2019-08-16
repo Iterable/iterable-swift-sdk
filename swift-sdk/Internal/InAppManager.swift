@@ -113,7 +113,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         createResult.futureClickedURL.onSuccess { url in
             ITBInfo()
             // in addition perform action or url delegate task
-            self.handle(clickedUrl: url, forMessage: message)
+            self.handle(clickedUrl: url, forMessage: message, location: .inbox)
         }
         
         viewController.navigationItem.title = message.inboxMetadata?.title
@@ -134,10 +134,10 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         }
     }
     
-    func remove(message: IterableInAppMessage) {
+    func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource) {
         ITBInfo()
         
-        removePrivate(message: message)
+        removePrivate(message: message, location: location, source: source)
     }
     
     func set(read _: Bool, forMessage message: IterableInAppMessage) {
@@ -281,7 +281,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
                 _ = callback?(url)
                 
                 // in addition perform action or url delegate task
-                self.handle(clickedUrl: url, forMessage: message)
+                self.handle(clickedUrl: url, forMessage: message, location: .inApp)
                 
                 // set the dismiss time
                 self.lastDismissedTime = self.dateProvider.currentDate
@@ -373,7 +373,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         }
     }
     
-    private func handle(clickedUrl url: URL?, forMessage message: IterableInAppMessage) {
+    private func handle(clickedUrl url: URL?, forMessage message: IterableInAppMessage, location: InAppLocation) {
         guard let theUrl = url, let inAppClickedUrl = InAppHelper.parse(inAppUrl: theUrl) else {
             ITBError("Could not parse url: \(url?.absoluteString ?? "nil")")
             return
@@ -381,7 +381,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         
         switch inAppClickedUrl {
         case let .iterableCustomAction(name: iterableCustomActionName):
-            handleIterableCustomAction(name: iterableCustomActionName, forMessage: message)
+            handleIterableCustomAction(name: iterableCustomActionName, forMessage: message, location: location)
         case let .customAction(name: customActionName):
             handleUrlOrAction(urlOrAction: customActionName)
         case let .localResource(name: localResourceName):
@@ -391,14 +391,14 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         }
     }
     
-    private func handleIterableCustomAction(name: String, forMessage message: IterableInAppMessage) {
+    private func handleIterableCustomAction(name: String, forMessage message: IterableInAppMessage, location: InAppLocation) {
         guard let iterableCustomActionName = IterableCustomActionName(rawValue: name) else {
             return
         }
         
         switch iterableCustomActionName {
         case .delete:
-            remove(message: message)
+            remove(message: message, location: location, source: .deleteButton)
         case .dismiss:
             break
         }
@@ -436,7 +436,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     }
     
     // From client side
-    private func removePrivate(message: IterableInAppMessage) {
+    private func removePrivate(message: IterableInAppMessage, location _: InAppLocation, source _: InAppDeleteSource) {
         ITBInfo()
         
         updateMessage(message, didProcessTrigger: true, consumed: true)

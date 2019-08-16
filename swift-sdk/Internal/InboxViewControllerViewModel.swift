@@ -58,7 +58,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     func remove(atRow row: Int) {
-        IterableAPI.inAppManager.remove(message: messages[row].iterableMessage)
+        IterableAPI.inAppManager.remove(message: messages[row].iterableMessage, location: .inbox, source: .inboxSwipeLeft)
     }
     
     func set(read _: Bool, forMessage message: InboxMessageViewModel) {
