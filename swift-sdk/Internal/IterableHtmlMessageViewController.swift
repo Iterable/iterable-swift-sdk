@@ -85,7 +85,7 @@ class IterableHtmlMessageViewController: UIViewController {
             IterableAPI.track(inAppOpen: trackParams.message.messageId,
                               saveToInbox: trackParams.message.saveToInbox,
                               silentInbox: trackParams.message.silentInbox,
-                              location: trackParams.location)
+                              location: trackParams.location.jsonValue as? String)
         }
         
         webView?.layoutSubviews()
@@ -108,12 +108,12 @@ class IterableHtmlMessageViewController: UIViewController {
         if let _ = navigationController, linkClicked == false {
             IterableAPI.track(inAppClose: trackParams.message,
                               location: trackParams.location,
-                              source: InAppCloseSource.back.rawValue,
+                              source: InAppCloseSource.back,
                               clickedUrl: nil)
         } else {
             IterableAPI.track(inAppClose: trackParams.message,
                               location: trackParams.location,
-                              source: InAppCloseSource.link.rawValue,
+                              source: InAppCloseSource.link,
                               clickedUrl: clickedLink)
         }
     }
@@ -201,7 +201,7 @@ extension IterableHtmlMessageViewController: UIWebViewDelegate {
             IterableAPI.track(inAppClick: trackParams.message.messageId,
                               saveToInbox: trackParams.message.saveToInbox,
                               silentInbox: trackParams.message.silentInbox,
-                              location: trackParams.location,
+                              location: trackParams.location.jsonValue as? String,
                               clickedUrl: destinationUrl)
         }
     }

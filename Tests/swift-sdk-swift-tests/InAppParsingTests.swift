@@ -200,11 +200,9 @@ class InAppParsingTests: XCTestCase {
             TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_EMAIL), value: InAppParsingTests.email, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath("\(AnyHashable.ITBL_IN_APP_MESSAGE_CONTEXT).\(AnyHashable.ITBL_IN_APP_SAVE_TO_INBOX)"), value: true, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath("\(AnyHashable.ITBL_IN_APP_MESSAGE_CONTEXT).\(AnyHashable.ITBL_IN_APP_SILENT_INBOX)"), value: true, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("\(AnyHashable.ITBL_IN_APP_MESSAGE_CONTEXT).\(JsonKey.inAppLocation.rawValue)"), value: "inbox", inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.inAppCloseSource.rawValue)"), value: "back", inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.inAppCloseUrl.rawValue)"), value: "https://somewhere.com", inDictionary: body)
-            
-            print(body)
+            TestUtils.validateMatch(keyPath: KeyPath("\(AnyHashable.ITBL_IN_APP_MESSAGE_CONTEXT).\(JsonKey.inAppLocation.jsonKey)"), value: "inbox", inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.source.jsonKey)"), value: "back", inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.url.jsonKey)"), value: "https://somewhere.com", inDictionary: body)
             
             expectation1.fulfill()
         }
@@ -219,7 +217,7 @@ class InAppParsingTests: XCTestCase {
                                            inboxMetadata: nil,
                                            customPayload: nil)
         
-        IterableAPI.track(inAppClose: message, location: "inbox", source: "back", clickedUrl: "https://somewhere.com")
+        IterableAPI.track(inAppClose: message, location: .inbox, source: .back, clickedUrl: "https://somewhere.com")
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }

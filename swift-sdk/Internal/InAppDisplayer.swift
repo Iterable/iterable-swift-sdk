@@ -120,7 +120,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
             return .notShown("Invalid content type")
         }
         
-        let metadata = IterableInAppMessageMetadata(message: iterableMessage, location: AnyHashable.ITBL_IN_APP_LOCATION_IN_APP)
+        let metadata = IterableInAppMessageMetadata(message: iterableMessage, location: .inApp)
         
         return showIterableHtmlMessage(content.html,
                                        trackParams: metadata,

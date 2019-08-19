@@ -444,12 +444,12 @@ public final class IterableAPI: NSObject {
     /**
      Tracks an InAppClose event
      - parameter message:       The in-app message
-     - parameter clickedUrl:    The url that was clicked to close the in-app. It will be `nil` when message is closed on clicking `back`.
-     - parameter location:      Location is `inbox` if the message was shown by clicking a message in inbox. This value is `in-app` otherwise.
+     - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
      - parameter source:        Source is `back` if back button was clicked to dismiss in-app message. Otherwise source is `link`.
+     - parameter clickedUrl:    The url that was clicked to close the in-app. It will be `nil` when message is closed on clicking `back`.
      */
     @objc(trackInAppClose:location:source:clickedUrl:)
-    public static func track(inAppClose message: IterableInAppMessage, location: String?, source: String?, clickedUrl: String?) {
+    public static func track(inAppClose message: IterableInAppMessage, location: InAppLocation, source: InAppCloseSource, clickedUrl: String?) {
         internalImplementation?.trackInAppClose(message, location: location, source: source, clickedUrl: clickedUrl)
     }
     
@@ -467,6 +467,17 @@ public final class IterableAPI: NSObject {
      */
     @objc(inAppConsume:) public static func inAppConsume(messageId: String) {
         internalImplementation?.inAppConsume(messageId)
+    }
+    
+    /**
+     Consumes the notification and removes it from the list of inAppMessages
+     
+     - parameter message:       The Iterable message that is being consumed
+     - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
+     - parameter source:        The source of deletion `.inboxSwipeLeft' or `.deleteButton`. It should be `.unknown` if the deletion is not user initiated.
+     */
+    @objc(inAppConsume:location:source:) public static func inAppConsume(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource) {
+        internalImplementation?.inAppConsume(message: message, location: location, source: source)
     }
     
     /**

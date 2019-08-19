@@ -194,8 +194,8 @@ public enum JsonKey: String, JsonKeyRepresentable {
     case silentInbox
     case inAppLocation = "location"
     
-    case inAppCloseSource = "source"
-    case inAppCloseUrl = "url"
+    case source
+    case url
     
     case deviceInfo
     case deviceId
@@ -211,29 +211,54 @@ public protocol JsonValueRepresentable {
     var jsonValue: Any { get }
 }
 
-enum InAppLocation: String, JsonValueRepresentable {
-    case inApp = "in-app"
+@objc public enum InAppLocation: Int, JsonValueRepresentable {
+    case inApp
     case inbox
+    case unknown
     
-    var jsonValue: Any {
-        return rawValue
-    }
-    
-    static func from(_ value: String?) -> InAppLocation? {
-        return value.flatMap(InAppLocation.init(rawValue:))
+    public var jsonValue: Any {
+        switch self {
+        case .inApp:
+            return "in-app"
+        case .inbox:
+            return "inbox"
+        case .unknown:
+            return "unknown"
+        }
     }
 }
 
-enum InAppCloseSource: String, JsonValueRepresentable {
+@objc public enum InAppCloseSource: Int, JsonValueRepresentable {
     case back
     case link
+    case unknown
     
-    var jsonValue: Any {
-        return rawValue
+    public var jsonValue: Any {
+        switch self {
+        case .back:
+            return "back"
+        case .link:
+            return "link"
+        case .unknown:
+            return "unknown"
+        }
     }
+}
+
+@objc public enum InAppDeleteSource: Int, JsonValueRepresentable {
+    case inboxSwipeLeft
+    case deleteButton
+    case unknown
     
-    static func from(_ value: String?) -> InAppCloseSource? {
-        return value.flatMap(InAppCloseSource.init(rawValue:))
+    public var jsonValue: Any {
+        switch self {
+        case .inboxSwipeLeft:
+            return "inbox-swipe-left"
+        case .deleteButton:
+            return "delete-button"
+        case .unknown:
+            return "unknown"
+        }
     }
 }
 

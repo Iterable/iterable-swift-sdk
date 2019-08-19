@@ -294,10 +294,9 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: apiClient.track(inAppClick: messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, clickedUrl: clickedUrl, deviceMetadata: deviceMetadata))
     }
     
-    func trackInAppClose(_ message: IterableInAppMessage, location: String? = nil, source: String? = nil, clickedUrl: String? = nil) {
-        let result = apiClient.track(inAppClose: message,
-                                     inAppMessageContext: InAppMessageContext(message: message, location: InAppLocation.from(location), deviceMetadata: deviceMetadata),
-                                     source: InAppCloseSource.from(source),
+    func trackInAppClose(_ message: IterableInAppMessage, location: InAppLocation = .unknown, source: InAppCloseSource = .unknown, clickedUrl: String? = nil) {
+        let result = apiClient.track(inAppClose: InAppMessageContext(message: message, location: location, deviceMetadata: deviceMetadata),
+                                     source: source,
                                      clickedUrl: clickedUrl)
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClose"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClose"),
@@ -317,6 +316,13 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "inAppConsume"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "inAppConsume"),
                                  forResult: apiClient.inAppConsume(messageId: messageId))
+    }
+    
+    func inAppConsume(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource) {
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "inAppConsumeWithSource"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "inAppConsumeWithSource"),
+                                 forResult: apiClient.inAppConsume(inAppMessageContext: InAppMessageContext(message: message, location: location, deviceMetadata: deviceMetadata),
+                                                                   source: source))
     }
     
     private func disableDevice(forAllUsers allUsers: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {

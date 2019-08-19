@@ -256,20 +256,20 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLICK, body: body)))
     }
     
-    func createTrackInAppCloseRequest(_ message: IterableInAppMessage, inAppMessageContext: InAppMessageContext, source: InAppCloseSource?, clickedUrl: String?) -> Result<IterableRequest, IterableError> {
+    func createTrackInAppCloseRequest(inAppMessageContext: InAppMessageContext, source: InAppCloseSource, clickedUrl: String?) -> Result<IterableRequest, IterableError> {
         var body = [AnyHashable: Any]()
         
-        body[.ITBL_KEY_MESSAGE_ID] = message.messageId
+        body[.ITBL_KEY_MESSAGE_ID] = inAppMessageContext.message.messageId
         
-        if let source = source {
-            body.setValue(for: .inAppCloseSource, value: source)
+        if source != .unknown {
+            body.setValue(for: .source, value: source)
         }
         
         if let clickedUrl = clickedUrl {
-            body.setValue(for: .inAppCloseUrl, value: clickedUrl)
+            body.setValue(for: .url, value: clickedUrl)
         }
         
-        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toDictionary())
+        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMesageContextDictionary())
         
         addEmailOrUserId(dict: &body)
         
@@ -289,6 +289,22 @@ struct RequestCreator {
     
     func createInAppConsumeRequest(_ messageId: String) -> Result<IterableRequest, IterableError> {
         var body: [AnyHashable: Any] = [.ITBL_KEY_MESSAGE_ID: messageId]
+        
+        addEmailOrUserId(dict: &body)
+        
+        return .success(.post(createPostRequest(path: .ITBL_PATH_INAPP_CONSUME, body: body)))
+    }
+    
+    func createTrackInAppConsumeRequest(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource) -> Result<IterableRequest, IterableError> {
+        var body = [AnyHashable: Any]()
+        
+        body[.ITBL_KEY_MESSAGE_ID] = inAppMessageContext.message.messageId
+        
+        if source != .unknown {
+            body.setValue(for: .source, value: source)
+        }
+        
+        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMesageContextDictionary())
         
         addEmailOrUserId(dict: &body)
         
