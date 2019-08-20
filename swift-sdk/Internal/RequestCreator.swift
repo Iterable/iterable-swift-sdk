@@ -235,13 +235,24 @@ struct RequestCreator {
         return .success(.get(createGetRequest(forPath: .ITBL_PATH_GET_INAPP_MESSAGES, withArgs: args as! [String: String])))
     }
     
-    func createTrackInAppOpenRequest(_ messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, deviceMetadata: DeviceMetadata) -> Result<IterableRequest, IterableError> {
+    func createTrackInAppOpenRequest(_ messageId: String, deviceMetadata: DeviceMetadata) -> Result<IterableRequest, IterableError> {
         var body: [AnyHashable: Any] = [:]
         
         body[.ITBL_KEY_MESSAGE_ID] = messageId
         
         addEmailOrUserId(dict: &body)
-        addMessageContext(dict: &body, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, deviceMetadata: deviceMetadata)
+        addMessageContext(dict: &body, saveToInbox: false, silentInbox: false, location: nil, deviceMetadata: deviceMetadata)
+        
+        return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_OPEN, body: body)))
+    }
+    
+    func createTrackInAppOpenRequest(inAppMessageContext: InAppMessageContext) -> Result<IterableRequest, IterableError> {
+        var body: [AnyHashable: Any] = [:]
+        
+        body[.ITBL_KEY_MESSAGE_ID] = inAppMessageContext.message.messageId
+        
+        addEmailOrUserId(dict: &body)
+        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMesageContextDictionary())
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_OPEN, body: body)))
     }

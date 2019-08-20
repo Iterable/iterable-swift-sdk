@@ -399,19 +399,26 @@ public final class IterableAPI: NSObject {
     }
     
     /**
-     Tracks an InAppOpen event with custom completion blocks
+     Deprecated use track(inAppOpen:location:) method instead.
+     
+     Tracks an InAppOpen event.
      - parameter messageId:       The messageId of the notification
      */
+    @available(*, deprecated, message: "Use IterableAPI.track(inAppOpen:location) method instead.")
     @objc(trackInAppOpen:) public static func track(inAppOpen messageId: String) {
-        internalImplementation?.trackInAppOpen(messageId, saveToInbox: false, silentInbox: false, location: nil)
+        internalImplementation?.trackInAppOpen(messageId)
     }
     
-    @objc(trackInAppOpen:saveToInbox:silentInbox:location:) public static func track(inAppOpen messageId: String, saveToInbox: Bool, silentInbox: Bool, location: String?) {
-        internalImplementation?.trackInAppOpen(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location)
-    }
-    
-    public static func track(inAppOpen messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?) {
-        internalImplementation?.trackInAppOpen(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location)
+    /**
+     Tracks an InAppOpen event.
+     Usually you don't need to call this method explicitly. IterableSDK will call this automatically.
+     Call this method only if you are using a custom view controller to render IterableInAppMessages.
+     
+     - parameter messageId:       The messageId of the notification
+     - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
+     */
+    @objc(trackInAppOpen:location:) public static func track(inAppOpen message: IterableInAppMessage, location: InAppLocation = .unknown) {
+        internalImplementation?.trackInAppOpen(message, location: location)
     }
     
     /**
