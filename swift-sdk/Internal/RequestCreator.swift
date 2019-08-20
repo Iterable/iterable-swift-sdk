@@ -269,6 +269,20 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLICK, body: body)))
     }
     
+    func createTrackInAppClickRequest(inAppMessageContext: InAppMessageContext, clickedUrl: String) -> Result<IterableRequest, IterableError> {
+        var body = [AnyHashable: Any]()
+        
+        body[.ITBL_KEY_MESSAGE_ID] = inAppMessageContext.message.messageId
+        
+        body.setValue(for: .clickedUrl, value: clickedUrl)
+        
+        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMesageContextDictionary())
+        
+        addEmailOrUserId(dict: &body)
+        
+        return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLICK, body: body)))
+    }
+    
     func createTrackInAppCloseRequest(inAppMessageContext: InAppMessageContext, source: InAppCloseSource, clickedUrl: String?) -> Result<IterableRequest, IterableError> {
         var body = [AnyHashable: Any]()
         

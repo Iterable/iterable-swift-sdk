@@ -414,7 +414,7 @@ public final class IterableAPI: NSObject {
      Usually you don't need to call this method explicitly. IterableSDK will call this automatically.
      Call this method only if you are using a custom view controller to render IterableInAppMessages.
      
-     - parameter messageId:       The messageId of the notification
+     - parameter message:       The Iterable in-app message
      - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
      */
     @objc(trackInAppOpen:location:) public static func track(inAppOpen message: IterableInAppMessage, location: InAppLocation = .unknown) {
@@ -422,21 +422,29 @@ public final class IterableAPI: NSObject {
     }
     
     /**
-     Tracks an InAppClick event
+     Deprecated. Use track(inAppClick:location:clickedUrl) method instead.
      
+     Tracks an InAppClick event
+
      - parameter messageId:       The messageId of the notification
      - parameter buttonURL:     The url of the button that was clicked
      */
+    @available(*, deprecated, message: "Use IterableAPI.track(inAppClick:location:clickedUrl) method instead.")
     @objc(trackInAppClick:buttonURL:) public static func track(inAppClick messageId: String, buttonURL: String) {
         internalImplementation?.trackInAppClick(messageId, saveToInbox: false, silentInbox: false, location: nil, clickedUrl: buttonURL)
     }
     
-    @objc(trackInAppClick:saveToInbox:silentInbox:location:clickedUrl:) public static func track(inAppClick messageId: String, saveToInbox: Bool = false, silentInbox: Bool = false, location: String?, clickedUrl: String) {
-        internalImplementation?.trackInAppClick(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, clickedUrl: clickedUrl)
-    }
-    
-    public static func track(inAppClick messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, clickedUrl: String) {
-        internalImplementation?.trackInAppClick(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, clickedUrl: clickedUrl)
+    /**
+     Tracks an InAppClick event.
+     Usually you don't need to call this method explicitly. IterableSDK will call this automatically.
+     Call this method only if you are using a custom view controller to render IterableInAppMessages.
+
+     - parameter message:       The message of the notification
+     - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
+     - parameter clickedUrl:     The url of the button or link that was clicked
+     */
+    public static func track(inAppClick message: IterableInAppMessage, location: InAppLocation = .unknown, clickedUrl: String) {
+        internalImplementation?.trackInAppClick(message, location: location, clickedUrl: clickedUrl)
     }
     
     /**

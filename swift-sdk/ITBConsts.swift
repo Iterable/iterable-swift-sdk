@@ -193,6 +193,7 @@ public enum JsonKey: String, JsonKeyRepresentable {
     case saveToInbox
     case silentInbox
     case inAppLocation = "location"
+    case clickedUrl
     
     case source
     case url

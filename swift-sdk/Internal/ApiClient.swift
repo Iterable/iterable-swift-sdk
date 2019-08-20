@@ -35,6 +35,8 @@ protocol ApiClientProtocol: class {
     
     func track(inAppClick messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, clickedUrl: String, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError>
     
+    func track(inAppClick inAppMessageContext: InAppMessageContext, clickedUrl: String) -> Future<SendRequestValue, SendRequestError>
+    
     func track(inAppClose inAppMessageContext: InAppMessageContext, source: InAppCloseSource, clickedUrl: String?) -> Future<SendRequestValue, SendRequestError>
     
     func track(inAppDelivery messageId: String, saveToInbox: Bool?, silentInbox: Bool?, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError>
@@ -119,6 +121,10 @@ class ApiClient: ApiClientProtocol {
     
     func track(inAppClick messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, clickedUrl: String, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, deviceMetadata: deviceMetadata, clickedUrl: clickedUrl))
+    }
+    
+    func track(inAppClick inAppMessageContext: InAppMessageContext, clickedUrl: String) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(inAppMessageContext: inAppMessageContext, clickedUrl: clickedUrl))
     }
     
     func track(inAppClose inAppMessageContext: InAppMessageContext, source: InAppCloseSource, clickedUrl: String?) -> Future<SendRequestValue, SendRequestError> {
