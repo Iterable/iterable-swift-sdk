@@ -15,7 +15,7 @@ struct TestUtils {
         case post
     }
     
-    static func validate(request: URLRequest, requestType: RequestType? = nil, apiEndPoint: String, path: String, queryParams: [(name: String, value: String)]? = nil) {
+    static func validate(request: URLRequest, requestType: RequestType? = nil, apiEndPoint: String, path: String, headers: [String: String]? = nil, queryParams: [(name: String, value: String)]? = nil) {
         if let requestType = requestType {
             XCTAssertEqual(requestType == .get ? .ITBL_KEY_GET : .ITBL_KEY_POST, request.httpMethod)
         }
@@ -25,6 +25,12 @@ struct TestUtils {
         if let queryParams = queryParams {
             let urlComponents = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)!
             validateQueryParameters(inUrlComponents: urlComponents, queryParams: queryParams)
+        }
+        
+        if let headers = headers {
+            for header in headers {
+                XCTAssertEqual(header.value, request.value(forHTTPHeaderField: header.key))
+            }
         }
     }
     

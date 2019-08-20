@@ -555,7 +555,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         
         guard let request = IterableRequestUtil.createPostRequest(forApiEndPoint: .ITBL_ENDPOINT_LINKS,
                                                                   path: .ITBL_PATH_DDL_MATCH,
-                                                                  apiKey: apiKey,
+                                                                  headers: [AnyHashable.ITBL_HEADER_API_KEY: apiKey],
                                                                   args: nil,
                                                                   body: DeviceInfo.createDeviceInfo()) else {
             ITBError("Could not create request")
