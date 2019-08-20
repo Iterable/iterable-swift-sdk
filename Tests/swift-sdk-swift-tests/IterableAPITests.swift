@@ -17,12 +17,8 @@ class IterableAPITests: XCTestCase {
     
     override func setUp() {
         super.setUp()
+        
         TestUtils.clearTestUserDefaults()
-    }
-    
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
     }
     
     func testInitialize() {
@@ -255,7 +251,7 @@ class IterableAPITests: XCTestCase {
         }
         
         // only wait for small time, supposed to error out
-        wait(for: [expectation], timeout: 1.0)
+        wait(for: [expectation], timeout: testExpectationTimeoutForInverted)
     }
     
     func testRegisterTokenNilEmailAndUserId() {
