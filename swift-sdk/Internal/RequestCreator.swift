@@ -6,6 +6,8 @@
 
 import Foundation
 
+// These are Iterable specific Request items.
+// They don't have Api endpoint and request endpoint defined yet.
 enum IterableRequest {
     case get(GetRequest)
     case post(PostRequest)

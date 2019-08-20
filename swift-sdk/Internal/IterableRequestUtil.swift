@@ -1,6 +1,6 @@
 //
-//  IterableRequestUtil.swift
-//  swift-sdk
+//  This is a utility class which takes an apiEndpoint, path, header, args etc to create URLRequest objects.
+//  The methods should be generic and not specific to Iterable.
 //
 //  Created by Tapash Majumder on 8/7/18.
 //  Copyright © 2018 Iterable. All rights reserved.
@@ -33,16 +33,23 @@ struct IterableRequestUtil {
         return request
     }
     
-    static func createGetRequest(forApiEndPoint apiEndPoint: String, path: String, args: [String: String]? = nil) -> URLRequest? {
+    static func createGetRequest(forApiEndPoint apiEndPoint: String, path: String, headers: [String: String]? = nil, args: [String: String]? = nil) -> URLRequest? {
         guard let url = getUrlComponents(forApiEndPoint: apiEndPoint, path: path, args: args)?.url else {
             return nil
         }
         
         var request = URLRequest(url: url)
-        request.setValue(.ITBL_PLATFORM_IOS, forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_PLATFORM)
-        request.setValue(IterableAPI.sdkVersion, forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_VERSION)
+        addHeaders(headers: headers, toRequest: &request)
         request.httpMethod = .ITBL_KEY_GET
         return request
+    }
+    
+    private static func addHeaders(headers: [String: String]?, toRequest request: inout URLRequest) {
+        if let headers = headers {
+            headers.forEach {
+                request.setValue($0.value, forHTTPHeaderField: $0.key)
+            }
+        }
     }
     
     private static func getUrlComponents(forApiEndPoint apiEndPoint: String, path: String, args: [String: String]? = nil) -> URLComponents? {

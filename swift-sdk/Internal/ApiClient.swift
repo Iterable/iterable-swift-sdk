@@ -138,7 +138,7 @@ class ApiClient: ApiClientProtocol {
     func convertToURLRequest(iterableRequest: IterableRequest) -> URLRequest? {
         switch iterableRequest {
         case let .get(getRequest):
-            return IterableRequestUtil.createGetRequest(forApiEndPoint: endPoint, path: getRequest.path, args: getRequest.args)
+            return IterableRequestUtil.createGetRequest(forApiEndPoint: endPoint, path: getRequest.path, headers: createIterableHeaders(), args: getRequest.args)
         case let .post(postRequest):
             return IterableRequestUtil.createPostRequest(forApiEndPoint: endPoint, path: postRequest.path, apiKey: apiKey, args: postRequest.args, body: postRequest.body)
         }
@@ -167,6 +167,14 @@ class ApiClient: ApiClientProtocol {
         }
         
         return RequestCreator(apiKey: apiKey, auth: authProvider.auth)
+    }
+    
+    private func createIterableHeaders() -> [String: String] {
+        return [
+            AnyHashable.ITBL_HEADER_SDK_PLATFORM: .ITBL_PLATFORM_IOS,
+            AnyHashable.ITBL_HEADER_SDK_VERSION: IterableAPI.sdkVersion,
+            AnyHashable.ITBL_HEADER_API_KEY: apiKey,
+        ]
     }
     
     private let apiKey: String

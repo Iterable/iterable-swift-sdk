@@ -11,12 +11,12 @@ import XCTest
 
 class IterableAPIResponseTests: XCTestCase {
     func testPlatformAndVersionHeaderInGetRequest() {
-        let request = IterableRequestUtil.createGetRequest(forApiEndPoint: .ITBL_ENDPOINT_API,
-                                                           path: "",
-                                                           args: [AnyHashable.ITBL_KEY_API_KEY: "api_key_here"])!
+        let iterableRequest = IterableRequest.get(GetRequest(path: "", args: [AnyHashable.ITBL_KEY_API_KEY: "api_key_here"]))
         
-        XCTAssertEqual(request.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_PLATFORM), .ITBL_PLATFORM_IOS)
-        XCTAssertEqual(request.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_VERSION), IterableAPI.sdkVersion)
+        let urlRequest = createApiClient(networkSession: MockNetworkSession(statusCode: 200)).convertToURLRequest(iterableRequest: iterableRequest)!
+        
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_PLATFORM), .ITBL_PLATFORM_IOS)
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_VERSION), IterableAPI.sdkVersion)
     }
     
     func testPlatformAndVersionHeaderInPostRequest() {
