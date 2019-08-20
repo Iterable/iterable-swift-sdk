@@ -10,24 +10,27 @@ import XCTest
 @testable import IterableSDK
 
 class IterableAPIResponseTests: XCTestCase {
-    func testPlatformAndVersionHeaderInGetRequest() {
-        let request = IterableRequestUtil.createGetRequest(forApiEndPoint: .ITBL_ENDPOINT_API,
-                                                           path: "",
-                                                           args: [AnyHashable.ITBL_KEY_API_KEY: "api_key_here"])!
+    private let apiKey = "zee_api_key"
+    
+    func testHeadersInGetRequest() {
+        let iterableRequest = IterableRequest.get(GetRequest(path: "", args: ["var1": "value1"]))
+        let urlRequest = createApiClient(networkSession: MockNetworkSession(statusCode: 200)).convertToURLRequest(iterableRequest: iterableRequest)!
         
-        XCTAssertEqual(request.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_PLATFORM), .ITBL_PLATFORM_IOS)
-        XCTAssertEqual(request.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_VERSION), IterableAPI.sdkVersion)
+        verifyIterableHeaders(urlRequest)
     }
     
-    func testPlatformAndVersionHeaderInPostRequest() {
-        let request = IterableRequestUtil.createPostRequest(forApiEndPoint: .ITBL_ENDPOINT_API,
-                                                            path: "",
-                                                            apiKey: "api_key_here",
-                                                            args: nil,
-                                                            body: [:])!
+    func testHeadersInPostRequest() {
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: ["var1": "value1"], body: [:]))
+        let urlRequest = createApiClient(networkSession: MockNetworkSession(statusCode: 200)).convertToURLRequest(iterableRequest: iterableRequest)!
         
-        XCTAssertEqual(request.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_PLATFORM), .ITBL_PLATFORM_IOS)
-        XCTAssertEqual(request.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_VERSION), IterableAPI.sdkVersion)
+        verifyIterableHeaders(urlRequest)
+    }
+    
+    fileprivate func verifyIterableHeaders(_ urlRequest: URLRequest) {
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_PLATFORM), .ITBL_PLATFORM_IOS)
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_VERSION), IterableAPI.sdkVersion)
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_API_KEY), apiKey)
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: "Content-Type"), "application/json")
     }
     
     func testResponseCode200() {
@@ -182,7 +185,7 @@ class IterableAPIResponseTests: XCTestCase {
             let auth: Auth = Auth(userId: nil, email: "user@example.com")
         }
         
-        return ApiClient(apiKey: "",
+        return ApiClient(apiKey: apiKey,
                          authProvider: AuthProviderImpl(),
                          endPoint: .ITBL_ENDPOINT_API,
                          networkSession: networkSession)
