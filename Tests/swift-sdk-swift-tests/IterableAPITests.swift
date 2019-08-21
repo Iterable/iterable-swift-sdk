@@ -555,53 +555,35 @@ class IterableAPITests: XCTestCase {
     }
     
     func testGetInAppMessages() {
-        let expectation1 = expectation(description: "get in app messages")
-        let networkSession = MockNetworkSession(statusCode: 200)
-        networkSession.callback = { _, _, _ in
-            let expectedQueryParams = [
-                (name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAPITests.apiKey),
-                (name: AnyHashable.ITBL_KEY_COUNT, value: 1.description),
-                (name: AnyHashable.ITBL_KEY_PLATFORM, value: .ITBL_PLATFORM_IOS),
-                (name: AnyHashable.ITBL_KEY_SDK_VERSION, value: IterableAPI.sdkVersion),
-                (name: AnyHashable.ITBL_KEY_PACKAGE_NAME, value: Bundle.main.appPackageName!),
-            ]
-            TestUtils.validate(request: networkSession.request!,
-                               requestType: .get,
-                               apiEndPoint: .ITBL_ENDPOINT_API,
-                               path: .ITBL_PATH_GET_INAPP_MESSAGES,
-                               queryParams: expectedQueryParams)
+        let expectation1 = XCTestExpectation(description: "testGetInAppMessages()")
+        
+        let mockInAppFetcher = MockInAppFetcher()
+        
+        let config = IterableConfig()
+        config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
+        
+        IterableAPI.initializeForTesting(config: config, inAppFetcher: mockInAppFetcher)
+        IterableAPI.email = "user@example.com"
+        
+        let inAppMsg1 = IterableInAppMessage(messageId: "aswefwdf",
+                                             campaignId: "123344",
+                                             content: IterableHtmlInAppContent(edgeInsets: .zero,
+                                                                               backgroundAlpha: 0,
+                                                                               html: ""))
+        
+        let inAppMsg2 = IterableInAppMessage(messageId: "oeirgjoeigj",
+                                             campaignId: "948",
+                                             content: IterableHtmlInAppContent(edgeInsets: .zero,
+                                                                               backgroundAlpha: 0,
+                                                                               html: ""))
+        
+        mockInAppFetcher.mockMessagesAvailableFromServer(messages: [inAppMsg1, inAppMsg2]).onSuccess { _ in
+            let messages = IterableAPI.inAppManager.getMessages()
+            
+            XCTAssertEqual(messages.count, 2)
+            
             expectation1.fulfill()
         }
-        
-        let config = IterableConfig()
-        IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
-        IterableAPI.email = "user@example.com"
-        IterableAPI.get(inAppMessages: 1)
-        wait(for: [expectation1], timeout: testExpectationTimeout)
-    }
-    
-    func testGetInAppMessagesWithCallback() {
-        let expectation1 = expectation(description: "get in app messages with callback")
-        let networkSession = MockNetworkSession(statusCode: 200)
-        
-        let config = IterableConfig()
-        IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
-        IterableAPI.email = "user@example.com"
-        
-        IterableAPI.get(inAppMessages: 1,
-                        onSuccess: { _ in
-                            let expectedQueryParams = [(name: AnyHashable.ITBL_KEY_API_KEY, value: IterableAPITests.apiKey),
-                                                       (name: AnyHashable.ITBL_KEY_COUNT, value: 1.description),
-                                                       (name: AnyHashable.ITBL_KEY_PLATFORM, value: .ITBL_PLATFORM_IOS),
-                                                       (name: AnyHashable.ITBL_KEY_SDK_VERSION, value: IterableAPI.sdkVersion)]
-                            TestUtils.validate(request: networkSession.request!,
-                                               requestType: .get,
-                                               apiEndPoint: .ITBL_ENDPOINT_API,
-                                               path: .ITBL_PATH_GET_INAPP_MESSAGES,
-                                               queryParams: expectedQueryParams)
-                            expectation1.fulfill()
-                        },
-                        onFailure: nil)
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
