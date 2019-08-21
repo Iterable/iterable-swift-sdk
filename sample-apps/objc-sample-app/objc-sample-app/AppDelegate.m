@@ -17,7 +17,7 @@
 
 @implementation AppDelegate
 
-// ITBL: Set your actual API key here.
+// ITBL: Set your actual API key here
 NSString *iterableApiKey = @"";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -36,6 +36,7 @@ NSString *iterableApiKey = @"";
                         launchOptions: launchOptions
                                config: config];
     
+    //ITBL: Set your user's email here
     IterableAPI.email = @"user@domain.com";
     
     return YES;

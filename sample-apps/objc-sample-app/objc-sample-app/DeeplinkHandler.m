@@ -71,13 +71,7 @@
     }
     
     NSUInteger index = [components.queryItems indexOfObjectPassingTest:^BOOL(NSURLQueryItem * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-//        if ([obj.name isEqualToString:@"q"]) {
-//            return true;
-//        } else {
-//            return false;
-//        }
-        
-        return [obj.name isEqualToString:@"q"];
+        return [obj.name isEqualToString: @"q"];
     }];
     
     if (index == NSNotFound) {
