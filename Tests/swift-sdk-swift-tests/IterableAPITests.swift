@@ -554,7 +554,7 @@ class IterableAPITests: XCTestCase {
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
     
-    func testGetInAppMessages() {
+    func testGetInAppMessagesFunction() {
         let expectation1 = XCTestExpectation(description: "testGetInAppMessages()")
         
         let mockInAppFetcher = MockInAppFetcher()
@@ -581,6 +581,9 @@ class IterableAPITests: XCTestCase {
             let messages = IterableAPI.inAppManager.getMessages()
             
             XCTAssertEqual(messages.count, 2)
+            
+            XCTAssertEqual(messages[0], inAppMsg1)
+            XCTAssertEqual(messages[1], inAppMsg2)
             
             expectation1.fulfill()
         }
