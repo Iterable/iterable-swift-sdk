@@ -425,20 +425,20 @@ public final class IterableAPI: NSObject {
      Deprecated. Use track(inAppClick:location:clickedUrl) method instead.
      
      Tracks an InAppClick event
-
+     
      - parameter messageId:       The messageId of the notification
      - parameter buttonURL:     The url of the button that was clicked
      */
     @available(*, deprecated, message: "Use IterableAPI.track(inAppClick:location:clickedUrl) method instead.")
     @objc(trackInAppClick:buttonURL:) public static func track(inAppClick messageId: String, buttonURL: String) {
-        internalImplementation?.trackInAppClick(messageId, saveToInbox: false, silentInbox: false, location: nil, clickedUrl: buttonURL)
+        internalImplementation?.trackInAppClick(messageId, clickedUrl: buttonURL)
     }
     
     /**
      Tracks an InAppClick event.
      Usually you don't need to call this method explicitly. IterableSDK will call this automatically.
      Call this method only if you are using a custom view controller to render IterableInAppMessages.
-
+     
      - parameter message:       The message of the notification
      - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
      - parameter clickedUrl:     The url of the button or link that was clicked

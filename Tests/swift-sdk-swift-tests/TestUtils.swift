@@ -58,6 +58,20 @@ struct TestUtils {
         }
     }
     
+    static func validateMessageContext(messageId _: String, email _: String? = nil, userId _: String? = nil, saveToInbox: Bool, silentInbox: Bool, location: InAppLocation, inBody body: [String: Any]) {
+        let contextKey = "\(JsonKey.inAppMessageContext.jsonKey)"
+        validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.saveToInbox.jsonKey)"), value: saveToInbox, inDictionary: body)
+        validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.silentInbox.jsonKey)"), value: silentInbox, inDictionary: body)
+        if location != .unknown {
+            validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.inAppLocation.jsonKey)"), value: location.jsonValue as! String, inDictionary: body)
+        }
+        
+        let deviceInfoKey = "\(contextKey).\(JsonKey.deviceInfo.jsonKey)"
+        validateMatch(keyPath: KeyPath("\(deviceInfoKey).\(JsonKey.deviceId.jsonKey)"), value: IterableAPI.internalImplementation!.deviceId, inDictionary: body)
+        validateMatch(keyPath: KeyPath("\(deviceInfoKey).\(JsonKey.platform.jsonKey)"), value: String.ITBL_PLATFORM_IOS, inDictionary: body)
+        validateMatch(keyPath: KeyPath("\(deviceInfoKey).\(JsonKey.appPackageName.jsonKey)"), value: Bundle.main.appPackageName, inDictionary: body)
+    }
+    
     static func getTestUserDefaults() -> UserDefaults {
         return TestHelper.getTestUserDefaults()
     }

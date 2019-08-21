@@ -629,14 +629,8 @@ class IterableAPITests: XCTestCase {
             
             let body = networkSession.getRequestBody() as! [String: Any]
             
-            TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_MESSAGE_ID), value: messageId, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_EMAIL), value: IterableAPITests.email, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("\(AnyHashable.ITBL_IN_APP_MESSAGE_CONTEXT).\(AnyHashable.ITBL_IN_APP_SAVE_TO_INBOX)"), value: true, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("\(AnyHashable.ITBL_IN_APP_MESSAGE_CONTEXT).\(AnyHashable.ITBL_IN_APP_SILENT_INBOX)"), value: true, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("\(AnyHashable.ITBL_IN_APP_MESSAGE_CONTEXT).\(JsonKey.inAppLocation.jsonKey)"), value: "inbox", inDictionary: body)
+            TestUtils.validateMessageContext(messageId: messageId, email: IterableAPITests.email, saveToInbox: true, silentInbox: true, location: .inbox, inBody: body)
             TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.source.jsonKey)"), value: InAppDeleteSource.deleteButton.jsonValue as! String, inDictionary: body)
-            
-            print(body)
             
             expectation1.fulfill()
         }
