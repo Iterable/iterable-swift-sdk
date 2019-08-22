@@ -15,6 +15,7 @@
 
 + (BOOL)handleURL:(NSURL *)url {
     NSString *page = url.lastPathComponent.lowercaseString;
+    
     if ([page isEqualToString:@"mocha"]) {
         [DeeplinkHandler showCoffee:CoffeeType.mocha];
         return YES;
@@ -28,11 +29,11 @@
         [DeeplinkHandler showCoffee:CoffeeType.black];
         return YES;
     } else if ([page isEqualToString:@"coffee"]) {
-        NSString *query = [DeeplinkHandler parseQueryFromURL:url];
-        [DeeplinkHandler showCoffeeListWithQuery:query];
+        NSString *query = [DeeplinkHandler parseQueryFromURL: url];
+        [DeeplinkHandler showCoffeeListWithQuery: query];
         return YES;
     } else {
-        [UIApplication.sharedApplication openURL:url options:@{} completionHandler:nil];
+        [UIApplication.sharedApplication openURL: url options: @{} completionHandler: nil];
         return NO;
     }
 }
@@ -40,13 +41,13 @@
 + (void)showCoffee:(CoffeeType *)coffeeType {
     UINavigationController *rootNav = (UINavigationController *) UIApplication.sharedApplication.keyWindow.rootViewController;
     if (rootNav != nil) {
-        [rootNav popToRootViewControllerAnimated:false];
+        [rootNav popToRootViewControllerAnimated: false];
 
-        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-        CoffeeViewController *viewController = (CoffeeViewController *) [storyboard instantiateViewControllerWithIdentifier:@"CoffeeViewController"];
+        UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle: nil];
+        CoffeeViewController *viewController = (CoffeeViewController *) [storyboard instantiateViewControllerWithIdentifier: @"CoffeeViewController"];
         viewController.coffeeType = coffeeType;
         
-        [rootNav pushViewController:viewController animated:true];
+        [rootNav pushViewController: viewController animated: true];
     }
 }
 
@@ -54,8 +55,8 @@
     UINavigationController *rootNav = (UINavigationController *) UIApplication.sharedApplication.keyWindow.rootViewController;
 
     if (rootNav != nil) {
-        [rootNav popToRootViewControllerAnimated:true];
-        CoffeeListTableViewController * coffeeListVC = (CoffeeListTableViewController *) rootNav.viewControllers[0];
+        [rootNav popToRootViewControllerAnimated: true];
+        CoffeeListTableViewController *coffeeListVC = (CoffeeListTableViewController *) rootNav.viewControllers[0];
         if (coffeeListVC != nil) {
             coffeeListVC.searchTerm = query;
         }
@@ -63,18 +64,16 @@
 }
 
 + (NSString *)parseQueryFromURL:(NSURL *)url {
-    NSURLComponents *components = [[NSURLComponents alloc] initWithURL:url resolvingAgainstBaseURL:false];
+    NSURLComponents *components = [[NSURLComponents alloc] initWithURL: url resolvingAgainstBaseURL: false];
+    
     if (components == nil || components.queryItems == nil) {
         return nil;
     }
     
     NSUInteger index = [components.queryItems indexOfObjectPassingTest:^BOOL(NSURLQueryItem * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ([obj.name isEqualToString:@"q"]) {
-            return true;
-        } else {
-            return false;
-        }
+        return [obj.name isEqualToString: @"q"];
     }];
+    
     if (index == NSNotFound) {
         return nil;
     } else {

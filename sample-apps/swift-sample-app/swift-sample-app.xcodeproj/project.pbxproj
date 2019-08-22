@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -262,6 +262,7 @@
 				TargetAttributes = {
 					ACA3A13420E2F6AF00FEF74F = {
 						CreatedOnToolsVersion = 9.4;
+						LastSwiftMigration = 1030;
 						SystemCapabilities = {
 							com.apple.Push = {
 								enabled = 1;
@@ -273,6 +274,7 @@
 					};
 					ACA3A14D20E2F83D00FEF74F = {
 						CreatedOnToolsVersion = 9.4;
+						LastSwiftMigration = 1030;
 					};
 				};
 			};
@@ -321,15 +323,12 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-swift-sample-app/Pods-swift-sample-app-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/Iterable-iOS-SDK/IterableSDK.framework",
-				"${BUILT_PRODUCTS_DIR}/Iterable-iOS-AppExtensions/IterableAppExtensions.framework",
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-swift-sample-app/Pods-swift-sample-app-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IterableSDK.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/IterableAppExtensions.framework",
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-swift-sample-app/Pods-swift-sample-app-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -556,7 +555,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "iterable.swift-sample-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -576,7 +575,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "iterable.swift-sample-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -596,7 +595,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "iterable.swift-sample-app.swift-sample-app-notification-extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -616,7 +615,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "iterable.swift-sample-app.swift-sample-app-notification-extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

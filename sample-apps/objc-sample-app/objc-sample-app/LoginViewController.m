@@ -10,6 +10,7 @@
 @import IterableSDK;
 
 @interface LoginViewController ()
+
 @property (weak, nonatomic) IBOutlet UITextField *emailAddressTextField;
 @property (weak, nonatomic) IBOutlet UIButton *logInOutButton;
 

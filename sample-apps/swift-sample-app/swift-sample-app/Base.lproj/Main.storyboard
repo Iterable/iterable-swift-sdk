@@ -69,7 +69,7 @@
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="qEk-Vx-GkX">
                                 <rect key="frame" x="62.5" y="209" width="250" height="365.5"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qfg-yZ-0Fk">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qfg-yZ-0Fk">
                                         <rect key="frame" x="0.0" y="0.0" width="250" height="20.5"/>
                                         <fontDescription key="fontDescription" type="system" weight="thin" pointSize="17"/>
                                         <nil key="textColor"/>
@@ -202,7 +202,7 @@
                         <viewLayoutGuide key="safeArea" id="yud-Uv-4dK"/>
                     </view>
                     <navigationItem key="navigationItem" id="mEu-Bh-eTp">
-                        <barButtonItem key="rightBarButtonItem" style="plain" systemItem="done" id="peu-e0-ngp">
+                        <barButtonItem key="rightBarButtonItem" style="done" systemItem="done" id="peu-e0-ngp">
                             <connections>
                                 <action selector="doneButtonTapped:" destination="8n5-2h-usW" id="Lof-Z6-EsN"/>
                             </connections>

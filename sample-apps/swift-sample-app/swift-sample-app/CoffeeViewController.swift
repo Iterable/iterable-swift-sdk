@@ -42,6 +42,7 @@ class CoffeeViewController: UIViewController {
             dataFields["templateId"] = attributionInfo.templateId
             dataFields["messageId"] = attributionInfo.messageId
         }
+        
         // ITBL: Track attribution to purchase
         IterableAPI.track(purchase: 10.0, items: [CommerceItem(id: coffee.name.lowercased(), name: coffee.name, price: 10.0, quantity: 1)], dataFields: dataFields)
     }

@@ -11,10 +11,8 @@
 
 @import IterableSDK;
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate, IterableURLDelegate, IterableCustomActionDelegate>
+@interface AppDelegate: UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate, IterableURLDelegate, IterableCustomActionDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 
-
 @end
-

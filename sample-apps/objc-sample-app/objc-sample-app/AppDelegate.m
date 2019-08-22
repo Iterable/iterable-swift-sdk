@@ -16,9 +16,9 @@
 @end
 
 @implementation AppDelegate
-// ITBL: Set your actual api key here.
-NSString *iterableApiKey = @""; // set iterable api key here
 
+// ITBL: Set your actual API key here
+NSString *iterableApiKey = @"";
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
@@ -33,8 +33,11 @@ NSString *iterableApiKey = @""; // set iterable api key here
     config.sandboxPushIntegrationName = @"objc-sample-app";
     
     [IterableAPI initializeWithApiKey: iterableApiKey
-                        launchOptions:launchOptions
-                               config:config];
+                        launchOptions: launchOptions
+                               config: config];
+    
+    //ITBL: Set your user's email here
+    IterableAPI.email = @"user@domain.com";
     
     return YES;
 }
@@ -110,10 +113,6 @@ NSString *iterableApiKey = @""; // set iterable api key here
 #pragma mark - notification registration
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
     [IterableAPI registerToken:deviceToken];
-}
-
-- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
-    //TODO: handle
 }
 
 #pragma mark - UNUserNotificationCenterDelegate

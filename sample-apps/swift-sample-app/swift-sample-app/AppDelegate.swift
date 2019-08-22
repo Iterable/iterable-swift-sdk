@@ -18,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // ITBL: Set your actual api key here.
     let iterableApiKey = ""
     
-    func application(_: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // ITBL: Setup Notification
         setupNotifications()
         
@@ -91,7 +91,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // MARK: Deep link
     
-    func application(_: UIApplication, continue userActivity: NSUserActivity, restorationHandler _: @escaping ([Any]?) -> Void) -> Bool {
+    func application(_: UIApplication, continue userActivity: NSUserActivity, restorationHandler _: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
         guard let url = userActivity.webpageURL else {
             return false
         }
