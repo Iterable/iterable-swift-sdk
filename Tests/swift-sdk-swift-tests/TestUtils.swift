@@ -127,6 +127,10 @@ struct KeyPath {
         segments = string.components(separatedBy: ".")
     }
     
+    init(_ jsonKeys: JsonKey...) {
+        segments = jsonKeys.map { $0.jsonKey }
+    }
+    
     init(segments: [String]) {
         self.segments = segments
     }
@@ -153,6 +157,12 @@ extension String: StringKey {
     }
 }
 
+extension JsonKey: StringKey {
+    init(string: String) {
+        self = JsonKey(rawValue: string)!
+    }
+}
+
 extension Dictionary where Key: StringKey {
     subscript(keyPath keyPath: KeyPath) -> Any? {
         switch keyPath.firstAndRest() {
@@ -169,5 +179,11 @@ extension Dictionary where Key: StringKey {
                 return nil
             }
         }
+    }
+}
+
+public extension URLRequest {
+    var bodyDict: [String: Any] {
+        return try! JSONSerialization.jsonObject(with: httpBody!, options: []) as! [String: Any]
     }
 }
