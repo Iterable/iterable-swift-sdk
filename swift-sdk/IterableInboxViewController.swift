@@ -71,6 +71,24 @@ open class IterableInboxViewController: UITableViewController {
         registerTableViewCell()
     }
     
+    open override func viewWillAppear(_ animated: Bool) {
+        ITBError()
+        super.viewWillAppear(animated)
+        
+        if navigationController == nil {
+            viewModel.viewWillAppear()
+        }
+    }
+    
+    open override func viewWillDisappear(_ animated: Bool) {
+        ITBError()
+        super.viewWillDisappear(animated)
+        
+        if navigationController == nil {
+            viewModel.viewWillDisappear()
+        }
+    }
+    
     // MARK: - UITableViewDataSource (Required Functions)
     
     open override func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {

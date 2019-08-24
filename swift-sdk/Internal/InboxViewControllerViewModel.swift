@@ -25,6 +25,8 @@ protocol InboxViewControllerViewModelProtocol {
     // Internal model can't be changed until the view begins update.
     func beganUpdates()
     func endedUpdates()
+    func viewWillAppear()
+    func viewWillDisappear()
 }
 
 class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
@@ -36,6 +38,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
             messages = IterableAPI.inAppManager.getInboxMessages().map { InboxMessageViewModel(message: $0) }
         }
         NotificationCenter.default.addObserver(self, selector: #selector(onInboxChanged(notification:)), name: .iterableInboxChanged, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onAppDidEnterBackground(notification:)), name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
     
     deinit {
@@ -87,6 +90,16 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     func endedUpdates() {}
     
+    func viewWillAppear() {
+        ITBInfo()
+        sessionManager.viewWillAppear()
+    }
+    
+    func viewWillDisappear() {
+        ITBInfo()
+        sessionManager.viewWillDisappear()
+    }
+    
     private func loadImageIfNecessary(_ message: InboxMessageViewModel) {
         guard let imageUrlString = message.imageUrl, let url = URL(string: imageUrlString) else {
             return
@@ -132,6 +145,49 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         }
     }
     
+    @objc private func onAppDidEnterBackground(notification _: NSNotification) {
+        ITBInfo()
+    }
+    
     private var messages = [InboxMessageViewModel]()
     private var newMessages = [InboxMessageViewModel]()
+    private var sessionManager = SessionManager()
+    
+    struct SessionManager {
+        var session = Session()
+        
+        mutating func viewWillAppear() {
+            ITBInfo()
+            guard session.sessionStartTime == nil else {
+                ITBError("Session started twice")
+                return
+            }
+            ITBInfo("Session Start")
+            session = Session(sessionStartTime: Date(), sessionEndTime: nil)
+        }
+        
+        mutating func viewWillDisappear() {
+            guard let sessionStartTime = session.sessionStartTime else {
+                ITBError("Session ended without start")
+                return
+            }
+            ITBInfo("Session End")
+            session = Session(sessionStartTime: sessionStartTime, sessionEndTime: Date())
+            let difference = (session.sessionEndTime!.timeIntervalSince1970 - sessionStartTime.timeIntervalSince1970)
+            //:tqm
+            ITBError("sessionDuration: \(difference)")
+            session = Session()
+        }
+    }
+    
+    struct Session {
+        let sessionStartTime: Date?
+        let sessionEndTime: Date?
+        
+        init(sessionStartTime: Date? = nil,
+             sessionEndTime: Date? = nil) {
+            self.sessionStartTime = sessionStartTime
+            self.sessionEndTime = sessionEndTime
+        }
+    }
 }
