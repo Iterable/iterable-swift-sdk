@@ -179,7 +179,10 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
                 return
             }
             ITBInfo("Session Start")
-            session = Session(sessionStartTime: Date(), sessionEndTime: nil)
+            session = Session(sessionStartTime: Date(),
+                              sessionEndTime: nil,
+                              startTotalMessageCount: IterableAPI.inAppManager.getInboxMessages().count,
+                              startUnreadMessageCount: IterableAPI.inAppManager.getUnreadInboxMessagesCount())
         }
         
         mutating func viewWillDisappear() {
@@ -188,10 +191,12 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
                 return
             }
             ITBInfo("Session End")
-            session = Session(sessionStartTime: sessionStartTime, sessionEndTime: Date())
-            let difference = (session.sessionEndTime!.timeIntervalSince1970 - sessionStartTime.timeIntervalSince1970)
-            //:tqm
-            ITBError("sessionDuration: \(difference)")
+            IterableAPI.trackInboxSession(sessionStart: sessionStartTime,
+                                          sessionEnd: Date(),
+                                          startTotalMessageCount: session.startTotalMessageCount,
+                                          endTotalMessageCount: IterableAPI.inAppManager.getInboxMessages().count,
+                                          startUnreadMessageCount: session.startUnreadMessageCount,
+                                          endUnreadMessageCount: IterableAPI.inAppManager.getUnreadInboxMessagesCount())
             session = Session()
         }
     }
@@ -199,11 +204,17 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     struct Session {
         let sessionStartTime: Date?
         let sessionEndTime: Date?
+        let startTotalMessageCount: Int
+        let startUnreadMessageCount: Int
         
         init(sessionStartTime: Date? = nil,
-             sessionEndTime: Date? = nil) {
+             sessionEndTime: Date? = nil,
+             startTotalMessageCount: Int = 0,
+             startUnreadMessageCount: Int = 0) {
             self.sessionStartTime = sessionStartTime
             self.sessionEndTime = sessionEndTime
+            self.startTotalMessageCount = startTotalMessageCount
+            self.startUnreadMessageCount = startUnreadMessageCount
         }
     }
 }
