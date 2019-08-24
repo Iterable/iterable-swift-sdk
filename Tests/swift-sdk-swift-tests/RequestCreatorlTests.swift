@@ -11,25 +11,22 @@ class RequestCreatorTests: XCTestCase {
     func testTrackInboxSession() {
         let startDate = Date()
         let endDate = startDate.addingTimeInterval(60 * 5)
-        let startTotalMessageCount = 15
-        let endTotalMessageCount = 10
-        let startUnreadMessageCount = 5
-        let endUnreadMessageCount = 3
-        let urlRequest = convertToUrlRequest(createRequestCreator().createTrackInboxSessionRequest(sessionStart: startDate,
-                                                                                                   sessionEnd: endDate,
-                                                                                                   startTotalMessageCount: startTotalMessageCount,
-                                                                                                   endTotalMessageCount: endTotalMessageCount,
-                                                                                                   startUnreadMessageCount: startUnreadMessageCount,
-                                                                                                   endUnreadMessageCount: endUnreadMessageCount))
+        let inboxSession = IterableInboxSession(sessionStartTime: startDate,
+                                                sessionEndTime: endDate,
+                                                startTotalMessageCount: 15,
+                                                startUnreadMessageCount: 5,
+                                                endTotalMessageCount: 10,
+                                                endUnreadMessageCount: 3)
+        let urlRequest = convertToUrlRequest(createRequestCreator().createTrackInboxSessionRequest(inboxSession: inboxSession))
         TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_TRACK_INBOX_SESSION)
         let body = urlRequest.bodyDict
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.email), value: auth.email, inDictionary: body)
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.inboxSessionStart), value: IterableUtil.int(fromDate: startDate), inDictionary: body)
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.inboxSessionEnd), value: IterableUtil.int(fromDate: endDate), inDictionary: body)
-        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.startTotalMessageCount), value: startTotalMessageCount, inDictionary: body)
-        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.startUnreadMessageCount), value: startUnreadMessageCount, inDictionary: body)
-        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.endTotalMessageCount), value: endTotalMessageCount, inDictionary: body)
-        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.endUnreadMessageCount), value: endUnreadMessageCount, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.startTotalMessageCount), value: inboxSession.startTotalMessageCount, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.startUnreadMessageCount), value: inboxSession.startUnreadMessageCount, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.endTotalMessageCount), value: inboxSession.endTotalMessageCount, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.endUnreadMessageCount), value: inboxSession.endUnreadMessageCount, inDictionary: body)
     }
     
     private let apiKey = "zee-api-key"

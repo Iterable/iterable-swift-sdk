@@ -204,3 +204,39 @@ public final class IterableInAppMessage: NSObject {
         self.customPayload = customPayload
     }
 }
+
+/// Encapsulates Inbox Session
+@objcMembers
+public final class IterableInboxSession: NSObject {
+    /// Start time of session
+    public let sessionStartTime: Date?
+    
+    /// End time of session
+    public let sessionEndTime: Date?
+    
+    /// Total messages at start of session
+    public let startTotalMessageCount: Int
+    
+    /// Unread messages at start of session
+    public let startUnreadMessageCount: Int
+    
+    /// Total messages at end of session
+    public let endTotalMessageCount: Int
+    
+    /// Unread messages at end of session
+    public let endUnreadMessageCount: Int
+    
+    public init(sessionStartTime: Date? = nil,
+                sessionEndTime: Date? = nil,
+                startTotalMessageCount: Int = 0,
+                startUnreadMessageCount: Int = 0,
+                endTotalMessageCount: Int = 0,
+                endUnreadMessageCount: Int = 0) {
+        self.sessionStartTime = sessionStartTime
+        self.sessionEndTime = sessionEndTime
+        self.startTotalMessageCount = startTotalMessageCount
+        self.startUnreadMessageCount = startUnreadMessageCount
+        self.endTotalMessageCount = endTotalMessageCount
+        self.endUnreadMessageCount = endUnreadMessageCount
+    }
+}

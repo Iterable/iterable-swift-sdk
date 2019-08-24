@@ -169,7 +169,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     private var sessionManager = SessionManager()
     
     struct SessionManager {
-        var session = Session()
+        var session = IterableInboxSession()
         var startSessionWhenAppMovesToForefound = false
         
         mutating func viewWillAppear() {
@@ -179,10 +179,10 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
                 return
             }
             ITBInfo("Session Start")
-            session = Session(sessionStartTime: Date(),
-                              sessionEndTime: nil,
-                              startTotalMessageCount: IterableAPI.inAppManager.getInboxMessages().count,
-                              startUnreadMessageCount: IterableAPI.inAppManager.getUnreadInboxMessagesCount())
+            session = IterableInboxSession(sessionStartTime: Date(),
+                                           sessionEndTime: nil,
+                                           startTotalMessageCount: IterableAPI.inAppManager.getInboxMessages().count,
+                                           startUnreadMessageCount: IterableAPI.inAppManager.getUnreadInboxMessagesCount())
         }
         
         mutating func viewWillDisappear() {
@@ -191,30 +191,14 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
                 return
             }
             ITBInfo("Session End")
-            IterableAPI.trackInboxSession(sessionStart: sessionStartTime,
-                                          sessionEnd: Date(),
-                                          startTotalMessageCount: session.startTotalMessageCount,
-                                          endTotalMessageCount: IterableAPI.inAppManager.getInboxMessages().count,
-                                          startUnreadMessageCount: session.startUnreadMessageCount,
-                                          endUnreadMessageCount: IterableAPI.inAppManager.getUnreadInboxMessagesCount())
-            session = Session()
-        }
-    }
-    
-    struct Session {
-        let sessionStartTime: Date?
-        let sessionEndTime: Date?
-        let startTotalMessageCount: Int
-        let startUnreadMessageCount: Int
-        
-        init(sessionStartTime: Date? = nil,
-             sessionEndTime: Date? = nil,
-             startTotalMessageCount: Int = 0,
-             startUnreadMessageCount: Int = 0) {
-            self.sessionStartTime = sessionStartTime
-            self.sessionEndTime = sessionEndTime
-            self.startTotalMessageCount = startTotalMessageCount
-            self.startUnreadMessageCount = startUnreadMessageCount
+            let sessionToTrack = IterableInboxSession(sessionStartTime: sessionStartTime,
+                                                      sessionEndTime: Date(),
+                                                      startTotalMessageCount: session.startTotalMessageCount,
+                                                      startUnreadMessageCount: session.startUnreadMessageCount,
+                                                      endTotalMessageCount: IterableAPI.inAppManager.getInboxMessages().count,
+                                                      endUnreadMessageCount: IterableAPI.inAppManager.getUnreadInboxMessagesCount())
+            IterableAPI.track(inboxSession: sessionToTrack)
+            session = IterableInboxSession()
         }
     }
 }

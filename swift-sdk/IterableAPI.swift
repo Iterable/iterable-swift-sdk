@@ -437,6 +437,7 @@ public final class IterableAPI: NSObject {
      - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
      - parameter clickedUrl:     The url of the button or link that was clicked
      */
+    @objc(trackInAppClick:location:clickedUrl:)
     public static func track(inAppClick message: IterableInAppMessage, location: InAppLocation = .unknown, clickedUrl: String) {
         internalImplementation?.trackInAppClick(message, location: location, clickedUrl: clickedUrl)
     }
@@ -463,17 +464,12 @@ public final class IterableAPI: NSObject {
     }
     
     /**
-     Tracks in inbox session.
-     - parameter sessionStart:              Start time of session
-     - parameter sessionEnd:                End time of session
-     - parameter startTotalMessageCount:    Total messages at start of session
-     - parameter endTotalMessageCount:      Total messages at end of session
-     - parameter startUnreadMessageCount:   Unread messages at start of session
-     - parameter endUnreadMessageCount:     Unread messages at end of session
+     Tracks an inbox session.
+     - parameter inboxSession:  The inbox session to track. Please see documentation of `IterableInboxSession` for session parameters.
      */
-    @objc(trackInboxSessionWithSessionStart:sessionEnd:startTotalMessageCount:endTotalMessageCount:startUnreadMessageCount:endUnreadMessageCount:)
-    public static func trackInboxSession(sessionStart: Date, sessionEnd: Date, startTotalMessageCount: Int, endTotalMessageCount: Int, startUnreadMessageCount: Int, endUnreadMessageCount: Int) {
-        internalImplementation?.trackInboxSession(sessionStart: sessionStart, sessionEnd: sessionEnd, startTotalMessageCount: startTotalMessageCount, endTotalMessageCount: endTotalMessageCount, startUnreadMessageCount: startUnreadMessageCount, endUnreadMessageCount: endUnreadMessageCount)
+    @objc(trackInboxSession:)
+    public static func track(inboxSession: IterableInboxSession) {
+        internalImplementation?.track(inboxSession: inboxSession)
     }
     
     /**
