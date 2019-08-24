@@ -463,6 +463,20 @@ public final class IterableAPI: NSObject {
     }
     
     /**
+     Tracks in inbox session.
+     - parameter sessionStart:              Start time of session
+     - parameter sessionEnd:                End time of session
+     - parameter startTotalMessageCount:    Total messages at start of session
+     - parameter endTotalMessageCount:      Total messages at end of session
+     - parameter startUnreadMessageCount:   Unread messages at start of session
+     - parameter endUnreadMessageCount:     Unread messages at end of session
+     */
+    @objc(trackInboxSessionWithSessionStart:sessionEnd:startTotalMessageCount:endTotalMessageCount:startUnreadMessageCount:endUnreadMessageCount:)
+    public static func trackInboxSession(sessionStart: Date, sessionEnd: Date, startTotalMessageCount: Int, endTotalMessageCount: Int, startUnreadMessageCount: Int, endUnreadMessageCount: Int) {
+        internalImplementation?.trackInboxSession(sessionStart: sessionStart, sessionEnd: sessionEnd, startTotalMessageCount: startTotalMessageCount, endTotalMessageCount: endTotalMessageCount, startUnreadMessageCount: startUnreadMessageCount, endUnreadMessageCount: endUnreadMessageCount)
+    }
+    
+    /**
      Tracks an InAppDelivery event (internal use)
      */
     static func track(inAppDelivery message: IterableInAppMessage) {

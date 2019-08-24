@@ -45,6 +45,8 @@ protocol ApiClientProtocol: class {
     
     func inAppConsume(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource) -> Future<SendRequestValue, SendRequestError>
     
+    func trackInboxSession(sessionStart: Date, sessionEnd: Date, startTotalMessageCount: Int, endTotalMessageCount: Int, startUnreadMessageCount: Int, endUnreadMessageCount: Int) -> Future<SendRequestValue, SendRequestError>
+    
     func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Future<SendRequestValue, SendRequestError>
 }
 
@@ -133,6 +135,10 @@ class ApiClient: ApiClientProtocol {
     
     func track(inAppDelivery messageId: String, saveToInbox: Bool?, silentInbox: Bool?, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppDeliveryRequest(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, deviceMetadata: deviceMetadata))
+    }
+    
+    func trackInboxSession(sessionStart: Date, sessionEnd: Date, startTotalMessageCount: Int, endTotalMessageCount: Int, startUnreadMessageCount: Int, endUnreadMessageCount: Int) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createTrackInboxSessionRequest(sessionStart: sessionStart, sessionEnd: sessionEnd, startTotalMessageCount: startTotalMessageCount, endTotalMessageCount: endTotalMessageCount, startUnreadMessageCount: startUnreadMessageCount, endUnreadMessageCount: endUnreadMessageCount))
     }
     
     func inAppConsume(messageId: String) -> Future<SendRequestValue, SendRequestError> {
