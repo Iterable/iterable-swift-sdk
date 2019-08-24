@@ -72,7 +72,7 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     open override func viewWillAppear(_ animated: Bool) {
-        ITBError()
+        ITBInfo()
         super.viewWillAppear(animated)
         
         if navigationController == nil {
@@ -81,7 +81,7 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     open override func viewWillDisappear(_ animated: Bool) {
-        ITBError()
+        ITBInfo()
         super.viewWillDisappear(animated)
         
         if navigationController == nil {

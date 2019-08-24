@@ -38,6 +38,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
             messages = IterableAPI.inAppManager.getInboxMessages().map { InboxMessageViewModel(message: $0) }
         }
         NotificationCenter.default.addObserver(self, selector: #selector(onInboxChanged(notification:)), name: .iterableInboxChanged, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onAppWillEnterForeground(notification:)), name: UIApplication.willEnterForegroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppDidEnterBackground(notification:)), name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
     
@@ -145,8 +146,22 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         }
     }
     
+    @objc private func onAppWillEnterForeground(notification _: NSNotification) {
+        ITBInfo()
+        
+        if sessionManager.startSessionWhenAppMovesToForefound {
+            sessionManager.viewWillAppear()
+            sessionManager.startSessionWhenAppMovesToForefound = false
+        }
+    }
+    
     @objc private func onAppDidEnterBackground(notification _: NSNotification) {
         ITBInfo()
+        if sessionManager.session.sessionStartTime != nil {
+            // if a session is going on trigger session end
+            sessionManager.viewWillDisappear()
+            sessionManager.startSessionWhenAppMovesToForefound = true
+        }
     }
     
     private var messages = [InboxMessageViewModel]()
@@ -155,6 +170,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     struct SessionManager {
         var session = Session()
+        var startSessionWhenAppMovesToForefound = false
         
         mutating func viewWillAppear() {
             ITBInfo()
