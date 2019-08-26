@@ -399,12 +399,9 @@ public final class IterableAPI: NSObject {
     }
     
     /**
-     Deprecated use track(inAppOpen:location:) method instead.
-     
      Tracks an InAppOpen event.
      - parameter messageId:       The messageId of the notification
      */
-    @available(*, deprecated, message: "Use IterableAPI.track(inAppOpen:location) method instead.")
     @objc(trackInAppOpen:) public static func track(inAppOpen messageId: String) {
         internalImplementation?.trackInAppOpen(messageId)
     }
@@ -422,14 +419,11 @@ public final class IterableAPI: NSObject {
     }
     
     /**
-     Deprecated. Use track(inAppClick:location:clickedUrl) method instead.
-     
      Tracks an InAppClick event
      
      - parameter messageId:       The messageId of the notification
      - parameter buttonURL:     The url of the button that was clicked
      */
-    @available(*, deprecated, message: "Use IterableAPI.track(inAppClick:location:clickedUrl) method instead.")
     @objc(trackInAppClick:buttonURL:) public static func track(inAppClick messageId: String, buttonURL: String) {
         internalImplementation?.trackInAppClick(messageId, clickedUrl: buttonURL)
     }
