@@ -149,9 +149,9 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     @objc private func onAppWillEnterForeground(notification _: NSNotification) {
         ITBInfo()
         
-        if sessionManager.startSessionWhenAppMovesToForefound {
+        if sessionManager.startSessionWhenAppMovesToForeground {
             sessionManager.viewWillAppear()
-            sessionManager.startSessionWhenAppMovesToForefound = false
+            sessionManager.startSessionWhenAppMovesToForeground = false
         }
     }
     
@@ -160,7 +160,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         if sessionManager.session.sessionStartTime != nil {
             // if a session is going on trigger session end
             sessionManager.viewWillDisappear()
-            sessionManager.startSessionWhenAppMovesToForefound = true
+            sessionManager.startSessionWhenAppMovesToForeground = true
         }
     }
     
@@ -170,7 +170,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     struct SessionManager {
         var session = IterableInboxSession()
-        var startSessionWhenAppMovesToForefound = false
+        var startSessionWhenAppMovesToForeground = false
         
         mutating func viewWillAppear() {
             ITBInfo()
