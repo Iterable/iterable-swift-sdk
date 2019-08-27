@@ -142,6 +142,11 @@ open class IterableInboxViewController: UITableViewController {
         }
     }
     
+    open override func scrollViewDidScroll(_: UIScrollView) {
+        ITBDebug()
+        viewModel.visibleRowsChanged()
+    }
+    
     var viewModel: InboxViewControllerViewModelProtocol
     
     private let iterableCellNibName = "IterableInboxCell"
@@ -227,6 +232,10 @@ extension IterableInboxViewController: InboxViewControllerViewModelDelegate {
         tableView.reloadRows(at: [IndexPath(row: row, section: 0)], with: .automatic)
     }
     
+    var currentlyVisibleRows: [Int] {
+        return tableView.indexPathsForVisibleRows?.compactMap(isRowVisible(atIndexPath:)) ?? []
+    }
+    
     private func updateUnreadBadgeCount() {
         let unreadCount = viewModel.unreadCount
         let badgeValue = unreadCount == 0 ? nil : "\(unreadCount)"
@@ -248,5 +257,24 @@ extension IterableInboxViewController: InboxViewControllerViewModelDelegate {
         
         tableView.endUpdates()
         viewModel.endedUpdates()
+    }
+    
+    private func isRowVisible(atIndexPath indexPath: IndexPath) -> Int? {
+        let topMargin = CGFloat(10.0)
+        let bottomMargin = CGFloat(10.0)
+        let frame = tableView.frame
+        let statusHeight = UIApplication.shared.statusBarFrame.height
+        let navHeight = navigationController?.navigationBar.frame.height ?? 0
+        let topHeightToSubtract = statusHeight + navHeight - topMargin // subtract topMargin
+        
+        let tabBarHeight = tabBarController?.tabBar.bounds.height ?? 0
+        let bottomHeightToSubtract = tabBarHeight - bottomMargin
+        let size = CGSize(width: frame.width, height: frame.height - (topHeightToSubtract + bottomHeightToSubtract))
+        
+        let newRect = CGRect(origin: CGPoint(x: frame.origin.x, y: frame.origin.y + topHeightToSubtract), size: size)
+        
+        let cellRect = tableView.rectForRow(at: indexPath)
+        let convertedRect = tableView.convert(cellRect, to: tableView.superview)
+        return newRect.contains(convertedRect) ? indexPath.row : nil
     }
 }

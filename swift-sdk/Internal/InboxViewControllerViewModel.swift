@@ -10,6 +10,7 @@ protocol InboxViewControllerViewModelDelegate: class {
     // All these methods should be called on the main thread
     func onViewModelChanged(diff: [SectionedDiffStep<Int, InboxMessageViewModel>])
     func onImageLoaded(forRow row: Int)
+    var currentlyVisibleRows: [Int] { get }
 }
 
 protocol InboxViewControllerViewModelProtocol {
@@ -22,11 +23,12 @@ protocol InboxViewControllerViewModelProtocol {
     func createInboxMessageViewController(for message: InboxMessageViewModel, withInboxMode inboxMode: IterableInboxViewController.InboxMode) -> UIViewController?
     func refresh() -> Future<Bool, Error> // Talks to the server and refreshes
     // this works hand in hand with listener.onViewModelChanged.
-    // Internal model can't be changed until the view begins update.
+    // Internal model can't be changed until the view begins update (tableView.beginUpdates()).
     func beganUpdates()
     func endedUpdates()
     func viewWillAppear()
     func viewWillDisappear()
+    func visibleRowsChanged()
 }
 
 class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
@@ -101,6 +103,18 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         sessionManager.viewWillDisappear()
     }
     
+    func visibleRowsChanged() {
+        ITBDebug()
+        guard sessionManager.isTracking else {
+            ITBInfo("Not tracking session")
+            return
+        }
+        
+        if let currentlyVisibleRows = delegate?.currentlyVisibleRows {
+            impressionTracker.updateVisibleRows(visibleRows: currentlyVisibleRows, messages: messages)
+        }
+    }
+    
     private func loadImageIfNecessary(_ message: InboxMessageViewModel) {
         guard let imageUrlString = message.imageUrl, let url = URL(string: imageUrlString) else {
             return
@@ -157,7 +171,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     @objc private func onAppDidEnterBackground(notification _: NSNotification) {
         ITBInfo()
-        if sessionManager.session.sessionStartTime != nil {
+        if sessionManager.isTracking {
             // if a session is going on trigger session end
             sessionManager.viewWillDisappear()
             sessionManager.startSessionWhenAppMovesToForeground = true
@@ -167,14 +181,19 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     private var messages = [InboxMessageViewModel]()
     private var newMessages = [InboxMessageViewModel]()
     private var sessionManager = SessionManager()
+    private var impressionTracker = ImpressionTracker()
     
     struct SessionManager {
         var session = IterableInboxSession()
         var startSessionWhenAppMovesToForeground = false
         
+        var isTracking: Bool {
+            return session.sessionStartTime != nil
+        }
+        
         mutating func viewWillAppear() {
             ITBInfo()
-            guard session.sessionStartTime == nil else {
+            guard isTracking == false else {
                 ITBError("Session started twice")
                 return
             }
@@ -200,5 +219,88 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
             IterableAPI.track(inboxSession: sessionToTrack)
             session = IterableInboxSession()
         }
+    }
+    
+    struct Impression {
+        let messageId: String
+        let silentInbox: Bool
+        let displayCount: Int
+        let displayStart: Date
+        let displayDuration: TimeInterval
+        
+        func startImpression(now: Date) -> Impression {
+            return Impression(messageId: messageId,
+                              silentInbox: silentInbox,
+                              displayCount: displayCount + 1,
+                              displayStart: now,
+                              displayDuration: displayDuration)
+        }
+        
+        func endImpression(now: Date) -> Impression {
+            return Impression(messageId: messageId,
+                              silentInbox: silentInbox,
+                              displayCount: displayCount,
+                              displayStart: displayStart,
+                              displayDuration: displayDuration + now.timeIntervalSince1970 - displayStart.timeIntervalSince1970)
+        }
+    }
+    
+    struct ImpressionTracker {
+        mutating func updateVisibleRows(visibleRows: [Int], messages: [InboxMessageViewModel]) {
+            let diff = Dwifft.diff(lastVisibleRows, visibleRows)
+            guard diff.count > 0 else {
+                return
+            }
+            #if DEBUG
+                print(diff)
+            #endif
+            
+            diff.forEach {
+                switch $0 {
+                case let .insert(_, row):
+                    addImpression(row: row, message: messages[row].iterableMessage)
+                case let .delete(_, row):
+                    removeImpression(row: row, message: messages[row].iterableMessage)
+                }
+            }
+            
+            lastVisibleRows = visibleRows
+            #if DEBUG
+                printImpressions()
+            #endif
+        }
+        
+        private mutating func addImpression(row: Int, message: IterableInAppMessage) {
+            let impression: Impression
+            if let currentImpression = impressionsMap[row] {
+                impression = currentImpression.startImpression(now: Date())
+            } else {
+                // brand new impression
+                impression = Impression(messageId: message.messageId,
+                                        silentInbox: message.silentInbox,
+                                        displayCount: 1,
+                                        displayStart: Date(),
+                                        displayDuration: 0.0)
+            }
+            impressionsMap[row] = impression
+        }
+        
+        private mutating func removeImpression(row: Int, message _: IterableInAppMessage) {
+            guard let impression = impressionsMap[row] else {
+                ITBError("Could not find row: \(row)")
+                return
+            }
+            
+            impressionsMap[row] = impression.endImpression(now: Date())
+        }
+        
+        #if DEBUG
+            private func printImpressions() {
+                impressionsMap.keys.sorted().forEach { print("row: \($0) value: \(impressionsMap[$0]!)") }
+            }
+        #endif
+        
+        private var lastVisibleRows = [Int]()
+        private var impressionsMap = [Int: Impression]()
     }
 }
