@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="bj6-kS-Oax">
+    <device id="retina6_1" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="Stack View standard spacing" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Inbox-->
+        <scene sceneID="tne-QT-ifu">
+            <objects>
+                <viewController id="BYZ-38-t0r" customClass="IterableInboxNavigationViewController" customModule="IterableSDK" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Inbox" id="a2L-7v-w26"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="string" keyPath="navTitle" value="Inbox"/>
+                    </userDefinedRuntimeAttributes>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1530" y="139"/>
+        </scene>
+        <!--Tab Bar Controller-->
+        <scene sceneID="zmK-60-o17">
+            <objects>
+                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="bj6-kS-Oax" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="YZm-GJ-8xn">
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </tabBar>
+                    <connections>
+                        <segue destination="UpA-wW-DMA" kind="relationship" relationship="viewControllers" id="yh0-r5-UFs"/>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="viewControllers" id="K1v-wK-9qE"/>
+                    </connections>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ZyT-UD-BcN" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="137.68115942028987" y="138.61607142857142"/>
+        </scene>
+        <!--Tab1-->
+        <scene sceneID="WmK-Vs-MsR">
+            <objects>
+                <viewController id="UpA-wW-DMA" customClass="MainViewController" customModule="inbox_ui_tests_app" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Ua7-2X-azG">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="eGn-zM-0ZP">
+                                <rect key="frame" x="110" y="204.5" width="194" height="448"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LIM-RT-zMI">
+                                        <rect key="frame" x="31.5" y="0.0" width="131" height="30"/>
+                                        <state key="normal" title="Setup Notifications"/>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MTq-kY-Aaj">
+                                        <rect key="frame" x="37.5" y="38" width="119" height="30"/>
+                                        <state key="normal" title="Send Notification"/>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9tt-W0-hl6">
+                                        <rect key="frame" x="1" y="76" width="192" height="30"/>
+                                        <state key="normal" title="Show System Notification#1"/>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XfQ-n7-pwJ">
+                                        <rect key="frame" x="0.0" y="114" width="194" height="30"/>
+                                        <state key="normal" title="Show System Notification#2"/>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="g3e-hG-Fcc">
+                                        <rect key="frame" x="48" y="152" width="98" height="30"/>
+                                        <state key="normal" title="Show InApp#1"/>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4o1-16-1fr">
+                                        <rect key="frame" x="47" y="190" width="100" height="30"/>
+                                        <state key="normal" title="Show InApp#2"/>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QCh-mx-bdp">
+                                        <rect key="frame" x="46.5" y="228" width="101" height="30"/>
+                                        <state key="normal" title="Show InApp#3"/>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r2v-GM-ZuX">
+                                        <rect key="frame" x="46.5" y="266" width="101" height="30"/>
+                                        <state key="normal" title="Show InApp#4"/>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eDM-Dk-GRS">
+                                        <rect key="frame" x="47" y="304" width="100" height="30"/>
+                                        <state key="normal" title="Show InApp#5"/>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JRd-5f-1Xn">
+                                        <rect key="frame" x="57.5" y="342" width="79" height="30"/>
+                                        <state key="normal" title="Show Inbox"/>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zx6-Jr-yFN">
+                                        <rect key="frame" x="19" y="380" width="156" height="30"/>
+                                        <state key="normal" title="Show Popup Inbox Tab"/>
+                                        <connections>
+                                            <action selector="showPopupInboxTabTap:" destination="UpA-wW-DMA" eventType="touchUpInside" id="zqs-UF-dYK"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EC9-JJ-Tlq">
+                                        <rect key="frame" x="27.5" y="418" width="139" height="30"/>
+                                        <state key="normal" title="Show Nav Inbox Tab"/>
+                                        <connections>
+                                            <action selector="showNavInboxTabTap:" destination="UpA-wW-DMA" eventType="touchUpInside" id="iO9-3U-nib"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kFV-Qm-qzV">
+                                <rect key="frame" x="0.0" y="813" width="414" height="0.0"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="kFV-Qm-qzV" firstAttribute="leading" secondItem="yKY-sY-tfX" secondAttribute="leading" id="4uW-RT-bF5"/>
+                            <constraint firstItem="eGn-zM-0ZP" firstAttribute="centerX" secondItem="yKY-sY-tfX" secondAttribute="centerX" id="9wP-P5-3UK"/>
+                            <constraint firstItem="kFV-Qm-qzV" firstAttribute="trailing" secondItem="yKY-sY-tfX" secondAttribute="trailing" id="QcW-mX-sk1"/>
+                            <constraint firstItem="kFV-Qm-qzV" firstAttribute="bottom" secondItem="yKY-sY-tfX" secondAttribute="bottom" id="bKA-A5-fdZ"/>
+                            <constraint firstItem="eGn-zM-0ZP" firstAttribute="centerY" secondItem="yKY-sY-tfX" secondAttribute="centerY" id="y5f-p8-ACu"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="yKY-sY-tfX"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Tab1" id="pRK-MM-jLC"/>
+                    <connections>
+                        <outlet property="statusLbl" destination="kFV-Qm-qzV" id="hSW-fS-Vfd"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hoA-jS-PgX" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="842" y="139"/>
+        </scene>
+    </scenes>
+</document>
