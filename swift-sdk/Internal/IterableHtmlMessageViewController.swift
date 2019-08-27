@@ -82,10 +82,8 @@ class IterableHtmlMessageViewController: UIViewController {
         super.viewDidLoad()
         
         if let trackParams = parameters.trackParams {
-            IterableAPI.track(inAppOpen: trackParams.message.messageId,
-                              saveToInbox: trackParams.message.saveToInbox,
-                              silentInbox: trackParams.message.silentInbox,
-                              location: trackParams.location.jsonValue as? String)
+            IterableAPI.track(inAppOpen: trackParams.message,
+                              location: trackParams.location)
         }
         
         webView?.layoutSubviews()
@@ -198,10 +196,8 @@ extension IterableHtmlMessageViewController: UIWebViewDelegate {
     
     fileprivate func trackInAppClick(destinationUrl: String) {
         if let trackParams = parameters.trackParams {
-            IterableAPI.track(inAppClick: trackParams.message.messageId,
-                              saveToInbox: trackParams.message.saveToInbox,
-                              silentInbox: trackParams.message.silentInbox,
-                              location: trackParams.location.jsonValue as? String,
+            IterableAPI.track(inAppClick: trackParams.message,
+                              location: trackParams.location,
                               clickedUrl: destinationUrl)
         }
     }

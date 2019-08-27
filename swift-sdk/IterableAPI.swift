@@ -399,19 +399,23 @@ public final class IterableAPI: NSObject {
     }
     
     /**
-     Tracks an InAppOpen event with custom completion blocks
+     Tracks an InAppOpen event.
      - parameter messageId:       The messageId of the notification
      */
     @objc(trackInAppOpen:) public static func track(inAppOpen messageId: String) {
-        internalImplementation?.trackInAppOpen(messageId, saveToInbox: false, silentInbox: false, location: nil)
+        internalImplementation?.trackInAppOpen(messageId)
     }
     
-    @objc(trackInAppOpen:saveToInbox:silentInbox:location:) public static func track(inAppOpen messageId: String, saveToInbox: Bool, silentInbox: Bool, location: String?) {
-        internalImplementation?.trackInAppOpen(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location)
-    }
-    
-    public static func track(inAppOpen messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?) {
-        internalImplementation?.trackInAppOpen(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location)
+    /**
+     Tracks an InAppOpen event.
+     Usually you don't need to call this method explicitly. IterableSDK will call this automatically.
+     Call this method only if you are using a custom view controller to render IterableInAppMessages.
+     
+     - parameter message:       The Iterable in-app message
+     - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
+     */
+    @objc(trackInAppOpen:location:) public static func track(inAppOpen message: IterableInAppMessage, location: InAppLocation = .unknown) {
+        internalImplementation?.trackInAppOpen(message, location: location)
     }
     
     /**
@@ -421,15 +425,21 @@ public final class IterableAPI: NSObject {
      - parameter buttonURL:     The url of the button that was clicked
      */
     @objc(trackInAppClick:buttonURL:) public static func track(inAppClick messageId: String, buttonURL: String) {
-        internalImplementation?.trackInAppClick(messageId, saveToInbox: false, silentInbox: false, location: nil, clickedUrl: buttonURL)
+        internalImplementation?.trackInAppClick(messageId, clickedUrl: buttonURL)
     }
     
-    @objc(trackInAppClick:saveToInbox:silentInbox:location:clickedUrl:) public static func track(inAppClick messageId: String, saveToInbox: Bool = false, silentInbox: Bool = false, location: String?, clickedUrl: String) {
-        internalImplementation?.trackInAppClick(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, clickedUrl: clickedUrl)
-    }
-    
-    public static func track(inAppClick messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, clickedUrl: String) {
-        internalImplementation?.trackInAppClick(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, clickedUrl: clickedUrl)
+    /**
+     Tracks an InAppClick event.
+     Usually you don't need to call this method explicitly. IterableSDK will call this automatically.
+     Call this method only if you are using a custom view controller to render IterableInAppMessages.
+     
+     - parameter message:       The message of the notification
+     - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
+     - parameter clickedUrl:     The url of the button or link that was clicked
+     */
+    @objc(trackInAppClick:location:clickedUrl:)
+    public static func track(inAppClick message: IterableInAppMessage, location: InAppLocation = .unknown, clickedUrl: String) {
+        internalImplementation?.trackInAppClick(message, location: location, clickedUrl: clickedUrl)
     }
     
     /**
@@ -451,6 +461,15 @@ public final class IterableAPI: NSObject {
     @objc(trackInAppClose:location:source:clickedUrl:)
     public static func track(inAppClose message: IterableInAppMessage, location: InAppLocation, source: InAppCloseSource, clickedUrl: String?) {
         internalImplementation?.trackInAppClose(message, location: location, source: source, clickedUrl: clickedUrl)
+    }
+    
+    /**
+     Tracks an inbox session.
+     - parameter inboxSession:  The inbox session to track. Please see documentation of `IterableInboxSession` for session parameters.
+     */
+    @objc(trackInboxSession:)
+    public static func track(inboxSession: IterableInboxSession) {
+        internalImplementation?.track(inboxSession: inboxSession)
     }
     
     /**

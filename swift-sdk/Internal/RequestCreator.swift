@@ -235,25 +235,50 @@ struct RequestCreator {
         return .success(.get(createGetRequest(forPath: .ITBL_PATH_GET_INAPP_MESSAGES, withArgs: args as! [String: String])))
     }
     
-    func createTrackInAppOpenRequest(_ messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, deviceMetadata: DeviceMetadata) -> Result<IterableRequest, IterableError> {
+    func createTrackInAppOpenRequest(_ messageId: String, deviceMetadata: DeviceMetadata) -> Result<IterableRequest, IterableError> {
         var body: [AnyHashable: Any] = [:]
         
         body[.ITBL_KEY_MESSAGE_ID] = messageId
         
         addEmailOrUserId(dict: &body)
-        addMessageContext(dict: &body, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, deviceMetadata: deviceMetadata)
+        addMessageContext(dict: &body, saveToInbox: false, silentInbox: false, location: nil, deviceMetadata: deviceMetadata)
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_OPEN, body: body)))
     }
     
-    func createTrackInAppClickRequest(_ messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, deviceMetadata: DeviceMetadata, clickedUrl: String) -> Result<IterableRequest, IterableError> {
+    func createTrackInAppOpenRequest(inAppMessageContext: InAppMessageContext) -> Result<IterableRequest, IterableError> {
+        var body: [AnyHashable: Any] = [:]
+        
+        body[.ITBL_KEY_MESSAGE_ID] = inAppMessageContext.message.messageId
+        
+        addEmailOrUserId(dict: &body)
+        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMesageContextDictionary())
+        
+        return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_OPEN, body: body)))
+    }
+    
+    func createTrackInAppClickRequest(_ messageId: String, deviceMetadata: DeviceMetadata, clickedUrl: String) -> Result<IterableRequest, IterableError> {
         var body: [AnyHashable: Any] = [:]
         
         body[.ITBL_KEY_MESSAGE_ID] = messageId
         body[.ITBL_IN_APP_CLICKED_URL] = clickedUrl
         
         addEmailOrUserId(dict: &body)
-        addMessageContext(dict: &body, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, deviceMetadata: deviceMetadata)
+        addMessageContext(dict: &body, saveToInbox: false, silentInbox: false, location: nil, deviceMetadata: deviceMetadata)
+        
+        return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLICK, body: body)))
+    }
+    
+    func createTrackInAppClickRequest(inAppMessageContext: InAppMessageContext, clickedUrl: String) -> Result<IterableRequest, IterableError> {
+        var body = [AnyHashable: Any]()
+        
+        body[.ITBL_KEY_MESSAGE_ID] = inAppMessageContext.message.messageId
+        
+        body.setValue(for: .clickedUrl, value: clickedUrl)
+        
+        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMesageContextDictionary())
+        
+        addEmailOrUserId(dict: &body)
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLICK, body: body)))
     }
@@ -311,6 +336,28 @@ struct RequestCreator {
         addEmailOrUserId(dict: &body)
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_INAPP_CONSUME, body: body)))
+    }
+    
+    func createTrackInboxSessionRequest(inboxSession: IterableInboxSession) -> Result<IterableRequest, IterableError> {
+        guard let sessionStartTime = inboxSession.sessionStartTime else {
+            return .failure(IterableError.general(description: "expecting session start time"))
+        }
+        guard let sessionEndTime = inboxSession.sessionEndTime else {
+            return .failure(IterableError.general(description: "expecting session end time"))
+        }
+        
+        var body = [AnyHashable: Any]()
+        
+        addEmailOrUserId(dict: &body)
+        
+        body.setValue(for: .inboxSessionStart, value: IterableUtil.int(fromDate: sessionStartTime))
+        body.setValue(for: .inboxSessionEnd, value: IterableUtil.int(fromDate: sessionEndTime))
+        body.setValue(for: .startTotalMessageCount, value: inboxSession.startTotalMessageCount)
+        body.setValue(for: .endTotalMessageCount, value: inboxSession.endTotalMessageCount)
+        body.setValue(for: .startUnreadMessageCount, value: inboxSession.startUnreadMessageCount)
+        body.setValue(for: .endUnreadMessageCount, value: inboxSession.endUnreadMessageCount)
+        
+        return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INBOX_SESSION, body: body)))
     }
     
     func createDisableDeviceRequest(forAllUsers allUsers: Bool, hexToken: String) -> Result<IterableRequest, IterableError> {

@@ -58,6 +58,20 @@ struct TestUtils {
         }
     }
     
+    static func validateMessageContext(messageId _: String, email _: String? = nil, userId _: String? = nil, saveToInbox: Bool, silentInbox: Bool, location: InAppLocation, inBody body: [String: Any]) {
+        let contextKey = "\(JsonKey.inAppMessageContext.jsonKey)"
+        validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.saveToInbox.jsonKey)"), value: saveToInbox, inDictionary: body)
+        validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.silentInbox.jsonKey)"), value: silentInbox, inDictionary: body)
+        if location != .unknown {
+            validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.inAppLocation.jsonKey)"), value: location.jsonValue as! String, inDictionary: body)
+        }
+        
+        let deviceInfoKey = "\(contextKey).\(JsonKey.deviceInfo.jsonKey)"
+        validateMatch(keyPath: KeyPath("\(deviceInfoKey).\(JsonKey.deviceId.jsonKey)"), value: IterableAPI.internalImplementation!.deviceId, inDictionary: body)
+        validateMatch(keyPath: KeyPath("\(deviceInfoKey).\(JsonKey.platform.jsonKey)"), value: String.ITBL_PLATFORM_IOS, inDictionary: body)
+        validateMatch(keyPath: KeyPath("\(deviceInfoKey).\(JsonKey.appPackageName.jsonKey)"), value: Bundle.main.appPackageName, inDictionary: body)
+    }
+    
     static func getTestUserDefaults() -> UserDefaults {
         return TestHelper.getTestUserDefaults()
     }
@@ -113,6 +127,10 @@ struct KeyPath {
         segments = string.components(separatedBy: ".")
     }
     
+    init(_ jsonKeys: JsonKey...) {
+        segments = jsonKeys.map { $0.jsonKey }
+    }
+    
     init(segments: [String]) {
         self.segments = segments
     }
@@ -139,6 +157,12 @@ extension String: StringKey {
     }
 }
 
+extension JsonKey: StringKey {
+    init(string: String) {
+        self = JsonKey(rawValue: string)!
+    }
+}
+
 extension Dictionary where Key: StringKey {
     subscript(keyPath keyPath: KeyPath) -> Any? {
         switch keyPath.firstAndRest() {
@@ -155,5 +179,11 @@ extension Dictionary where Key: StringKey {
                 return nil
             }
         }
+    }
+}
+
+public extension URLRequest {
+    var bodyDict: [String: Any] {
+        return try! JSONSerialization.jsonObject(with: httpBody!, options: []) as! [String: Any]
     }
 }

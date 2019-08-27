@@ -10,6 +10,11 @@ import XCTest
 @testable import IterableSDK
 
 class InAppParsingTests: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        TestUtils.clearTestUserDefaults()
+    }
+    
     func testGetPaddingInvalid() {
         let insets = HtmlContentParser.getPadding(fromInAppSettings: [:])
         XCTAssertEqual(insets, UIEdgeInsets.zero)
@@ -134,7 +139,15 @@ class InAppParsingTests: XCTestCase {
     }
     
     func testTrackInAppClickWithButtonUrl() {
-        let messageId = "message1"
+        let message = IterableInAppMessage(messageId: "message1",
+                                           campaignId: "",
+                                           trigger: IterableInAppTrigger(dict: [.ITBL_IN_APP_TRIGGER_TYPE: "immediate"]),
+                                           createdAt: nil,
+                                           expiresAt: nil,
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
+                                           saveToInbox: false,
+                                           inboxMetadata: nil,
+                                           customPayload: nil)
         let buttonUrl = "http://somewhere.com"
         let expectation1 = expectation(description: "track in app click")
         
@@ -148,17 +161,24 @@ class InAppParsingTests: XCTestCase {
                                path: .ITBL_PATH_TRACK_INAPP_CLICK,
                                queryParams: [])
             let body = networkSession.getRequestBody() as! [String: Any]
-            TestUtils.validateMatch(keyPath: KeyPath("messageId"), value: messageId, inDictionary: body)
+            TestUtils.validateMessageContext(messageId: message.messageId, userId: InAppParsingTests.userId, saveToInbox: false, silentInbox: false, location: .unknown, inBody: body)
             TestUtils.validateMatch(keyPath: KeyPath("clickedUrl"), value: buttonUrl, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("userId"), value: InAppParsingTests.userId, inDictionary: body)
             expectation1.fulfill()
         }
-        IterableAPI.track(inAppClick: messageId, buttonURL: buttonUrl)
+        IterableAPI.track(inAppClick: message, clickedUrl: buttonUrl)
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
     func testTrackInAppOpen() {
-        let messageId = "message1"
+        let message = IterableInAppMessage(messageId: "message1",
+                                           campaignId: "",
+                                           trigger: IterableInAppTrigger(dict: [.ITBL_IN_APP_TRIGGER_TYPE: "never"]),
+                                           createdAt: nil,
+                                           expiresAt: nil,
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
+                                           saveToInbox: true,
+                                           inboxMetadata: nil,
+                                           customPayload: nil)
         let expectation1 = expectation(description: "track in app open")
         
         let networkSession = MockNetworkSession(statusCode: 200)
@@ -171,11 +191,10 @@ class InAppParsingTests: XCTestCase {
                                path: .ITBL_PATH_TRACK_INAPP_OPEN,
                                queryParams: [])
             let body = networkSession.getRequestBody() as! [String: Any]
-            TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_MESSAGE_ID), value: messageId, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_EMAIL), value: InAppParsingTests.email, inDictionary: body)
+            TestUtils.validateMessageContext(messageId: message.messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: .inbox, inBody: body)
             expectation1.fulfill()
         }
-        IterableAPI.track(inAppOpen: messageId)
+        IterableAPI.track(inAppOpen: message, location: .inbox)
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
@@ -195,12 +214,7 @@ class InAppParsingTests: XCTestCase {
                                queryParams: [])
             
             let body = networkSession.getRequestBody() as! [String: Any]
-            
-            TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_MESSAGE_ID), value: messageId, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_EMAIL), value: InAppParsingTests.email, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("\(AnyHashable.ITBL_IN_APP_MESSAGE_CONTEXT).\(AnyHashable.ITBL_IN_APP_SAVE_TO_INBOX)"), value: true, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("\(AnyHashable.ITBL_IN_APP_MESSAGE_CONTEXT).\(AnyHashable.ITBL_IN_APP_SILENT_INBOX)"), value: true, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("\(AnyHashable.ITBL_IN_APP_MESSAGE_CONTEXT).\(JsonKey.inAppLocation.jsonKey)"), value: "inbox", inDictionary: body)
+            TestUtils.validateMessageContext(messageId: messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: .inbox, inBody: body)
             TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.source.jsonKey)"), value: "back", inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.url.jsonKey)"), value: "https://somewhere.com", inDictionary: body)
             
@@ -238,12 +252,7 @@ class InAppParsingTests: XCTestCase {
                                queryParams: [])
             
             let body = networkSession.getRequestBody() as! [String: Any]
-            
-            TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_MESSAGE_ID), value: messageId, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_EMAIL), value: InAppParsingTests.email, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("\(AnyHashable.ITBL_IN_APP_MESSAGE_CONTEXT).\(AnyHashable.ITBL_IN_APP_SAVE_TO_INBOX)"), value: true, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("\(AnyHashable.ITBL_IN_APP_MESSAGE_CONTEXT).\(AnyHashable.ITBL_IN_APP_SILENT_INBOX)"), value: true, inDictionary: body)
-            
+            TestUtils.validateMessageContext(messageId: messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: .unknown, inBody: body)
             expectation1.fulfill()
         }
         

@@ -29,9 +29,13 @@ protocol ApiClientProtocol: class {
     
     func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError>
     
-    func track(inAppOpen messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError>
+    func track(inAppOpen messageId: String, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError>
     
-    func track(inAppClick messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, clickedUrl: String, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError>
+    func track(inAppOpen inAppMessageContext: InAppMessageContext) -> Future<SendRequestValue, SendRequestError>
+    
+    func track(inAppClick messageId: String, clickedUrl: String, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError>
+    
+    func track(inAppClick inAppMessageContext: InAppMessageContext, clickedUrl: String) -> Future<SendRequestValue, SendRequestError>
     
     func track(inAppClose inAppMessageContext: InAppMessageContext, source: InAppCloseSource, clickedUrl: String?) -> Future<SendRequestValue, SendRequestError>
     
@@ -40,6 +44,8 @@ protocol ApiClientProtocol: class {
     @discardableResult func inAppConsume(messageId: String) -> Future<SendRequestValue, SendRequestError>
     
     func inAppConsume(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource) -> Future<SendRequestValue, SendRequestError>
+    
+    func track(inboxSession: IterableInboxSession) -> Future<SendRequestValue, SendRequestError>
     
     func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Future<SendRequestValue, SendRequestError>
 }
@@ -107,12 +113,20 @@ class ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: createRequestCreator().createGetInAppMessagesRequest(count))
     }
     
-    func track(inAppOpen messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createTrackInAppOpenRequest(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, deviceMetadata: deviceMetadata))
+    func track(inAppOpen messageId: String, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createTrackInAppOpenRequest(messageId, deviceMetadata: deviceMetadata))
     }
     
-    func track(inAppClick messageId: String, saveToInbox: Bool?, silentInbox: Bool?, location: String?, clickedUrl: String, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, location: location, deviceMetadata: deviceMetadata, clickedUrl: clickedUrl))
+    func track(inAppOpen inAppMessageContext: InAppMessageContext) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createTrackInAppOpenRequest(inAppMessageContext: inAppMessageContext))
+    }
+    
+    func track(inAppClick messageId: String, clickedUrl: String, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(messageId, deviceMetadata: deviceMetadata, clickedUrl: clickedUrl))
+    }
+    
+    func track(inAppClick inAppMessageContext: InAppMessageContext, clickedUrl: String) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(inAppMessageContext: inAppMessageContext, clickedUrl: clickedUrl))
     }
     
     func track(inAppClose inAppMessageContext: InAppMessageContext, source: InAppCloseSource, clickedUrl: String?) -> Future<SendRequestValue, SendRequestError> {
@@ -121,6 +135,10 @@ class ApiClient: ApiClientProtocol {
     
     func track(inAppDelivery messageId: String, saveToInbox: Bool?, silentInbox: Bool?, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppDeliveryRequest(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, deviceMetadata: deviceMetadata))
+    }
+    
+    func track(inboxSession: IterableInboxSession) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createTrackInboxSessionRequest(inboxSession: inboxSession))
     }
     
     func inAppConsume(messageId: String) -> Future<SendRequestValue, SendRequestError> {
