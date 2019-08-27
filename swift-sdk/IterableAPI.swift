@@ -437,6 +437,7 @@ public final class IterableAPI: NSObject {
      - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
      - parameter clickedUrl:     The url of the button or link that was clicked
      */
+    @objc(trackInAppClick:location:clickedUrl:)
     public static func track(inAppClick message: IterableInAppMessage, location: InAppLocation = .unknown, clickedUrl: String) {
         internalImplementation?.trackInAppClick(message, location: location, clickedUrl: clickedUrl)
     }
@@ -460,6 +461,15 @@ public final class IterableAPI: NSObject {
     @objc(trackInAppClose:location:source:clickedUrl:)
     public static func track(inAppClose message: IterableInAppMessage, location: InAppLocation, source: InAppCloseSource, clickedUrl: String?) {
         internalImplementation?.trackInAppClose(message, location: location, source: source, clickedUrl: clickedUrl)
+    }
+    
+    /**
+     Tracks an inbox session.
+     - parameter inboxSession:  The inbox session to track. Please see documentation of `IterableInboxSession` for session parameters.
+     */
+    @objc(trackInboxSession:)
+    public static func track(inboxSession: IterableInboxSession) {
+        internalImplementation?.track(inboxSession: inboxSession)
     }
     
     /**

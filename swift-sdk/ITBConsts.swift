@@ -28,6 +28,7 @@ public extension String {
     static let ITBL_PATH_TRACK_INAPP_CLOSE = "events/trackInAppClose"
     static let ITBL_PATH_TRACK_INAPP_DELIVERY = "events/trackInAppDelivery"
     static let ITBL_PATH_TRACK_PUSH_OPEN = "events/trackPushOpen"
+    static let ITBL_PATH_TRACK_INBOX_SESSION = "events/trackInboxSession"
     static let ITBL_PATH_UPDATE_USER = "users/update"
     static let ITBL_PATH_UPDATE_EMAIL = "users/updateEmail"
     static let ITBL_PATH_UPDATE_SUBSCRIPTIONS = "users/updateSubscriptions"
@@ -181,6 +182,8 @@ public protocol JsonKeyRepresentable {
 }
 
 public enum JsonKey: String, JsonKeyRepresentable {
+    case email
+    
     case inboxTitle = "title"
     case inboxSubtitle = "subtitle"
     case inboxIcon = "icon"
@@ -194,6 +197,13 @@ public enum JsonKey: String, JsonKeyRepresentable {
     case silentInbox
     case inAppLocation = "location"
     case clickedUrl
+    
+    case inboxSessionStart
+    case inboxSessionEnd
+    case startTotalMessageCount
+    case startUnreadMessageCount
+    case endTotalMessageCount
+    case endUnreadMessageCount
     
     case source
     case url

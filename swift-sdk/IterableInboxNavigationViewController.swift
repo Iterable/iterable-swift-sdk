@@ -14,31 +14,25 @@ open class IterableInboxNavigationViewController: UINavigationController {
     /// that the xib is present in the main bundle.
     @IBInspectable public var cellNibName: String? = nil {
         didSet {
-            if let inboxViewController = viewControllers[0] as? IterableInboxViewController {
-                inboxViewController.cellNibName = cellNibName
-            }
+            inboxViewController?.cellNibName = cellNibName
         }
     }
     
     /// This is the title for the Inbox Navigation Bar
     @IBInspectable public var navTitle: String? = nil {
         didSet {
-            if let inboxViewController = viewControllers[0] as? IterableInboxViewController {
-                if let navTitle = navTitle {
-                    inboxViewController.navigationItem.title = navTitle
-                }
+            if let navTitle = navTitle {
+                inboxViewController?.navigationItem.title = navTitle
             }
         }
     }
     
     @IBInspectable public var isPopup: Bool = true {
         didSet {
-            if let inboxViewController = viewControllers[0] as? IterableInboxViewController {
-                if isPopup {
-                    inboxViewController.inboxMode = .popup
-                } else {
-                    inboxViewController.inboxMode = .nav
-                }
+            if isPopup {
+                inboxViewController?.inboxMode = .popup
+            } else {
+                inboxViewController?.inboxMode = .nav
             }
         }
     }
@@ -73,10 +67,26 @@ open class IterableInboxNavigationViewController: UINavigationController {
             if let _ = strongSelf.presentingViewController {
                 let viewController = strongSelf.viewControllers[0]
                 if viewController.navigationItem.leftBarButtonItem == nil, viewController.navigationItem.rightBarButtonItem == nil {
+                    // we can't do popup on top of popup so the inbox must be shown inside nav controller.
+                    strongSelf.inboxViewController?.inboxMode = .nav
                     viewController.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(strongSelf.onDoneTapped))
                 }
             }
         }
+    }
+    
+    open override func viewWillAppear(_ animated: Bool) {
+        ITBInfo()
+        super.viewWillAppear(animated)
+        
+        inboxViewController?.viewModel.viewWillAppear()
+    }
+    
+    open override func viewWillDisappear(_ animated: Bool) {
+        ITBInfo()
+        super.viewWillDisappear(animated)
+        
+        inboxViewController?.viewModel.viewWillDisappear()
     }
     
     /// Do not use this
@@ -114,5 +124,9 @@ open class IterableInboxNavigationViewController: UINavigationController {
     @objc private func onDoneTapped() {
         ITBInfo()
         presentingViewController?.dismiss(animated: true)
+    }
+    
+    private var inboxViewController: IterableInboxViewController? {
+        return viewControllers[0] as? IterableInboxViewController
     }
 }

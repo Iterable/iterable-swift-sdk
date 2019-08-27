@@ -25,6 +25,8 @@ protocol InboxViewControllerViewModelProtocol {
     // Internal model can't be changed until the view begins update.
     func beganUpdates()
     func endedUpdates()
+    func viewWillAppear()
+    func viewWillDisappear()
 }
 
 class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
@@ -36,6 +38,8 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
             messages = IterableAPI.inAppManager.getInboxMessages().map { InboxMessageViewModel(message: $0) }
         }
         NotificationCenter.default.addObserver(self, selector: #selector(onInboxChanged(notification:)), name: .iterableInboxChanged, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onAppWillEnterForeground(notification:)), name: UIApplication.willEnterForegroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onAppDidEnterBackground(notification:)), name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
     
     deinit {
@@ -87,6 +91,16 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     func endedUpdates() {}
     
+    func viewWillAppear() {
+        ITBInfo()
+        sessionManager.viewWillAppear()
+    }
+    
+    func viewWillDisappear() {
+        ITBInfo()
+        sessionManager.viewWillDisappear()
+    }
+    
     private func loadImageIfNecessary(_ message: InboxMessageViewModel) {
         guard let imageUrlString = message.imageUrl, let url = URL(string: imageUrlString) else {
             return
@@ -132,6 +146,59 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         }
     }
     
+    @objc private func onAppWillEnterForeground(notification _: NSNotification) {
+        ITBInfo()
+        
+        if sessionManager.startSessionWhenAppMovesToForeground {
+            sessionManager.viewWillAppear()
+            sessionManager.startSessionWhenAppMovesToForeground = false
+        }
+    }
+    
+    @objc private func onAppDidEnterBackground(notification _: NSNotification) {
+        ITBInfo()
+        if sessionManager.session.sessionStartTime != nil {
+            // if a session is going on trigger session end
+            sessionManager.viewWillDisappear()
+            sessionManager.startSessionWhenAppMovesToForeground = true
+        }
+    }
+    
     private var messages = [InboxMessageViewModel]()
     private var newMessages = [InboxMessageViewModel]()
+    private var sessionManager = SessionManager()
+    
+    struct SessionManager {
+        var session = IterableInboxSession()
+        var startSessionWhenAppMovesToForeground = false
+        
+        mutating func viewWillAppear() {
+            ITBInfo()
+            guard session.sessionStartTime == nil else {
+                ITBError("Session started twice")
+                return
+            }
+            ITBInfo("Session Start")
+            session = IterableInboxSession(sessionStartTime: Date(),
+                                           sessionEndTime: nil,
+                                           startTotalMessageCount: IterableAPI.inAppManager.getInboxMessages().count,
+                                           startUnreadMessageCount: IterableAPI.inAppManager.getUnreadInboxMessagesCount())
+        }
+        
+        mutating func viewWillDisappear() {
+            guard let sessionStartTime = session.sessionStartTime else {
+                ITBError("Session ended without start")
+                return
+            }
+            ITBInfo("Session End")
+            let sessionToTrack = IterableInboxSession(sessionStartTime: sessionStartTime,
+                                                      sessionEndTime: Date(),
+                                                      startTotalMessageCount: session.startTotalMessageCount,
+                                                      startUnreadMessageCount: session.startUnreadMessageCount,
+                                                      endTotalMessageCount: IterableAPI.inAppManager.getInboxMessages().count,
+                                                      endUnreadMessageCount: IterableAPI.inAppManager.getUnreadInboxMessagesCount())
+            IterableAPI.track(inboxSession: sessionToTrack)
+            session = IterableInboxSession()
+        }
+    }
 }

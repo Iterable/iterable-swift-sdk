@@ -75,6 +75,15 @@ struct NetworkHelper {
     }
     
     static func sendRequest(_ request: URLRequest, usingSession networkSession: NetworkSessionProtocol) -> Future<SendRequestValue, SendRequestError> {
+        #if DEBUG
+            if let body = request.httpBody {
+                if let dict = try? JSONSerialization.jsonObject(with: body, options: []) {
+                    print("request body:")
+                    print(dict)
+                }
+            }
+        #endif
+        
         let promise = Promise<SendRequestValue, SendRequestError>()
         
         networkSession.makeRequest(request) { data, response, error in
