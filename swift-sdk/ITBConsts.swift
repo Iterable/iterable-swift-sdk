@@ -204,6 +204,7 @@ public enum JsonKey: String, JsonKeyRepresentable {
     case startUnreadMessageCount
     case endTotalMessageCount
     case endUnreadMessageCount
+    case impressions
     
     case source
     case url

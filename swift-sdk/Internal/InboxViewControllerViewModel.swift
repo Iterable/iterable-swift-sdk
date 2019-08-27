@@ -220,7 +220,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
             session = IterableInboxSession()
         }
     }
-
+    
     struct StartImpression {
         let messageId: String
         let silentInbox: Bool
@@ -238,12 +238,12 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         
         func createEndImpression(now: Date) -> EndImpression {
             return EndImpression(messageId: messageId,
-                              silentInbox: silentInbox,
-                              displayCount: displayCount,
-                              displayDuration: lastDuration + now.timeIntervalSince1970 - displayStart.timeIntervalSince1970)
+                                 silentInbox: silentInbox,
+                                 displayCount: displayCount,
+                                 displayDuration: lastDuration + now.timeIntervalSince1970 - displayStart.timeIntervalSince1970)
         }
     }
-
+    
     struct EndImpression {
         let messageId: String
         let silentInbox: Bool
@@ -252,10 +252,10 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         
         func startNewImpression(now: Date) -> StartImpression {
             return StartImpression(messageId: messageId,
-                              silentInbox: silentInbox,
-                              displayCount: displayCount + 1,
-                              displayStart: now,
-                              lastDuration: displayDuration)
+                                   silentInbox: silentInbox,
+                                   displayCount: displayCount + 1,
+                                   displayStart: now,
+                                   lastDuration: displayDuration)
         }
     }
     

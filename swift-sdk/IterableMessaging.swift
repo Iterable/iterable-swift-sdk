@@ -207,7 +207,7 @@ public final class IterableInAppMessage: NSObject {
 
 /// Encapsulates Inbox Session
 @objcMembers
-public final class IterableInboxSession: NSObject {
+public final class IterableInboxSession: NSObject, Codable {
     /// Start time of session
     public let sessionStartTime: Date?
     
@@ -226,17 +226,48 @@ public final class IterableInboxSession: NSObject {
     /// Unread messages at end of session
     public let endUnreadMessageCount: Int
     
+    /// Array of impressions for inbox messages
+    public let impressions: [IterableInboxImpression]
+    
     public init(sessionStartTime: Date? = nil,
                 sessionEndTime: Date? = nil,
                 startTotalMessageCount: Int = 0,
                 startUnreadMessageCount: Int = 0,
                 endTotalMessageCount: Int = 0,
-                endUnreadMessageCount: Int = 0) {
+                endUnreadMessageCount: Int = 0,
+                impressions: [IterableInboxImpression] = []) {
         self.sessionStartTime = sessionStartTime
         self.sessionEndTime = sessionEndTime
         self.startTotalMessageCount = startTotalMessageCount
         self.startUnreadMessageCount = startUnreadMessageCount
         self.endTotalMessageCount = endTotalMessageCount
         self.endUnreadMessageCount = endUnreadMessageCount
+        self.impressions = impressions
+    }
+}
+
+/// Encapsulates an Inbox impression of a message
+@objcMembers
+public final class IterableInboxImpression: NSObject, Codable {
+    /// The message id of message
+    public let messageId: String
+    
+    /// Whether the message was silent delivered to inbox
+    public let silentInbox: Bool
+    
+    /// How many times this message was displayed in inbox
+    public let displayCount: Int
+    
+    /// Total duration this message was displayed
+    public let displayDuration: TimeInterval
+    
+    public init(messageId: String,
+                silentInbox: Bool,
+                displayCount: Int,
+                displayDuration: TimeInterval) {
+        self.messageId = messageId
+        self.silentInbox = silentInbox
+        self.displayCount = displayCount
+        self.displayDuration = displayDuration
     }
 }
