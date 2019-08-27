@@ -4,7 +4,6 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="Stack View standard spacing" minToolsVersion="9.0"/>
@@ -36,6 +35,7 @@
                 <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="bj6-kS-Oax" sceneMemberID="viewController">
                     <toolbarItems/>
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="YZm-GJ-8xn">
+                        <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBar>
@@ -57,57 +57,17 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="eGn-zM-0ZP">
-                                <rect key="frame" x="110" y="204.5" width="194" height="448"/>
+                                <rect key="frame" x="129" y="394.5" width="156" height="68"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LIM-RT-zMI">
-                                        <rect key="frame" x="31.5" y="0.0" width="131" height="30"/>
-                                        <state key="normal" title="Setup Notifications"/>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MTq-kY-Aaj">
-                                        <rect key="frame" x="37.5" y="38" width="119" height="30"/>
-                                        <state key="normal" title="Send Notification"/>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9tt-W0-hl6">
-                                        <rect key="frame" x="1" y="76" width="192" height="30"/>
-                                        <state key="normal" title="Show System Notification#1"/>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XfQ-n7-pwJ">
-                                        <rect key="frame" x="0.0" y="114" width="194" height="30"/>
-                                        <state key="normal" title="Show System Notification#2"/>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="g3e-hG-Fcc">
-                                        <rect key="frame" x="48" y="152" width="98" height="30"/>
-                                        <state key="normal" title="Show InApp#1"/>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4o1-16-1fr">
-                                        <rect key="frame" x="47" y="190" width="100" height="30"/>
-                                        <state key="normal" title="Show InApp#2"/>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QCh-mx-bdp">
-                                        <rect key="frame" x="46.5" y="228" width="101" height="30"/>
-                                        <state key="normal" title="Show InApp#3"/>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r2v-GM-ZuX">
-                                        <rect key="frame" x="46.5" y="266" width="101" height="30"/>
-                                        <state key="normal" title="Show InApp#4"/>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eDM-Dk-GRS">
-                                        <rect key="frame" x="47" y="304" width="100" height="30"/>
-                                        <state key="normal" title="Show InApp#5"/>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JRd-5f-1Xn">
-                                        <rect key="frame" x="57.5" y="342" width="79" height="30"/>
-                                        <state key="normal" title="Show Inbox"/>
-                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zx6-Jr-yFN">
-                                        <rect key="frame" x="19" y="380" width="156" height="30"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="156" height="30"/>
                                         <state key="normal" title="Show Popup Inbox Tab"/>
                                         <connections>
                                             <action selector="showPopupInboxTabTap:" destination="UpA-wW-DMA" eventType="touchUpInside" id="zqs-UF-dYK"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EC9-JJ-Tlq">
-                                        <rect key="frame" x="27.5" y="418" width="139" height="30"/>
+                                        <rect key="frame" x="8.5" y="38" width="139" height="30"/>
                                         <state key="normal" title="Show Nav Inbox Tab"/>
                                         <connections>
                                             <action selector="showNavInboxTabTap:" destination="UpA-wW-DMA" eventType="touchUpInside" id="iO9-3U-nib"/>
