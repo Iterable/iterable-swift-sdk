@@ -29,6 +29,48 @@ class RequestCreatorTests: XCTestCase {
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.endUnreadMessageCount), value: inboxSession.endUnreadMessageCount, inDictionary: body)
     }
     
+    func testGetInAppMessagesRequest() {
+        IterableAPI.initializeForTesting()
+        IterableAPI.email = "user@example.com"
+        
+        let inAppMessageRequestCount: NSNumber = 42
+        
+        let request = createRequestCreator().createGetInAppMessagesRequest(inAppMessageRequestCount)
+        
+        let urlRequest = convertToUrlRequest(request)
+        
+        TestUtils.validate(request: urlRequest, requestType: .get, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_GET_INAPP_MESSAGES)
+        
+        guard let header = urlRequest.allHTTPHeaderFields else {
+            XCTFail("no header")
+            return
+        }
+        
+        XCTAssertEqual(header[AnyHashable.ITBL_HEADER_SDK_PLATFORM], String.ITBL_PLATFORM_IOS)
+        XCTAssertEqual(header[AnyHashable.ITBL_HEADER_SDK_VERSION], IterableAPI.sdkVersion)
+        XCTAssertEqual(header[AnyHashable.ITBL_HEADER_API_KEY], apiKey)
+        
+        do {
+            let success = try request.get()
+            
+            switch success {
+            case let .get(g):
+                if let args = g.args {
+                    print(args)
+                    XCTAssertEqual(args[AnyHashable.ITBL_KEY_EMAIL], IterableAPI.email)
+                    XCTAssertEqual(args[AnyHashable.ITBL_KEY_PACKAGE_NAME], Bundle.main.appPackageName)
+                    XCTAssertEqual(args[AnyHashable.ITBL_KEY_COUNT], inAppMessageRequestCount.stringValue)
+                } else {
+                    XCTFail("no arguments as expected")
+                }
+            default:
+                XCTFail("not a get request as expected")
+            }
+        } catch {
+            XCTFail("unwrapping get request failed")
+        }
+    }
+    
     private let apiKey = "zee-api-key"
     
     private func convertToUrlRequest(_ requestCreationResult: Result<IterableRequest, IterableError>) -> URLRequest {
