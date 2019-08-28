@@ -11,12 +11,17 @@ class RequestCreatorTests: XCTestCase {
     func testTrackInboxSession() {
         let startDate = Date()
         let endDate = startDate.addingTimeInterval(60 * 5)
+        let impressions = [
+            IterableInboxImpression(messageId: "message1", silentInbox: true, displayCount: 2, displayDuration: 1.23),
+            IterableInboxImpression(messageId: "message2", silentInbox: false, displayCount: 3, displayDuration: 2.34),
+        ]
         let inboxSession = IterableInboxSession(sessionStartTime: startDate,
                                                 sessionEndTime: endDate,
                                                 startTotalMessageCount: 15,
                                                 startUnreadMessageCount: 5,
                                                 endTotalMessageCount: 10,
-                                                endUnreadMessageCount: 3)
+                                                endUnreadMessageCount: 3,
+                                                impressions: impressions)
         let urlRequest = convertToUrlRequest(createRequestCreator().createTrackInboxSessionRequest(inboxSession: inboxSession))
         TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_TRACK_INBOX_SESSION)
         let body = urlRequest.bodyDict
@@ -27,6 +32,8 @@ class RequestCreatorTests: XCTestCase {
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.startUnreadMessageCount), value: inboxSession.startUnreadMessageCount, inDictionary: body)
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.endTotalMessageCount), value: inboxSession.endTotalMessageCount, inDictionary: body)
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.endUnreadMessageCount), value: inboxSession.endUnreadMessageCount, inDictionary: body)
+        
+        validateImpressions(impressions, inBody: body)
     }
     
     func testGetInAppMessagesRequestFailure() {
@@ -69,6 +76,28 @@ class RequestCreatorTests: XCTestCase {
     }
     
     private let apiKey = "zee-api-key"
+    
+    private func validateImpressions(_ impressions: [IterableInboxImpression], inBody body: [String: Any]) {
+        guard let impressionsFromBody = body["impressions"] as? [[String: Any]] else {
+            XCTFail("Could not find impressions element")
+            return
+        }
+        
+        XCTAssertEqual(impressionsFromBody.count, impressions.count)
+        impressions.forEach {
+            validateImpression($0, impressionsFromBody: impressionsFromBody)
+        }
+    }
+    
+    private func validateImpression(_ impression: IterableInboxImpression, impressionsFromBody: [[String: Any]]) {
+        guard let matchedImpression = impressionsFromBody.first(where: { impression.messageId == $0["messageId"] as? String }) else {
+            XCTFail()
+            return
+        }
+        XCTAssertEqual(matchedImpression["silentInbox"] as? Bool, impression.silentInbox)
+        XCTAssertEqual(matchedImpression["displayCount"] as? Int, impression.displayCount)
+        XCTAssertEqual(matchedImpression["displayDuration"] as? TimeInterval, impression.displayDuration)
+    }
     
     private func convertToUrlRequest(_ requestCreationResult: Result<IterableRequest, IterableError>) -> URLRequest {
         if case let Result.success(iterableRequest) = requestCreationResult {
