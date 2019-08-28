@@ -111,7 +111,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         }
         
         if let currentlyVisibleRows = delegate?.currentlyVisibleRows {
-            impressionTracker.updateVisibleRows(visibleRows: currentlyVisibleRows, messages: messages)
+            impressionTracker.updateVisibleRows(visibleRows: currentlyVisibleRows)
         }
     }
     
@@ -183,6 +183,13 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     private var sessionManager = SessionManager()
     private var impressionTracker = ImpressionTracker()
     
+    struct Session {
+        let startTime: Date
+        let totalMessageCount: Int
+        let unreadMessageCount: Int
+        let impressionTracker: ImpressionTracker
+    }
+    
     struct SessionManager {
         var session = IterableInboxSession()
         var startSessionWhenAppMovesToForeground = false
@@ -221,46 +228,13 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         }
     }
     
-    struct StartImpression {
-        let messageId: String
-        let silentInbox: Bool
+    struct Impression {
         let displayCount: Int
-        let displayStart: Date
-        let lastDuration: TimeInterval
-        
-        static func create(now: Date, message: IterableInAppMessage) -> StartImpression {
-            return StartImpression(messageId: message.messageId,
-                                   silentInbox: message.silentInbox,
-                                   displayCount: 1,
-                                   displayStart: now,
-                                   lastDuration: 0.0)
-        }
-        
-        func createEndImpression(now: Date) -> EndImpression {
-            return EndImpression(messageId: messageId,
-                                 silentInbox: silentInbox,
-                                 displayCount: displayCount,
-                                 displayDuration: lastDuration + now.timeIntervalSince1970 - displayStart.timeIntervalSince1970)
-        }
-    }
-    
-    struct EndImpression {
-        let messageId: String
-        let silentInbox: Bool
-        let displayCount: Int
-        let displayDuration: TimeInterval
-        
-        func startNewImpression(now: Date) -> StartImpression {
-            return StartImpression(messageId: messageId,
-                                   silentInbox: silentInbox,
-                                   displayCount: displayCount + 1,
-                                   displayStart: now,
-                                   lastDuration: displayDuration)
-        }
+        let duration: TimeInterval
     }
     
     struct ImpressionTracker {
-        mutating func updateVisibleRows(visibleRows: [Int], messages: [InboxMessageViewModel]) {
+        mutating func updateVisibleRows(visibleRows: [Int]) {
             let diff = Dwifft.diff(lastVisibleRows, visibleRows)
             guard diff.count > 0 else {
                 return
@@ -272,9 +246,9 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
             diff.forEach {
                 switch $0 {
                 case let .insert(_, row):
-                    addImpression(row: row, message: messages[row].iterableMessage)
+                    startImpression(for: row)
                 case let .delete(_, row):
-                    removeImpression(row: row, message: messages[row].iterableMessage)
+                    endImpression(for: row)
                 }
             }
             
@@ -284,40 +258,46 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
             #endif
         }
         
-        private mutating func addImpression(row: Int, message: IterableInAppMessage) {
-            let startImpression: StartImpression
-            if let endImpression = endImpressions[row] {
-                startImpression = endImpression.startNewImpression(now: Date())
-                endImpressions.removeValue(forKey: row)
-            } else {
-                startImpression = StartImpression.create(now: Date(), message: message)
-            }
-            startImpressions[row] = startImpression
+        mutating func updateOnSessionEnd() {
+            startTimes.forEach { endImpression(for: $0.key) }
         }
         
-        private mutating func removeImpression(row: Int, message _: IterableInAppMessage) {
-            guard let startImpression = startImpressions[row] else {
-                ITBError("Could not find row: \(row)")
+        private mutating func startImpression(for row: Int) {
+            assert(startTimes[row] == nil, "Did not expect start time for row: \(row)")
+            startTimes[row] = Date()
+        }
+        
+        private mutating func endImpression(for row: Int) {
+            guard let startTime = startTimes[row] else {
+                ITBError("Could not find startTime for row: \(row)")
                 return
             }
             
-            endImpressions[row] = startImpression.createEndImpression(now: Date())
-            startImpressions.removeValue(forKey: row)
+            let duration = Date().timeIntervalSince1970 - startTime.timeIntervalSince1970
+            let impression: Impression
+            if let existing = impressions[row] {
+                impression = Impression(displayCount: existing.displayCount + 1, duration: existing.duration + duration)
+            } else {
+                impression = Impression(displayCount: 1, duration: duration)
+            }
+            impressions[row] = impression
+            
+            startTimes.removeValue(forKey: row)
         }
         
         #if DEBUG
             private func printImpressions() {
-                print("startImpressions:")
-                startImpressions.keys.sorted().forEach { print("row: \($0) value: \(startImpressions[$0]!)") }
-                print("endImpressions:")
-                endImpressions.keys.sorted().forEach { print("row: \($0) value: \(endImpressions[$0]!)") }
+                print("startTimes:")
+                startTimes.keys.sorted().forEach { print("row: \($0) value: \(startTimes[$0]!)") }
+                print("impressions:")
+                impressions.keys.sorted().forEach { print("row: \($0) value: \(impressions[$0]!)") }
                 print()
                 print()
             }
         #endif
         
         private var lastVisibleRows = [Int]()
-        private var startImpressions = [Int: StartImpression]()
-        private var endImpressions = [Int: EndImpression]()
+        private var startTimes = [Int: Date]()
+        private var impressions = [Int: Impression]()
     }
 }
