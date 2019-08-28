@@ -102,16 +102,6 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AC7B143920D02D8700877BFE"
-               BuildableName = "swift-sdk-objc-tests.xctest"
-               BlueprintName = "swift-sdk-objc-tests"
-               ReferencedContainer = "container:swift-sdk.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "ACC87762215C20B50097E29B"
                BuildableName = "ui-tests.xctest"
                BlueprintName = "ui-tests"
@@ -125,6 +115,16 @@
                BlueprintIdentifier = "AC90C4CB20D8632E00EECA5D"
                BuildableName = "notification-extension-tests.xctest"
                BlueprintName = "notification-extension-tests"
+               ReferencedContainer = "container:swift-sdk.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "ACDA976B23159C39004C412E"
+               BuildableName = "inbox-ui-tests-app-ui-tests.xctest"
+               BlueprintName = "inbox-ui-tests-app-ui-tests"
                ReferencedContainer = "container:swift-sdk.xcodeproj">
             </BuildableReference>
          </TestableReference>
