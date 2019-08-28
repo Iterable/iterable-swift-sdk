@@ -36,7 +36,7 @@ class RequestCreatorTests: XCTestCase {
         let failingRequest = requestCreator.createGetInAppMessagesRequest(1)
         
         if let _ = try? failingRequest.get() {
-            XCTFail(message: "request succeeded despite userId and email being nil")
+            XCTFail("request succeeded despite userId and email being nil")
         }
     }
     
