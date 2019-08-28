@@ -48,6 +48,7 @@ class RequestCreatorTests: XCTestCase {
         
         TestUtils.validate(request: urlRequest, requestType: .get, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_GET_INAPP_MESSAGES)
         
+        //TODO: consider refactoring this header check into its own unit test and remove from here
         guard let header = urlRequest.allHTTPHeaderFields else {
             XCTFail("no header")
             return
@@ -57,24 +58,19 @@ class RequestCreatorTests: XCTestCase {
         XCTAssertEqual(header[AnyHashable.ITBL_HEADER_SDK_VERSION], IterableAPI.sdkVersion)
         XCTAssertEqual(header[AnyHashable.ITBL_HEADER_API_KEY], apiKey)
         
-        do {
-            let success = try request.get()
-            
-            switch success {
-            case let .get(g):
-                if let args = g.args {
-                    XCTAssertEqual(args[AnyHashable.ITBL_KEY_EMAIL], auth.email)
-                    XCTAssertEqual(args[AnyHashable.ITBL_KEY_PACKAGE_NAME], Bundle.main.appPackageName)
-                    XCTAssertEqual(args[AnyHashable.ITBL_KEY_COUNT], inAppMessageRequestCount.stringValue)
-                } else {
-                    XCTFail("no arguments as expected")
-                }
-            default:
-                XCTFail("not a get request as expected")
-            }
-        } catch {
-            XCTFail("unwrapping get request failed")
+        guard let success = try? request.get() else {
+            XCTFail("unwrapping IterableRequest failed")
+            return
         }
+        
+        guard case let IterableRequest.get(getRequest) = success, let args = getRequest.args else {
+            XCTFail("could not unwrap to a get request and its arguments")
+            return
+        }
+        
+        XCTAssertEqual(args[AnyHashable.ITBL_KEY_EMAIL], auth.email)
+        XCTAssertEqual(args[AnyHashable.ITBL_KEY_PACKAGE_NAME], Bundle.main.appPackageName)
+        XCTAssertEqual(args[AnyHashable.ITBL_KEY_COUNT], inAppMessageRequestCount.stringValue)
     }
     
     private let apiKey = "zee-api-key"
