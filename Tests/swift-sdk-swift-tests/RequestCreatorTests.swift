@@ -29,14 +29,26 @@ class RequestCreatorTests: XCTestCase {
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.endUnreadMessageCount), value: inboxSession.endUnreadMessageCount, inDictionary: body)
     }
     
-    func testGetInAppMessagesRequest() {
-        IterableAPI.initializeForTesting()
-        IterableAPI.email = "user@example.com"
+    func testGetInAppMessagesRequestFailure() {
+        let expectation1 = expectation(description: "result succeeded when it should have failed")
+        let auth = Auth(userId: nil, email: nil)
+        let requestCreator = RequestCreator(apiKey: apiKey, auth: auth)
         
+        let failingRequest = requestCreator.createGetInAppMessagesRequest(1)
+        
+        do {
+            _ = try failingRequest.get()
+        } catch {
+            expectation1.fulfill()
+        }
+        
+        wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
+    }
+    
+    func testGetInAppMessagesRequest() {
         let inAppMessageRequestCount: NSNumber = 42
         
         let request = createRequestCreator().createGetInAppMessagesRequest(inAppMessageRequestCount)
-        
         let urlRequest = convertToUrlRequest(request)
         
         TestUtils.validate(request: urlRequest, requestType: .get, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_GET_INAPP_MESSAGES)
@@ -56,8 +68,7 @@ class RequestCreatorTests: XCTestCase {
             switch success {
             case let .get(g):
                 if let args = g.args {
-                    print(args)
-                    XCTAssertEqual(args[AnyHashable.ITBL_KEY_EMAIL], IterableAPI.email)
+                    XCTAssertEqual(args[AnyHashable.ITBL_KEY_EMAIL], auth.email)
                     XCTAssertEqual(args[AnyHashable.ITBL_KEY_PACKAGE_NAME], Bundle.main.appPackageName)
                     XCTAssertEqual(args[AnyHashable.ITBL_KEY_COUNT], inAppMessageRequestCount.stringValue)
                 } else {
