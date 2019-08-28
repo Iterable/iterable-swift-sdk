@@ -30,19 +30,14 @@ class RequestCreatorTests: XCTestCase {
     }
     
     func testGetInAppMessagesRequestFailure() {
-        let expectation1 = expectation(description: "result succeeded when it should have failed")
         let auth = Auth(userId: nil, email: nil)
         let requestCreator = RequestCreator(apiKey: apiKey, auth: auth)
         
         let failingRequest = requestCreator.createGetInAppMessagesRequest(1)
         
-        do {
-            _ = try failingRequest.get()
-        } catch {
-            expectation1.fulfill()
+        if let _ = try? failingRequest.get() {
+            XCTFail(message: "request succeeded despite userId and email being nil")
         }
-        
-        wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
     }
     
     func testGetInAppMessagesRequest() {
