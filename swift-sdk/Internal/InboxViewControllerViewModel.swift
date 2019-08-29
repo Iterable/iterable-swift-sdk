@@ -293,8 +293,15 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
                 ITBError("Could not find startTime for row: \(row)")
                 return
             }
-            
+
+            startTimes.removeValue(forKey: row)
+
             let duration = Date().timeIntervalSince1970 - startTime.timeIntervalSince1970
+            guard duration > minDuration else {
+                ITBInfo("duration less than min, not counting impression for row: \(row)")
+                return
+            }
+            
             let impression: Impression
             if let existing = impressions[row] {
                 impression = Impression(displayCount: existing.displayCount + 1, duration: existing.duration + duration)
@@ -302,8 +309,6 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
                 impression = Impression(displayCount: 1, duration: duration)
             }
             impressions[row] = impression
-            
-            startTimes.removeValue(forKey: row)
         }
         
         #if INBOX_SESSION_DEBUG
@@ -317,6 +322,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
             }
         #endif
         
+        private let minDuration: TimeInterval = 1.0
         private var lastVisibleRows = [Int]()
         private var startTimes = [Int: Date]()
         private var impressions = [Int: Impression]()
