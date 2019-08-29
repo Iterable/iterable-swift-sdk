@@ -1,5 +1,6 @@
 ignore:
   - "Tests"
   - "host-app"
+  - "inbox-ui-tests-app"
   - "swift-sdk/Internal/Dwifft"
   

@@ -1,11 +1,13 @@
 //
-//  Created by Tapash Majumder on 8/10/19.
+//  Created by Tapash Majumder on 8/27/19.
 //  Copyright © 2019 Iterable. All rights reserved.
 //
 
 import XCTest
 
-class InboxUITests: XCTestCase {
+@testable import IterableSDK
+
+class InboxModeInboxUITests: XCTestCase {
     private static var timeout = 15.0
     private var app = XCUIApplication()
     
@@ -67,7 +69,7 @@ class InboxUITests: XCTestCase {
     }
     
     private func waitForElementToAppear(_ element: XCUIElement, fail: Bool = true) {
-        let exists = element.waitForExistence(timeout: InboxUITests.timeout)
+        let exists = element.waitForExistence(timeout: InboxModeInboxUITests.timeout)
         
         if fail, !exists {
             XCTFail("expected element: \(element)")
