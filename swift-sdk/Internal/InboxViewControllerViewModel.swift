@@ -293,9 +293,9 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
                 ITBError("Could not find startTime for row: \(row)")
                 return
             }
-
+            
             startTimes.removeValue(forKey: row)
-
+            
             let duration = Date().timeIntervalSince1970 - startTime.timeIntervalSince1970
             guard duration > minDuration else {
                 ITBInfo("duration less than min, not counting impression for row: \(row)")
@@ -322,9 +322,41 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
             }
         #endif
         
-        private let minDuration: TimeInterval = 1.0
+        private let minDuration: TimeInterval = 0.5
         private var lastVisibleRows = [Int]()
         private var startTimes = [Int: Date]()
         private var impressions = [Int: Impression]()
+    }
+}
+
+enum MessageDiffStep : CustomDebugStringConvertible {
+    /// An insertion.
+    case insert(String)
+    /// A deletion.
+    case delete(String)
+    /// An update
+    case update(String)
+    
+    /// The id to inserted/deleted/updated
+    public var id: String {
+        switch(self) {
+        case let .insert(id):
+            return id
+        case let .delete(id):
+            return id
+        case let .update(id):
+            return id
+        }
+    }
+
+    public var debugDescription: String {
+        switch(self) {
+        case let .insert(id):
+            return "i\(id)"
+        case let .delete(id):
+            return "d\(id)"
+        case let .update(id):
+            return "u\(id)"
+        }
     }
 }
