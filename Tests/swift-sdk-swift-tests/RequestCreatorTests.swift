@@ -29,6 +29,45 @@ class RequestCreatorTests: XCTestCase {
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.endUnreadMessageCount), value: inboxSession.endUnreadMessageCount, inDictionary: body)
     }
     
+    func testGetInAppMessagesRequestFailure() {
+        let auth = Auth(userId: nil, email: nil)
+        let requestCreator = RequestCreator(apiKey: apiKey, auth: auth)
+        
+        let failingRequest = requestCreator.createGetInAppMessagesRequest(1)
+        
+        if let _ = try? failingRequest.get() {
+            XCTFail("request succeeded despite userId and email being nil")
+        }
+    }
+    
+    func testGetInAppMessagesRequest() {
+        let inAppMessageRequestCount: NSNumber = 42
+        
+        let request = createRequestCreator().createGetInAppMessagesRequest(inAppMessageRequestCount)
+        let urlRequest = convertToUrlRequest(request)
+        
+        TestUtils.validate(request: urlRequest, requestType: .get, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_GET_INAPP_MESSAGES)
+        
+        // TODO: consider refactoring this header check into its own unit test and remove from here
+        guard let header = urlRequest.allHTTPHeaderFields else {
+            XCTFail("no header")
+            return
+        }
+        
+        XCTAssertEqual(header[AnyHashable.ITBL_HEADER_SDK_PLATFORM], String.ITBL_PLATFORM_IOS)
+        XCTAssertEqual(header[AnyHashable.ITBL_HEADER_SDK_VERSION], IterableAPI.sdkVersion)
+        XCTAssertEqual(header[AnyHashable.ITBL_HEADER_API_KEY], apiKey)
+        
+        guard case let .success(.get(getRequest)) = request, let args = getRequest.args else {
+            XCTFail("could not unwrap to a get request and its arguments")
+            return
+        }
+        
+        XCTAssertEqual(args[AnyHashable.ITBL_KEY_EMAIL], auth.email)
+        XCTAssertEqual(args[AnyHashable.ITBL_KEY_PACKAGE_NAME], Bundle.main.appPackageName)
+        XCTAssertEqual(args[AnyHashable.ITBL_KEY_COUNT], inAppMessageRequestCount.stringValue)
+    }
+    
     private let apiKey = "zee-api-key"
     
     private func convertToUrlRequest(_ requestCreationResult: Result<IterableRequest, IterableError>) -> URLRequest {

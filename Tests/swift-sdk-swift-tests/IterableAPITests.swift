@@ -555,7 +555,7 @@ class IterableAPITests: XCTestCase {
     }
     
     func testGetInAppMessagesFunction() {
-        let expectation1 = XCTestExpectation(description: "testGetInAppMessages()")
+        let expectation1 = XCTestExpectation(description: "test functionality of getting in-app messages")
         
         let mockInAppFetcher = MockInAppFetcher()
         
