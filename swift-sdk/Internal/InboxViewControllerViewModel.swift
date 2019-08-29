@@ -95,7 +95,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     func viewWillAppear() {
         ITBInfo()
-        sessionManager.startSession()
+        sessionManager.startSession(visibleRows: delegate?.currentlyVisibleRows ?? [])
     }
     
     func viewWillDisappear() {
@@ -164,7 +164,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         ITBInfo()
         
         if sessionManager.startSessionWhenAppMovesToForeground {
-            sessionManager.startSession()
+            sessionManager.startSession(visibleRows: delegate?.currentlyVisibleRows ?? [])
             sessionManager.startSessionWhenAppMovesToForeground = false
         }
     }
@@ -206,7 +206,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
             session.impressionTracker.updateVisibleRows(visibleRows: visibleRows)
         }
         
-        func startSession() {
+        func startSession(visibleRows: [Int]) {
             ITBInfo()
             guard isTracking == false else {
                 ITBError("Session started twice")
@@ -217,6 +217,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
                               totalMessageCount: IterableAPI.inAppManager.getInboxMessages().count,
                               unreadMessageCount: IterableAPI.inAppManager.getUnreadInboxMessagesCount(),
                               impressionTracker: ImpressionTracker())
+            updateVisibleRows(visibleRows: visibleRows)
         }
         
         func endSession(messages: [InboxMessageViewModel]) {
@@ -255,9 +256,6 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
             guard diff.count > 0 else {
                 return
             }
-            #if DEBUG
-                print(diff)
-            #endif
             
             diff.forEach {
                 switch $0 {
@@ -269,7 +267,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
             }
             
             lastVisibleRows = visibleRows
-            #if DEBUG
+            #if INBOX_SESSION_DEBUG
                 printImpressions()
             #endif
         }
@@ -308,7 +306,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
             startTimes.removeValue(forKey: row)
         }
         
-        #if DEBUG
+        #if INBOX_SESSION_DEBUG
             private func printImpressions() {
                 print("startTimes:")
                 startTimes.keys.sorted().forEach { print("row: \($0) value: \(startTimes[$0]!)") }
