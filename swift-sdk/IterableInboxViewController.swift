@@ -232,19 +232,8 @@ extension IterableInboxViewController: InboxViewControllerViewModelDelegate {
         tableView.reloadRows(at: [IndexPath(row: row, section: 0)], with: .automatic)
     }
     
-    func filterVisibleRows(rows: [Int]) -> [Int] {
-        let currentVisible = currentlyVisibleRowIndices
-        return rows.filter { currentVisible.contains($0) }
-    }
-    
     var currentlyVisibleRowIndices: [Int] {
         return tableView.indexPathsForVisibleRows?.compactMap(isRowVisible(atIndexPath:)) ?? []
-    }
-    
-    var currentlyVisibleMessages: [String] {
-        return tableView.indexPathsForVisibleRows?
-            .compactMap(isRowVisible(atIndexPath:))
-            .map { viewModel.message(atRow: $0).iterableMessage.messageId } ?? []
     }
     
     private func updateUnreadBadgeCount() {

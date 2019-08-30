@@ -105,6 +105,11 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     func visibleRowsChanged() {
         ITBDebug()
+        updateVisibleRows()
+    }
+    
+    private func updateVisibleRows() {
+        ITBDebug()
         guard sessionManager.isTracking else {
             ITBInfo("Not tracking session")
             return
@@ -148,7 +153,13 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
             return []
         }
         
-        return delegate.currentlyVisibleRowIndices.map { RowInfo(messageId: messages[$0].iterableMessage.messageId) }
+        return delegate.currentlyVisibleRowIndices.compactMap { index in
+            guard index < messages.count else {
+                return nil
+            }
+            let message = messages[index].iterableMessage
+            return RowInfo(messageId: message.messageId, silentInbox: message.silentInbox)
+        }
     }
     
     private func startSession() {
@@ -168,52 +179,8 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
                                                 startUnreadMessageCount: sessionInfo.startInfo.unreadMessageCount,
                                                 endTotalMessageCount: IterableAPI.inAppManager.getInboxMessages().count,
                                                 endUnreadMessageCount: IterableAPI.inAppManager.getUnreadInboxMessagesCount(),
-                                                impressions: iterableInboxImpressions(from: sessionInfo.impressions))
+                                                impressions: sessionInfo.impressions.map { $0.toIterableInboxImpression() })
         IterableAPI.track(inboxSession: inboxSession)
-    }
-    
-    private func iterableInboxImpressions(from impressions: [(messageId: String, impression: Impression)]) -> [IterableInboxImpression] {
-        return impressions.compactMap {
-            guard let message = findMessage(for: $0.messageId) else {
-                return nil
-            }
-            return IterableInboxImpression(messageId: $0.messageId, silentInbox: message.iterableMessage.silentInbox, displayCount: $0.impression.displayCount, displayDuration: $0.impression.duration)
-        }
-    }
-    
-    private func findMessage(for messageId: String) -> InboxMessageViewModel? {
-        return messages.first(where: { $0.iterableMessage.messageId == messageId })
-    }
-    
-    private func messageDiff(from diff: [SectionedDiffStep<Int, InboxMessageViewModel>]) -> [MessageDiffStep] {
-        var result = [MessageDiffStep]()
-        
-        var inserts = Set<String>()
-        var deletes = Set<String>()
-        diff.forEach {
-            switch $0 {
-            case let .insert(_, _, message):
-                inserts.insert(message.iterableMessage.messageId)
-            case let .delete(_, _, message):
-                deletes.insert(message.iterableMessage.messageId)
-            default:
-                break
-            }
-        }
-        
-        inserts.forEach { insert in
-            if deletes.contains(insert) {
-                deletes.remove(insert)
-                result.append(MessageDiffStep.update(insert))
-            } else {
-                result.append(MessageDiffStep.insert(insert))
-            }
-        }
-        deletes.forEach {
-            result.append(MessageDiffStep.delete($0))
-        }
-        
-        return result
     }
     
     @objc private func onInboxChanged(notification _: NSNotification) {
@@ -225,9 +192,9 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         
         let diff = Dwifft.diff(lhs: oldSectionedValues, rhs: newSectionedValues)
         if diff.count > 0 {
-            print(messageDiff(from: diff))
             DispatchQueue.main.async { [weak self] in
                 self?.delegate?.onViewModelChanged(diff: diff)
+                self?.updateVisibleRows()
             }
         }
     }
@@ -263,7 +230,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     struct SessionInfo {
         let startInfo: SessionStartInfo
-        let impressions: [(messageId: String, impression: Impression)]
+        let impressions: [Impression]
     }
     
     class SessionManager {
@@ -312,22 +279,23 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     struct Impression {
+        let messageId: String
+        let silentInbox: Bool
         let displayCount: Int
         let duration: TimeInterval
         
-        func convertToIterableInboxImpression(message: InboxMessageViewModel) -> IterableInboxImpression {
-            return IterableInboxImpression(messageId: message.iterableMessage.messageId,
-                                           silentInbox: message.iterableMessage.silentInbox,
-                                           displayCount: displayCount,
-                                           displayDuration: duration)
+        func toIterableInboxImpression() -> IterableInboxImpression {
+            return IterableInboxImpression(messageId: messageId, silentInbox: silentInbox, displayCount: displayCount, displayDuration: duration)
         }
     }
     
     struct RowInfo {
         let messageId: String
         #if INBOX_SESSION_DEBUG
+            // for debug only, so that rows are sorted
             let timestamp = Date()
         #endif
+        let silentInbox: Bool
     }
     
     class ImpressionTracker {
@@ -352,9 +320,9 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
             #endif
         }
         
-        func endSession() -> [(messageId: String, impression: Impression)] {
+        func endSession() -> [Impression] {
             startTimes.forEach { endImpression(for: $0.key) }
-            return impressions.map { (messageId: $0.key.messageId, impression: $0.value) }
+            return Array(impressions.values)
         }
         
         private func startImpression(for row: RowInfo) {
@@ -378,9 +346,9 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
             
             let impression: Impression
             if let existing = impressions[row] {
-                impression = Impression(displayCount: existing.displayCount + 1, duration: existing.duration + duration)
+                impression = Impression(messageId: row.messageId, silentInbox: row.silentInbox, displayCount: existing.displayCount + 1, duration: existing.duration + duration)
             } else {
-                impression = Impression(displayCount: 1, duration: duration)
+                impression = Impression(messageId: row.messageId, silentInbox: row.silentInbox, displayCount: 1, duration: duration)
             }
             impressions[row] = impression
         }
@@ -422,35 +390,3 @@ extension InboxViewControllerViewModel.RowInfo: Equatable {
         }
     }
 #endif
-
-enum MessageDiffStep: CustomDebugStringConvertible {
-    /// An insertion.
-    case insert(String)
-    /// A deletion.
-    case delete(String)
-    /// An update
-    case update(String)
-    
-    /// The id to inserted/deleted/updated
-    public var id: String {
-        switch self {
-        case let .insert(id):
-            return id
-        case let .delete(id):
-            return id
-        case let .update(id):
-            return id
-        }
-    }
-    
-    public var debugDescription: String {
-        switch self {
-        case let .insert(id):
-            return "i\(id)"
-        case let .delete(id):
-            return "d\(id)"
-        case let .update(id):
-            return "u\(id)"
-        }
-    }
-}
