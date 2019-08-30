@@ -232,7 +232,12 @@ extension IterableInboxViewController: InboxViewControllerViewModelDelegate {
         tableView.reloadRows(at: [IndexPath(row: row, section: 0)], with: .automatic)
     }
     
-    var currentlyVisibleRows: [Int] {
+    func filterVisibleRows(rows: [Int]) -> [Int] {
+        let currentVisible = currentlyVisibleRowIndices
+        return rows.filter { currentVisible.contains($0) }
+    }
+    
+    var currentlyVisibleRowIndices: [Int] {
         return tableView.indexPathsForVisibleRows?.compactMap(isRowVisible(atIndexPath:)) ?? []
     }
     
