@@ -183,27 +183,32 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     private var newMessages = [InboxMessageViewModel]()
     private var sessionManager = SessionManager()
     
-    struct Session {
+    struct SessionStartInfo {
         let startTime: Date
         let totalMessageCount: Int
         let unreadMessageCount: Int
-        let impressionTracker: ImpressionTracker
+    }
+    
+    struct SessionInfo {
+        let startInfo: SessionStartInfo
+        let impressions: [Impression]
     }
     
     class SessionManager {
-        var session: Session?
+        var sessionStartInfo: SessionStartInfo?
+        var impressionTracker: ImpressionTracker?
         var startSessionWhenAppMovesToForeground = false
         
         var isTracking: Bool {
-            return session != nil
+            return sessionStartInfo != nil
         }
         
         func updateVisibleRows(visibleRows: [Int]) {
-            guard let session = session else {
-                ITBError("Expecting session here.")
+            guard let impressionTracker = impressionTracker else {
+                ITBError("Expecting impressionTracker here.")
                 return
             }
-            session.impressionTracker.updateVisibleRows(visibleRows: visibleRows)
+            impressionTracker.updateVisibleRows(visibleRows: visibleRows)
         }
         
         func startSession(visibleRows: [Int]) {
@@ -213,28 +218,28 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
                 return
             }
             ITBInfo("Session Start")
-            session = Session(startTime: Date(),
-                              totalMessageCount: IterableAPI.inAppManager.getInboxMessages().count,
-                              unreadMessageCount: IterableAPI.inAppManager.getUnreadInboxMessagesCount(),
-                              impressionTracker: ImpressionTracker())
+            sessionStartInfo = SessionStartInfo(startTime: Date(),
+                                                totalMessageCount: IterableAPI.inAppManager.getInboxMessages().count,
+                                                unreadMessageCount: IterableAPI.inAppManager.getUnreadInboxMessagesCount())
+            impressionTracker = ImpressionTracker()
             updateVisibleRows(visibleRows: visibleRows)
         }
         
         func endSession(messages: [InboxMessageViewModel]) {
-            guard let session = session else {
+            guard let sessionStartInfo = sessionStartInfo, let impressionTracker = impressionTracker else {
                 ITBError("Session ended without start")
                 return
             }
             ITBInfo("Session End")
-            let sessionToTrack = IterableInboxSession(sessionStartTime: session.startTime,
+            let sessionToTrack = IterableInboxSession(sessionStartTime: sessionStartInfo.startTime,
                                                       sessionEndTime: Date(),
-                                                      startTotalMessageCount: session.totalMessageCount,
-                                                      startUnreadMessageCount: session.unreadMessageCount,
+                                                      startTotalMessageCount: sessionStartInfo.totalMessageCount,
+                                                      startUnreadMessageCount: sessionStartInfo.unreadMessageCount,
                                                       endTotalMessageCount: IterableAPI.inAppManager.getInboxMessages().count,
                                                       endUnreadMessageCount: IterableAPI.inAppManager.getUnreadInboxMessagesCount(),
-                                                      impressions: session.impressionTracker.endSession(messages: messages))
+                                                      impressions: impressionTracker.endSession(messages: messages))
             IterableAPI.track(inboxSession: sessionToTrack)
-            self.session = nil
+            self.sessionStartInfo = nil
         }
     }
     
@@ -329,7 +334,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
 }
 
-enum MessageDiffStep : CustomDebugStringConvertible {
+enum MessageDiffStep: CustomDebugStringConvertible {
     /// An insertion.
     case insert(String)
     /// A deletion.
@@ -339,7 +344,7 @@ enum MessageDiffStep : CustomDebugStringConvertible {
     
     /// The id to inserted/deleted/updated
     public var id: String {
-        switch(self) {
+        switch self {
         case let .insert(id):
             return id
         case let .delete(id):
@@ -348,9 +353,9 @@ enum MessageDiffStep : CustomDebugStringConvertible {
             return id
         }
     }
-
+    
     public var debugDescription: String {
-        switch(self) {
+        switch self {
         case let .insert(id):
             return "i\(id)"
         case let .delete(id):

@@ -236,6 +236,12 @@ extension IterableInboxViewController: InboxViewControllerViewModelDelegate {
         return tableView.indexPathsForVisibleRows?.compactMap(isRowVisible(atIndexPath:)) ?? []
     }
     
+    var currentlyVisibleMessages: [String] {
+        return tableView.indexPathsForVisibleRows?
+            .compactMap(isRowVisible(atIndexPath:))
+            .map { viewModel.message(atRow: $0).iterableMessage.messageId } ?? []
+    }
+    
     private func updateUnreadBadgeCount() {
         let unreadCount = viewModel.unreadCount
         let badgeValue = unreadCount == 0 ? nil : "\(unreadCount)"
