@@ -26,21 +26,21 @@ extension Dictionary where Key == AnyHashable {
 
 extension URLRequest {
     var serializedString: String {
-        let serializedRequest = createSerializedRequest()
-        let encodedData = try! JSONEncoder().encode(serializedRequest)
+        let serializableRequest = createSerializableRequest()
+        let encodedData = try! JSONEncoder().encode(serializableRequest)
         return String(bytes: encodedData, encoding: .utf8)!
     }
     
-    func createSerializedRequest() -> SerializedRequest {
+    func createSerializableRequest() -> SerializableRequest {
         let url = self.url!
         let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)!
         
-        return SerializedRequest(method: httpMethod!,
-                                 host: urlComponents.host!,
-                                 path: urlComponents.path,
-                                 queryParameters: mapQueryItems(urlComponents: urlComponents),
-                                 headers: allHTTPHeaderFields,
-                                 bodyString: getBodyString())
+        return SerializableRequest(method: httpMethod!,
+                                   host: urlComponents.host!,
+                                   path: urlComponents.path,
+                                   queryParameters: mapQueryItems(urlComponents: urlComponents),
+                                   headers: allHTTPHeaderFields,
+                                   bodyString: getBodyString())
     }
     
     private func mapQueryItems(urlComponents: URLComponents) -> [String: String]? {

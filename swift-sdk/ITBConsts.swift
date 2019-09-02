@@ -8,7 +8,8 @@ import Foundation
 
 // Iterable API Endpoints
 public extension String {
-    static let ITBL_ENDPOINT_API = apiHostname + "/api/"
+    static let ITBL_API_PATH = "/api/"
+    static let ITBL_ENDPOINT_API = apiHostname + ITBL_API_PATH
     static let ITBL_ENDPOINT_LINKS = linksHostname + "/"
     
     private static let apiHostname = "https://api.iterable.com"

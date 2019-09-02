@@ -25,6 +25,9 @@
 		AC03094B21E532470003A288 /* InAppPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC03094A21E532470003A288 /* InAppPersistence.swift */; };
 		AC0674E620D8766600C2806D /* NotificationExtensionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AC0674E520D8766600C2806D /* NotificationExtensionTests.m */; };
 		AC1670CD2230A91C00989F8E /* InboxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1670CC2230A91C00989F8E /* InboxTests.swift */; };
+		AC19520D231D9AC600CD5B61 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA8D1A42196309C001B1332 /* Common.swift */; };
+		AC19520E231DAB7B00CD5B61 /* ITBConsts.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0BE20CF4CB8004D7997 /* ITBConsts.swift */; };
+		AC195210231DAD6B00CD5B61 /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CB31B4210960C4004ACDEC /* TestUtils.swift */; };
 		AC219C49225FD7EB00B98631 /* IterableInboxViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC219C48225FD7EB00B98631 /* IterableInboxViewController.swift */; };
 		AC219C4D225FE4C000B98631 /* InboxMessageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC219C4C225FE4C000B98631 /* InboxMessageViewModel.swift */; };
 		AC219C50225FEDBD00B98631 /* IterableInboxCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC219C4E225FEDBD00B98631 /* IterableInboxCell.swift */; };
@@ -33,6 +36,7 @@
 		AC2263F020CF49B8009800EB /* IterableSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = AC2263E220CF49B8009800EB /* IterableSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AC2A2986231A7CFF0070A9C3 /* TestInAppPayloadGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */; };
 		AC2A2988231CFAC40070A9C3 /* NetworkTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2A2987231CFAC40070A9C3 /* NetworkTableViewController.swift */; };
+		AC2A298A231D44C00070A9C3 /* NetworkDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2A2989231D44C00070A9C3 /* NetworkDetailViewController.swift */; };
 		AC2B79F721E6A38900A59080 /* NotificationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2B79F621E6A38900A59080 /* NotificationHelper.swift */; };
 		AC2C667E20D3111900D46CC9 /* DateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C667D20D3111900D46CC9 /* DateProvider.swift */; };
 		AC2C668020D31B1F00D46CC9 /* IterableNotificationResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */; };
@@ -247,6 +251,7 @@
 		AC2263E220CF49B8009800EB /* IterableSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IterableSDK.h; sourceTree = "<group>"; };
 		AC2263E320CF49B8009800EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AC2A2987231CFAC40070A9C3 /* NetworkTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkTableViewController.swift; sourceTree = "<group>"; };
+		AC2A2989231D44C00070A9C3 /* NetworkDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDetailViewController.swift; sourceTree = "<group>"; };
 		AC2B79F621E6A38900A59080 /* NotificationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationHelper.swift; sourceTree = "<group>"; };
 		AC2C667D20D3111900D46CC9 /* DateProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateProvider.swift; sourceTree = "<group>"; };
 		AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableNotificationResponseTests.swift; sourceTree = "<group>"; };
@@ -731,6 +736,7 @@
 				ACDA976723159C39004C412E /* Info.plist */,
 				AC738CE92315A8B200B96B2D /* MainViewController.swift */,
 				AC2A2987231CFAC40070A9C3 /* NetworkTableViewController.swift */,
+				AC2A2989231D44C00070A9C3 /* NetworkDetailViewController.swift */,
 			);
 			path = "inbox-ui-tests-app";
 			sourceTree = "<group>";
@@ -1378,6 +1384,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC19520E231DAB7B00CD5B61 /* ITBConsts.swift in Sources */,
+				AC2A298A231D44C00070A9C3 /* NetworkDetailViewController.swift in Sources */,
 				AC738CE62315A52A00B96B2D /* Common.swift in Sources */,
 				AC2A2988231CFAC40070A9C3 /* NetworkTableViewController.swift in Sources */,
 				ACDA975C23159C37004C412E /* AppDelegate.swift in Sources */,
@@ -1392,6 +1400,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC19520D231D9AC600CD5B61 /* Common.swift in Sources */,
+				AC195210231DAD6B00CD5B61 /* TestUtils.swift in Sources */,
 				ACDA977123159C39004C412E /* InboxUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

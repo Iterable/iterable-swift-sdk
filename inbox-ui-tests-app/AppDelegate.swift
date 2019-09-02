@@ -73,8 +73,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     private func logRequest() {
         let request = mockNetworkSession.request!
-        let serializedRequest = request.createSerializedRequest()
-        networkTableViewController.requests.append(serializedRequest)
+        let serializableRequest = request.createSerializableRequest()
+        networkTableViewController.requests.append(serializableRequest)
         networkTableViewController.tableView.reloadData()
     }
 }

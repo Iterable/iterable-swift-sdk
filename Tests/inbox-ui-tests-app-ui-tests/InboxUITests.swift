@@ -75,11 +75,33 @@ class InboxUITests: XCTestCase {
         app.navigationBars.buttons["Done"].tap()
     }
     
+    func testTrackSession() {
+        app.tabBars.buttons["Inbox"].tap()
+        sleep(2)
+        app.tabBars.buttons["Network"].tap()
+        
+        let request = serializableRequest(forEvent: String.ITBL_PATH_TRACK_INBOX_SESSION)
+        let body = request.body! as! [String: Any]
+        let impressions = body[keyPath: KeyPath(JsonKey.impressions)] as! [[String: Any]]
+        XCTAssertEqual(impressions.count, 3)
+    }
+    
     private func waitForElementToAppear(_ element: XCUIElement, fail: Bool = true) {
         let exists = element.waitForExistence(timeout: InboxUITests.timeout)
         
         if fail, !exists {
             XCTFail("expected element: \(element)")
         }
+    }
+    
+    private func lastElement(forEvent event: String) -> XCUIElement {
+        let eventRows = app.tables.cells.containing(.staticText, identifier: String.ITBL_API_PATH + event)
+        let count = eventRows.count
+        return eventRows.element(boundBy: count - 1)
+    }
+    
+    func serializableRequest(forEvent event: String) -> SerializableRequest {
+        let serializedString = lastElement(forEvent: event).staticTexts["serializedString"].label
+        return SerializableRequest.create(from: serializedString)
     }
 }
