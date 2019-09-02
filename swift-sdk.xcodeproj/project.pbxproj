@@ -32,6 +32,7 @@
 		AC219C532260006600B98631 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC219C522260006600B98631 /* Assets.xcassets */; };
 		AC2263F020CF49B8009800EB /* IterableSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = AC2263E220CF49B8009800EB /* IterableSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AC2A2986231A7CFF0070A9C3 /* TestInAppPayloadGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */; };
+		AC2A2988231CFAC40070A9C3 /* NetworkTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2A2987231CFAC40070A9C3 /* NetworkTableViewController.swift */; };
 		AC2B79F721E6A38900A59080 /* NotificationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2B79F621E6A38900A59080 /* NotificationHelper.swift */; };
 		AC2C667E20D3111900D46CC9 /* DateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C667D20D3111900D46CC9 /* DateProvider.swift */; };
 		AC2C668020D31B1F00D46CC9 /* IterableNotificationResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */; };
@@ -112,7 +113,7 @@
 		ACDA976123159C37004C412E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACDA975F23159C37004C412E /* Main.storyboard */; };
 		ACDA976323159C39004C412E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ACDA976223159C39004C412E /* Assets.xcassets */; };
 		ACDA976623159C39004C412E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACDA976423159C39004C412E /* LaunchScreen.storyboard */; };
-		ACDA977123159C39004C412E /* InboxModeInboxUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACDA977023159C39004C412E /* InboxModeInboxUITests.swift */; };
+		ACDA977123159C39004C412E /* InboxUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACDA977023159C39004C412E /* InboxUITests.swift */; };
 		ACDA977923159C7E004C412E /* IterableSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2263DF20CF49B8009800EB /* IterableSDK.framework */; };
 		ACDA977A23159C7E004C412E /* IterableSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AC2263DF20CF49B8009800EB /* IterableSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		ACE34AB321376B1000691224 /* UserDefaultsLocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE34AB221376B1000691224 /* UserDefaultsLocalStorage.swift */; };
@@ -245,6 +246,7 @@
 		AC2263DF20CF49B8009800EB /* IterableSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = IterableSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC2263E220CF49B8009800EB /* IterableSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IterableSDK.h; sourceTree = "<group>"; };
 		AC2263E320CF49B8009800EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AC2A2987231CFAC40070A9C3 /* NetworkTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkTableViewController.swift; sourceTree = "<group>"; };
 		AC2B79F621E6A38900A59080 /* NotificationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationHelper.swift; sourceTree = "<group>"; };
 		AC2C667D20D3111900D46CC9 /* DateProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateProvider.swift; sourceTree = "<group>"; };
 		AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableNotificationResponseTests.swift; sourceTree = "<group>"; };
@@ -325,7 +327,7 @@
 		ACDA976523159C39004C412E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		ACDA976723159C39004C412E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		ACDA976C23159C39004C412E /* inbox-ui-tests-app-ui-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "inbox-ui-tests-app-ui-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		ACDA977023159C39004C412E /* InboxModeInboxUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxModeInboxUITests.swift; sourceTree = "<group>"; };
+		ACDA977023159C39004C412E /* InboxUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxUITests.swift; sourceTree = "<group>"; };
 		ACDA977223159C39004C412E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		ACE34AB221376B1000691224 /* UserDefaultsLocalStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsLocalStorage.swift; sourceTree = "<group>"; };
 		ACE34AB4213776CB00691224 /* LocalStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageTests.swift; sourceTree = "<group>"; };
@@ -722,12 +724,13 @@
 		ACDA975A23159C37004C412E /* inbox-ui-tests-app */ = {
 			isa = PBXGroup;
 			children = (
+				ACDA976223159C39004C412E /* Assets.xcassets */,
 				ACDA975B23159C37004C412E /* AppDelegate.swift */,
 				ACDA975F23159C37004C412E /* Main.storyboard */,
-				ACDA976223159C39004C412E /* Assets.xcassets */,
 				ACDA976423159C39004C412E /* LaunchScreen.storyboard */,
 				ACDA976723159C39004C412E /* Info.plist */,
 				AC738CE92315A8B200B96B2D /* MainViewController.swift */,
+				AC2A2987231CFAC40070A9C3 /* NetworkTableViewController.swift */,
 			);
 			path = "inbox-ui-tests-app";
 			sourceTree = "<group>";
@@ -735,7 +738,7 @@
 		ACDA976F23159C39004C412E /* inbox-ui-tests-app-ui-tests */ = {
 			isa = PBXGroup;
 			children = (
-				ACDA977023159C39004C412E /* InboxModeInboxUITests.swift */,
+				ACDA977023159C39004C412E /* InboxUITests.swift */,
 				ACDA977223159C39004C412E /* Info.plist */,
 			);
 			path = "inbox-ui-tests-app-ui-tests";
@@ -1376,6 +1379,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC738CE62315A52A00B96B2D /* Common.swift in Sources */,
+				AC2A2988231CFAC40070A9C3 /* NetworkTableViewController.swift in Sources */,
 				ACDA975C23159C37004C412E /* AppDelegate.swift in Sources */,
 				AC2A2986231A7CFF0070A9C3 /* TestInAppPayloadGenerator.swift in Sources */,
 				AC738CE82315A5B600B96B2D /* CommonExtensions.swift in Sources */,
@@ -1388,7 +1392,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ACDA977123159C39004C412E /* InboxModeInboxUITests.swift in Sources */,
+				ACDA977123159C39004C412E /* InboxUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

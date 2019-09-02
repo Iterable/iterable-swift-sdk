@@ -24,6 +24,50 @@ extension Dictionary where Key == AnyHashable {
     }
 }
 
+extension URLRequest {
+    var serializedString: String {
+        let serializedRequest = createSerializedRequest()
+        let encodedData = try! JSONEncoder().encode(serializedRequest)
+        return String(bytes: encodedData, encoding: .utf8)!
+    }
+    
+    func createSerializedRequest() -> SerializedRequest {
+        let url = self.url!
+        let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+        
+        return SerializedRequest(method: httpMethod!,
+                                 host: urlComponents.host!,
+                                 path: urlComponents.path,
+                                 queryParameters: mapQueryItems(urlComponents: urlComponents),
+                                 headers: allHTTPHeaderFields,
+                                 bodyString: getBodyString())
+    }
+    
+    private func mapQueryItems(urlComponents: URLComponents) -> [String: String]? {
+        guard let queryItems = urlComponents.queryItems else {
+            return nil
+        }
+        
+        var result = [String: String]()
+        
+        queryItems.forEach { queryItem in
+            if let value = queryItem.value {
+                result[queryItem.name] = value
+            }
+        }
+        
+        return result
+    }
+    
+    private func getBodyString() -> String? {
+        guard let bodyData = httpBody else {
+            return nil
+        }
+        
+        return String(data: bodyData, encoding: .utf8)!
+    }
+}
+
 class MockDependencyContainer: DependencyContainerProtocol {
     let dateProvider: DateProviderProtocol
     let networkSession: NetworkSessionProtocol

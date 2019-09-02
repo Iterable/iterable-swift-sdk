@@ -27,7 +27,72 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1530" y="139"/>
+            <point key="canvasLocation" x="914" y="199"/>
+        </scene>
+        <!--Network Table View Controller-->
+        <scene sceneID="lsa-ix-gqR">
+            <objects>
+                <tableViewController id="uRG-J5-gHE" customClass="NetworkTableViewController" customModule="inbox_ui_tests_app" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="ZIb-nq-Duy">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <view key="tableFooterView" contentMode="scaleToFill" id="NVU-10-GFN">
+                            <rect key="frame" x="0.0" y="128" width="414" height="44"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </view>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="networkCell" rowHeight="100" id="fus-vc-WYy" customClass="NetworkCell" customModule="inbox_ui_tests_app" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="28" width="414" height="100"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="fus-vc-WYy" id="zS7-ZF-I0M">
+                                    <rect key="frame" x="0.0" y="0.0" width="414" height="99.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="Hm8-ke-9pq">
+                                            <rect key="frame" x="164.5" y="25" width="85" height="50"/>
+                                            <subviews>
+                                                <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="A6g-Nc-hFE">
+                                                    <rect key="frame" x="0.0" y="0.0" width="85" height="50"/>
+                                                    <subviews>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Path" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tMH-OX-L12">
+                                                            <rect key="frame" x="0.0" y="0.0" width="35" height="50"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5Fs-Iq-9Ll">
+                                                            <rect key="frame" x="35" y="0.0" width="50" height="50"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                    </subviews>
+                                                </stackView>
+                                            </subviews>
+                                        </stackView>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="Hm8-ke-9pq" firstAttribute="centerY" secondItem="zS7-ZF-I0M" secondAttribute="centerY" id="aVk-5b-xdw"/>
+                                        <constraint firstItem="Hm8-ke-9pq" firstAttribute="centerX" secondItem="zS7-ZF-I0M" secondAttribute="centerX" id="tVI-du-QOI"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="pathLbl" destination="5Fs-Iq-9Ll" id="83P-1g-RQI"/>
+                                </connections>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="uRG-J5-gHE" id="Bkk-S3-r3Y"/>
+                            <outlet property="delegate" destination="uRG-J5-gHE" id="tRm-zn-R5b"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" id="DuN-hA-qnr"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="frK-IF-Rtm" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1844.9275362318842" y="860.49107142857144"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="zmK-60-o17">
@@ -40,15 +105,16 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBar>
                     <connections>
-                        <segue destination="UpA-wW-DMA" kind="relationship" relationship="viewControllers" id="yh0-r5-UFs"/>
+                        <segue destination="LaA-pi-fh3" kind="relationship" relationship="viewControllers" id="yh0-r5-UFs"/>
                         <segue destination="BYZ-38-t0r" kind="relationship" relationship="viewControllers" id="K1v-wK-9qE"/>
+                        <segue destination="iPF-0d-gDn" kind="relationship" relationship="viewControllers" id="rFP-zW-o4d"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZyT-UD-BcN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="137.68115942028987" y="138.61607142857142"/>
         </scene>
-        <!--Tab1-->
+        <!--Main View Controller-->
         <scene sceneID="WmK-Vs-MsR">
             <objects>
                 <viewController id="UpA-wW-DMA" customClass="MainViewController" customModule="inbox_ui_tests_app" customModuleProvider="target" sceneMemberID="viewController">
@@ -57,20 +123,13 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="eGn-zM-0ZP">
-                                <rect key="frame" x="129" y="394.5" width="156" height="68"/>
+                                <rect key="frame" x="167.5" y="435.5" width="79" height="30"/>
                                 <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zx6-Jr-yFN">
-                                        <rect key="frame" x="0.0" y="0.0" width="156" height="30"/>
-                                        <state key="normal" title="Show Popup Inbox Tab"/>
-                                        <connections>
-                                            <action selector="showPopupInboxTabTap:" destination="UpA-wW-DMA" eventType="touchUpInside" id="zqs-UF-dYK"/>
-                                        </connections>
-                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EC9-JJ-Tlq">
-                                        <rect key="frame" x="8.5" y="38" width="139" height="30"/>
-                                        <state key="normal" title="Show Nav Inbox Tab"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="79" height="30"/>
+                                        <state key="normal" title="Show Inbox"/>
                                         <connections>
-                                            <action selector="showNavInboxTabTap:" destination="UpA-wW-DMA" eventType="touchUpInside" id="iO9-3U-nib"/>
+                                            <action selector="showInboxTap:" destination="UpA-wW-DMA" eventType="touchUpInside" id="iO9-3U-nib"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -92,14 +151,52 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="yKY-sY-tfX"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Tab1" id="pRK-MM-jLC"/>
+                    <navigationItem key="navigationItem" id="UUv-2w-VK3"/>
                     <connections>
                         <outlet property="statusLbl" destination="kFV-Qm-qzV" id="hSW-fS-Vfd"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hoA-jS-PgX" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="842" y="139"/>
+            <point key="canvasLocation" x="1658" y="-454"/>
+        </scene>
+        <!--Home-->
+        <scene sceneID="VSL-wG-ec7">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="LaA-pi-fh3" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Home" id="pRK-MM-jLC"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="yJ8-d7-ejL">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="UpA-wW-DMA" kind="relationship" relationship="rootViewController" id="YgS-L3-mE1"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="g4G-cn-2HS" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="907" y="-454"/>
+        </scene>
+        <!--Network-->
+        <scene sceneID="mZq-wC-qKa">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="iPF-0d-gDn" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Network" id="NLL-y6-728"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="E01-cY-r6d">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="uRG-J5-gHE" kind="relationship" relationship="rootViewController" id="iUd-k9-Lhn"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="tuf-iQ-Ciy" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="934.78260869565224" y="860.49107142857144"/>
         </scene>
     </scenes>
 </document>

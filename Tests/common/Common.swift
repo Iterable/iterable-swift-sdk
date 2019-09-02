@@ -38,3 +38,37 @@ struct InAppTestHelper {
         }
     }
 }
+
+struct SerializedRequest: Codable {
+    let method: String
+    let host: String
+    let path: String
+    let queryParameters: [String: String]?
+    let headers: [String: String]?
+    let bodyString: String? // because we can't serialize dictionary with value of type 'Any'
+    
+    var body: [AnyHashable: Any]? {
+        guard let bodyString = bodyString else {
+            return nil
+        }
+        
+        return try? JSONSerialization.jsonObject(with: bodyString.data(using: .utf8)!, options: []) as? [AnyHashable: Any]
+    }
+    
+    static func create(from string: String) -> SerializedRequest {
+        return try! JSONDecoder().decode(SerializedRequest.self, from: string.data(using: .utf8)!)
+    }
+}
+
+extension SerializedRequest: CustomStringConvertible {
+    var description: String {
+        return """
+        method: \(method),
+        host: \(host),
+        path: \(path),
+        headers: \(headers?.description ?? "nil"),
+        queryParameters: \(queryParameters?.description ?? "nil"),
+        body: \(body?.description ?? "nil")
+        """
+    }
+}
