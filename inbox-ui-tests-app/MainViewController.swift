@@ -72,9 +72,13 @@ class MainViewController: UIViewController {
         
         mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { _ in
             DispatchQueue.main.async {
-                self.tabBarController?.selectedIndex = 2
+                self.tabBarController?.selectedIndex = self.lastTabNumber
             }
         }
+    }
+    
+    private var lastTabNumber: Int {
+        return (tabBarController?.viewControllers?.count).map { $0 - 1 } ?? 0
     }
     
     @IBAction func showNavInboxTabTap(_: UIButton) {
@@ -132,7 +136,7 @@ class MainViewController: UIViewController {
         
         mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { _ in
             DispatchQueue.main.async {
-                self.tabBarController?.selectedIndex = 2
+                self.tabBarController?.selectedIndex = self.lastTabNumber
             }
         }
     }

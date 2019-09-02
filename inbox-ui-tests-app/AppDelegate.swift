@@ -9,20 +9,28 @@
 import UIKit
 import UserNotifications
 
-import IterableSDK
+@testable import IterableSDK
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
+    var mockInAppFetcher: MockInAppFetcher!
     
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        mockInAppFetcher = MockInAppFetcher(messages: InAppTestHelper.inAppMessages(fromPayload: TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 2, 3], saveToInbox: true)))
         
         let config = IterableConfig()
         config.customActionDelegate = self
         config.urlDelegate = self
         TestHelper.getTestUserDefaults().set("user1@example.com", forKey: .ITBL_USER_DEFAULTS_EMAIL_KEY)
-        IterableAPI.initializeForTesting(config: config, networkSession: MockNetworkSession(), urlOpener: AppUrlOpener())
+        IterableAPI.initializeForTesting(config: config,
+                                         networkSession: MockNetworkSession(),
+                                         inAppFetcher: mockInAppFetcher,
+                                         urlOpener: AppUrlOpener())
+        
+        _ = mockInAppFetcher.fetch()
         
         return true
     }
@@ -76,3 +84,4 @@ extension Notification.Name {
     static let handleIterableUrl = Notification.Name("handleIterableUrl")
     static let handleIterableCustomAction = Notification.Name("handleIterableCustomAction")
 }
+

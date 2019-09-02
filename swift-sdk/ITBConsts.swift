@@ -184,6 +184,7 @@ public protocol JsonKeyRepresentable {
 public enum JsonKey: String, JsonKeyRepresentable {
     case email
     
+    case inboxMetadata
     case inboxTitle = "title"
     case inboxSubtitle = "subtitle"
     case inboxIcon = "icon"

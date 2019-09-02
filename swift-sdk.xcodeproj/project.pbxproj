@@ -31,6 +31,7 @@
 		AC219C51225FEDBD00B98631 /* IterableInboxCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AC219C4F225FEDBD00B98631 /* IterableInboxCell.xib */; };
 		AC219C532260006600B98631 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC219C522260006600B98631 /* Assets.xcassets */; };
 		AC2263F020CF49B8009800EB /* IterableSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = AC2263E220CF49B8009800EB /* IterableSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AC2A2986231A7CFF0070A9C3 /* TestInAppPayloadGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */; };
 		AC2B79F721E6A38900A59080 /* NotificationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2B79F621E6A38900A59080 /* NotificationHelper.swift */; };
 		AC2C667E20D3111900D46CC9 /* DateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C667D20D3111900D46CC9 /* DateProvider.swift */; };
 		AC2C668020D31B1F00D46CC9 /* IterableNotificationResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */; };
@@ -1376,6 +1377,7 @@
 			files = (
 				AC738CE62315A52A00B96B2D /* Common.swift in Sources */,
 				ACDA975C23159C37004C412E /* AppDelegate.swift in Sources */,
+				AC2A2986231A7CFF0070A9C3 /* TestInAppPayloadGenerator.swift in Sources */,
 				AC738CE82315A5B600B96B2D /* CommonExtensions.swift in Sources */,
 				AC738CE72315A54100B96B2D /* CommonMocks.swift in Sources */,
 				AC738CEA2315A8B200B96B2D /* MainViewController.swift in Sources */,
