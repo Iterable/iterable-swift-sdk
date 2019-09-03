@@ -9,20 +9,42 @@
 import UIKit
 import UserNotifications
 
-import IterableSDK
+@testable import IterableSDK
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    static var instance: AppDelegate {
+        return UIApplication.shared.delegate as! AppDelegate
+    }
+    
     var window: UIWindow?
+    var mockInAppFetcher: MockInAppFetcher!
+    var mockNetworkSession: MockNetworkSession!
+    var networkTableViewController: NetworkTableViewController {
+        let tabBarController = window!.rootViewController! as! UITabBarController
+        let nav = tabBarController.viewControllers![tabBarController.viewControllers!.count - 1] as! UINavigationController
+        return nav.viewControllers[0] as! NetworkTableViewController
+    }
     
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        mockInAppFetcher = MockInAppFetcher(messages: InAppTestHelper.inAppMessages(fromPayload: TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 2, 3], saveToInbox: true)))
+        mockNetworkSession = MockNetworkSession(statusCode: 200)
+        mockNetworkSession.callback = { _, _, _ in
+            self.logRequest()
+        }
         
         let config = IterableConfig()
         config.customActionDelegate = self
         config.urlDelegate = self
         TestHelper.getTestUserDefaults().set("user1@example.com", forKey: .ITBL_USER_DEFAULTS_EMAIL_KEY)
-        IterableAPI.initializeForTesting(config: config, networkSession: MockNetworkSession(), urlOpener: AppUrlOpener())
+        IterableAPI.initializeForTesting(config: config,
+                                         networkSession: mockNetworkSession,
+                                         inAppFetcher: mockInAppFetcher,
+                                         urlOpener: AppUrlOpener())
+        
+        _ = mockInAppFetcher.fetch()
         
         return true
     }
@@ -47,6 +69,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func applicationWillTerminate(_: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    }
+    
+    private func logRequest() {
+        let request = mockNetworkSession.request!
+        let serializableRequest = request.createSerializableRequest()
+        networkTableViewController.requests.append(serializableRequest)
+        networkTableViewController.tableView.reloadData()
     }
 }
 

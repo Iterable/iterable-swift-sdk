@@ -10,6 +10,7 @@ protocol InboxViewControllerViewModelDelegate: class {
     // All these methods should be called on the main thread
     func onViewModelChanged(diff: [SectionedDiffStep<Int, InboxMessageViewModel>])
     func onImageLoaded(forRow row: Int)
+    var currentlyVisibleRowIndices: [Int] { get }
 }
 
 protocol InboxViewControllerViewModelProtocol {
@@ -22,11 +23,12 @@ protocol InboxViewControllerViewModelProtocol {
     func createInboxMessageViewController(for message: InboxMessageViewModel, withInboxMode inboxMode: IterableInboxViewController.InboxMode) -> UIViewController?
     func refresh() -> Future<Bool, Error> // Talks to the server and refreshes
     // this works hand in hand with listener.onViewModelChanged.
-    // Internal model can't be changed until the view begins update.
+    // Internal model can't be changed until the view begins update (tableView.beginUpdates()).
     func beganUpdates()
     func endedUpdates()
     func viewWillAppear()
     func viewWillDisappear()
+    func visibleRowsChanged()
 }
 
 class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
@@ -93,12 +95,27 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     func viewWillAppear() {
         ITBInfo()
-        sessionManager.viewWillAppear()
+        startSession()
     }
     
     func viewWillDisappear() {
         ITBInfo()
-        sessionManager.viewWillDisappear()
+        endSession()
+    }
+    
+    func visibleRowsChanged() {
+        ITBDebug()
+        updateVisibleRows()
+    }
+    
+    private func updateVisibleRows() {
+        ITBDebug()
+        guard sessionManager.isTracking else {
+            ITBInfo("Not tracking session")
+            return
+        }
+        
+        sessionManager.updateVisibleRows(visibleRows: getVisibleRows())
     }
     
     private func loadImageIfNecessary(_ message: InboxMessageViewModel) {
@@ -131,6 +148,41 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         delegate?.onImageLoaded(forRow: row)
     }
     
+    private func getVisibleRows() -> [RowInfo] {
+        guard let delegate = delegate else {
+            return []
+        }
+        
+        return delegate.currentlyVisibleRowIndices.compactMap { index in
+            guard index < messages.count else {
+                return nil
+            }
+            let message = messages[index].iterableMessage
+            return RowInfo(messageId: message.messageId, silentInbox: message.silentInbox)
+        }
+    }
+    
+    private func startSession() {
+        ITBInfo()
+        sessionManager.startSession(visibleRows: getVisibleRows())
+    }
+    
+    private func endSession() {
+        guard let sessionInfo = sessionManager.endSession() else {
+            ITBError("Could not find session info")
+            return
+        }
+        
+        let inboxSession = IterableInboxSession(sessionStartTime: sessionInfo.startInfo.startTime,
+                                                sessionEndTime: Date(),
+                                                startTotalMessageCount: sessionInfo.startInfo.totalMessageCount,
+                                                startUnreadMessageCount: sessionInfo.startInfo.unreadMessageCount,
+                                                endTotalMessageCount: IterableAPI.inAppManager.getInboxMessages().count,
+                                                endUnreadMessageCount: IterableAPI.inAppManager.getUnreadInboxMessagesCount(),
+                                                impressions: sessionInfo.impressions.map { $0.toIterableInboxImpression() })
+        IterableAPI.track(inboxSession: inboxSession)
+    }
+    
     @objc private func onInboxChanged(notification _: NSNotification) {
         ITBInfo()
         
@@ -142,6 +194,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         if diff.count > 0 {
             DispatchQueue.main.async { [weak self] in
                 self?.delegate?.onViewModelChanged(diff: diff)
+                self?.updateVisibleRows()
             }
         }
     }
@@ -150,16 +203,17 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         ITBInfo()
         
         if sessionManager.startSessionWhenAppMovesToForeground {
-            sessionManager.viewWillAppear()
+            startSession()
             sessionManager.startSessionWhenAppMovesToForeground = false
         }
     }
     
     @objc private func onAppDidEnterBackground(notification _: NSNotification) {
         ITBInfo()
-        if sessionManager.session.sessionStartTime != nil {
+        
+        if sessionManager.isTracking {
             // if a session is going on trigger session end
-            sessionManager.viewWillDisappear()
+            endSession()
             sessionManager.startSessionWhenAppMovesToForeground = true
         }
     }
@@ -168,37 +222,171 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     private var newMessages = [InboxMessageViewModel]()
     private var sessionManager = SessionManager()
     
-    struct SessionManager {
-        var session = IterableInboxSession()
+    struct SessionStartInfo {
+        let startTime: Date
+        let totalMessageCount: Int
+        let unreadMessageCount: Int
+    }
+    
+    struct SessionInfo {
+        let startInfo: SessionStartInfo
+        let impressions: [Impression]
+    }
+    
+    class SessionManager {
+        var sessionStartInfo: SessionStartInfo?
+        var impressionTracker: ImpressionTracker?
         var startSessionWhenAppMovesToForeground = false
         
-        mutating func viewWillAppear() {
+        var isTracking: Bool {
+            return sessionStartInfo != nil
+        }
+        
+        func updateVisibleRows(visibleRows: [RowInfo]) {
+            guard let impressionTracker = impressionTracker else {
+                ITBError("Expecting impressionTracker here.")
+                return
+            }
+            impressionTracker.updateVisibleRows(visibleRows: visibleRows)
+        }
+        
+        func startSession(visibleRows: [RowInfo]) {
             ITBInfo()
-            guard session.sessionStartTime == nil else {
+            guard isTracking == false else {
                 ITBError("Session started twice")
                 return
             }
             ITBInfo("Session Start")
-            session = IterableInboxSession(sessionStartTime: Date(),
-                                           sessionEndTime: nil,
-                                           startTotalMessageCount: IterableAPI.inAppManager.getInboxMessages().count,
-                                           startUnreadMessageCount: IterableAPI.inAppManager.getUnreadInboxMessagesCount())
+            sessionStartInfo = SessionStartInfo(startTime: Date(),
+                                                totalMessageCount: IterableAPI.inAppManager.getInboxMessages().count,
+                                                unreadMessageCount: IterableAPI.inAppManager.getUnreadInboxMessagesCount())
+            impressionTracker = ImpressionTracker()
+            updateVisibleRows(visibleRows: visibleRows)
         }
         
-        mutating func viewWillDisappear() {
-            guard let sessionStartTime = session.sessionStartTime else {
+        func endSession() -> SessionInfo? {
+            guard let sessionStartInfo = sessionStartInfo, let impressionTracker = impressionTracker else {
                 ITBError("Session ended without start")
-                return
+                return nil
             }
             ITBInfo("Session End")
-            let sessionToTrack = IterableInboxSession(sessionStartTime: sessionStartTime,
-                                                      sessionEndTime: Date(),
-                                                      startTotalMessageCount: session.startTotalMessageCount,
-                                                      startUnreadMessageCount: session.startUnreadMessageCount,
-                                                      endTotalMessageCount: IterableAPI.inAppManager.getInboxMessages().count,
-                                                      endUnreadMessageCount: IterableAPI.inAppManager.getUnreadInboxMessagesCount())
-            IterableAPI.track(inboxSession: sessionToTrack)
-            session = IterableInboxSession()
+            
+            let sessionInfo = SessionInfo(startInfo: sessionStartInfo, impressions: impressionTracker.endSession())
+            self.sessionStartInfo = nil
+            self.impressionTracker = nil
+            return sessionInfo
         }
     }
+    
+    struct Impression {
+        let messageId: String
+        let silentInbox: Bool
+        let displayCount: Int
+        let duration: TimeInterval
+        
+        func toIterableInboxImpression() -> IterableInboxImpression {
+            return IterableInboxImpression(messageId: messageId, silentInbox: silentInbox, displayCount: displayCount, displayDuration: duration)
+        }
+    }
+    
+    struct RowInfo {
+        let messageId: String
+        #if INBOX_SESSION_DEBUG
+            // for debug only, so that rows are sorted
+            let timestamp = Date()
+        #endif
+        let silentInbox: Bool
+    }
+    
+    class ImpressionTracker {
+        func updateVisibleRows(visibleRows: [RowInfo]) {
+            let diff = Dwifft.diff(lastVisibleRows, visibleRows)
+            guard diff.count > 0 else {
+                return
+            }
+            
+            diff.forEach {
+                switch $0 {
+                case let .insert(_, row):
+                    startImpression(for: row)
+                case let .delete(_, row):
+                    endImpression(for: row)
+                }
+            }
+            
+            lastVisibleRows = visibleRows
+            #if INBOX_SESSION_DEBUG
+                printImpressions()
+            #endif
+        }
+        
+        func endSession() -> [Impression] {
+            startTimes.forEach { endImpression(for: $0.key) }
+            return Array(impressions.values)
+        }
+        
+        private func startImpression(for row: RowInfo) {
+            assert(startTimes[row] == nil, "Did not expect start time for row: \(row)")
+            startTimes[row] = Date()
+        }
+        
+        private func endImpression(for row: RowInfo) {
+            guard let startTime = startTimes[row] else {
+                ITBError("Could not find startTime for row: \(row)")
+                return
+            }
+            
+            startTimes.removeValue(forKey: row)
+            
+            let duration = Date().timeIntervalSince1970 - startTime.timeIntervalSince1970
+            guard duration > minDuration else {
+                ITBInfo("duration less than min, not counting impression for row: \(row)")
+                return
+            }
+            
+            let impression: Impression
+            if let existing = impressions[row] {
+                impression = Impression(messageId: row.messageId, silentInbox: row.silentInbox, displayCount: existing.displayCount + 1, duration: existing.duration + duration)
+            } else {
+                impression = Impression(messageId: row.messageId, silentInbox: row.silentInbox, displayCount: 1, duration: duration)
+            }
+            impressions[row] = impression
+        }
+        
+        #if INBOX_SESSION_DEBUG
+            private func printImpressions() {
+                print("startTimes:")
+                startTimes.keys.sorted().forEach { print("row: \($0) value: \(startTimes[$0]!)") }
+                print("impressions:")
+                impressions.keys.sorted().forEach { print("row: \($0) value: \(impressions[$0]!)") }
+                print()
+                print()
+            }
+        #endif
+        
+        private let minDuration: TimeInterval = 0.5
+        private var lastVisibleRows = [RowInfo]()
+        private var startTimes = [RowInfo: Date]()
+        private var impressions = [RowInfo: Impression]()
+    }
 }
+
+extension InboxViewControllerViewModel.RowInfo: Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(messageId)
+    }
+}
+
+extension InboxViewControllerViewModel.RowInfo: Equatable {
+    static func == (lhs: InboxViewControllerViewModel.RowInfo, rhs: InboxViewControllerViewModel.RowInfo) -> Bool {
+        return lhs.messageId == rhs.messageId
+    }
+}
+
+#if INBOX_SESSION_DEBUG
+    extension InboxViewControllerViewModel.RowInfo: Comparable {
+        static func < (lhs: InboxViewControllerViewModel.RowInfo, rhs: InboxViewControllerViewModel.RowInfo) -> Bool {
+            return lhs.timestamp < rhs.timestamp
+        }
+    }
+#endif

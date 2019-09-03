@@ -58,6 +58,15 @@ public extension Bundle {
     }
 }
 
+extension Encodable {
+    func asDictionary() -> [String: Any]? {
+        guard let data = try? JSONEncoder().encode(self) else {
+            return nil
+        }
+        return try? JSONSerialization.jsonObject(with: data, options: [.allowFragments]) as? [String: Any]
+    }
+}
+
 public extension UIColor {
     convenience init?(hex: String) {
         guard let int = Int(hex, radix: 16) else {

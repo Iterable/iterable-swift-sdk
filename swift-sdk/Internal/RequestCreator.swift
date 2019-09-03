@@ -356,6 +356,7 @@ struct RequestCreator {
         body.setValue(for: .endTotalMessageCount, value: inboxSession.endTotalMessageCount)
         body.setValue(for: .startUnreadMessageCount, value: inboxSession.startUnreadMessageCount)
         body.setValue(for: .endUnreadMessageCount, value: inboxSession.endUnreadMessageCount)
+        body.setValue(for: .impressions, value: inboxSession.impressions.compactMap { $0.asDictionary() })
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INBOX_SESSION, body: body)))
     }
