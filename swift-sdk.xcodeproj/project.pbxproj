@@ -45,7 +45,6 @@
 		AC2C668720D3435700D46CC9 /* IterableActionRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668620D3435700D46CC9 /* IterableActionRunnerTests.swift */; };
 		AC32E16821DD55B900BD4F83 /* OrderedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC32E16721DD55B900BD4F83 /* OrderedDictionary.swift */; };
 		AC347B5C20E5A7E1003449CF /* IterableAPNSUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC347B5B20E5A7E1003449CF /* IterableAPNSUtil.swift */; };
-		AC347B5D20E5C7C6003449CF /* IterableConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = AC72A0B120CF4C32004D7997 /* IterableConstants.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AC347B6720E699FA003449CF /* IterableAppExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = AC347B6620E699D8003449CF /* IterableAppExtensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AC3C10F9213F46A900A9B839 /* IterableLogging.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3C10F8213F46A900A9B839 /* IterableLogging.swift */; };
 		AC3DD9C82142F3650046F886 /* ClassExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3DD9C72142F3650046F886 /* ClassExtensions.swift */; };
@@ -58,8 +57,6 @@
 		AC6FDD8820F4372E005D811E /* IterableAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC6FDD8720F4372E005D811E /* IterableAPI.swift */; };
 		AC6FDD8C20F56309005D811E /* InAppParsingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC6FDD8B20F56309005D811E /* InAppParsingTests.swift */; };
 		AC7125EF20D4579E0043BBC1 /* IterableConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */; };
-		AC72A0B520CF4C49004D7997 /* IterableConstants.h in Headers */ = {isa = PBXBuildFile; fileRef = AC72A0B120CF4C32004D7997 /* IterableConstants.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		AC72A0B620CF4C53004D7997 /* IterableConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0B420CF4C32004D7997 /* IterableConstants.m */; };
 		AC72A0C720CF4CE2004D7997 /* CommerceItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C120CF4CB8004D7997 /* CommerceItem.swift */; };
 		AC72A0C820CF4CE2004D7997 /* ITBConsts.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0BE20CF4CB8004D7997 /* ITBConsts.swift */; };
 		AC72A0C920CF4CE2004D7997 /* IterableAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0BF20CF4CB8004D7997 /* IterableAction.swift */; };
@@ -275,8 +272,6 @@
 		AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableConfig.swift; sourceTree = "<group>"; };
 		AC72A0AA20CF4BEB004D7997 /* InAppHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppHelper.swift; sourceTree = "<group>"; };
 		AC72A0AD20CF4C16004D7997 /* IterableUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableUtil.swift; sourceTree = "<group>"; };
-		AC72A0B120CF4C32004D7997 /* IterableConstants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IterableConstants.h; sourceTree = "<group>"; };
-		AC72A0B420CF4C32004D7997 /* IterableConstants.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IterableConstants.m; sourceTree = "<group>"; };
 		AC72A0BD20CF4C98004D7997 /* IterableDeeplinkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableDeeplinkManager.swift; sourceTree = "<group>"; };
 		AC72A0BE20CF4CB8004D7997 /* ITBConsts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ITBConsts.swift; sourceTree = "<group>"; };
 		AC72A0BF20CF4CB8004D7997 /* IterableAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAction.swift; sourceTree = "<group>"; };
@@ -587,8 +582,6 @@
 		AC72A0AE20CF4C1E004D7997 /* Objective C */ = {
 			isa = PBXGroup;
 			children = (
-				AC72A0B120CF4C32004D7997 /* IterableConstants.h */,
-				AC72A0B420CF4C32004D7997 /* IterableConstants.m */,
 			);
 			name = "Objective C";
 			sourceTree = "<group>";
@@ -814,7 +807,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AC72A0B520CF4C49004D7997 /* IterableConstants.h in Headers */,
 				AC2263F020CF49B8009800EB /* IterableSDK.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -824,7 +816,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC347B6720E699FA003449CF /* IterableAppExtensions.h in Headers */,
-				AC347B5D20E5C7C6003449CF /* IterableConstants.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1299,7 +1290,6 @@
 				AC7125EF20D4579E0043BBC1 /* IterableConfig.swift in Sources */,
 				AC03094B21E532470003A288 /* InAppPersistence.swift in Sources */,
 				AC819184227138EF0014955E /* Dwifft.swift in Sources */,
-				AC72A0B620CF4C53004D7997 /* IterableConstants.m in Sources */,
 				AC02480822791E2100495FB9 /* IterableInboxNavigationViewController.swift in Sources */,
 				AC845107228DF54E0052BB8F /* ApiClient.swift in Sources */,
 				AC72A0D120CF4D0B004D7997 /* InAppHelper.swift in Sources */,
