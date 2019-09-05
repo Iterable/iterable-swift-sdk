@@ -207,8 +207,8 @@ public enum JsonKey: String, JsonKeyRepresentable {
     case endUnreadMessageCount
     case impressions
     case closeAction
+    case deleteAction
     
-    case source
     case url
     
     case deviceInfo
