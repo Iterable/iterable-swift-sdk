@@ -289,7 +289,7 @@ struct RequestCreator {
         body[.ITBL_KEY_MESSAGE_ID] = inAppMessageContext.message.messageId
         
         if source != .unknown {
-            body.setValue(for: .source, value: source)
+            body.setValue(for: .closeAction, value: source)
         }
         
         if let clickedUrl = clickedUrl {
@@ -328,7 +328,7 @@ struct RequestCreator {
         body[.ITBL_KEY_MESSAGE_ID] = inAppMessageContext.message.messageId
         
         if source != .unknown {
-            body.setValue(for: .source, value: source)
+            body.setValue(for: .deleteAction, value: source)
         }
         
         body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMesageContextDictionary())
