@@ -289,7 +289,7 @@ struct RequestCreator {
         body[.ITBL_KEY_MESSAGE_ID] = inAppMessageContext.message.messageId
         
         if source != .unknown {
-            body.setValue(for: .source, value: source)
+            body.setValue(for: .closeAction, value: source)
         }
         
         if let clickedUrl = clickedUrl {
@@ -328,7 +328,7 @@ struct RequestCreator {
         body[.ITBL_KEY_MESSAGE_ID] = inAppMessageContext.message.messageId
         
         if source != .unknown {
-            body.setValue(for: .source, value: source)
+            body.setValue(for: .deleteAction, value: source)
         }
         
         body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMesageContextDictionary())
@@ -379,10 +379,8 @@ struct RequestCreator {
     }
     
     private func createGetRequest(forPath path: String, withArgs args: [String: String]) -> GetRequest {
-        var argsWithApiKey = args
-        argsWithApiKey[AnyHashable.ITBL_KEY_API_KEY] = apiKey
         return GetRequest(path: path,
-                          args: argsWithApiKey)
+                          args: args)
     }
     
     private func addEmailOrUserId(dict: inout [AnyHashable: Any], mustExist: Bool = true) {

@@ -630,7 +630,7 @@ class IterableAPITests: XCTestCase {
             let body = networkSession.getRequestBody() as! [String: Any]
             
             TestUtils.validateMessageContext(messageId: messageId, email: IterableAPITests.email, saveToInbox: true, silentInbox: true, location: .inbox, inBody: body)
-            TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.source.jsonKey)"), value: InAppDeleteSource.deleteButton.jsonValue as! String, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.deleteAction.jsonKey)"), value: InAppDeleteSource.deleteButton.jsonValue as! String, inDictionary: body)
             
             expectation1.fulfill()
         }

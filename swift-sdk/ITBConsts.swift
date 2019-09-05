@@ -38,7 +38,6 @@ public extension String {
 
 // Keys
 public extension AnyHashable {
-    static let ITBL_KEY_API_KEY = "api_key"
     static let ITBL_HEADER_API_KEY = "Api-Key"
     static let ITBL_HEADER_SDK_VERSION = "SDK-Version"
     static let ITBL_HEADER_SDK_PLATFORM = "SDK-Platform"
@@ -207,8 +206,9 @@ public enum JsonKey: String, JsonKeyRepresentable {
     case endTotalMessageCount
     case endUnreadMessageCount
     case impressions
+    case closeAction
+    case deleteAction
     
-    case source
     case url
     
     case deviceInfo
