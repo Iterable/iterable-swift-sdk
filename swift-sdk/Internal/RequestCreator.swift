@@ -379,10 +379,8 @@ struct RequestCreator {
     }
     
     private func createGetRequest(forPath path: String, withArgs args: [String: String]) -> GetRequest {
-        var argsWithApiKey = args
-        argsWithApiKey[AnyHashable.ITBL_KEY_API_KEY] = apiKey
         return GetRequest(path: path,
-                          args: argsWithApiKey)
+                          args: args)
     }
     
     private func addEmailOrUserId(dict: inout [AnyHashable: Any], mustExist: Bool = true) {
