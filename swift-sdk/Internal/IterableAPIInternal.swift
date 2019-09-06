@@ -105,7 +105,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     lazy var inAppManager: IterableInAppManagerProtocolInternal = {
-        self.dependencyContainer.createInAppManager(config: self.config, apiClient: self.apiClient)
+        self.dependencyContainer.createInAppManager(config: self.config, apiClient: self.apiClient, deviceMetadata: deviceMetadata)
     }()
     
     func register(token: Data) {

@@ -32,6 +32,7 @@ protocol IterableInAppManagerProtocolInternal: IterableInAppManagerProtocol, InA
 
 class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     init(apiClient: ApiClientProtocol,
+         deviceMetadata: DeviceMetadata,
          fetcher: InAppFetcherProtocol,
          displayer: InAppDisplayerProtocol,
          persister: InAppPersistenceProtocol,
@@ -45,6 +46,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
          retryInterval: Double) {
         ITBInfo()
         self.apiClient = apiClient
+        self.deviceMetadata = deviceMetadata
         self.fetcher = fetcher
         self.displayer = displayer
         self.persister = persister
@@ -134,7 +136,13 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         }
     }
     
-    func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource) {
+    func remove(message: IterableInAppMessage) {
+        ITBInfo()
+        
+        remove(message: message, location: .unknown, source: .unknown)
+    }
+    
+    func remove(message: IterableInAppMessage, location: InAppLocation = .unknown, source: InAppDeleteSource = .unknown) {
         ITBInfo()
         
         removePrivate(message: message, location: location, source: source)
@@ -436,11 +444,12 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     }
     
     // From client side
-    private func removePrivate(message: IterableInAppMessage, location _: InAppLocation, source _: InAppDeleteSource) {
+    private func removePrivate(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource) {
         ITBInfo()
         
         updateMessage(message, didProcessTrigger: true, consumed: true)
-        apiClient?.inAppConsume(messageId: message.messageId)
+        let messageContext = InAppMessageContext(message: message, location: location, deviceMetadata: deviceMetadata)
+        apiClient?.inAppConsume(inAppMessageContext: messageContext, source: source)
         callbackQueue.async {
             self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
         }
@@ -459,6 +468,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     }
     
     private weak var apiClient: ApiClientProtocol?
+    private var deviceMetadata: DeviceMetadata
     private var fetcher: InAppFetcherProtocol // this is mutable because we need to set internalApi
     private let displayer: InAppDisplayerProtocol
     private let inAppDelegate: IterableInAppDelegate

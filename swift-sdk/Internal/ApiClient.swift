@@ -43,7 +43,7 @@ protocol ApiClientProtocol: class {
     
     @discardableResult func inAppConsume(messageId: String) -> Future<SendRequestValue, SendRequestError>
     
-    func inAppConsume(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource) -> Future<SendRequestValue, SendRequestError>
+    @discardableResult func inAppConsume(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource) -> Future<SendRequestValue, SendRequestError>
     
     func track(inboxSession: IterableInboxSession) -> Future<SendRequestValue, SendRequestError>
     
