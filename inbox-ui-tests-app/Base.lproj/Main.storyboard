@@ -76,7 +76,13 @@
                             <outlet property="delegate" destination="uRG-J5-gHE" id="tRm-zn-R5b"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" id="DuN-hA-qnr"/>
+                    <navigationItem key="navigationItem" id="DuN-hA-qnr">
+                        <barButtonItem key="rightBarButtonItem" title="Clear" id="CO3-3a-j3i">
+                            <connections>
+                                <action selector="clearBtnTapped:" destination="uRG-J5-gHE" id="AqM-id-ojT"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="frK-IF-Rtm" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

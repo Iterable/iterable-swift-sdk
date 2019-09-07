@@ -8,22 +8,10 @@ import XCTest
 @testable import IterableSDK
 
 class InboxUITests: XCTestCase {
-    private static var timeout = 15.0
-    
-    static var application: XCUIApplication = {
-        let app = XCUIApplication()
-        app.launch()
-        return app
-    }()
-    
-    // shortcut calculated property
-    private var app: XCUIApplication {
-        return InboxUITests.application
-    }
-    
     override func setUp() {
         // In UI tests it is usually best to stop immediately when a failure occurs.
         continueAfterFailure = false
+        clearNetwork()
     }
     
     func testShowInboxMessages() {
@@ -86,7 +74,58 @@ class InboxUITests: XCTestCase {
         XCTAssertEqual(impressions.count, 3)
     }
     
-    func testAddInboxMessage() {}
+    func testSwipeToDelete() {
+        gotoTab(.inbox)
+        let count1 = app.tables.cells.count
+        
+        gotoTab(.home)
+        app.tapButton(withName: "Add Inbox Message")
+        
+        gotoTab(.inbox)
+        let count2 = app.tables.cells.count
+        XCTAssertEqual(count2, count1 + 1)
+        app.tableCell(withText: "title4").deleteSwipe()
+        XCTAssertEqual(app.tables.cells.count, count1)
+        
+        gotoTab(.network)
+        let dict = body(forEvent: String.ITBL_PATH_INAPP_CONSUME)
+        XCTAssertEqual(dict[keyPath: KeyPath(JsonKey.deleteAction)] as! String, InAppDeleteSource.inboxSwipeLeft.jsonValue as! String)
+    }
+    
+    func body(forEvent event: String) -> [String: Any] {
+        let request = serializableRequest(forEvent: event)
+        return request.body! as! [String: Any]
+    }
+    
+    func serializableRequest(forEvent event: String) -> SerializableRequest {
+        let serializedString = lastElement(forEvent: event).staticTexts["serializedString"].label
+        return SerializableRequest.create(from: serializedString)
+    }
+    
+    private static var timeout = 15.0
+    
+    private static var application: XCUIApplication = {
+        let app = XCUIApplication()
+        app.launch()
+        return app
+    }()
+    
+    // shortcut calculated property
+    private var app: XCUIApplication {
+        return InboxUITests.application
+    }
+    
+    private enum TabName: String {
+        case
+            home = "Home",
+            inbox = "Inbox",
+            network = "Network"
+    }
+    
+    private func clearNetwork() {
+        gotoTab(.network)
+        app.tapButton(withName: "Clear")
+    }
     
     private func waitForElementToAppear(_ element: XCUIElement, fail: Bool = true) {
         let exists = element.waitForExistence(timeout: InboxUITests.timeout)
@@ -102,8 +141,7 @@ class InboxUITests: XCTestCase {
         return eventRows.element(boundBy: count - 1)
     }
     
-    func serializableRequest(forEvent event: String) -> SerializableRequest {
-        let serializedString = lastElement(forEvent: event).staticTexts["serializedString"].label
-        return SerializableRequest.create(from: serializedString)
+    private func gotoTab(_ tabName: TabName) {
+        app.gotoTab(tabName.rawValue)
     }
 }

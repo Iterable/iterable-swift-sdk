@@ -55,4 +55,11 @@ class NetworkTableViewController: UITableViewController {
         detailVC.request = request
         navigationController?.pushViewController(detailVC, animated: true)
     }
+    
+    @IBAction func clearBtnTapped(_: UIBarButtonItem) {
+        ITBInfo()
+        
+        requests = []
+        tableView.reloadData()
+    }
 }
