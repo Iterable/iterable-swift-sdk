@@ -13,7 +13,7 @@ import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    static var instance: AppDelegate {
+    static var sharedInstance: AppDelegate {
         return UIApplication.shared.delegate as! AppDelegate
     }
     
@@ -29,7 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-        mockInAppFetcher = MockInAppFetcher(messages: InAppTestHelper.inAppMessages(fromPayload: TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 2, 3], saveToInbox: true)))
+        mockInAppFetcher = MockInAppFetcher(messages: InAppTestHelper.inAppMessages(fromPayload: createPayload()))
         mockNetworkSession = MockNetworkSession(statusCode: 200)
         mockNetworkSession.callback = { _, _, _ in
             self.logRequest()
@@ -69,6 +69,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func applicationWillTerminate(_: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    }
+    
+    func addInboxMessage() {
+        if let max = indices.max() {
+            indices = indices + [max + 1]
+        } else {
+            indices = [1]
+        }
+        mockInAppFetcher.mockInAppPayloadFromServer(createPayload())
+    }
+    
+    private var indices = [1, 2, 3]
+    
+    private func createPayload() -> [AnyHashable: Any] {
+        return TestInAppPayloadGenerator.createPayloadWithUrl(indices: indices, saveToInbox: true)
     }
     
     private func logRequest() {

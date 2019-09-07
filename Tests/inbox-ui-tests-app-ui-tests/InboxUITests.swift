@@ -86,6 +86,8 @@ class InboxUITests: XCTestCase {
         XCTAssertEqual(impressions.count, 3)
     }
     
+    func testAddInboxMessage() {}
+    
     private func waitForElementToAppear(_ element: XCUIElement, fail: Bool = true) {
         let exists = element.waitForExistence(timeout: InboxUITests.timeout)
         

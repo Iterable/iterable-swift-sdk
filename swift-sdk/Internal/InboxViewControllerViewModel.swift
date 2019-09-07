@@ -186,16 +186,21 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     @objc private func onInboxChanged(notification _: NSNotification) {
         ITBInfo()
         
+        DispatchQueue.main.async { [weak self] in
+            self?.updateView()
+        }
+    }
+    
+    private func updateView() {
+        ITBInfo()
         let oldSectionedValues = AbstractDiffCalculator<Int, InboxMessageViewModel>.buildSectionedValues(values: messages, sectionIndex: 0)
         newMessages = IterableAPI.inAppManager.getInboxMessages().map { InboxMessageViewModel(message: $0) }
         let newSectionedValues = AbstractDiffCalculator<Int, InboxMessageViewModel>.buildSectionedValues(values: newMessages, sectionIndex: 0)
         
         let diff = Dwifft.diff(lhs: oldSectionedValues, rhs: newSectionedValues)
         if diff.count > 0 {
-            DispatchQueue.main.async { [weak self] in
-                self?.delegate?.onViewModelChanged(diff: diff)
-                self?.updateVisibleRows()
-            }
+            delegate?.onViewModelChanged(diff: diff)
+            updateVisibleRows()
         }
     }
     

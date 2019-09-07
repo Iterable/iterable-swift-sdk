@@ -28,4 +28,10 @@ class MainViewController: UIViewController {
         
         present(inboxNavController, animated: true)
     }
+    
+    @IBAction func addInboxMessageTap(_: UIButton) {
+        ITBInfo()
+        
+        AppDelegate.sharedInstance.addInboxMessage()
+    }
 }

@@ -105,7 +105,7 @@
                                                     <subviews>
                                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7Gy-6o-a5R">
                                                             <rect key="frame" x="0.0" y="0.0" width="374" height="3.5"/>
-                                                            <mutableString key="text">//
+                                                            <string key="text">//
 //  Created by Tapash Majumder on 9/2/19.
 //  Copyright © 2019 Iterable. All rights reserved.
 //
@@ -132,7 +132,7 @@ class NetworkDetailViewController: UITableViewController {
     }
     
 }
-</mutableString>
+</string>
                                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
@@ -193,13 +193,20 @@ class NetworkDetailViewController: UITableViewController {
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="eGn-zM-0ZP">
-                                <rect key="frame" x="167.5" y="435.5" width="79" height="30"/>
+                                <rect key="frame" x="139.5" y="416.5" width="135" height="68"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EC9-JJ-Tlq">
-                                        <rect key="frame" x="0.0" y="0.0" width="79" height="30"/>
+                                        <rect key="frame" x="28" y="0.0" width="79" height="30"/>
                                         <state key="normal" title="Show Inbox"/>
                                         <connections>
                                             <action selector="showInboxTap:" destination="UpA-wW-DMA" eventType="touchUpInside" id="iO9-3U-nib"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Cf5-1D-zj5">
+                                        <rect key="frame" x="0.0" y="38" width="135" height="30"/>
+                                        <state key="normal" title="Add Inbox Message"/>
+                                        <connections>
+                                            <action selector="addInboxMessageTap:" destination="UpA-wW-DMA" eventType="touchUpInside" id="gzx-ks-LaA"/>
                                         </connections>
                                     </button>
                                 </subviews>
