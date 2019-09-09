@@ -34,14 +34,14 @@ class InAppDisplayer: InAppDisplayerProtocol {
      
      - parameters:
      - htmlString:      The NSString containing the dialog HTML
-     - trackParams:     The track params for the notification
+     - messageMetadata: Message metadata object.
      - backgroundAlpha: The background alpha behind the notification
      - padding:         The padding around the notification
      - returns:
      A future representing the URL clicked by the user
      */
     @discardableResult static func showIterableHtmlMessage(_ htmlString: String,
-                                                           trackParams: IterableInAppMessageMetadata? = nil,
+                                                           messageMetadata: IterableInAppMessageMetadata? = nil,
                                                            backgroundAlpha: Double = 0,
                                                            padding: UIEdgeInsets = .zero) -> ShowResult {
         guard let topViewController = getTopViewController() else {
@@ -54,7 +54,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
         
         let parameters = IterableHtmlMessageViewController.Parameters(html: htmlString,
                                                                       padding: padding,
-                                                                      trackParams: trackParams,
+                                                                      messageMetadata: messageMetadata,
                                                                       isModal: true)
         let createResult = IterableHtmlMessageViewController.create(parameters: parameters)
         let baseNotification = createResult.viewController
@@ -123,7 +123,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
         let metadata = IterableInAppMessageMetadata(message: iterableMessage, location: .inApp)
         
         return showIterableHtmlMessage(content.html,
-                                       trackParams: metadata,
+                                       messageMetadata: metadata,
                                        backgroundAlpha: content.backgroundAlpha,
                                        padding: content.edgeInsets)
     }

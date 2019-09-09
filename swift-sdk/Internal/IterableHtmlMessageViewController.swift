@@ -17,16 +17,16 @@ class IterableHtmlMessageViewController: UIViewController {
     struct Parameters {
         let html: String
         let padding: UIEdgeInsets
-        let trackParams: IterableInAppMessageMetadata?
+        let messageMetadata: IterableInAppMessageMetadata?
         let isModal: Bool
         
         init(html: String,
              padding: UIEdgeInsets = .zero,
-             trackParams: IterableInAppMessageMetadata? = nil,
+             messageMetadata: IterableInAppMessageMetadata? = nil,
              isModal: Bool) {
             self.html = html
             self.padding = IterableHtmlMessageViewController.padding(fromPadding: padding)
-            self.trackParams = trackParams
+            self.messageMetadata = messageMetadata
             self.isModal = isModal
         }
     }
@@ -81,9 +81,9 @@ class IterableHtmlMessageViewController: UIViewController {
         ITBInfo()
         super.viewDidLoad()
         
-        if let trackParams = parameters.trackParams {
-            IterableAPI.track(inAppOpen: trackParams.message,
-                              location: trackParams.location)
+        if let messageMetadata = parameters.messageMetadata {
+            IterableAPI.track(inAppOpen: messageMetadata.message,
+                              location: messageMetadata.location)
         }
         
         webView?.layoutSubviews()
@@ -99,18 +99,18 @@ class IterableHtmlMessageViewController: UIViewController {
     open override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        guard let trackParams = parameters.trackParams else {
+        guard let messageMetadata = parameters.messageMetadata else {
             return
         }
         
         if let _ = navigationController, linkClicked == false {
-            IterableAPI.track(inAppClose: trackParams.message,
-                              location: trackParams.location,
+            IterableAPI.track(inAppClose: messageMetadata.message,
+                              location: messageMetadata.location,
                               source: InAppCloseSource.back,
                               clickedUrl: nil)
         } else {
-            IterableAPI.track(inAppClose: trackParams.message,
-                              location: trackParams.location,
+            IterableAPI.track(inAppClose: messageMetadata.message,
+                              location: messageMetadata.location,
                               source: InAppCloseSource.link,
                               clickedUrl: clickedLink)
         }
@@ -195,9 +195,9 @@ extension IterableHtmlMessageViewController: UIWebViewDelegate {
     }
     
     fileprivate func trackInAppClick(destinationUrl: String) {
-        if let trackParams = parameters.trackParams {
-            IterableAPI.track(inAppClick: trackParams.message,
-                              location: trackParams.location,
+        if let messageMetadata = parameters.messageMetadata {
+            IterableAPI.track(inAppClick: messageMetadata.message,
+                              location: messageMetadata.location,
                               clickedUrl: destinationUrl)
         }
     }
