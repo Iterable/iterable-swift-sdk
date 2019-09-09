@@ -107,7 +107,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         
         let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
                                                                       padding: content.edgeInsets,
-                                                                      trackParams: IterableInAppMessageMetadata(message: message, location: .inbox),
+                                                                      messageMetadata: IterableInAppMessageMetadata(message: message, location: .inbox),
                                                                       isModal: inboxMode == .popup)
         let createResult = IterableHtmlMessageViewController.create(parameters: parameters)
         let viewController = createResult.viewController
