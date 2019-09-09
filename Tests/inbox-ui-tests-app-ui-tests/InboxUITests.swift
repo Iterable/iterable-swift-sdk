@@ -51,13 +51,12 @@ class InboxUITests: XCTestCase, IterableInboxUITestsProtocol {
         sleep(2)
         gotoTab(.network)
         
-        let request = serializableRequest(forEvent: String.ITBL_PATH_TRACK_INBOX_SESSION)
-        let body = request.body! as! [String: Any]
-        let impressions = body[keyPath: KeyPath(JsonKey.impressions)] as! [[String: Any]]
+        let dict = body(forEvent: String.ITBL_PATH_TRACK_INBOX_SESSION)
+        let impressions = dict[keyPath: KeyPath(JsonKey.impressions)] as! [[String: Any]]
         XCTAssertEqual(impressions.count, 3)
     }
     
-    func testSwipeToDelete() {
+    func testDeleteActionSwipeToDelete() {
         gotoTab(.inbox)
         let count1 = app.tables.cells.count
         
@@ -67,11 +66,33 @@ class InboxUITests: XCTestCase, IterableInboxUITestsProtocol {
         gotoTab(.inbox)
         let count2 = app.tables.cells.count
         XCTAssertEqual(count2, count1 + 1)
-        app.tableCell(withText: "title4").deleteSwipe()
+        app.lastCell().deleteSwipe()
         XCTAssertEqual(app.tables.cells.count, count1)
         
         gotoTab(.network)
         let dict = body(forEvent: String.ITBL_PATH_INAPP_CONSUME)
-        XCTAssertEqual(dict[keyPath: KeyPath(JsonKey.deleteAction)] as! String, InAppDeleteSource.inboxSwipeLeft.jsonValue as! String)
+        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.deleteAction), value: InAppDeleteSource.inboxSwipeLeft.jsonValue as! String, inDictionary: dict)
+    }
+    
+    func testDeleteActionDeleteButton() {
+        gotoTab(.inbox)
+        let count1 = app.tables.cells.count
+        
+        gotoTab(.home)
+        app.tapButton(withName: "Add Inbox Message")
+        
+        gotoTab(.inbox)
+        let count2 = app.tables.cells.count
+        XCTAssertEqual(count2, count1 + 1)
+        
+        app.lastCell().tap()
+        app.link(withText: "Delete").waitToAppear().tap()
+        
+        app.tableCell(withText: "title1").waitToAppear()
+        XCTAssertEqual(app.tables.cells.count, count1)
+        
+        gotoTab(.network)
+        let dict = body(forEvent: String.ITBL_PATH_INAPP_CONSUME)
+        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.deleteAction), value: InAppDeleteSource.deleteButton.jsonValue as! String, inDictionary: dict)
     }
 }

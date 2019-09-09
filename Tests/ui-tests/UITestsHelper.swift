@@ -30,6 +30,15 @@ struct UITestsHelper {
         return app.tables.cells.staticTexts[text]
     }
     
+    static func lastElement(query: XCUIElementQuery) -> XCUIElement {
+        let count = query.count
+        return query.element(boundBy: count - 1)
+    }
+    
+    static func lastCell(inApp app: XCUIApplication) -> XCUIElement {
+        return lastElement(query: app.tables.cells)
+    }
+    
     static func link(withText text: String, inApp app: XCUIApplication) -> XCUIElement {
         return app.links[text]
     }
@@ -58,6 +67,10 @@ extension XCUIApplication {
     
     func tableCell(withText text: String) -> XCUIElement {
         return UITestsHelper.tableCell(withText: text, inApp: self)
+    }
+    
+    func lastCell() -> XCUIElement {
+        return UITestsHelper.lastCell(inApp: self)
     }
     
     func link(withText text: String) -> XCUIElement {
