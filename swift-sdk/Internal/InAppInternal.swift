@@ -21,6 +21,11 @@ extension IterableInAppTriggerType {
     static let undefinedTriggerType = IterableInAppTriggerType.never // undefined is what we select if payload has new trigger type
 }
 
+struct IterableInAppMessageMetadata {
+    let message: IterableInAppMessage
+    let location: InAppLocation
+}
+
 class InAppFetcher: InAppFetcherProtocol {
     init(apiClient: ApiClientProtocol) {
         ITBInfo()
