@@ -5,13 +5,11 @@
 
 import Foundation
 
-struct IterableInAppMessageMetadata {
-    let message: IterableInAppMessage
-    let location: InAppLocation
-}
-
-@objc class IterablePushNotificationMetadata: IterableNotificationMetadata {
-    @objc var isGhostPush: Bool = false
+struct IterablePushNotificationMetadata {
+    let campaignId: NSNumber
+    let templateId: NSNumber?
+    let messageId: String?
+    let isGhostPush: Bool
     
     /**
      Creates an `IterableNotificationMetadata` from a push payload
@@ -20,7 +18,7 @@ struct IterableInAppMessageMetadata {
      - returns:    an instance of `IterableNotificationMetadata` with the specified properties; `nil` if this isn't an Iterable notification
      - warning:   `metadataFromLaunchOptions` will return `nil` if `userInfo` isn't an Iterable notification
      */
-    @objc public static func metadata(fromLaunchOptions userInfo: [AnyHashable: Any]) -> IterablePushNotificationMetadata? {
+    public static func metadata(fromLaunchOptions userInfo: [AnyHashable: Any]) -> IterablePushNotificationMetadata? {
         guard NotificationHelper.isValidIterableNotification(userInfo: userInfo) else {
             return nil
         }
@@ -29,8 +27,6 @@ struct IterableInAppMessageMetadata {
     }
     
     private init(fromLaunchOptions userInfo: [AnyHashable: Any]) {
-        super.init()
-        
         let notificationInfo = NotificationHelper.inspect(notification: userInfo)
         
         switch notificationInfo {
@@ -40,27 +36,27 @@ struct IterableInAppMessageMetadata {
             messageId = iterableNotification.messageId
             isGhostPush = iterableNotification.isGhostPush
         case .nonIterable:
-            break
+            campaignId = NSNumber(0)
+            templateId = nil
+            messageId = nil
+            isGhostPush = false
         case .silentPush:
+            campaignId = NSNumber(0)
+            templateId = nil
+            messageId = nil
             isGhostPush = true
         }
     }
     
-    @objc public func isRealCampaignNotification() -> Bool {
+    func isRealCampaignNotification() -> Bool {
         return !(isGhostPush || isProof() || isTestPush())
     }
-}
-
-@objc class IterableNotificationMetadata: NSObject {
-    @objc var campaignId: NSNumber = NSNumber(value: 0)
-    @objc var templateId: NSNumber?
-    @objc var messageId: String?
     
-    @objc public func isProof() -> Bool {
+    func isProof() -> Bool {
         return campaignId.intValue == 0 && templateId?.intValue != 0
     }
     
-    @objc public func isTestPush() -> Bool {
+    func isTestPush() -> Bool {
         return campaignId.intValue == 0 && templateId?.intValue == 0
     }
 }
