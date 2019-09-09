@@ -31,19 +31,19 @@ class InboxUITests: XCTestCase, IterableInboxUITestsProtocol {
     func testShowInboxOnButtonClick() {
         gotoTab(.home)
         
-        app.tapButton(withName: "Show Inbox")
+        app.button(withText: "Show Inbox").tap()
         
         app.tableCell(withText: "title1").waitToAppear().tap()
         
         app.link(withText: "Click Here1").waitToAppear()
-        app.navButton(withName: "Inbox").waitToAppear() // Nav bar 'back' button
+        app.navButton(withText: "Inbox").waitToAppear() // Nav bar 'back' button
         app.link(withText: "Click Here1").tap()
         
         app.tableCell(withText: "title2").waitToAppear().tap()
         app.link(withText: "Click Here2").waitToAppear().tap()
         
         app.tableCell(withText: "title1").waitToAppear()
-        app.tapNavButton(withName: "Done")
+        app.navButton(withText: "Done").tap()
     }
     
     func testTrackSession() {
@@ -61,7 +61,7 @@ class InboxUITests: XCTestCase, IterableInboxUITestsProtocol {
         let count1 = app.tables.cells.count
         
         gotoTab(.home)
-        app.tapButton(withName: "Add Inbox Message")
+        app.button(withText: "Add Inbox Message").tap()
         
         gotoTab(.inbox)
         let count2 = app.tables.cells.count
@@ -79,7 +79,7 @@ class InboxUITests: XCTestCase, IterableInboxUITestsProtocol {
         let count1 = app.tables.cells.count
         
         gotoTab(.home)
-        app.tapButton(withName: "Add Inbox Message")
+        app.button(withText: "Add Inbox Message").tap()
         
         gotoTab(.inbox)
         let count2 = app.tables.cells.count

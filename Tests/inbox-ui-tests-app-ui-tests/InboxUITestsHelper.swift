@@ -18,7 +18,7 @@ protocol IterableInboxUITestsProtocol: IterableUITestsProtocol {}
 extension IterableInboxUITestsProtocol where Self: XCTestCase {
     func clearNetwork() {
         gotoTab(.network)
-        app.tapButton(withName: "Clear")
+        app.button(withText: "Clear").tap()
     }
     
     func body(forEvent event: String) -> [String: Any] {

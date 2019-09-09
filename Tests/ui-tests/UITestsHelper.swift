@@ -47,16 +47,8 @@ struct UITestsHelper {
         return app.buttons[text]
     }
     
-    static func tapButton(withName name: String, inApp app: XCUIApplication) {
-        app.buttons[name].tap()
-    }
-    
-    static func navButton(withName name: String, inApp app: XCUIApplication) -> XCUIElement {
-        return app.navigationBars.buttons[name]
-    }
-    
-    static func tapNavButton(withName name: String, inApp app: XCUIApplication) {
-        app.navigationBars.buttons[name].tap()
+    static func navButton(withText text: String, inApp app: XCUIApplication) -> XCUIElement {
+        return app.navigationBars.buttons[text]
     }
 }
 
@@ -81,16 +73,8 @@ extension XCUIApplication {
         return UITestsHelper.button(withText: text, inApp: self)
     }
     
-    func tapButton(withName name: String) {
-        UITestsHelper.tapButton(withName: name, inApp: self)
-    }
-    
-    func navButton(withName name: String) -> XCUIElement {
-        return UITestsHelper.navButton(withName: name, inApp: self)
-    }
-    
-    func tapNavButton(withName name: String) {
-        UITestsHelper.tapNavButton(withName: name, inApp: self)
+    func navButton(withText text: String) -> XCUIElement {
+        return UITestsHelper.navButton(withText: text, inApp: self)
     }
 }
 
