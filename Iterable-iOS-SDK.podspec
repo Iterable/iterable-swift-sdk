@@ -81,8 +81,8 @@ Pod::Spec.new do |s|
   s.resources = ['swift-sdk/Resources/**/*.{storyboard,xib,xcassets}']
 
   s.pod_target_xcconfig = {
-    'SWIFT_VERSION' => '5.0'
+    'SWIFT_VERSION' => '5.2'
   }
 
-  s.swift_version = '5.0'
+  s.swift_version = '5.2'
 end
