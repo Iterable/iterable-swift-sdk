@@ -10,7 +10,7 @@ public typealias UrlHandler = (URL) -> Bool
 public typealias CustomActionHandler = (String) -> Bool
 
 /// handles opening of Urls
-@objc public protocol UrlOpenerProtocol: class {
+@objc public protocol UrlOpenerProtocol: AnyObject {
     @objc func open(url: URL)
 }
 

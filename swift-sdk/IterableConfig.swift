@@ -11,7 +11,7 @@ import Foundation
 /**
  * Custom URL handling delegate
  */
-@objc public protocol IterableURLDelegate: class {
+@objc public protocol IterableURLDelegate: AnyObject {
     /**
      * Callback called for a deeplink action. Return true to override default behavior
      * - parameter url:     Deeplink URL
@@ -24,7 +24,7 @@ import Foundation
 /**
  * Custom action handling delegate
  */
-@objc public protocol IterableCustomActionDelegate: class {
+@objc public protocol IterableCustomActionDelegate: AnyObject {
     /**
      * Callback called for custom actions from push notifications
      * - parameter action:  `IterableAction` object containing action payload
@@ -37,7 +37,7 @@ import Foundation
 /**
  * This protocol allows you to override default behavior when new in-app messages arrive.
  */
-@objc public protocol IterableInAppDelegate: class {
+@objc public protocol IterableInAppDelegate: AnyObject {
     /**
      * This method is called when new in-app message is available.
      * The default behavior is to `show` if you don't override this method.
@@ -59,7 +59,7 @@ import Foundation
 /**
  * Logging Delegate.
  */
-@objc public protocol IterableLogDelegate: class {
+@objc public protocol IterableLogDelegate: AnyObject {
     /**
      * Log a message.
      * - parameter level: The log level.
