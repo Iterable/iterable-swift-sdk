@@ -75,7 +75,7 @@ struct UserNotificationResponse: NotificationResponseProtocol {
 }
 
 /// Abstraction of PushTacking
-@objc public protocol PushTrackerProtocol: class {
+@objc public protocol PushTrackerProtocol: AnyObject {
     @objc var lastPushPayload: [AnyHashable: Any]? { get }
     @objc func trackPushOpen(_ userInfo: [AnyHashable: Any])
     @objc func trackPushOpen(_ userInfo: [AnyHashable: Any], dataFields: [AnyHashable: Any]?)
@@ -85,7 +85,7 @@ struct UserNotificationResponse: NotificationResponseProtocol {
 }
 
 /// Abstraction of applicationState
-@objc public protocol ApplicationStateProviderProtocol: class {
+@objc public protocol ApplicationStateProviderProtocol: AnyObject {
     @objc var applicationState: UIApplication.State { get }
 }
 

@@ -7,7 +7,7 @@
 import Foundation
 
 /// Responsible for sending request to server
-protocol ApiClientProtocol: class {
+protocol ApiClientProtocol: AnyObject {
     func register(hexToken: String,
                   appName: String,
                   deviceId: String,
@@ -55,7 +55,7 @@ struct Auth {
     let email: String?
 }
 
-protocol AuthProvider: class {
+protocol AuthProvider: AnyObject {
     var auth: Auth { get }
 }
 

@@ -6,7 +6,7 @@
 
 import Foundation
 
-@objc public protocol DateProviderProtocol: class {
+@objc public protocol DateProviderProtocol: AnyObject {
     @objc var currentDate: Date { get }
 }
 

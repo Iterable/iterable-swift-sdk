@@ -6,7 +6,7 @@
 
 import Foundation
 
-protocol InboxViewControllerViewModelDelegate: class {
+protocol InboxViewControllerViewModelDelegate: AnyObject {
     // All these methods should be called on the main thread
     func onViewModelChanged(diff: [SectionedDiffStep<Int, InboxMessageViewModel>])
     func onImageLoaded(forRow row: Int)
