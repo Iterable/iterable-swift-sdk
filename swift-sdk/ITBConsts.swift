@@ -260,14 +260,14 @@ public protocol JsonValueRepresentable {
 }
 
 @objc public enum InAppDeleteSource: Int, JsonValueRepresentable {
-    case inboxSwipeLeft
+    case inboxSwipe
     case deleteButton
     case unknown
     
     public var jsonValue: Any {
         switch self {
-        case .inboxSwipeLeft:
-            return "inbox-swipe-left"
+        case .inboxSwipe:
+            return "inbox-swipe"
         case .deleteButton:
             return "delete-button"
         case .unknown:
