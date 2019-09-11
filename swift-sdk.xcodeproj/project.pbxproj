@@ -497,7 +497,6 @@
 			isa = PBXGroup;
 			children = (
 				AC72A0BB20CF4C8C004D7997 /* Internal */,
-				AC72A0AE20CF4C1E004D7997 /* Objective C */,
 				AC44C0EB22615F8100E0641D /* Resources */,
 				AC2263F920CF4B63009800EB /* Supporting Files */,
 				AC219C4A225FD7F900B98631 /* UI */,
@@ -577,13 +576,6 @@
 				AC32E16721DD55B900BD4F83 /* OrderedDictionary.swift */,
 			);
 			name = Util;
-			sourceTree = "<group>";
-		};
-		AC72A0AE20CF4C1E004D7997 /* Objective C */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "Objective C";
 			sourceTree = "<group>";
 		};
 		AC72A0BB20CF4C8C004D7997 /* Internal */ = {
@@ -722,14 +714,14 @@
 		ACDA975A23159C37004C412E /* inbox-ui-tests-app */ = {
 			isa = PBXGroup;
 			children = (
-				ACDA976223159C39004C412E /* Assets.xcassets */,
 				ACDA975B23159C37004C412E /* AppDelegate.swift */,
-				ACDA975F23159C37004C412E /* Main.storyboard */,
-				ACDA976423159C39004C412E /* LaunchScreen.storyboard */,
+				ACDA976223159C39004C412E /* Assets.xcassets */,
 				ACDA976723159C39004C412E /* Info.plist */,
+				ACDA976423159C39004C412E /* LaunchScreen.storyboard */,
+				ACDA975F23159C37004C412E /* Main.storyboard */,
 				AC738CE92315A8B200B96B2D /* MainViewController.swift */,
-				AC2A2987231CFAC40070A9C3 /* NetworkTableViewController.swift */,
 				AC2A2989231D44C00070A9C3 /* NetworkDetailViewController.swift */,
+				AC2A2987231CFAC40070A9C3 /* NetworkTableViewController.swift */,
 			);
 			path = "inbox-ui-tests-app";
 			sourceTree = "<group>";
@@ -755,13 +747,13 @@
 		ACF560D420E443BF000AAC23 /* host-app */ = {
 			isa = PBXGroup;
 			children = (
-				AC0A45372179300D0040394F /* host-app.entitlements */,
 				ACF560D520E443BF000AAC23 /* AppDelegate.swift */,
-				ACF560D720E443BF000AAC23 /* ViewController.swift */,
-				ACF560D920E443BF000AAC23 /* Main.storyboard */,
 				ACF560DC20E443C0000AAC23 /* Assets.xcassets */,
-				ACF560DE20E443C0000AAC23 /* LaunchScreen.storyboard */,
+				AC0A45372179300D0040394F /* host-app.entitlements */,
 				ACF560E120E443C0000AAC23 /* Info.plist */,
+				ACF560DE20E443C0000AAC23 /* LaunchScreen.storyboard */,
+				ACF560D920E443BF000AAC23 /* Main.storyboard */,
+				ACF560D720E443BF000AAC23 /* ViewController.swift */,
 			);
 			path = "host-app";
 			sourceTree = "<group>";
