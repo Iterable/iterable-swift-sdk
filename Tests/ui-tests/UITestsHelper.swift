@@ -96,7 +96,7 @@ extension XCUIElement {
 
 let uiElementWaitTimeout = 15.0
 
-protocol IterableUITestsProtocol: class {}
+protocol IterableUITestsProtocol: AnyObject {}
 
 extension IterableUITestsProtocol where Self: XCTestCase {
     var app: XCUIApplication { // Just a shortcut to global app

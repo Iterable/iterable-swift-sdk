@@ -71,7 +71,7 @@ class InboxUITests: XCTestCase, IterableInboxUITestsProtocol {
         
         gotoTab(.network)
         let dict = body(forEvent: String.ITBL_PATH_INAPP_CONSUME)
-        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.deleteAction), value: InAppDeleteSource.inboxSwipeLeft.jsonValue as! String, inDictionary: dict)
+        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.deleteAction), value: InAppDeleteSource.inboxSwipe.jsonValue as! String, inDictionary: dict)
     }
     
     func testDeleteActionDeleteButton() {
