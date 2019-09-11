@@ -96,15 +96,20 @@ extension IterableInAppTriggerType {
 }
 
 extension IterableInAppTrigger {
-    static let defaultTrigger = IterableInAppTrigger(dict: createDefaultTriggerDict())
-    static let undefinedTrigger = IterableInAppTrigger(dict: createUndefinedTriggerDict())
+    static let defaultTrigger = create(withTriggerType: .defaultTriggerType)
+    static let undefinedTrigger = create(withTriggerType: .undefinedTriggerType)
+    static let neverTrigger = create(withTriggerType: .never)
     
-    private static func createDefaultTriggerDict() -> [AnyHashable: Any] {
-        return [.ITBL_IN_APP_TRIGGER_TYPE: String(describing: IterableInAppTriggerType.defaultTriggerType)]
+    static func create(withTriggerType triggerType: IterableInAppTriggerType) -> IterableInAppTrigger {
+        return IterableInAppTrigger(dict: createTriggerDict(forTriggerType: triggerType))
     }
     
-    private static func createUndefinedTriggerDict() -> [AnyHashable: Any] {
-        return [.ITBL_IN_APP_TRIGGER_TYPE: String(describing: IterableInAppTriggerType.undefinedTriggerType)]
+    static func createDefaultTriggerDict() -> [AnyHashable: Any] {
+        return createTriggerDict(forTriggerType: .defaultTriggerType)
+    }
+    
+    static func createTriggerDict(forTriggerType triggerType: IterableInAppTriggerType) -> [AnyHashable: Any] {
+        return [.ITBL_IN_APP_TRIGGER_TYPE: String(describing: triggerType)]
     }
 }
 

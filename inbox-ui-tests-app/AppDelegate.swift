@@ -13,7 +13,7 @@ import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    static var instance: AppDelegate {
+    static var sharedInstance: AppDelegate {
         return UIApplication.shared.delegate as! AppDelegate
     }
     
@@ -29,7 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-        mockInAppFetcher = MockInAppFetcher(messages: InAppTestHelper.inAppMessages(fromPayload: TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 2, 3], saveToInbox: true)))
+        mockInAppFetcher = MockInAppFetcher(messages: InAppTestHelper.inAppMessages(fromPayload: createPayload()))
         mockNetworkSession = MockNetworkSession(statusCode: 200)
         mockNetworkSession.callback = { _, _, _ in
             self.logRequest()
@@ -69,6 +69,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func applicationWillTerminate(_: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    }
+    
+    func addInboxMessage() {
+        ITBInfo()
+        let max = indices.max().map { $0 + 1 } ?? 1
+        
+        let html = """
+        <body bgColor="#FFF">
+            <div style="width:100px;height:100px;position:absolute;margin:auto;top:0;bottom:0;left:0;right:0;"><a href="iterable://delete">Delete</a></div>
+        </body>
+        """
+        let message = IterableInAppMessage(messageId: "message\(max)",
+                                           campaignId: "campaign\(max)",
+                                           trigger: IterableInAppTrigger.neverTrigger,
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 1.0, html: html),
+                                           saveToInbox: true,
+                                           inboxMetadata: IterableInboxMetadata(title: "title\(max)", subtitle: "subTitle\(max)"))
+        mockInAppFetcher.mockMessagesAvailableFromServer(messages: InAppTestHelper.inAppMessages(fromPayload: createPayload()) + [message]).onSuccess { _ in
+            self.indices.append(max)
+        }
+    }
+    
+    private var indices = [1, 2, 3]
+    
+    private func createPayload() -> [AnyHashable: Any] {
+        return TestInAppPayloadGenerator.createPayloadWithUrl(indices: indices, triggerType: .never, saveToInbox: true)
     }
     
     private func logRequest() {

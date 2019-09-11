@@ -84,10 +84,14 @@ struct TestInAppPayloadGenerator {
     }
     
     private static func createOneInAppDict(withHref href: String, index: Int) -> [AnyHashable: Any] {
+        let html = """
+        <body bgColor="#FFF">
+            <div style="width:100px;height:100px;position:absolute;margin:auto;top:0;bottom:0;left:0;right:0;"><a href="\(href)">Click Here\(index)</a></div>
+        </body>
+        """
         return [
             "content": [
-                "html": "<a href='\(href)'>Click Here\(index)</a>",
-                "inAppDisplaySettings": ["backgroundAlpha": 0.5, "left": ["percentage": 60], "right": ["percentage": 60], "bottom": ["displayOption": "AutoExpand"], "top": ["displayOption": "AutoExpand"]],
+                "html": html,
             ],
             "messageId": getMessageId(index: index),
             "campaignId": getCampaignId(index: index),
