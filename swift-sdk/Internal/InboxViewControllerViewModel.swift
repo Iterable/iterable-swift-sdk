@@ -148,7 +148,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         delegate?.onImageLoaded(forRow: row)
     }
     
-    private func getVisibleRows() -> [RowInfo] {
+    private func getVisibleRows() -> [InboxImpressionTracker.RowInfo] {
         guard let delegate = delegate else {
             return []
         }
@@ -158,7 +158,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
                 return nil
             }
             let message = messages[index].iterableMessage
-            return RowInfo(messageId: message.messageId, silentInbox: message.silentInbox)
+            return InboxImpressionTracker.RowInfo(messageId: message.messageId, silentInbox: message.silentInbox)
         }
     }
     
@@ -225,173 +225,5 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     private var messages = [InboxMessageViewModel]()
     private var newMessages = [InboxMessageViewModel]()
-    private var sessionManager = SessionManager()
-    
-    struct SessionStartInfo {
-        let startTime: Date
-        let totalMessageCount: Int
-        let unreadMessageCount: Int
-    }
-    
-    struct SessionInfo {
-        let startInfo: SessionStartInfo
-        let impressions: [Impression]
-    }
-    
-    class SessionManager {
-        var sessionStartInfo: SessionStartInfo?
-        var impressionTracker: ImpressionTracker?
-        var startSessionWhenAppMovesToForeground = false
-        
-        var isTracking: Bool {
-            return sessionStartInfo != nil
-        }
-        
-        func updateVisibleRows(visibleRows: [RowInfo]) {
-            guard let impressionTracker = impressionTracker else {
-                ITBError("Expecting impressionTracker here.")
-                return
-            }
-            impressionTracker.updateVisibleRows(visibleRows: visibleRows)
-        }
-        
-        func startSession(visibleRows: [RowInfo]) {
-            ITBInfo()
-            guard isTracking == false else {
-                ITBError("Session started twice")
-                return
-            }
-            ITBInfo("Session Start")
-            sessionStartInfo = SessionStartInfo(startTime: Date(),
-                                                totalMessageCount: IterableAPI.inAppManager.getInboxMessages().count,
-                                                unreadMessageCount: IterableAPI.inAppManager.getUnreadInboxMessagesCount())
-            impressionTracker = ImpressionTracker()
-            updateVisibleRows(visibleRows: visibleRows)
-        }
-        
-        func endSession() -> SessionInfo? {
-            guard let sessionStartInfo = sessionStartInfo, let impressionTracker = impressionTracker else {
-                ITBError("Session ended without start")
-                return nil
-            }
-            ITBInfo("Session End")
-            
-            let sessionInfo = SessionInfo(startInfo: sessionStartInfo, impressions: impressionTracker.endSession())
-            self.sessionStartInfo = nil
-            self.impressionTracker = nil
-            return sessionInfo
-        }
-    }
-    
-    struct Impression {
-        let messageId: String
-        let silentInbox: Bool
-        let displayCount: Int
-        let duration: TimeInterval
-        
-        func toIterableInboxImpression() -> IterableInboxImpression {
-            return IterableInboxImpression(messageId: messageId, silentInbox: silentInbox, displayCount: displayCount, displayDuration: duration)
-        }
-    }
-    
-    struct RowInfo {
-        let messageId: String
-        #if INBOX_SESSION_DEBUG
-            // for debug only, so that rows are sorted
-            let timestamp = Date()
-        #endif
-        let silentInbox: Bool
-    }
-    
-    class ImpressionTracker {
-        func updateVisibleRows(visibleRows: [RowInfo]) {
-            let diff = Dwifft.diff(lastVisibleRows, visibleRows)
-            guard diff.count > 0 else {
-                return
-            }
-            
-            diff.forEach {
-                switch $0 {
-                case let .insert(_, row):
-                    startImpression(for: row)
-                case let .delete(_, row):
-                    endImpression(for: row)
-                }
-            }
-            
-            lastVisibleRows = visibleRows
-            #if INBOX_SESSION_DEBUG
-                printImpressions()
-            #endif
-        }
-        
-        func endSession() -> [Impression] {
-            startTimes.forEach { endImpression(for: $0.key) }
-            return Array(impressions.values)
-        }
-        
-        private func startImpression(for row: RowInfo) {
-            assert(startTimes[row] == nil, "Did not expect start time for row: \(row)")
-            startTimes[row] = Date()
-        }
-        
-        private func endImpression(for row: RowInfo) {
-            guard let startTime = startTimes[row] else {
-                ITBError("Could not find startTime for row: \(row)")
-                return
-            }
-            
-            startTimes.removeValue(forKey: row)
-            
-            let duration = Date().timeIntervalSince1970 - startTime.timeIntervalSince1970
-            guard duration > minDuration else {
-                ITBInfo("duration less than min, not counting impression for row: \(row)")
-                return
-            }
-            
-            let impression: Impression
-            if let existing = impressions[row] {
-                impression = Impression(messageId: row.messageId, silentInbox: row.silentInbox, displayCount: existing.displayCount + 1, duration: existing.duration + duration)
-            } else {
-                impression = Impression(messageId: row.messageId, silentInbox: row.silentInbox, displayCount: 1, duration: duration)
-            }
-            impressions[row] = impression
-        }
-        
-        #if INBOX_SESSION_DEBUG
-            private func printImpressions() {
-                print("startTimes:")
-                startTimes.keys.sorted().forEach { print("row: \($0) value: \(startTimes[$0]!)") }
-                print("impressions:")
-                impressions.keys.sorted().forEach { print("row: \($0) value: \(impressions[$0]!)") }
-                print()
-                print()
-            }
-        #endif
-        
-        private let minDuration: TimeInterval = 0.5
-        private var lastVisibleRows = [RowInfo]()
-        private var startTimes = [RowInfo: Date]()
-        private var impressions = [RowInfo: Impression]()
-    }
+    private var sessionManager = InboxSessionManager()
 }
-
-extension InboxViewControllerViewModel.RowInfo: Hashable {
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(messageId)
-    }
-}
-
-extension InboxViewControllerViewModel.RowInfo: Equatable {
-    static func == (lhs: InboxViewControllerViewModel.RowInfo, rhs: InboxViewControllerViewModel.RowInfo) -> Bool {
-        return lhs.messageId == rhs.messageId
-    }
-}
-
-#if INBOX_SESSION_DEBUG
-    extension InboxViewControllerViewModel.RowInfo: Comparable {
-        static func < (lhs: InboxViewControllerViewModel.RowInfo, rhs: InboxViewControllerViewModel.RowInfo) -> Bool {
-            return lhs.timestamp < rhs.timestamp
-        }
-    }
-#endif
