@@ -311,7 +311,7 @@ class InAppTests: XCTestCase {
         
         mockInAppSynchronizer.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1))
         
-        var messages = IterableAPI.inAppManager.getMessages()
+        let messages = IterableAPI.inAppManager.getMessages()
         // Now show the first message, but don't consume
         IterableAPI.inAppManager.show(message: messages[0], consume: false) { (clickedUrl) in
             XCTAssertEqual(clickedUrl, TestInAppPayloadGenerator.getClickedUrl(index: 1))

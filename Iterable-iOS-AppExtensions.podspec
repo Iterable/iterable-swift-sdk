@@ -80,8 +80,8 @@ Pod::Spec.new do |s|
   # s.public_header_files = "Classes/**/*.h"
 
   s.pod_target_xcconfig = {
-    'SWIFT_VERSION' => '4.2'
+    'SWIFT_VERSION' => '5'
   }
 
-  s.swift_version = '4.2'
+  s.swift_version = '5'
 end
