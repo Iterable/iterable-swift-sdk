@@ -1,12 +1,11 @@
 //
-//  IterableInAppHTMLViewController.swift
-//  new-ios-sdk
 //
 //  Created by Tapash Majumder on 6/7/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
 import UIKit
+import WebKit
 
 enum InAppNotificationType : Int {
     case full
@@ -98,12 +97,12 @@ class IterableInAppHTMLViewController: UIViewController {
         location = IterableInAppHTMLViewController.location(fromPadding: insetPadding)
         view.backgroundColor = UIColor.clear
         
-        let webView = UIWebView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
+        let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
         webView.loadHTMLString(htmlString, baseURL: URL(string: ""))
         webView.scrollView.bounces = false
         webView.isOpaque = false
         webView.backgroundColor = UIColor.clear
-        webView.delegate = self
+        webView.navigationDelegate = self
         
         view.addSubview(webView)
         self.webView = webView
@@ -135,7 +134,7 @@ class IterableInAppHTMLViewController: UIViewController {
     private var insetPadding: UIEdgeInsets = UIEdgeInsets.zero
     private var customBlockCallback: ITBURLCallback?
     private var trackParams: IterableNotificationMetadata?
-    private var webView: UIWebView?
+    private var webView: WKWebView?
     private var location: InAppNotificationType = .full
     private var loaded = false
     
@@ -150,7 +149,7 @@ class IterableInAppHTMLViewController: UIViewController {
      
      - parameter: aWebView the webview
      */
-    private func resizeWebView(_ aWebView :UIWebView) {
+    private func resizeWebView(_ aWebView: WKWebView) {
         guard loaded else {
             return
         }
@@ -163,7 +162,7 @@ class IterableInAppHTMLViewController: UIViewController {
         var frame = aWebView.frame
         frame.size.height = 1
         aWebView.frame = frame;
-        let fittingSize = aWebView.sizeThatFits(.zero)
+        let fittingSize = aWebView.scrollView.contentSize
         frame.size = fittingSize
         let notificationWidth = 100 - (insetPadding.left + insetPadding.right)
         let screenWidth = view.bounds.width
@@ -188,21 +187,25 @@ class IterableInAppHTMLViewController: UIViewController {
     }
 }
 
-extension IterableInAppHTMLViewController : UIWebViewDelegate {
-    func webViewDidFinishLoad(_ webView: UIWebView) {
+extension IterableInAppHTMLViewController : WKNavigationDelegate {
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        ITBInfo()
         loaded = true
         if let myWebview = self.webView {
             resizeWebView(myWebview)
         }
     }
     
-    func webView(_ webView: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebView.NavigationType) -> Bool {
-        guard navigationType == .linkClicked, let url = request.url else {
-            return true
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        ITBInfo()
+        guard navigationAction.navigationType == .linkActivated, let url = navigationAction.request.url else {
+            decisionHandler(.allow)
+            return
         }
-        
+
         guard let parsed = InAppHelper.parse(inAppUrl: url) else {
-            return true
+            decisionHandler(.allow)
+            return
         }
         
         let destinationUrl: String
@@ -211,13 +214,14 @@ extension IterableInAppHTMLViewController : UIWebViewDelegate {
         } else {
             destinationUrl = url.absoluteString
         }
-
+        
         dismiss(animated: false) { [weak self] in
             self?.customBlockCallback?(url)
             if let trackParams = self?.trackParams, let messageId = trackParams.messageId {
                 IterableAPIInternal.sharedInstance?.trackInAppClick(messageId, buttonURL: destinationUrl)
             }
         }
-        return false
+
+        decisionHandler(.cancel)
     }
 }

@@ -6,7 +6,7 @@ platform :ios, '11.0'
 use_frameworks!
 
 target 'swift-sample-app' do
-  pod 'Iterable-iOS-SDK'
+  pod 'Iterable-iOS-SDK', :path => '../../'
 end
 
 target 'swift-sample-app-notification-extension' do
