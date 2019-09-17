@@ -132,7 +132,7 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
             return SendRequestError.createErroredFuture(reason: "Both email and userId are nil")
         }
         
-        hexToken = (token as NSData).iteHexadecimalString()
+        hexToken = token.hexString()
         
         let device = UIDevice.current
         let pushServicePlatformString = IterableAPIInternal.pushServicePlatformToString(pushServicePlatform)
