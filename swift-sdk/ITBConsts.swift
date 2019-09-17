@@ -165,3 +165,7 @@ public extension AnyHashable {
     static let ITBL_IN_APP_CONTENT_TYPE = "contentType"
 }
 
+public typealias ITEActionBlock = (String?) -> Void
+public typealias ITBURLCallback = (URL?) -> Void
+public typealias OnSuccessHandler = (_ data: [AnyHashable: Any]?) -> Void
+public typealias OnFailureHandler = (_ reason: String?, _ data: Data?) -> Void
