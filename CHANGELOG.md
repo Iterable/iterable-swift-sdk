@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.1.1
+#### Changed
+- Use WKWebView instead of deprecated class UIWebView.
+- Migrated all Objective C code to Swift.
+
 ## 6.1.0
 #### Changed
 - In this version we have changed the way we use in-app notifications. In-app messages are now being sent asynchronously and your code can control the order and time in which an in-app notification will be shown. There is no need to poll for new in-app messages. Please refer to the **in-app messages** section of README file for how to use in-app messages. If you are already using in-app messages, please refer to [migration guide](https://github.com/iterable/swift-sdk##migrating-from-a-version-prior-to-610) section of README file.
