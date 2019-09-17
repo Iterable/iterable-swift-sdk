@@ -27,8 +27,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let config = IterableConfig()
         config.customActionDelegate = self
         config.urlDelegate = self
-        config.pushIntegrationName = "iOSDemoAppProd"
-        config.sandboxPushIntegrationName = "iOSDemoAppDev"
+        config.pushIntegrationName = Bundle.main.appPackageName!
+        config.sandboxPushIntegrationName = Bundle.main.appPackageName!
+        config.inAppDisplayInterval = 1
         // Replace with your api key and email here.
         IterableAPI.initialize(apiKey: iterableApiKey,
                                launchOptions:launchOptions,
