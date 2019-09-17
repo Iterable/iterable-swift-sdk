@@ -162,7 +162,7 @@ class IterableInAppHTMLViewController: UIViewController {
         var frame = aWebView.frame
         frame.size.height = 1
         aWebView.frame = frame;
-        let fittingSize = aWebView.sizeThatFits(.zero)
+        let fittingSize = aWebView.scrollView.contentSize
         frame.size = fittingSize
         let notificationWidth = 100 - (insetPadding.left + insetPadding.right)
         let screenWidth = view.bounds.width
