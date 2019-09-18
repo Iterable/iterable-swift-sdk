@@ -29,7 +29,7 @@ directory as your Xcode project.
 2. Edit **Cartfile**, adding the following line:
 
     ```
-    github "Iterable/swift-sdk" ~> 6.1.0
+    github "Iterable/swift-sdk" ~> 6.1.1
     ```
 
 3. In the terminal, in the same directory as your **Cartfile**, run the 
