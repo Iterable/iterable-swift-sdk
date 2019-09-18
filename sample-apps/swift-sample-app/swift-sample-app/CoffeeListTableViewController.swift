@@ -109,7 +109,6 @@ class CoffeeListTableViewController: UITableViewController {
     private var filtering = false
     private var filteredCoffees: [CoffeeType] = []
     private var searchController: UISearchController!
-    private var timer: Timer?
 }
 
 extension CoffeeListTableViewController: UISearchControllerDelegate {
