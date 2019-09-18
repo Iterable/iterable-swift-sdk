@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.1.1
+#### Changed
+- Use WKWebView instead of deprecated class UIWebView.
+- Migrated all Objective C code to Swift.
+
 ## 6.2.0-dev1
 #### Added
 - Inbox

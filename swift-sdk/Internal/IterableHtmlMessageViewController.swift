@@ -5,6 +5,7 @@
 //
 
 import UIKit
+import WebKit
 
 enum IterableMessageLocation: Int {
     case full
@@ -63,12 +64,12 @@ class IterableHtmlMessageViewController: UIViewController {
             view.backgroundColor = UIColor.white
         }
         
-        let webView = UIWebView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
+        let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
         webView.loadHTMLString(parameters.html, baseURL: URL(string: ""))
         webView.scrollView.bounces = false
         webView.isOpaque = false
         webView.backgroundColor = UIColor.clear
-        webView.delegate = self
+        webView.navigationDelegate = self
         
         view.addSubview(webView)
         self.webView = webView
@@ -124,7 +125,7 @@ class IterableHtmlMessageViewController: UIViewController {
     
     private var parameters: Parameters
     private let futureClickedURL: Promise<URL, IterableError>
-    private var webView: UIWebView?
+    private var webView: WKWebView?
     private var location: IterableMessageLocation = .full
     private var loaded = false
     private var linkClicked = false
@@ -135,7 +136,7 @@ class IterableHtmlMessageViewController: UIViewController {
      
      - parameter: aWebView the webview
      */
-    private func resizeWebView(_ aWebView: UIWebView) {
+    private func resizeWebView(_ aWebView: WKWebView) {
         guard loaded else {
             return
         }
@@ -149,7 +150,7 @@ class IterableHtmlMessageViewController: UIViewController {
         var frame = aWebView.frame
         frame.size.height = 1
         aWebView.frame = frame
-        let fittingSize = aWebView.sizeThatFits(.zero)
+        let fittingSize = aWebView.scrollView.contentSize
         frame.size = fittingSize
         let notificationWidth = 100 - (parameters.padding.left + parameters.padding.right)
         let screenWidth = view.bounds.width
@@ -186,8 +187,8 @@ class IterableHtmlMessageViewController: UIViewController {
     }
 }
 
-extension IterableHtmlMessageViewController: UIWebViewDelegate {
-    func webViewDidFinishLoad(_: UIWebView) {
+extension IterableHtmlMessageViewController: WKNavigationDelegate {
+    func webView(_: WKWebView, didFinish _: WKNavigation!) {
         loaded = true
         if let myWebview = self.webView {
             resizeWebView(myWebview)
@@ -202,13 +203,15 @@ extension IterableHtmlMessageViewController: UIWebViewDelegate {
         }
     }
     
-    func webView(_: UIWebView, shouldStartLoadWith request: URLRequest, navigationType: UIWebView.NavigationType) -> Bool {
-        guard navigationType == .linkClicked, let url = request.url else {
-            return true
+    func webView(_: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        guard navigationAction.navigationType == .linkActivated, let url = navigationAction.request.url else {
+            decisionHandler(.allow)
+            return
         }
         
         guard let parsed = InAppHelper.parse(inAppUrl: url) else {
-            return true
+            decisionHandler(.allow)
+            return
         }
         
         let destinationUrl: String
@@ -233,6 +236,6 @@ extension IterableHtmlMessageViewController: UIWebViewDelegate {
             navigationController?.popViewController(animated: true)
         }
         
-        return false
+        decisionHandler(.cancel)
     }
 }

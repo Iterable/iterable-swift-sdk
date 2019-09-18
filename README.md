@@ -29,7 +29,7 @@ directory as your Xcode project.
 2. Edit **Cartfile**, adding the following line:
 
     ```
-    github "Iterable/swift-sdk" ~> 6.1.0
+    github "Iterable/swift-sdk" ~> 6.1.1
     ```
 
 3. In the terminal, in the same directory as your **Cartfile**, run the 
@@ -361,8 +361,7 @@ For more information, take a look at the following documents from Apple:
 ### 7. (Optional) Configure support for rich push notifications
 
 For push notifications to contain images, animated GIFs, video, or action
-buttons, you must create a Notification Service Extension. For more 
-information, read [Rich Push Notifications in iOS 10 and Android - Media Attachments](https://support.iterable.com/hc/articles/115003982203-Rich-Push-Notifications-in-iOS-10-and-Android-Media-Attachments).
+buttons, you must create a Notification Service Extension.
 
 The Iterable iOS SDK provides a Notification Service Extension implementation 
 that handles media attachments and action buttons. To use it:
