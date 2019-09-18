@@ -714,10 +714,19 @@ config.customActionDelegate = YourCustomActionDelegate()
 
 To customize the time delay between successive in-app messages (default value of 30 seconds), set `IterableConfig.inAppDisplayInterval` to an appropriate value (in seconds).
 
-
 ### Mobile Inbox
 
-As of version 6.2.0, the SDK is able to persist received in-app messages by means of the mobile inbox. An inbox is a piece of UI that displays a list of received in-apps, and allows the user to look at them at their convenience, as well as interact with them and delete them, etc. As an app developer, you are able to not only use it as is (featuring a neutral layout), but also to inherit and extend the provided classes to match and customize it per your app and its usage.
+As of version 6.2.0, the SDK is able to persist received in-app messages by means of the mobile inbox. An inbox is a piece of UI that displays a list of received in-apps, and allows the user to look at them at their convenience, as well as interact with them and delete them, etc. As an app developer, you are able to not only use it as is (featuring a clean, app-neutral layout), but also to inherit and extend the provided classes to match and customize it per your app and its usage.
+
+#### Inbox Customization
+
+The SDK provides ways of customizing the inbox UI to match how you'd like to use it in the app. Depending on how much customization you need, you can go from as little work as typing a name for `cellNibName` on an instance of `IterableInboxViewController`, to creating a new class that inherits `IterableInboxViewController` or `IterableInboxNavigationViewController` depending on your specific UI stack, and overriding the existing methods.
+
+#### Inbox Mode
+
+
+
+#### Events
 
 
 
