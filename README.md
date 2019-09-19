@@ -715,19 +715,31 @@ To customize the time delay between successive in-app messages (default value of
 
 ### Mobile Inbox
 
-As of version 6.2.0, the SDK is able to persist received in-app messages by means of the mobile inbox. An inbox is a piece of UI that displays a list of received in-apps, and allows the user to look at them at their convenience, as well as interact with them and delete them, etc. As an app developer, you are able to not only use it as is (featuring a clean, app-neutral layout), but also to inherit and extend the provided classes to match and customize it per your app and its usage.
+As of version 6.2.0, the SDK is able to persist received in-app messages by means of the mobile inbox. The inbox is a piece of UI that displays a list of received in-apps, and allows the user to look at them at their convenience, as well as interact with them and delete them, etc. As an app developer, you are able to not only use it as is (featuring a clean, app-neutral layout), but also to inherit and extend the provided classes to match and customize it per your app and its usage.
 
-#### Inbox Customization
+#### Changes from the SDK version 6.1.1
 
-The SDK provides ways of customizing the inbox UI to match how you'd like to use it in the app. Depending on how much customization you need, you can go from as little work as typing a name for `cellNibName` on an instance of `IterableInboxViewController`, to creating a new class that inherits `IterableInboxViewController` or `IterableInboxNavigationViewController` depending on your specific UI stack, and overriding the existing methods.
+In terms of other SDK features, nothing regarding mobile inbox requires changes to existing code related to the SDK, however, the SDK may have had other updates and/or deprecations that do.
+
+#### SDK Integration
+
+The instructions for integrating the SDK remain the same as noted above. Mobile Inbox will 
+
+#### Mobile Inbox implementation guide
+
+// Step by step guide on implementing inbox (out of the box version) that includes testing it
+
+#### Mobile Inbox Customization and Options
+
+The SDK provides ways of customizing the inbox UI to match how you'd like to use it in the app. Depending on how much customization you need, you can go from as little work as typing a name for `cellNibName` (and ensuring the existence of the corresponding XIB) on an instance of `IterableInboxViewController`, to creating a new class that inherits `IterableInboxViewController` or `IterableInboxNavigationViewController`, depending on your specific UI stack, and overriding the existing methods.
 
 #### Inbox Mode
 
+`IterableInboxViewController` features two ways to be instantiated. The first, and most likely more common, is the `nav` mode where the instance will be pushed onto the navigation stack. The second, is `popup` mode where the mobile inbox will be presented in a modal fashion.
 
+#### Events and the Events Lifecycle
 
-#### Events
-
-
+// Events lifecycle and how and when they are generated
 
 ### Custom events
 
