@@ -361,9 +361,6 @@ public final class IterableAPI: NSObject {
     
     // MARK: In-App Notifications
     
-    @available(*, unavailable, message: "In-app messages are automatically shown by SDK now. Please check our migration guide here https://github.com/iterable/swift-sdk/#migrating-in-app-messages-from-the-previous-version-of-the-sdk.")
-    public static func spawnInAppNotification(_: ITEActionBlock?) {}
-    
     /**
      Deprecated.
      Tracks an InAppOpen event.
@@ -431,22 +428,6 @@ public final class IterableAPI: NSObject {
     @objc(trackInAppClose:location:source:clickedUrl:)
     public static func track(inAppClose message: IterableInAppMessage, location: InAppLocation, source: InAppCloseSource, clickedUrl: String?) {
         internalImplementation?.trackInAppClose(message, location: location, source: source, clickedUrl: clickedUrl)
-    }
-    
-    /**
-     Tracks an inbox session.
-     - parameter inboxSession:  The inbox session to track. Please see documentation of `IterableInboxSession` for session parameters.
-     */
-    @objc(trackInboxSession:)
-    public static func track(inboxSession: IterableInboxSession) {
-        internalImplementation?.track(inboxSession: inboxSession)
-    }
-    
-    /**
-     Tracks an InAppDelivery event (internal use)
-     */
-    static func track(inAppDelivery message: IterableInAppMessage) {
-        internalImplementation?.trackInAppDelivery(message)
     }
     
     /**

@@ -266,7 +266,7 @@ class InAppParsingTests: XCTestCase {
                                            inboxMetadata: nil,
                                            customPayload: nil)
         
-        IterableAPI.track(inAppDelivery: message)
+        IterableAPI.internalImplementation?.track(inAppDelivery: message)
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }

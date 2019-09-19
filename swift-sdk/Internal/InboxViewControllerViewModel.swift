@@ -180,7 +180,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
                                                 endTotalMessageCount: IterableAPI.inAppManager.getInboxMessages().count,
                                                 endUnreadMessageCount: IterableAPI.inAppManager.getUnreadInboxMessagesCount(),
                                                 impressions: sessionInfo.impressions.map { $0.toIterableInboxImpression() })
-        IterableAPI.track(inboxSession: inboxSession)
+        IterableAPI.internalImplementation?.track(inboxSession: inboxSession)
     }
     
     @objc private func onInboxChanged(notification _: NSNotification) {

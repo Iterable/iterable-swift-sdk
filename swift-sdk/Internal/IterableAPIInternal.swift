@@ -323,7 +323,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: result)
     }
     
-    func trackInAppDelivery(_ message: IterableInAppMessage) {
+    func track(inAppDelivery message: IterableInAppMessage) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppDelivery"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppDelivery"),
                                  forResult: apiClient.track(inAppDelivery: message.messageId,
