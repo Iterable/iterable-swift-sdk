@@ -66,7 +66,10 @@ struct TestUtils {
             validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.inAppLocation.jsonKey)"), value: location.jsonValue as! String, inDictionary: body)
         }
         
-        let deviceInfoKey = "\(contextKey).\(JsonKey.deviceInfo.jsonKey)"
+        validateDeviceInfo(deviceInfoKey: "\(contextKey).\(JsonKey.deviceInfo.jsonKey)", inBody: body)
+    }
+    
+    static func validateDeviceInfo(deviceInfoKey: String, inBody body: [String: Any]) {
         validateMatch(keyPath: KeyPath("\(deviceInfoKey).\(JsonKey.deviceId.jsonKey)"), value: IterableAPI.internalImplementation!.deviceId, inDictionary: body)
         validateMatch(keyPath: KeyPath("\(deviceInfoKey).\(JsonKey.platform.jsonKey)"), value: String.ITBL_PLATFORM_IOS, inDictionary: body)
         validateMatch(keyPath: KeyPath("\(deviceInfoKey).\(JsonKey.appPackageName.jsonKey)"), value: Bundle.main.appPackageName, inDictionary: body)

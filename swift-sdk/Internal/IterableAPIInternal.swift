@@ -316,7 +316,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     func track(inboxSession: IterableInboxSession) {
-        let result = apiClient.track(inboxSession: inboxSession)
+        let result = apiClient.track(inboxSession: inboxSession, deviceMetadata: deviceMetadata)
         
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInboxSession"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInboxSession"),
