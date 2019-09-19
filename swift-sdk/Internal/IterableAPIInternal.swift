@@ -338,11 +338,10 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: apiClient.inAppConsume(messageId: messageId))
     }
     
-    func inAppConsume(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource) {
+    func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .unknown, source: InAppDeleteSource = .unknown) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "inAppConsumeWithSource"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "inAppConsumeWithSource"),
-                                 forResult: apiClient.inAppConsume(inAppMessageContext: InAppMessageContext(message: message, location: location, deviceMetadata: deviceMetadata),
-                                                                   source: source))
+                                 forResult: apiClient.inAppConsume(inAppMessageContext: InAppMessageContext(message: message, location: location, deviceMetadata: deviceMetadata), source: source))
     }
     
     private func disableDevice(forAllUsers allUsers: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
@@ -363,12 +362,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken))
     }
     
-    func showSystemNotification(_ title: String, body: String, button: String?, callbackBlock: ITEActionBlock?) {
-        showSystemNotification(title, body: body, buttonLeft: button, buttonRight: nil, callbackBlock: callbackBlock)
-    }
-    
-    func showSystemNotification(_ title: String, body: String, buttonLeft: String?, buttonRight: String?, callbackBlock: ITEActionBlock?) {
-        InAppDisplayer.showSystemNotification(title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
+    func showSystemNotification(withTitle title: String, body: String, buttonLeft: String? = nil, buttonRight: String? = nil, callbackBlock: ITEActionBlock?) {
+        InAppDisplayer.showSystemNotification(withTitle: title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
     }
     
     func getAndTrackDeeplink(webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {

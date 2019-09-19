@@ -608,7 +608,17 @@ class IterableAPITests: XCTestCase {
             TestUtils.validateElementPresent(withName: "messageId", andValue: messageId, inDictionary: networkSession.getRequestBody())
             expectation1.fulfill()
         }
-        IterableAPI.inAppConsume(messageId: messageId)
+        
+        let message = IterableInAppMessage(messageId: messageId,
+                                           campaignId: "",
+                                           trigger: IterableInAppTrigger(dict: [.ITBL_IN_APP_TRIGGER_TYPE: "never"]),
+                                           createdAt: nil,
+                                           expiresAt: nil,
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
+                                           saveToInbox: true,
+                                           inboxMetadata: nil,
+                                           customPayload: nil)
+        IterableAPI.inAppConsume(message: message)
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     

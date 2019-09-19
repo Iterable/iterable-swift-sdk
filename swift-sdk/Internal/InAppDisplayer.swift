@@ -67,7 +67,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
         return .shown(createResult.futureClickedURL)
     }
     
-    static func showSystemNotification(_ title: String,
+    static func showSystemNotification(withTitle title: String,
                                        body: String,
                                        buttonLeft: String?,
                                        buttonRight: String?,
