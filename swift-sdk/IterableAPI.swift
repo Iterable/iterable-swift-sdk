@@ -510,8 +510,9 @@ public final class IterableAPI: NSObject {
      - parameter webpageURL:      the URL that was clicked
      - parameter callbackBlock:   the callback to send after the webpageURL is called
      */
+    @available(*, deprecated, message: "Please use IterableAPI.handle(universalLink:) method instead.")
     @objc(getAndTrackDeeplink:callbackBlock:) public static func getAndTrack(deeplink webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {
-        internalImplementation?.getAndTrackDeeplink(webpageURL: webpageURL, callbackBlock: callbackBlock)
+        internalImplementation?.getAndTrack(deeplink: webpageURL, callbackBlock: callbackBlock)
     }
     
     /**

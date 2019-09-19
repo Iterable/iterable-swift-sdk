@@ -366,8 +366,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         InAppDisplayer.showSystemNotification(withTitle: title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
     }
     
-    func getAndTrackDeeplink(webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {
-        deeplinkManager.getAndTrackDeeplink(webpageURL: webpageURL, callbackBlock: callbackBlock)
+    func getAndTrack(deeplink: URL, callbackBlock: @escaping ITEActionBlock) {
+        deeplinkManager.getAndTrack(deeplink: deeplink, callbackBlock: callbackBlock)
     }
     
     @discardableResult func handleUniversalLink(_ url: URL) -> Bool {
