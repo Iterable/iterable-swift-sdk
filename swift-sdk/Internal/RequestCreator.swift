@@ -293,7 +293,7 @@ struct RequestCreator {
         }
         
         if let clickedUrl = clickedUrl {
-            body.setValue(for: .url, value: clickedUrl)
+            body.setValue(for: .clickedUrl, value: clickedUrl)
         }
         
         body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMesageContextDictionary())
