@@ -216,7 +216,7 @@ class InAppParsingTests: XCTestCase {
             let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMessageContext(messageId: messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: .inbox, inBody: body)
             TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.closeAction.jsonKey)"), value: "back", inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.url.jsonKey)"), value: "https://somewhere.com", inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.clickedUrl.jsonKey)"), value: "https://somewhere.com", inDictionary: body)
             
             expectation1.fulfill()
         }
