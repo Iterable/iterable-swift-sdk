@@ -45,7 +45,7 @@ protocol ApiClientProtocol: AnyObject {
     
     @discardableResult func inAppConsume(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource) -> Future<SendRequestValue, SendRequestError>
     
-    func track(inboxSession: IterableInboxSession) -> Future<SendRequestValue, SendRequestError>
+    func track(inboxSession: IterableInboxSession, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError>
     
     func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Future<SendRequestValue, SendRequestError>
 }
@@ -137,8 +137,8 @@ class ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppDeliveryRequest(messageId, saveToInbox: saveToInbox, silentInbox: silentInbox, deviceMetadata: deviceMetadata))
     }
     
-    func track(inboxSession: IterableInboxSession) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createTrackInboxSessionRequest(inboxSession: inboxSession))
+    func track(inboxSession: IterableInboxSession, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createTrackInboxSessionRequest(inboxSession: inboxSession, deviceMetadata: deviceMetadata))
     }
     
     func inAppConsume(messageId: String) -> Future<SendRequestValue, SendRequestError> {
