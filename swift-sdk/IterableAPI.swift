@@ -12,7 +12,7 @@ import Foundation
 @objcMembers
 public final class IterableAPI: NSObject {
     // Current SDK Version.
-    static let sdkVersion = "6.2.0-dev1"
+    public static let sdkVersion = "6.2.0-dev1"
     
     // MARK: Initialization
     
@@ -361,47 +361,12 @@ public final class IterableAPI: NSObject {
     
     // MARK: In-App Notifications
     
-    @available(*, unavailable, message: "In-app messages are automatically shown by SDK now. Please check our migration guide here https://github.com/iterable/swift-sdk/#migrating-in-app-messages-from-the-previous-version-of-the-sdk.")
-    public static func spawnInAppNotification(_: ITEActionBlock?) {}
-    
     /**
-     Deprecated. Gets the list of InAppMessages from the server.
-     
-     This is deprecated in SDK version 6.1.0.
-     In-App notifications are automatically shown via `IterableInAppDelegate` methods. The SDK takes care of getting messages automatically.
-     See `IterableAPI.inAppManager.getMessages()` method to get messages already fetched from the server.
-     
-     - parameter count:  the number of messages to fetch
-     */
-    @available(*, deprecated, message: "Use IterableAPI.inAppManager.getMessages() method instead.")
-    @objc(getInAppMessages:) public static func get(inAppMessages count: NSNumber) {
-        internalImplementation?.getInAppMessages(count)
-    }
-    
-    /**
-     Deprecated. Gets the list of InAppMessages with optional additional fields and custom completion blocks
-     
-     This is deprecated in SDK version 6.1.0.
-     In-App notifications are automatically shown via `IterableInAppDelegate` methods. The SDK takes care of getting messages automatically.
-     See `IterableAPI.inAppManager.getMessages()` method to get messages already fetched from the server.
-     
-     - Parameters:
-     - count:  the number of messages to fetch
-     - onSuccess:   OnSuccessHandler to invoke if the get call succeeds
-     - onFailure:   OnFailureHandler to invoke if the get call fails
-     
-     - seeAlso: OnSuccessHandler
-     - seeAlso: OnFailureHandler
-     */
-    @available(*, deprecated, message: "Use IterableAPI.inAppManager.getMessages() method instead.")
-    @objc(getInAppMessages:onSucess:onFailure:) public static func get(inAppMessages count: NSNumber, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        internalImplementation?.getInAppMessages(count, onSuccess: onSuccess, onFailure: onFailure)
-    }
-    
-    /**
+     Deprecated.
      Tracks an InAppOpen event.
      - parameter messageId:       The messageId of the notification
      */
+    @available(*, deprecated, message: "Use IterableAPI.track(inAppOpen:location:) method instead.")
     @objc(trackInAppOpen:) public static func track(inAppOpen messageId: String) {
         internalImplementation?.trackInAppOpen(messageId)
     }
@@ -419,11 +384,13 @@ public final class IterableAPI: NSObject {
     }
     
     /**
+     Deprecated.
      Tracks an InAppClick event
      
      - parameter messageId:       The messageId of the notification
      - parameter buttonURL:     The url of the button that was clicked
      */
+    @available(*, deprecated, message: "Use IterableAPI.track(inAppClick:location:clickedUrl) method instead.")
     @objc(trackInAppClick:buttonURL:) public static func track(inAppClick messageId: String, buttonURL: String) {
         internalImplementation?.trackInAppClick(messageId, clickedUrl: buttonURL)
     }
@@ -464,26 +431,12 @@ public final class IterableAPI: NSObject {
     }
     
     /**
-     Tracks an inbox session.
-     - parameter inboxSession:  The inbox session to track. Please see documentation of `IterableInboxSession` for session parameters.
-     */
-    @objc(trackInboxSession:)
-    public static func track(inboxSession: IterableInboxSession) {
-        internalImplementation?.track(inboxSession: inboxSession)
-    }
-    
-    /**
-     Tracks an InAppDelivery event (internal use)
-     */
-    static func track(inAppDelivery message: IterableInAppMessage) {
-        internalImplementation?.trackInAppDelivery(message)
-    }
-    
-    /**
+     Deprecated.
      Consumes the notification and removes it from the list of inAppMessages
      
      - parameter messageId:       The messageId of the notification
      */
+    @available(*, deprecated, message: "Use IterableAPI.inAppConsume(message:location:source:) method instead.")
     @objc(inAppConsume:) public static func inAppConsume(messageId: String) {
         internalImplementation?.inAppConsume(messageId)
     }
@@ -495,7 +448,7 @@ public final class IterableAPI: NSObject {
      - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
      - parameter source:        The source of deletion `.inboxSwipe' or `.deleteButton`. It should be `.unknown` if the deletion is not user initiated.
      */
-    @objc(inAppConsume:location:source:) public static func inAppConsume(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource) {
+    @objc(inAppConsume:location:source:) public static func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .unknown, source: InAppDeleteSource = .unknown) {
         internalImplementation?.inAppConsume(message: message, location: location, source: source)
     }
     
@@ -510,8 +463,9 @@ public final class IterableAPI: NSObject {
      
      - remark:            passes the string of the button clicked to the callbackBlock
      */
+    @available(*, deprecated, message: "Please use UIAlertController to show system notifiation.")
     public static func showSystemNotification(withTitle title: String, body: String, button: String?, callbackBlock: ITEActionBlock?) {
-        internalImplementation?.showSystemNotification(title, body: body, button: button, callbackBlock: callbackBlock)
+        internalImplementation?.showSystemNotification(withTitle: title, body: body, buttonLeft: button, callbackBlock: callbackBlock)
     }
     
     /**
@@ -526,8 +480,9 @@ public final class IterableAPI: NSObject {
      
      - remark:            passes the string of the button clicked to the callbackBlock
      */
+    @available(*, deprecated, message: "Please use UIAlertController to show system notifiation.")
     public static func showSystemNotification(withTitle title: String, body: String, buttonLeft: String?, buttonRight: String?, callbackBlock: ITEActionBlock?) {
-        internalImplementation?.showSystemNotification(title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
+        internalImplementation?.showSystemNotification(withTitle: title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
     }
     
     /**
@@ -536,8 +491,9 @@ public final class IterableAPI: NSObject {
      - parameter webpageURL:      the URL that was clicked
      - parameter callbackBlock:   the callback to send after the webpageURL is called
      */
+    @available(*, deprecated, message: "Please use IterableAPI.handle(universalLink:) method instead.")
     @objc(getAndTrackDeeplink:callbackBlock:) public static func getAndTrack(deeplink webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {
-        internalImplementation?.getAndTrackDeeplink(webpageURL: webpageURL, callbackBlock: callbackBlock)
+        internalImplementation?.getAndTrack(deeplink: webpageURL, callbackBlock: callbackBlock)
     }
     
     /**

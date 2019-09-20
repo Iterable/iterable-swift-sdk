@@ -316,14 +316,14 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     func track(inboxSession: IterableInboxSession) {
-        let result = apiClient.track(inboxSession: inboxSession)
+        let result = apiClient.track(inboxSession: inboxSession, deviceMetadata: deviceMetadata)
         
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInboxSession"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInboxSession"),
                                  forResult: result)
     }
     
-    func trackInAppDelivery(_ message: IterableInAppMessage) {
+    func track(inAppDelivery message: IterableInAppMessage) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppDelivery"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppDelivery"),
                                  forResult: apiClient.track(inAppDelivery: message.messageId,
@@ -338,11 +338,10 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: apiClient.inAppConsume(messageId: messageId))
     }
     
-    func inAppConsume(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource) {
+    func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .unknown, source: InAppDeleteSource = .unknown) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "inAppConsumeWithSource"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "inAppConsumeWithSource"),
-                                 forResult: apiClient.inAppConsume(inAppMessageContext: InAppMessageContext(message: message, location: location, deviceMetadata: deviceMetadata),
-                                                                   source: source))
+                                 forResult: apiClient.inAppConsume(inAppMessageContext: InAppMessageContext(message: message, location: location, deviceMetadata: deviceMetadata), source: source))
     }
     
     private func disableDevice(forAllUsers allUsers: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
@@ -363,16 +362,12 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken))
     }
     
-    func showSystemNotification(_ title: String, body: String, button: String?, callbackBlock: ITEActionBlock?) {
-        showSystemNotification(title, body: body, buttonLeft: button, buttonRight: nil, callbackBlock: callbackBlock)
+    func showSystemNotification(withTitle title: String, body: String, buttonLeft: String? = nil, buttonRight: String? = nil, callbackBlock: ITEActionBlock?) {
+        InAppDisplayer.showSystemNotification(withTitle: title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
     }
     
-    func showSystemNotification(_ title: String, body: String, buttonLeft: String?, buttonRight: String?, callbackBlock: ITEActionBlock?) {
-        InAppDisplayer.showSystemNotification(title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
-    }
-    
-    func getAndTrackDeeplink(webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {
-        deeplinkManager.getAndTrackDeeplink(webpageURL: webpageURL, callbackBlock: callbackBlock)
+    func getAndTrack(deeplink: URL, callbackBlock: @escaping ITEActionBlock) {
+        deeplinkManager.getAndTrack(deeplink: deeplink, callbackBlock: callbackBlock)
     }
     
     @discardableResult func handleUniversalLink(_ url: URL) -> Bool {

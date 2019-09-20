@@ -43,7 +43,7 @@ class ViewController: UIViewController {
     @IBAction func showSystemNotificationTap(_: UIButton) {
         ITBInfo()
         
-        IterableAPI.showSystemNotification(withTitle: "Zee Title", body: "Zee Body", buttonLeft: "Left Button", buttonRight: "Right Button") { str in
+        IterableAPI.internalImplementation?.showSystemNotification(withTitle: "Zee Title", body: "Zee Body", buttonLeft: "Left Button", buttonRight: "Right Button") { str in
             self.statusLbl.text = str
         }
     }
@@ -51,7 +51,7 @@ class ViewController: UIViewController {
     @IBAction func showSystemNotification2Tap(_: UIButton) {
         ITBInfo()
         
-        IterableAPI.showSystemNotification(withTitle: "Zee Title", body: "Zee Body", button: "Zee Button") { str in
+        IterableAPI.internalImplementation?.showSystemNotification(withTitle: "Zee Title", body: "Zee Body", buttonLeft: "Zee Button") { str in
             self.statusLbl.text = str
         }
     }

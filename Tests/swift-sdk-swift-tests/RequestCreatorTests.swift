@@ -22,7 +22,8 @@ class RequestCreatorTests: XCTestCase {
                                                 endTotalMessageCount: 10,
                                                 endUnreadMessageCount: 3,
                                                 impressions: impressions)
-        let urlRequest = convertToUrlRequest(createRequestCreator().createTrackInboxSessionRequest(inboxSession: inboxSession))
+        let deviceMetadata = IterableAPI.internalImplementation!.deviceMetadata
+        let urlRequest = convertToUrlRequest(createRequestCreator().createTrackInboxSessionRequest(inboxSession: inboxSession, deviceMetadata: deviceMetadata))
         TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_TRACK_INBOX_SESSION)
         let body = urlRequest.bodyDict
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.email), value: auth.email, inDictionary: body)
@@ -32,6 +33,8 @@ class RequestCreatorTests: XCTestCase {
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.startUnreadMessageCount), value: inboxSession.startUnreadMessageCount, inDictionary: body)
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.endTotalMessageCount), value: inboxSession.endTotalMessageCount, inDictionary: body)
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.endUnreadMessageCount), value: inboxSession.endUnreadMessageCount, inDictionary: body)
+        
+        TestUtils.validateDeviceInfo(deviceInfoKey: JsonKey.deviceInfo.jsonKey, inBody: body)
         
         validateImpressions(impressions, inBody: body)
     }

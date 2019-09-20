@@ -293,7 +293,7 @@ struct RequestCreator {
         }
         
         if let clickedUrl = clickedUrl {
-            body.setValue(for: .url, value: clickedUrl)
+            body.setValue(for: .clickedUrl, value: clickedUrl)
         }
         
         body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMesageContextDictionary())
@@ -338,7 +338,7 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: .ITBL_PATH_INAPP_CONSUME, body: body)))
     }
     
-    func createTrackInboxSessionRequest(inboxSession: IterableInboxSession) -> Result<IterableRequest, IterableError> {
+    func createTrackInboxSessionRequest(inboxSession: IterableInboxSession, deviceMetadata: DeviceMetadata) -> Result<IterableRequest, IterableError> {
         guard let sessionStartTime = inboxSession.sessionStartTime else {
             return .failure(IterableError.general(description: "expecting session start time"))
         }
@@ -357,6 +357,8 @@ struct RequestCreator {
         body.setValue(for: .startUnreadMessageCount, value: inboxSession.startUnreadMessageCount)
         body.setValue(for: .endUnreadMessageCount, value: inboxSession.endUnreadMessageCount)
         body.setValue(for: .impressions, value: inboxSession.impressions.compactMap { $0.asDictionary() })
+        
+        body.setValue(for: .deviceInfo, value: translateDeviceMetadata(metadata: deviceMetadata))
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INBOX_SESSION, body: body)))
     }

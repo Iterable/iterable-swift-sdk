@@ -152,7 +152,7 @@ struct MessagesObtainedHandler {
                 
                 messagesMap[message.messageId] = message
                 
-                IterableAPI.track(inAppDelivery: message)
+                IterableAPI.internalImplementation?.track(inAppDelivery: message)
             }
         }
         

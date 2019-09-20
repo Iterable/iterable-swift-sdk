@@ -35,7 +35,9 @@ class DeeplinkTests: XCTestCase {
         
         setupRedirectStubResponse(location: redirectLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
         
-        IterableAPI.getAndTrack(deeplink: URL(string: iterableRewriteURL)!) { redirectUrl in
+        IterableAPI.handle(universalLink: URL(string: iterableRewriteURL)!)
+        
+        IterableAPI.internalImplementation?.getAndTrack(deeplink: URL(string: iterableRewriteURL)!) { redirectUrl in
             XCTAssertEqual(redirectUrl, redirectLocation)
             XCTAssertTrue(Thread.isMainThread)
             expectation1.fulfill()
@@ -49,7 +51,7 @@ class DeeplinkTests: XCTestCase {
         
         setupStubResponse()
         
-        IterableAPI.getAndTrack(deeplink: URL(string: iterableNoRewriteURL)!) { redirectUrl in
+        IterableAPI.internalImplementation?.getAndTrack(deeplink: URL(string: iterableNoRewriteURL)!) { redirectUrl in
             XCTAssertEqual(redirectUrl, self.iterableNoRewriteURL)
             XCTAssertTrue(Thread.isMainThread)
             expectation1.fulfill()
@@ -94,7 +96,7 @@ class DeeplinkTests: XCTestCase {
         
         setupRedirectStubResponse(location: redirectLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
         
-        IterableAPI.getAndTrack(deeplink: URL(string: iterableRewriteURL)!) { _ in
+        IterableAPI.internalImplementation?.getAndTrack(deeplink: URL(string: iterableRewriteURL)!) { _ in
             XCTAssertEqual(IterableAPI.attributionInfo?.campaignId, NSNumber(value: campaignId))
             XCTAssertEqual(IterableAPI.attributionInfo?.templateId, NSNumber(value: templateId))
             XCTAssertEqual(IterableAPI.attributionInfo?.messageId, messageId)
@@ -111,7 +113,7 @@ class DeeplinkTests: XCTestCase {
         
         setupStubResponse()
         
-        IterableAPI.getAndTrack(deeplink: URL(string: redirectRequest)!) { redirectUrl in
+        IterableAPI.internalImplementation?.getAndTrack(deeplink: URL(string: redirectRequest)!) { redirectUrl in
             XCTAssertNotEqual(redirectUrl, self.exampleUrl)
             XCTAssertEqual(redirectUrl, self.redirectRequest)
             expectation1.fulfill()
