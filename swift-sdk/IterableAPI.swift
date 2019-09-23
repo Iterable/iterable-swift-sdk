@@ -379,7 +379,7 @@ public final class IterableAPI: NSObject {
      - parameter message:       The Iterable in-app message
      - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
      */
-    @objc(trackInAppOpen:location:) public static func track(inAppOpen message: IterableInAppMessage, location: InAppLocation = .unknown) {
+    @objc(trackInAppOpen:location:) public static func track(inAppOpen message: IterableInAppMessage, location: InAppLocation = .inApp) {
         internalImplementation?.trackInAppOpen(message, location: location)
     }
     
@@ -405,7 +405,7 @@ public final class IterableAPI: NSObject {
      - parameter clickedUrl:     The url of the button or link that was clicked
      */
     @objc(trackInAppClick:location:clickedUrl:)
-    public static func track(inAppClick message: IterableInAppMessage, location: InAppLocation = .unknown, clickedUrl: String) {
+    public static func track(inAppClick message: IterableInAppMessage, location: InAppLocation = .inApp, clickedUrl: String) {
         internalImplementation?.trackInAppClick(message, location: location, clickedUrl: clickedUrl)
     }
     
@@ -448,7 +448,7 @@ public final class IterableAPI: NSObject {
      - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
      - parameter source:        The source of deletion `.inboxSwipe' or `.deleteButton`. It should be `.unknown` if the deletion is not user initiated.
      */
-    @objc(inAppConsume:location:source:) public static func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .unknown, source: InAppDeleteSource = .unknown) {
+    @objc(inAppConsume:location:source:) public static func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource = .unknown) {
         internalImplementation?.inAppConsume(message: message, location: location, source: source)
     }
     

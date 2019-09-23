@@ -161,7 +161,7 @@ class InAppParsingTests: XCTestCase {
                                path: .ITBL_PATH_TRACK_INAPP_CLICK,
                                queryParams: [])
             let body = networkSession.getRequestBody() as! [String: Any]
-            TestUtils.validateMessageContext(messageId: message.messageId, userId: InAppParsingTests.userId, saveToInbox: false, silentInbox: false, location: .unknown, inBody: body)
+            TestUtils.validateMessageContext(messageId: message.messageId, userId: InAppParsingTests.userId, saveToInbox: false, silentInbox: false, location: .inApp, inBody: body)
             TestUtils.validateMatch(keyPath: KeyPath("clickedUrl"), value: buttonUrl, inDictionary: body)
             expectation1.fulfill()
         }
@@ -252,7 +252,7 @@ class InAppParsingTests: XCTestCase {
                                queryParams: [])
             
             let body = networkSession.getRequestBody() as! [String: Any]
-            TestUtils.validateMessageContext(messageId: messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: .unknown, inBody: body)
+            TestUtils.validateMessageContext(messageId: messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: .other, inBody: body)
             expectation1.fulfill()
         }
         

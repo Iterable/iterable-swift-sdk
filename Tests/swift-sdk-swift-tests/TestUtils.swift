@@ -62,9 +62,7 @@ struct TestUtils {
         let contextKey = "\(JsonKey.inAppMessageContext.jsonKey)"
         validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.saveToInbox.jsonKey)"), value: saveToInbox, inDictionary: body)
         validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.silentInbox.jsonKey)"), value: silentInbox, inDictionary: body)
-        if location != .unknown {
-            validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.inAppLocation.jsonKey)"), value: location.jsonValue as! String, inDictionary: body)
-        }
+        validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.inAppLocation.jsonKey)"), value: location.jsonValue as! String, inDictionary: body)
         
         validateDeviceInfo(deviceInfoKey: "\(contextKey).\(JsonKey.deviceInfo.jsonKey)", inBody: body)
     }

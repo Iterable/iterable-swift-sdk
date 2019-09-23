@@ -54,33 +54,40 @@ class InAppFetcher: InAppFetcherProtocol {
 }
 
 struct InAppMessageContext {
-    let message: IterableInAppMessage
+    let messageId: String
+    let saveToInbox: Bool
+    let silentInbox: Bool
     let location: InAppLocation
     let deviceMetadata: DeviceMetadata
+    
+    static func from(message: IterableInAppMessage, location: InAppLocation, deviceMetadata: DeviceMetadata) -> InAppMessageContext {
+        return InAppMessageContext(messageId: message.messageId,
+                                   saveToInbox: message.saveToInbox,
+                                   silentInbox: message.silentInbox,
+                                   location: location,
+                                   deviceMetadata: deviceMetadata)
+    }
+    
+    // For backward compatibility, assume .inApp
+    static func from(messageId: String, deviceMetadata: DeviceMetadata) -> InAppMessageContext {
+        return InAppMessageContext(messageId: messageId,
+                                   saveToInbox: false,
+                                   silentInbox: false,
+                                   location: .inApp,
+                                   deviceMetadata: deviceMetadata)
+    }
     
     func toMesageContextDictionary() -> [AnyHashable: Any] {
         var context = [AnyHashable: Any]()
         
-        context.setValue(for: .saveToInbox, value: message.saveToInbox)
+        context.setValue(for: .saveToInbox, value: saveToInbox)
         
-        context.setValue(for: .silentInbox, value: message.saveToInbox && message.trigger.type == .never)
+        context.setValue(for: .silentInbox, value: silentInbox)
         
-        if location != .unknown {
-            context.setValue(for: .inAppLocation, value: location)
-        }
+        context.setValue(for: .inAppLocation, value: location)
         
-        context.setValue(for: .deviceInfo, value: InAppMessageContext.translateDeviceMetadata(metadata: deviceMetadata))
+        context.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
         return context
-    }
-    
-    private static func translateDeviceMetadata(metadata: DeviceMetadata) -> [AnyHashable: Any] {
-        var dict = [AnyHashable: Any]()
-        
-        dict.setValue(for: .deviceId, value: metadata.deviceId)
-        dict.setValue(for: .platform, value: metadata.platform)
-        dict.setValue(for: .appPackageName, value: metadata.appPackageName)
-        
-        return dict
     }
 }

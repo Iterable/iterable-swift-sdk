@@ -31,7 +31,7 @@ public extension Dictionary where Key == AnyHashable, Value == Any {
         self[key.jsonKey] = value.jsonValue
     }
     
-    mutating func setValue(for key: JsonKey, value: Any) {
+    mutating func setValue(for key: JsonKey, value: Any?) {
         self[key.jsonKey] = value
     }
 }
