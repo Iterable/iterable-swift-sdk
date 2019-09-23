@@ -38,7 +38,7 @@ public protocol IterableInAppManagerProtocol {
     
     /// - parameter message: The message to remove.
     /// - parameter location: The location from where this message was shown. `inbox` or `inApp`.
-    /// - parameter source: The source of deletion `.inboxSwipe' or `.deleteButton`. It should be `.unknown` if the deletion is not user initiated.
+    /// - parameter source: The source of deletion `.inboxSwipe' or `.deleteButton`. It should be `.other` if the deletion is not user initiated.
     @objc(removeMessage:location:source:) func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource)
     
     /// - parameter read: Whether this inbox message was read

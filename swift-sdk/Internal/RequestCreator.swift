@@ -330,9 +330,7 @@ struct RequestCreator {
         
         body[.ITBL_KEY_MESSAGE_ID] = inAppMessageContext.messageId
         
-        if source != .unknown {
-            body.setValue(for: .deleteAction, value: source)
-        }
+        body.setValue(for: .deleteAction, value: source)
         
         body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMesageContextDictionary())
         

@@ -183,6 +183,7 @@ public protocol JsonKeyRepresentable {
 
 public enum JsonKey: String, JsonKeyRepresentable {
     case email
+    case userId
     
     case inboxMetadata
     case inboxTitle = "title"
@@ -193,6 +194,8 @@ public enum JsonKey: String, JsonKeyRepresentable {
     case inboxCreatedAt = "createdAt"
     
     case inAppMessageContext = "messageContext"
+    
+    case messageId
     
     case saveToInbox
     case silentInbox
@@ -262,7 +265,7 @@ public protocol JsonValueRepresentable {
 @objc public enum InAppDeleteSource: Int, JsonValueRepresentable {
     case inboxSwipe
     case deleteButton
-    case unknown
+    case other
     
     public var jsonValue: Any {
         switch self {
@@ -270,8 +273,8 @@ public protocol JsonValueRepresentable {
             return "inbox-swipe"
         case .deleteButton:
             return "delete-button"
-        case .unknown:
-            return "unknown"
+        case .other:
+            return "other"
         }
     }
 }

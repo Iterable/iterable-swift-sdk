@@ -139,10 +139,10 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     func remove(message: IterableInAppMessage) {
         ITBInfo()
         
-        remove(message: message, location: .inApp, source: .unknown)
+        remove(message: message, location: .inApp, source: .other)
     }
     
-    func remove(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource = .unknown) {
+    func remove(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource = .other) {
         ITBInfo()
         
         removePrivate(message: message, location: location, source: source)
