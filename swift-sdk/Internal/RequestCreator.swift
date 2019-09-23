@@ -292,9 +292,7 @@ struct RequestCreator {
         
         body[.ITBL_KEY_MESSAGE_ID] = inAppMessageContext.messageId
         
-        if source != .unknown {
-            body.setValue(for: .closeAction, value: source)
-        }
+        body.setValue(for: .closeAction, value: source)
         
         if let clickedUrl = clickedUrl {
             body.setValue(for: .clickedUrl, value: clickedUrl)

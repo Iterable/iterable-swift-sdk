@@ -245,7 +245,7 @@ public protocol JsonValueRepresentable {
 @objc public enum InAppCloseSource: Int, JsonValueRepresentable {
     case back
     case link
-    case unknown
+    case other
     
     public var jsonValue: Any {
         switch self {
@@ -253,8 +253,8 @@ public protocol JsonValueRepresentable {
             return "back"
         case .link:
             return "link"
-        case .unknown:
-            return "unknown"
+        case .other:
+            return "other"
         }
     }
 }
