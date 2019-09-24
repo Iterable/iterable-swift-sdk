@@ -27,6 +27,63 @@ class IterableAPITests: XCTestCase {
         XCTAssertEqual(IterableAPI.internalImplementation?.apiKey, IterableAPITests.apiKey)
     }
     
+    func testInitializeCheckEndpoint() {
+        let expectation1 = XCTestExpectation(description: "links endpoint called")
+        let expectation2 = XCTestExpectation(description: "api endpoint called")
+        
+        let mockNetworkSession = MockNetworkSession()
+        mockNetworkSession.requestCallback = { urlRequest in
+            if let url = urlRequest.url {
+                if url.absoluteString.starts(with: Endpoint.links) {
+                    expectation1.fulfill()
+                } else if url.absoluteString.starts(with: Endpoint.api) {
+                    expectation2.fulfill()
+                }
+            }
+        }
+        
+        let config = IterableConfig()
+        config.checkForDeferredDeeplink = true
+        IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: mockNetworkSession)
+        IterableAPI.email = IterableAPITests.email
+        IterableAPI.track(event: "Some Event")
+        
+        XCTAssertEqual(IterableAPI.internalImplementation?.apiKey, IterableAPITests.apiKey)
+        
+        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
+    }
+    
+    func testInitializeWithNewEndpoint() {
+        let expectation1 = XCTestExpectation(description: "new links endpoint called")
+        let expectation2 = XCTestExpectation(description: "new api endpoint called")
+        
+        let newApiEndpoint = "https://test.iterable.com/api/"
+        let newLinksEndpoint = "https://links.test.iterable.com/"
+        
+        let mockNetworkSession = MockNetworkSession()
+        mockNetworkSession.requestCallback = { urlRequest in
+            if let url = urlRequest.url {
+                if url.absoluteString.starts(with: newLinksEndpoint) {
+                    expectation1.fulfill()
+                } else if url.absoluteString.starts(with: newApiEndpoint) {
+                    expectation2.fulfill()
+                }
+            }
+        }
+        
+        let config = IterableConfig()
+        config.apiEndpoint = newApiEndpoint
+        config.linksEndpoint = newLinksEndpoint
+        config.checkForDeferredDeeplink = true
+        IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: mockNetworkSession)
+        IterableAPI.email = IterableAPITests.email
+        IterableAPI.track(event: "Some Event")
+        
+        XCTAssertEqual(IterableAPI.internalImplementation?.apiKey, IterableAPITests.apiKey)
+        
+        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
+    }
+    
     func testTrackEventWithNoEmailOrUser() {
         let eventName = "MyCustomEvent"
         let networkSession = MockNetworkSession(statusCode: 200)

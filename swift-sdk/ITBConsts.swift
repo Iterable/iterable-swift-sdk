@@ -7,6 +7,11 @@
 import Foundation
 
 // Iterable API Endpoints
+enum Endpoint {
+    static let api = String.ITBL_ENDPOINT_API
+    static let links = String.ITBL_ENDPOINT_LINKS
+}
+
 public extension String {
     static let ITBL_API_PATH = "/api/"
     static let ITBL_ENDPOINT_API = apiHostname + ITBL_API_PATH
