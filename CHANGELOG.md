@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.1.2
+#### Fixed
+- Fixed a bug in token to hex conversion code.
+
 ## 6.1.1
 #### Changed
 - Use WKWebView instead of deprecated class UIWebView.
