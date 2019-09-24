@@ -35,18 +35,7 @@ public extension Bundle {
 }
 
 public extension Data {
-    //from: https://stackoverflow.com/questions/39075043/how-to-convert-data-to-hex-string-in-swift
     func hexString() -> String {
-        let digits = Array("01234567890abcdef".utf16)
-        
-        var chars: [UniChar] = []
-        chars.reserveCapacity(count * 2)
-        
-        for byte in self {
-            chars.append(digits[Int(byte / 16)])
-            chars.append(digits[Int(byte % 16)])
-        }
-        
-        return String(utf16CodeUnits: chars, count: chars.count)
+        return self.map { String(format: "%02.2hhx", $0) }.joined()
     }
 }
