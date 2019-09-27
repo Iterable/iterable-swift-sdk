@@ -132,7 +132,7 @@ class IterableInAppHTMLViewController: UIViewController {
         }
     }
     
-    private let viewportMeta = "<meta name=\"viewport\" content=\"width=device-width\">"
+    private let viewportMeta = "<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"
     private let htmlString: String
     private var insetPadding: UIEdgeInsets = UIEdgeInsets.zero
     private var customBlockCallback: ITBURLCallback?
