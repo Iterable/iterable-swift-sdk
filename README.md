@@ -717,10 +717,7 @@ To customize the time delay between successive in-app messages (default value of
 
 As of version 6.2.0, the SDK is able to persist received in-app messages by means of the mobile inbox. The inbox is a piece of UI that displays a list of received in-apps, and allows the user to look at them at their convenience, as well as interact with them and delete them, etc. As an app developer, you are able to not only use it as is (featuring a clean, app-neutral layout), but also to inherit and extend the provided classes to match and customize it per your app and its usage.
 
-
 ![Linking](images/mobile-inbox.png)
-
-
 
 #### Changes from the SDK version 6.1.2
 
@@ -730,7 +727,7 @@ Now you have the option of deciding whether to persist an in-app message in the 
 
 You need to choose `Show in inbox` radio option in your in-app template for the in-app to show up in your mobile inbox.
 
-The instructions for integrating the SDK remain the same as noted above. With the release of SDK version 6.2.0 you will get out-of-the-box support for mobile inbox. You can customize the default behavior as noted below.
+The instructions for integrating the SDK remain the same as noted above. With the release of SDK version 6.2.0 you will get out-of-the-box support for mobile inbox without writing any code. You can further customize the default behavior as noted below.
 
 
 #### Mobile Inbox implementation guide
@@ -751,7 +748,7 @@ present(inboxViewController, animated: true)
 ```
 
 
-#### Mobile Inbox Customization and Options
+#### Mobile Inbox Customization Options
 
 The SDK provides ways of customizing the inbox UI to match how you'd like to use it in the app. Depending on how much customization you need, you can go from as little work as typing a name for `cellNibName` (and ensuring the existence of the corresponding XIB) on an instance of `IterableInboxNavigationViewController`, to creating a new class that inherits `IterableInboxViewController` or `IterableInboxNavigationViewController`, depending on your specific UI stack, and overriding the existing methods.
 
@@ -762,15 +759,15 @@ The SDK provides ways of customizing the inbox UI to match how you'd like to use
 
 ##### cellNibName
 
-You can completely change the look of mobile inbox by creating your own `UITableViewCell` XIB file in Storyboard.  Set the custom class of this XIB to be `IterableInboxCell`. You can then set the `cellNibName` property of `IterableInboxNavigationViewController` to the name of your newly created XIB file name.
+You can completely change the look of mobile inbox by creating your own `UITableViewCell` XIB file in Storyboard.  Set the custom class of this XIB to be `IterableInboxCell` and connect the outlets. You can then set the `cellNibName` property of `IterableInboxNavigationViewController` to the name of your newly created XIB file name.
 
 ##### navTitle
 
-You can set the property `navTitle` in `IterableInboxNavigationViewController` to set the title of mobile inbox navigation item.
+You can set the property `navTitle` in `IterableInboxNavigationViewController` to set the title of mobile inbox. We recommend setting it to a value like 'Inbox'.
 
 #### Mobile inbox events and the events lifecycle
 
-Inbox messages are in-app messages which are delivered to mobile inbox. So the events that apply to in-app messages also apply to inbox messages.
+Inbox messages are in-app messages that are delivered to mobile inbox. So the events that apply to in-app messages also apply to inbox messages.
 
 ##### In App Send
 This event is triggered when an in-app is sent to a user.
@@ -813,7 +810,7 @@ This event is triggered when the user taps on a link or button in an in-app mess
 
 Important event properties
 
-- `createdAt` - when the in-app was sent
+- `createdAt` - when the in-app was sentit
 - `campaignId`- the in-app campaign id
 - `clickedUrl` - the url that was tapped.
 
@@ -824,7 +821,7 @@ Important event properties
 
 - `createdAt` - when the in-app was closed
 - `campaignId`- the in-app campaign id
-- `closeAction` - it will be 'link' if the message was closed due to clicking a link. It will be `back` if the message was closed due to tapping on back button.
+- `closeAction` - it will be `link` if the message was closed due to clicking a link. It will be `back` if the message was closed due to tapping on back button.
 
 ##### In App Delete 
 This event is triggered when the user deletes an inbox message by swiping left to delete in mobile inbox or when tapping on 'Delete' button while viewing the inbox message.
