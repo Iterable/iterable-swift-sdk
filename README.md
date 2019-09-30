@@ -772,16 +772,16 @@ This event is triggered when an in-app is sent to a user.
 
 Important event properties
 
-`createdAt` - when the in-app was sent
-`campaignId`- the in-app campaign id
+- `createdAt` - when the in-app was sent
+- `campaignId`- the in-app campaign id
 
 ##### In App Delivery
 This event is triggered when an in-app is received by user on their device.
 
 Important event properties
 
-`createdAt` - when the in-app was received by the client
-`campaignId`- the in-app campaign id
+- `createdAt` - when the in-app was received by the client
+- `campaignId`- the in-app campaign id
 
 
 ##### Inbox Message Impression
@@ -789,18 +789,18 @@ This event is triggered when an inbox message is shown in mobile inbox. An impre
 
 Important event properties
 
-`createdAt` - when the in-app was sent
-`campaignId`- the in-app campaign id
-`impressionCount` - how many times the message was in the visible viewport
-`totalDuration` - the total duration the inbox message was shown in mobile inbox
+- `createdAt` - when the in-app was sent
+- `campaignId`- the in-app campaign id
+- `impressionCount` - how many times the message was in the visible viewport
+- `totalDuration` - the total duration the inbox message was shown in mobile inbox
 
 ##### In App Open
 This event is triggered when the user taps on a message in their inbox.
 
 Important event properties
 
-`createdAt` - when the in-app was opened
-`campaignId`- the in-app campaign id
+- `createdAt` - when the in-app was opened
+- `campaignId`- the in-app campaign id
 
 
 ##### In App Click
@@ -808,37 +808,37 @@ This event is triggered when the user taps on a link or button in an in-app mess
 
 Important event properties
 
-`createdAt` - when the in-app was sent
-`campaignId`- the in-app campaign id
-`clickedUrl` - the url that was tapped.
+- `createdAt` - when the in-app was sent
+- `campaignId`- the in-app campaign id
+- `clickedUrl` - the url that was tapped.
 
 ##### In App Close
 This event is triggered when the user closes an inbox message by either tapping on 'Close' button or 'Back' button in the navigation controller.
 
 Important event properties
 
-`createdAt` - when the in-app was closed
-`campaignId`- the in-app campaign id
-`closeAction` - it will be 'link' if the message was closed due to clicking a link. It will be `back` if the message was closed due to tapping on back button.
+- `createdAt` - when the in-app was closed
+- `campaignId`- the in-app campaign id
+- `closeAction` - it will be 'link' if the message was closed due to clicking a link. It will be `back` if the message was closed due to tapping on back button.
 
 ##### In App Delete 
 This event is triggered when the user deletes an inbox message by swiping left to delete in mobile inbox or when tapping on 'Delete' button while viewing the inbox message.
 
 Important event properties
 
-`createdAt` - when the in-app was deleted
-`campaignId`- the in-app campaign id
-`deleteAction` - it will be `inbox-swipe` if the delete happened as a result of swiping left on the message in mobile inbox. It will be `delete-button` if the delete happened because 'Delete' button was tapped.
+- `createdAt` - when the in-app was deleted
+- `campaignId`- the in-app campaign id
+- `deleteAction` - it will be `inbox-swipe` if the delete happened as a result of swiping left on the message in mobile inbox. It will be `delete-button` if the delete happened because 'Delete' button was tapped.
 
 ##### Inbox Session
 This event captures an 'inbox session'. An inbox session starts when mobile inbox is shown to the user. An inbox session ends when the user navigates to another part of the application. Please note that inbox session does not end when the user views an inbox message.
 
 Important event properties
 
-`campaignId`- the in-app campaign id
-`inboxSessionStart` - when the session started
-`inboxSessionEnd` - when the session ended
-`uniqueImpressionCount` - how many unique inbox messages were displayed in the viewport
+- `campaignId`- the in-app campaign id
+- `inboxSessionStart` - when the session started
+- `inboxSessionEnd` - when the session ended
+- `uniqueImpressionCount` - how many unique inbox messages were displayed in the viewport
 
 
 ### Custom events
