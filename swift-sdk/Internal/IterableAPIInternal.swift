@@ -291,7 +291,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     func trackInAppOpen(_ message: IterableInAppMessage, location: InAppLocation) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppOpen"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"),
-                                 forResult: apiClient.track(inAppOpen: InAppMessageContext(message: message, location: location, deviceMetadata: deviceMetadata)))
+                                 forResult: apiClient.track(inAppOpen: InAppMessageContext.from(message: message, location: location, deviceMetadata: deviceMetadata)))
     }
     
     func trackInAppClick(_ messageId: String, clickedUrl: String) {
@@ -300,14 +300,14 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: apiClient.track(inAppClick: messageId, clickedUrl: clickedUrl, deviceMetadata: deviceMetadata))
     }
     
-    func trackInAppClick(_ message: IterableInAppMessage, location: InAppLocation = .unknown, clickedUrl: String) {
+    func trackInAppClick(_ message: IterableInAppMessage, location: InAppLocation = .inApp, clickedUrl: String) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"),
-                                 forResult: apiClient.track(inAppClick: InAppMessageContext(message: message, location: location, deviceMetadata: deviceMetadata), clickedUrl: clickedUrl))
+                                 forResult: apiClient.track(inAppClick: InAppMessageContext.from(message: message, location: location, deviceMetadata: deviceMetadata), clickedUrl: clickedUrl))
     }
     
-    func trackInAppClose(_ message: IterableInAppMessage, location: InAppLocation = .unknown, source: InAppCloseSource = .unknown, clickedUrl: String? = nil) {
-        let result = apiClient.track(inAppClose: InAppMessageContext(message: message, location: location, deviceMetadata: deviceMetadata),
+    func trackInAppClose(_ message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppCloseSource = .other, clickedUrl: String? = nil) {
+        let result = apiClient.track(inAppClose: InAppMessageContext.from(message: message, location: location, deviceMetadata: deviceMetadata),
                                      source: source,
                                      clickedUrl: clickedUrl)
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClose"),
@@ -326,10 +326,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     func track(inAppDelivery message: IterableInAppMessage) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppDelivery"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppDelivery"),
-                                 forResult: apiClient.track(inAppDelivery: message.messageId,
-                                                            saveToInbox: message.saveToInbox,
-                                                            silentInbox: message.saveToInbox && message.trigger.type == .never,
-                                                            deviceMetadata: deviceMetadata))
+                                 forResult: apiClient.track(inAppDelivery: InAppMessageContext.from(message: message, location: .other, deviceMetadata: deviceMetadata)))
     }
     
     func inAppConsume(_ messageId: String) {
@@ -338,10 +335,10 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: apiClient.inAppConsume(messageId: messageId))
     }
     
-    func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .unknown, source: InAppDeleteSource = .unknown) {
+    func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource = .other) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "inAppConsumeWithSource"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "inAppConsumeWithSource"),
-                                 forResult: apiClient.inAppConsume(inAppMessageContext: InAppMessageContext(message: message, location: location, deviceMetadata: deviceMetadata), source: source))
+                                 forResult: apiClient.inAppConsume(inAppMessageContext: InAppMessageContext.from(message: message, location: location, deviceMetadata: deviceMetadata), source: source))
     }
     
     private func disableDevice(forAllUsers allUsers: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
@@ -407,8 +404,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     private var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     
-    private lazy var apiClient: ApiClient = {
-        ApiClient(apiKey: apiKey, authProvider: self, endPoint: .ITBL_ENDPOINT_API, networkSession: networkSession)
+    lazy var apiClient: ApiClient = {
+        ApiClient(apiKey: apiKey, authProvider: self, endPoint: config.apiEndpoint, networkSession: networkSession)
     }()
     
     var networkSession: NetworkSessionProtocol
@@ -568,7 +565,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             return
         }
         
-        guard let request = IterableRequestUtil.createPostRequest(forApiEndPoint: .ITBL_ENDPOINT_LINKS,
+        guard let request = IterableRequestUtil.createPostRequest(forApiEndPoint: config.linksEndpoint,
                                                                   path: .ITBL_PATH_DDL_MATCH,
                                                                   headers: [AnyHashable.ITBL_HEADER_API_KEY: apiKey],
                                                                   args: nil,

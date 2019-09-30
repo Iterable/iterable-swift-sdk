@@ -134,4 +134,8 @@ public class IterableConfig: NSObject {
     
     /// How many seconds to wait before showing the next inApp, if there are more than one present
     public var inAppDisplayInterval: Double = 30.0
+    
+    /// These are internal. Do not change
+    internal var apiEndpoint = Endpoint.api
+    internal var linksEndpoint = Endpoint.links
 }

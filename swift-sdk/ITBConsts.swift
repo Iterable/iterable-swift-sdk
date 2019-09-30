@@ -7,6 +7,11 @@
 import Foundation
 
 // Iterable API Endpoints
+enum Endpoint {
+    static let api = String.ITBL_ENDPOINT_API
+    static let links = String.ITBL_ENDPOINT_LINKS
+}
+
 public extension String {
     static let ITBL_API_PATH = "/api/"
     static let ITBL_ENDPOINT_API = apiHostname + ITBL_API_PATH
@@ -183,6 +188,7 @@ public protocol JsonKeyRepresentable {
 
 public enum JsonKey: String, JsonKeyRepresentable {
     case email
+    case userId
     
     case inboxMetadata
     case inboxTitle = "title"
@@ -193,6 +199,8 @@ public enum JsonKey: String, JsonKeyRepresentable {
     case inboxCreatedAt = "createdAt"
     
     case inAppMessageContext = "messageContext"
+    
+    case messageId
     
     case saveToInbox
     case silentInbox
@@ -228,7 +236,7 @@ public protocol JsonValueRepresentable {
 @objc public enum InAppLocation: Int, JsonValueRepresentable {
     case inApp
     case inbox
-    case unknown
+    case other
     
     public var jsonValue: Any {
         switch self {
@@ -236,8 +244,8 @@ public protocol JsonValueRepresentable {
             return "in-app"
         case .inbox:
             return "inbox"
-        case .unknown:
-            return "unknown"
+        case .other:
+            return "other"
         }
     }
 }
@@ -245,7 +253,7 @@ public protocol JsonValueRepresentable {
 @objc public enum InAppCloseSource: Int, JsonValueRepresentable {
     case back
     case link
-    case unknown
+    case other
     
     public var jsonValue: Any {
         switch self {
@@ -253,8 +261,8 @@ public protocol JsonValueRepresentable {
             return "back"
         case .link:
             return "link"
-        case .unknown:
-            return "unknown"
+        case .other:
+            return "other"
         }
     }
 }
@@ -262,7 +270,7 @@ public protocol JsonValueRepresentable {
 @objc public enum InAppDeleteSource: Int, JsonValueRepresentable {
     case inboxSwipe
     case deleteButton
-    case unknown
+    case other
     
     public var jsonValue: Any {
         switch self {
@@ -270,8 +278,8 @@ public protocol JsonValueRepresentable {
             return "inbox-swipe"
         case .deleteButton:
             return "delete-button"
-        case .unknown:
-            return "unknown"
+        case .other:
+            return "other"
         }
     }
 }

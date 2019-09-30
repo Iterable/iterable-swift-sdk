@@ -58,13 +58,18 @@ struct TestUtils {
         }
     }
     
-    static func validateMessageContext(messageId _: String, email _: String? = nil, userId _: String? = nil, saveToInbox: Bool, silentInbox: Bool, location: InAppLocation, inBody body: [String: Any]) {
+    static func validateMessageContext(messageId: String, email: String? = nil, userId: String? = nil, saveToInbox: Bool, silentInbox: Bool, location: InAppLocation, inBody body: [String: Any]) {
+        validateMatch(keyPath: KeyPath(JsonKey.messageId), value: messageId, inDictionary: body)
+        if let email = email {
+            validateMatch(keyPath: KeyPath(JsonKey.email), value: email, inDictionary: body)
+        }
+        if let userId = userId {
+            validateMatch(keyPath: KeyPath(JsonKey.userId), value: userId, inDictionary: body)
+        }
         let contextKey = "\(JsonKey.inAppMessageContext.jsonKey)"
         validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.saveToInbox.jsonKey)"), value: saveToInbox, inDictionary: body)
         validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.silentInbox.jsonKey)"), value: silentInbox, inDictionary: body)
-        if location != .unknown {
-            validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.inAppLocation.jsonKey)"), value: location.jsonValue as! String, inDictionary: body)
-        }
+        validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.inAppLocation.jsonKey)"), value: location.jsonValue as! String, inDictionary: body)
         
         validateDeviceInfo(deviceInfoKey: "\(contextKey).\(JsonKey.deviceInfo.jsonKey)", inBody: body)
     }

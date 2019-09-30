@@ -153,6 +153,7 @@ class MockNetworkSession: NetworkSessionProtocol {
     var url: URL?
     var request: URLRequest?
     var callback: ((Data?, URLResponse?, Error?) -> Void)?
+    var requestCallback: ((URLRequest) -> Void)?
     
     var statusCode: Int
     var data: Data? // This is data returned
@@ -179,6 +180,7 @@ class MockNetworkSession: NetworkSessionProtocol {
     func makeRequest(_ request: URLRequest, completionHandler: @escaping NetworkSessionProtocol.CompletionHandler) {
         DispatchQueue.main.async {
             self.request = request
+            self.requestCallback?(request)
             let response = HTTPURLResponse(url: request.url!, statusCode: self.statusCode, httpVersion: "HTTP/1.1", headerFields: [:])
             completionHandler(self.data, response, self.error)
             

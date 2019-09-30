@@ -139,10 +139,10 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     func remove(message: IterableInAppMessage) {
         ITBInfo()
         
-        remove(message: message, location: .unknown, source: .unknown)
+        remove(message: message, location: .inApp, source: .other)
     }
     
-    func remove(message: IterableInAppMessage, location: InAppLocation = .unknown, source: InAppDeleteSource = .unknown) {
+    func remove(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource = .other) {
         ITBInfo()
         
         removePrivate(message: message, location: location, source: source)
@@ -448,7 +448,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         ITBInfo()
         
         updateMessage(message, didProcessTrigger: true, consumed: true)
-        let messageContext = InAppMessageContext(message: message, location: location, deviceMetadata: deviceMetadata)
+        let messageContext = InAppMessageContext.from(message: message, location: location, deviceMetadata: deviceMetadata)
         apiClient?.inAppConsume(inAppMessageContext: messageContext, source: source)
         callbackQueue.async {
             self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)

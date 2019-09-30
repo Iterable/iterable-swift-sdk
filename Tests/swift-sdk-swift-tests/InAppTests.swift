@@ -298,7 +298,7 @@ class InAppTests: XCTestCase {
         )
         
         mockInAppFetcher.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 1)).onSuccess { _ in
-            var messages = IterableAPI.inAppManager.getMessages()
+            let messages = IterableAPI.inAppManager.getMessages()
             // Now show the first message, but don't consume
             IterableAPI.inAppManager.show(message: messages[0], consume: false) { clickedUrl in
                 XCTAssertEqual(clickedUrl, TestInAppPayloadGenerator.getClickedUrl(index: 1))
@@ -745,12 +745,12 @@ class InAppTests: XCTestCase {
         // now remove 1, there should be 1 left
         let expectation3 = expectation(description: "remove reduces count to 1")
         let expectation4 = expectation(description: "remove reduces count to 0")
-        IterableAPI.inAppManager.remove(message: IterableAPI.inAppManager.getMessages()[0], location: .inApp, source: .unknown)
+        IterableAPI.inAppManager.remove(message: IterableAPI.inAppManager.getMessages()[0], location: .inApp, source: .other)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
             expectation3.fulfill()
             // now remove 1, there should be 0 left
-            IterableAPI.inAppManager.remove(message: IterableAPI.inAppManager.getMessages()[0], location: .inApp, source: .unknown)
+            IterableAPI.inAppManager.remove(message: IterableAPI.inAppManager.getMessages()[0], location: .inApp, source: .other)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                 XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
                 expectation4.fulfill()
