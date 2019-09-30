@@ -99,7 +99,7 @@ class IterableInAppHTMLViewController: UIViewController {
         
         let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
         // We need to add this because of the way WKWebView works vs UIWebView
-        let htmlToAdd = viewportMeta + htmlString
+        let htmlToAdd = htmlString + viewportMeta
         webView.loadHTMLString(htmlToAdd, baseURL: URL(string: ""))
         webView.scrollView.bounces = false
         webView.isOpaque = false
