@@ -404,8 +404,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     private var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     
-    private lazy var apiClient: ApiClient = {
-        ApiClient(apiKey: apiKey, authProvider: self, endPoint: .ITBL_ENDPOINT_API, networkSession: networkSession)
+    lazy var apiClient: ApiClient = {
+        ApiClient(apiKey: apiKey, authProvider: self, endPoint: config.apiEndpoint, networkSession: networkSession)
     }()
     
     var networkSession: NetworkSessionProtocol
@@ -565,7 +565,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             return
         }
         
-        guard let request = IterableRequestUtil.createPostRequest(forApiEndPoint: .ITBL_ENDPOINT_LINKS,
+        guard let request = IterableRequestUtil.createPostRequest(forApiEndPoint: config.linksEndpoint,
                                                                   path: .ITBL_PATH_DDL_MATCH,
                                                                   headers: [AnyHashable.ITBL_HEADER_API_KEY: apiKey],
                                                                   args: nil,
