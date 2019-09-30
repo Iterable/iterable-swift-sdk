@@ -721,29 +721,125 @@ As of version 6.2.0, the SDK is able to persist received in-app messages by mean
 
 Now you have the option of deciding whether to persist an in-app message in the user's *mobile inbox* to view later. If you choose to persist an in-app it would be delivered to their mobile inbox. You also have the option to choose whether a particular in-app message would be delivered *silently* to mobile inbox. In that case, the in-app would only appear in their mobile inbox. It would not be shown to the user. The user can then decide to view the in-app when they choose. 
 
-#### SDK Integration
+#### SDK Integration and template changes
 
-The instructions for integrating the SDK remain the same as noted above. Mobile Inbox will 
+You need to choose `Show in inbox` radio option in your in-app template for the in-app to show up in your mobile inbox.
+
+The instructions for integrating the SDK remain the same as noted above. With the release of SDK version 6.2.0 you will get out-of-the-box support for mobile inbox. You can customize the default behavior as noted below.
+
 
 #### Mobile Inbox implementation guide
-##### As a tab
+The main class that you will have to deal with is `IterableInboxNavigationViewController`. This class is a subclass of `UINavigationController`. This class automatically instantiates `IterableInboxViewController` as its root view controller. 
+
+You can also instantiate `IterableInboxViewController` directly if you don't want mobile inbox to be embedded in a `UINavigationController`. In the documentation below, you can substitute `IterableInboxViewController` for `IterableInboxNavigationViewController` if you are not using mobile inbox embedded in `UINavigationController`. Although we would recommend using `IterableInboxNavigationViewController`.
+
+##### Show mobile inbox as a tab
 The recommended way is to create a dedicated mobile inbox tab in your UITabBarController. This way Iterable mobile inbox would automatically show the number of unread messages as a badge count on the inbox tab. You can get all this functionality by just adding `IterableInboxNavigationViewController` as a tab in your storyboard or code. There is no code needed to get this functionality out of the box. To test that this is working, you need to create an in-app template in Iteable Web UI. Then you choose the `Show in inbox` radio option. Save this template and send proof to yourself.
 
-##### As a popup
-You can also show mobile inbox as a result of button click. In that case you will have to 
+##### Display mobile inbox as a result of an user action
+You can also show mobile inbox as a result of button tap or any other user action. In that case you will have to instantiate the inbox view controller and display it.
+
+```swift
+// Add this in your button tap handler
+let inboxViewController = IterableInboxNavigationViewController()
+present(inboxViewController, animated: true)
+```
 
 
 #### Mobile Inbox Customization and Options
 
-The SDK provides ways of customizing the inbox UI to match how you'd like to use it in the app. Depending on how much customization you need, you can go from as little work as typing a name for `cellNibName` (and ensuring the existence of the corresponding XIB) on an instance of `IterableInboxViewController`, to creating a new class that inherits `IterableInboxViewController` or `IterableInboxNavigationViewController`, depending on your specific UI stack, and overriding the existing methods.
+The SDK provides ways of customizing the inbox UI to match how you'd like to use it in the app. Depending on how much customization you need, you can go from as little work as typing a name for `cellNibName` (and ensuring the existence of the corresponding XIB) on an instance of `IterableInboxNavigationViewController`, to creating a new class that inherits `IterableInboxViewController` or `IterableInboxNavigationViewController`, depending on your specific UI stack, and overriding the existing methods.
 
-#### Inbox Mode
 
-`IterableInboxViewController` features two ways to be instantiated. The first, and most likely more common, is the `nav` mode where the instance will be pushed onto the navigation stack. The second, is `popup` mode where the mobile inbox will be presented in a modal fashion.
+##### inboxMode
 
-#### Events and the Events Lifecycle
+`IterableInboxViewController` can display inbox messages in two ways. The first and default, is `popup` mode where the mobile inbox will be presented in a modal fashion. The second, and most likely a better option for iOS UI guidelines, is the `nav` mode where the inbox message will be pushed onto the navigation stack. We recommend using the `nav` mode if you believe your in-app message is showing fine in a navigation stack.
 
-// Events lifecycle and how and when they are generated
+##### cellNibName
+
+You can completely change the look of mobile inbox by creating your own `UITableViewCell` XIB file in Storyboard.  Set the custom class of this XIB to be `IterableInboxCell`. You can then set the `cellNibName` property of `IterableInboxNavigationViewController` to the name of your newly created XIB file name.
+
+##### navTitle
+
+You can set the property `navTitle` in `IterableInboxNavigationViewController` to set the title of mobile inbox navigation item.
+
+#### Mobile inbox events and the events lifecycle
+
+Inbox messages are in-app messages which are delivered to mobile inbox. So the events that apply to in-app messages also apply to inbox messages.
+
+##### In App Send
+This event is triggered when an in-app is sent to a user.
+
+Important event properties
+
+`createdAt` - when the in-app was sent
+`campaignId`- the in-app campaign id
+
+##### In App Delivery
+This event is triggered when an in-app is received by user on their device.
+
+Important event properties
+
+`createdAt` - when the in-app was received by the client
+`campaignId`- the in-app campaign id
+
+
+##### Inbox Message Impression
+This event is triggered when an inbox message is shown in mobile inbox. An impression is registered if the inbox message is displayed in the viewport of mobile inbox. If the inbox message is not visible then an impression is not counted.
+
+Important event properties
+
+`createdAt` - when the in-app was sent
+`campaignId`- the in-app campaign id
+`impressionCount` - how many times the message was in the visible viewport
+`totalDuration` - the total duration the inbox message was shown in mobile inbox
+
+##### In App Open
+This event is triggered when the user taps on a message in their inbox.
+
+Important event properties
+
+`createdAt` - when the in-app was opened
+`campaignId`- the in-app campaign id
+
+
+##### In App Click
+This event is triggered when the user taps on a link or button in an in-app message.
+
+Important event properties
+
+`createdAt` - when the in-app was sent
+`campaignId`- the in-app campaign id
+`clickedUrl` - the url that was tapped.
+
+##### In App Close
+This event is triggered when the user closes an inbox message by either tapping on 'Close' button or 'Back' button in the navigation controller.
+
+Important event properties
+
+`createdAt` - when the in-app was closed
+`campaignId`- the in-app campaign id
+`closeAction` - it will be 'link' if the message was closed due to clicking a link. It will be `back` if the message was closed due to tapping on back button.
+
+##### In App Delete 
+This event is triggered when the user deletes an inbox message by swiping left to delete in mobile inbox or when tapping on 'Delete' button while viewing the inbox message.
+
+Important event properties
+
+`createdAt` - when the in-app was deleted
+`campaignId`- the in-app campaign id
+`deleteAction` - it will be `inbox-swipe` if the delete happened as a result of swiping left on the message in mobile inbox. It will be `delete-button` if the delete happened because 'Delete' button was tapped.
+
+##### Inbox Session
+This event captures an 'inbox session'. An inbox session starts when mobile inbox is shown to the user. An inbox session ends when the user navigates to another part of the application. Please note that inbox session does not end when the user views an inbox message.
+
+Important event properties
+
+`campaignId`- the in-app campaign id
+`inboxSessionStart` - when the session started
+`inboxSessionEnd` - when the session ended
+`uniqueImpressionCount` - how many unique inbox messages were displayed in the viewport
+
 
 ### Custom events
 
