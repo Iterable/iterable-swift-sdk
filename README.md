@@ -717,6 +717,11 @@ To customize the time delay between successive in-app messages (default value of
 
 As of version 6.2.0, the SDK is able to persist received in-app messages by means of the mobile inbox. The inbox is a piece of UI that displays a list of received in-apps, and allows the user to look at them at their convenience, as well as interact with them and delete them, etc. As an app developer, you are able to not only use it as is (featuring a clean, app-neutral layout), but also to inherit and extend the provided classes to match and customize it per your app and its usage.
 
+
+![Linking](images/mobile-inbox.png)
+
+
+
 #### Changes from the SDK version 6.1.2
 
 Now you have the option of deciding whether to persist an in-app message in the user's *mobile inbox* to view later. If you choose to persist an in-app it would be delivered to their mobile inbox. You also have the option to choose whether a particular in-app message would be delivered *silently* to mobile inbox. In that case, the in-app would only appear in their mobile inbox. It would not be shown to the user. The user can then decide to view the in-app when they choose. 
