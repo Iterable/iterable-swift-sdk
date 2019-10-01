@@ -30,6 +30,7 @@ struct PostRequest {
 struct RequestCreator {
     let apiKey: String
     let auth: Auth
+    let deviceMetadata: DeviceMetadata
     
     func createUpdateEmailRequest(newEmail: String) -> Result<IterableRequest, IterableError> {
         var body: [String: Any] = [AnyHashable.ITBL_KEY_NEW_EMAIL: newEmail]
@@ -235,7 +236,7 @@ struct RequestCreator {
         return .success(.get(createGetRequest(forPath: .ITBL_PATH_GET_INAPP_MESSAGES, withArgs: args as! [String: String])))
     }
     
-    func createTrackInAppOpenRequest(_ messageId: String, deviceMetadata: DeviceMetadata) -> Result<IterableRequest, IterableError> {
+    func createTrackInAppOpenRequest(_ messageId: String) -> Result<IterableRequest, IterableError> {
         var body: [AnyHashable: Any] = [:]
         
         body[.ITBL_KEY_MESSAGE_ID] = messageId
@@ -259,7 +260,7 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_OPEN, body: body)))
     }
     
-    func createTrackInAppClickRequest(_ messageId: String, deviceMetadata: DeviceMetadata, clickedUrl: String) -> Result<IterableRequest, IterableError> {
+    func createTrackInAppClickRequest(_ messageId: String, clickedUrl: String) -> Result<IterableRequest, IterableError> {
         var body: [AnyHashable: Any] = [:]
         
         body[.ITBL_KEY_MESSAGE_ID] = messageId
@@ -339,7 +340,7 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: .ITBL_PATH_INAPP_CONSUME, body: body)))
     }
     
-    func createTrackInboxSessionRequest(inboxSession: IterableInboxSession, deviceMetadata: DeviceMetadata) -> Result<IterableRequest, IterableError> {
+    func createTrackInboxSessionRequest(inboxSession: IterableInboxSession) -> Result<IterableRequest, IterableError> {
         guard let sessionStartTime = inboxSession.sessionStartTime else {
             return .failure(IterableError.general(description: "expecting session start time"))
         }

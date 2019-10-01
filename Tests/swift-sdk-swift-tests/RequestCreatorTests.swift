@@ -22,8 +22,7 @@ class RequestCreatorTests: XCTestCase {
                                                 endTotalMessageCount: 10,
                                                 endUnreadMessageCount: 3,
                                                 impressions: impressions)
-        let deviceMetadata = IterableAPI.internalImplementation!.deviceMetadata
-        let urlRequest = convertToUrlRequest(createRequestCreator().createTrackInboxSessionRequest(inboxSession: inboxSession, deviceMetadata: deviceMetadata))
+        let urlRequest = convertToUrlRequest(createRequestCreator().createTrackInboxSessionRequest(inboxSession: inboxSession))
         TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_TRACK_INBOX_SESSION)
         let body = urlRequest.bodyDict
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.email), value: auth.email, inDictionary: body)
@@ -41,7 +40,7 @@ class RequestCreatorTests: XCTestCase {
     
     func testGetInAppMessagesRequestFailure() {
         let auth = Auth(userId: nil, email: nil)
-        let requestCreator = RequestCreator(apiKey: apiKey, auth: auth)
+        let requestCreator = RequestCreator(apiKey: apiKey, auth: auth, deviceMetadata: IterableAPI.internalImplementation!.deviceMetadata)
         
         let failingRequest = requestCreator.createGetInAppMessagesRequest(1)
         
@@ -111,7 +110,7 @@ class RequestCreatorTests: XCTestCase {
     }
     
     private func createRequestCreator() -> RequestCreator {
-        return RequestCreator(apiKey: apiKey, auth: auth)
+        return RequestCreator(apiKey: apiKey, auth: auth, deviceMetadata: IterableAPI.internalImplementation!.deviceMetadata)
     }
     
     private func createApiClient(networkSession: NetworkSessionProtocol) -> ApiClient {

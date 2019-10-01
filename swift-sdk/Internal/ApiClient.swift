@@ -115,7 +115,7 @@ class ApiClient: ApiClientProtocol {
     }
     
     func track(inAppOpen messageId: String) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createTrackInAppOpenRequest(messageId, deviceMetadata: deviceMetadata))
+        return send(iterableRequestResult: createRequestCreator().createTrackInAppOpenRequest(messageId))
     }
     
     func track(inAppOpen inAppMessageContext: InAppMessageContext) -> Future<SendRequestValue, SendRequestError> {
@@ -123,7 +123,7 @@ class ApiClient: ApiClientProtocol {
     }
     
     func track(inAppClick messageId: String, clickedUrl: String) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(messageId, deviceMetadata: deviceMetadata, clickedUrl: clickedUrl))
+        return send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(messageId, clickedUrl: clickedUrl))
     }
     
     func track(inAppClick inAppMessageContext: InAppMessageContext, clickedUrl: String) -> Future<SendRequestValue, SendRequestError> {
@@ -139,7 +139,7 @@ class ApiClient: ApiClientProtocol {
     }
     
     func track(inboxSession: IterableInboxSession) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createTrackInboxSessionRequest(inboxSession: inboxSession, deviceMetadata: deviceMetadata))
+        return send(iterableRequestResult: createRequestCreator().createTrackInboxSessionRequest(inboxSession: inboxSession))
     }
     
     func inAppConsume(messageId: String) -> Future<SendRequestValue, SendRequestError> {
@@ -185,7 +185,7 @@ class ApiClient: ApiClientProtocol {
             fatalError("authProvider is missing")
         }
         
-        return RequestCreator(apiKey: apiKey, auth: authProvider.auth)
+        return RequestCreator(apiKey: apiKey, auth: authProvider.auth, deviceMetadata: deviceMetadata)
     }
     
     func createIterableHeaders() -> [String: String] {
