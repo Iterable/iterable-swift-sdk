@@ -162,6 +162,7 @@ class InAppParsingTests: XCTestCase {
                                queryParams: [])
             let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMessageContext(messageId: message.messageId, userId: InAppParsingTests.userId, saveToInbox: false, silentInbox: false, location: .inApp, inBody: body)
+            TestUtils.validateDeviceInfo(inBody: body)
             TestUtils.validateMatch(keyPath: KeyPath("clickedUrl"), value: buttonUrl, inDictionary: body)
             expectation1.fulfill()
         }
@@ -192,6 +193,7 @@ class InAppParsingTests: XCTestCase {
                                queryParams: [])
             let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMessageContext(messageId: message.messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: .inbox, inBody: body)
+            TestUtils.validateDeviceInfo(inBody: body)
             expectation1.fulfill()
         }
         IterableAPI.track(inAppOpen: message, location: .inbox)
@@ -215,6 +217,7 @@ class InAppParsingTests: XCTestCase {
             
             let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMessageContext(messageId: messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: .inbox, inBody: body)
+            TestUtils.validateDeviceInfo(inBody: body)
             TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.closeAction.jsonKey)"), value: "back", inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.clickedUrl.jsonKey)"), value: "https://somewhere.com", inDictionary: body)
             
@@ -253,6 +256,7 @@ class InAppParsingTests: XCTestCase {
             
             let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMessageContext(messageId: messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: .other, inBody: body)
+            TestUtils.validateDeviceInfo(inBody: body)
             expectation1.fulfill()
         }
         

@@ -33,7 +33,7 @@ class RequestCreatorTests: XCTestCase {
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.endTotalMessageCount), value: inboxSession.endTotalMessageCount, inDictionary: body)
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.endUnreadMessageCount), value: inboxSession.endUnreadMessageCount, inDictionary: body)
         
-        TestUtils.validateDeviceInfo(deviceInfoKey: JsonKey.deviceInfo.jsonKey, inBody: body)
+        TestUtils.validateDeviceInfo(inBody: body)
         
         validateImpressions(impressions, inBody: body)
     }

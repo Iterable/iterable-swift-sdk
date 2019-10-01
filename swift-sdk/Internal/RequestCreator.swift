@@ -244,7 +244,8 @@ struct RequestCreator {
         addEmailOrUserId(dict: &body)
         
         let inAppMessageContext = InAppMessageContext.from(messageId: messageId, deviceMetadata: deviceMetadata)
-        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMesageContextDictionary())
+        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
+        body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_OPEN, body: body)))
     }
@@ -255,7 +256,8 @@ struct RequestCreator {
         body[.ITBL_KEY_MESSAGE_ID] = inAppMessageContext.messageId
         
         addEmailOrUserId(dict: &body)
-        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMesageContextDictionary())
+        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
+        body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_OPEN, body: body)))
     }
@@ -269,7 +271,8 @@ struct RequestCreator {
         addEmailOrUserId(dict: &body)
         
         let inAppMessageContext = InAppMessageContext.from(messageId: messageId, deviceMetadata: deviceMetadata)
-        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMesageContextDictionary())
+        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
+        body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLICK, body: body)))
     }
@@ -281,7 +284,8 @@ struct RequestCreator {
         
         body.setValue(for: .clickedUrl, value: clickedUrl)
         
-        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMesageContextDictionary())
+        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
+        body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
         addEmailOrUserId(dict: &body)
         
@@ -299,7 +303,8 @@ struct RequestCreator {
             body.setValue(for: .clickedUrl, value: clickedUrl)
         }
         
-        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMesageContextDictionary())
+        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
+        body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
         addEmailOrUserId(dict: &body)
         
@@ -313,7 +318,8 @@ struct RequestCreator {
         
         addEmailOrUserId(dict: &body)
         
-        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMesageContextDictionary())
+        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
+        body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_DELIVERY, body: body)))
     }
@@ -333,7 +339,8 @@ struct RequestCreator {
         
         body.setValue(for: .deleteAction, value: source)
         
-        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMesageContextDictionary())
+        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
+        body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
         addEmailOrUserId(dict: &body)
         
