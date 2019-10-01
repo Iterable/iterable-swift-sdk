@@ -118,7 +118,8 @@ class RequestCreatorTests: XCTestCase {
         return ApiClient(apiKey: apiKey,
                          authProvider: self,
                          endPoint: .ITBL_ENDPOINT_API,
-                         networkSession: networkSession)
+                         networkSession: networkSession,
+                         deviceMetadata: IterableAPI.internalImplementation!.deviceMetadata)
     }
 }
 
