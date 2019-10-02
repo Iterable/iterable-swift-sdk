@@ -444,6 +444,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         if config.autoPushRegistration == true {
             disableDeviceForCurrentUser()
         }
+        
+        _ = inAppManager.reset()
     }
     
     private func loginNewUser() {

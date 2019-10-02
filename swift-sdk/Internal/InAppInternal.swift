@@ -14,6 +14,7 @@ protocol InAppFetcherProtocol {
 protocol InAppNotifiable {
     func scheduleSync() -> Future<Bool, Error>
     func onInAppRemoved(messageId: String)
+    func reset() -> Future<Bool, Error>
 }
 
 extension IterableInAppTriggerType {

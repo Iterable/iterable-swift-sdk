@@ -45,4 +45,8 @@ class EmptyInAppManager: IterableInAppManagerProtocolInternal {
     func isOkToShowNow(message _: IterableInAppMessage) -> Bool {
         return true
     }
+    
+    func reset() -> Future<Bool, Error> {
+        return Promise<Bool, Error>(value: true)
+    }
 }
