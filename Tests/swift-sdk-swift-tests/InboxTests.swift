@@ -577,7 +577,7 @@ class InboxTests: XCTestCase {
             {
                 "saveToInbox": true,
                 "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
-                "trigger": {"type": "immediate"},
+                "trigger": {"type": "never"},
                 "messageId": "message1",
                 "campaignId": "campaign1",
                 "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
@@ -593,12 +593,14 @@ class InboxTests: XCTestCase {
             IterableAPI.email = nil
         }
         
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+        
         let predicate = NSPredicate { (_, _) -> Bool in
             IterableAPI.inAppManager.getMessages().count == 0
         }
         
         let expectation2 = expectation(for: predicate, evaluatedWith: nil, handler: nil)
         
-        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
+        wait(for: [expectation2], timeout: testExpectationTimeout)
     }
 }
