@@ -292,7 +292,31 @@ public protocol JsonValueRepresentable {
     }
 }
 
+extension Int: JsonValueRepresentable {
+    public var jsonValue: Any {
+        return self
+    }
+}
+
 extension String: JsonValueRepresentable {
+    public var jsonValue: Any {
+        return self
+    }
+}
+
+extension Bool: JsonValueRepresentable {
+    public var jsonValue: Any {
+        return self
+    }
+}
+
+extension Dictionary: JsonValueRepresentable {
+    public var jsonValue: Any {
+        return self
+    }
+}
+
+extension Array: JsonValueRepresentable where Element: JsonValueRepresentable {
     public var jsonValue: Any {
         return self
     }
