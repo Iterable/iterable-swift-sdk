@@ -53,7 +53,7 @@ struct RequestCreator {
                                     sdkVersion: String?,
                                     pushServicePlatform: PushServicePlatform,
                                     notificationsEnabled: Bool) -> Result<IterableRequest, IterableError> {
-        guard auth.email != nil || auth.userId != nil else {
+        guard let keyValueForCurrentUser = keyValueForCurrentUser else {
             ITBError("Both email and userId are nil")
             return .failure(IterableError.general(description: "Both email and userId are nil"))
         }
@@ -102,7 +102,8 @@ struct RequestCreator {
         
         var body = [AnyHashable: Any]()
         body[.ITBL_KEY_DEVICE] = deviceDictionary
-        addEmailOrUserId(dict: &body)
+        
+        body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
         if auth.email == nil, auth.userId != nil {
             body[.ITBL_KEY_PREFER_USER_ID] = true
@@ -112,10 +113,16 @@ struct RequestCreator {
     }
     
     func createUpdateUserRequest(dataFields: [AnyHashable: Any], mergeNestedObjects: Bool) -> Result<IterableRequest, IterableError> {
+        guard let keyValueForCurrentUser = keyValueForCurrentUser else {
+            ITBError("Both email and userId are nil")
+            return .failure(IterableError.general(description: "Both email and userId are nil"))
+        }
+        
         var body = [AnyHashable: Any]()
+        
         body[.ITBL_KEY_DATA_FIELDS] = dataFields
         body[.ITBL_KEY_MERGE_NESTED] = NSNumber(value: mergeNestedObjects)
-        addEmailOrUserId(dict: &body)
+        body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
         if auth.email == nil, auth.userId != nil {
             body[.ITBL_KEY_PREFER_USER_ID] = true
@@ -125,7 +132,7 @@ struct RequestCreator {
     }
     
     func createTrackPurchaseRequest(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) -> Result<IterableRequest, IterableError> {
-        guard auth.email != nil || auth.userId != nil else {
+        guard let keyValueForCurrentUser = keyValueForCurrentUser else {
             ITBError("Both email and userId are nil")
             return .failure(IterableError.general(description: "Both email and userId are nil"))
         }
@@ -136,7 +143,7 @@ struct RequestCreator {
         }
         
         var apiUserDict = [AnyHashable: Any]()
-        addEmailOrUserId(dict: &apiUserDict)
+        apiUserDict.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
         let body: [String: Any]
         if let dataFields = dataFields {
@@ -166,7 +173,9 @@ struct RequestCreator {
         reqDataFields["appAlreadyRunning"] = appAlreadyRunning
         body[.ITBL_KEY_DATA_FIELDS] = reqDataFields
         
-        addEmailOrUserId(dict: &body, mustExist: false)
+        if let keyValueForCurrentUser = keyValueForCurrentUser {
+            body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
+        }
         
         body[.ITBL_KEY_CAMPAIGN_ID] = campaignId
         
@@ -182,13 +191,13 @@ struct RequestCreator {
     }
     
     func createTrackEventRequest(_ eventName: String, dataFields: [AnyHashable: Any]?) -> Result<IterableRequest, IterableError> {
-        guard auth.email != nil || auth.userId != nil else {
+        guard let keyValueForCurrentUser = keyValueForCurrentUser else {
             ITBError("Both email and userId are nil")
             return .failure(IterableError.general(description: "Both email and userId are nil"))
         }
         
         var body = [AnyHashable: Any]()
-        addEmailOrUserId(dict: &body)
+        body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         body[.ITBL_KEY_EVENT_NAME] = eventName
         
         if let dataFields = dataFields {
@@ -199,8 +208,12 @@ struct RequestCreator {
     }
     
     func createUpdateSubscriptionsRequest(_ emailListIds: [String]?, unsubscribedChannelIds: [String]?, unsubscribedMessageTypeIds: [String]?) -> Result<IterableRequest, IterableError> {
+        guard let keyValueForCurrentUser = keyValueForCurrentUser else {
+            ITBError("Both email and userId are nil")
+            return .failure(IterableError.general(description: "Both email and userId are nil"))
+        }
         var body = [AnyHashable: Any]()
-        addEmailOrUserId(dict: &body)
+        body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
         if let emailListIds = emailListIds {
             body[.ITBL_KEY_EMAIL_LIST_IDS] = emailListIds
@@ -218,7 +231,7 @@ struct RequestCreator {
     }
     
     func createGetInAppMessagesRequest(_ count: NSNumber) -> Result<IterableRequest, IterableError> {
-        guard auth.email != nil || auth.userId != nil else {
+        guard let keyValueForCurrentUser = keyValueForCurrentUser else {
             ITBError("Both email and userId are nil")
             return .failure(IterableError.general(description: "Both email and userId are nil"))
         }
@@ -231,17 +244,21 @@ struct RequestCreator {
             args[AnyHashable.ITBL_KEY_PACKAGE_NAME] = packageName
         }
         
-        addEmailOrUserId(dict: &args)
+        args.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
         return .success(.get(createGetRequest(forPath: .ITBL_PATH_GET_INAPP_MESSAGES, withArgs: args as! [String: String])))
     }
     
     func createTrackInAppOpenRequest(_ messageId: String) -> Result<IterableRequest, IterableError> {
+        guard let keyValueForCurrentUser = keyValueForCurrentUser else {
+            ITBError("Both email and userId are nil")
+            return .failure(IterableError.general(description: "Both email and userId are nil"))
+        }
         var body: [AnyHashable: Any] = [:]
         
         body[.ITBL_KEY_MESSAGE_ID] = messageId
         
-        addEmailOrUserId(dict: &body)
+        body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
         let inAppMessageContext = InAppMessageContext.from(messageId: messageId, deviceMetadata: deviceMetadata)
         body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
@@ -251,11 +268,15 @@ struct RequestCreator {
     }
     
     func createTrackInAppOpenRequest(inAppMessageContext: InAppMessageContext) -> Result<IterableRequest, IterableError> {
+        guard let keyValueForCurrentUser = keyValueForCurrentUser else {
+            ITBError("Both email and userId are nil")
+            return .failure(IterableError.general(description: "Both email and userId are nil"))
+        }
         var body: [AnyHashable: Any] = [:]
         
         body[.ITBL_KEY_MESSAGE_ID] = inAppMessageContext.messageId
         
-        addEmailOrUserId(dict: &body)
+        body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
         body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
@@ -263,12 +284,16 @@ struct RequestCreator {
     }
     
     func createTrackInAppClickRequest(_ messageId: String, clickedUrl: String) -> Result<IterableRequest, IterableError> {
+        guard let keyValueForCurrentUser = keyValueForCurrentUser else {
+            ITBError("Both email and userId are nil")
+            return .failure(IterableError.general(description: "Both email and userId are nil"))
+        }
         var body: [AnyHashable: Any] = [:]
         
         body[.ITBL_KEY_MESSAGE_ID] = messageId
         body[.ITBL_IN_APP_CLICKED_URL] = clickedUrl
         
-        addEmailOrUserId(dict: &body)
+        body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
         let inAppMessageContext = InAppMessageContext.from(messageId: messageId, deviceMetadata: deviceMetadata)
         body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
@@ -278,6 +303,10 @@ struct RequestCreator {
     }
     
     func createTrackInAppClickRequest(inAppMessageContext: InAppMessageContext, clickedUrl: String) -> Result<IterableRequest, IterableError> {
+        guard let keyValueForCurrentUser = keyValueForCurrentUser else {
+            ITBError("Both email and userId are nil")
+            return .failure(IterableError.general(description: "Both email and userId are nil"))
+        }
         var body = [AnyHashable: Any]()
         
         body[.ITBL_KEY_MESSAGE_ID] = inAppMessageContext.messageId
@@ -287,12 +316,16 @@ struct RequestCreator {
         body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
         body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
-        addEmailOrUserId(dict: &body)
+        body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLICK, body: body)))
     }
     
     func createTrackInAppCloseRequest(inAppMessageContext: InAppMessageContext, source: InAppCloseSource, clickedUrl: String?) -> Result<IterableRequest, IterableError> {
+        guard let keyValueForCurrentUser = keyValueForCurrentUser else {
+            ITBError("Both email and userId are nil")
+            return .failure(IterableError.general(description: "Both email and userId are nil"))
+        }
         var body = [AnyHashable: Any]()
         
         body[.ITBL_KEY_MESSAGE_ID] = inAppMessageContext.messageId
@@ -306,17 +339,21 @@ struct RequestCreator {
         body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
         body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
-        addEmailOrUserId(dict: &body)
+        body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLOSE, body: body)))
     }
     
     func createTrackInAppDeliveryRequest(inAppMessageContext: InAppMessageContext) -> Result<IterableRequest, IterableError> {
+        guard let keyValueForCurrentUser = keyValueForCurrentUser else {
+            ITBError("Both email and userId are nil")
+            return .failure(IterableError.general(description: "Both email and userId are nil"))
+        }
         var body: [AnyHashable: Any] = [:]
         
         body[.ITBL_KEY_MESSAGE_ID] = inAppMessageContext.messageId
         
-        addEmailOrUserId(dict: &body)
+        body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
         body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
         body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
@@ -325,14 +362,22 @@ struct RequestCreator {
     }
     
     func createInAppConsumeRequest(_ messageId: String) -> Result<IterableRequest, IterableError> {
+        guard let keyValueForCurrentUser = keyValueForCurrentUser else {
+            ITBError("Both email and userId are nil")
+            return .failure(IterableError.general(description: "Both email and userId are nil"))
+        }
         var body: [AnyHashable: Any] = [.ITBL_KEY_MESSAGE_ID: messageId]
         
-        addEmailOrUserId(dict: &body)
+        body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_INAPP_CONSUME, body: body)))
     }
     
     func createTrackInAppConsumeRequest(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource) -> Result<IterableRequest, IterableError> {
+        guard let keyValueForCurrentUser = keyValueForCurrentUser else {
+            ITBError("Both email and userId are nil")
+            return .failure(IterableError.general(description: "Both email and userId are nil"))
+        }
         var body = [AnyHashable: Any]()
         
         body[.ITBL_KEY_MESSAGE_ID] = inAppMessageContext.messageId
@@ -342,12 +387,16 @@ struct RequestCreator {
         body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
         body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
-        addEmailOrUserId(dict: &body)
+        body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_INAPP_CONSUME, body: body)))
     }
     
     func createTrackInboxSessionRequest(inboxSession: IterableInboxSession) -> Result<IterableRequest, IterableError> {
+        guard let keyValueForCurrentUser = keyValueForCurrentUser else {
+            ITBError("Both email and userId are nil")
+            return .failure(IterableError.general(description: "Both email and userId are nil"))
+        }
         guard let sessionStartTime = inboxSession.sessionStartTime else {
             return .failure(IterableError.general(description: "expecting session start time"))
         }
@@ -357,7 +406,7 @@ struct RequestCreator {
         
         var body = [AnyHashable: Any]()
         
-        addEmailOrUserId(dict: &body)
+        body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
         body.setValue(for: .inboxSessionStart, value: IterableUtil.int(fromDate: sessionStartTime))
         body.setValue(for: .inboxSessionEnd, value: IterableUtil.int(fromDate: sessionEndTime))
@@ -377,7 +426,9 @@ struct RequestCreator {
         body[.ITBL_KEY_TOKEN] = hexToken
         
         if !allUsers {
-            addEmailOrUserId(dict: &body, mustExist: false)
+            if let keyValueForCurrentUser = keyValueForCurrentUser {
+                body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
+            }
         }
         
         return .success(.post(createPostRequest(path: .ITBL_PATH_DISABLE_DEVICE, body: body)))
@@ -394,13 +445,14 @@ struct RequestCreator {
                           args: args)
     }
     
-    private func addEmailOrUserId(dict: inout [AnyHashable: Any], mustExist: Bool = true) {
-        if let email = auth.email {
-            dict[.ITBL_KEY_EMAIL] = email
-        } else if let userId = auth.userId {
-            dict[.ITBL_KEY_USER_ID] = userId
-        } else if mustExist {
-            assertionFailure("Either email or userId should be set")
+    private var keyValueForCurrentUser: JsonKeyValueRepresentable? {
+        switch auth.emailOrUserId {
+        case let .email(email):
+            return JsonKeyValue(key: JsonKey.email, value: email)
+        case let .userId(userId):
+            return JsonKeyValue(key: JsonKey.userId, value: userId)
+        case .none:
+            return nil
         }
     }
     
