@@ -82,7 +82,6 @@ public extension UIColor {
 }
 
 public extension Data {
-    // from: https://stackoverflow.com/questions/39075043/how-to-convert-data-to-hex-string-in-swift
     func hexString() -> String {
         return map { String(format: "%02.2hhx", $0) }.joined()
     }
