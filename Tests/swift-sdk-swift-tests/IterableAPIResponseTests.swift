@@ -188,6 +188,7 @@ class IterableAPIResponseTests: XCTestCase {
         return ApiClient(apiKey: apiKey,
                          authProvider: AuthProviderImpl(),
                          endPoint: .ITBL_ENDPOINT_API,
-                         networkSession: networkSession)
+                         networkSession: networkSession,
+                         deviceMetadata: IterableAPI.internalImplementation!.deviceMetadata)
     }
 }

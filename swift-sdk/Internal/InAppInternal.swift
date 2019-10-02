@@ -77,7 +77,7 @@ struct InAppMessageContext {
                                    deviceMetadata: deviceMetadata)
     }
     
-    func toMesageContextDictionary() -> [AnyHashable: Any] {
+    func toMessageContextDictionary() -> [AnyHashable: Any] {
         var context = [AnyHashable: Any]()
         
         context.setValue(for: .saveToInbox, value: saveToInbox)

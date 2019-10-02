@@ -285,7 +285,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     func trackInAppOpen(_ messageId: String) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppOpen"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"),
-                                 forResult: apiClient.track(inAppOpen: messageId, deviceMetadata: deviceMetadata))
+                                 forResult: apiClient.track(inAppOpen: messageId))
     }
     
     func trackInAppOpen(_ message: IterableInAppMessage, location: InAppLocation) {
@@ -297,7 +297,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     func trackInAppClick(_ messageId: String, clickedUrl: String) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"),
-                                 forResult: apiClient.track(inAppClick: messageId, clickedUrl: clickedUrl, deviceMetadata: deviceMetadata))
+                                 forResult: apiClient.track(inAppClick: messageId, clickedUrl: clickedUrl))
     }
     
     func trackInAppClick(_ message: IterableInAppMessage, location: InAppLocation = .inApp, clickedUrl: String) {
@@ -316,7 +316,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     func track(inboxSession: IterableInboxSession) {
-        let result = apiClient.track(inboxSession: inboxSession, deviceMetadata: deviceMetadata)
+        let result = apiClient.track(inboxSession: inboxSession)
         
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInboxSession"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInboxSession"),
@@ -405,7 +405,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     private var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     
     lazy var apiClient: ApiClient = {
-        ApiClient(apiKey: apiKey, authProvider: self, endPoint: config.apiEndpoint, networkSession: networkSession)
+        ApiClient(apiKey: apiKey, authProvider: self, endPoint: config.apiEndpoint, networkSession: networkSession, deviceMetadata: deviceMetadata)
     }()
     
     var networkSession: NetworkSessionProtocol

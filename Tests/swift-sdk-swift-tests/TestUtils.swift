@@ -70,14 +70,12 @@ struct TestUtils {
         validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.saveToInbox.jsonKey)"), value: saveToInbox, inDictionary: body)
         validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.silentInbox.jsonKey)"), value: silentInbox, inDictionary: body)
         validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.inAppLocation.jsonKey)"), value: location.jsonValue as! String, inDictionary: body)
-        
-        validateDeviceInfo(deviceInfoKey: "\(contextKey).\(JsonKey.deviceInfo.jsonKey)", inBody: body)
     }
     
-    static func validateDeviceInfo(deviceInfoKey: String, inBody body: [String: Any]) {
-        validateMatch(keyPath: KeyPath("\(deviceInfoKey).\(JsonKey.deviceId.jsonKey)"), value: IterableAPI.internalImplementation!.deviceId, inDictionary: body)
-        validateMatch(keyPath: KeyPath("\(deviceInfoKey).\(JsonKey.platform.jsonKey)"), value: String.ITBL_PLATFORM_IOS, inDictionary: body)
-        validateMatch(keyPath: KeyPath("\(deviceInfoKey).\(JsonKey.appPackageName.jsonKey)"), value: Bundle.main.appPackageName, inDictionary: body)
+    static func validateDeviceInfo(inBody body: [String: Any]) {
+        validateMatch(keyPath: KeyPath(.deviceInfo, .deviceId), value: IterableAPI.internalImplementation!.deviceId, inDictionary: body)
+        validateMatch(keyPath: KeyPath(.deviceInfo, .platform), value: String.ITBL_PLATFORM_IOS, inDictionary: body)
+        validateMatch(keyPath: KeyPath(.deviceInfo, .appPackageName), value: Bundle.main.appPackageName, inDictionary: body)
     }
     
     static func getTestUserDefaults() -> UserDefaults {

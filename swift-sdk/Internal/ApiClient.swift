@@ -29,11 +29,11 @@ protocol ApiClientProtocol: AnyObject {
     
     func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError>
     
-    func track(inAppOpen messageId: String, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError>
+    func track(inAppOpen messageId: String) -> Future<SendRequestValue, SendRequestError>
     
     func track(inAppOpen inAppMessageContext: InAppMessageContext) -> Future<SendRequestValue, SendRequestError>
     
-    func track(inAppClick messageId: String, clickedUrl: String, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError>
+    func track(inAppClick messageId: String, clickedUrl: String) -> Future<SendRequestValue, SendRequestError>
     
     func track(inAppClick inAppMessageContext: InAppMessageContext, clickedUrl: String) -> Future<SendRequestValue, SendRequestError>
     
@@ -45,7 +45,7 @@ protocol ApiClientProtocol: AnyObject {
     
     @discardableResult func inAppConsume(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource) -> Future<SendRequestValue, SendRequestError>
     
-    func track(inboxSession: IterableInboxSession, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError>
+    func track(inboxSession: IterableInboxSession) -> Future<SendRequestValue, SendRequestError>
     
     func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Future<SendRequestValue, SendRequestError>
 }
@@ -60,11 +60,12 @@ protocol AuthProvider: AnyObject {
 }
 
 class ApiClient: ApiClientProtocol {
-    init(apiKey: String, authProvider: AuthProvider, endPoint: String, networkSession: NetworkSessionProtocol) {
+    init(apiKey: String, authProvider: AuthProvider, endPoint: String, networkSession: NetworkSessionProtocol, deviceMetadata: DeviceMetadata) {
         self.apiKey = apiKey
         self.authProvider = authProvider
         self.endPoint = endPoint
         self.networkSession = networkSession
+        self.deviceMetadata = deviceMetadata
     }
     
     func register(hexToken: String,
@@ -113,16 +114,16 @@ class ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: createRequestCreator().createGetInAppMessagesRequest(count))
     }
     
-    func track(inAppOpen messageId: String, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createTrackInAppOpenRequest(messageId, deviceMetadata: deviceMetadata))
+    func track(inAppOpen messageId: String) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createTrackInAppOpenRequest(messageId))
     }
     
     func track(inAppOpen inAppMessageContext: InAppMessageContext) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppOpenRequest(inAppMessageContext: inAppMessageContext))
     }
     
-    func track(inAppClick messageId: String, clickedUrl: String, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(messageId, deviceMetadata: deviceMetadata, clickedUrl: clickedUrl))
+    func track(inAppClick messageId: String, clickedUrl: String) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(messageId, clickedUrl: clickedUrl))
     }
     
     func track(inAppClick inAppMessageContext: InAppMessageContext, clickedUrl: String) -> Future<SendRequestValue, SendRequestError> {
@@ -137,8 +138,8 @@ class ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppDeliveryRequest(inAppMessageContext: inAppMessageContext))
     }
     
-    func track(inboxSession: IterableInboxSession, deviceMetadata: DeviceMetadata) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createTrackInboxSessionRequest(inboxSession: inboxSession, deviceMetadata: deviceMetadata))
+    func track(inboxSession: IterableInboxSession) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createTrackInboxSessionRequest(inboxSession: inboxSession))
     }
     
     func inAppConsume(messageId: String) -> Future<SendRequestValue, SendRequestError> {
@@ -184,7 +185,7 @@ class ApiClient: ApiClientProtocol {
             fatalError("authProvider is missing")
         }
         
-        return RequestCreator(apiKey: apiKey, auth: authProvider.auth)
+        return RequestCreator(apiKey: apiKey, auth: authProvider.auth, deviceMetadata: deviceMetadata)
     }
     
     func createIterableHeaders() -> [String: String] {
@@ -200,4 +201,5 @@ class ApiClient: ApiClientProtocol {
     private weak var authProvider: AuthProvider?
     private let endPoint: String
     private let networkSession: NetworkSessionProtocol
+    private let deviceMetadata: DeviceMetadata
 }

@@ -96,8 +96,6 @@ public extension String {
 
 // Device Dictionary
 public extension String {
-    static let ITBL_DEVICE_INFO_KEY = "deviceInfo"
-    
     static let ITBL_DEVICE_LOCALIZED_MODEL = "localizedModel"
     static let ITBL_DEVICE_ID_VENDOR = "identifierForVendor"
     static let ITBL_DEVICE_MODEL = "model"
