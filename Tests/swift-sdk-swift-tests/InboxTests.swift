@@ -562,12 +562,15 @@ class InboxTests: XCTestCase {
         TestUtils.clearTestUserDefaults()
         
         let expectation1 = expectation(description: "initial messages sent")
+        let expectation2 = expectation(description: "inbox change notification is fired on logout")
         
         let mockInAppFetcher = MockInAppFetcher()
+        let mockNotificationCenter = MockNotificationCenter()
         
         IterableAPI.initializeForTesting(
             config: IterableConfig(),
-            inAppFetcher: mockInAppFetcher
+            inAppFetcher: mockInAppFetcher,
+            notificationCenter: mockNotificationCenter
         )
         IterableAPI.email = "user@example.com"
         
@@ -590,6 +593,9 @@ class InboxTests: XCTestCase {
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
             expectation1.fulfill()
             
+            mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) {
+                expectation2.fulfill()
+            }
             IterableAPI.email = nil
         }
         
@@ -599,8 +605,8 @@ class InboxTests: XCTestCase {
             IterableAPI.inAppManager.getMessages().count == 0
         }
         
-        let expectation2 = expectation(for: predicate, evaluatedWith: nil, handler: nil)
+        let expectation3 = expectation(for: predicate, evaluatedWith: nil, handler: nil)
         
-        wait(for: [expectation2], timeout: testExpectationTimeout)
+        wait(for: [expectation2, expectation3], timeout: testExpectationTimeout)
     }
 }
