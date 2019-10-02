@@ -123,7 +123,9 @@ open class IterableInboxViewController: UITableViewController {
     
     // MARK: - UITableViewDelegate (Optional Functions)
     
-    open override func tableView(_: UITableView, didSelectRowAt indexPath: IndexPath) {
+    open override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        
         let message = viewModel.message(atRow: indexPath.row)
         
         if let viewController = viewModel.createInboxMessageViewController(for: message, withInboxMode: inboxMode) {
@@ -142,10 +144,14 @@ open class IterableInboxViewController: UITableViewController {
         }
     }
     
+    // MARK: - UIScrollViewDelegate (Optional Functions)
+    
     open override func scrollViewDidScroll(_: UIScrollView) {
         ITBDebug()
         viewModel.visibleRowsChanged()
     }
+    
+    // MARK: - IterableInboxViewController-specific Functions and Variables
     
     var viewModel: InboxViewControllerViewModelProtocol
     
