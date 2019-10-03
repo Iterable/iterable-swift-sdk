@@ -124,7 +124,9 @@ open class IterableInboxViewController: UITableViewController {
     // MARK: - UITableViewDelegate (Optional Functions)
     
     open override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
+        if inboxMode == .popup {
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
         
         let message = viewModel.message(atRow: indexPath.row)
         
