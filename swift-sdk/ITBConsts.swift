@@ -180,6 +180,16 @@ public extension AnyHashable {
     static let ITBL_IN_APP_INBOX_METADATA = "inboxMetadata"
 }
 
+public protocol JsonKeyValueRepresentable {
+    var key: JsonKeyRepresentable { get }
+    var value: JsonValueRepresentable { get }
+}
+
+public struct JsonKeyValue: JsonKeyValueRepresentable {
+    public let key: JsonKeyRepresentable
+    public let value: JsonValueRepresentable
+}
+
 public protocol JsonKeyRepresentable {
     var jsonKey: String { get }
 }
@@ -279,6 +289,36 @@ public protocol JsonValueRepresentable {
         case .other:
             return "other"
         }
+    }
+}
+
+extension Int: JsonValueRepresentable {
+    public var jsonValue: Any {
+        return self
+    }
+}
+
+extension String: JsonValueRepresentable {
+    public var jsonValue: Any {
+        return self
+    }
+}
+
+extension Bool: JsonValueRepresentable {
+    public var jsonValue: Any {
+        return self
+    }
+}
+
+extension Dictionary: JsonValueRepresentable {
+    public var jsonValue: Any {
+        return self
+    }
+}
+
+extension Array: JsonValueRepresentable where Element: JsonValueRepresentable {
+    public var jsonValue: Any {
+        return self
     }
 }
 

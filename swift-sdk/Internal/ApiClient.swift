@@ -53,6 +53,22 @@ protocol ApiClientProtocol: AnyObject {
 struct Auth {
     let userId: String?
     let email: String?
+    
+    var emailOrUserId: EmailOrUserId {
+        if let email = email {
+            return .email(email)
+        } else if let userId = userId {
+            return .userId(userId)
+        } else {
+            return .none
+        }
+    }
+    
+    enum EmailOrUserId {
+        case email(String)
+        case userId(String)
+        case none
+    }
 }
 
 protocol AuthProvider: AnyObject {
