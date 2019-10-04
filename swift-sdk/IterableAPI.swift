@@ -9,8 +9,7 @@
 
 import Foundation
 
-@objcMembers
-public final class IterableAPI: NSObject {
+@objcMembers public final class IterableAPI: NSObject {
     // Current SDK Version.
     public static let sdkVersion = "6.2.0-dev1"
     

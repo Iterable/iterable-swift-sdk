@@ -13,8 +13,7 @@ import Foundation
     case skip
 }
 
-@objc
-public protocol IterableInAppManagerProtocol {
+@objc public protocol IterableInAppManagerProtocol {
     /// - returns: A list of all in-app messages
     @objc(getMessages) func getMessages() -> [IterableInAppMessage]
     
@@ -52,8 +51,7 @@ public extension Notification.Name {
     static let iterableInboxChanged = Notification.Name(rawValue: "itbl_inbox_changed")
 }
 
-@objcMembers
-open class DefaultInAppDelegate: IterableInAppDelegate {
+@objcMembers open class DefaultInAppDelegate: IterableInAppDelegate {
     public init() {}
     
     /// By default, every single inApp will be shown as soon as it is available.
@@ -64,20 +62,17 @@ open class DefaultInAppDelegate: IterableInAppDelegate {
     }
 }
 
-@objc
-public enum IterableInAppContentType: Int, Codable {
+@objc public enum IterableInAppContentType: Int, Codable {
     case html
     case alert
     case banner
 }
 
-@objc
-public protocol IterableInAppContent {
+@objc public protocol IterableInAppContent {
     var type: IterableInAppContentType { get }
 }
 
-@objcMembers
-public final class IterableHtmlInAppContent: NSObject, IterableInAppContent {
+@objcMembers public final class IterableHtmlInAppContent: NSObject, IterableInAppContent {
     public let type = IterableInAppContentType.html
     
     /// Edge insets
@@ -97,8 +92,7 @@ public final class IterableHtmlInAppContent: NSObject, IterableInAppContent {
     }
 }
 
-@objcMembers
-public final class IterableInboxMetadata: NSObject {
+@objcMembers public final class IterableInboxMetadata: NSObject {
     public let title: String?
     public let subtitle: String?
     public let icon: String?
@@ -122,8 +116,7 @@ public final class IterableInboxMetadata: NSObject {
     case never
 }
 
-@objcMembers
-public final class IterableInAppTrigger: NSObject {
+@objcMembers public final class IterableInAppTrigger: NSObject {
     public let type: IterableInAppTriggerType
     
     // Internal
@@ -141,8 +134,7 @@ public final class IterableInAppTrigger: NSObject {
 }
 
 /// A message is comprised of content and whether this message was skipped.
-@objcMembers
-public final class IterableInAppMessage: NSObject {
+@objcMembers public final class IterableInAppMessage: NSObject {
     /// the id for the inApp message
     public let messageId: String
     
@@ -209,8 +201,7 @@ public final class IterableInAppMessage: NSObject {
 }
 
 /// Encapsulates Inbox Session
-@objcMembers
-public final class IterableInboxSession: NSObject, Codable {
+@objcMembers public final class IterableInboxSession: NSObject, Codable {
     /// Start time of session
     public let sessionStartTime: Date?
     
@@ -250,8 +241,7 @@ public final class IterableInboxSession: NSObject, Codable {
 }
 
 /// Encapsulates an Inbox impression of a message
-@objcMembers
-public final class IterableInboxImpression: NSObject, Codable {
+@objcMembers public final class IterableInboxImpression: NSObject, Codable {
     /// The message id of message
     public let messageId: String
     

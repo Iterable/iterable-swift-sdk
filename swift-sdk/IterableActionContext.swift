@@ -14,9 +14,7 @@ import Foundation
     case inApp
 }
 
-@objc
-@objcMembers
-public class IterableActionContext: NSObject {
+@objcMembers public class IterableActionContext: NSObject {
     public let action: IterableAction
     public let source: IterableActionSource
     

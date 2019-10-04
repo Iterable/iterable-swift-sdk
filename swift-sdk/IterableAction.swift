@@ -12,9 +12,9 @@ import Foundation
  `IterableAction` represents an action defined as a response to user events.
  It is currently used in push notification actions (open push & action buttons).
  */
-@objc public class IterableAction: NSObject {
+@objcMembers public class IterableAction: NSObject {
     /** Open the URL or deep link */
-    @objc public static let actionTypeOpenUrl = "openUrl"
+    public static let actionTypeOpenUrl = "openUrl"
     /**
      * Action type
      *
@@ -23,16 +23,16 @@ import Foundation
      *
      * For other types, `IterableCustomActionDelegate` will be called.
      */
-    @objc public var type: String
+    public var type: String
     /**
      * Additional data, its content depends on the action type
      */
-    @objc public var data: String?
+    public var data: String?
     
     /** The text response typed by the user */
-    @objc public var userInput: String?
+    public var userInput: String?
     
-    @objc public func isOpenUrl() -> Bool {
+    public func isOpenUrl() -> Bool {
         return type == IterableAction.actionTypeOpenUrl
     }
     
