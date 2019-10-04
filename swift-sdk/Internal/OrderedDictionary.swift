@@ -48,6 +48,11 @@ public struct OrderedDictionary<K: Hashable, V> {
         return prevValue
     }
     
+    public mutating func reset() {
+        keys.removeAll()
+        dict.removeAll()
+    }
+    
     private var dict = [K: V]()
 }
 

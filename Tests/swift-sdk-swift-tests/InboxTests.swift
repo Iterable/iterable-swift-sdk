@@ -557,4 +557,56 @@ class InboxTests: XCTestCase {
         }
         wait(for: [expectation3, expectation1, expectation2], timeout: testExpectationTimeout)
     }
+    
+    func testLogout() {
+        TestUtils.clearTestUserDefaults()
+        
+        let expectation1 = expectation(description: "initial messages sent")
+        let expectation2 = expectation(description: "inbox change notification is fired on logout")
+        
+        let mockInAppFetcher = MockInAppFetcher()
+        let mockNotificationCenter = MockNotificationCenter()
+        
+        IterableAPI.initializeForTesting(
+            config: IterableConfig(),
+            inAppFetcher: mockInAppFetcher,
+            notificationCenter: mockNotificationCenter
+        )
+        IterableAPI.email = "user@example.com"
+        
+        let payload = """
+        {"inAppMessages":
+        [
+            {
+                "saveToInbox": true,
+                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "trigger": {"type": "never"},
+                "messageId": "message1",
+                "campaignId": "campaign1",
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+        ]
+        }
+        """.toJsonDict()
+        
+        mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { _ in
+            XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
+            expectation1.fulfill()
+            
+            mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) {
+                expectation2.fulfill()
+            }
+            IterableAPI.email = nil
+        }
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+        
+        let predicate = NSPredicate { (_, _) -> Bool in
+            IterableAPI.inAppManager.getMessages().count == 0
+        }
+        
+        let expectation3 = expectation(for: predicate, evaluatedWith: nil, handler: nil)
+        
+        wait(for: [expectation2, expectation3], timeout: testExpectationTimeout)
+    }
 }

@@ -532,4 +532,20 @@ extension InAppManager: InAppNotifiable {
             self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
         }
     }
+    
+    func reset() -> Future<Bool, Error> {
+        ITBInfo()
+        
+        let result = Promise<Bool, Error>()
+        syncQueue.async {
+            self.messagesMap.reset()
+            self.persister.persist(self.messagesMap.values)
+            
+            self.callbackQueue.async {
+                self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
+                result.resolve(with: true)
+            }
+        }
+        return result
+    }
 }
