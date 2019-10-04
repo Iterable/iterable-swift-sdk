@@ -448,7 +448,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         ITBInfo()
         
         updateMessage(message, didProcessTrigger: true, consumed: true)
-        let messageContext = InAppMessageContext.from(message: message, location: location, deviceMetadata: deviceMetadata)
+        let messageContext = InAppMessageContext.from(message: message, location: location)
         apiClient?.inAppConsume(inAppMessageContext: messageContext, source: source)
         callbackQueue.async {
             self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
