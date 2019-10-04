@@ -59,23 +59,20 @@ struct InAppMessageContext {
     let saveToInbox: Bool
     let silentInbox: Bool
     let location: InAppLocation
-    let deviceMetadata: DeviceMetadata
     
-    static func from(message: IterableInAppMessage, location: InAppLocation, deviceMetadata: DeviceMetadata) -> InAppMessageContext {
+    static func from(message: IterableInAppMessage, location: InAppLocation) -> InAppMessageContext {
         return InAppMessageContext(messageId: message.messageId,
                                    saveToInbox: message.saveToInbox,
                                    silentInbox: message.silentInbox,
-                                   location: location,
-                                   deviceMetadata: deviceMetadata)
+                                   location: location)
     }
     
     // For backward compatibility, assume .inApp
-    static func from(messageId: String, deviceMetadata: DeviceMetadata) -> InAppMessageContext {
+    static func from(messageId: String, deviceMetadata _: DeviceMetadata) -> InAppMessageContext {
         return InAppMessageContext(messageId: messageId,
                                    saveToInbox: false,
                                    silentInbox: false,
-                                   location: .inApp,
-                                   deviceMetadata: deviceMetadata)
+                                   location: .inApp)
     }
     
     func toMessageContextDictionary() -> [AnyHashable: Any] {
@@ -86,8 +83,6 @@ struct InAppMessageContext {
         context.setValue(for: .silentInbox, value: silentInbox)
         
         context.setValue(for: .inAppLocation, value: location)
-        
-        context.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
         return context
     }
