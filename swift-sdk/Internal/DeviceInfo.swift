@@ -34,6 +34,7 @@ struct DeviceInfo: Codable {
     private static func createDeviceFp() -> DeviceFp {
         let screen = UIScreen.main
         let device = UIDevice.current
+        
         // iOS TimeZone stores secondsFromGMT which is the difference between the local time and GMT in seconds.
         // We are supposed to return 'timeZoneOffset', which is difference between GMT and local time in minutes.
         // Therefore, the conversion from secondsFomGMT to timezoneOffsetMinutes is as follows.
@@ -50,7 +51,7 @@ struct DeviceInfo: Codable {
     
     /// Returns UserInterfaceIdiom as String to be passed to server
     private static func getUserInterfaceIdiom() -> String {
-        switch UI_USER_INTERFACE_IDIOM() {
+        switch UIDevice.current.userInterfaceIdiom {
         case .phone:
             return "iPhone"
         case .pad:

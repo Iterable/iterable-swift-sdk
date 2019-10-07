@@ -83,8 +83,7 @@ import Foundation
 /**
  Iterable Configuration Object. Use this when initializing the API.
  */
-@objcMembers
-public class IterableConfig: NSObject {
+@objcMembers public class IterableConfig: NSObject {
     /**
      * Push integration name – used for token registration.
      * Make sure the name of this integration matches the one set up in Iterable console.
