@@ -64,7 +64,7 @@ struct TestUtils {
             return
         }
         
-        XCTAssertEqual(header[JsonKey.contentType.jsonKey], JsonKey.applicationJson.jsonKey)
+        XCTAssertEqual(header[JsonKey.contentType.jsonKey], JsonValue.applicationJson.jsonStringValue)
         XCTAssertEqual(header[AnyHashable.ITBL_HEADER_SDK_PLATFORM], String.ITBL_PLATFORM_IOS)
         XCTAssertEqual(header[AnyHashable.ITBL_HEADER_SDK_VERSION], IterableAPI.sdkVersion)
         XCTAssertEqual(header[AnyHashable.ITBL_HEADER_API_KEY], apiKey)
