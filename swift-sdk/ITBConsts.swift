@@ -232,6 +232,9 @@ public enum JsonKey: String, JsonKeyRepresentable {
     case platform
     case appPackageName
     
+    case contentType = "Content-Type"
+    case applicationJson = "application/json"
+    
     public var jsonKey: String {
         return rawValue
     }
