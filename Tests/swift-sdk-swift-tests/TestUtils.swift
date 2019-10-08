@@ -58,6 +58,18 @@ struct TestUtils {
         }
     }
     
+    static func validateHeader(_ request: URLRequest, _ apiKey: String) {
+        guard let header = request.allHTTPHeaderFields else {
+            XCTFail("no header for request")
+            return
+        }
+        
+        XCTAssertEqual(header[JsonKey.contentType.jsonKey], JsonValue.applicationJson.jsonStringValue)
+        XCTAssertEqual(header[AnyHashable.ITBL_HEADER_SDK_PLATFORM], String.ITBL_PLATFORM_IOS)
+        XCTAssertEqual(header[AnyHashable.ITBL_HEADER_SDK_VERSION], IterableAPI.sdkVersion)
+        XCTAssertEqual(header[AnyHashable.ITBL_HEADER_API_KEY], apiKey)
+    }
+    
     static func validateMessageContext(messageId: String, email: String? = nil, userId: String? = nil, saveToInbox: Bool, silentInbox: Bool, location: InAppLocation, inBody body: [String: Any]) {
         validateMatch(keyPath: KeyPath(JsonKey.messageId), value: messageId, inDictionary: body)
         if let email = email {

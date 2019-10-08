@@ -23,7 +23,9 @@ class RequestCreatorTests: XCTestCase {
                                                 endUnreadMessageCount: 3,
                                                 impressions: impressions)
         let urlRequest = convertToUrlRequest(createRequestCreator().createTrackInboxSessionRequest(inboxSession: inboxSession))
+        TestUtils.validateHeader(urlRequest, apiKey)
         TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_TRACK_INBOX_SESSION)
+        
         let body = urlRequest.bodyDict
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.email), value: auth.email, inDictionary: body)
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.inboxSessionStart), value: IterableUtil.int(fromDate: startDate), inDictionary: body)
@@ -55,17 +57,8 @@ class RequestCreatorTests: XCTestCase {
         let request = createRequestCreator().createGetInAppMessagesRequest(inAppMessageRequestCount)
         let urlRequest = convertToUrlRequest(request)
         
+        TestUtils.validateHeader(urlRequest, apiKey)
         TestUtils.validate(request: urlRequest, requestType: .get, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_GET_INAPP_MESSAGES)
-        
-        // TODO: consider refactoring this header check into its own unit test and remove from here
-        guard let header = urlRequest.allHTTPHeaderFields else {
-            XCTFail("no header")
-            return
-        }
-        
-        XCTAssertEqual(header[AnyHashable.ITBL_HEADER_SDK_PLATFORM], String.ITBL_PLATFORM_IOS)
-        XCTAssertEqual(header[AnyHashable.ITBL_HEADER_SDK_VERSION], IterableAPI.sdkVersion)
-        XCTAssertEqual(header[AnyHashable.ITBL_HEADER_API_KEY], apiKey)
         
         guard case let .success(.get(getRequest)) = request, let args = getRequest.args else {
             XCTFail("could not unwrap to a get request and its arguments")
@@ -96,6 +89,7 @@ class RequestCreatorTests: XCTestCase {
             XCTFail()
             return
         }
+        
         XCTAssertEqual(matchedImpression["silentInbox"] as? Bool, impression.silentInbox)
         XCTAssertEqual(matchedImpression["displayCount"] as? Int, impression.displayCount)
         XCTAssertEqual(matchedImpression["displayDuration"] as? TimeInterval, impression.displayDuration)

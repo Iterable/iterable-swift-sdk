@@ -232,6 +232,8 @@ public enum JsonKey: String, JsonKeyRepresentable {
     case platform
     case appPackageName
     
+    case contentType = "Content-Type"
+    
     public var jsonKey: String {
         return rawValue
     }
@@ -239,6 +241,18 @@ public enum JsonKey: String, JsonKeyRepresentable {
 
 public protocol JsonValueRepresentable {
     var jsonValue: Any { get }
+}
+
+public enum JsonValue: String, JsonValueRepresentable {
+    case applicationJson = "application/json"
+    
+    public var jsonStringValue: String {
+        return rawValue
+    }
+    
+    public var jsonValue: Any {
+        return rawValue
+    }
 }
 
 @objc public enum InAppLocation: Int, JsonValueRepresentable {
