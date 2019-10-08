@@ -74,6 +74,7 @@
 		AC738CE72315A54100B96B2D /* CommonMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F942166EC880099A184 /* CommonMocks.swift */; };
 		AC738CE82315A5B600B96B2D /* CommonExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F9C2167E9FD0099A184 /* CommonExtensions.swift */; };
 		AC738CEA2315A8B200B96B2D /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC738CE92315A8B200B96B2D /* MainViewController.swift */; };
+		AC750A4A234CD67900561902 /* InAppHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC750A49234CD67900561902 /* InAppHelperTests.swift */; };
 		AC776DA22118B86600C27C27 /* DeviceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC776DA12118B86600C27C27 /* DeviceInfo.swift */; };
 		AC776DA4211A17C700C27C27 /* IterableRequestUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC776DA3211A17C700C27C27 /* IterableRequestUtilTests.swift */; };
 		AC776DA6211A1B8A00C27C27 /* IterableRequestUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC776DA5211A1B8A00C27C27 /* IterableRequestUtil.swift */; };
@@ -289,6 +290,7 @@
 		AC72A0C520CF4CB9004D7997 /* IterableAPIInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPIInternal.swift; sourceTree = "<group>"; };
 		AC72A0C620CF4CB9004D7997 /* IterableAppIntegration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAppIntegration.swift; sourceTree = "<group>"; };
 		AC738CE92315A8B200B96B2D /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		AC750A49234CD67900561902 /* InAppHelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppHelperTests.swift; sourceTree = "<group>"; };
 		AC776DA12118B86600C27C27 /* DeviceInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceInfo.swift; sourceTree = "<group>"; };
 		AC776DA3211A17C700C27C27 /* IterableRequestUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableRequestUtilTests.swift; sourceTree = "<group>"; };
 		AC776DA5211A1B8A00C27C27 /* IterableRequestUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableRequestUtil.swift; sourceTree = "<group>"; };
@@ -666,6 +668,7 @@
 				55B37FC32297135F0042F13A /* NotificationMetadataTests.swift */,
 				55B37FC5229752DD0042F13A /* OrderedDictionaryTests.swift */,
 				ACEDF41E2183C436000B9BFE /* PromiseTests.swift */,
+				AC750A49234CD67900561902 /* InAppHelperTests.swift */,
 			);
 			path = "swift-sdk-swift-tests";
 			sourceTree = "<group>";
@@ -1354,6 +1357,7 @@
 				AC995F9E2167E9FD0099A184 /* CommonExtensions.swift in Sources */,
 				ACD6EDB921CD78F600D2901B /* DeeplinkTests.swift in Sources */,
 				AC2C668020D31B1F00D46CC9 /* IterableNotificationResponseTests.swift in Sources */,
+				AC750A4A234CD67900561902 /* InAppHelperTests.swift in Sources */,
 				AC87172621A4E47E00FEA369 /* TestInAppPayloadGenerator.swift in Sources */,
 				AC1670CD2230A91C00989F8E /* InboxTests.swift in Sources */,
 				AC2C668420D3370600D46CC9 /* Mocks.swift in Sources */,
