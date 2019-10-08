@@ -86,3 +86,13 @@ public extension Data {
         return map { String(format: "%02.2hhx", $0) }.joined()
     }
 }
+
+public extension Int {
+    func times(_ f: () -> Void) {
+        if self > 0 {
+            for _ in 0 ..< self {
+                f()
+            }
+        }
+    }
+}
