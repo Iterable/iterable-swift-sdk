@@ -84,6 +84,22 @@ struct TestUtils {
         validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.inAppLocation.jsonKey)"), value: location.jsonValue as! String, inDictionary: body)
     }
     
+    static func validateDeprecatedMessageContext(messageId: String, email: String? = nil, userId: String? = nil, saveToInbox: Bool, silentInbox: Bool, inBody body: [String: Any]) {
+        validateMatch(keyPath: KeyPath(JsonKey.messageId), value: messageId, inDictionary: body)
+        
+        if let email = email {
+            validateMatch(keyPath: KeyPath(JsonKey.email), value: email, inDictionary: body)
+        }
+        
+        if let userId = userId {
+            validateMatch(keyPath: KeyPath(JsonKey.userId), value: userId, inDictionary: body)
+        }
+        
+        let contextKey = "\(JsonKey.inAppMessageContext.jsonKey)"
+        validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.saveToInbox.jsonKey)"), value: saveToInbox, inDictionary: body)
+        validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.silentInbox.jsonKey)"), value: silentInbox, inDictionary: body)
+    }
+    
     static func validateDeviceInfo(inBody body: [String: Any]) {
         validateMatch(keyPath: KeyPath(.deviceInfo, .deviceId), value: IterableAPI.internalImplementation!.deviceId, inDictionary: body)
         validateMatch(keyPath: KeyPath(.deviceInfo, .platform), value: String.ITBL_PLATFORM_IOS, inDictionary: body)
