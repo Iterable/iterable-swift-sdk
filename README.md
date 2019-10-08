@@ -824,7 +824,7 @@ Important event properties:
 
 ##### In-App Close
 
-This event is triggered when the user closes an inbox message by tapping a close or button or a back button in the navigation controller. Close buttons/links should have URL `iterable://close` or `iterable://dismiss`. Tapping a close button/link also creates an `inAppClick` event.
+This event is triggered when the user closes an inbox message by tapping a close button or a back button in the navigation controller. Close buttons/links should have URL `iterable://dismiss`. Tapping a close button/link also creates an `inAppClick` event.
 
 Important event properties:
 
