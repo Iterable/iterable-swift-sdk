@@ -11,5 +11,11 @@ import XCTest
 @testable import IterableSDK
 
 class DeprecatedFunctionsTests: XCTestCase {
+    func testDeprecatedTrackInAppOpen() {}
     
+    func testDeprecatedTrackInAppClick() {}
+    
+    func testDeprecatedTrackInAppClose() {}
+    
+    func testDeprecatedTrackInAppConsume() {}
 }
