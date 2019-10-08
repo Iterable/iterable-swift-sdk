@@ -44,6 +44,9 @@ class LocalStorageTests: XCTestCase {
         mockDateProvider.currentDate = Calendar.current.date(byAdding: Calendar.Component.hour, value: 25, to: currentDate)!
         let fromLocalStorage2: IterableAttributionInfo? = localStorage.getAttributionInfo(currentDate: mockDateProvider.currentDate)
         XCTAssertNil(fromLocalStorage2)
+        
+        XCTAssertEqual(attributionInfo.description,
+                       "\(AnyHashable.ITBL_KEY_CAMPAIGN_ID): \(attributionInfo.campaignId), \(AnyHashable.ITBL_KEY_TEMPLATE_ID): \(attributionInfo.templateId), \(AnyHashable.ITBL_KEY_MESSAGE_ID): \(attributionInfo.messageId)")
     }
     
     func testPayload() throws {
