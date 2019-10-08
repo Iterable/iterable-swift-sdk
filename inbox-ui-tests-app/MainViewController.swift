@@ -34,4 +34,10 @@ class MainViewController: UIViewController {
         
         AppDelegate.sharedInstance.addInboxMessage()
     }
+    
+    @IBAction func addMessageToServer(_: Any) {
+        ITBInfo()
+        
+        AppDelegate.sharedInstance.addMessageToServer()
+    }
 }

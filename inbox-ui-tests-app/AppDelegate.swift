@@ -73,6 +73,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func addInboxMessage() {
         ITBInfo()
+        let (max, message) = createNextMessage()
+        mockInAppFetcher.mockMessagesAvailableFromServer(messages: InAppTestHelper.inAppMessages(fromPayload: createPayload()) + [message]).onSuccess { _ in
+            self.indices.append(max)
+        }
+    }
+    
+    func addMessageToServer() {
+        // mocks message added to server
+        
+        mockInAppFetcher.add(message: createNextMessage().1)
+    }
+    
+    private var indices = [1, 2, 3]
+    
+    private func createNextMessage() -> (Int, IterableInAppMessage) {
         let max = indices.max().map { $0 + 1 } ?? 1
         
         let html = """
@@ -80,18 +95,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             <div style="width:100px;height:100px;position:absolute;margin:auto;top:0;bottom:0;left:0;right:0;"><a href="iterable://delete">Delete</a></div>
         </body>
         """
-        let message = IterableInAppMessage(messageId: "message\(max)",
-                                           campaignId: "campaign\(max)",
-                                           trigger: IterableInAppTrigger.neverTrigger,
-                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 1.0, html: html),
-                                           saveToInbox: true,
-                                           inboxMetadata: IterableInboxMetadata(title: "title\(max)", subtitle: "subTitle\(max)"))
-        mockInAppFetcher.mockMessagesAvailableFromServer(messages: InAppTestHelper.inAppMessages(fromPayload: createPayload()) + [message]).onSuccess { _ in
-            self.indices.append(max)
-        }
+        return (max, IterableInAppMessage(messageId: "message\(max)",
+                                          campaignId: "campaign\(max)",
+                                          trigger: IterableInAppTrigger.neverTrigger,
+                                          content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 1.0, html: html),
+                                          saveToInbox: true,
+                                          inboxMetadata: IterableInboxMetadata(title: "title\(max)", subtitle: "subTitle\(max)")))
     }
-    
-    private var indices = [1, 2, 3]
     
     private func createPayload() -> [AnyHashable: Any] {
         return TestInAppPayloadGenerator.createPayloadWithUrl(indices: indices, triggerType: .never, saveToInbox: true)

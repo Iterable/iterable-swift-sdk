@@ -26,6 +26,13 @@ struct UITestsHelper {
         startPoint.press(forDuration: 0, thenDragTo: endPoint)
     }
     
+    static func pullToRefresh(_ cell: XCUIElement) {
+        let firstCell = cell
+        let start = firstCell.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 0))
+        let finish = firstCell.coordinate(withNormalizedOffset: CGVector(dx: 0, dy: 25))
+        start.press(forDuration: 0, thenDragTo: finish)
+    }
+    
     static func tableCell(withText text: String, inApp app: XCUIApplication) -> XCUIElement {
         return app.tables.cells.staticTexts[text]
     }
@@ -81,6 +88,10 @@ extension XCUIApplication {
 extension XCUIElement {
     func deleteSwipe() {
         UITestsHelper.deleteSwipe(self)
+    }
+    
+    func pullToRefresh() {
+        UITestsHelper.pullToRefresh(self)
     }
     
     @discardableResult func waitToAppear(fail: Bool = true) -> XCUIElement {
