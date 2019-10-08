@@ -1178,6 +1178,58 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
+    func testEmptyInAppManager() {
+        let expectation1 = expectation(description: "scheduleSync() returns a true value")
+        let expectation2 = expectation(description: "reset() returns a true value")
+        
+        let emptyManager = EmptyInAppManager()
+        
+        emptyManager.start()
+        
+        XCTAssertNil(emptyManager.createInboxMessageViewController(for: getEmptyInAppMessage(), withInboxMode: .nav))
+        
+        XCTAssertEqual(emptyManager.getMessages(), [])
+        
+        XCTAssertEqual(emptyManager.getInboxMessages(), [])
+        
+        // maybe test with a constructed message and check for changes on that message?
+        emptyManager.show(message: getEmptyInAppMessage())
+        
+        emptyManager.show(message: getEmptyInAppMessage(), consume: true, callback: nil)
+        
+        emptyManager.remove(message: getEmptyInAppMessage())
+        
+        emptyManager.remove(message: getEmptyInAppMessage(), location: .inApp, source: .deleteButton)
+        
+        emptyManager.set(read: true, forMessage: getEmptyInAppMessage())
+        
+        XCTAssertEqual(emptyManager.getUnreadInboxMessagesCount(), 0)
+        
+        emptyManager.scheduleSync().onSuccess(block: { value in
+            XCTAssertTrue(value)
+            expectation1.fulfill()
+        })
+        
+        emptyManager.onInAppRemoved(messageId: "")
+        
+        XCTAssertTrue(emptyManager.isOkToShowNow(message: getEmptyInAppMessage()))
+        
+        emptyManager.reset().onSuccess { value in
+            XCTAssertTrue(value)
+            expectation2.fulfill()
+        }
+        
+        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
+    }
+    
+    private func getEmptyInAppMessage() -> IterableInAppMessage {
+        return IterableInAppMessage(messageId: "", campaignId: "", content: getEmptyInAppContent())
+    }
+    
+    private func getEmptyInAppContent() -> IterableInAppContent {
+        return IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0, html: "")
+    }
+    
     fileprivate func verifyCustomActionIsCalled(expectation1: XCTestExpectation, customActionScheme: String, customActionName: String) {
         let expectation2 = expectation(description: "correct number of messages")
         
