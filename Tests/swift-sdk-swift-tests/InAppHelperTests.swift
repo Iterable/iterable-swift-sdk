@@ -78,6 +78,22 @@ class InAppHelperTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
+    func testParseURL() {
+        let urlWithNoScheme = URL(string: "blah")!
+        XCTAssertNil(InAppHelper.parse(inAppUrl: urlWithNoScheme))
+        
+        let urlWithInvalidAppleWebdata = URL(string: "applewebdata://")!
+        XCTAssertNil(InAppHelper.parse(inAppUrl: urlWithInvalidAppleWebdata))
+        
+        let urlWithUnsupportedScheme = URL(string: "myscheme://host/path")!
+        let parsed = InAppHelper.parse(inAppUrl: urlWithUnsupportedScheme)!
+        if case let InAppHelper.InAppClickedUrl.regularUrl(url) = parsed {
+            XCTAssertEqual(urlWithUnsupportedScheme, url)
+        } else {
+            XCTFail("expected regular url")
+        }
+    }
+    
     private class MockApiClient: ApiClientProtocol {
         func register(hexToken _: String, appName _: String, deviceId _: String, sdkVersion _: String?, pushServicePlatform _: PushServicePlatform, notificationsEnabled _: Bool) -> Future<SendRequestValue, SendRequestError> {
             fatalError()
