@@ -53,6 +53,7 @@ class ClassExtensionsTests: XCTestCase {
         return digits.firstIndex(of: hexChar).map { Byte($0) }
     }
     
+    // takes 2 hexadecimal characters and convert it to a single byte
     private func hexCharsToByte(c1: Character, c2: Character) -> (Byte)? {
         guard let d1 = hexCharToDigit(c1), let d2 = hexCharToDigit(c2) else {
             return nil
@@ -60,6 +61,8 @@ class ClassExtensionsTests: XCTestCase {
         return d1 * 16 + d2
     }
     
+    // convert string of hexadecimal characters into a combination of bytes
+    // assembles combination of bytes by converting every 2 characters
     private func data(fromHexString hexString: String) -> Data {
         return Data(Array(hexString).take(2).map { hexCharsToByte(c1: $0[0], c2: $0[1]) }.compactMap { $0 })
     }
