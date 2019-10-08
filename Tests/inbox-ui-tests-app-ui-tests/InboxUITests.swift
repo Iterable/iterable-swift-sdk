@@ -95,4 +95,22 @@ class InboxUITests: XCTestCase, IterableInboxUITestsProtocol {
         let dict = body(forEvent: String.ITBL_PATH_INAPP_CONSUME)
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.deleteAction), value: InAppDeleteSource.deleteButton.jsonValue as! String, inDictionary: dict)
     }
+    
+    func testPullToRefresh() {
+        gotoTab(.home)
+        app.button(withText: "Add Message To Server").tap()
+        
+        gotoTab(.inbox)
+        let count1 = app.tables.cells.count
+        app.tableCell(withText: "title1").pullToRefresh()
+        
+        let count2 = app.tables.cells.count
+        XCTAssertEqual(count2, count1 + 1)
+        
+        app.lastCell().tap()
+        app.link(withText: "Delete").waitToAppear().tap()
+        
+        app.tableCell(withText: "title1").waitToAppear()
+        XCTAssertEqual(app.tables.cells.count, count1)
+    }
 }

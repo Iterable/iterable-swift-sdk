@@ -266,6 +266,10 @@ class MockInAppFetcher: InAppFetcherProtocol {
         return mockMessagesAvailableFromServer(messages: InAppTestHelper.inAppMessages(fromPayload: payload))
     }
     
+    func add(message: IterableInAppMessage) {
+        messagesMap[message.messageId] = message
+    }
+    
     private var messagesMap = OrderedDictionary<String, IterableInAppMessage>()
 }
 
