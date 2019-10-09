@@ -49,12 +49,6 @@ class DeprecatedFunctionsTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
-//    func testDeprecatedTrackInAppClick() {}
-    
-//    func testDeprecatedTrackInAppClose() {}
-    
-//    func testDeprecatedTrackInAppConsume() {}
-    
     private func getEmptyInAppContent() -> IterableHtmlInAppContent {
         return IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
     }
