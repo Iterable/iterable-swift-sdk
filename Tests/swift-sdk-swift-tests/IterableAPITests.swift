@@ -27,6 +27,18 @@ class IterableAPITests: XCTestCase {
         XCTAssertEqual(IterableAPI.internalImplementation?.apiKey, IterableAPITests.apiKey)
     }
     
+    func testInitializeWithConfig() {
+        let prodIntegrationName = "the-best-app-ever"
+        
+        let config = IterableConfig()
+        config.pushIntegrationName = prodIntegrationName
+        config.inAppDisplayInterval = 1.0
+        
+        IterableAPI.initialize(apiKey: IterableAPITests.apiKey, config: config)
+        
+        XCTAssertEqual(IterableAPI.internalImplementation?.apiKey, IterableAPITests.apiKey)
+    }
+    
     func testInitializeCheckEndpoint() {
         let expectation1 = XCTestExpectation(description: "links endpoint called")
         let expectation2 = XCTestExpectation(description: "api endpoint called")
