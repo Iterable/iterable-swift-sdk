@@ -854,7 +854,7 @@ Important event properties
 - `campaignId`- the in-app campaign id
 - `inboxSessionStart` - when the session started
 - `inboxSessionEnd` - when the session ended
-- `uniqueImpressionCount` - how many unique inbox messages were displayed in the viewport
+- `uniqueImpressionCount` - no of unique messages visible in the Inbox message list to the user during the inbox session
 - `startTotalMessageCount` - the number of messages in the inbox at the session's start
 - `endTotalMessageCount` - the number of messages in the inbox at the session's end (messages can be added or removed during a session)
 
