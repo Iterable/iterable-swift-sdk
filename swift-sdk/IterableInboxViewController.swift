@@ -15,7 +15,7 @@ open class IterableInboxViewController: UITableViewController {
     // MARK: Settable properties
     
     /// If you want to use a custom layout for your inbox TableViewCell
-    /// this is where you should override it. Please note that this assumes
+    /// this is the variable you should override. Please note that this assumes
     /// that the XIB is present in the main bundle.
     @IBInspectable public var cellNibName: String? = nil
     
