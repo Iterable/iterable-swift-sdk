@@ -23,6 +23,10 @@ open class IterableInboxViewController: UITableViewController {
     /// Set this mode to `nav` to push inbox message into navigation stack.
     public var inboxMode = InboxMode.popup
     
+    /// If you'd like to customize how dates show up for the cells, override dateFormatter
+    /// If it's nil, this class will simply use the localizedString function from DateFormatter.
+    public var dateFormatter: DateFormatter? = nil
+    
     /// You can change insertion/deletion animations here.
     public var insertionAnimation = UITableView.RowAnimation.automatic
     public var deletionAnimation = UITableView.RowAnimation.automatic
@@ -205,13 +209,17 @@ open class IterableInboxViewController: UITableViewController {
         
         if let createdAt = message.createdAt {
             cell.createdAtLbl?.isHidden = false
-            cell.createdAtLbl?.text = IterableInboxViewController.displayValue(forTime: createdAt)
+            cell.createdAtLbl?.text = displayValue(forTime: createdAt)
         } else {
             cell.createdAtLbl?.isHidden = true
         }
     }
     
-    private static func displayValue(forTime date: Date) -> String {
+    private func displayValue(forTime date: Date) -> String {
+        if let dateFormatter = dateFormatter {
+            return dateFormatter.string(from: date)
+        }
+        
         return DateFormatter.localizedString(from: date, dateStyle: .medium, timeStyle: .short)
     }
 }
