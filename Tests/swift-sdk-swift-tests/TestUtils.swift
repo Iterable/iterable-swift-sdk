@@ -70,34 +70,25 @@ struct TestUtils {
         XCTAssertEqual(header[AnyHashable.ITBL_HEADER_API_KEY], apiKey)
     }
     
-    static func validateMessageContext(messageId: String, email: String? = nil, userId: String? = nil, saveToInbox: Bool, silentInbox: Bool, location: InAppLocation, inBody body: [String: Any]) {
-        validateMatch(keyPath: KeyPath(JsonKey.messageId), value: messageId, inDictionary: body)
+    static func validateEmailOrUserId(email: String? = nil, userId: String? = nil, inBody body: [String: Any]) {
         if let email = email {
             validateMatch(keyPath: KeyPath(JsonKey.email), value: email, inDictionary: body)
         }
+        
         if let userId = userId {
             validateMatch(keyPath: KeyPath(JsonKey.userId), value: userId, inDictionary: body)
         }
+    }
+    
+    static func validateMessageContext(messageId: String, email: String? = nil, userId: String? = nil, saveToInbox: Bool, silentInbox: Bool, location: InAppLocation, inBody body: [String: Any]) {
+        validateMatch(keyPath: KeyPath(JsonKey.messageId), value: messageId, inDictionary: body)
+        
+        validateEmailOrUserId(email: email, userId: userId, inBody: body)
+        
         let contextKey = "\(JsonKey.inAppMessageContext.jsonKey)"
         validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.saveToInbox.jsonKey)"), value: saveToInbox, inDictionary: body)
         validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.silentInbox.jsonKey)"), value: silentInbox, inDictionary: body)
         validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.inAppLocation.jsonKey)"), value: location.jsonValue as! String, inDictionary: body)
-    }
-    
-    static func validateDeprecatedMessageContext(messageId: String, email: String? = nil, userId: String? = nil, saveToInbox: Bool, silentInbox: Bool, inBody body: [String: Any]) {
-        validateMatch(keyPath: KeyPath(JsonKey.messageId), value: messageId, inDictionary: body)
-        
-        if let email = email {
-            validateMatch(keyPath: KeyPath(JsonKey.email), value: email, inDictionary: body)
-        }
-        
-        if let userId = userId {
-            validateMatch(keyPath: KeyPath(JsonKey.userId), value: userId, inDictionary: body)
-        }
-        
-        let contextKey = "\(JsonKey.inAppMessageContext.jsonKey)"
-        validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.saveToInbox.jsonKey)"), value: saveToInbox, inDictionary: body)
-        validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.silentInbox.jsonKey)"), value: silentInbox, inDictionary: body)
     }
     
     static func validateDeviceInfo(inBody body: [String: Any]) {

@@ -59,3 +59,15 @@ class DeprecatedFunctionsTests: XCTestCase {
         return IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
     }
 }
+
+extension TestUtils {
+    static func validateDeprecatedMessageContext(messageId: String, email: String? = nil, userId: String? = nil, saveToInbox: Bool, silentInbox: Bool, inBody body: [String: Any]) {
+        validateMatch(keyPath: KeyPath(JsonKey.messageId), value: messageId, inDictionary: body)
+        
+        validateEmailOrUserId(email: email, userId: userId, inBody: body)
+        
+        let contextKey = "\(JsonKey.inAppMessageContext.jsonKey)"
+        validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.saveToInbox.jsonKey)"), value: saveToInbox, inDictionary: body)
+        validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.silentInbox.jsonKey)"), value: silentInbox, inDictionary: body)
+    }
+}
