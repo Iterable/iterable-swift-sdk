@@ -15,7 +15,7 @@ open class IterableInboxViewController: UITableViewController {
     // MARK: Settable properties
     
     /// If you want to use a custom layout for your inbox TableViewCell
-    /// this is where you should override it. Please note that this assumes
+    /// this is the variable you should override. Please note that this assumes
     /// that the XIB is present in the main bundle.
     @IBInspectable public var cellNibName: String? = nil
     
@@ -23,7 +23,7 @@ open class IterableInboxViewController: UITableViewController {
     /// Set this mode to `nav` to push inbox message into navigation stack.
     public var inboxMode = InboxMode.popup
     
-    /// You can change insertion/deletion animations here.
+    /// You can override these insertion/deletion animations for custom ones
     public var insertionAnimation = UITableView.RowAnimation.automatic
     public var deletionAnimation = UITableView.RowAnimation.automatic
     

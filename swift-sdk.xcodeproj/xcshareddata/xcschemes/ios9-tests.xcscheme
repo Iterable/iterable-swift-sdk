@@ -98,16 +98,6 @@
                </Test>
             </SkippedTests>
          </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AC7B143920D02D8700877BFE"
-               BuildableName = "swift-sdk-objc-tests.xctest"
-               BlueprintName = "swift-sdk-objc-tests"
-               ReferencedContainer = "container:swift-sdk.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference

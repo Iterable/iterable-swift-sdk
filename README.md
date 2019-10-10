@@ -711,7 +711,152 @@ config.customActionDelegate = YourCustomActionDelegate()
     
 #### Changing the display interval between in-app messages
 
-To customize the time delay between successive in-app messages (default value of 30 seconds), set `IterableConfig.inAppDisplayInterval` to an appropriate value (in seconds). 
+To customize the time delay between successive in-app messages (default value of 30 seconds), set `IterableConfig.inAppDisplayInterval` to an appropriate value (in seconds).
+
+### Mobile Inbox
+
+Apps using version 6.2.0 and later of this SDK can save in-app messages to an inbox. This inbox displays a list of saved in-app messages and allows users to read and interact with them at their convenience. The SDK provides a default user interface for the inbox, and it can be customized to match your brand's styles.
+
+![Linking](images/mobile-inbox.png)
+
+To configure an in-app message to use the inbox, marketers should:
+
+- Enable the **Show in Inbox** toggle in the in-app message's template
+- Choose whether or not to **Deliver Silently to Inbox** (so that the message does not display prominently when the device receives it, but can be viewed later by the user)
+
+#### Mobile Inbox implementation guide
+
+When implementing an inbox, you'll work primarily with the `IterableInboxNavigationViewController` class, a subclass of `UINavigationController`. This class automatically instantiates `IterableInboxViewController` as its root view controller.
+
+To avoid the use of a navigation controller, instantiate an `IterableInboxViewController` object. In this case, when reading the below documentation, substitute `IterableInboxViewController` for `IterableInboxNavigationViewController`.
+
+##### Show the inbox as a tab
+
+Many iOS apps place a message inbox in a `UITabBarController` tab. When using `IterableInboxNavigationViewController` as a tab's view controller (whether in a storyboard or in code), the tab automatically shows a badge count that represents the user's total unread in-app message count.
+
+##### Display mobile inbox as a result of an user action
+
+It's also possible to show the inbox when a user taps a button (or completes some other action). To do this, respond to the user's action by instantiating the `IterableInboxNavigationViewController` and displaying it. For example:
+
+```swift
+// Add this in your button tap handler
+let inboxViewController = IterableInboxNavigationViewController()
+present(inboxViewController, animated: true)
+```
+
+#### Mobile Inbox customization options
+
+The SDK provides various ways to customize the inbox's interface to match your brand's styles. For simpler customization needs, specify a custom `cellNibName` (and corresponding XIB file) on the `IterableInboxNavigationController`. For more advanced scenarios, define a class that inherits from `IterableInboxViewController` or `IterableInboxNavigationController` and override existing methods as necessary.
+
+##### inboxMode
+
+`IterableInboxViewController` can display inbox messages in two ways:
+
+- `popup` - (default): Displays the inbox message modally.
+- `nav` - Pushes the inbox message onto the navigation stack.
+
+It's generally best to use `nav` mode, since it makes sense in more app navigation paradigms.
+
+##### cellNibName
+
+To completely change the look of an inbox, create a custom `UITableViewCell` XIB file. Set the custom class of this XIB to `IterableInboxCell`, connect the outlets, and set the `cellNibName` property on `IterableInboxNavigationViewController` to the name of the newly created XIB file.
+
+##### navTitle
+
+To change the title of the inbox, set the `navTitle` property on `IterableInboxNavigationViewController`. Choose a simple title such as "Inbox".
+
+#### Mobile inbox events and the events lifecycle
+
+An inbox lists saved in-app messages. Because of this, Iterable events that apply to in-app messages also apply to inbox messages. These events are described below:
+
+##### In-App Send
+
+This event is triggered when an in-app message is sent to a user.
+
+Important event properties:
+
+- `eventType` - `inAppSend`
+- `createdAt` - when the in-app message was sent
+- `campaignId`- the in-app message campaign ID
+
+##### In-App Delivery
+
+This event is triggered when an in-app message is received by a user's device.
+
+Important event properties:
+
+- `eventType` - `inAppDelivery`
+- `createdAt` - when the in-app message was received by the device
+- `campaignId` - the in-app message campaign ID
+
+##### Inbox Message Impression
+
+This event tracks the number of unique times a message appeared in the inbox during a single inbox session (period when the user had the inbox open). The total represents the count of unique times the message displayed on-screen in the inbox during an inbox session (not the number of times the user actually opened that message).
+
+Important event properties:
+
+- `eventType` - `inboxMessageImpression`
+- `createdAt` - when the event was created
+- `campaignId` - the in-app message campaign ID
+- `impressionCount` - how many times the message was visible in the inbox during the inbox session
+- `totalDuration` - the total duration of time (in seconds) the message was visible in the inbox
+
+##### In-App Open
+
+This event is triggered when the user taps a message in the inbox to view its contents.
+
+Important event properties:
+
+- `eventType` - `inAppOpen`
+- `createdAt` - when the in-app message was opened
+- `campaignId`- the in-app message campaign ID
+
+##### In-App Click
+
+This event is triggered when the user taps on a link or button in an in-app message.
+
+Important event properties:
+
+- `eventType` - `inAppClick`
+- `createdAt` - when the button in the in-app message was tapped
+- `campaignId`- the in-app message campaign ID
+- `clickedUrl` - the URL associated with the tapped link/button
+
+##### In-App Close
+
+This event is triggered when the user closes an inbox message by tapping a close button or a back button in the navigation controller. Close buttons/links should have URL `iterable://dismiss`. Tapping a close button/link also creates an `inAppClick` event.
+
+Important event properties:
+
+- `eventType` - `inAppClose`
+- `createdAt` - when the in-app message was closed
+- `campaignId`- the in-app message campaign ID
+- `closeAction` - the type of item the user tapped: `link` (for buttons/links), `back` for a navigation controller back button, or `other`
+
+##### In-App Delete 
+
+This event is triggered when the user deletes an inbox message by swiping left on it and tapping the **Delete** button, or when the user taps a delete button/link in the in-app message, which should have a URL of `iterable://delete`. Tapping a delete button/link also creates an `inAppClick` event and an `inAppClose` event.
+
+Important event properties:
+
+- `eventType` - `inAppDelete`
+- `createdAt` - when the in-app message was deleted
+- `campaignId`- the in-app campaign ID
+- `deleteAction` - how the message was deleted (`inbox-swipe` if the user swiped left in the inbox and tapped **Delete**, or `delete-button` if the user tapped a button/link with URL `iterable://delete`).
+
+##### Inbox Session
+
+This event captures information about an inbox session, which starts when a user opens the inbox and ends when they navigate away (or close/minimize the app). Viewing a message in the inbox does not end the session.
+
+Important event properties
+
+- `eventType` - `inboxSession`
+- `campaignId`- the in-app campaign id
+- `inboxSessionStart` - when the session started
+- `inboxSessionEnd` - when the session ended
+- `uniqueImpressionCount` - no of unique messages visible in the Inbox message list to the user during the inbox session
+- `startTotalMessageCount` - the number of messages in the inbox at the session's start
+- `endTotalMessageCount` - the number of messages in the inbox at the session's end (messages can be added or removed during a session)
 
 ### Custom events
 
