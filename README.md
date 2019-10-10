@@ -3,6 +3,20 @@
 [![pod](https://badge.fury.io/co/Iterable-iOS-SDK.svg)](https://cocoapods.org/pods/Iterable-iOS-SDK)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 
+# Table of Contents
+- [Installing with a Dependency Manager](#installing-with-a-dependency-manager)
+    - [Carthage](#carthage)
+    - [CocoaPods](#cocoapods)
+- [Installing Manually](#installing-manually)
+- [Migrating from a Version Prior to 6.1.0](#migrating-from-a-version-prior-to-610)
+- [Sample Projects](#sample-projects)
+- [Configuring the SDK](#configuring-the-sdk)
+- [Using the SDK](#using-the-sdk)
+    - [Push Notifications](#push-notifications)
+    - [Deep Links](#deep-links)
+    - [In-app Messages](#in-app-messages)
+    - [Mobile Inbox](#mobile-inbox)
+
 # Iterable iOS SDK
 
 The Iterable iOS SDK is a Swift implementation of an iOS client for Iterable, for iOS versions 9.0 and higher.
