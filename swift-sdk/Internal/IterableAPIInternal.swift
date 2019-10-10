@@ -427,8 +427,11 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             case .auto:
                 return IterableAPNSUtil.isSandboxAPNS() ? sandboxPushIntegrationName : pushIntegrationName
             }
+        } else if let pushIntegrationName = config.pushIntegrationName {
+            return pushIntegrationName
+        } else {
+            return Bundle.main.appPackageName
         }
-        return config.pushIntegrationName
     }
     
     private func isEitherUserIdOrEmailSet() -> Bool {

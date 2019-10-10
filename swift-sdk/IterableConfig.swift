@@ -88,13 +88,13 @@ import Foundation
      * You don't have to set this variable. Set this value only if you are an existing Iterable customer who has already setup mobile integrations in Iterable Web UI.
      * In that case, set this variable to the push integration name that you have set for 'APNS' in Iterable Web UI.
      */
-    public var pushIntegrationName: String? = Bundle.main.appPackageName
+    public var pushIntegrationName: String?
     
     /**
      * You don't have to set this variable. Set this value only if you are an existing Iterable customer who has already setup mobile integrations in Iterable Web UI.
      * In that case, set this variable to the push integration name that you have set for 'APNS_SANDBOX' in Iterable Web UI.
      */
-    public var sandboxPushIntegrationName: String? = Bundle.main.appPackageName
+    public var sandboxPushIntegrationName: String?
     
     /**
      * APNS (Apple Push Notification Service) environment for the current build of the app.
