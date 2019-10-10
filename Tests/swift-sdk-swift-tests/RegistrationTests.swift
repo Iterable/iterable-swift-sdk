@@ -30,7 +30,10 @@ class RegistrationTests: XCTestCase {
         config.pushIntegrationName = "my-push-integration"
         config.sandboxPushIntegrationName = "my-sandbox-push-integration"
         config.pushPlatform = .production
-        IterableAPI.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession)
+        IterableAPI.initializeForTesting(apiKey: apiKey,
+                                         config: config,
+                                         networkSession: networkSession,
+                                         notificationStateProvider: MockNotificationStateProvider(enabled: true))
         IterableAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         IterableAPI.register(token: token, onSuccess: { _ in
