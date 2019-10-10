@@ -227,10 +227,26 @@ public enum JsonKey: String, JsonKeyRepresentable {
     
     case url
     
+    case device
+    case token
+    case dataFields
     case deviceInfo
+    case identifierForVendor
     case deviceId
+    case localizedModel
+    case model
+    case userInterfaceIdiom
+    case systemName
+    case systemVersion
     case platform
     case appPackageName
+    case appVersion
+    case appBuild
+    case applicationName
+    
+    case iterableSdkVersion
+    
+    case notificationsEnabled
     
     case contentType = "Content-Type"
     
@@ -245,6 +261,8 @@ public protocol JsonValueRepresentable {
 
 public enum JsonValue: String, JsonValueRepresentable {
     case applicationJson = "application/json"
+    case apnsSandbox = "APNS_SANDBOX"
+    case apnsProduction = "APNS"
     
     public var jsonStringValue: String {
         return rawValue

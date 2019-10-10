@@ -15,16 +15,20 @@ public extension Array {
 }
 
 public extension Dictionary where Key == AnyHashable, Value == Any {
+    func getValue(for key: JsonKey) -> Any? {
+        return self[key.jsonKey]
+    }
+    
     func getStringValue(for key: JsonKey, withDefault default: String? = nil) -> String? {
-        return self[key.jsonKey] as? String ?? `default`
+        return getValue(for: key) as? String ?? `default`
     }
     
     func getIntValue(for key: JsonKey) -> Int? {
-        return self[key.jsonKey] as? Int
+        return getValue(for: key) as? Int
     }
     
     func getBoolValue(for key: JsonKey) -> Bool? {
-        return self[key.jsonKey] as? Bool
+        return getValue(for: key) as? Bool
     }
     
     mutating func setValue(for key: JsonKey, value: JsonValueRepresentable?) {

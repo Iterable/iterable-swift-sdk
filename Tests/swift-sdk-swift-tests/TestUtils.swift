@@ -15,6 +15,10 @@ struct TestUtils {
         case post
     }
     
+    static let appPackageName = Bundle.main.bundleIdentifier!
+    static let appVersion = Bundle.main.infoDictionary!["CFBundleShortVersionString"] as! String
+    static let appBuild = Bundle.main.infoDictionary!["CFBundleVersion"] as! String
+    
     static func validate(request: URLRequest, requestType: RequestType? = nil, apiEndPoint: String, path: String, headers: [String: String]? = nil, queryParams: [(name: String, value: String)]? = nil) {
         if let requestType = requestType {
             XCTAssertEqual(requestType == .get ? .ITBL_KEY_GET : .ITBL_KEY_POST, request.httpMethod)

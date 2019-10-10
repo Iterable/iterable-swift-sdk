@@ -85,14 +85,14 @@ import Foundation
  */
 @objcMembers public class IterableConfig: NSObject {
     /**
-     * Push integration name – used for token registration.
-     * Make sure the name of this integration matches the one set up in Iterable console.
+     * You don't have to set this variable. Set this value only if you are an existing Iterable customer who has already setup mobile integrations in Iterable Web UI.
+     * In that case, set this variable to the push integration name that you have set for 'APNS' in Iterable Web UI.
      */
     public var pushIntegrationName: String?
     
     /**
-     * Push integration name for development builds – used for token registration.
-     * Make sure the name of this integration matches the one set up in Iterable console.
+     * You don't have to set this variable. Set this value only if you are an existing Iterable customer who has already setup mobile integrations in Iterable Web UI.
+     * In that case, set this variable to the push integration name that you have set for 'APNS_SANDBOX' in Iterable Web UI.
      */
     public var sandboxPushIntegrationName: String?
     
