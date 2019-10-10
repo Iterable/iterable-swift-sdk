@@ -669,6 +669,7 @@
 				55B37FC32297135F0042F13A /* NotificationMetadataTests.swift */,
 				55B37FC5229752DD0042F13A /* OrderedDictionaryTests.swift */,
 				ACEDF41E2183C436000B9BFE /* PromiseTests.swift */,
+				ACAA816D231163660035C743 /* RequestCreatorTests.swift */,
 				AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */,
 			);
 			path = "swift-sdk-swift-tests";
