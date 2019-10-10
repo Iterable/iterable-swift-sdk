@@ -16,6 +16,12 @@
     - [Deep Links](#deep-links)
     - [In-app Messages](#in-app-messages)
     - [Mobile Inbox](#mobile-inbox)
+    - [Custom Events](#custom-events)
+    - [User Fields](#user-fields)
+    - [Uninstall Tracking](#uninstall-tracking)
+- [Additional Information](#additional-information)
+- [License](#license)
+- [Want to Contribute?](#want-to-contribute)
 
 # Iterable iOS SDK
 
@@ -894,6 +900,8 @@ To update an Iterable's user profile fields, use the following methods on
 Iterable will track uninstalls with no additional work by you. 
 
 To do this, Iterable sends a silent push notification some time (currently, 12 hours) after a campaign has been sent. Based on this silent push notification, if Iterable receives feedback that the device token is no longer valid, it assigns an uninstall to the device based on the prior campaign. Similarly, if a "real" campaign uncovers an invalid device token, it will also check for a prior (within 12 hours) campaign to mark as the cause for the uninstall. If there was no recent campaign, Iterable still tracks the uninstall, but does not attribute it to a campaign.
+
+NOTE: Currently, Apple has changed the way device tokens expire, so they may take up to 8 days to detect if they are invalid. This does mean that uninstall tracking may not be accurately attributable to campaigns sent within that period of time.
 
 ## Additional information
 
