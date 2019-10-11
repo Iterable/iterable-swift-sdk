@@ -87,7 +87,7 @@ class DeprecatedFunctionsTests: XCTestCase {
             
             TestUtils.validateDeviceInfo(inBody: body)
             
-            TestUtils.validateMatch(keyPath: KeyPath("clickedUrl"), value: buttonUrl, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(.clickedUrl), value: buttonUrl, inDictionary: body)
             
             expectation1.fulfill()
         }
@@ -96,8 +96,6 @@ class DeprecatedFunctionsTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-    
-    
     
     private func getEmptyInAppContent() -> IterableHtmlInAppContent {
         return IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
