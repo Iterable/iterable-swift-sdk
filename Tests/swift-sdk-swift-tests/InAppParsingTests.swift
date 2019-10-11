@@ -138,7 +138,7 @@ class InAppParsingTests: XCTestCase {
         XCTAssert(HtmlContentParser.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha": 1]) == 1.0)
     }
     
-    func testTrackInAppClickWithButtonUrl() {
+    func testTrackInAppClickWithClickedUrl() {
         let message = IterableInAppMessage(messageId: "message1",
                                            campaignId: "",
                                            trigger: IterableInAppTrigger(dict: [.ITBL_IN_APP_TRIGGER_TYPE: "immediate"]),
