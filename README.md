@@ -4,22 +4,22 @@
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 
 # Table of Contents
-- [Installing with a Dependency Manager](#installing-with-a-dependency-manager)
+- [Installing with a dependency manager](#installing-with-a-dependency-manager)
     - [Carthage](#carthage)
     - [CocoaPods](#cocoapods)
-- [Installing Manually](#installing-manually)
-- [Migrating from a Version Prior to 6.1.0](#migrating-from-a-version-prior-to-610)
-- [Sample Projects](#sample-projects)
+- [Installing manually](#installing-manually)
+- [Migrating from a version prior to 6.1.0](#migrating-from-a-version-prior-to-610)
+- [Sample projects](#sample-projects)
 - [Configuring the SDK](#configuring-the-sdk)
 - [Using the SDK](#using-the-sdk)
-    - [Push Notifications](#push-notifications)
-    - [Deep Links](#deep-links)
-    - [In-app Messages](#in-app-messages)
-    - [Mobile Inbox](#mobile-inbox)
-    - [Custom Events](#custom-events)
-    - [User Fields](#user-fields)
-    - [Uninstall Tracking](#uninstall-tracking)
-- [Additional Information](#additional-information)
+    - [Push notifications](#push-notifications)
+    - [Deep links](#deep-links)
+    - [In-app messages](#in-app-messages)
+    - [Mobile inbox](#mobile-inbox)
+    - [Custom events](#custom-events)
+    - [User fields](#user-fields)
+    - [Uninstall tracking](#uninstall-tracking)
+- [Additional information](#additional-information)
 - [License](#license)
 - [Want to Contribute?](#want-to-contribute)
 
@@ -733,7 +733,7 @@ config.customActionDelegate = YourCustomActionDelegate()
 
 To customize the time delay between successive in-app messages (default value of 30 seconds), set `IterableConfig.inAppDisplayInterval` to an appropriate value (in seconds).
 
-### Mobile Inbox
+### Mobile inbox
 
 Apps using version 6.2.0 and later of this SDK can save in-app messages to an inbox. This inbox displays a list of saved in-app messages and allows users to read and interact with them at their convenience. The SDK provides a default user interface for the inbox, and it can be customized to match your brand's styles.
 
@@ -744,7 +744,7 @@ To configure an in-app message to use the inbox, marketers should:
 - Enable the **Show in Inbox** toggle in the in-app message's template
 - Choose whether or not to **Deliver Silently to Inbox** (so that the message does not display prominently when the device receives it, but can be viewed later by the user)
 
-#### Mobile Inbox implementation guide
+#### Mobile inbox implementation guide
 
 When implementing an inbox, you'll work primarily with the `IterableInboxNavigationViewController` class, a subclass of `UINavigationController`. This class automatically instantiates `IterableInboxViewController` as its root view controller.
 
