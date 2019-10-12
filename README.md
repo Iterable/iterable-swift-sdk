@@ -3,6 +3,26 @@
 [![pod](https://badge.fury.io/co/Iterable-iOS-SDK.svg)](https://cocoapods.org/pods/Iterable-iOS-SDK)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 
+# Table of Contents
+- [Installing with a dependency manager](#installing-with-a-dependency-manager)
+    - [Carthage](#carthage)
+    - [CocoaPods](#cocoapods)
+- [Installing manually](#installing-manually)
+- [Migrating from a version prior to 6.1.0](#migrating-from-a-version-prior-to-610)
+- [Sample projects](#sample-projects)
+- [Configuring the SDK](#configuring-the-sdk)
+- [Using the SDK](#using-the-sdk)
+    - [Push notifications](#push-notifications)
+    - [Deep links](#deep-links)
+    - [In-app messages](#in-app-messages)
+    - [Mobile inbox](#mobile-inbox)
+    - [Custom events](#custom-events)
+    - [User fields](#user-fields)
+    - [Uninstall tracking](#uninstall-tracking)
+- [Additional information](#additional-information)
+- [License](#license)
+- [Want to Contribute?](#want-to-contribute)
+
 # Iterable iOS SDK
 
 The Iterable iOS SDK is a Swift implementation of an iOS client for Iterable, for iOS versions 9.0 and higher.
@@ -713,7 +733,7 @@ config.customActionDelegate = YourCustomActionDelegate()
 
 To customize the time delay between successive in-app messages (default value of 30 seconds), set `IterableConfig.inAppDisplayInterval` to an appropriate value (in seconds).
 
-### Mobile Inbox
+### Mobile inbox
 
 Apps using version 6.2.0 and later of this SDK can save in-app messages to an inbox. This inbox displays a list of saved in-app messages and allows users to read and interact with them at their convenience. The SDK provides a default user interface for the inbox, and it can be customized to match your brand's styles.
 
@@ -724,7 +744,7 @@ To configure an in-app message to use the inbox, marketers should:
 - Enable the **Show in Inbox** toggle in the in-app message's template
 - Choose whether or not to **Deliver Silently to Inbox** (so that the message does not display prominently when the device receives it, but can be viewed later by the user)
 
-#### Mobile Inbox implementation guide
+#### Mobile inbox implementation guide
 
 When implementing an inbox, you'll work primarily with the `IterableInboxNavigationViewController` class, a subclass of `UINavigationController`. This class automatically instantiates `IterableInboxViewController` as its root view controller.
 
@@ -880,6 +900,8 @@ To update an Iterable's user profile fields, use the following methods on
 Iterable will track uninstalls with no additional work by you. 
 
 To do this, Iterable sends a silent push notification some time (currently, 12 hours) after a campaign has been sent. Based on this silent push notification, if Iterable receives feedback that the device token is no longer valid, it assigns an uninstall to the device based on the prior campaign. Similarly, if a "real" campaign uncovers an invalid device token, it will also check for a prior (within 12 hours) campaign to mark as the cause for the uninstall. If there was no recent campaign, Iterable still tracks the uninstall, but does not attribute it to a campaign.
+
+NOTE: Currently, Apple has changed the way device tokens expire, so they may take up to 8 days to detect if they are invalid. This does mean that uninstall tracking may not be accurately attributable to campaigns sent within that period of time.
 
 ## Additional information
 
