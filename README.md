@@ -34,18 +34,36 @@ Before starting with the SDK, you will need to set up Iterable push notification
 
 For more information, read Iterable's [Setting up iOS Push Notifications](https://support.iterable.com/hc/articles/115000315806-Setting-Up-iOS-Push-Notifications) guide.
 
-## Updating SDK for Inbox beta
-
-- Beta releases are not pushed as normal releases to Cocoapods. Instead, point Cocoapods to the git tag.
-- Update to 6.2.0-beta1 in Podfile
-    * pod 'Iterable-iOS-SDK', :git => 'https://github.com/Iterable/swift-sdk.git', :tag => '6.2.0-beta1'
-- Same with Carthage:
-    * github "Iterable/swift-sdk" ~> 6.2.0-beta1
+## Installing a beta version of the SDK to use with Iterable's Mobile Inbox beta
 
 > &#x26A0; **IMPORTANT**
-> - Beta versions of this SDK are subject to Iterable's
+> Beta versions of this SDK are subject to Iterable's 
 [Beta Mobile SDK Terms of Service](https://support.iterable.com/hc/articles/360034753412).
 
+The current beta version of the SDK is `6.2.0-beta1`. Install it with
+CocoaPods or Carthage:
+
+- CocoaPods
+
+    Beta versions of the SDK are not pushed as normal releases to CocoaPods.
+    Instead, point CocoaPods to the git tag associated with a specific build.
+    For example, the following **Podfile** entry looks for the SDK build
+    tagged with `6.2.0-beta1`:
+
+    ```
+    pod 'Iterable-iOS-SDK', :git => 'https://github.com/Iterable/swift-sdk.git', :tag => '6.2.0-beta1'
+    ```
+
+- Carthage
+
+    Like CocoaPods, Carthage can install an SDK build associated with a
+    specific git tag. For example, the following **Cartfile** entry looks for
+    an SDK build tagged with `6.2.0-beta1`:
+
+    ```
+    github "Iterable/swift-sdk" ~> 6.2.0-beta1
+    ```
+    
 ## Installing with a dependency manager
 
 Iterable's iOS SDK can be installed using [Carthage](https://github.com/Carthage/Carthage) 
