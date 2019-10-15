@@ -4,6 +4,7 @@
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 
 # Table of Contents
+- [Updating SDK for Inbox beta](#updating-sdk-for-inbox-beta)
 - [Installing with a dependency manager](#installing-with-a-dependency-manager)
     - [Carthage](#carthage)
     - [CocoaPods](#cocoapods)
@@ -32,6 +33,18 @@ The Iterable iOS SDK is a Swift implementation of an iOS client for Iterable, fo
 Before starting with the SDK, you will need to set up Iterable push notifications for your app.
 
 For more information, read Iterable's [Setting up iOS Push Notifications](https://support.iterable.com/hc/articles/115000315806-Setting-Up-iOS-Push-Notifications) guide.
+
+## Updating SDK for Inbox beta
+
+- Beta releases are not pushed as normal releases to Cocoapods. Instead, point Cocoapods to the git tag.
+- Update to 6.2.0-beta1 in Podfile
+    * pod 'Iterable-iOS-SDK', :git => 'https://github.com/Iterable/swift-sdk.git', :tag => '6.2.0-beta1'
+- Same with Carthage:
+    * github "Iterable/swift-sdk" ~> 6.2.0-beta1
+
+> &#x26A0; **IMPORTANT**
+> - Beta versions of this SDK are subject to Iterable's
+[Beta Mobile SDK Terms of Service](https://support.iterable.com/hc/articles/360034753412).
 
 ## Installing with a dependency manager
 

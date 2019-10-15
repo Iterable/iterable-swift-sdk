@@ -2,6 +2,30 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.2.0-beta1
+#### Added
+- [Mobile inbox](https://github.com/Iterable/swift-sdk/tree/inbox#mobile-inbox)
+- [Mobile Inbox related events](https://github.com/Iterable/swift-sdk/tree/inbox#mobile-inbox-events-and-the-events-lifecycle)
+
+#### Removed
+- `IterableAPI.spawnInAppNotification(_:)`
+	- In-app messages are automatically shown by SDK now. Please check our [migration guide](https://github.com/iterable/swift-sdk/#migrating-in-app-messages-from-the-previous-version-of-the-sdk).
+- `IterableAPI.get(inAppMessages:)`
+	- Use `IterableAPI.inAppManager.getMessages()` instead
+
+#### Changed
+ - There is no need to set `IterableConfig.pushIntegrationName` for new projects.
+
+#### Deprecated
+Please see method documentation for details about how to replace them.
+
+- `IterableAPI.inAppConsume(messageId:)`
+- `IterableAPI.showSystemNotification(..)`
+- `IterableAPI.getAndTrack(deeplink:callbackBlock:)`
+
+#### Fixed
+- nothing yet
+
 ## 6.1.2
 #### Fixed
 - Fixed a bug in token to hex conversion code.
