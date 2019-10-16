@@ -255,7 +255,7 @@ class InAppParsingTests: XCTestCase {
                                queryParams: [])
             
             let body = networkSession.getRequestBody() as! [String: Any]
-            TestUtils.validateMessageContext(messageId: messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: .other, inBody: body)
+            TestUtils.validateMessageContext(messageId: messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: nil, inBody: body)
             TestUtils.validateDeviceInfo(inBody: body)
             expectation1.fulfill()
         }

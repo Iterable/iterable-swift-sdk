@@ -58,9 +58,9 @@ struct InAppMessageContext {
     let messageId: String
     let saveToInbox: Bool
     let silentInbox: Bool
-    let location: InAppLocation
+    let location: InAppLocation?
     
-    static func from(message: IterableInAppMessage, location: InAppLocation) -> InAppMessageContext {
+    static func from(message: IterableInAppMessage, location: InAppLocation?) -> InAppMessageContext {
         return InAppMessageContext(messageId: message.messageId,
                                    saveToInbox: message.saveToInbox,
                                    silentInbox: message.silentInbox,
@@ -82,7 +82,9 @@ struct InAppMessageContext {
         
         context.setValue(for: .silentInbox, value: silentInbox)
         
-        context.setValue(for: .inAppLocation, value: location)
+        if let location = location {
+            context.setValue(for: .inAppLocation, value: location)
+        }
         
         return context
     }
