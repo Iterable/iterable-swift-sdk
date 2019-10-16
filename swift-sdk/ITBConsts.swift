@@ -290,7 +290,6 @@ public enum JsonValue: String, JsonValueRepresentable {
 @objc public enum InAppCloseSource: Int, JsonValueRepresentable {
     case back
     case link
-    case other
     
     public var jsonValue: Any {
         switch self {
@@ -298,8 +297,6 @@ public enum JsonValue: String, JsonValueRepresentable {
             return "back"
         case .link:
             return "link"
-        case .other:
-            return "other"
         }
     }
 }

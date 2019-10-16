@@ -143,7 +143,7 @@ class InAppHelperTests: XCTestCase {
             fatalError()
         }
         
-        func track(inAppClose _: InAppMessageContext, source _: InAppCloseSource, clickedUrl _: String?) -> Future<SendRequestValue, SendRequestError> {
+        func track(inAppClose _: InAppMessageContext, source _: InAppCloseSource?, clickedUrl _: String?) -> Future<SendRequestValue, SendRequestError> {
             fatalError()
         }
         

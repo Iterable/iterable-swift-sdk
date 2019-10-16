@@ -421,6 +421,17 @@ import Foundation
      Tracks an InAppClose event
      - parameter message:       The in-app message
      - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
+     - parameter clickedUrl:    The url that was clicked to close the in-app. It will be `nil` when message is closed on clicking `back`.
+     */
+    @objc(trackInAppClose:location:clickedUrl:)
+    public static func track(inAppClose message: IterableInAppMessage, location: InAppLocation, clickedUrl: String?) {
+        internalImplementation?.trackInAppClose(message, location: location, clickedUrl: clickedUrl)
+    }
+    
+    /**
+     Tracks an InAppClose event
+     - parameter message:       The in-app message
+     - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
      - parameter source:        Source is `back` if back button was clicked to dismiss in-app message. Otherwise source is `link`.
      - parameter clickedUrl:    The url that was clicked to close the in-app. It will be `nil` when message is closed on clicking `back`.
      */

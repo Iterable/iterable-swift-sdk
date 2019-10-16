@@ -37,7 +37,7 @@ protocol ApiClientProtocol: AnyObject {
     
     func track(inAppClick inAppMessageContext: InAppMessageContext, clickedUrl: String) -> Future<SendRequestValue, SendRequestError>
     
-    func track(inAppClose inAppMessageContext: InAppMessageContext, source: InAppCloseSource, clickedUrl: String?) -> Future<SendRequestValue, SendRequestError>
+    func track(inAppClose inAppMessageContext: InAppMessageContext, source: InAppCloseSource?, clickedUrl: String?) -> Future<SendRequestValue, SendRequestError>
     
     func track(inAppDelivery inAppMessageContext: InAppMessageContext) -> Future<SendRequestValue, SendRequestError>
     
@@ -146,7 +146,7 @@ class ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(inAppMessageContext: inAppMessageContext, clickedUrl: clickedUrl))
     }
     
-    func track(inAppClose inAppMessageContext: InAppMessageContext, source: InAppCloseSource, clickedUrl: String?) -> Future<SendRequestValue, SendRequestError> {
+    func track(inAppClose inAppMessageContext: InAppMessageContext, source: InAppCloseSource?, clickedUrl: String?) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppCloseRequest(inAppMessageContext: inAppMessageContext, source: source, clickedUrl: clickedUrl))
     }
     
