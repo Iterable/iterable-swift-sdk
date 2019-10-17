@@ -57,10 +57,6 @@ open class IterableInboxViewController: UITableViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = UITableView.automaticDimension
         
-        // Set footer view so that we don't see table view separators
-        // for the empty rows.
-        tableView.tableFooterView = UIView()
-        
         if #available(iOS 10.0, *) {
             let refreshControl = UIRefreshControl()
             refreshControl.attributedTitle = NSAttributedString(string: "Fetching new in-app messages")
@@ -74,6 +70,12 @@ open class IterableInboxViewController: UITableViewController {
     open override func viewWillAppear(_ animated: Bool) {
         ITBInfo()
         super.viewWillAppear(animated)
+        
+        // Set footer view so that we don't see table view separators
+        // for the empty rows.
+        if tableView.tableFooterView == nil {
+            tableView.tableFooterView = UIView()
+        }
         
         if navigationController == nil {
             viewModel.viewWillAppear()
