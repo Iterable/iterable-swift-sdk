@@ -204,12 +204,10 @@ class ApiClient: ApiClientProtocol {
     }
     
     func createIterableHeaders() -> [String: String] {
-        return [
-            JsonKey.contentType.jsonKey: JsonValue.applicationJson.jsonStringValue,
-            AnyHashable.ITBL_HEADER_SDK_PLATFORM: .ITBL_PLATFORM_IOS,
-            AnyHashable.ITBL_HEADER_SDK_VERSION: IterableAPI.sdkVersion,
-            AnyHashable.ITBL_HEADER_API_KEY: apiKey,
-        ]
+        return [JsonKey.contentType.jsonKey: JsonValue.applicationJson.jsonStringValue,
+                JsonKey.Header.sdkPlatform: JsonValue.iOS.jsonStringValue,
+                JsonKey.Header.sdkVersion: IterableAPI.sdkVersion,
+                JsonKey.Header.apiKey: apiKey]
     }
     
     private let apiKey: String

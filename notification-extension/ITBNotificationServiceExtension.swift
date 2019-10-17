@@ -16,7 +16,7 @@ import UserNotifications
         // IMPORTANT: need to add this to the documentation
         bestAttemptContent?.categoryIdentifier = getCategory(fromContent: request.content)
         
-        guard let itblDictionary = request.content.userInfo[.ITBL_PAYLOAD_METADATA] as? [AnyHashable: Any] else {
+        guard let itblDictionary = request.content.userInfo[JsonKey.Payload.metadata] as? [AnyHashable: Any] else {
             if let bestAttemptContent = bestAttemptContent {
                 contentHandler(bestAttemptContent)
             }
@@ -43,7 +43,7 @@ import UserNotifications
     }
     
     private func loadAttachment(itblDictionary: [AnyHashable: Any]) -> Bool {
-        guard let attachmentUrlString = itblDictionary[.ITBL_PAYLOAD_ATTACHMENT_URL] as? String else { return false }
+        guard let attachmentUrlString = itblDictionary[JsonKey.Payload.attachmentUrl] as? String else { return false }
         guard let url = URL(string: attachmentUrlString) else { return false }
         
         let downloadTask = URLSession.shared.downloadTask(with: url, completionHandler: { [weak self] location, response, error in
@@ -76,20 +76,20 @@ import UserNotifications
     
     private func getCategory(fromContent content: UNNotificationContent) -> String {
         if content.categoryIdentifier.count == 0 {
-            guard let itblDictionary = content.userInfo[.ITBL_PAYLOAD_METADATA] as? [AnyHashable: Any] else {
+            guard let itblDictionary = content.userInfo[JsonKey.Payload.metadata] as? [AnyHashable: Any] else {
                 return ""
             }
             
-            guard let messageId = itblDictionary[.ITBL_PAYLOAD_MESSAGE_ID] as? String else {
+            guard let messageId = itblDictionary[JsonKey.Payload.messageId] as? String else {
                 return ""
             }
             
             var actionButtons: [[AnyHashable: Any]] = []
-            if let actionButtonsFromITBLPayload = itblDictionary[.ITBL_PAYLOAD_ACTION_BUTTONS] as? [[AnyHashable: Any]] {
+            if let actionButtonsFromITBLPayload = itblDictionary[JsonKey.Payload.actionButtons] as? [[AnyHashable: Any]] {
                 actionButtons = actionButtonsFromITBLPayload
             } else {
                 #if DEBUG
-                    if let actionButtonsFromUserInfo = content.userInfo[.ITBL_PAYLOAD_ACTION_BUTTONS] as? [[AnyHashable: Any]] {
+                    if let actionButtonsFromUserInfo = content.userInfo[JsonKey.Payload.actionButtons] as? [[AnyHashable: Any]] {
                         actionButtons = actionButtonsFromUserInfo
                     }
                 #endif
@@ -118,22 +118,22 @@ import UserNotifications
     }
     
     private func createNotificationActionButton(buttonDictionary: [AnyHashable: Any]) -> UNNotificationAction? {
-        guard let identifier = buttonDictionary[.ITBL_BUTTON_IDENTIFIER] as? String else {
+        guard let identifier = buttonDictionary[JsonKey.ActionButton.identifier] as? String else {
             return nil
         }
         
-        guard let title = buttonDictionary[.ITBL_BUTTON_TITLE] as? String else {
+        guard let title = buttonDictionary[JsonKey.ActionButton.title] as? String else {
             return nil
         }
         
         let buttonType = getButtonType(buttonDictionary: buttonDictionary)
         var openApp = true
-        if let openAppFromDict = buttonDictionary[.ITBL_BUTTON_OPEN_APP] as? NSNumber {
+        if let openAppFromDict = buttonDictionary[JsonKey.ActionButton.openApp] as? NSNumber {
             openApp = openAppFromDict.boolValue
         }
         
         var requiresUnlock = false
-        if let requiresUnlockFromDict = buttonDictionary[.ITBL_BUTTON_REQUIRES_UNLOCK] as? NSNumber {
+        if let requiresUnlockFromDict = buttonDictionary[JsonKey.ActionButton.requiresUnlock] as? NSNumber {
             requiresUnlock = requiresUnlockFromDict.boolValue
         }
         
@@ -151,8 +151,8 @@ import UserNotifications
         }
         
         if buttonType == IterableButtonTypeTextInput {
-            let inputTitle = buttonDictionary[.ITBL_BUTTON_INPUT_TITLE] as? String ?? ""
-            let inputPlaceholder = buttonDictionary[.ITBL_BUTTON_INPUT_PLACEHOLDER] as? String ?? ""
+            let inputTitle = buttonDictionary[JsonKey.ActionButton.inputTitle] as? String ?? ""
+            let inputPlaceholder = buttonDictionary[JsonKey.ActionButton.inputPlaceholder] as? String ?? ""
             
             return UNTextInputNotificationAction(identifier: identifier,
                                                  title: title,
@@ -165,7 +165,7 @@ import UserNotifications
     }
     
     private func getButtonType(buttonDictionary: [AnyHashable: Any]) -> String {
-        guard let buttonType = buttonDictionary[.ITBL_BUTTON_TYPE] as? String else {
+        guard let buttonType = buttonDictionary[JsonKey.ActionButton.buttonType] as? String else {
             return IterableButtonTypeDefault
         }
         

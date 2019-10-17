@@ -63,7 +63,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     var deviceMetadata: DeviceMetadata {
         return DeviceMetadata(deviceId: deviceId,
-                              platform: .ITBL_PLATFORM_IOS,
+                              platform: JsonValue.iOS.jsonStringValue,
                               appPackageName: Bundle.main.appPackageName ?? "")
     }
     
@@ -92,7 +92,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             return localStorage.getAttributionInfo(currentDate: dateProvider.currentDate)
         } set {
             let expiration = Calendar.current.date(byAdding: .hour,
-                                                   value: .ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_EXPIRATION_HOURS,
+                                                   value: Const.UserDefaults.attributionInfoExpiration,
                                                    to: dateProvider.currentDate)
             localStorage.save(attributionInfo: newValue, withExpiration: expiration)
         }
@@ -240,7 +240,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     private func save(pushPayload payload: [AnyHashable: Any]) {
         let expiration = Calendar.current.date(byAdding: .hour,
-                                               value: .ITBL_USER_DEFAULTS_PAYLOAD_EXPIRATION_HOURS,
+                                               value: Const.UserDefaults.payloadExpiration,
                                                to: dateProvider.currentDate)
         localStorage.save(payload: payload, withExpiration: expiration)
         
@@ -570,8 +570,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
         
         guard let request = IterableRequestUtil.createPostRequest(forApiEndPoint: config.linksEndpoint,
-                                                                  path: .ITBL_PATH_DDL_MATCH,
-                                                                  headers: [AnyHashable.ITBL_HEADER_API_KEY: apiKey],
+                                                                  path: Const.Path.ddlMatch,
+                                                                  headers: [JsonKey.Header.apiKey: apiKey],
                                                                   args: nil,
                                                                   body: DeviceInfo.createDeviceInfo()) else {
             ITBError("Could not create request")

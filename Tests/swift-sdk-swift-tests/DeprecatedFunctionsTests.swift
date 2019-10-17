@@ -24,8 +24,8 @@ class DeprecatedFunctionsTests: XCTestCase {
         networkSession.callback = { _, _, _ in
             TestUtils.validate(request: networkSession.request!,
                                requestType: .post,
-                               apiEndPoint: .ITBL_ENDPOINT_API,
-                               path: .ITBL_PATH_TRACK_INAPP_OPEN,
+                               apiEndPoint: Endpoint.api,
+                               path: Const.Path.trackInAppOpen,
                                queryParams: [])
             
             TestUtils.validateHeader(networkSession.request!, self.apiKey)
@@ -51,7 +51,7 @@ class DeprecatedFunctionsTests: XCTestCase {
     func testDeprecatedTrackInAppClick() {
         let message = IterableInAppMessage(messageId: "message1",
                                            campaignId: "",
-                                           trigger: IterableInAppTrigger(dict: [.ITBL_IN_APP_TRIGGER_TYPE: "immediate"]),
+                                           trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "immediate"]),
                                            createdAt: nil,
                                            expiresAt: nil,
                                            content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
@@ -68,8 +68,8 @@ class DeprecatedFunctionsTests: XCTestCase {
         networkSession.callback = { _, _, _ in
             TestUtils.validate(request: networkSession.request!,
                                requestType: .post,
-                               apiEndPoint: .ITBL_ENDPOINT_API,
-                               path: .ITBL_PATH_TRACK_INAPP_CLICK,
+                               apiEndPoint: Endpoint.api,
+                               path: Const.Path.trackInAppClick,
                                queryParams: [])
             
             TestUtils.validateHeader(networkSession.request!, self.apiKey)

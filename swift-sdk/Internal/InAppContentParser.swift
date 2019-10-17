@@ -15,7 +15,7 @@ enum InAppContentParseResult {
 struct InAppContentParser {
     static func parse(contentDict: [AnyHashable: Any]) -> InAppContentParseResult {
         let contentType: IterableInAppContentType
-        if let contentTypeStr = contentDict[.ITBL_IN_APP_CONTENT_TYPE] as? String {
+        if let contentTypeStr = contentDict[JsonKey.InApp.type] as? String {
             contentType = IterableInAppContentType.from(string: contentTypeStr)
         } else {
             contentType = .html
@@ -118,7 +118,7 @@ struct HtmlContentParser {
             return 0
         }
         
-        if let number = settings[.ITBL_IN_APP_BACKGROUND_ALPHA] as? NSNumber {
+        if let number = settings[JsonKey.InApp.backgroundAlpha] as? NSNumber {
             return number.doubleValue
         } else {
             return 0
@@ -137,14 +137,15 @@ struct HtmlContentParser {
 
 extension HtmlContentParser: ContentFromJsonParser {
     fileprivate static func tryCreate(from json: [AnyHashable: Any]) -> InAppContentParseResult {
-        guard let html = json[.ITBL_IN_APP_HTML] as? String else {
+        guard let html = json[JsonKey.html.jsonKey] as? String else {
             return .failure(reason: "no html")
         }
-        guard html.range(of: AnyHashable.ITBL_IN_APP_HREF, options: [.caseInsensitive]) != nil else {
+        
+        guard html.range(of: Const.href, options: [.caseInsensitive]) != nil else {
             return .failure(reason: "No href tag found in in-app html payload \(html)")
         }
         
-        let inAppDisplaySettings = json[.ITBL_IN_APP_DISPLAY_SETTINGS] as? [AnyHashable: Any]
+        let inAppDisplaySettings = json[JsonKey.InApp.inAppDisplaySettings] as? [AnyHashable: Any]
         let backgroundAlpha = getBackgroundAlpha(fromInAppSettings: inAppDisplaySettings)
         let edgeInsets = getPadding(fromInAppSettings: inAppDisplaySettings)
         

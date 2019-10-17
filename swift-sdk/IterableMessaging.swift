@@ -124,7 +124,7 @@ public extension Notification.Name {
     // Internal
     init(dict: [AnyHashable: Any]) {
         self.dict = dict
-        if let typeString = dict[.ITBL_IN_APP_TRIGGER_TYPE] as? String {
+        if let typeString = dict[JsonKey.InApp.type] as? String {
             type = IterableInAppTriggerType.from(string: typeString)
         } else {
             type = IterableInAppTriggerType.immediate

@@ -40,17 +40,17 @@ class IterableAutoRegistrationTests: XCTestCase {
         networkSession.callback = { _, _, _ in
             // First call, API call to register endpoint
             expectation1.fulfill()
-            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_REGISTER_DEVICE_TOKEN, queryParams: [])
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.registerDeviceToken, queryParams: [])
             let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMatch(keyPath: KeyPath("device.dataFields.notificationsEnabled"), value: false, inDictionary: body)
             
             networkSession.callback = { _, _, _ in
                 // Second call, API call to disable endpoint
                 expectation3.fulfill()
-                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_DISABLE_DEVICE, queryParams: [])
+                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.disableDevice, queryParams: [])
                 let body = networkSession.getRequestBody() as! [String: Any]
-                TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_TOKEN, andValue: token.hexString(), inDictionary: body)
-                TestUtils.validateElementPresent(withName: AnyHashable.ITBL_KEY_EMAIL, andValue: "user1@example.com", inDictionary: body)
+                TestUtils.validateElementPresent(withName: JsonKey.token.jsonKey, andValue: token.hexString(), inDictionary: body)
+                TestUtils.validateElementPresent(withName: JsonKey.email.jsonKey, andValue: "user1@example.com", inDictionary: body)
             }
             
             IterableAPI.email = "user2@example.com"
@@ -77,7 +77,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         let token = "zeeToken".data(using: .utf8)!
         networkSession.callback = { _, _, _ in
             // first call back will be called on register
-            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_REGISTER_DEVICE_TOKEN, queryParams: [])
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.registerDeviceToken, queryParams: [])
             networkSession.callback = { _, _, _ in
                 // Second callback should not happen
                 XCTFail("Should not call disable")
@@ -106,7 +106,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         let token = "zeeToken".data(using: .utf8)!
         networkSession.callback = { _, _, _ in
             // first call back will be called on register
-            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_REGISTER_DEVICE_TOKEN, queryParams: [])
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.registerDeviceToken, queryParams: [])
             networkSession.callback = { _, _, _ in
                 // Second callback should not happen
                 XCTFail("should not call disable")
@@ -128,7 +128,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         config.autoPushRegistration = true
         let notificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: expectation1)
         
-        TestUtils.getTestUserDefaults().set("user1@example.com", forKey: .ITBL_USER_DEFAULTS_EMAIL_KEY)
+        TestUtils.getTestUserDefaults().set("user1@example.com", forKey: Const.UserDefaults.emailKey)
         IterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey, config: config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
         
         // only wait for small time, supposed to error out

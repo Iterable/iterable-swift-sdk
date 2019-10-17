@@ -20,7 +20,7 @@ struct TestUtils {
     
     static func validate(request: URLRequest, requestType: RequestType? = nil, apiEndPoint: String, path: String, headers: [String: String]? = nil, queryParams: [(name: String, value: String)]? = nil) {
         if let requestType = requestType {
-            XCTAssertEqual(requestType == .get ? .ITBL_KEY_GET : .ITBL_KEY_POST, request.httpMethod)
+            XCTAssertEqual(requestType == .get ? Const.Http.GET : Const.Http.POST, request.httpMethod)
         }
         
         XCTAssertTrue(request.url!.absoluteString.hasPrefix(IterableRequestUtil.pathCombine(paths: [apiEndPoint, path])), "request: \(request.url!.absoluteString), apiEndPoint: \(apiEndPoint), path: \(path)")
@@ -68,9 +68,9 @@ struct TestUtils {
         }
         
         XCTAssertEqual(header[JsonKey.contentType.jsonKey], JsonValue.applicationJson.jsonStringValue)
-        XCTAssertEqual(header[AnyHashable.ITBL_HEADER_SDK_PLATFORM], String.ITBL_PLATFORM_IOS)
-        XCTAssertEqual(header[AnyHashable.ITBL_HEADER_SDK_VERSION], IterableAPI.sdkVersion)
-        XCTAssertEqual(header[AnyHashable.ITBL_HEADER_API_KEY], apiKey)
+        XCTAssertEqual(header[JsonKey.Header.sdkPlatform], JsonValue.iOS.jsonStringValue)
+        XCTAssertEqual(header[JsonKey.Header.sdkVersion], IterableAPI.sdkVersion)
+        XCTAssertEqual(header[JsonKey.Header.apiKey], apiKey)
     }
     
     static func validateEmailOrUserId(email: String? = nil, userId: String? = nil, inBody body: [String: Any]) {
@@ -96,7 +96,7 @@ struct TestUtils {
     
     static func validateDeviceInfo(inBody body: [String: Any]) {
         validateMatch(keyPath: KeyPath(.deviceInfo, .deviceId), value: IterableAPI.internalImplementation!.deviceId, inDictionary: body)
-        validateMatch(keyPath: KeyPath(.deviceInfo, .platform), value: String.ITBL_PLATFORM_IOS, inDictionary: body)
+        validateMatch(keyPath: KeyPath(.deviceInfo, .platform), value: JsonValue.iOS.jsonStringValue, inDictionary: body)
         validateMatch(keyPath: KeyPath(.deviceInfo, .appPackageName), value: Bundle.main.appPackageName, inDictionary: body)
     }
     

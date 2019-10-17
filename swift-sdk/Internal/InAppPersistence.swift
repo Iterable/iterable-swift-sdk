@@ -108,7 +108,7 @@ extension IterableInAppTrigger {
     }
     
     static func createTriggerDict(forTriggerType triggerType: IterableInAppTriggerType) -> [AnyHashable: Any] {
-        return [.ITBL_IN_APP_TRIGGER_TYPE: String(describing: triggerType)]
+        return [JsonKey.InApp.type: String(describing: triggerType)]
     }
 }
 

@@ -32,18 +32,18 @@ struct RequestCreator {
     let deviceMetadata: DeviceMetadata
     
     func createUpdateEmailRequest(newEmail: String) -> Result<IterableRequest, IterableError> {
-        var body: [String: Any] = [AnyHashable.ITBL_KEY_NEW_EMAIL: newEmail]
+        var body: [String: Any] = [JsonKey.newEmail.jsonKey: newEmail]
         
         if let email = auth.email {
-            body[AnyHashable.ITBL_KEY_CURRENT_EMAIL] = email
+            body[JsonKey.currentEmail.jsonKey] = email
         } else if let userId = auth.userId {
-            body[AnyHashable.ITBL_KEY_CURRENT_USER_ID] = userId
+            body[JsonKey.currentUserId.jsonKey] = userId
         } else {
             ITBError("Both email and userId are nil")
             return .failure(IterableError.general(description: "Both email and userId are nil"))
         }
         
-        return .success(.post(createPostRequest(path: .ITBL_PATH_UPDATE_EMAIL, body: body)))
+        return .success(.post(createPostRequest(path: Const.Path.updateEmail, body: body)))
     }
     
     func createRegisterTokenRequest(hexToken: String,
@@ -61,54 +61,54 @@ struct RequestCreator {
         let pushServicePlatformString = RequestCreator.pushServicePlatformToString(pushServicePlatform)
         
         var dataFields: [String: Any] = [
-            .ITBL_DEVICE_LOCALIZED_MODEL: device.localizedModel,
-            .ITBL_DEVICE_USER_INTERFACE: RequestCreator.userInterfaceIdiomEnumToString(device.userInterfaceIdiom),
-            .ITBL_DEVICE_SYSTEM_NAME: device.systemName,
-            .ITBL_DEVICE_SYSTEM_VERSION: device.systemVersion,
-            .ITBL_DEVICE_MODEL: device.model,
+            JsonKey.Device.localizedModel: device.localizedModel,
+            JsonKey.Device.userInterfaceIdiom: RequestCreator.userInterfaceIdiomEnumToString(device.userInterfaceIdiom),
+            JsonKey.Device.systemName: device.systemName,
+            JsonKey.Device.systemVersion: device.systemVersion,
+            JsonKey.Device.model: device.model,
         ]
         
         if let identifierForVendor = device.identifierForVendor?.uuidString {
-            dataFields[.ITBL_DEVICE_ID_VENDOR] = identifierForVendor
+            dataFields[JsonKey.Device.vendorId] = identifierForVendor
         }
         
-        dataFields[.ITBL_DEVICE_DEVICE_ID] = deviceId
+        dataFields[JsonKey.deviceId.jsonKey] = deviceId
         
         if let sdkVersion = sdkVersion {
-            dataFields[.ITBL_DEVICE_ITERABLE_SDK_VERSION] = sdkVersion
+            dataFields[JsonKey.iterableSdkVersion.jsonKey] = sdkVersion
         }
         
         if let appPackageName = Bundle.main.appPackageName {
-            dataFields[.ITBL_DEVICE_APP_PACKAGE_NAME] = appPackageName
+            dataFields[JsonKey.appPackageName.jsonKey] = appPackageName
         }
         
         if let appVersion = Bundle.main.appVersion {
-            dataFields[.ITBL_DEVICE_APP_VERSION] = appVersion
+            dataFields[JsonKey.appVersion.jsonKey] = appVersion
         }
         
         if let appBuild = Bundle.main.appBuild {
-            dataFields[.ITBL_DEVICE_APP_BUILD] = appBuild
+            dataFields[JsonKey.appBuild.jsonKey] = appBuild
         }
         
-        dataFields[.ITBL_DEVICE_NOTIFICATIONS_ENABLED] = notificationsEnabled
+        dataFields[JsonKey.notificationsEnabled.jsonKey] = notificationsEnabled
         
         let deviceDictionary: [String: Any] = [
-            AnyHashable.ITBL_KEY_TOKEN: hexToken,
-            AnyHashable.ITBL_KEY_PLATFORM: pushServicePlatformString,
-            AnyHashable.ITBL_KEY_APPLICATION_NAME: appName,
-            AnyHashable.ITBL_KEY_DATA_FIELDS: dataFields,
+            JsonKey.token.jsonKey: hexToken,
+            JsonKey.platform.jsonKey: pushServicePlatformString,
+            JsonKey.applicationName.jsonKey: appName,
+            JsonKey.dataFields.jsonKey: dataFields,
         ]
         
         var body = [AnyHashable: Any]()
-        body[.ITBL_KEY_DEVICE] = deviceDictionary
+        body[JsonKey.device.jsonKey] = deviceDictionary
         
         body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
         if auth.email == nil, auth.userId != nil {
-            body[.ITBL_KEY_PREFER_USER_ID] = true
+            body[JsonKey.preferUserId.jsonKey] = true
         }
         
-        return .success(.post(createPostRequest(path: .ITBL_PATH_REGISTER_DEVICE_TOKEN, body: body)))
+        return .success(.post(createPostRequest(path: Const.Path.registerDeviceToken, body: body)))
     }
     
     func createUpdateUserRequest(dataFields: [AnyHashable: Any], mergeNestedObjects: Bool) -> Result<IterableRequest, IterableError> {
@@ -119,15 +119,15 @@ struct RequestCreator {
         
         var body = [AnyHashable: Any]()
         
-        body[.ITBL_KEY_DATA_FIELDS] = dataFields
-        body[.ITBL_KEY_MERGE_NESTED] = NSNumber(value: mergeNestedObjects)
+        body[JsonKey.dataFields.jsonKey] = dataFields
+        body[JsonKey.mergeNestedObjects.jsonKey] = NSNumber(value: mergeNestedObjects)
         body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
         if auth.email == nil, auth.userId != nil {
-            body[.ITBL_KEY_PREFER_USER_ID] = true
+            body[JsonKey.preferUserId.jsonKey] = true
         }
         
-        return .success(.post(createPostRequest(path: .ITBL_PATH_UPDATE_USER, body: body)))
+        return .success(.post(createPostRequest(path: Const.Path.updateUser, body: body)))
     }
     
     func createTrackPurchaseRequest(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) -> Result<IterableRequest, IterableError> {
@@ -146,17 +146,17 @@ struct RequestCreator {
         
         let body: [String: Any]
         if let dataFields = dataFields {
-            body = [AnyHashable.ITBL_KEY_USER: apiUserDict,
-                    AnyHashable.ITBL_KEY_ITEMS: itemsToSerialize,
-                    AnyHashable.ITBL_KEY_TOTAL: total,
-                    AnyHashable.ITBL_KEY_DATA_FIELDS: dataFields]
+            body = [JsonKey.Commerce.user: apiUserDict,
+                    JsonKey.Commerce.items: itemsToSerialize,
+                    JsonKey.Commerce.total: total,
+                    JsonKey.dataFields.jsonKey: dataFields]
         } else {
-            body = [AnyHashable.ITBL_KEY_USER: apiUserDict,
-                    AnyHashable.ITBL_KEY_ITEMS: itemsToSerialize,
-                    AnyHashable.ITBL_KEY_TOTAL: total]
+            body = [JsonKey.Commerce.user: apiUserDict,
+                    JsonKey.Commerce.items: itemsToSerialize,
+                    JsonKey.Commerce.total: total]
         }
         
-        return .success(.post(createPostRequest(path: .ITBL_PATH_COMMERCE_TRACK_PURCHASE, body: body)))
+        return .success(.post(createPostRequest(path: Const.Path.trackPurchase, body: body)))
     }
     
     func createTrackPushOpenRequest(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?) -> Result<IterableRequest, IterableError> {
@@ -170,23 +170,23 @@ struct RequestCreator {
         }
         
         reqDataFields["appAlreadyRunning"] = appAlreadyRunning
-        body[.ITBL_KEY_DATA_FIELDS] = reqDataFields
+        body[JsonKey.dataFields.jsonKey] = reqDataFields
         
         if let keyValueForCurrentUser = keyValueForCurrentUser {
             body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         }
         
-        body[.ITBL_KEY_CAMPAIGN_ID] = campaignId
+        body[JsonKey.campaignId.jsonKey] = campaignId
         
         if let templateId = templateId {
-            body[.ITBL_KEY_TEMPLATE_ID] = templateId
+            body[JsonKey.templateId.jsonKey] = templateId
         }
         
         if let messageId = messageId {
-            body[.ITBL_KEY_MESSAGE_ID] = messageId
+            body[JsonKey.messageId.jsonKey] = messageId
         }
         
-        return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_PUSH_OPEN, body: body)))
+        return .success(.post(createPostRequest(path: Const.Path.trackPushOpen, body: body)))
     }
     
     func createTrackEventRequest(_ eventName: String, dataFields: [AnyHashable: Any]?) -> Result<IterableRequest, IterableError> {
@@ -197,13 +197,13 @@ struct RequestCreator {
         
         var body = [AnyHashable: Any]()
         body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
-        body[.ITBL_KEY_EVENT_NAME] = eventName
+        body[JsonKey.eventName.jsonKey] = eventName
         
         if let dataFields = dataFields {
-            body[.ITBL_KEY_DATA_FIELDS] = dataFields
+            body[JsonKey.dataFields.jsonKey] = dataFields
         }
         
-        return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK, body: body)))
+        return .success(.post(createPostRequest(path: Const.Path.trackEvent, body: body)))
     }
     
     func createUpdateSubscriptionsRequest(_ emailListIds: [String]?, unsubscribedChannelIds: [String]?, unsubscribedMessageTypeIds: [String]?) -> Result<IterableRequest, IterableError> {
@@ -215,18 +215,18 @@ struct RequestCreator {
         body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
         if let emailListIds = emailListIds {
-            body[.ITBL_KEY_EMAIL_LIST_IDS] = emailListIds
+            body[JsonKey.emailListIds.jsonKey] = emailListIds
         }
         
         if let unsubscribedChannelIds = unsubscribedChannelIds {
-            body[.ITBL_KEY_UNSUB_CHANNEL] = unsubscribedChannelIds
+            body[JsonKey.unsubscribedChannelIds.jsonKey] = unsubscribedChannelIds
         }
         
         if let unsubscribedMessageTypeIds = unsubscribedMessageTypeIds {
-            body[.ITBL_KEY_UNSUB_MESSAGE] = unsubscribedMessageTypeIds
+            body[JsonKey.unsubscribedMessageTypeIds.jsonKey] = unsubscribedMessageTypeIds
         }
         
-        return .success(.post(createPostRequest(path: .ITBL_PATH_UPDATE_SUBSCRIPTIONS, body: body)))
+        return .success(.post(createPostRequest(path: Const.Path.updateSubscriptions, body: body)))
     }
     
     func createGetInAppMessagesRequest(_ count: NSNumber) -> Result<IterableRequest, IterableError> {
@@ -235,17 +235,17 @@ struct RequestCreator {
             return .failure(IterableError.general(description: "Both email and userId are nil"))
         }
         
-        var args: [AnyHashable: Any] = [AnyHashable.ITBL_KEY_COUNT: count.description,
-                                        AnyHashable.ITBL_KEY_PLATFORM: String.ITBL_PLATFORM_IOS,
-                                        AnyHashable.ITBL_KEY_SDK_VERSION: IterableAPI.sdkVersion]
+        var args: [AnyHashable: Any] = [JsonKey.InApp.count: count.description,
+                                        JsonKey.platform.jsonKey: JsonValue.iOS.jsonStringValue,
+                                        JsonKey.InApp.sdkVersion: IterableAPI.sdkVersion]
         
         if let packageName = Bundle.main.appPackageName {
-            args[AnyHashable.ITBL_KEY_PACKAGE_NAME] = packageName
+            args[JsonKey.InApp.packageName] = packageName
         }
         
         args.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
-        return .success(.get(createGetRequest(forPath: .ITBL_PATH_GET_INAPP_MESSAGES, withArgs: args as! [String: String])))
+        return .success(.get(createGetRequest(forPath: Const.Path.getInAppMessages, withArgs: args as! [String: String])))
     }
     
     func createTrackInAppOpenRequest(_ messageId: String) -> Result<IterableRequest, IterableError> {
@@ -255,7 +255,7 @@ struct RequestCreator {
         }
         var body: [AnyHashable: Any] = [:]
         
-        body[.ITBL_KEY_MESSAGE_ID] = messageId
+        body[JsonKey.messageId.jsonKey] = messageId
         
         body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
@@ -263,7 +263,7 @@ struct RequestCreator {
         body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
         body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
-        return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_OPEN, body: body)))
+        return .success(.post(createPostRequest(path: Const.Path.trackInAppOpen, body: body)))
     }
     
     func createTrackInAppOpenRequest(inAppMessageContext: InAppMessageContext) -> Result<IterableRequest, IterableError> {
@@ -273,13 +273,13 @@ struct RequestCreator {
         }
         var body: [AnyHashable: Any] = [:]
         
-        body[.ITBL_KEY_MESSAGE_ID] = inAppMessageContext.messageId
+        body[JsonKey.messageId.jsonKey] = inAppMessageContext.messageId
         
         body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
         body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
-        return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_OPEN, body: body)))
+        return .success(.post(createPostRequest(path: Const.Path.trackInAppOpen, body: body)))
     }
     
     func createTrackInAppClickRequest(_ messageId: String, clickedUrl: String) -> Result<IterableRequest, IterableError> {
@@ -289,8 +289,8 @@ struct RequestCreator {
         }
         var body: [AnyHashable: Any] = [:]
         
-        body[.ITBL_KEY_MESSAGE_ID] = messageId
-        body[.ITBL_IN_APP_CLICKED_URL] = clickedUrl
+        body[JsonKey.messageId.jsonKey] = messageId
+        body[JsonKey.clickedUrl.jsonKey] = clickedUrl
         
         body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
@@ -298,7 +298,7 @@ struct RequestCreator {
         body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
         body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
-        return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLICK, body: body)))
+        return .success(.post(createPostRequest(path: Const.Path.trackInAppClick, body: body)))
     }
     
     func createTrackInAppClickRequest(inAppMessageContext: InAppMessageContext, clickedUrl: String) -> Result<IterableRequest, IterableError> {
@@ -308,7 +308,7 @@ struct RequestCreator {
         }
         var body = [AnyHashable: Any]()
         
-        body[.ITBL_KEY_MESSAGE_ID] = inAppMessageContext.messageId
+        body[JsonKey.messageId.jsonKey] = inAppMessageContext.messageId
         
         body.setValue(for: .clickedUrl, value: clickedUrl)
         
@@ -317,7 +317,7 @@ struct RequestCreator {
         
         body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
-        return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLICK, body: body)))
+        return .success(.post(createPostRequest(path: Const.Path.trackInAppClick, body: body)))
     }
     
     func createTrackInAppCloseRequest(inAppMessageContext: InAppMessageContext, source: InAppCloseSource, clickedUrl: String?) -> Result<IterableRequest, IterableError> {
@@ -327,7 +327,7 @@ struct RequestCreator {
         }
         var body = [AnyHashable: Any]()
         
-        body[.ITBL_KEY_MESSAGE_ID] = inAppMessageContext.messageId
+        body[JsonKey.messageId.jsonKey] = inAppMessageContext.messageId
         
         body.setValue(for: .closeAction, value: source)
         
@@ -340,7 +340,7 @@ struct RequestCreator {
         
         body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
-        return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_CLOSE, body: body)))
+        return .success(.post(createPostRequest(path: Const.Path.trackInAppClose, body: body)))
     }
     
     func createTrackInAppDeliveryRequest(inAppMessageContext: InAppMessageContext) -> Result<IterableRequest, IterableError> {
@@ -350,14 +350,14 @@ struct RequestCreator {
         }
         var body: [AnyHashable: Any] = [:]
         
-        body[.ITBL_KEY_MESSAGE_ID] = inAppMessageContext.messageId
+        body[JsonKey.messageId.jsonKey] = inAppMessageContext.messageId
         
         body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
         body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
         body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
-        return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INAPP_DELIVERY, body: body)))
+        return .success(.post(createPostRequest(path: Const.Path.trackInAppDelivery, body: body)))
     }
     
     func createInAppConsumeRequest(_ messageId: String) -> Result<IterableRequest, IterableError> {
@@ -365,11 +365,12 @@ struct RequestCreator {
             ITBError("Both email and userId are nil")
             return .failure(IterableError.general(description: "Both email and userId are nil"))
         }
-        var body: [AnyHashable: Any] = [.ITBL_KEY_MESSAGE_ID: messageId]
+        
+        var body: [AnyHashable: Any] = [JsonKey.messageId.jsonKey: messageId]
         
         body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
-        return .success(.post(createPostRequest(path: .ITBL_PATH_INAPP_CONSUME, body: body)))
+        return .success(.post(createPostRequest(path: Const.Path.inAppConsume, body: body)))
     }
     
     func createTrackInAppConsumeRequest(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource) -> Result<IterableRequest, IterableError> {
@@ -377,9 +378,10 @@ struct RequestCreator {
             ITBError("Both email and userId are nil")
             return .failure(IterableError.general(description: "Both email and userId are nil"))
         }
+        
         var body = [AnyHashable: Any]()
         
-        body[.ITBL_KEY_MESSAGE_ID] = inAppMessageContext.messageId
+        body[JsonKey.messageId.jsonKey] = inAppMessageContext.messageId
         
         body.setValue(for: .deleteAction, value: source)
         
@@ -388,7 +390,7 @@ struct RequestCreator {
         
         body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
-        return .success(.post(createPostRequest(path: .ITBL_PATH_INAPP_CONSUME, body: body)))
+        return .success(.post(createPostRequest(path: Const.Path.inAppConsume, body: body)))
     }
     
     func createTrackInboxSessionRequest(inboxSession: IterableInboxSession) -> Result<IterableRequest, IterableError> {
@@ -417,12 +419,12 @@ struct RequestCreator {
         
         body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
-        return .success(.post(createPostRequest(path: .ITBL_PATH_TRACK_INBOX_SESSION, body: body)))
+        return .success(.post(createPostRequest(path: Const.Path.trackInboxSession, body: body)))
     }
     
     func createDisableDeviceRequest(forAllUsers allUsers: Bool, hexToken: String) -> Result<IterableRequest, IterableError> {
         var body = [AnyHashable: Any]()
-        body[.ITBL_KEY_TOKEN] = hexToken
+        body[JsonKey.token.jsonKey] = hexToken
         
         if !allUsers {
             if let keyValueForCurrentUser = keyValueForCurrentUser {
@@ -430,12 +432,12 @@ struct RequestCreator {
             }
         }
         
-        return .success(.post(createPostRequest(path: .ITBL_PATH_DISABLE_DEVICE, body: body)))
+        return .success(.post(createPostRequest(path: Const.Path.disableDevice, body: body)))
     }
     
     private func createPostRequest(path: String, body: [AnyHashable: Any]? = nil) -> PostRequest {
         return PostRequest(path: path,
-                           args: [AnyHashable.ITBL_HEADER_API_KEY: apiKey],
+                           args: [JsonKey.Header.apiKey: apiKey],
                            body: body)
     }
     
@@ -458,22 +460,26 @@ struct RequestCreator {
     private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform) -> String {
         switch pushServicePlatform {
         case .production:
-            return .ITBL_KEY_APNS
+            return JsonValue.apnsProduction.jsonStringValue
         case .sandbox:
-            return .ITBL_KEY_APNS_SANDBOX
+            return JsonValue.apnsSandbox.jsonStringValue
         case .auto:
-            return IterableAPNSUtil.isSandboxAPNS() ? .ITBL_KEY_APNS_SANDBOX : .ITBL_KEY_APNS
+            return IterableAPNSUtil.isSandboxAPNS() ? JsonValue.apnsSandbox.jsonStringValue : JsonValue.apnsProduction.jsonStringValue
         }
     }
     
     private static func userInterfaceIdiomEnumToString(_ idiom: UIUserInterfaceIdiom) -> String {
         switch idiom {
         case .phone:
-            return .ITBL_KEY_PHONE
+            return JsonValue.DeviceIdiom.phone
         case .pad:
-            return .ITBL_KEY_PAD
+            return JsonValue.DeviceIdiom.pad
+        case .tv:
+            return JsonValue.DeviceIdiom.tv
+        case .carPlay:
+            return JsonValue.DeviceIdiom.carPlay
         default:
-            return .ITBL_KEY_UNSPECIFIED
+            return JsonValue.DeviceIdiom.unspecified
         }
     }
 }

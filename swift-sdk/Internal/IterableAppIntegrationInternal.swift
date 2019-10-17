@@ -177,7 +177,7 @@ struct IterableAppIntegrationInternal {
         let action = IterableAppIntegrationInternal.createIterableAction(actionIdentifier: response.actionIdentifier, userText: response.textInputResponse?.userText, userInfo: userInfo, iterableElement: itbl)
         
         // Track push open
-        if let _ = dataFields[.ITBL_KEY_ACTION_IDENTIFIER] { // i.e., if action is not dismiss
+        if let _ = dataFields[JsonKey.actionIdentifier.jsonKey] { // i.e., if action is not dismiss
             tracker.trackPushOpen(userInfo, dataFields: dataFields)
         }
         
@@ -217,7 +217,7 @@ struct IterableAppIntegrationInternal {
     }
     
     private static func createDefaultAction(userInfo: [AnyHashable: Any], iterableElement itbl: [AnyHashable: Any]) -> IterableAction? {
-        if let defaultActionConfig = itbl[.ITBL_PAYLOAD_DEFAULT_ACTION] as? [AnyHashable: Any] {
+        if let defaultActionConfig = itbl[JsonKey.Payload.defaultAction] as? [AnyHashable: Any] {
             return IterableAction.action(fromDictionary: defaultActionConfig)
         } else {
             return IterableAppIntegrationInternal.legacyDefaultActionFromPayload(userInfo: userInfo)
@@ -225,19 +225,19 @@ struct IterableAppIntegrationInternal {
     }
     
     private static func findButtonActionConfig(actionIdentifier: String, iterableElement itbl: [AnyHashable: Any]) -> [AnyHashable: Any]? {
-        guard let buttons = itbl[.ITBL_PAYLOAD_ACTION_BUTTONS] as? [[AnyHashable: Any]] else {
+        guard let buttons = itbl[JsonKey.Payload.actionButtons] as? [[AnyHashable: Any]] else {
             return nil
         }
         
         let foundButton = buttons.first { (button) -> Bool in
-            guard let buttonIdentifier = button[.ITBL_BUTTON_IDENTIFIER] as? String else {
+            guard let buttonIdentifier = button[JsonKey.ActionButton.identifier] as? String else {
                 return false
             }
             
             return buttonIdentifier == actionIdentifier
         }
         
-        return foundButton?[.ITBL_BUTTON_ACTION] as? [AnyHashable: Any]
+        return foundButton?[JsonKey.ActionButton.action] as? [AnyHashable: Any]
     }
     
     @available(iOS 10.0, *)
@@ -245,15 +245,15 @@ struct IterableAppIntegrationInternal {
         var dataFields = [AnyHashable: Any]()
         
         if actionIdentifier == UNNotificationDefaultActionIdentifier {
-            dataFields[AnyHashable.ITBL_KEY_ACTION_IDENTIFIER] = String.ITBL_VALUE_DEFAULT_PUSH_OPEN_ACTION_ID
+            dataFields[JsonKey.actionIdentifier.jsonKey] = JsonValue.ActionIdentifier.pushOpenDefault
         } else if actionIdentifier == UNNotificationDismissActionIdentifier {
             // We don't track dismiss actions yet
         } else {
-            dataFields[.ITBL_KEY_ACTION_IDENTIFIER] = actionIdentifier
+            dataFields[JsonKey.actionIdentifier.jsonKey] = actionIdentifier
         }
         
         if let userText = userText {
-            dataFields[.ITBL_KEY_USER_TEXT] = userText
+            dataFields[JsonKey.userText.jsonKey] = userText
         }
         
         return dataFields
@@ -266,7 +266,7 @@ struct IterableAppIntegrationInternal {
         }
         
         // Track push open
-        let dataFields = [AnyHashable.ITBL_KEY_ACTION_IDENTIFIER: String.ITBL_VALUE_DEFAULT_PUSH_OPEN_ACTION_ID]
+        let dataFields = [JsonKey.actionIdentifier.jsonKey: JsonValue.ActionIdentifier.pushOpenDefault]
         tracker.trackPushOpen(userInfo, dataFields: dataFields)
         
         guard let itbl = IterableAppIntegrationInternal.itblValue(fromUserInfo: userInfo) else {
@@ -295,14 +295,14 @@ struct IterableAppIntegrationInternal {
     // Normally itblValue would be the value stored in "itbl" key inside of userInfo.
     // But it is possible to save them at root level for debugging purpose.
     private static func itblValue(fromUserInfo userInfo: [AnyHashable: Any]) -> [AnyHashable: Any]? {
-        let itbl = userInfo[.ITBL_PAYLOAD_METADATA] as? [AnyHashable: Any]
+        let itbl = userInfo[JsonKey.Payload.metadata] as? [AnyHashable: Any]
         
         #if DEBUG
             guard let value = itbl else {
                 return nil
             }
             
-            if value[.ITBL_PAYLOAD_DEFAULT_ACTION] == nil, value[.ITBL_PAYLOAD_ACTION_BUTTONS] == nil {
+            if value[JsonKey.Payload.defaultAction] == nil, value[JsonKey.Payload.actionButtons] == nil {
                 return userInfo
             }
         #endif
@@ -313,8 +313,8 @@ struct IterableAppIntegrationInternal {
     // Normally default action would be stored in key "itbl/"defaultAction"
     // In legacy templates it gets saved in the key "url"
     private static func legacyDefaultActionFromPayload(userInfo: [AnyHashable: Any]) -> IterableAction? {
-        if let deeplinkUrl = userInfo[.ITBL_PAYLOAD_DEEP_LINK_URL] as? String {
-            return IterableAction.actionOpenUrl(fromUrlString: deeplinkUrl)
+        if let deepLinkUrl = userInfo[JsonKey.url.jsonKey] as? String {
+            return IterableAction.actionOpenUrl(fromUrlString: deepLinkUrl)
         } else {
             return nil
         }
