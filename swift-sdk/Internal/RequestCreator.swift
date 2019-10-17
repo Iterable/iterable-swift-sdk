@@ -375,7 +375,7 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: .ITBL_PATH_INAPP_CONSUME, body: body)))
     }
     
-    func createTrackInAppConsumeRequest(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource) -> Result<IterableRequest, IterableError> {
+    func createTrackInAppConsumeRequest(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource?) -> Result<IterableRequest, IterableError> {
         guard let keyValueForCurrentUser = keyValueForCurrentUser else {
             ITBError("Both email and userId are nil")
             return .failure(IterableError.general(description: "Both email and userId are nil"))
@@ -384,7 +384,9 @@ struct RequestCreator {
         
         body[.ITBL_KEY_MESSAGE_ID] = inAppMessageContext.messageId
         
-        body.setValue(for: .deleteAction, value: source)
+        if let source = source {
+            body.setValue(for: .deleteAction, value: source)
+        }
         
         body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
         body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())

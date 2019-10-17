@@ -745,12 +745,12 @@ class InAppTests: XCTestCase {
         // now remove 1, there should be 1 left
         let expectation3 = expectation(description: "remove reduces count to 1")
         let expectation4 = expectation(description: "remove reduces count to 0")
-        IterableAPI.inAppManager.remove(message: IterableAPI.inAppManager.getMessages()[0], location: .inApp, source: .other)
+        IterableAPI.inAppManager.remove(message: IterableAPI.inAppManager.getMessages()[0])
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
             XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 1)
             expectation3.fulfill()
             // now remove 1, there should be 0 left
-            IterableAPI.inAppManager.remove(message: IterableAPI.inAppManager.getMessages()[0], location: .inApp, source: .other)
+            IterableAPI.inAppManager.remove(message: IterableAPI.inAppManager.getMessages()[0], location: .inApp)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                 XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
                 expectation4.fulfill()

@@ -304,7 +304,6 @@ public enum JsonValue: String, JsonValueRepresentable {
 @objc public enum InAppDeleteSource: Int, JsonValueRepresentable {
     case inboxSwipe
     case deleteButton
-    case other
     
     public var jsonValue: Any {
         switch self {
@@ -312,8 +311,6 @@ public enum JsonValue: String, JsonValueRepresentable {
             return "inbox-swipe"
         case .deleteButton:
             return "delete-button"
-        case .other:
-            return "other"
         }
     }
 }

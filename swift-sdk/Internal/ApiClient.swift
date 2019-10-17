@@ -43,7 +43,7 @@ protocol ApiClientProtocol: AnyObject {
     
     @discardableResult func inAppConsume(messageId: String) -> Future<SendRequestValue, SendRequestError>
     
-    @discardableResult func inAppConsume(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource) -> Future<SendRequestValue, SendRequestError>
+    @discardableResult func inAppConsume(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource?) -> Future<SendRequestValue, SendRequestError>
     
     func track(inboxSession: IterableInboxSession) -> Future<SendRequestValue, SendRequestError>
     
@@ -162,7 +162,7 @@ class ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: createRequestCreator().createInAppConsumeRequest(messageId))
     }
     
-    func inAppConsume(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource) -> Future<SendRequestValue, SendRequestError> {
+    func inAppConsume(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource?) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppConsumeRequest(inAppMessageContext: inAppMessageContext, source: source))
     }
     

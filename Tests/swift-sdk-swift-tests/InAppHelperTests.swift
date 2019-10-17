@@ -155,7 +155,7 @@ class InAppHelperTests: XCTestCase {
             fatalError()
         }
         
-        func inAppConsume(inAppMessageContext _: InAppMessageContext, source _: InAppDeleteSource) -> Future<SendRequestValue, SendRequestError> {
+        func inAppConsume(inAppMessageContext _: InAppMessageContext, source _: InAppDeleteSource?) -> Future<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
