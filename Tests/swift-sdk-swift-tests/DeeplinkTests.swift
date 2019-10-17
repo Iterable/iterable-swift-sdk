@@ -8,7 +8,7 @@ import XCTest
 
 @testable import IterableSDK
 
-class DeeplinkTests: XCTestCase {
+class DeepLinkTests: XCTestCase {
     override func setUp() {
         super.setUp()
         

@@ -1,7 +1,4 @@
 //
-//  IterableAppIntegration.swift
-//  new-ios-sdk
-//
 //  Created by Tapash Majumder on 5/31/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //

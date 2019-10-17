@@ -1,9 +1,9 @@
-// This class should have generic helper methods for UI testing.
-// It should not contain Iterable specific helper methods.
 //
 //  Created by Tapash Majumder on 9/7/19.
 //  Copyright © 2019 Iterable. All rights reserved.
 //
+// This class should have generic helper methods for UI testing.
+// It should not contain Iterable specific helper methods.
 
 import Foundation
 import XCTest

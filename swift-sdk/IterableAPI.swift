@@ -1,7 +1,4 @@
 //
-//  IterableAPI.swift
-//  swift-sdk
-//
 //  Created by Ilya Brin on 11/19/14.
 //  Ported to Swift by Tapash Majumder on 7/9/18.
 //  Copyright © 2018 Iterable. All rights reserved.

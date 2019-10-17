@@ -1,7 +1,4 @@
 //
-//  NotificationExtensionTests.m
-//  notification-extensionTests
-//
 //  Created by Victor Babenko on 4/18/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //

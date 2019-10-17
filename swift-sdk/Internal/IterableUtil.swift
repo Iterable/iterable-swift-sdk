@@ -1,6 +1,4 @@
 //
-//  IterableUtil.swift
-//
 //  Created by Tapash Majumder on 5/18/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //

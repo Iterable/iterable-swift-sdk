@@ -1,7 +1,4 @@
 //
-//  DeferredDeeplinkTests.swift
-//  swift-sdk-swift-tests
-//
 //  Created by Tapash Majumder on 9/4/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
@@ -10,17 +7,12 @@ import XCTest
 
 @testable import IterableSDK
 
-class DeferredDeeplinkTests: XCTestCase {
+class DeferredDeepLinkTests: XCTestCase {
     private static let apiKey = "zeeApiKey"
     
     override func setUp() {
         super.setUp()
         TestUtils.clearTestUserDefaults()
-    }
-    
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
     }
     
     func testCallCheckForDDL() {
@@ -39,12 +31,12 @@ class DeferredDeeplinkTests: XCTestCase {
         config.checkForDeferredDeeplink = true
         let urlDelegate = MockUrlDelegate(returnValue: true)
         urlDelegate.callback = { url, _ in
-            TestUtils.validate(request: networkSession.request!, apiEndPoint: .ITBL_ENDPOINT_LINKS, path: .ITBL_PATH_DDL_MATCH)
+            TestUtils.validate(request: networkSession.request!, apiEndPoint: .ITBL_ENDPOINT_LINKS, path: Const.Path.ddlMatch.rawValue)
             expectation.fulfill()
             XCTAssertEqual(url.absoluteString, "zeeDestinationUrl")
         }
         config.urlDelegate = urlDelegate
-        IterableAPI.initializeForTesting(apiKey: DeferredDeeplinkTests.apiKey, config: config, networkSession: networkSession)
+        IterableAPI.initializeForTesting(apiKey: DeferredDeepLinkTests.apiKey, config: config, networkSession: networkSession)
         
         wait(for: [expectation], timeout: testExpectationTimeout)
         
@@ -58,7 +50,7 @@ class DeferredDeeplinkTests: XCTestCase {
             expectation2.fulfill()
         }
         config.urlDelegate = urlDelegate2
-        IterableAPI.initializeForTesting(apiKey: DeferredDeeplinkTests.apiKey, config: config, networkSession: networkSession)
+        IterableAPI.initializeForTesting(apiKey: DeferredDeepLinkTests.apiKey, config: config, networkSession: networkSession)
         
         wait(for: [expectation2], timeout: 1.0)
     }
@@ -79,7 +71,7 @@ class DeferredDeeplinkTests: XCTestCase {
             expectation.fulfill()
         }
         config.urlDelegate = urlDelegate
-        IterableAPI.initializeForTesting(apiKey: DeferredDeeplinkTests.apiKey, config: config, networkSession: networkSession)
+        IterableAPI.initializeForTesting(apiKey: DeferredDeepLinkTests.apiKey, config: config, networkSession: networkSession)
         
         wait(for: [expectation], timeout: 1.0)
     }
@@ -104,7 +96,7 @@ class DeferredDeeplinkTests: XCTestCase {
             expectation.fulfill()
         }
         config.urlDelegate = urlDelegate
-        IterableAPI.initializeForTesting(apiKey: DeferredDeeplinkTests.apiKey, config: config, networkSession: networkSession)
+        IterableAPI.initializeForTesting(apiKey: DeferredDeepLinkTests.apiKey, config: config, networkSession: networkSession)
         
         wait(for: [expectation], timeout: 1.0)
     }

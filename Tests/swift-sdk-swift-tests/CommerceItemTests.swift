@@ -1,7 +1,4 @@
 //
-//  CommerceItemTests.swift
-//  swift-sdk-swift-tests
-//
 //  Created by Jay Kim on 5/22/19.
 //  Copyright © 2019 Iterable. All rights reserved.
 //

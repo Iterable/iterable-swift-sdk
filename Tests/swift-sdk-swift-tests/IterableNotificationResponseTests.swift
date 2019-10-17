@@ -1,7 +1,4 @@
 //
-//  IterableNotificationResponseTests.swift
-//  swift-sdk-swift-tests
-//
 //  Created by Tapash Majumder on 6/14/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //

@@ -1,7 +1,4 @@
 //
-//  Promise.swift
-//  swift-sdk
-//
 //  Created by Tapash Majumder on 10/26/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
