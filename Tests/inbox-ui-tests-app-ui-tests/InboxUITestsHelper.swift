@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import IterableSDK
 import XCTest
 
 enum TabName: String {
