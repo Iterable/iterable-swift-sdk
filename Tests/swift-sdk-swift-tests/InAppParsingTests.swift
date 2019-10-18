@@ -238,6 +238,45 @@ class InAppParsingTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
+    func testTrackInAppCloseWithNoSource() {
+        let messageId = "message1"
+        let expectation1 = expectation(description: "track inAppClose event")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        IterableAPI.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
+        IterableAPI.email = InAppParsingTests.email
+        
+        networkSession.callback = { _, _, _ in
+            TestUtils.validate(request: networkSession.request!,
+                               requestType: .post,
+                               apiEndPoint: .ITBL_ENDPOINT_API,
+                               path: .ITBL_PATH_TRACK_INAPP_CLOSE,
+                               queryParams: [])
+            
+            let body = networkSession.getRequestBody() as! [String: Any]
+            TestUtils.validateMessageContext(messageId: messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: .inbox, inBody: body)
+            TestUtils.validateDeviceInfo(inBody: body)
+            XCTAssertNil(body[keyPath: KeyPath("\(JsonKey.closeAction.jsonKey)")])
+            TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.clickedUrl.jsonKey)"), value: "https://somewhere.com", inDictionary: body)
+            
+            expectation1.fulfill()
+        }
+        
+        let message = IterableInAppMessage(messageId: messageId,
+                                           campaignId: "",
+                                           trigger: IterableInAppTrigger(dict: [.ITBL_IN_APP_TRIGGER_TYPE: "never"]),
+                                           createdAt: nil,
+                                           expiresAt: nil,
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
+                                           saveToInbox: true,
+                                           inboxMetadata: nil,
+                                           customPayload: nil)
+        
+        IterableAPI.track(inAppClose: message, location: .inbox, clickedUrl: "https://somewhere.com")
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+    
     func testTrackInAppDelivery() {
         let messageId = "message1"
         let expectation1 = expectation(description: "track inAppDelivery event")
@@ -254,7 +293,7 @@ class InAppParsingTests: XCTestCase {
                                queryParams: [])
             
             let body = networkSession.getRequestBody() as! [String: Any]
-            TestUtils.validateMessageContext(messageId: messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: .other, inBody: body)
+            TestUtils.validateMessageContext(messageId: messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: nil, inBody: body)
             TestUtils.validateDeviceInfo(inBody: body)
             expectation1.fulfill()
         }

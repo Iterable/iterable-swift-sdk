@@ -690,7 +690,7 @@ class IterableAPITests: XCTestCase {
     
     func testTrackInAppConsumeWithSource() {
         let messageId = "message1"
-        let expectation1 = expectation(description: "track inAppClose event")
+        let expectation1 = expectation(description: "testTrackInAppConsumeWithSource")
         
         let networkSession = MockNetworkSession(statusCode: 200)
         IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)

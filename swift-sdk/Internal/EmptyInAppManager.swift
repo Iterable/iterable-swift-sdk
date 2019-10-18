@@ -27,6 +27,8 @@ class EmptyInAppManager: IterableInAppManagerProtocolInternal {
     
     func remove(message _: IterableInAppMessage) {}
     
+    func remove(message _: IterableInAppMessage, location _: InAppLocation) {}
+    
     func remove(message _: IterableInAppMessage, location _: InAppLocation, source _: InAppDeleteSource) {}
     
     func set(read _: Bool, forMessage _: IterableInAppMessage) {}

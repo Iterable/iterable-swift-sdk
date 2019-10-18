@@ -83,7 +83,7 @@ struct TestUtils {
         }
     }
     
-    static func validateMessageContext(messageId: String, email: String? = nil, userId: String? = nil, saveToInbox: Bool, silentInbox: Bool, location: InAppLocation, inBody body: [String: Any]) {
+    static func validateMessageContext(messageId: String, email: String? = nil, userId: String? = nil, saveToInbox: Bool, silentInbox: Bool, location: InAppLocation?, inBody body: [String: Any]) {
         validateMatch(keyPath: KeyPath(JsonKey.messageId), value: messageId, inDictionary: body)
         
         validateEmailOrUserId(email: email, userId: userId, inBody: body)
@@ -91,7 +91,11 @@ struct TestUtils {
         let contextKey = "\(JsonKey.inAppMessageContext.jsonKey)"
         validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.saveToInbox.jsonKey)"), value: saveToInbox, inDictionary: body)
         validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.silentInbox.jsonKey)"), value: silentInbox, inDictionary: body)
-        validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.inAppLocation.jsonKey)"), value: location.jsonValue as! String, inDictionary: body)
+        if let location = location {
+            validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.inAppLocation.jsonKey)"), value: location.jsonValue as! String, inDictionary: body)
+        } else {
+            XCTAssertNil(body[keyPath: KeyPath("\(contextKey).\(JsonKey.inAppLocation.jsonKey)")])
+        }
     }
     
     static func validateDeviceInfo(inBody body: [String: Any]) {

@@ -138,10 +138,16 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     func remove(message: IterableInAppMessage) {
         ITBInfo()
         
-        remove(message: message, location: .inApp, source: .other)
+        removePrivate(message: message)
     }
     
-    func remove(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource = .other) {
+    func remove(message: IterableInAppMessage, location: InAppLocation) {
+        ITBInfo()
+        
+        removePrivate(message: message, location: location)
+    }
+    
+    func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource) {
         ITBInfo()
         
         removePrivate(message: message, location: location, source: source)
@@ -443,7 +449,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     }
     
     // From client side
-    private func removePrivate(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource) {
+    private func removePrivate(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource? = nil) {
         ITBInfo()
         
         updateMessage(message, didProcessTrigger: true, consumed: true)

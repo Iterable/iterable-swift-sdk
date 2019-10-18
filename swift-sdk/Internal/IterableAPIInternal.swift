@@ -305,7 +305,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: apiClient.track(inAppClick: InAppMessageContext.from(message: message, location: location), clickedUrl: clickedUrl))
     }
     
-    func trackInAppClose(_ message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppCloseSource = .other, clickedUrl: String? = nil) {
+    func trackInAppClose(_ message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppCloseSource? = nil, clickedUrl: String? = nil) {
         let result = apiClient.track(inAppClose: InAppMessageContext.from(message: message, location: location),
                                      source: source,
                                      clickedUrl: clickedUrl)
@@ -325,7 +325,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     func track(inAppDelivery message: IterableInAppMessage) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppDelivery"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppDelivery"),
-                                 forResult: apiClient.track(inAppDelivery: InAppMessageContext.from(message: message, location: .other)))
+                                 forResult: apiClient.track(inAppDelivery: InAppMessageContext.from(message: message, location: nil)))
     }
     
     func inAppConsume(_ messageId: String) {
@@ -334,7 +334,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: apiClient.inAppConsume(messageId: messageId))
     }
     
-    func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource = .other) {
+    func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource? = nil) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "inAppConsumeWithSource"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "inAppConsumeWithSource"),
                                  forResult: apiClient.inAppConsume(inAppMessageContext: InAppMessageContext.from(message: message, location: location), source: source))
