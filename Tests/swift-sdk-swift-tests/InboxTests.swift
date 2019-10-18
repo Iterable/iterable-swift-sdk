@@ -164,7 +164,7 @@ class InboxTests: XCTestCase {
             let messages = IterableAPI.inAppManager.getInboxMessages()
             XCTAssertEqual(messages.count, 2)
             
-            IterableAPI.inAppManager.remove(message: messages[0], location: .inApp, source: .other)
+            IterableAPI.inAppManager.remove(message: messages[0], location: .inbox, source: .inboxSwipe)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                 let newMessages = IterableAPI.inAppManager.getInboxMessages()
                 XCTAssertEqual(newMessages.count, 1)

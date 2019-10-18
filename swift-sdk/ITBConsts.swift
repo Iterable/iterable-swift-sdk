@@ -276,7 +276,6 @@ public enum JsonValue: String, JsonValueRepresentable {
 @objc public enum InAppLocation: Int, JsonValueRepresentable {
     case inApp
     case inbox
-    case other
     
     public var jsonValue: Any {
         switch self {
@@ -284,8 +283,6 @@ public enum JsonValue: String, JsonValueRepresentable {
             return "in-app"
         case .inbox:
             return "inbox"
-        case .other:
-            return "other"
         }
     }
 }
@@ -293,7 +290,6 @@ public enum JsonValue: String, JsonValueRepresentable {
 @objc public enum InAppCloseSource: Int, JsonValueRepresentable {
     case back
     case link
-    case other
     
     public var jsonValue: Any {
         switch self {
@@ -301,8 +297,6 @@ public enum JsonValue: String, JsonValueRepresentable {
             return "back"
         case .link:
             return "link"
-        case .other:
-            return "other"
         }
     }
 }
@@ -310,7 +304,6 @@ public enum JsonValue: String, JsonValueRepresentable {
 @objc public enum InAppDeleteSource: Int, JsonValueRepresentable {
     case inboxSwipe
     case deleteButton
-    case other
     
     public var jsonValue: Any {
         switch self {
@@ -318,8 +311,6 @@ public enum JsonValue: String, JsonValueRepresentable {
             return "inbox-swipe"
         case .deleteButton:
             return "delete-button"
-        case .other:
-            return "other"
         }
     }
 }

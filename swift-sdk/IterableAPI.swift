@@ -421,6 +421,17 @@ import Foundation
      Tracks an InAppClose event
      - parameter message:       The in-app message
      - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
+     - parameter clickedUrl:    The url that was clicked to close the in-app. It will be `nil` when message is closed on clicking `back`.
+     */
+    @objc(trackInAppClose:location:clickedUrl:)
+    public static func track(inAppClose message: IterableInAppMessage, location: InAppLocation, clickedUrl: String?) {
+        internalImplementation?.trackInAppClose(message, location: location, clickedUrl: clickedUrl)
+    }
+    
+    /**
+     Tracks an InAppClose event
+     - parameter message:       The in-app message
+     - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
      - parameter source:        Source is `back` if back button was clicked to dismiss in-app message. Otherwise source is `link`.
      - parameter clickedUrl:    The url that was clicked to close the in-app. It will be `nil` when message is closed on clicking `back`.
      */
@@ -445,9 +456,19 @@ import Foundation
      
      - parameter message:       The Iterable message that is being consumed
      - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
-     - parameter source:        The source of deletion `.inboxSwipe' or `.deleteButton`. It should be `.other` if the deletion is not user initiated.
      */
-    @objc(inAppConsume:location:source:) public static func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource = .other) {
+    @objc(inAppConsume:location:) public static func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp) {
+        internalImplementation?.inAppConsume(message: message, location: location)
+    }
+    
+    /**
+     Consumes the notification and removes it from the list of inAppMessages
+     
+     - parameter message:       The Iterable message that is being consumed
+     - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
+     - parameter source:        The source of deletion `inboxSwipe` or `deleteButton`.
+     */
+    @objc(inAppConsume:location:source:) public static func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource) {
         internalImplementation?.inAppConsume(message: message, location: location, source: source)
     }
     
