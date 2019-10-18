@@ -249,8 +249,8 @@ class InAppParsingTests: XCTestCase {
         networkSession.callback = { _, _, _ in
             TestUtils.validate(request: networkSession.request!,
                                requestType: .post,
-                               apiEndPoint: .ITBL_ENDPOINT_API,
-                               path: .ITBL_PATH_TRACK_INAPP_CLOSE,
+                               apiEndPoint: Endpoint.api,
+                               path: Const.Path.trackInAppClose,
                                queryParams: [])
             
             let body = networkSession.getRequestBody() as! [String: Any]
@@ -264,7 +264,7 @@ class InAppParsingTests: XCTestCase {
         
         let message = IterableInAppMessage(messageId: messageId,
                                            campaignId: "",
-                                           trigger: IterableInAppTrigger(dict: [.ITBL_IN_APP_TRIGGER_TYPE: "never"]),
+                                           trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                            createdAt: nil,
                                            expiresAt: nil,
                                            content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
