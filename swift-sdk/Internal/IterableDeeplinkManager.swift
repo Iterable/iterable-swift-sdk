@@ -1,14 +1,11 @@
 //
-//  IterableDeeplinkManager.swift
-//  new-ios-sdk
-//
 //  Created by Tapash Majumder on 6/1/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
 import Foundation
 
-class IterableDeeplinkManager: NSObject {
+class IterableDeepLinkManager: NSObject {
     /**
      Tracks a link click and passes the redirected URL to the callback
      
@@ -118,7 +115,7 @@ class IterableDeeplinkManager: NSObject {
     private var deeplinkMessageId: String?
 }
 
-extension IterableDeeplinkManager: URLSessionDelegate, URLSessionTaskDelegate {
+extension IterableDeepLinkManager: URLSessionDelegate, URLSessionTaskDelegate {
     /**
      Delegate handler when a redirect occurs. Stores a reference to the redirect url and does not execute the redirect.
      - parameters:

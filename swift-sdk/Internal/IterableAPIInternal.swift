@@ -1,5 +1,4 @@
 //
-//
 //  Created by Tapash Majumder on 5/30/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
@@ -388,7 +387,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     private let inAppDisplayer: InAppDisplayerProtocol
     
-    private var deeplinkManager: IterableDeeplinkManager
+    private var deeplinkManager: IterableDeepLinkManager
     
     private var _email: String?
     private var _userId: String?
@@ -516,7 +515,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         localStorage = dependencyContainer.localStorage
         inAppDisplayer = dependencyContainer.inAppDisplayer
         urlOpener = dependencyContainer.urlOpener
-        deeplinkManager = IterableDeeplinkManager()
+        deeplinkManager = IterableDeepLinkManager()
     }
     
     func start() {

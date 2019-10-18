@@ -1,9 +1,8 @@
 //
-// This file contains InApp and Inbox messaging classes.
-//
 //  Created by Tapash Majumder on 11/5/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
+// This file contains InApp and Inbox messaging classes.
 
 import Foundation
 

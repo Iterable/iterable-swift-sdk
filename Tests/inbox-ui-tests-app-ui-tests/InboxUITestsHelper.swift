@@ -1,9 +1,10 @@
 //
-import Foundation
-//
 //  Created by Tapash Majumder on 9/7/19.
 //  Copyright © 2019 Iterable. All rights reserved.
 //
+
+import Foundation
+import IterableSDK
 import XCTest
 
 enum TabName: String {

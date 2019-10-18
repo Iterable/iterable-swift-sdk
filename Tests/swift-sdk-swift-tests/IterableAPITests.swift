@@ -1,7 +1,4 @@
 //
-//  IterableAPITests.swift
-//  swift-sdk-swift-tests
-//
 //  Created by Tapash Majumder on 7/24/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //

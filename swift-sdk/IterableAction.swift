@@ -1,7 +1,4 @@
 //
-//  IterableAction.swift
-//  new-ios-sdk
-//
 //  Created by Tapash Majumder on 6/4/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
