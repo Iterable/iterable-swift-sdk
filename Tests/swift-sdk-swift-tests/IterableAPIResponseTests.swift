@@ -26,9 +26,9 @@ class IterableAPIResponseTests: XCTestCase {
     }
     
     fileprivate func verifyIterableHeaders(_ urlRequest: URLRequest) {
-        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_PLATFORM), .ITBL_PLATFORM_IOS)
-        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_VERSION), IterableAPI.sdkVersion)
-        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_API_KEY), apiKey)
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.sdkPlatform), JsonValue.iOS.jsonStringValue)
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.sdkVersion), IterableAPI.sdkVersion)
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.apiKey), apiKey)
         XCTAssertEqual(urlRequest.value(forHTTPHeaderField: "Content-Type"), "application/json")
     }
     
@@ -186,7 +186,7 @@ class IterableAPIResponseTests: XCTestCase {
         
         return ApiClient(apiKey: apiKey,
                          authProvider: AuthProviderImpl(),
-                         endPoint: .ITBL_ENDPOINT_API,
+                         endPoint: Endpoint.api,
                          networkSession: networkSession,
                          deviceMetadata: IterableAPI.internalImplementation!.deviceMetadata)
     }

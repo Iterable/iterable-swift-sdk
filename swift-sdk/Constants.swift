@@ -7,67 +7,54 @@ import Foundation
 
 // Iterable API Endpoints
 enum Endpoint {
-    static let api = String.ITBL_ENDPOINT_API
-    static let links = String.ITBL_ENDPOINT_LINKS
+    private static let apiHostName = "https://api.iterable.com"
+    private static let linksHostName = "https://links.iterable.com"
+    
+    static let api = Endpoint.apiHostName + Const.apiPath
+    static let links = linksHostName + "/"
 }
 
-public extension String {
-    static let ITBL_API_PATH = "/api/"
-    static let ITBL_ENDPOINT_API = apiHostname + ITBL_API_PATH
-    static let ITBL_ENDPOINT_LINKS = linksHostname + "/"
+public enum Const {
+    public static let apiPath = "/api/"
     
-    private static let apiHostname = "https://api.iterable.com"
-    private static let linksHostname = "https://links.iterable.com"
-}
-
-// UserDefaults Int Consts
-public extension Int {
-    static let ITBL_USER_DEFAULTS_PAYLOAD_EXPIRATION_HOURS = 24
-    static let ITBL_USER_DEFAULTS_ATTRIBUTION_INFO_EXPIRATION_HOURS = 24
-}
-
-//let apiHostName = "https://api.iterable.com"
-//let linksHostName = "https://links.iterable.com"
-
-public enum Const: String {
-    case apiPath = "/api/"
-//    case endpointApi = apiHostName + apiPath
-//    case endpointLinks = linksHostName + "/"
+    static let deepLinkRegex = "/a/[a-zA-Z0-9]+"
+    static let href = "href"
     
-    case get = "GET"
-    case post = "POST"
-    
-    case deepLinkRegex = "/a/[a-zA-Z0-9]+"
-    
-    case href
-    
-    public enum Path: String {
-        case trackPurchase = "commerce/trackPurchase"
-        case disableDevice = "users/disableDevice"
-        case getInAppMessages = "inApp/getMessages"
-        case inAppConsume = "events/inAppConsume"
-        case registerDeviceToken = "users/registerDeviceToken"
-        case trackEvent = "events/track"
-        case trackInAppClick = "events/trackInAppClick"
-        case trackInAppOpen = "events/trackInAppOpen"
-        case trackInAppClose = "events/trackInAppClose"
-        case trackInAppDelivery = "events/trackInAppDelivery"
-        case trackPushOpen = "events/trackPushOpen"
-        case trackInboxSession = "events/trackInboxSession"
-        case updateUser = "users/update"
-        case updateEmail = "users/updateEmail"
-        case updateSubscriptions = "users/updateSubscriptions"
-        case ddlMatch = "a/matchFp" // DDL = Deferred Deep Linking
+    enum Http {
+        static let GET = "GET"
+        static let POST = "POST"
     }
     
-    public enum UserDefaults: String {
-        case payloadKey = "itbl_payload_key"
-        case attributionInfoKey = "itbl_attribution_info_key"
-        case emailKey = "itbl_email"
-        case userIdKey = "itbl_userid"
-        case ddlChecked = "itbl_ddl_checked"
-        case deviceId = "itbl_device_id"
-        case sdkVersion = "itbl_sdk_version"
+    enum Path {
+        static let trackPurchase = "commerce/trackPurchase"
+        static let disableDevice = "users/disableDevice"
+        static let getInAppMessages = "inApp/getMessages"
+        static let inAppConsume = "events/inAppConsume"
+        static let registerDeviceToken = "users/registerDeviceToken"
+        static let trackEvent = "events/track"
+        static let trackInAppClick = "events/trackInAppClick"
+        static let trackInAppOpen = "events/trackInAppOpen"
+        static let trackInAppClose = "events/trackInAppClose"
+        static let trackInAppDelivery = "events/trackInAppDelivery"
+        static let trackPushOpen = "events/trackPushOpen"
+        static let trackInboxSession = "events/trackInboxSession"
+        static let updateUser = "users/update"
+        static let updateEmail = "users/updateEmail"
+        static let updateSubscriptions = "users/updateSubscriptions"
+        static let ddlMatch = "a/matchFp" // DDL = Deferred Deep Linking
+    }
+    
+    public enum UserDefaults {
+        static let payloadKey = "itbl_payload_key"
+        static let attributionInfoKey = "itbl_attribution_info_key"
+        public static let emailKey = "itbl_email"
+        static let userIdKey = "itbl_userid"
+        static let ddlChecked = "itbl_ddl_checked"
+        static let deviceId = "itbl_device_id"
+        static let sdkVersion = "itbl_sdk_version"
+        
+        static let payloadExpiration = 24
+        static let attributionInfoExpiration = 24
     }
 }
 
@@ -157,83 +144,59 @@ public enum JsonKey: String, JsonKeyRepresentable {
     
     case contentType = "Content-Type"
     
-    public enum ActionButton: String, JsonKeyRepresentable {
-        case identifier
-        case buttonType
-        case title
-        case openApp
-        case requiresUnlock
-        case inputTitle
-        case inputPlaceholder
-        case action
-        
-        public var jsonKey: String {
-            return rawValue
-        }
+    public enum ActionButton {
+        static let identifier = "identifier"
+        static let buttonType = "buttonType"
+        static let title = "title"
+        static let openApp = "openApp"
+        static let requiresUnlock = "requiresUnlock"
+        static let inputTitle = "inputTitle"
+        static let inputPlaceholder = "inputPlaceholder"
+        static let action = "action"
     }
     
-    public enum Commerce: String, JsonKeyRepresentable {
-        case items
-        case total
-        case user
-        
-        public var jsonKey: String {
-            return rawValue
-        }
+    public enum Commerce {
+        static let items = "items"
+        static let total = "total"
+        static let user = "user"
     }
     
-    public enum Device: String, JsonKeyRepresentable {
-        case localizedModel
-        case vendorId = "identifierForVendor"
-        case model
-        case systemName
-        case systemVersion
-        case userInterfaceIdiom
-        
-        public var jsonKey: String {
-            return rawValue
-        }
+    public enum Device {
+        static let localizedModel = "localizedModel"
+        static let vendorId = "identifierForVendor"
+        static let model = "model"
+        static let systemName = "systemName"
+        static let systemVersion = "systemVersion"
+        static let userInterfaceIdiom = "userInterfaceIdiom"
     }
     
-    public enum Header: String, JsonKeyRepresentable {
-        case apiKey = "Api-Key"
-        case sdkVersion = "SDK-Version"
-        case sdkPlatform = "SDK-Platform"
-        
-        public var jsonKey: String {
-            return rawValue
-        }
+    public enum Header {
+        static let apiKey = "Api-Key"
+        static let sdkVersion = "SDK-Version"
+        static let sdkPlatform = "SDK-Platform"
     }
     
-    public enum InApp: String, JsonKeyRepresentable {
-        case trigger
-        case type
-        case contentType
-        case inAppDisplaySettings
-        case backgroundAlpha
-        case customPayload
-        case inAppMessages
-        case count
-        case packageName
-        case sdkVersion = "SDKVersion"
-        case content
-        
-        public var jsonKey: String {
-            return rawValue
-        }
+    public enum InApp {
+        static let trigger = "trigger"
+        static let type = "type"
+        static let contentType = "contentType"
+        static let inAppDisplaySettings = "inAppDisplaySettings"
+        static let backgroundAlpha = "backgroundAlpha"
+        static let customPayload = "customPayload"
+        static let inAppMessages = "inAppMessages"
+        static let count = "count"
+        static let packageName = "packageName"
+        static let sdkVersion = "SDKVersion"
+        static let content = "content"
     }
     
-    public enum Payload: String, JsonKeyRepresentable {
-        case metadata = "itbl"
-        case messageId
-        case deepLinkUrl = "url"
-        case attachmentUrl = "attachment-url"
-        case actionButtons
-        case defaultAction
-        
-        public var jsonKey: String {
-            return rawValue
-        }
+    public enum Payload {
+        static let metadata = "itbl"
+        static let messageId = "messageId"
+        static let deepLinkUrl = "url"
+        static let attachmentUrl = "attachment-url"
+        static let actionButtons = "actionButtons"
+        static let defaultAction = "defaultAction"
     }
     
     public var jsonKey: String {
@@ -251,32 +214,16 @@ public enum JsonValue: String, JsonValueRepresentable {
     case apnsProduction = "APNS"
     case iOS
     
-    public enum ActionIdentifier: String, JsonValueRepresentable {
-        case pushOpenDefault = "default"
-        
-        public var jsonValue: Any {
-            return rawValue
-        }
-        
-        public var jsonStringValue: String {
-            return rawValue
-        }
+    public enum ActionIdentifier {
+        static let pushOpenDefault = "default"
     }
     
-    public enum DeviceIdiom: String, JsonValueRepresentable {
-        case pad = "Pad"
-        case phone = "Phone"
-        case carPlay = "CarPlay"
-        case tv = "TV"
-        case unspecified = "Unspecified"
-        
-        public var jsonValue: Any {
-            return rawValue
-        }
-        
-        public var jsonStringValue: String {
-            return rawValue
-        }
+    public enum DeviceIdiom {
+        static let pad = "Pad"
+        static let phone = "Phone"
+        static let carPlay = "CarPlay"
+        static let tv = "TV"
+        static let unspecified = "Unspecified"
     }
     
     public var jsonStringValue: String {

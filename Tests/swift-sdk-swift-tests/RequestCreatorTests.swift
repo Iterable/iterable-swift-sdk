@@ -24,7 +24,7 @@ class RequestCreatorTests: XCTestCase {
                                                 impressions: impressions)
         let urlRequest = convertToUrlRequest(createRequestCreator().createTrackInboxSessionRequest(inboxSession: inboxSession))
         TestUtils.validateHeader(urlRequest, apiKey)
-        TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_TRACK_INBOX_SESSION)
+        TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackInboxSession)
         
         let body = urlRequest.bodyDict
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.email), value: auth.email, inDictionary: body)
@@ -58,16 +58,16 @@ class RequestCreatorTests: XCTestCase {
         let urlRequest = convertToUrlRequest(request)
         
         TestUtils.validateHeader(urlRequest, apiKey)
-        TestUtils.validate(request: urlRequest, requestType: .get, apiEndPoint: .ITBL_ENDPOINT_API, path: .ITBL_PATH_GET_INAPP_MESSAGES)
+        TestUtils.validate(request: urlRequest, requestType: .get, apiEndPoint: Endpoint.api, path: Const.Path.getInAppMessages)
         
         guard case let .success(.get(getRequest)) = request, let args = getRequest.args else {
             XCTFail("could not unwrap to a get request and its arguments")
             return
         }
         
-        XCTAssertEqual(args[AnyHashable.ITBL_KEY_EMAIL], auth.email)
-        XCTAssertEqual(args[AnyHashable.ITBL_KEY_PACKAGE_NAME], Bundle.main.appPackageName)
-        XCTAssertEqual(args[AnyHashable.ITBL_KEY_COUNT], inAppMessageRequestCount.stringValue)
+        XCTAssertEqual(args[JsonKey.email.jsonKey], auth.email)
+        XCTAssertEqual(args[JsonKey.InApp.packageName], Bundle.main.appPackageName)
+        XCTAssertEqual(args[JsonKey.InApp.count], inAppMessageRequestCount.stringValue)
     }
     
     private let apiKey = "zee-api-key"
@@ -110,7 +110,7 @@ class RequestCreatorTests: XCTestCase {
     private func createApiClient(networkSession: NetworkSessionProtocol) -> ApiClient {
         return ApiClient(apiKey: apiKey,
                          authProvider: self,
-                         endPoint: .ITBL_ENDPOINT_API,
+                         endPoint: Endpoint.api,
                          networkSession: networkSession,
                          deviceMetadata: IterableAPI.internalImplementation!.deviceMetadata)
     }

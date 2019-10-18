@@ -33,7 +33,7 @@ extension IterableInboxUITestsProtocol where Self: XCTestCase {
     }
     
     private func lastElement(forEvent event: String) -> XCUIElement {
-        let eventRows = app.tables.cells.containing(.staticText, identifier: String.ITBL_API_PATH + event)
+        let eventRows = app.tables.cells.containing(.staticText, identifier: Const.apiPath + event)
         let count = eventRows.count
         return eventRows.element(boundBy: count - 1)
     }
