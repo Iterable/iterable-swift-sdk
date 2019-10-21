@@ -50,7 +50,7 @@ struct RequestCreator {
                                     appName: String,
                                     deviceId: String,
                                     sdkVersion: String?,
-                                    pushServicePlatform: PushServicePlatform,
+                                    pushServicePlatform: String,
                                     notificationsEnabled: Bool) -> Result<IterableRequest, IterableError> {
         guard let keyValueForCurrentUser = keyValueForCurrentUser else {
             ITBError("Both email and userId are nil")
@@ -58,7 +58,6 @@ struct RequestCreator {
         }
         
         let device = UIDevice.current
-        let pushServicePlatformString = RequestCreator.pushServicePlatformToString(pushServicePlatform)
         
         var dataFields: [String: Any] = [
             JsonKey.Device.localizedModel: device.localizedModel,
@@ -94,7 +93,7 @@ struct RequestCreator {
         
         let deviceDictionary: [String: Any] = [
             JsonKey.token.jsonKey: hexToken,
-            JsonKey.platform.jsonKey: pushServicePlatformString,
+            JsonKey.platform.jsonKey: pushServicePlatform,
             JsonKey.applicationName.jsonKey: appName,
             JsonKey.dataFields.jsonKey: dataFields,
         ]
@@ -458,17 +457,6 @@ struct RequestCreator {
             return JsonKeyValue(key: JsonKey.userId, value: userId)
         case .none:
             return nil
-        }
-    }
-    
-    private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform) -> String {
-        switch pushServicePlatform {
-        case .production:
-            return JsonValue.apnsProduction.jsonStringValue
-        case .sandbox:
-            return JsonValue.apnsSandbox.jsonStringValue
-        case .auto:
-            return APNSTypeChecker.isSandboxAPNS() ? JsonValue.apnsSandbox.jsonStringValue : JsonValue.apnsProduction.jsonStringValue
         }
     }
     

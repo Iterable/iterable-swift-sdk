@@ -146,13 +146,14 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                              onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         hexToken = token.hexString()
         
+        let pushServicePlatformString = IterableAPIInternal.pushServicePlatformToString(pushServicePlatform, apnsType: dependencyContainer.apnsTypeChecker.apnsType)
         return IterableAPIInternal.call(successHandler: onSuccess,
                                         andFailureHandler: onFailure,
                                         forResult: apiClient.register(hexToken: hexToken!,
                                                                       appName: appName,
                                                                       deviceId: deviceId,
                                                                       sdkVersion: localStorage.sdkVersion,
-                                                                      pushServicePlatform: pushServicePlatform,
+                                                                      pushServicePlatform: pushServicePlatformString,
                                                                       notificationsEnabled: notificationsEnabled))
     }
     
@@ -424,7 +425,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             case .sandbox:
                 return sandboxPushIntegrationName
             case .auto:
-                return APNSTypeChecker.isSandboxAPNS() ? sandboxPushIntegrationName : pushIntegrationName
+                return dependencyContainer.apnsTypeChecker.apnsType == .sandbox ? sandboxPushIntegrationName : pushIntegrationName
             }
         } else if let pushIntegrationName = config.pushIntegrationName {
             return pushIntegrationName
@@ -483,6 +484,17 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                 toLog += ", got response \(data)"
             }
             ITBError(toLog)
+        }
+    }
+    
+    private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform, apnsType: APNSType) -> String {
+        switch pushServicePlatform {
+        case .production:
+            return JsonValue.apnsProduction.jsonStringValue
+        case .sandbox:
+            return JsonValue.apnsSandbox.jsonStringValue
+        case .auto:
+            return apnsType == .sandbox ? JsonValue.apnsSandbox.jsonStringValue : JsonValue.apnsProduction.jsonStringValue
         }
     }
     

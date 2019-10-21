@@ -11,7 +11,7 @@ protocol ApiClientProtocol: AnyObject {
                   appName: String,
                   deviceId: String,
                   sdkVersion: String?,
-                  pushServicePlatform: PushServicePlatform,
+                  pushServicePlatform: String,
                   notificationsEnabled: Bool) -> Future<SendRequestValue, SendRequestError>
     
     func updateUser(_ dataFields: [AnyHashable: Any], mergeNestedObjects: Bool) -> Future<SendRequestValue, SendRequestError>
@@ -87,7 +87,7 @@ class ApiClient: ApiClientProtocol {
                   appName: String,
                   deviceId: String,
                   sdkVersion: String?,
-                  pushServicePlatform: PushServicePlatform,
+                  pushServicePlatform: String,
                   notificationsEnabled: Bool) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createRegisterTokenRequest(hexToken: hexToken,
                                                                                              appName: appName,

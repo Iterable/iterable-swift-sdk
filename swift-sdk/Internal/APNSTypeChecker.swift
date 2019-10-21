@@ -19,7 +19,7 @@ struct APNSTypeChecker: APNSTypeCheckerProtocol {
         return APNSTypeChecker.isSandboxAPNS() ? .sandbox : .production
     }
     
-    static func isSandboxAPNS() -> Bool {
+    private static func isSandboxAPNS() -> Bool {
         #if targetEnvironment(simulator)
             return isSandboxAPNS(mobileProvision: mobileProvision, isSimulator: true)
         #else
