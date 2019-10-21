@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		007960EE213F8B2300C53A6A /* DeferredDeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 007960ED213F8B2300C53A6A /* DeferredDeepLinkTests.swift */; };
-		00B6FACC210E8484007535CF /* APNSUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B6FACB210E8484007535CF /* APNSUtilTests.swift */; };
+		00B6FACC210E8484007535CF /* APNSTypeCheckerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B6FACB210E8484007535CF /* APNSTypeCheckerTests.swift */; };
 		00B6FACE210E88ED007535CF /* prod-1.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 00B6FACD210E874D007535CF /* prod-1.mobileprovision */; };
 		00B6FAD1210E8D90007535CF /* dev-1.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */; };
 		00CB31B621096129004ACDEC /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CB31B4210960C4004ACDEC /* TestUtils.swift */; };
@@ -48,7 +48,7 @@
 		AC31B040232AB42100BE25EB /* InboxSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC31B03F232AB42100BE25EB /* InboxSessionManager.swift */; };
 		AC31B042232AB53500BE25EB /* InboxImpressionTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC31B041232AB53500BE25EB /* InboxImpressionTracker.swift */; };
 		AC32E16821DD55B900BD4F83 /* OrderedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC32E16721DD55B900BD4F83 /* OrderedDictionary.swift */; };
-		AC347B5C20E5A7E1003449CF /* IterableAPNSUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC347B5B20E5A7E1003449CF /* IterableAPNSUtil.swift */; };
+		AC347B5C20E5A7E1003449CF /* APNSTypeChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC347B5B20E5A7E1003449CF /* APNSTypeChecker.swift */; };
 		AC347B6720E699FA003449CF /* IterableAppExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = AC347B6620E699D8003449CF /* IterableAppExtensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AC3C10F9213F46A900A9B839 /* IterableLogging.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3C10F8213F46A900A9B839 /* IterableLogging.swift */; };
 		AC3DD9C82142F3650046F886 /* ClassExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3DD9C72142F3650046F886 /* ClassExtensions.swift */; };
@@ -225,7 +225,7 @@
 
 /* Begin PBXFileReference section */
 		007960ED213F8B2300C53A6A /* DeferredDeepLinkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeferredDeepLinkTests.swift; sourceTree = "<group>"; };
-		00B6FACB210E8484007535CF /* APNSUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APNSUtilTests.swift; sourceTree = "<group>"; };
+		00B6FACB210E8484007535CF /* APNSTypeCheckerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APNSTypeCheckerTests.swift; sourceTree = "<group>"; };
 		00B6FACD210E874D007535CF /* prod-1.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = "prod-1.mobileprovision"; sourceTree = "<group>"; };
 		00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = "dev-1.mobileprovision"; sourceTree = "<group>"; };
 		00CB31B4210960C4004ACDEC /* TestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtils.swift; sourceTree = "<group>"; };
@@ -267,7 +267,7 @@
 		AC31B03F232AB42100BE25EB /* InboxSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxSessionManager.swift; sourceTree = "<group>"; };
 		AC31B041232AB53500BE25EB /* InboxImpressionTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxImpressionTracker.swift; sourceTree = "<group>"; };
 		AC32E16721DD55B900BD4F83 /* OrderedDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderedDictionary.swift; sourceTree = "<group>"; };
-		AC347B5B20E5A7E1003449CF /* IterableAPNSUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPNSUtil.swift; sourceTree = "<group>"; };
+		AC347B5B20E5A7E1003449CF /* APNSTypeChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APNSTypeChecker.swift; sourceTree = "<group>"; };
 		AC347B6620E699D8003449CF /* IterableAppExtensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IterableAppExtensions.h; sourceTree = "<group>"; };
 		AC3C10F8213F46A900A9B839 /* IterableLogging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableLogging.swift; sourceTree = "<group>"; };
 		AC3DD9C72142F3650046F886 /* ClassExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassExtensions.swift; sourceTree = "<group>"; };
@@ -600,7 +600,7 @@
 			isa = PBXGroup;
 			children = (
 				AC3DD9C72142F3650046F886 /* ClassExtensions.swift */,
-				AC347B5B20E5A7E1003449CF /* IterableAPNSUtil.swift */,
+				AC347B5B20E5A7E1003449CF /* APNSTypeChecker.swift */,
 				AC776DA5211A1B8A00C27C27 /* IterableRequestUtil.swift */,
 				AC72A0AD20CF4C16004D7997 /* IterableUtil.swift */,
 				AC32E16721DD55B900BD4F83 /* OrderedDictionary.swift */,
@@ -645,7 +645,7 @@
 			children = (
 				AC87172421A4E3FF00FEA369 /* Helper Classes */,
 				00B6FACF210E8B10007535CF /* Test Files */,
-				00B6FACB210E8484007535CF /* APNSUtilTests.swift */,
+				00B6FACB210E8484007535CF /* APNSTypeCheckerTests.swift */,
 				5531CDAD22A9C992000D05E2 /* ClassExtensionsTests.swift */,
 				55B37FC0229620D20042F13A /* CommerceItemTests.swift */,
 				ACD6EDB821CD78F600D2901B /* DeepLinkTests.swift */,
@@ -1329,7 +1329,7 @@
 				AC2C667E20D3111900D46CC9 /* DateProvider.swift in Sources */,
 				ACA8D1AB21966555001B1332 /* InAppManager.swift in Sources */,
 				AC81918822713A110014955E /* Dwifft+UIKit.swift in Sources */,
-				AC347B5C20E5A7E1003449CF /* IterableAPNSUtil.swift in Sources */,
+				AC347B5C20E5A7E1003449CF /* APNSTypeChecker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1342,7 +1342,7 @@
 				00CB31B621096129004ACDEC /* TestUtils.swift in Sources */,
 				AC89661E2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift in Sources */,
 				ACA8D1A921965B7D001B1332 /* InAppTests.swift in Sources */,
-				00B6FACC210E8484007535CF /* APNSUtilTests.swift in Sources */,
+				00B6FACC210E8484007535CF /* APNSTypeCheckerTests.swift in Sources */,
 				AC995F9A2166EEB50099A184 /* CommonMocks.swift in Sources */,
 				5585DF8F22A73390000A32B9 /* IterableInboxViewControllerTests.swift in Sources */,
 				007960EE213F8B2300C53A6A /* DeferredDeepLinkTests.swift in Sources */,

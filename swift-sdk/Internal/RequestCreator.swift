@@ -468,7 +468,7 @@ struct RequestCreator {
         case .sandbox:
             return JsonValue.apnsSandbox.jsonStringValue
         case .auto:
-            return IterableAPNSUtil.isSandboxAPNS() ? JsonValue.apnsSandbox.jsonStringValue : JsonValue.apnsProduction.jsonStringValue
+            return APNSTypeChecker.isSandboxAPNS() ? JsonValue.apnsSandbox.jsonStringValue : JsonValue.apnsProduction.jsonStringValue
         }
     }
     

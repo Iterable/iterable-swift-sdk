@@ -424,7 +424,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             case .sandbox:
                 return sandboxPushIntegrationName
             case .auto:
-                return IterableAPNSUtil.isSandboxAPNS() ? sandboxPushIntegrationName : pushIntegrationName
+                return APNSTypeChecker.isSandboxAPNS() ? sandboxPushIntegrationName : pushIntegrationName
             }
         } else if let pushIntegrationName = config.pushIntegrationName {
             return pushIntegrationName

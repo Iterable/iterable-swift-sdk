@@ -15,6 +15,7 @@ protocol DependencyContainerProtocol {
     var urlOpener: UrlOpenerProtocol { get }
     var applicationStateProvider: ApplicationStateProviderProtocol { get }
     var notificationCenter: NotificationCenterProtocol { get }
+    var apnsTypeChecker: APNSTypeCheckerProtocol { get }
     
     func createInAppFetcher(apiClient: ApiClientProtocol) -> InAppFetcherProtocol
 }
@@ -51,4 +52,5 @@ struct DependencyContainer: DependencyContainerProtocol {
     let urlOpener: UrlOpenerProtocol = AppUrlOpener()
     let applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared
     let notificationCenter: NotificationCenterProtocol = NotificationCenter.default
+    let apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker()
 }
