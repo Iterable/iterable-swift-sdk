@@ -473,8 +473,8 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     }
     
     private weak var apiClient: ApiClientProtocol?
-    private var deviceMetadata: DeviceMetadata
-    private var fetcher: InAppFetcherProtocol // this is mutable because we need to set internalApi
+    private let deviceMetadata: DeviceMetadata
+    private let fetcher: InAppFetcherProtocol // this is mutable because we need to set internalApi
     private let displayer: InAppDisplayerProtocol
     private let inAppDelegate: IterableInAppDelegate
     private let urlDelegate: IterableURLDelegate?
