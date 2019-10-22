@@ -356,19 +356,17 @@ class InAppTests: XCTestCase {
     
     func testShowInAppWithIterableCustomActionDelete() {
         let expectation1 = expectation(description: "correct number of messages")
-        let expectation2 = expectation(description: "custom action delete called")
+        let predicate = NSPredicate { (_, _) -> Bool in
+            IterableAPI.inAppManager.getMessages().count == 0
+        }
+        let expectation2 = expectation(for: predicate, evaluatedWith: nil, handler: nil)
         
         let mockInAppFetcher = MockInAppFetcher()
         
         let iterableDeleteUrl = "iterable://delete"
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShow.onSuccess { _ in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                mockInAppDisplayer.click(url: URL(string: iterableDeleteUrl)!)
-                
-                XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
-                expectation2.fulfill()
-            }
+            mockInAppDisplayer.click(url: URL(string: iterableDeleteUrl)!)
         }
         
         let config = IterableConfig()
