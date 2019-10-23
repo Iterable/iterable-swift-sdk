@@ -474,7 +474,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     
     private weak var apiClient: ApiClientProtocol?
     private let deviceMetadata: DeviceMetadata
-    private let fetcher: InAppFetcherProtocol // this is mutable because we need to set internalApi
+    private let fetcher: InAppFetcherProtocol
     private let displayer: InAppDisplayerProtocol
     private let inAppDelegate: IterableInAppDelegate
     private let urlDelegate: IterableURLDelegate?
@@ -484,7 +484,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     private let notificationCenter: NotificationCenterProtocol
     
     private let persister: InAppPersistenceProtocol
-    private var messagesMap = OrderedDictionary<String, IterableInAppMessage>() // This is mutable
+    private var messagesMap = OrderedDictionary<String, IterableInAppMessage>()
     private let dateProvider: DateProviderProtocol
     private let retryInterval: TimeInterval // in seconds, if a message is already showing how long to wait?
     private var lastDismissedTime: Date?
