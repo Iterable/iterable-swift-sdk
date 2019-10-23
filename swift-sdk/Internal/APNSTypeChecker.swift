@@ -5,8 +5,21 @@
 
 import Foundation
 
-struct IterableAPNSUtil {
-    static func isSandboxAPNS() -> Bool {
+enum APNSType {
+    case sandbox
+    case production
+}
+
+protocol APNSTypeCheckerProtocol {
+    var apnsType: APNSType { get }
+}
+
+struct APNSTypeChecker: APNSTypeCheckerProtocol {
+    var apnsType: APNSType {
+        return APNSTypeChecker.isSandboxAPNS() ? .sandbox : .production
+    }
+    
+    private static func isSandboxAPNS() -> Bool {
         #if targetEnvironment(simulator)
             return isSandboxAPNS(mobileProvision: mobileProvision, isSimulator: true)
         #else

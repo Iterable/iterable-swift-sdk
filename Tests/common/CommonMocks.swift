@@ -381,3 +381,11 @@ class MockInAppPesister: InAppPersistenceProtocol {
         messages.removeAll()
     }
 }
+
+struct MockAPNSTypeChecker: APNSTypeCheckerProtocol {
+    let apnsType: APNSType
+    
+    init(apnsType: APNSType) {
+        self.apnsType = apnsType
+    }
+}

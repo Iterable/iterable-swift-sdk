@@ -102,15 +102,15 @@ class RegistrationTests: XCTestCase {
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
     
-    func testRegisterTokenWithAutoPlatform() {
-        let expectation = XCTestExpectation(description: "testRegisterToken")
+    func testRegisterTokenWithAutoPlatformChooseSandbox() {
+        let expectation = XCTestExpectation(description: "testRegisterTokenWithAutoPlatformChooseSandbox")
         
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
         config.pushIntegrationName = "my-push-integration"
         config.sandboxPushIntegrationName = "my-sandbox-push-integration"
         config.pushPlatform = .auto
-        IterableAPI.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession)
+        IterableAPI.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession, apnsTypeChecker: MockAPNSTypeChecker(apnsType: .sandbox))
         IterableAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         IterableAPI.register(token: token, onSuccess: { _ in
@@ -131,8 +131,37 @@ class RegistrationTests: XCTestCase {
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
     
-    func testRegisterTokenChoosingPackageNameWhenNotProvided() {
-        let expectation = XCTestExpectation(description: "testRegisterToken")
+    func testRegisterTokenWithAutoPlatformChooseProduction() {
+        let expectation = XCTestExpectation(description: "testRegisterTokenWithAutoPlatformChooseProduction")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let config = IterableConfig()
+        config.pushIntegrationName = "my-push-integration"
+        config.sandboxPushIntegrationName = "my-sandbox-push-integration"
+        config.pushPlatform = .auto
+        IterableAPI.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession, apnsTypeChecker: MockAPNSTypeChecker(apnsType: .production))
+        IterableAPI.email = "user@example.com"
+        let token = "zeeToken".data(using: .utf8)!
+        IterableAPI.register(token: token, onSuccess: { _ in
+            let body = networkSession.getRequestBody() as! [String: Any]
+            TestUtils.validateMatch(keyPath: KeyPath(.device, .applicationName), value: config.pushIntegrationName, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(.device, .platform), value: JsonValue.apnsProduction.jsonValue as! String, inDictionary: body)
+            expectation.fulfill()
+        }) { reason, _ in
+            // failure
+            if let reason = reason {
+                XCTFail("encountered error: \(reason)")
+            } else {
+                XCTFail("encountered error")
+            }
+        }
+        
+        // only wait for small time, supposed to error out
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+    
+    func testRegisterTokenWithAutoPlatformAndNoIntegrationNameChooseSandbox() {
+        let expectation = XCTestExpectation(description: "testRegisterTokenWithAutoPlatformAndNoIntegrationNameChooseSandbox")
         
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
@@ -144,6 +173,33 @@ class RegistrationTests: XCTestCase {
             let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMatch(keyPath: KeyPath(.device, .applicationName), value: TestUtils.appPackageName, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(.device, .platform), value: JsonValue.apnsSandbox.jsonValue as! String, inDictionary: body)
+            expectation.fulfill()
+        }) { reason, _ in
+            // failure
+            if let reason = reason {
+                XCTFail("encountered error: \(reason)")
+            } else {
+                XCTFail("encountered error")
+            }
+        }
+        
+        // only wait for small time, supposed to error out
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+    
+    func testRegisterTokenWithAutoPlatformAndNoIntegrationNameChooseProduction() {
+        let expectation = XCTestExpectation(description: "testRegisterTokenWithAutoPlatformAndNoIntegrationNameChooseProduction")
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let config = IterableConfig()
+        config.pushPlatform = .auto
+        IterableAPI.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession, apnsTypeChecker: MockAPNSTypeChecker(apnsType: .production))
+        IterableAPI.email = "user@example.com"
+        let token = "zeeToken".data(using: .utf8)!
+        IterableAPI.register(token: token, onSuccess: { _ in
+            let body = networkSession.getRequestBody() as! [String: Any]
+            TestUtils.validateMatch(keyPath: KeyPath(.device, .applicationName), value: TestUtils.appPackageName, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(.device, .platform), value: JsonValue.apnsProduction.jsonValue as! String, inDictionary: body)
             expectation.fulfill()
         }) { reason, _ in
             // failure

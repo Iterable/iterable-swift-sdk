@@ -78,6 +78,7 @@ class MockDependencyContainer: DependencyContainerProtocol {
     let urlOpener: UrlOpenerProtocol
     let applicationStateProvider: ApplicationStateProviderProtocol
     let notificationCenter: NotificationCenterProtocol
+    let apnsTypeChecker: APNSTypeCheckerProtocol
     
     init(dateProvider: DateProviderProtocol,
          networkSession: NetworkSessionProtocol,
@@ -88,7 +89,8 @@ class MockDependencyContainer: DependencyContainerProtocol {
          inAppPersister: InAppPersistenceProtocol,
          urlOpener: UrlOpenerProtocol,
          applicationStateProvider: ApplicationStateProviderProtocol,
-         notificationCenter: NotificationCenterProtocol) {
+         notificationCenter: NotificationCenterProtocol,
+         apnsTypeChecker: APNSTypeCheckerProtocol) {
         self.dateProvider = dateProvider
         self.networkSession = networkSession
         self.notificationStateProvider = notificationStateProvider
@@ -99,6 +101,7 @@ class MockDependencyContainer: DependencyContainerProtocol {
         self.urlOpener = urlOpener
         self.applicationStateProvider = applicationStateProvider
         self.notificationCenter = notificationCenter
+        self.apnsTypeChecker = apnsTypeChecker
     }
     
     func createInAppFetcher(apiClient _: ApiClientProtocol) -> InAppFetcherProtocol {
@@ -119,7 +122,8 @@ extension IterableAPI {
                                      inAppPersister: InAppPersistenceProtocol = MockInAppPesister(),
                                      urlOpener: UrlOpenerProtocol = MockUrlOpener(),
                                      applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
-                                     notificationCenter: NotificationCenterProtocol = NotificationCenter.default) {
+                                     notificationCenter: NotificationCenterProtocol = NotificationCenter.default,
+                                     apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker()) {
         let mockDependencyContainer = MockDependencyContainer(dateProvider: dateProvider,
                                                               networkSession: networkSession,
                                                               notificationStateProvider: notificationStateProvider,
@@ -129,7 +133,8 @@ extension IterableAPI {
                                                               inAppPersister: inAppPersister,
                                                               urlOpener: urlOpener,
                                                               applicationStateProvider: applicationStateProvider,
-                                                              notificationCenter: notificationCenter)
+                                                              notificationCenter: notificationCenter,
+                                                              apnsTypeChecker: apnsTypeChecker)
         
         internalImplementation = IterableAPIInternal(apiKey: apiKey,
                                                      launchOptions: launchOptions,
