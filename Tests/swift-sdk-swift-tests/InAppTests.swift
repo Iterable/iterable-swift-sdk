@@ -356,19 +356,17 @@ class InAppTests: XCTestCase {
     
     func testShowInAppWithIterableCustomActionDelete() {
         let expectation1 = expectation(description: "correct number of messages")
-        let expectation2 = expectation(description: "custom action delete called")
+        let predicate = NSPredicate { (_, _) -> Bool in
+            IterableAPI.inAppManager.getMessages().count == 0
+        }
+        let expectation2 = expectation(for: predicate, evaluatedWith: nil, handler: nil)
         
         let mockInAppFetcher = MockInAppFetcher()
         
         let iterableDeleteUrl = "iterable://delete"
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShow.onSuccess { _ in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                mockInAppDisplayer.click(url: URL(string: iterableDeleteUrl)!)
-                
-                XCTAssertEqual(IterableAPI.inAppManager.getMessages().count, 0)
-                expectation2.fulfill()
-            }
+            mockInAppDisplayer.click(url: URL(string: iterableDeleteUrl)!)
         }
         
         let config = IterableConfig()
@@ -664,7 +662,7 @@ class InAppTests: XCTestCase {
         wait(for: [expectation4], timeout: testExpectationTimeout)
     }
     
-    func testDontShowMessageWithinRetryInterval() {
+    func testDontShowNewlyArrivedMessageWithinRetryInterval() {
         let expectation1 = expectation(description: "show first message")
         let expectation2 = expectation(description: "don't show second message within interval")
         expectation2.isInverted = true
@@ -673,6 +671,7 @@ class InAppTests: XCTestCase {
         let retryInterval = 2.0
         
         let mockInAppFetcher = MockInAppFetcher()
+        let mockDateProvider = MockDateProvider()
         
         let mockInAppDisplayer = MockInAppDisplayer()
         var messageNumber = -1
@@ -681,6 +680,7 @@ class InAppTests: XCTestCase {
                 expectation1.fulfill()
                 mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: messageNumber))
             } else if messageNumber == 2 {
+                // it should never be true
                 expectation2.fulfill()
                 mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: messageNumber))
             } else if messageNumber == 3 {
@@ -697,6 +697,7 @@ class InAppTests: XCTestCase {
         
         IterableAPI.initializeForTesting(
             config: config,
+            dateProvider: mockDateProvider,
             inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer
         )
@@ -708,11 +709,13 @@ class InAppTests: XCTestCase {
         
         // second message payload, should not be shown
         messageNumber = 2
+        mockDateProvider.currentDate = mockDateProvider.currentDate.addingTimeInterval(retryInterval - 0.01)
         mockInAppFetcher.mockInAppPayloadFromServer(TestInAppPayloadGenerator.createPayloadWithUrl(indices: 1 ... messageNumber))
         wait(for: [expectation2], timeout: retryInterval)
         
-        // After retryInternval, the third should show
+        // After retryInternval, the second message should show
         messageNumber = 3
+        mockDateProvider.currentDate = mockDateProvider.currentDate.addingTimeInterval(1000)
         wait(for: [expectation3], timeout: testExpectationTimeout)
     }
     

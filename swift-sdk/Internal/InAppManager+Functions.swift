@@ -88,7 +88,7 @@ struct MessagesProcessor {
     }
     
     private let inAppDelegate: IterableInAppDelegate
-    private var inAppDisplayChecker: InAppDisplayChecker
+    private let inAppDisplayChecker: InAppDisplayChecker
     private var messagesMap: OrderedDictionary<String, IterableInAppMessage>
 }
 
