@@ -400,7 +400,8 @@ class InAppTests: XCTestCase {
             expectation1.fulfill()
         }
         
-        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+        wait(for: [expectation2], timeout: testExpectationTimeout)
     }
     
     func testShowInAppWithIterableCustomActionDismiss() {
