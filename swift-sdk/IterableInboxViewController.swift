@@ -5,6 +5,24 @@
 
 import UIKit
 
+/// Use this protocol to override the default inbox display behavior
+@objc public protocol IterableInboxViewControllerDelegate: AnyObject {
+    /// Override the title to display instead of actual inbox message title
+    /// - parameter forTitle: The actual title of inbox message
+    /// - returns: The title to display or nil to not display title
+    @objc optional func display(forTitle title: String?) -> String?
+    
+    /// Override the title to display instead of actual inbox message subtitle
+    /// - parameter forSubtitle: The actual subtitle of inbox message
+    /// - returns: The title to display or nil to not display subtitle
+    @objc optional func display(forSubtitle subtitle: String?) -> String?
+    
+    /// Override the title to display instead of actual inbox message title
+    /// - parameter forDate: The actual creation time of inbox message
+    /// - returns: The string value to display or nil to not display date
+    @objc optional func display(forDate date: Date?) -> String?
+}
+
 @IBDesignable
 open class IterableInboxViewController: UITableViewController {
     public enum InboxMode {
@@ -13,6 +31,9 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     // MARK: Settable properties
+    
+    /// Set this property to override default inbox display behavior
+    public weak var delegate: IterableInboxViewControllerDelegate?
     
     /// If you want to use a custom layout for your inbox TableViewCell
     /// this is the variable you should override. Please note that this assumes
@@ -183,10 +204,38 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     private func configure(cell: IterableInboxCell, forMessage message: InboxMessageViewModel) {
-        cell.titleLbl?.text = message.title
-        cell.subtitleLbl?.text = message.subtitle
+        setTitle(cell: cell, message: message)
+        setSubtitle(cell: cell, message: message)
+        setCreatedAt(cell: cell, message: message)
+        
+        // unread circle view
         cell.unreadCircleView?.isHidden = message.read
         
+        loadCellImage(cell: cell, message: message)
+    }
+    
+    private func setTitle(cell: IterableInboxCell, message: InboxMessageViewModel) {
+        let displayValue = IterableInboxViewController.valueToDisplay(value: message.title,
+                                                                      defaultDisplayFromValue: { $0 },
+                                                                      modifiedDisplayFromValue: delegate?.display(forTitle:))
+        IterableInboxViewController.set(value: displayValue, forLabel: cell.titleLbl)
+    }
+    
+    private func setSubtitle(cell: IterableInboxCell, message: InboxMessageViewModel) {
+        let displayValue = IterableInboxViewController.valueToDisplay(value: message.subtitle,
+                                                                      defaultDisplayFromValue: { $0 },
+                                                                      modifiedDisplayFromValue: delegate?.display(forSubtitle:))
+        IterableInboxViewController.set(value: displayValue, forLabel: cell.subtitleLbl)
+    }
+    
+    private func setCreatedAt(cell: IterableInboxCell, message: InboxMessageViewModel) {
+        let displayValue = IterableInboxViewController.valueToDisplay(value: message.createdAt,
+                                                                      defaultDisplayFromValue: IterableInboxViewController.defaultValueToDisplay(forCreatedAt:),
+                                                                      modifiedDisplayFromValue: delegate?.display(forDate:))
+        IterableInboxViewController.set(value: displayValue, forLabel: cell.createdAtLbl)
+    }
+    
+    private func loadCellImage(cell: IterableInboxCell, message: InboxMessageViewModel) {
         cell.iconImageView?.clipsToBounds = true
         
         if message.hasValidImageUrl() {
@@ -204,17 +253,33 @@ open class IterableInboxViewController: UITableViewController {
             cell.iconContainerView?.isHidden = true
             cell.iconImageView?.isHidden = true
         }
-        
-        if let createdAt = message.createdAt {
-            cell.createdAtLbl?.isHidden = false
-            cell.createdAtLbl?.text = IterableInboxViewController.displayValue(forTime: createdAt)
+    }
+    
+    // if value is present it is set, otherwise hide the label
+    private static func set(value: String?, forLabel label: UILabel?) {
+        if let value = value {
+            label?.isHidden = false
+            label?.text = value
         } else {
-            cell.createdAtLbl?.isHidden = true
+            label?.isHidden = true
+            label?.text = nil
         }
     }
     
-    private static func displayValue(forTime date: Date) -> String {
-        return DateFormatter.localizedString(from: date, dateStyle: .medium, timeStyle: .short)
+    private static func valueToDisplay<T>(value: T?, defaultDisplayFromValue: (T?) -> String?, modifiedDisplayFromValue: ((T?) -> String?)?) -> String? {
+        if let modifiedDisplayFromValue = modifiedDisplayFromValue {
+            return modifiedDisplayFromValue(value)
+        } else {
+            return defaultDisplayFromValue(value)
+        }
+    }
+    
+    // By default show locale specific medium date
+    private static func defaultValueToDisplay(forCreatedAt createdAt: Date?) -> String? {
+        guard let createdAt = createdAt else {
+            return nil
+        }
+        return DateFormatter.localizedString(from: createdAt, dateStyle: .medium, timeStyle: .short)
     }
 }
 
