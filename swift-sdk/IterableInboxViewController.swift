@@ -11,6 +11,11 @@ import UIKit
     /// - parameter forMessage: IterableInboxMessage
     /// - returns: The string value to display or nil to not display date
     @objc optional func displayDate(forMessage message: IterableInAppMessage) -> String?
+    
+    /// Use this method to render any additional custom fields other than title, subtitle and createAt.
+    /// - parameter forCell: The table view cell to render
+    /// - parameter withMessage: IterableInAppMessage
+    @objc optional func renderAdditionalFields(forCell cell: IterableInboxCell, withMessage message: IterableInAppMessage)
 }
 
 @IBDesignable
@@ -203,6 +208,9 @@ open class IterableInboxViewController: UITableViewController {
         cell.unreadCircleView?.isHidden = message.read
         
         loadCellImage(cell: cell, message: message)
+        
+        // call the delegate to set additional fields
+        delegate?.renderAdditionalFields?(forCell: cell, withMessage: message.iterableMessage)
     }
     
     private func setCreatedAt(cell: IterableInboxCell, message: InboxMessageViewModel) {
