@@ -28,10 +28,6 @@ class IterableNotificationResponseTests: XCTestCase {
     }
     
     func testTrackOpenPushWithCustomAction() {
-        guard #available(iOS 10.0, *) else {
-            return
-        }
-        
         // we test with both 'true' and 'false' values below
         // to make sure that it doesn't influence the result
         // the return value is reserved for future use.
@@ -40,10 +36,6 @@ class IterableNotificationResponseTests: XCTestCase {
     }
     
     private func testTrackOpenPushWithCustomAction(returnValue: Bool) {
-        guard #available(iOS 10.0, *) else {
-            return
-        }
-        
         let messageId = UUID().uuidString
         let userInfo: [AnyHashable: Any] = [
             "itbl": [
@@ -83,10 +75,6 @@ class IterableNotificationResponseTests: XCTestCase {
     }
     
     func testActionButtonDismiss() {
-        guard #available(iOS 10.0, *) else {
-            return
-        }
-        
         let messageId = UUID().uuidString
         let userInfo = [
             "itbl": [
@@ -130,42 +118,39 @@ class IterableNotificationResponseTests: XCTestCase {
     }
     
     func testForegroundPushActionBeforeiOS10() {
-        if #available(iOS 10, *) {
-        } else {
-            let messageId = UUID().uuidString
-            let userInfo = [
-                "itbl": [
-                    "campaignId": 1234,
-                    "templateId": 4321,
-                    "isGhostPush": false,
-                    "messageId": messageId,
-                    "defaultAction": [
-                        "type": "customAction",
-                    ],
+        let messageId = UUID().uuidString
+        let userInfo = [
+            "itbl": [
+                "campaignId": 1234,
+                "templateId": 4321,
+                "isGhostPush": false,
+                "messageId": messageId,
+                "defaultAction": [
+                    "type": "customAction",
                 ],
-            ]
-            
-            let pushTracker = MockPushTracker()
-            let expection = XCTestExpectation(description: "customActionDelegate is called")
-            let customActionDelegate = MockCustomActionDelegate(returnValue: true)
-            customActionDelegate.callback = { customActionName, _ in
-                XCTAssertEqual(customActionName, "customAction")
-                expection.fulfill()
-            }
-            
-            let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker,
-                                                                customActionDelegate: customActionDelegate,
-                                                                urlOpener: MockUrlOpener(),
-                                                                inAppNotifiable: EmptyInAppManager())
-            appIntegration.application(MockApplicationStateProvider(applicationState: .inactive), didReceiveRemoteNotification: userInfo, fetchCompletionHandler: nil)
-            
-            wait(for: [expection], timeout: testExpectationTimeout)
-            
-            XCTAssertEqual(pushTracker.campaignId, 1234)
-            XCTAssertEqual(pushTracker.templateId, 4321)
-            XCTAssertEqual(pushTracker.messageId, messageId)
-            XCTAssertFalse(pushTracker.appAlreadyRunnnig)
+            ],
+        ]
+        
+        let pushTracker = MockPushTracker()
+        let expection = XCTestExpectation(description: "customActionDelegate is called")
+        let customActionDelegate = MockCustomActionDelegate(returnValue: true)
+        customActionDelegate.callback = { customActionName, _ in
+            XCTAssertEqual(customActionName, "customAction")
+            expection.fulfill()
         }
+        
+        let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker,
+                                                            customActionDelegate: customActionDelegate,
+                                                            urlOpener: MockUrlOpener(),
+                                                            inAppNotifiable: EmptyInAppManager())
+        appIntegration.application(MockApplicationStateProvider(applicationState: .inactive), didReceiveRemoteNotification: userInfo, fetchCompletionHandler: nil)
+        
+        wait(for: [expection], timeout: testExpectationTimeout)
+        
+        XCTAssertEqual(pushTracker.campaignId, 1234)
+        XCTAssertEqual(pushTracker.templateId, 4321)
+        XCTAssertEqual(pushTracker.messageId, messageId)
+        XCTAssertFalse(pushTracker.appAlreadyRunnnig)
     }
     
     func testSavePushPayload() {
@@ -238,10 +223,6 @@ class IterableNotificationResponseTests: XCTestCase {
     }
     
     func testLegacyDeeplinkPayload() {
-        guard #available(iOS 10.0, *) else {
-            return
-        }
-        
         let messageId = UUID().uuidString
         let userInfo: [AnyHashable: Any] = [
             "itbl": [

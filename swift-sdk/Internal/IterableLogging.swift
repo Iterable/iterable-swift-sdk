@@ -20,11 +20,8 @@ public class DefaultLogDelegate: IterableLogDelegate {
         }
         
         let markedMessage = IterableLogUtil.markedMessage(level: level, message: message)
-        if #available(iOS 10.0, *) {
-            os_log("%@", log: OSLog.default, type: OSLogType.error, markedMessage)
-        } else {
-            print(markedMessage)
-        }
+        
+        os_log("%@", log: OSLog.default, type: OSLogType.error, markedMessage)
     }
 }
 

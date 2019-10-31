@@ -16,17 +16,8 @@ struct SystemNotificationStateProvider: NotificationStateProviderProtocol {
     var notificationsEnabled: Promise<Bool, Error> {
         let result = Promise<Bool, Error>()
         
-        if #available(iOS 10.0, *) {
-            UNUserNotificationCenter.current().getNotificationSettings { settings in
-                if settings.authorizationStatus == .authorized {
-                    result.resolve(with: true)
-                } else {
-                    result.resolve(with: false)
-                }
-            }
-        } else {
-            // Fallback on earlier versions
-            if let currentSettings = UIApplication.shared.currentUserNotificationSettings, currentSettings.types != [] {
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            if settings.authorizationStatus == .authorized {
                 result.resolve(with: true)
             } else {
                 result.resolve(with: false)
@@ -43,14 +34,12 @@ struct SystemNotificationStateProvider: NotificationStateProviderProtocol {
     }
 }
 
-@available(iOS 10.0, *)
 public protocol NotificationResponseProtocol {
     var userInfo: [AnyHashable: Any] { get }
     var actionIdentifier: String { get }
     var textInputResponse: UNTextInputNotificationResponse? { get }
 }
 
-@available(iOS 10.0, *)
 struct UserNotificationResponse: NotificationResponseProtocol {
     var userInfo: [AnyHashable: Any] {
         return response.notification.request.content.userInfo
@@ -136,12 +125,6 @@ struct IterableAppIntegrationInternal {
             case .background:
                 break
             case .inactive:
-                if #available(iOS 10, *) {
-                } else {
-                    // iOS 10+ notification actions are handled by userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:
-                    // so this should only be executed if iOS 10 is not available.
-                    performDefaultNotificationAction(userInfo)
-                }
                 break
             @unknown default:
                 break
@@ -159,7 +142,6 @@ struct IterableAppIntegrationInternal {
      * - parameter completionHandler: Completion handler passed from the original call. Iterable will call the completion handler
      * automatically if you pass one. If you handle completionHandler in the app code, pass a nil value to this argument.
      */
-    @available(iOS 10.0, *)
     func userNotificationCenter(_: UNUserNotificationCenter?, didReceive response: NotificationResponseProtocol, withCompletionHandler completionHandler: (() -> Void)?) {
         ITBInfo()
         let userInfo = response.userInfo
@@ -194,7 +176,6 @@ struct IterableAppIntegrationInternal {
         completionHandler?()
     }
     
-    @available(iOS 10.0, *)
     private static func createIterableAction(actionIdentifier: String, userText: String?, userInfo: [AnyHashable: Any], iterableElement itbl: [AnyHashable: Any]) -> IterableAction? {
         var action: IterableAction?
         
@@ -240,7 +221,6 @@ struct IterableAppIntegrationInternal {
         return foundButton?[JsonKey.ActionButton.action] as? [AnyHashable: Any]
     }
     
-    @available(iOS 10.0, *)
     private static func createIterableDataFields(actionIdentifier: String, userText: String?) -> [AnyHashable: Any] {
         var dataFields = [AnyHashable: Any]()
         

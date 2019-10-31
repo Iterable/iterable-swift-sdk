@@ -33,7 +33,6 @@ import UserNotifications
      * - parameter completionHandler: Completion handler passed from the original call. Iterable will call the completion handler
      * automatically if you pass one. If you handle completionHandler in the app code, pass a nil value to this argument.
      */
-    @available(iOS 10.0, *)
     @objc(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:) public static func userNotificationCenter(_ center: UNUserNotificationCenter?, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: (() -> Void)?) {
         ITBInfo()
         implementation?.userNotificationCenter(center, didReceive: UserNotificationResponse(response: response), withCompletionHandler: completionHandler)
