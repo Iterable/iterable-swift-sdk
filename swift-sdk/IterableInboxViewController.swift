@@ -5,6 +5,14 @@
 
 import UIKit
 
+/// Use this protocol to override the default inbox display behavior
+@objc public protocol IterableInboxViewControllerDelegate: AnyObject {
+    /// Use this method to override the default display for message creation time. Return nil if you don't want to display time.
+    /// - parameter forMessage: IterableInboxMessage
+    /// - returns: The string value to display or nil to not display date
+    @objc optional func displayDate(forMessage message: IterableInAppMessage) -> String?
+}
+
 @IBDesignable
 open class IterableInboxViewController: UITableViewController {
     public enum InboxMode {
@@ -13,6 +21,9 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     // MARK: Settable properties
+    
+    /// Set this property to override default inbox display behavior
+    public weak var delegate: IterableInboxViewControllerDelegate?
     
     /// If you want to use a custom layout for your inbox TableViewCell
     /// this is the variable you should override. Please note that this assumes
@@ -183,10 +194,28 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     private func configure(cell: IterableInboxCell, forMessage message: InboxMessageViewModel) {
-        cell.titleLbl?.text = message.title
-        cell.subtitleLbl?.text = message.subtitle
+        IterableInboxViewController.set(value: message.title, forLabel: cell.titleLbl)
+        IterableInboxViewController.set(value: message.subtitle, forLabel: cell.subtitleLbl)
+        
+        setCreatedAt(cell: cell, message: message)
+        
+        // unread circle view
         cell.unreadCircleView?.isHidden = message.read
         
+        loadCellImage(cell: cell, message: message)
+    }
+    
+    private func setCreatedAt(cell: IterableInboxCell, message: InboxMessageViewModel) {
+        let value: String?
+        if let modifier = delegate?.displayDate(forMessage:) {
+            value = modifier(message.iterableMessage)
+        } else {
+            value = IterableInboxViewController.defaultValueToDisplay(forCreatedAt: message.iterableMessage.createdAt)
+        }
+        IterableInboxViewController.set(value: value, forLabel: cell.createdAtLbl)
+    }
+    
+    private func loadCellImage(cell: IterableInboxCell, message: InboxMessageViewModel) {
         cell.iconImageView?.clipsToBounds = true
         
         if message.hasValidImageUrl() {
@@ -204,17 +233,25 @@ open class IterableInboxViewController: UITableViewController {
             cell.iconContainerView?.isHidden = true
             cell.iconImageView?.isHidden = true
         }
-        
-        if let createdAt = message.createdAt {
-            cell.createdAtLbl?.isHidden = false
-            cell.createdAtLbl?.text = IterableInboxViewController.displayValue(forTime: createdAt)
+    }
+    
+    // if value is present it is set, otherwise hide the label
+    private static func set(value: String?, forLabel label: UILabel?) {
+        if let value = value {
+            label?.isHidden = false
+            label?.text = value
         } else {
-            cell.createdAtLbl?.isHidden = true
+            label?.isHidden = true
+            label?.text = nil
         }
     }
     
-    private static func displayValue(forTime date: Date) -> String {
-        return DateFormatter.localizedString(from: date, dateStyle: .medium, timeStyle: .short)
+    // By default show locale specific medium date
+    private static func defaultValueToDisplay(forCreatedAt createdAt: Date?) -> String? {
+        guard let createdAt = createdAt else {
+            return nil
+        }
+        return DateFormatter.localizedString(from: createdAt, dateStyle: .medium, timeStyle: .short)
     }
 }
 
