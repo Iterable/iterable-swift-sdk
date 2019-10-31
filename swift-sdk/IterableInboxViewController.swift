@@ -39,23 +39,12 @@ open class IterableInboxViewController: UITableViewController {
     /// view delegate class for you.
     @IBInspectable public var viewDelegateClassName: String? {
         didSet {
-            if let viewDelegateClassName = viewDelegateClassName {
-                guard let delegateClass = NSClassFromString(viewDelegateClassName) as? IterableInboxViewControllerViewDelegate.Type else {
-                    ITBError("Could not initialize dynamic class: \(viewDelegateClassName)")
-                    return
-                }
-                guard let delegateObject = delegateClass.createInstance?() else {
-                    ITBError("'createInstance() method is not defined in \(viewDelegateClassName)'")
-                    return
-                }
-                
-                strongViewDelegate = delegateObject
-                viewDelegate = strongViewDelegate
+            guard let viewDelegateClassName = viewDelegateClassName else {
+                return
             }
+            instantiateViewDelegate(withClassName: viewDelegateClassName)
         }
     }
-    
-    private var strongViewDelegate: IterableInboxViewControllerViewDelegate?
     
     /// If you want to use a custom layout for your inbox TableViewCell
     /// this is the variable you should override. Please note that this assumes
@@ -204,6 +193,9 @@ open class IterableInboxViewController: UITableViewController {
     
     private let iterableCellNibName = "IterableInboxCell"
     
+    // we need this variable because we are instantiating the delegate class
+    private var strongViewDelegate: IterableInboxViewControllerViewDelegate?
+    
     deinit {
         ITBInfo()
     }
@@ -287,6 +279,20 @@ open class IterableInboxViewController: UITableViewController {
             return nil
         }
         return DateFormatter.localizedString(from: createdAt, dateStyle: .medium, timeStyle: .short)
+    }
+    
+    private func instantiateViewDelegate(withClassName className: String) {
+        guard let delegateClass = NSClassFromString(className) as? IterableInboxViewControllerViewDelegate.Type else {
+            ITBError("Could not initialize dynamic class: \(className), please check protocol \(IterableInboxViewControllerViewDelegate.self) conformanace.")
+            return
+        }
+        guard let delegateObject = delegateClass.createInstance?() else {
+            ITBError("'createInstance() method is not defined in \(className)'")
+            return
+        }
+        
+        strongViewDelegate = delegateObject
+        viewDelegate = strongViewDelegate
     }
 }
 
