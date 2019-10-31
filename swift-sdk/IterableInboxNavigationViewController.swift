@@ -37,6 +37,14 @@ open class IterableInboxNavigationViewController: UINavigationController {
         }
     }
     
+    /// Set this property if you want to set the view delegate class name in Storyboard
+    /// and want `IterableInboxViewController` to create a view delegate class for you.
+    @IBInspectable public var viewDelegateClassName: String? = nil {
+        didSet {
+            inboxViewController?.viewDelegateClassName = viewDelegateClassName
+        }
+    }
+    
     // MARK: Initializers
     
     /// This initializer should be used when initializing from Code.
