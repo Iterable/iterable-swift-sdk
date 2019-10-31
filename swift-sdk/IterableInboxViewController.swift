@@ -283,11 +283,12 @@ open class IterableInboxViewController: UITableViewController {
     
     private func instantiateViewDelegate(withClassName className: String) {
         guard let delegateClass = NSClassFromString(className) as? IterableInboxViewControllerViewDelegate.Type else {
-            ITBError("Could not initialize dynamic class: \(className), please check protocol \(IterableInboxViewControllerViewDelegate.self) conformanace.")
+            // we can't use IterableLog here because this happens from storyboard before logging is initialized.
+            print("❤️: Could not initialize dynamic class: \(className), please check protocol \(IterableInboxViewControllerViewDelegate.self) conformanace.")
             return
         }
         guard let delegateObject = delegateClass.createInstance?() else {
-            ITBError("'createInstance() method is not defined in \(className)'")
+            print("❤️: 'createInstance() method is not defined in \(className)'")
             return
         }
         
