@@ -288,7 +288,7 @@ open class IterableInboxViewController: UITableViewController {
             return
         }
         guard let delegateObject = delegateClass.createInstance?() else {
-            print("❤️: 'createInstance()' method is not defined in \(className)'")
+            print("❤️: 'createInstance()' method is not defined in '\(className)'")
             return
         }
         
