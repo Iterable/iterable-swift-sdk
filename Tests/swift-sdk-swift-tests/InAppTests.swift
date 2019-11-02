@@ -8,6 +8,11 @@ import XCTest
 @testable import IterableSDK
 
 class InAppTests: XCTestCase {
+    override class func setUp() {
+        super.setUp()
+        IterableAPI.internalImplementation = nil
+    }
+    
     func testAutoShowInAppSingle() {
         let expectation1 = expectation(description: "testAutoShowInAppSingle")
         let expectation2 = expectation(description: "count decrements after showing")

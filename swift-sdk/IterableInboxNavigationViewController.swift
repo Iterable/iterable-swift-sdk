@@ -75,8 +75,6 @@ open class IterableInboxNavigationViewController: UINavigationController {
             if let _ = strongSelf.presentingViewController {
                 let viewController = strongSelf.viewControllers[0]
                 if viewController.navigationItem.leftBarButtonItem == nil, viewController.navigationItem.rightBarButtonItem == nil {
-                    // we can't do popup on top of popup so the inbox must be shown inside nav controller.
-                    strongSelf.inboxViewController?.inboxMode = .nav
                     viewController.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(strongSelf.onDoneTapped))
                 }
             }
