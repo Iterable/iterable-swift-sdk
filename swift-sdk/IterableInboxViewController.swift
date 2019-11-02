@@ -6,7 +6,7 @@
 import UIKit
 
 /// Use this protocol to override the default inbox display behavior
-@objc public protocol IterableInboxViewControllerDelegate: AnyObject {
+@objc public protocol IterableInboxViewControllerViewDelegate: AnyObject {
     /// Use this method to override the default display for message creation time. Return nil if you don't want to display time.
     /// - parameter forMessage: IterableInboxMessage
     /// - returns: The string value to display or nil to not display date
@@ -16,6 +16,10 @@ import UIKit
     /// - parameter forCell: The table view cell to render
     /// - parameter withMessage: IterableInAppMessage
     @objc optional func renderAdditionalFields(forCell cell: IterableInboxCell, withMessage message: IterableInAppMessage)
+    
+    /// Implement this method if you want `IterableInboxViewController` to create an instance of the view delegate class
+    /// This method is used when `viewDelegateClassName` property is set.
+    @objc optional static func createInstance() -> IterableInboxViewControllerViewDelegate
 }
 
 @IBDesignable
@@ -27,8 +31,20 @@ open class IterableInboxViewController: UITableViewController {
     
     // MARK: Settable properties
     
-    /// Set this property to override default inbox display behavior
-    public weak var delegate: IterableInboxViewControllerDelegate?
+    /// Set this property to override default inbox display behavior. You should set either this property
+    /// or `viewDelegateClassName`property but not both.
+    public weak var viewDelegate: IterableInboxViewControllerViewDelegate?
+    
+    /// Set this property if you want to set the class name in Storyboard and want `IterableInboxViewController` to create a
+    /// view delegate class for you.
+    @IBInspectable public var viewDelegateClassName: String? {
+        didSet {
+            guard let viewDelegateClassName = viewDelegateClassName else {
+                return
+            }
+            instantiateViewDelegate(withClassName: viewDelegateClassName)
+        }
+    }
     
     /// If you want to use a custom layout for your inbox TableViewCell
     /// this is the variable you should override. Please note that this assumes
@@ -177,6 +193,9 @@ open class IterableInboxViewController: UITableViewController {
     
     private let iterableCellNibName = "IterableInboxCell"
     
+    // we need this variable because we are instantiating the delegate class
+    private var strongViewDelegate: IterableInboxViewControllerViewDelegate?
+    
     deinit {
         ITBInfo()
     }
@@ -210,12 +229,12 @@ open class IterableInboxViewController: UITableViewController {
         loadCellImage(cell: cell, message: message)
         
         // call the delegate to set additional fields
-        delegate?.renderAdditionalFields?(forCell: cell, withMessage: message.iterableMessage)
+        viewDelegate?.renderAdditionalFields?(forCell: cell, withMessage: message.iterableMessage)
     }
     
     private func setCreatedAt(cell: IterableInboxCell, message: InboxMessageViewModel) {
         let value: String?
-        if let modifier = delegate?.displayDate(forMessage:) {
+        if let modifier = viewDelegate?.displayDate(forMessage:) {
             value = modifier(message.iterableMessage)
         } else {
             value = IterableInboxViewController.defaultValueToDisplay(forCreatedAt: message.iterableMessage.createdAt)
@@ -260,6 +279,21 @@ open class IterableInboxViewController: UITableViewController {
             return nil
         }
         return DateFormatter.localizedString(from: createdAt, dateStyle: .medium, timeStyle: .short)
+    }
+    
+    private func instantiateViewDelegate(withClassName className: String) {
+        guard let delegateClass = NSClassFromString(className) as? IterableInboxViewControllerViewDelegate.Type else {
+            // we can't use IterableLog here because this happens from storyboard before logging is initialized.
+            print("❤️: Could not initialize dynamic class: \(className), please check protocol \(IterableInboxViewControllerViewDelegate.self) conformanace.")
+            return
+        }
+        guard let delegateObject = delegateClass.createInstance?() else {
+            print("❤️: 'createInstance()' method is not defined in '\(className)'")
+            return
+        }
+        
+        strongViewDelegate = delegateObject
+        viewDelegate = strongViewDelegate
     }
 }
 
