@@ -31,7 +31,7 @@ class IterableActionRunnerTests: XCTestCase {
         wait(for: [expectation], timeout: testExpectationTimeout)
         XCTAssertTrue(handled)
         
-        XCTAssertEqual(urlOpener.ios10OpenedUrl?.absoluteString, urlString)
+        XCTAssertEqual(urlOpener.openedUrl?.absoluteString, urlString)
     }
     
     func testUrlHandlingOverride() {
@@ -54,7 +54,7 @@ class IterableActionRunnerTests: XCTestCase {
         wait(for: [expectation], timeout: testExpectationTimeout)
         XCTAssertTrue(handled)
         
-        XCTAssertNil(urlOpener.ios10OpenedUrl)
+        XCTAssertNil(urlOpener.openedUrl)
     }
     
     func testCustomAction() {

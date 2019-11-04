@@ -72,7 +72,7 @@ public class MockCustomActionDelegate: NSObject, IterableCustomActionDelegate {
 
 @objcMembers
 public class MockUrlOpener: NSObject, UrlOpenerProtocol {
-    var ios10OpenedUrl: URL?
+    var openedUrl: URL?
     var callback: ((URL) -> Void)?
     
     public init(callback: ((URL) -> Void)? = nil) {
@@ -82,7 +82,7 @@ public class MockUrlOpener: NSObject, UrlOpenerProtocol {
     public func open(url: URL) {
         callback?(url)
         
-        ios10OpenedUrl = url
+        openedUrl = url
     }
 }
 
