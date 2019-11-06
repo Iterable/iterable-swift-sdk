@@ -1066,7 +1066,19 @@ class InAppTests: XCTestCase {
     }
     
     func testInAppRemoveMessagePayload1() {
-        let expectation1 = expectation(description: "testInAppRemoveMessagePayload1")
+        checkInAppRemoveMessagePayload(location: .inApp, source: nil, removeFunction: { IterableAPI.inAppManager.remove(message: $0) })
+    }
+    
+    func testInAppRemoveMessagePayload2() {
+        checkInAppRemoveMessagePayload(location: .inbox, source: nil, removeFunction: { IterableAPI.inAppManager.remove(message: $0, location: .inbox) })
+    }
+    
+    func testInAppRemoveMessagePayload3() {
+        checkInAppRemoveMessagePayload(location: .inbox, source: .deleteButton, removeFunction: { IterableAPI.inAppManager.remove(message: $0, location: .inbox, source: .deleteButton) })
+    }
+    
+    private func checkInAppRemoveMessagePayload(location: InAppLocation, source: InAppDeleteSource?, removeFunction: @escaping (IterableInAppMessage) -> Void) {
+        let expectation1 = expectation(description: "checkInAppRemoveMessagePayload")
         let mockInAppFetcher = MockInAppFetcher()
         let mockNetworkSession = MockNetworkSession()
         mockNetworkSession.requestCallback = { urlRequest in
@@ -1075,8 +1087,12 @@ class InAppTests: XCTestCase {
             }
             TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.inAppConsume)
             let body = mockNetworkSession.getRequestBody() as! [String: Any]
-            TestUtils.validateMessageContext(messageId: "message1", saveToInbox: true, silentInbox: true, location: .inApp, inBody: body)
-            TestUtils.validateNil(keyPath: KeyPath(.deleteAction), inDictionary: body, message: "deleteAction should be nil")
+            TestUtils.validateMessageContext(messageId: "message1", saveToInbox: true, silentInbox: true, location: location, inBody: body)
+            if let deleteAction = source {
+                TestUtils.validateMatch(keyPath: KeyPath(.deleteAction), value: deleteAction.jsonValue as! String, inDictionary: body, message: "deleteAction should be nil")
+            } else {
+                TestUtils.validateNil(keyPath: KeyPath(.deleteAction), inDictionary: body, message: "deleteAction should be nil")
+            }
             expectation1.fulfill()
         }
         IterableAPI.initializeForTesting(
@@ -1084,7 +1100,7 @@ class InAppTests: XCTestCase {
             inAppFetcher: mockInAppFetcher
         )
         
-        let payload = """
+        let payloadFromServer = """
         {"inAppMessages":
         [
             {
@@ -1107,11 +1123,11 @@ class InAppTests: XCTestCase {
         }
         """.toJsonDict()
         
-        mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { _ in
+        mockInAppFetcher.mockInAppPayloadFromServer(payloadFromServer).onSuccess { _ in
             let messages = IterableAPI.inAppManager.getInboxMessages()
             XCTAssertEqual(messages.count, 2)
             
-            IterableAPI.inAppManager.remove(message: messages[0])
+            removeFunction(messages[0])
         }
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
