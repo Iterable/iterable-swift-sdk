@@ -1065,6 +1065,58 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
+    func testInAppRemoveMessagePayload1() {
+        let expectation1 = expectation(description: "testInAppRemoveMessagePayload1")
+        let mockInAppFetcher = MockInAppFetcher()
+        let mockNetworkSession = MockNetworkSession()
+        mockNetworkSession.requestCallback = { urlRequest in
+            guard urlRequest.url!.absoluteString.contains(Const.Path.inAppConsume) else {
+                return
+            }
+            TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.inAppConsume)
+            let body = mockNetworkSession.getRequestBody() as! [String: Any]
+            TestUtils.validateMessageContext(messageId: "message1", saveToInbox: true, silentInbox: true, location: .inApp, inBody: body)
+            TestUtils.validateNil(keyPath: KeyPath(.deleteAction), inDictionary: body, message: "deleteAction should be nil")
+            expectation1.fulfill()
+        }
+        IterableAPI.initializeForTesting(
+            networkSession: mockNetworkSession,
+            inAppFetcher: mockInAppFetcher
+        )
+        
+        let payload = """
+        {"inAppMessages":
+        [
+            {
+                "saveToInbox": true,
+                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "trigger": {"type": "never"},
+                "messageId": "message1",
+                "campaignId": "campaign1",
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+            {
+                "saveToInbox": true,
+                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "trigger": {"type": "never"},
+                "messageId": "message2",
+                "campaignId": "campaign2",
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+        ]
+        }
+        """.toJsonDict()
+        
+        mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { _ in
+            let messages = IterableAPI.inAppManager.getInboxMessages()
+            XCTAssertEqual(messages.count, 2)
+            
+            IterableAPI.inAppManager.remove(message: messages[0])
+        }
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+    
     func testInboxChangedIsCalledWhenInAppIsRemovedInServer() {
         let expectation1 = expectation(description: "testInboxChangedIsCalledWhenInAppIsRemovedInServer")
         
