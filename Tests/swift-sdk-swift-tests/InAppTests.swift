@@ -8,6 +8,11 @@ import XCTest
 @testable import IterableSDK
 
 class InAppTests: XCTestCase {
+    override class func setUp() {
+        super.setUp()
+        IterableAPI.internalImplementation = nil
+    }
+    
     func testAutoShowInAppSingle() {
         let expectation1 = expectation(description: "testAutoShowInAppSingle")
         let expectation2 = expectation(description: "count decrements after showing")
@@ -400,7 +405,8 @@ class InAppTests: XCTestCase {
             expectation1.fulfill()
         }
         
-        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+        wait(for: [expectation2], timeout: testExpectationTimeout)
     }
     
     func testShowInAppWithIterableCustomActionDismiss() {
@@ -1055,6 +1061,74 @@ class InAppTests: XCTestCase {
         
         let appIntegration = IterableAppIntegrationInternal(tracker: MockPushTracker(), inAppNotifiable: mockInAppManager)
         appIntegration.application(MockApplicationStateProvider(applicationState: .background), didReceiveRemoteNotification: notification, fetchCompletionHandler: nil)
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+    
+    func testInAppRemoveMessagePayload1() {
+        checkInAppRemoveMessagePayload(location: .inApp, source: nil, removeFunction: { IterableAPI.inAppManager.remove(message: $0) })
+    }
+    
+    func testInAppRemoveMessagePayload2() {
+        checkInAppRemoveMessagePayload(location: .inbox, source: nil, removeFunction: { IterableAPI.inAppManager.remove(message: $0, location: .inbox) })
+    }
+    
+    func testInAppRemoveMessagePayload3() {
+        checkInAppRemoveMessagePayload(location: .inbox, source: .deleteButton, removeFunction: { IterableAPI.inAppManager.remove(message: $0, location: .inbox, source: .deleteButton) })
+    }
+    
+    private func checkInAppRemoveMessagePayload(location: InAppLocation, source: InAppDeleteSource?, removeFunction: @escaping (IterableInAppMessage) -> Void) {
+        let expectation1 = expectation(description: "checkInAppRemoveMessagePayload")
+        let mockInAppFetcher = MockInAppFetcher()
+        let mockNetworkSession = MockNetworkSession()
+        mockNetworkSession.requestCallback = { urlRequest in
+            guard urlRequest.url!.absoluteString.contains(Const.Path.inAppConsume) else {
+                return
+            }
+            TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.inAppConsume)
+            let body = mockNetworkSession.getRequestBody() as! [String: Any]
+            TestUtils.validateMessageContext(messageId: "message1", saveToInbox: true, silentInbox: true, location: location, inBody: body)
+            if let deleteAction = source {
+                TestUtils.validateMatch(keyPath: KeyPath(.deleteAction), value: deleteAction.jsonValue as! String, inDictionary: body, message: "deleteAction should be nil")
+            } else {
+                TestUtils.validateNil(keyPath: KeyPath(.deleteAction), inDictionary: body, message: "deleteAction should be nil")
+            }
+            expectation1.fulfill()
+        }
+        IterableAPI.initializeForTesting(
+            networkSession: mockNetworkSession,
+            inAppFetcher: mockInAppFetcher
+        )
+        
+        let payloadFromServer = """
+        {"inAppMessages":
+        [
+            {
+                "saveToInbox": true,
+                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "trigger": {"type": "never"},
+                "messageId": "message1",
+                "campaignId": "campaign1",
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+            {
+                "saveToInbox": true,
+                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "trigger": {"type": "never"},
+                "messageId": "message2",
+                "campaignId": "campaign2",
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+        ]
+        }
+        """.toJsonDict()
+        
+        mockInAppFetcher.mockInAppPayloadFromServer(payloadFromServer).onSuccess { _ in
+            let messages = IterableAPI.inAppManager.getInboxMessages()
+            XCTAssertEqual(messages.count, 2)
+            
+            removeFunction(messages[0])
+        }
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }

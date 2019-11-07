@@ -5,6 +5,23 @@
 
 import UIKit
 
+/// Use this protocol to override the default inbox display behavior
+@objc public protocol IterableInboxViewControllerViewDelegate: AnyObject {
+    /// Use this method to override the default display for message creation time. Return nil if you don't want to display time.
+    /// - parameter forMessage: IterableInboxMessage
+    /// - returns: The string value to display or nil to not display date
+    @objc optional func displayDate(forMessage message: IterableInAppMessage) -> String?
+    
+    /// Use this method to render any additional custom fields other than title, subtitle and createAt.
+    /// - parameter forCell: The table view cell to render
+    /// - parameter withMessage: IterableInAppMessage
+    @objc optional func renderAdditionalFields(forCell cell: IterableInboxCell, withMessage message: IterableInAppMessage)
+    
+    /// Implement this method if you want `IterableInboxViewController` to create an instance of the view delegate class
+    /// This method is used when `viewDelegateClassName` property is set.
+    @objc optional static func createInstance() -> IterableInboxViewControllerViewDelegate
+}
+
 @IBDesignable
 open class IterableInboxViewController: UITableViewController {
     public enum InboxMode {
@@ -13,6 +30,21 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     // MARK: Settable properties
+    
+    /// Set this property to override default inbox display behavior. You should set either this property
+    /// or `viewDelegateClassName`property but not both.
+    public weak var viewDelegate: IterableInboxViewControllerViewDelegate?
+    
+    /// Set this property if you want to set the class name in Storyboard and want `IterableInboxViewController` to create a
+    /// view delegate class for you.
+    @IBInspectable public var viewDelegateClassName: String? {
+        didSet {
+            guard let viewDelegateClassName = viewDelegateClassName else {
+                return
+            }
+            instantiateViewDelegate(withClassName: viewDelegateClassName)
+        }
+    }
     
     /// If you want to use a custom layout for your inbox TableViewCell
     /// this is the variable you should override. Please note that this assumes
@@ -135,13 +167,12 @@ open class IterableInboxViewController: UITableViewController {
             if inboxMode == .nav {
                 navigationController?.pushViewController(viewController, animated: true)
             } else {
-                definesPresentationContext = true
-                viewController.modalPresentationStyle = .overCurrentContext
-                if let rootViewController = IterableUtil.rootViewController {
-                    rootViewController.present(viewController, animated: true)
+                if #available(iOS 13.0, *) {
+                    viewController.modalPresentationStyle = .overCurrentContext
                 } else {
-                    present(viewController, animated: true)
+                    viewController.modalPresentationStyle = .overFullScreen
                 }
+                present(viewController, animated: true)
             }
         }
     }
@@ -158,6 +189,9 @@ open class IterableInboxViewController: UITableViewController {
     var viewModel: InboxViewControllerViewModelProtocol
     
     private let iterableCellNibName = "IterableInboxCell"
+    
+    // we need this variable because we are instantiating the delegate class
+    private var strongViewDelegate: IterableInboxViewControllerViewDelegate?
     
     deinit {
         ITBInfo()
@@ -180,10 +214,31 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     private func configure(cell: IterableInboxCell, forMessage message: InboxMessageViewModel) {
-        cell.titleLbl?.text = message.title
-        cell.subtitleLbl?.text = message.subtitle
+        IterableInboxViewController.set(value: message.title, forLabel: cell.titleLbl)
+        IterableInboxViewController.set(value: message.subtitle, forLabel: cell.subtitleLbl)
+        
+        setCreatedAt(cell: cell, message: message)
+        
+        // unread circle view
         cell.unreadCircleView?.isHidden = message.read
         
+        loadCellImage(cell: cell, message: message)
+        
+        // call the delegate to set additional fields
+        viewDelegate?.renderAdditionalFields?(forCell: cell, withMessage: message.iterableMessage)
+    }
+    
+    private func setCreatedAt(cell: IterableInboxCell, message: InboxMessageViewModel) {
+        let value: String?
+        if let modifier = viewDelegate?.displayDate(forMessage:) {
+            value = modifier(message.iterableMessage)
+        } else {
+            value = IterableInboxViewController.defaultValueToDisplay(forCreatedAt: message.iterableMessage.createdAt)
+        }
+        IterableInboxViewController.set(value: value, forLabel: cell.createdAtLbl)
+    }
+    
+    private func loadCellImage(cell: IterableInboxCell, message: InboxMessageViewModel) {
         cell.iconImageView?.clipsToBounds = true
         
         if message.hasValidImageUrl() {
@@ -201,17 +256,40 @@ open class IterableInboxViewController: UITableViewController {
             cell.iconContainerView?.isHidden = true
             cell.iconImageView?.isHidden = true
         }
-        
-        if let createdAt = message.createdAt {
-            cell.createdAtLbl?.isHidden = false
-            cell.createdAtLbl?.text = IterableInboxViewController.displayValue(forTime: createdAt)
+    }
+    
+    // if value is present it is set, otherwise hide the label
+    private static func set(value: String?, forLabel label: UILabel?) {
+        if let value = value {
+            label?.isHidden = false
+            label?.text = value
         } else {
-            cell.createdAtLbl?.isHidden = true
+            label?.isHidden = true
+            label?.text = nil
         }
     }
     
-    private static func displayValue(forTime date: Date) -> String {
-        return DateFormatter.localizedString(from: date, dateStyle: .medium, timeStyle: .short)
+    // By default show locale specific medium date
+    private static func defaultValueToDisplay(forCreatedAt createdAt: Date?) -> String? {
+        guard let createdAt = createdAt else {
+            return nil
+        }
+        return DateFormatter.localizedString(from: createdAt, dateStyle: .medium, timeStyle: .short)
+    }
+    
+    private func instantiateViewDelegate(withClassName className: String) {
+        guard let delegateClass = NSClassFromString(className) as? IterableInboxViewControllerViewDelegate.Type else {
+            // we can't use IterableLog here because this happens from storyboard before logging is initialized.
+            print("❤️: Could not initialize dynamic class: \(className), please check protocol \(IterableInboxViewControllerViewDelegate.self) conformanace.")
+            return
+        }
+        guard let delegateObject = delegateClass.createInstance?() else {
+            print("❤️: 'createInstance()' method is not defined in '\(className)'")
+            return
+        }
+        
+        strongViewDelegate = delegateObject
+        viewDelegate = strongViewDelegate
     }
 }
 

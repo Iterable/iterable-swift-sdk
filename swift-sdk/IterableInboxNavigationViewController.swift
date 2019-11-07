@@ -37,6 +37,14 @@ open class IterableInboxNavigationViewController: UINavigationController {
         }
     }
     
+    /// Set this property if you want to set the view delegate class name in Storyboard
+    /// and want `IterableInboxViewController` to create a view delegate class for you.
+    @IBInspectable public var viewDelegateClassName: String? = nil {
+        didSet {
+            inboxViewController?.viewDelegateClassName = viewDelegateClassName
+        }
+    }
+    
     // MARK: Initializers
     
     /// This initializer should be used when initializing from Code.
@@ -67,8 +75,6 @@ open class IterableInboxNavigationViewController: UINavigationController {
             if let _ = strongSelf.presentingViewController {
                 let viewController = strongSelf.viewControllers[0]
                 if viewController.navigationItem.leftBarButtonItem == nil, viewController.navigationItem.rightBarButtonItem == nil {
-                    // we can't do popup on top of popup so the inbox must be shown inside nav controller.
-                    strongSelf.inboxViewController?.inboxMode = .nav
                     viewController.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(strongSelf.onDoneTapped))
                 }
             }

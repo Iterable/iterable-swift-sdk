@@ -53,6 +53,14 @@ struct TestUtils {
         }
     }
     
+    static func validateNil(keyPath: KeyPath, inDictionary dict: [String: Any], message: String? = nil) {
+        if let message = message {
+            XCTAssertNil(dict[keyPath: keyPath], message)
+        } else {
+            XCTAssertNil(dict[keyPath: keyPath])
+        }
+    }
+    
     static func validateExists<T: Equatable>(keyPath: KeyPath, type _: T.Type, inDictionary dict: [String: Any], message: String? = nil) {
         if let message = message {
             XCTAssertNotNil(dict[keyPath: keyPath] as? T, message)
