@@ -188,42 +188,30 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         }
     }
     
-    private func synchronize() -> Future<Bool, Error> {
+    private func synchronize(appIsActive: Bool) -> Future<Bool, Error> {
         ITBInfo()
+        
         return
             fetcher.fetch()
             .map { self.mergeMessages($0) }
-            .flatMap { self.processMergedMessages($0) }
+            .map { self.processMergedMessages(appIsActive: appIsActive, mergeMessagesResult: $0) }
     }
     
     // messages are new messages coming from the server
-    // This function
     private func mergeMessages(_ messages: [IterableInAppMessage]) -> MergeMessagesResult {
         var messagesObtainedHandler = MessagesObtainedHandler(messagesMap: messagesMap, messages: messages)
         return messagesObtainedHandler.handle()
     }
     
-    private func processMergedMessages(_ mergeMessagesResult: MergeMessagesResult) -> Future<Bool, Error> {
-        let result = Promise<Bool, Error>()
-        DispatchQueue.main.async {
-            // we can only check on main thread
-            if self.applicationStateProvider.applicationState == .active {
-                self.processMessages(messagesMap: mergeMessagesResult.messagesMap).onSuccess { processMessagesResult in
-                    self.onMessagesProcessed(processMessagesResult)
-                    
-                    self.finishSync(inboxChanged: mergeMessagesResult.inboxChanged)
-                    
-                    result.resolve(with: true)
-                }
-            } else {
-                self.messagesMap = mergeMessagesResult.messagesMap
-                
-                self.finishSync(inboxChanged: mergeMessagesResult.inboxChanged)
-                
-                result.resolve(with: true)
-            }
+    private func processMergedMessages(appIsActive: Bool, mergeMessagesResult: MergeMessagesResult) -> Bool {
+        if appIsActive {
+            processAndShowMessage(messagesMap: mergeMessagesResult.messagesMap)
+        } else {
+            messagesMap = mergeMessagesResult.messagesMap
         }
-        return result
+        
+        finishSync(inboxChanged: mergeMessagesResult.inboxChanged)
+        return true
     }
     
     private func finishSync(inboxChanged: Bool) {
@@ -238,14 +226,8 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         lastSyncTime = dateProvider.currentDate
     }
     
-    // Not a pure function. This has side effect of showing the message
-    private func onMessagesProcessed(_ processMessagesResult: ProcessMessagesResult) {
-        messagesMap = getMessagesMap(fromProcessMessagesResult: processMessagesResult)
-        showMessage(fromProcessMessagesResult: processMessagesResult)
-    }
-    
-    private func getMessagesMap(fromProcessMessagesResult processMessagesResult: ProcessMessagesResult) -> OrderedDictionary<String, IterableInAppMessage> {
-        switch processMessagesResult {
+    private func getMessagesMap(fromMessagesProcessorResult messagesProcessorResult: MessagesProcessorResult) -> OrderedDictionary<String, IterableInAppMessage> {
+        switch messagesProcessorResult {
         case let .noShow(messagesMap: messagesMap):
             return messagesMap
         case .show(message: _, messagesMap: let messagesMap):
@@ -254,19 +236,17 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     }
     
     // Not a pure function.
-    private func showMessage(fromProcessMessagesResult processMessagesResult: ProcessMessagesResult) {
-        if case let ProcessMessagesResult.show(message: message, messagesMap: _) = processMessagesResult {
+    private func showMessage(fromMessagesProcessorResult messagesProcessorResult: MessagesProcessorResult) {
+        if case let MessagesProcessorResult.show(message: message, messagesMap: _) = messagesProcessorResult {
             self.show(message: message, consume: !message.saveToInbox)
         }
     }
     
-    private func processMessages(messagesMap: OrderedDictionary<String, IterableInAppMessage>) -> Future<ProcessMessagesResult, Error> {
-        let result = Promise<ProcessMessagesResult, Error>()
-        syncQueue.async {
-            var messagesProcessor = MessagesProcessor(inAppDelegate: self.inAppDelegate, inAppDisplayChecker: self, messagesMap: messagesMap)
-            result.resolve(with: messagesProcessor.processMessages())
-        }
-        return result
+    private func processAndShowMessage(messagesMap: OrderedDictionary<String, IterableInAppMessage>) {
+        var processor = MessagesProcessor(inAppDelegate: inAppDelegate, inAppDisplayChecker: self, messagesMap: messagesMap)
+        let messagesProcessorResult = processor.processMessages()
+        self.messagesMap = getMessagesMap(fromMessagesProcessorResult: messagesProcessorResult)
+        showMessage(fromMessagesProcessorResult: messagesProcessorResult)
     }
     
     // This must be called from MainThread
@@ -320,12 +300,10 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
                 self.scheduleNextInAppMessage()
             }
         } else {
-            DispatchQueue.main.async {
-                if self.applicationStateProvider.applicationState == .active {
-                    self.processMessages(messagesMap: self.messagesMap).onSuccess { processMessagesResult in
-                        self.onMessagesProcessed(processMessagesResult)
-                        self.persister.persist(self.messagesMap.values)
-                    }
+            _ = InAppManager.getAppIsActive(applicationStateProvider: applicationStateProvider).map { appIsActive in
+                if appIsActive {
+                    self.processAndShowMessage(messagesMap: self.messagesMap)
+                    self.persister.persist(self.messagesMap.values)
                 }
             }
         }
@@ -472,6 +450,18 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         return message.consumed == false && isExpired(message: message, currentDate: currentDate) == false
     }
     
+    fileprivate static func getAppIsActive(applicationStateProvider: ApplicationStateProviderProtocol) -> Promise<Bool, Error> {
+        if Thread.isMainThread {
+            return Promise(value: applicationStateProvider.applicationState == .active)
+        } else {
+            let result = Promise<Bool, Error>()
+            DispatchQueue.main.async {
+                result.resolve(with: applicationStateProvider.applicationState == .active)
+            }
+            return result
+        }
+    }
+    
     private weak var apiClient: ApiClientProtocol?
     private let deviceMetadata: DeviceMetadata
     private let fetcher: InAppFetcherProtocol
@@ -503,16 +493,22 @@ extension InAppManager: InAppNotifiable {
     func scheduleSync() -> Future<Bool, Error> {
         ITBInfo()
         
+        return InAppManager.getAppIsActive(applicationStateProvider: applicationStateProvider).flatMap { self.scheduleSync(appIsActive: $0) }
+    }
+    
+    private func scheduleSync(appIsActive: Bool) -> Future<Bool, Error> {
+        ITBInfo()
+        
         let result = Promise<Bool, Error>()
         syncQueue.async {
             if let syncResult = self.syncResult {
                 if syncResult.isResolved() {
-                    self.syncResult = self.synchronize()
+                    self.syncResult = self.synchronize(appIsActive: appIsActive)
                 } else {
-                    self.syncResult = syncResult.flatMap { _ in self.synchronize() }
+                    self.syncResult = syncResult.flatMap { _ in self.synchronize(appIsActive: appIsActive) }
                 }
             } else {
-                self.syncResult = self.synchronize()
+                self.syncResult = self.synchronize(appIsActive: appIsActive)
             }
             self.syncResult?.onSuccess { success in
                 result.resolve(with: success)
