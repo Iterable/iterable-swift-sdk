@@ -212,72 +212,6 @@ open class IterableInboxViewController: UITableViewController {
         ITBInfo()
     }
     
-    private struct CellLoader {
-        weak var viewDelegate: IterableInboxViewControllerViewDelegate?
-        let cellNibName: String?
-        
-        init(viewDelegate: IterableInboxViewControllerViewDelegate?,
-             cellNibName: String?) {
-            self.viewDelegate = viewDelegate
-            self.cellNibName = cellNibName
-        }
-        
-        func registerCells(forTableView tableView: UITableView) {
-            registerDefaultCell(forTableView: tableView)
-            registerCustomCells(forTableView: tableView)
-        }
-        
-        func loadCell(for message: IterableInAppMessage, forTableView tableView: UITableView, atIndexPath indexPath: IndexPath) -> IterableInboxCell {
-            guard let viewDelegate = viewDelegate else {
-                return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
-            }
-            guard let modifier1 = viewDelegate.customXibNames, let customXibNames = modifier1, customXibNames.count > 0 else {
-                return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
-            }
-            guard let modifier2 = viewDelegate.customXibName(for:), let customXibName = modifier2(message) else {
-                return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
-            }
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: customXibName, for: indexPath) as? IterableInboxCell else {
-                ITBError("Please make sure that an the nib: \(customXibName) is present in the main bundle")
-                return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
-            }
-            
-            return cell
-        }
-        
-        private let iterableCellNibName = "IterableInboxCell"
-        private let defaultCellReuseIdentifier = "inboxCell"
-        
-        private func registerCustomCells(forTableView tableView: UITableView) {
-            guard let viewDelegate = viewDelegate else {
-                return
-            }
-            guard let modifier = viewDelegate.customXibNames, let customXibNames = modifier, customXibNames.count > 0 else {
-                return
-            }
-            
-            customXibNames.forEach { customXibName in
-                let nib = UINib(nibName: customXibName, bundle: Bundle.main)
-                tableView.register(nib, forCellReuseIdentifier: customXibName)
-            }
-        }
-        
-        private func registerDefaultCell(forTableView tableView: UITableView) {
-            let cellNibName = self.cellNibName ?? iterableCellNibName
-            let bundle = self.cellNibName == nil ? Bundle(for: IterableInboxViewController.self) : Bundle.main
-            
-            let nib = UINib(nibName: cellNibName, bundle: bundle)
-            tableView.register(nib, forCellReuseIdentifier: defaultCellReuseIdentifier)
-        }
-        
-        private func loadDefaultCell(forTableView tableView: UITableView, atIndexPath indexPath: IndexPath) -> IterableInboxCell {
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: defaultCellReuseIdentifier, for: indexPath) as? IterableInboxCell else {
-                fatalError("Please make sure that an the nib: \(cellNibName ?? iterableCellNibName) is present in the main bundle")
-            }
-            return cell
-        }
-    }
-    
     @available(iOS 10.0, *)
     @objc private func handleRefreshControl() {
         ITBInfo()
@@ -437,3 +371,70 @@ extension IterableInboxViewController: InboxViewControllerViewModelDelegate {
         return newRect.contains(convertedRect) ? indexPath.row : nil
     }
 }
+
+fileprivate struct CellLoader {
+    weak var viewDelegate: IterableInboxViewControllerViewDelegate?
+    let cellNibName: String?
+    
+    init(viewDelegate: IterableInboxViewControllerViewDelegate?,
+         cellNibName: String?) {
+        self.viewDelegate = viewDelegate
+        self.cellNibName = cellNibName
+    }
+    
+    func registerCells(forTableView tableView: UITableView) {
+        registerDefaultCell(forTableView: tableView)
+        registerCustomCells(forTableView: tableView)
+    }
+    
+    func loadCell(for message: IterableInAppMessage, forTableView tableView: UITableView, atIndexPath indexPath: IndexPath) -> IterableInboxCell {
+        guard let viewDelegate = viewDelegate else {
+            return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
+        }
+        guard let modifier1 = viewDelegate.customXibNames, let customXibNames = modifier1, customXibNames.count > 0 else {
+            return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
+        }
+        guard let modifier2 = viewDelegate.customXibName(for:), let customXibName = modifier2(message) else {
+            return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
+        }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: customXibName, for: indexPath) as? IterableInboxCell else {
+            ITBError("Please make sure that an the nib: \(customXibName) is present in the main bundle")
+            return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
+        }
+        
+        return cell
+    }
+    
+    private let iterableCellNibName = "IterableInboxCell"
+    private let defaultCellReuseIdentifier = "inboxCell"
+    
+    private func registerCustomCells(forTableView tableView: UITableView) {
+        guard let viewDelegate = viewDelegate else {
+            return
+        }
+        guard let modifier = viewDelegate.customXibNames, let customXibNames = modifier, customXibNames.count > 0 else {
+            return
+        }
+        
+        customXibNames.forEach { customXibName in
+            let nib = UINib(nibName: customXibName, bundle: Bundle.main)
+            tableView.register(nib, forCellReuseIdentifier: customXibName)
+        }
+    }
+    
+    private func registerDefaultCell(forTableView tableView: UITableView) {
+        let cellNibName = self.cellNibName ?? iterableCellNibName
+        let bundle = self.cellNibName == nil ? Bundle(for: IterableInboxViewController.self) : Bundle.main
+        
+        let nib = UINib(nibName: cellNibName, bundle: bundle)
+        tableView.register(nib, forCellReuseIdentifier: defaultCellReuseIdentifier)
+    }
+    
+    private func loadDefaultCell(forTableView tableView: UITableView, atIndexPath indexPath: IndexPath) -> IterableInboxCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: defaultCellReuseIdentifier, for: indexPath) as? IterableInboxCell else {
+            fatalError("Please make sure that an the nib: \(cellNibName ?? iterableCellNibName) is present in the main bundle")
+        }
+        return cell
+    }
+}
+
