@@ -27,6 +27,8 @@ open class IterableInboxNavigationViewController: UINavigationController {
         }
     }
     
+    /// Set this to `true` to show a popup when an inbox message is selected in the list.
+    /// Set this to `false`to push inbox message into navigation stack.
     @IBInspectable public var isPopup: Bool = true {
         didSet {
             if isPopup {
@@ -34,6 +36,14 @@ open class IterableInboxNavigationViewController: UINavigationController {
             } else {
                 inboxViewController?.inboxMode = .nav
             }
+        }
+    }
+    
+    /// Set this property to override default inbox display behavior. You should set either this property
+    /// or `viewDelegateClassName`property but not both.
+    public var viewDelegate: IterableInboxViewControllerViewDelegate? {
+        didSet {
+            inboxViewController?.viewDelegate = viewDelegate
         }
     }
     
