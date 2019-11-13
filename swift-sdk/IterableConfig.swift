@@ -88,12 +88,14 @@ public class IterableConfig : NSObject {
     /**
      * Push integration name – used for token registration.
      * Make sure the name of this integration matches the one set up in Iterable console.
+     * For iOS apps, this is the bundle ID of your app.
      */
     public var pushIntegrationName: String?
     
     /**
      * Push integration name for development builds – used for token registration.
      * Make sure the name of this integration matches the one set up in Iterable console.
+     * For iOS apps, this is the bundle ID of your app.
      */
     public var sandboxPushIntegrationName: String?
     

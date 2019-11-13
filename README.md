@@ -235,7 +235,7 @@ Iterable API key:
     
 ```swift
 let config = IterableConfig()
-config.pushIntegrationName = "<your-iterable-push-integration-name>"
+config.pushIntegrationName = "<your-iterable-push-integration-name>" // For iOS apps, this is your app's bundle ID
 IterableAPI.initialize(apiKey: "<your-api-key>", launchOptions: launchOptions, config:config)
 ```
     
@@ -243,7 +243,7 @@ IterableAPI.initialize(apiKey: "<your-api-key>", launchOptions: launchOptions, c
     
 ```objc
 IterableConfig *config = [[IterableConfig alloc] init];
-config.pushIntegrationName = @"<your-iterable-push-integration-name>";
+config.pushIntegrationName = @"<your-iterable-push-integration-name>"; // For iOS apps, this is your app's bundle ID
 [IterableAPI initializeWithApiKey:@"<your-api-key>" launchOptions:launchOptions config:config]
 ```
 
