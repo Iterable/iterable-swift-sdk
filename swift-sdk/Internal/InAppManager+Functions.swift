@@ -5,7 +5,7 @@
 
 import Foundation
 
-enum ProcessMessagesResult {
+enum MessagesProcessorResult {
     case show(message: IterableInAppMessage, messagesMap: OrderedDictionary<String, IterableInAppMessage>)
     case noShow(messagesMap: OrderedDictionary<String, IterableInAppMessage>)
 }
@@ -20,7 +20,7 @@ struct MessagesProcessor {
         self.messagesMap = messagesMap
     }
     
-    mutating func processMessages() -> ProcessMessagesResult {
+    mutating func processMessages() -> MessagesProcessorResult {
         ITBDebug()
         switch processNextMessage() {
         case let .show(message):
