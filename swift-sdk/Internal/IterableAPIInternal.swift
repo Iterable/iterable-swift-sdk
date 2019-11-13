@@ -481,7 +481,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                 toLog += ", \(reason)"
             }
             if let data = data {
-                toLog += ", got response \(data)"
+                toLog += ", got response \(String(data: data, encoding: .utf8) ?? "nil")"
             }
             ITBError(toLog)
         }
