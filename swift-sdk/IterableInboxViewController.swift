@@ -23,13 +23,13 @@ import UIKit
     /// Use this property only when you  have more than one type of custom table view cells.
     /// For example, if you have inbox cells of one type to show  informational mesages,
     /// and inbox cells of another type to show discount messages.
-    /// - returns: a list of custom XIB names.
-    @objc optional var customXibNames: [String]? { get }
+    /// - returns: a list of custom nib names.
+    @objc optional var customNibNames: [String]? { get }
     
-    /// This function goes hand in hand with `customXibNames` property..
+    /// This function goes hand in hand with `customNibNames` property..
     /// - parameter for: Iterable in app message.
     /// - returns: Name of custom cell for the message or nil if using default cell.
-    @objc optional func customXibName(for message: IterableInAppMessage) -> String?
+    @objc optional func customNibName(for message: IterableInAppMessage) -> String?
 }
 
 @IBDesignable
@@ -59,7 +59,7 @@ open class IterableInboxViewController: UITableViewController {
     
     /// If you want to use a custom layout for your inbox TableViewCell
     /// this is the variable you should override. Please note that this assumes
-    /// that the XIB is present in the main bundle.
+    /// that the nib is present in the main bundle.
     @IBInspectable public var cellNibName: String? = nil
     
     /// Set this mode to `popup` to show a popup when an inbox message is selected in the list.
@@ -393,14 +393,14 @@ private struct CellLoader {
         guard let viewDelegate = viewDelegate else {
             return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
         }
-        guard let modifier1 = viewDelegate.customXibNames, let customXibNames = modifier1, customXibNames.count > 0 else {
+        guard let modifier1 = viewDelegate.customNibNames, let customNibNames = modifier1, customNibNames.count > 0 else {
             return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
         }
-        guard let modifier2 = viewDelegate.customXibName(for:), let customXibName = modifier2(message) else {
+        guard let modifier2 = viewDelegate.customNibName(for:), let customNibName = modifier2(message) else {
             return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
         }
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: customXibName, for: indexPath) as? IterableInboxCell else {
-            ITBError("Please make sure that an the nib: \(customXibName) is present in the main bundle")
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: customNibName, for: indexPath) as? IterableInboxCell else {
+            ITBError("Please make sure that an the nib: \(customNibName) is present in the main bundle")
             return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
         }
         
@@ -414,13 +414,13 @@ private struct CellLoader {
         guard let viewDelegate = viewDelegate else {
             return
         }
-        guard let modifier = viewDelegate.customXibNames, let customXibNames = modifier, customXibNames.count > 0 else {
+        guard let modifier = viewDelegate.customNibNames, let customNibNames = modifier, customNibNames.count > 0 else {
             return
         }
         
-        customXibNames.forEach { customXibName in
-            let nib = UINib(nibName: customXibName, bundle: Bundle.main)
-            tableView.register(nib, forCellReuseIdentifier: customXibName)
+        customNibNames.forEach { customNibName in
+            let nib = UINib(nibName: customNibName, bundle: Bundle.main)
+            tableView.register(nib, forCellReuseIdentifier: customNibName)
         }
     }
     

@@ -10,8 +10,8 @@ open class IterableInboxNavigationViewController: UINavigationController {
     // MARK: Settable properties
     
     /// If you want to use a custom layout for your Inbox TableViewCell
-    /// this is where you should override it. Please note that this assumes
-    /// that the xib is present in the main bundle.
+    /// this is where you should override it.
+    /// Please note that this assumes  that the nib is present in the main bundle.
     @IBInspectable public var cellNibName: String? = nil {
         didSet {
             inboxViewController?.cellNibName = cellNibName
