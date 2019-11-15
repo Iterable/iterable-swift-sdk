@@ -7,6 +7,9 @@ import UIKit
 
 /// Use this protocol to override the default inbox display behavior
 @objc public protocol IterableInboxViewControllerViewDelegate: AnyObject {
+    /// View delegate must have a public `required` initializer.
+    @objc init()
+    
     /// Use this method to override the default display for message creation time. Return nil if you don't want to display time.
     /// - parameter forMessage: IterableInboxMessage
     /// - returns: The string value to display or nil to not display date
@@ -16,10 +19,6 @@ import UIKit
     /// - parameter forCell: The table view cell to render
     /// - parameter withMessage: IterableInAppMessage
     @objc optional func renderAdditionalFields(forCell cell: IterableInboxCell, withMessage message: IterableInAppMessage)
-    
-    /// Implement this method if you want `IterableInboxViewController` to create an instance of the view delegate class
-    /// This method is used when `viewDelegateClassName` property is set.
-    @objc optional static func createInstance() -> IterableInboxViewControllerViewDelegate
     
     /// Use this property only when you  have more than one type of custom table view cells.
     /// For example, if you have inbox cells of one type to show  informational mesages,
@@ -48,6 +47,7 @@ open class IterableInboxViewController: UITableViewController {
     
     /// Set this property if you want to set the class name in Storyboard and want `IterableInboxViewController` to create a
     /// view delegate class for you.
+    /// The class name must include the package name as well, e.g., MyModule.CustomInboxViewDelegate
     @IBInspectable public var viewDelegateClassName: String? {
         didSet {
             guard let viewDelegateClassName = viewDelegateClassName else {
@@ -286,15 +286,17 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     private func instantiateViewDelegate(withClassName className: String) {
+        guard className.split(separator: ".").count > 1 else {
+            assertionFailure("Module name is missing. 'viewDelegateClassName' must be of the form $package_name.$class_name")
+            return
+        }
         guard let delegateClass = NSClassFromString(className) as? IterableInboxViewControllerViewDelegate.Type else {
             // we can't use IterableLog here because this happens from storyboard before logging is initialized.
-            print("❤️: Could not initialize dynamic class: \(className), please check protocol \(IterableInboxViewControllerViewDelegate.self) conformanace.")
+            assertionFailure("Could not initialize dynamic class: \(className), please check protocol \(IterableInboxViewControllerViewDelegate.self) conformanace.")
             return
         }
-        guard let delegateObject = delegateClass.createInstance?() else {
-            print("❤️: 'createInstance()' method is not defined in '\(className)'")
-            return
-        }
+        
+        let delegateObject = delegateClass.init()
         
         strongViewDelegate = delegateObject
         viewDelegate = strongViewDelegate
@@ -372,7 +374,7 @@ extension IterableInboxViewController: InboxViewControllerViewModelDelegate {
     }
 }
 
-fileprivate struct CellLoader {
+private struct CellLoader {
     weak var viewDelegate: IterableInboxViewControllerViewDelegate?
     let cellNibName: String?
     
@@ -437,4 +439,3 @@ fileprivate struct CellLoader {
         return cell
     }
 }
-
