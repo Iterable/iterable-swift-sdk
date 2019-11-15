@@ -31,11 +31,7 @@ open class IterableInboxNavigationViewController: UINavigationController {
     /// Set this to `false`to push inbox message into navigation stack.
     @IBInspectable public var isPopup: Bool = true {
         didSet {
-            if isPopup {
-                inboxViewController?.inboxMode = .popup
-            } else {
-                inboxViewController?.inboxMode = .nav
-            }
+            inboxViewController?.isPopup = isPopup
         }
     }
     

@@ -41,6 +41,23 @@ open class IterableInboxViewController: UITableViewController {
     
     // MARK: Settable properties
     
+    /// If you want to use a custom layout for your inbox TableViewCell
+    /// this is the variable you should override. Please note that this assumes
+    /// that the nib is present in the main bundle.
+    @IBInspectable public var cellNibName: String? = nil
+    
+    /// Set this to `true` to show a popup when an inbox message is selected in the list.
+    /// Set this to `false`to push inbox message into navigation stack.
+    @IBInspectable public var isPopup: Bool = true {
+        didSet {
+            if isPopup {
+                inboxMode = .popup
+            } else {
+                inboxMode = .nav
+            }
+        }
+    }
+    
     /// Set this property to override default inbox display behavior. You should set either this property
     /// or `viewDelegateClassName`property but not both.
     public weak var viewDelegate: IterableInboxViewControllerViewDelegate?
@@ -56,15 +73,6 @@ open class IterableInboxViewController: UITableViewController {
             instantiateViewDelegate(withClassName: viewDelegateClassName)
         }
     }
-    
-    /// If you want to use a custom layout for your inbox TableViewCell
-    /// this is the variable you should override. Please note that this assumes
-    /// that the nib is present in the main bundle.
-    @IBInspectable public var cellNibName: String? = nil
-    
-    /// Set this mode to `popup` to show a popup when an inbox message is selected in the list.
-    /// Set this mode to `nav` to push inbox message into navigation stack.
-    public var inboxMode = InboxMode.popup
     
     /// You can override these insertion/deletion animations for custom ones
     public var insertionAnimation = UITableView.RowAnimation.automatic
@@ -201,7 +209,9 @@ open class IterableInboxViewController: UITableViewController {
     
     var viewModel: InboxViewControllerViewModelProtocol
     
-    private let iterableCellNibName = "IterableInboxCell"
+    /// Set this mode to `popup` to show a popup when an inbox message is selected in the list.
+    /// Set this mode to `nav` to push inbox message into navigation stack.
+    private var inboxMode = InboxMode.popup
     
     // we need this variable because we are instantiating the delegate class
     private var strongViewDelegate: IterableInboxViewControllerViewDelegate?
@@ -292,7 +302,7 @@ open class IterableInboxViewController: UITableViewController {
         }
         guard let delegateClass = NSClassFromString(className) as? IterableInboxViewControllerViewDelegate.Type else {
             // we can't use IterableLog here because this happens from storyboard before logging is initialized.
-            assertionFailure("Could not initialize dynamic class: \(className), please check protocol \(IterableInboxViewControllerViewDelegate.self) conformanace.")
+            assertionFailure("Could not initialize dynamic class: \(className), please check module name and protocol \(IterableInboxViewControllerViewDelegate.self) conformanace.")
             return
         }
         
