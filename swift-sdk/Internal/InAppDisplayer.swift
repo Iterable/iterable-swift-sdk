@@ -59,7 +59,11 @@ class InAppDisplayer: InAppDisplayerProtocol {
         let baseNotification = createResult.viewController
         
         topViewController.definesPresentationContext = true
-        baseNotification.view.backgroundColor = UIColor(white: 0, alpha: CGFloat(backgroundAlpha))
+        if #available(iOS 13, *) {
+            baseNotification.view.backgroundColor = UIColor.systemBackground.withAlphaComponent(CGFloat(backgroundAlpha))
+        } else {
+            baseNotification.view.backgroundColor = UIColor.white.withAlphaComponent(CGFloat(backgroundAlpha))
+        }
         baseNotification.modalPresentationStyle = .overCurrentContext
         
         topViewController.present(baseNotification, animated: false)

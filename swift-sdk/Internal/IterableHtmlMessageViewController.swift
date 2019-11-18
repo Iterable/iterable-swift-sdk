@@ -60,7 +60,11 @@ class IterableHtmlMessageViewController: UIViewController {
         if parameters.isModal {
             view.backgroundColor = UIColor.clear
         } else {
-            view.backgroundColor = UIColor.white
+            if #available(iOS 13, *) {
+                view.backgroundColor = UIColor.systemBackground
+            } else {
+                view.backgroundColor = UIColor.white
+            }
         }
         
         let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
