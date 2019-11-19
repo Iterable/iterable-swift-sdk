@@ -42,7 +42,7 @@ import Foundation
                                   launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
                                   config: IterableConfig = IterableConfig()) {
         internalImplementation = IterableAPIInternal(apiKey: apiKey, launchOptions: launchOptions, config: config)
-        internalImplementation?.start()
+        _ = internalImplementation?.start()
     }
     
     /**

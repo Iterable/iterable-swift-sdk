@@ -10,6 +10,7 @@ import XCTest
 class InAppTests: XCTestCase {
     override class func setUp() {
         super.setUp()
+        TestUtils.clearTestUserDefaults()
         IterableAPI.internalImplementation = nil
     }
     
@@ -1099,6 +1100,7 @@ class InAppTests: XCTestCase {
             networkSession: mockNetworkSession,
             inAppFetcher: mockInAppFetcher
         )
+        IterableAPI.email = "user@example.com"
         
         let payloadFromServer = """
         {"inAppMessages":

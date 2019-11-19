@@ -530,7 +530,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         deeplinkManager = IterableDeepLinkManager()
     }
     
-    func start() {
+    func start() -> Future<Bool, Error> {
         ITBInfo()
         // sdk version
         updateSDKVersion()
@@ -553,7 +553,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         
         handle(launchOptions: launchOptions)
         
-        inAppManager.start()
+        return inAppManager.start()
     }
     
     private func handle(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {

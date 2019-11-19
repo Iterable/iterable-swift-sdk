@@ -190,6 +190,20 @@ class PromiseTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
+    func testWaitUntilFinished() {
+        let expectation1 = expectation(description: "testWaitUntilFinished")
+        let future = Promise<Bool, Error>()
+        
+        DispatchQueue.global(qos: .userInitiated).asyncAfter(deadline: .now() + 0.3) {
+            future.resolve(with: true)
+        }
+        
+        future.wait()
+        expectation1.fulfill()
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+    
     private func createSucessfulFuture<T>(withValue value: T) -> Future<T, Error> {
         let future = Promise<T, Error>()
         

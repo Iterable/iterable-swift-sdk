@@ -20,7 +20,7 @@ protocol InAppDisplayChecker {
 }
 
 protocol IterableInAppManagerProtocolInternal: IterableInAppManagerProtocol, InAppNotifiable, InAppDisplayChecker {
-    func start()
+    func start() -> Future<Bool, Error>
     /// This will create a ViewController which displays an inbox message.
     /// This ViewController would typically be pushed into the navigation stack.
     /// - parameter message: The message to show.
@@ -73,14 +73,15 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         notificationCenter.removeObserver(self)
     }
     
-    func start() {
+    func start() -> Future<Bool, Error> {
         ITBInfo()
         if messagesMap.values.filter({ $0.saveToInbox == true }).count > 0 {
             callbackQueue.async {
                 self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
             }
         }
-        _ = scheduleSync()
+        
+        return scheduleSync()
     }
     
     func getMessages() -> [IterableInAppMessage] {

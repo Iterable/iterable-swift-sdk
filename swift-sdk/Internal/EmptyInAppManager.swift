@@ -6,7 +6,9 @@
 import Foundation
 
 class EmptyInAppManager: IterableInAppManagerProtocolInternal {
-    func start() {}
+    func start() -> Future<Bool, Error> {
+        return Promise<Bool, Error>(value: true)
+    }
     
     func createInboxMessageViewController(for _: IterableInAppMessage, withInboxMode _: IterableInboxViewController.InboxMode) -> UIViewController? {
         ITBError("Can't create VC")
