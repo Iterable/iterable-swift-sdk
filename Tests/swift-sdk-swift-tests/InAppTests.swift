@@ -372,6 +372,8 @@ class InAppTests: XCTestCase {
         let iterableDeleteUrl = "iterable://delete"
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShow.onSuccess { _ in
+            let count = IterableAPI.inAppManager.getMessages().count
+            XCTAssertEqual(count, 1)
             mockInAppDisplayer.click(url: URL(string: iterableDeleteUrl)!)
         }
         
@@ -400,8 +402,7 @@ class InAppTests: XCTestCase {
         }
         """.toJsonDict()
         
-        mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { count in
-            XCTAssertEqual(count, 1)
+        mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { _ in
             expectation1.fulfill()
         }
         
