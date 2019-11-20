@@ -1,4 +1,4 @@
-osx_image: xcode11.1
+osx_image: xcode11.2
 language: swift
 
 # if debugging this script, don't forget to check the environment vars on https://travis-ci.com/Iterable/swift-sdk/settings
