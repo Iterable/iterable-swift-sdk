@@ -400,9 +400,8 @@ class InAppTests: XCTestCase {
         }
         """.toJsonDict()
         
-        mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { _ in
-            let messages = IterableAPI.inAppManager.getMessages()
-            XCTAssertEqual(messages.count, 1)
+        mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { count in
+            XCTAssertEqual(count, 1)
             expectation1.fulfill()
         }
         

@@ -94,9 +94,9 @@ struct IterableLogUtil {
         let formattedDate = formatDate(date: date)
         
         if let zeeMessage = message {
-            return "\(formattedDate):\(fileToDisplay):\(method):\(line): \(zeeMessage)"
+            return "\(formattedDate):\(String(format: "%p", Thread.current)):\(fileToDisplay):\(method):\(line): \(zeeMessage)"
         } else {
-            return "\(formattedDate):\(fileToDisplay):\(method):\(line)"
+            return "\(formattedDate):\(String(format: "%p", Thread.current)):\(fileToDisplay):\(method):\(line)"
         }
     }
     
