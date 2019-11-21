@@ -98,7 +98,7 @@
       </CodeCoverageTargets>
       <Testables>
          <TestableReference
-            skipped = "NO">
+            skipped = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "AC7B142A20D02CE200877BFE"
@@ -116,9 +116,41 @@
                BlueprintName = "ui-tests"
                ReferencedContainer = "container:swift-sdk.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "IterableInboxViewControllerUITests">
+               </Test>
+               <Test
+                  Identifier = "UITests/testSendNotificationCustomAction()">
+               </Test>
+               <Test
+                  Identifier = "UITests/testSendNotificationOpenDeeplink()">
+               </Test>
+               <Test
+                  Identifier = "UITests/testSendNotificationOpenSafari()">
+               </Test>
+               <Test
+                  Identifier = "UITests/testShowInApp2()">
+               </Test>
+               <Test
+                  Identifier = "UITests/testShowInApp3()">
+               </Test>
+               <Test
+                  Identifier = "UITests/testShowInApp4()">
+               </Test>
+               <Test
+                  Identifier = "UITests/testShowInApp5()">
+               </Test>
+               <Test
+                  Identifier = "UITests/testShowSystemNotification()">
+               </Test>
+               <Test
+                  Identifier = "UITests/testShowSystemNotification2()">
+               </Test>
+            </SkippedTests>
          </TestableReference>
          <TestableReference
-            skipped = "NO">
+            skipped = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "AC90C4CB20D8632E00EECA5D"
@@ -128,7 +160,7 @@
             </BuildableReference>
          </TestableReference>
          <TestableReference
-            skipped = "NO">
+            skipped = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "ACDA976B23159C39004C412E"
@@ -136,6 +168,11 @@
                BlueprintName = "inbox-ui-tests-app-ui-tests"
                ReferencedContainer = "container:swift-sdk.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "InboxUITests">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>
