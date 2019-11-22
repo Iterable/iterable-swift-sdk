@@ -10,8 +10,8 @@ open class IterableInboxNavigationViewController: UINavigationController {
     // MARK: Settable properties
     
     /// If you want to use a custom layout for your Inbox TableViewCell
-    /// this is where you should override it. Please note that this assumes
-    /// that the xib is present in the main bundle.
+    /// this is where you should override it.
+    /// Please note that this assumes  that the nib is present in the main bundle.
     @IBInspectable public var cellNibName: String? = nil {
         didSet {
             inboxViewController?.cellNibName = cellNibName
@@ -31,11 +31,7 @@ open class IterableInboxNavigationViewController: UINavigationController {
     /// Set this to `false`to push inbox message into navigation stack.
     @IBInspectable public var isPopup: Bool = true {
         didSet {
-            if isPopup {
-                inboxViewController?.inboxMode = .popup
-            } else {
-                inboxViewController?.inboxMode = .nav
-            }
+            inboxViewController?.isPopup = isPopup
         }
     }
     
@@ -49,6 +45,7 @@ open class IterableInboxNavigationViewController: UINavigationController {
     
     /// Set this property if you want to set the view delegate class name in Storyboard
     /// and want `IterableInboxViewController` to create a view delegate class for you.
+    /// The class name must include the package name as well, e.g., MyModule.CustomInboxViewDelegate
     @IBInspectable public var viewDelegateClassName: String? = nil {
         didSet {
             inboxViewController?.viewDelegateClassName = viewDelegateClassName

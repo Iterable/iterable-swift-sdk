@@ -5,7 +5,7 @@
 
 import UIKit
 
-/// If you are creating your own Xib file you must
+/// If you are creating your own Nib file you must
 /// connect the outlets.
 open class IterableInboxCell: UITableViewCell {
     /// A "dot" view showing that the message is unread

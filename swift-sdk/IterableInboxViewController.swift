@@ -7,6 +7,9 @@ import UIKit
 
 /// Use this protocol to override the default inbox display behavior
 @objc public protocol IterableInboxViewControllerViewDelegate: AnyObject {
+    /// View delegate must have a public `required` initializer.
+    @objc init()
+    
     /// Use this method to override the default display for message creation time. Return nil if you don't want to display time.
     /// - parameter forMessage: IterableInboxMessage
     /// - returns: The string value to display or nil to not display date
@@ -17,20 +20,16 @@ import UIKit
     /// - parameter withMessage: IterableInAppMessage
     @objc optional func renderAdditionalFields(forCell cell: IterableInboxCell, withMessage message: IterableInAppMessage)
     
-    /// Implement this method if you want `IterableInboxViewController` to create an instance of the view delegate class
-    /// This method is used when `viewDelegateClassName` property is set.
-    @objc optional static func createInstance() -> IterableInboxViewControllerViewDelegate
-    
     /// Use this property only when you  have more than one type of custom table view cells.
     /// For example, if you have inbox cells of one type to show  informational mesages,
     /// and inbox cells of another type to show discount messages.
-    /// - returns: a list of custom XIB names.
-    @objc optional var customXibNames: [String]? { get }
+    /// - returns: a list of custom nib names.
+    @objc optional var customNibNames: [String]? { get }
     
-    /// This function goes hand in hand with `customXibNames` property..
+    /// This function goes hand in hand with `customNibNames` property..
     /// - parameter for: Iterable in app message.
     /// - returns: Name of custom cell for the message or nil if using default cell.
-    @objc optional func customXibName(for message: IterableInAppMessage) -> String?
+    @objc optional func customNibName(for message: IterableInAppMessage) -> String?
 }
 
 @IBDesignable
@@ -42,12 +41,30 @@ open class IterableInboxViewController: UITableViewController {
     
     // MARK: Settable properties
     
+    /// If you want to use a custom layout for your inbox TableViewCell
+    /// this is the variable you should override. Please note that this assumes
+    /// that the nib is present in the main bundle.
+    @IBInspectable public var cellNibName: String? = nil
+    
+    /// Set this to `true` to show a popup when an inbox message is selected in the list.
+    /// Set this to `false`to push inbox message into navigation stack.
+    @IBInspectable public var isPopup: Bool = true {
+        didSet {
+            if isPopup {
+                inboxMode = .popup
+            } else {
+                inboxMode = .nav
+            }
+        }
+    }
+    
     /// Set this property to override default inbox display behavior. You should set either this property
     /// or `viewDelegateClassName`property but not both.
     public weak var viewDelegate: IterableInboxViewControllerViewDelegate?
     
     /// Set this property if you want to set the class name in Storyboard and want `IterableInboxViewController` to create a
     /// view delegate class for you.
+    /// The class name must include the package name as well, e.g., MyModule.CustomInboxViewDelegate
     @IBInspectable public var viewDelegateClassName: String? {
         didSet {
             guard let viewDelegateClassName = viewDelegateClassName else {
@@ -56,15 +73,6 @@ open class IterableInboxViewController: UITableViewController {
             instantiateViewDelegate(withClassName: viewDelegateClassName)
         }
     }
-    
-    /// If you want to use a custom layout for your inbox TableViewCell
-    /// this is the variable you should override. Please note that this assumes
-    /// that the XIB is present in the main bundle.
-    @IBInspectable public var cellNibName: String? = nil
-    
-    /// Set this mode to `popup` to show a popup when an inbox message is selected in the list.
-    /// Set this mode to `nav` to push inbox message into navigation stack.
-    public var inboxMode = InboxMode.popup
     
     /// You can override these insertion/deletion animations for custom ones
     public var insertionAnimation = UITableView.RowAnimation.automatic
@@ -201,7 +209,9 @@ open class IterableInboxViewController: UITableViewController {
     
     var viewModel: InboxViewControllerViewModelProtocol
     
-    private let iterableCellNibName = "IterableInboxCell"
+    /// Set this mode to `popup` to show a popup when an inbox message is selected in the list.
+    /// Set this mode to `nav` to push inbox message into navigation stack.
+    private var inboxMode = InboxMode.popup
     
     // we need this variable because we are instantiating the delegate class
     private var strongViewDelegate: IterableInboxViewControllerViewDelegate?
@@ -286,15 +296,17 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     private func instantiateViewDelegate(withClassName className: String) {
+        guard className.split(separator: ".").count > 1 else {
+            assertionFailure("Module name is missing. 'viewDelegateClassName' must be of the form $package_name.$class_name")
+            return
+        }
         guard let delegateClass = NSClassFromString(className) as? IterableInboxViewControllerViewDelegate.Type else {
             // we can't use IterableLog here because this happens from storyboard before logging is initialized.
-            print("❤️: Could not initialize dynamic class: \(className), please check protocol \(IterableInboxViewControllerViewDelegate.self) conformanace.")
+            assertionFailure("Could not initialize dynamic class: \(className), please check module name and protocol \(IterableInboxViewControllerViewDelegate.self) conformanace.")
             return
         }
-        guard let delegateObject = delegateClass.createInstance?() else {
-            print("❤️: 'createInstance()' method is not defined in '\(className)'")
-            return
-        }
+        
+        let delegateObject = delegateClass.init()
         
         strongViewDelegate = delegateObject
         viewDelegate = strongViewDelegate
@@ -372,7 +384,7 @@ extension IterableInboxViewController: InboxViewControllerViewModelDelegate {
     }
 }
 
-fileprivate struct CellLoader {
+private struct CellLoader {
     weak var viewDelegate: IterableInboxViewControllerViewDelegate?
     let cellNibName: String?
     
@@ -391,14 +403,14 @@ fileprivate struct CellLoader {
         guard let viewDelegate = viewDelegate else {
             return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
         }
-        guard let modifier1 = viewDelegate.customXibNames, let customXibNames = modifier1, customXibNames.count > 0 else {
+        guard let modifier1 = viewDelegate.customNibNames, let customNibNames = modifier1, customNibNames.count > 0 else {
             return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
         }
-        guard let modifier2 = viewDelegate.customXibName(for:), let customXibName = modifier2(message) else {
+        guard let modifier2 = viewDelegate.customNibName(for:), let customNibName = modifier2(message) else {
             return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
         }
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: customXibName, for: indexPath) as? IterableInboxCell else {
-            ITBError("Please make sure that an the nib: \(customXibName) is present in the main bundle")
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: customNibName, for: indexPath) as? IterableInboxCell else {
+            ITBError("Please make sure that an the nib: \(customNibName) is present in the main bundle")
             return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
         }
         
@@ -412,13 +424,13 @@ fileprivate struct CellLoader {
         guard let viewDelegate = viewDelegate else {
             return
         }
-        guard let modifier = viewDelegate.customXibNames, let customXibNames = modifier, customXibNames.count > 0 else {
+        guard let modifier = viewDelegate.customNibNames, let customNibNames = modifier, customNibNames.count > 0 else {
             return
         }
         
-        customXibNames.forEach { customXibName in
-            let nib = UINib(nibName: customXibName, bundle: Bundle.main)
-            tableView.register(nib, forCellReuseIdentifier: customXibName)
+        customNibNames.forEach { customNibName in
+            let nib = UINib(nibName: customNibName, bundle: Bundle.main)
+            tableView.register(nib, forCellReuseIdentifier: customNibName)
         }
     }
     
@@ -437,4 +449,3 @@ fileprivate struct CellLoader {
         return cell
     }
 }
-
