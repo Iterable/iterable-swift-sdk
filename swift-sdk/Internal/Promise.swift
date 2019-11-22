@@ -52,6 +52,18 @@ public class Future<Value, Failure> where Failure: Error {
         return result != nil
     }
     
+    public func wait() {
+        ITBInfo()
+        guard !isResolved() else {
+            ITBInfo("isResolved")
+            return
+        }
+        
+        ITBInfo("waiting....")
+        Thread.sleep(forTimeInterval: 0.1)
+        wait()
+    }
+    
     fileprivate var result: Result<Value, Failure>? {
         // Observe whenever a result is assigned, and report it
         didSet { result.map(report) }

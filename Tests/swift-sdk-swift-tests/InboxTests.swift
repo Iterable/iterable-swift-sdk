@@ -8,6 +8,12 @@ import XCTest
 @testable import IterableSDK
 
 class InboxTests: XCTestCase {
+    override class func setUp() {
+        super.setUp()
+        TestUtils.clearTestUserDefaults()
+        IterableAPI.internalImplementation = nil
+    }
+    
     func testInboxOrdering() {
         let expectation1 = expectation(description: "testInboxOrdering")
         let mockInAppFetcher = MockInAppFetcher()
