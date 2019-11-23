@@ -4,8 +4,8 @@
 //
 
 import Foundation
-import UIKit
 import os
+import UIKit
 
 /// Functionality such as this will be built in for Swift 5.0. This will help with the transition
 enum IterableResult<T, E> {
