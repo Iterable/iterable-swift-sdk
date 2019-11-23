@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UIKit
 
 // These are Iterable specific Request items.
 // They don't have Api endpoint and request endpoint defined yet.

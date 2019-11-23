@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 enum InAppContentParseResult {
     case success(content: IterableInAppContent)

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UIKit
 import os
 
 /// Functionality such as this will be built in for Swift 5.0. This will help with the transition

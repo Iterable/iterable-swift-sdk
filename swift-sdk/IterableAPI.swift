@@ -5,6 +5,7 @@
 //
 
 import Foundation
+import UIKit
 
 @objcMembers public final class IterableAPI: NSObject {
     // Current SDK Version.

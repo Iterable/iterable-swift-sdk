@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UIKit
 
 // Adhering to Codable
 extension UIEdgeInsets {

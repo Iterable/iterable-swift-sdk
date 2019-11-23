@@ -5,6 +5,7 @@
 // This file contains InApp and Inbox messaging classes.
 
 import Foundation
+import UIKit
 
 /// `show` to show the inApp otherwise `skip` to skip.
 @objc public enum InAppShowResponse: Int {

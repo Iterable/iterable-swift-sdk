@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UIKit
 
 class EmptyInAppManager: IterableInAppManagerProtocolInternal {
     func start() -> Future<Bool, Error> {
