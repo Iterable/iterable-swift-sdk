@@ -14,86 +14,86 @@ class InAppParsingTests: XCTestCase {
         TestUtils.clearTestUserDefaults()
     }
     
-    func testGetPaddingInvalid() {
-        let insets = HtmlContentParser.getPadding(fromInAppSettings: [:])
-        XCTAssertEqual(insets, UIEdgeInsets.zero)
-    }
-    
-    func testGetPaddingFull() {
-        let payload: [AnyHashable: Any] = [
-            "top": ["percentage": "0"],
-            "left": ["percentage": "0"],
-            "bottom": ["percentage": "0"],
-            "right": ["right": "0"],
-        ]
-        
-        let insets = HtmlContentParser.getPadding(fromInAppSettings: payload)
-        XCTAssertEqual(insets, UIEdgeInsets.zero)
-        
-        var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(HtmlContentParser.decodePadding(payload["top"]))
-        padding.left = CGFloat(HtmlContentParser.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(HtmlContentParser.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(HtmlContentParser.decodePadding(payload["right"]))
-        XCTAssertEqual(padding, UIEdgeInsets.zero)
-    }
-    
-    func testGetPaddingCenter() {
-        let payload: [AnyHashable: Any] = [
-            "top": ["displayOption": "AutoExpand"],
-            "left": ["percentage": "0"],
-            "bottom": ["displayOption": "AutoExpand"],
-            "right": ["right": "0"],
-        ]
-        
-        let insets = HtmlContentParser.getPadding(fromInAppSettings: payload)
-        XCTAssertEqual(insets, UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
-        
-        var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(HtmlContentParser.decodePadding(payload["top"]))
-        padding.left = CGFloat(HtmlContentParser.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(HtmlContentParser.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(HtmlContentParser.decodePadding(payload["right"]))
-        XCTAssertEqual(padding, UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
-    }
-    
-    func testGetPaddingTop() {
-        let payload: [AnyHashable: Any] = [
-            "top": ["percentage": "0"],
-            "left": ["percentage": "0"],
-            "bottom": ["displayOption": "AutoExpand"],
-            "right": ["right": "0"],
-        ]
-        
-        let insets = HtmlContentParser.getPadding(fromInAppSettings: payload)
-        XCTAssertEqual(insets, UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
-        
-        var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(HtmlContentParser.decodePadding(payload["top"]))
-        padding.left = CGFloat(HtmlContentParser.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(HtmlContentParser.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(HtmlContentParser.decodePadding(payload["right"]))
-        XCTAssertEqual(padding, UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
-    }
-    
-    func testGetPaddingBottom() {
-        let payload: [AnyHashable: Any] = [
-            "top": ["displayOption": "AutoExpand"],
-            "left": ["percentage": "0"],
-            "bottom": ["percentage": "0"],
-            "right": ["right": "0"],
-        ]
-        
-        let insets = HtmlContentParser.getPadding(fromInAppSettings: payload)
-        XCTAssertEqual(insets, UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
-        
-        var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(HtmlContentParser.decodePadding(payload["top"]))
-        padding.left = CGFloat(HtmlContentParser.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(HtmlContentParser.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(HtmlContentParser.decodePadding(payload["right"]))
-        XCTAssertEqual(padding, UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
-    }
+//    func testGetPaddingInvalid() {
+//        let insets = HtmlContentParser.getPadding(fromInAppSettings: [:])
+//        XCTAssertEqual(insets, UIEdgeInsets.zero)
+//    }
+//
+//    func testGetPaddingFull() {
+//        let payload: [AnyHashable: Any] = [
+//            "top": ["percentage": "0"],
+//            "left": ["percentage": "0"],
+//            "bottom": ["percentage": "0"],
+//            "right": ["right": "0"],
+//        ]
+//
+//        let insets = HtmlContentParser.getPadding(fromInAppSettings: payload)
+//        XCTAssertEqual(insets, UIEdgeInsets.zero)
+//
+//        var padding = UIEdgeInsets.zero
+//        padding.top = CGFloat(HtmlContentParser.decodePadding(payload["top"]))
+//        padding.left = CGFloat(HtmlContentParser.decodePadding(payload["left"]))
+//        padding.bottom = CGFloat(HtmlContentParser.decodePadding(payload["bottom"]))
+//        padding.right = CGFloat(HtmlContentParser.decodePadding(payload["right"]))
+//        XCTAssertEqual(padding, UIEdgeInsets.zero)
+//    }
+//
+//    func testGetPaddingCenter() {
+//        let payload: [AnyHashable: Any] = [
+//            "top": ["displayOption": "AutoExpand"],
+//            "left": ["percentage": "0"],
+//            "bottom": ["displayOption": "AutoExpand"],
+//            "right": ["right": "0"],
+//        ]
+//
+//        let insets = HtmlContentParser.getPadding(fromInAppSettings: payload)
+//        XCTAssertEqual(insets, UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
+//
+//        var padding = UIEdgeInsets.zero
+//        padding.top = CGFloat(HtmlContentParser.decodePadding(payload["top"]))
+//        padding.left = CGFloat(HtmlContentParser.decodePadding(payload["left"]))
+//        padding.bottom = CGFloat(HtmlContentParser.decodePadding(payload["bottom"]))
+//        padding.right = CGFloat(HtmlContentParser.decodePadding(payload["right"]))
+//        XCTAssertEqual(padding, UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
+//    }
+//
+//    func testGetPaddingTop() {
+//        let payload: [AnyHashable: Any] = [
+//            "top": ["percentage": "0"],
+//            "left": ["percentage": "0"],
+//            "bottom": ["displayOption": "AutoExpand"],
+//            "right": ["right": "0"],
+//        ]
+//
+//        let insets = HtmlContentParser.getPadding(fromInAppSettings: payload)
+//        XCTAssertEqual(insets, UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
+//
+//        var padding = UIEdgeInsets.zero
+//        padding.top = CGFloat(HtmlContentParser.decodePadding(payload["top"]))
+//        padding.left = CGFloat(HtmlContentParser.decodePadding(payload["left"]))
+//        padding.bottom = CGFloat(HtmlContentParser.decodePadding(payload["bottom"]))
+//        padding.right = CGFloat(HtmlContentParser.decodePadding(payload["right"]))
+//        XCTAssertEqual(padding, UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
+//    }
+//
+//    func testGetPaddingBottom() {
+//        let payload: [AnyHashable: Any] = [
+//            "top": ["displayOption": "AutoExpand"],
+//            "left": ["percentage": "0"],
+//            "bottom": ["percentage": "0"],
+//            "right": ["right": "0"],
+//        ]
+//
+//        let insets = HtmlContentParser.getPadding(fromInAppSettings: payload)
+//        XCTAssertEqual(insets, UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
+//
+//        var padding = UIEdgeInsets.zero
+//        padding.top = CGFloat(HtmlContentParser.decodePadding(payload["top"]))
+//        padding.left = CGFloat(HtmlContentParser.decodePadding(payload["left"]))
+//        padding.bottom = CGFloat(HtmlContentParser.decodePadding(payload["bottom"]))
+//        padding.right = CGFloat(HtmlContentParser.decodePadding(payload["right"]))
+//        XCTAssertEqual(padding, UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
+//    }
     
     func testNotificationPaddingFull() {
         let notificationType = HtmlContentParser.location(fromPadding: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0))
