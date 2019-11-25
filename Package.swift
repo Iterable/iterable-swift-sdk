@@ -10,11 +10,11 @@ let package = Package(
         // library that has the same name as the package itself:
         .library(
             name: "IterableSDK",
-            targets: ["swift-sdk"]
+            targets: ["IterableSDK"]
         ),
     ],
     targets: [
-        .target(name: "swift-sdk",
+        .target(name: "IterableSDK",
                 path: "swift-sdk"),
     ]
 )
