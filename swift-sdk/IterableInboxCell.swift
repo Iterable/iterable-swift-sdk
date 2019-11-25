@@ -9,31 +9,26 @@ import UIKit
 /// connect the outlets.
 open class IterableInboxCell: UITableViewCell {
     /// A "dot" view showing that the message is unread
-    @IBOutlet open weak var unreadCircleView: UIView?
+    @IBOutlet open var unreadCircleView: UIView?
     
     /// The title label
-    @IBOutlet open weak var titleLbl: UILabel?
+    @IBOutlet open var titleLbl: UILabel?
     
     /// The sub title label
-    @IBOutlet open weak var subtitleLbl: UILabel?
+    @IBOutlet open var subtitleLbl: UILabel?
     
     /// This shows the time when the message was created
-    @IBOutlet open weak var createdAtLbl: UILabel?
+    @IBOutlet open var createdAtLbl: UILabel?
     
     /// This is the container view for the icon image.
     /// You may or may not set it.
     /// Set this outlet if you have the icon inside a container view
     /// and you want the container to be set to hidden when icons are not
     /// present for the message.
-    @IBOutlet open weak var iconContainerView: UIView?
+    @IBOutlet open var iconContainerView: UIView?
     
     /// This is the icon image
-    @IBOutlet open weak var iconImageView: UIImageView?
-    
-    open override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-    }
+    @IBOutlet open var iconImageView: UIImageView?
     
     // override this to show unreadCircle color when highlighted
     // otherwise the background color is not correct.
@@ -45,5 +40,17 @@ open class IterableInboxCell: UITableViewCell {
                 unreadCircleView?.backgroundColor = color
             }
         }
+    }
+    
+    // This constructor is used when initializing from storyboard
+    public required init?(coder: NSCoder) {
+        super.init(coder: coder)
+    }
+    
+    // This constructor is used when initializing in code
+    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        doLayout()
     }
 }

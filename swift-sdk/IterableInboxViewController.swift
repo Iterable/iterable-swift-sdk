@@ -435,11 +435,30 @@ private struct CellLoader {
     }
     
     private func registerDefaultCell(forTableView tableView: UITableView) {
-        let cellNibName = self.cellNibName ?? iterableCellNibName
-        let bundle = self.cellNibName == nil ? Bundle(for: IterableInboxViewController.self) : Bundle.main
+        if let cellNibName = self.cellNibName {
+            if CellLoader.nibExists(inBundle: Bundle.main, withNibName: cellNibName) {
+                let nib = UINib(nibName: cellNibName, bundle: Bundle.main)
+                tableView.register(nib, forCellReuseIdentifier: defaultCellReuseIdentifier)
+            } else {
+                fatalError("Cannot find nib: \(cellNibName) in main bundle.")
+            }
+        } else {
+            let bundle = Bundle(for: IterableInboxViewController.self)
+            if CellLoader.nibExists(inBundle: bundle, withNibName: iterableCellNibName) {
+                let nib = UINib(nibName: iterableCellNibName, bundle: bundle)
+                tableView.register(nib, forCellReuseIdentifier: defaultCellReuseIdentifier)
+            } else {
+                tableView.register(IterableInboxCell.self, forCellReuseIdentifier: defaultCellReuseIdentifier)
+            }
+        }
+    }
+    
+    private static func nibExists(inBundle bundle: Bundle, withNibName nibName: String) -> Bool {
+        guard let path = bundle.path(forResource: nibName, ofType: "nib") else {
+            return false
+        }
         
-        let nib = UINib(nibName: cellNibName, bundle: bundle)
-        tableView.register(nib, forCellReuseIdentifier: defaultCellReuseIdentifier)
+        return FileManager.default.fileExists(atPath: path)
     }
     
     private func loadDefaultCell(forTableView tableView: UITableView, atIndexPath indexPath: IndexPath) -> IterableInboxCell {
