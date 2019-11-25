@@ -64,7 +64,20 @@ public class Future<Value, Failure> where Failure: Error {
         wait()
     }
     
-    fileprivate var result: Result<Value, Failure>?
+    fileprivate var result: Result<Value, Failure>? {
+        // Observe whenever a result is assigned, and report it
+        didSet { result.map(report) }
+    }
+    
+    // Report success or error based on result
+    private func report(result: Result<Value, Failure>) {
+        switch result {
+        case let .success(value):
+            successCallbacks.forEach { $0(value) }
+        case let .failure(error):
+            errorCallbacks.forEach { $0(error) }
+        }
+    }
 }
 
 public extension Future {
@@ -139,21 +152,9 @@ public class Promise<Value, Failure>: Future<Value, Failure> where Failure: Erro
     
     public func resolve(with value: Value) {
         result = .success(value)
-        result.map(report)
     }
     
     public func reject(with error: Failure) {
         result = .failure(error)
-        result.map(report)
-    }
-    
-    // Report success or error based on result
-    fileprivate func report(result: Result<Value, Failure>) {
-        switch result {
-        case let .success(value):
-            successCallbacks.forEach { $0(value) }
-        case let .failure(error):
-            errorCallbacks.forEach { $0(error) }
-        }
     }
 }
