@@ -5,6 +5,7 @@
 //
 
 import Foundation
+import UIKit
 
 extension IterableInboxCell {
     func doLayout() {
