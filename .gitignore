@@ -1,6 +1,8 @@
 .DS_Store
 xcuserdata
 
+.swiftpm/
+
 *~
 Podfile.lock
 Pods/
