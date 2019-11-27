@@ -11,14 +11,9 @@ import UIKit
 
 extension IterableInboxCell {
     func doLayout() {
-        let containerStackView = createContainerStackview()
-        contentView.addSubview(containerStackView)
+        let stack = createContainerStackview()
         let unreadContainerView = createUnreadContainerView()
-        containerStackView.addArrangedSubview(unreadContainerView)
-        containerStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8.0).isActive = true
-        containerStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8.0).isActive = true
-        containerStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0).isActive = true
-        containerStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5.0).isActive = true
+        stack.addArrangedSubview(unreadContainerView)
         let titleLbl = IterableInboxCell.createTitleLabel()
         self.titleLbl = titleLbl
         let subtitleLbl = IterableInboxCell.createSubTitleLabel()
@@ -26,20 +21,25 @@ extension IterableInboxCell {
         let createdAtLbl = IterableInboxCell.createCreatedAtLabel()
         self.createdAtLbl = createdAtLbl
         let middleStack = IterableInboxCell.createMiddleStackView(titleLbl: titleLbl, subtitleLbl: subtitleLbl, createdAtLbl: createdAtLbl)
-        containerStackView.addArrangedSubview(middleStack)
+        stack.addArrangedSubview(middleStack)
         
         let iconImageView = IterableInboxCell.createIconImageView()
         self.iconImageView = iconImageView
         let iconContainerView = IterableInboxCell.createIconContainerView(iconImageView: iconImageView)
         self.iconContainerView = iconContainerView
-        containerStackView.addArrangedSubview(iconContainerView)
+        stack.addArrangedSubview(iconContainerView)
     }
     
     func createContainerStackview() -> UIStackView {
         let stack = UIStackView()
+        contentView.addSubview(stack)
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.alignment = .top
         stack.distribution = .fill
+        stack.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8.0).isActive = true
+        stack.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8.0).isActive = true
+        stack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 0).isActive = true
+        stack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5.0).isActive = true
         return stack
     }
     
