@@ -98,6 +98,7 @@ public enum JsonKey: String, JsonKeyRepresentable {
     case campaignId
     case templateId
     case messageId
+    case inboxSessionId
     
     case saveToInbox
     case silentInbox

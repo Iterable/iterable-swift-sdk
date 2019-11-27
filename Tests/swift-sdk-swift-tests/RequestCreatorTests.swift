@@ -9,13 +9,15 @@ import XCTest
 
 class RequestCreatorTests: XCTestCase {
     func testTrackInboxSession() {
+        let inboxSessionId = IterableUtil.generateUUID()
         let startDate = Date()
         let endDate = startDate.addingTimeInterval(60 * 5)
         let impressions = [
             IterableInboxImpression(messageId: "message1", silentInbox: true, displayCount: 2, displayDuration: 1.23),
             IterableInboxImpression(messageId: "message2", silentInbox: false, displayCount: 3, displayDuration: 2.34),
         ]
-        let inboxSession = IterableInboxSession(sessionStartTime: startDate,
+        let inboxSession = IterableInboxSession(id: inboxSessionId,
+                                                sessionStartTime: startDate,
                                                 sessionEndTime: endDate,
                                                 startTotalMessageCount: 15,
                                                 startUnreadMessageCount: 5,
@@ -28,6 +30,7 @@ class RequestCreatorTests: XCTestCase {
         
         let body = urlRequest.bodyDict
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.email), value: auth.email, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.inboxSessionId), value: inboxSession.id, inDictionary: body)
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.inboxSessionStart), value: IterableUtil.int(fromDate: startDate), inDictionary: body)
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.inboxSessionEnd), value: IterableUtil.int(fromDate: endDate), inDictionary: body)
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.startTotalMessageCount), value: inboxSession.startTotalMessageCount, inDictionary: body)

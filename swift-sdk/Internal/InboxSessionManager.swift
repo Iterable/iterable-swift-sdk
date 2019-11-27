@@ -12,6 +12,7 @@ class InboxSessionManager {
     }
     
     struct SessionStartInfo {
+        let id: String
         let startTime: Date
         let totalMessageCount: Int
         let unreadMessageCount: Int
@@ -40,7 +41,8 @@ class InboxSessionManager {
             return
         }
         ITBInfo("Session Start")
-        sessionStartInfo = SessionStartInfo(startTime: Date(),
+        sessionStartInfo = SessionStartInfo(id: IterableUtil.generateUUID(),
+                                            startTime: Date(),
                                             totalMessageCount: IterableAPI.inAppManager.getInboxMessages().count,
                                             unreadMessageCount: IterableAPI.inAppManager.getUnreadInboxMessagesCount())
         impressionTracker = InboxImpressionTracker()

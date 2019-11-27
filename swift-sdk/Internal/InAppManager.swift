@@ -27,7 +27,7 @@ protocol IterableInAppManagerProtocolInternal: IterableInAppManagerProtocol, InA
     /// - parameter message: The message to show.
     /// - parameter inboxMode:
     /// - returns: UIViewController which displays the message.
-    func createInboxMessageViewController(for message: IterableInAppMessage, withInboxMode inboxMode: IterableInboxViewController.InboxMode) -> UIViewController?
+    func createInboxMessageViewController(for message: IterableInAppMessage, withInboxMode inboxMode: IterableInboxViewController.InboxMode, inboxSessionId: String?) -> UIViewController?
 }
 
 class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
@@ -100,7 +100,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         return getInboxMessages().filter { $0.read == false }.count
     }
     
-    func createInboxMessageViewController(for message: IterableInAppMessage, withInboxMode inboxMode: IterableInboxViewController.InboxMode) -> UIViewController? {
+    func createInboxMessageViewController(for message: IterableInAppMessage, withInboxMode inboxMode: IterableInboxViewController.InboxMode, inboxSessionId: String? = nil) -> UIViewController? {
         guard let content = message.content as? IterableHtmlInAppContent else {
             ITBError("Invalid Content in message")
             return nil
@@ -109,7 +109,8 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
                                                                       padding: content.edgeInsets,
                                                                       messageMetadata: IterableInAppMessageMetadata(message: message, location: .inbox),
-                                                                      isModal: inboxMode == .popup)
+                                                                      isModal: inboxMode == .popup,
+                                                                      inboxSessionId: inboxSessionId)
         let createResult = IterableHtmlMessageViewController.create(parameters: parameters)
         let viewController = createResult.viewController
         
@@ -153,6 +154,12 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         ITBInfo()
         
         removePrivate(message: message, location: location, source: source)
+    }
+    
+    func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource, inboxSessionId: String? = nil) {
+        ITBInfo()
+        
+        removePrivate(message: message, location: location, source: source, inboxSessionId: inboxSessionId)
     }
     
     func set(read _: Bool, forMessage message: IterableInAppMessage) {
@@ -429,11 +436,11 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     }
     
     // From client side
-    private func removePrivate(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource? = nil) {
+    private func removePrivate(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource? = nil, inboxSessionId: String? = nil) {
         ITBInfo()
         
         updateMessage(message, didProcessTrigger: true, consumed: true)
-        let messageContext = InAppMessageContext.from(message: message, location: location)
+        let messageContext = InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId)
         apiClient?.inAppConsume(inAppMessageContext: messageContext, source: source)
         callbackQueue.async {
             self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)

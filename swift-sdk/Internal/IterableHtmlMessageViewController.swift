@@ -20,14 +20,18 @@ class IterableHtmlMessageViewController: UIViewController {
         let messageMetadata: IterableInAppMessageMetadata?
         let isModal: Bool
         
+        let inboxSessionId: String?
+        
         init(html: String,
              padding: UIEdgeInsets = .zero,
              messageMetadata: IterableInAppMessageMetadata? = nil,
-             isModal: Bool) {
+             isModal: Bool,
+             inboxSessionId: String? = nil) {
             self.html = html
             self.padding = IterableHtmlMessageViewController.padding(fromPadding: padding)
             self.messageMetadata = messageMetadata
             self.isModal = isModal
+            self.inboxSessionId = inboxSessionId
         }
     }
     
@@ -86,8 +90,9 @@ class IterableHtmlMessageViewController: UIViewController {
         super.viewDidLoad()
         
         if let messageMetadata = parameters.messageMetadata {
-            IterableAPI.track(inAppOpen: messageMetadata.message,
-                              location: messageMetadata.location)
+            IterableAPI.internalImplementation?.trackInAppOpen(messageMetadata.message,
+                                                               location: messageMetadata.location,
+                                                               inboxSessionId: parameters.inboxSessionId)
         }
         
         webView?.layoutSubviews()
@@ -108,15 +113,17 @@ class IterableHtmlMessageViewController: UIViewController {
         }
         
         if let _ = navigationController, linkClicked == false {
-            IterableAPI.track(inAppClose: messageMetadata.message,
-                              location: messageMetadata.location,
-                              source: InAppCloseSource.back,
-                              clickedUrl: nil)
+            IterableAPI.internalImplementation?.trackInAppClose(messageMetadata.message,
+                                                                location: messageMetadata.location,
+                                                                inboxSessionId: parameters.inboxSessionId,
+                                                                source: InAppCloseSource.back,
+                                                                clickedUrl: nil)
         } else {
-            IterableAPI.track(inAppClose: messageMetadata.message,
-                              location: messageMetadata.location,
-                              source: InAppCloseSource.link,
-                              clickedUrl: clickedLink)
+            IterableAPI.internalImplementation?.trackInAppClose(messageMetadata.message,
+                                                                location: messageMetadata.location,
+                                                                inboxSessionId: parameters.inboxSessionId,
+                                                                source: InAppCloseSource.back,
+                                                                clickedUrl: clickedLink)
         }
     }
     
@@ -200,9 +207,10 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
     
     fileprivate func trackInAppClick(destinationUrl: String) {
         if let messageMetadata = parameters.messageMetadata {
-            IterableAPI.track(inAppClick: messageMetadata.message,
-                              location: messageMetadata.location,
-                              clickedUrl: destinationUrl)
+            IterableAPI.internalImplementation?.trackInAppClick(messageMetadata.message,
+                                                                location: messageMetadata.location,
+                                                                inboxSessionId: parameters.inboxSessionId,
+                                                                clickedUrl: destinationUrl)
         }
     }
     

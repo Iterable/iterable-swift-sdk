@@ -64,7 +64,10 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     func remove(atRow row: Int) {
-        IterableAPI.inAppManager.remove(message: messages[row].iterableMessage, location: .inbox, source: .inboxSwipe)
+        IterableAPI.inAppManager.remove(message: messages[row].iterableMessage,
+                                        location: .inbox,
+                                        source: .inboxSwipe,
+                                        inboxSessionId: sessionManager.sessionStartInfo?.id)
     }
     
     func set(read _: Bool, forMessage message: InboxMessageViewModel) {
@@ -84,7 +87,8 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
             ITBError("Unexpected inappManager type")
             return nil
         }
-        return inappManager.createInboxMessageViewController(for: message.iterableMessage, withInboxMode: inboxMode)
+        
+        return inappManager.createInboxMessageViewController(for: message.iterableMessage, withInboxMode: inboxMode, inboxSessionId: sessionManager.sessionStartInfo?.id)
     }
     
     func beganUpdates() {
@@ -173,7 +177,8 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
             return
         }
         
-        let inboxSession = IterableInboxSession(sessionStartTime: sessionInfo.startInfo.startTime,
+        let inboxSession = IterableInboxSession(id: sessionInfo.startInfo.id,
+                                                sessionStartTime: sessionInfo.startInfo.startTime,
                                                 sessionEndTime: Date(),
                                                 startTotalMessageCount: sessionInfo.startInfo.totalMessageCount,
                                                 startUnreadMessageCount: sessionInfo.startInfo.unreadMessageCount,

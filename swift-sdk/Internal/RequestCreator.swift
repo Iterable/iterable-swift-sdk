@@ -279,6 +279,9 @@ struct RequestCreator {
         body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
         body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
+        if let inboxSessionId = inAppMessageContext.inboxSessionId {
+            body.setValue(for: .inboxSessionId, value: inboxSessionId)
+        }
         return .success(.post(createPostRequest(path: Const.Path.trackInAppOpen, body: body)))
     }
     
@@ -316,6 +319,9 @@ struct RequestCreator {
         body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
         body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
+        if let inboxSessionId = inAppMessageContext.inboxSessionId {
+            body.setValue(for: .inboxSessionId, value: inboxSessionId)
+        }
         
         return .success(.post(createPostRequest(path: Const.Path.trackInAppClick, body: body)))
     }
@@ -340,6 +346,9 @@ struct RequestCreator {
         body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
         body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
+        if let inboxSessionId = inAppMessageContext.inboxSessionId {
+            body.setValue(for: .inboxSessionId, value: inboxSessionId)
+        }
         body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
         return .success(.post(createPostRequest(path: Const.Path.trackInAppClose, body: body)))
@@ -392,6 +401,9 @@ struct RequestCreator {
         body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
         body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
+        if let inboxSessionId = inAppMessageContext.inboxSessionId {
+            body.setValue(for: .inboxSessionId, value: inboxSessionId)
+        }
         body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
         return .success(.post(createPostRequest(path: Const.Path.inAppConsume, body: body)))
@@ -401,6 +413,9 @@ struct RequestCreator {
         guard let keyValueForCurrentUser = keyValueForCurrentUser else {
             ITBError("Both email and userId are nil")
             return .failure(IterableError.general(description: "Both email and userId are nil"))
+        }
+        guard let inboxSessionId = inboxSession.id else {
+            return .failure(IterableError.general(description: "expecting session UUID"))
         }
         guard let sessionStartTime = inboxSession.sessionStartTime else {
             return .failure(IterableError.general(description: "expecting session start time"))
@@ -413,6 +428,7 @@ struct RequestCreator {
         
         body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
+        body.setValue(for: .inboxSessionId, value: inboxSessionId)
         body.setValue(for: .inboxSessionStart, value: IterableUtil.int(fromDate: sessionStartTime))
         body.setValue(for: .inboxSessionEnd, value: IterableUtil.int(fromDate: sessionEndTime))
         body.setValue(for: .startTotalMessageCount, value: inboxSession.startTotalMessageCount)
