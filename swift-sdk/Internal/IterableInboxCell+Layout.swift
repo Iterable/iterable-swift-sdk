@@ -50,7 +50,7 @@ extension IterableInboxCell {
         view.addSubview(unreadCircleView)
         view.widthAnchor.constraint(equalToConstant: 24.0).isActive = true
         unreadCircleView.translatesAutoresizingMaskIntoConstraints = false
-        unreadCircleView.backgroundColor = UIColor(hex: "50B6FC")
+        unreadCircleView.backgroundColor = UIColor(hex: "007AFF")
         unreadCircleView.layer.cornerRadius = 5.0
         unreadCircleView.widthAnchor.constraint(equalToConstant: 10.0).isActive = true
         unreadCircleView.heightAnchor.constraint(equalToConstant: 10.0).isActive = true
