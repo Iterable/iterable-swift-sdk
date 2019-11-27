@@ -1,4 +1,6 @@
 //
+//  Note: We have to do the layout in code because Swift Package Manager does not support
+//        resources yet. We can remove this once support for resoures is added.
 //
 //  Created by Tapash Majumder on 11/25/19.
 //  Copyright © 2019 Iterable. All rights reserved.
@@ -48,7 +50,8 @@ extension IterableInboxCell {
         view.addSubview(unreadCircleView)
         view.widthAnchor.constraint(equalToConstant: 24.0).isActive = true
         unreadCircleView.translatesAutoresizingMaskIntoConstraints = false
-        unreadCircleView.backgroundColor = UIColor(hex: "007AFF")
+        unreadCircleView.backgroundColor = UIColor(hex: "50B6FC")
+        unreadCircleView.layer.cornerRadius = 5.0
         unreadCircleView.widthAnchor.constraint(equalToConstant: 10.0).isActive = true
         unreadCircleView.heightAnchor.constraint(equalToConstant: 10.0).isActive = true
         unreadCircleView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -60,6 +63,7 @@ extension IterableInboxCell {
     private static func createTitleLabel() -> UILabel {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.boldSystemFont(ofSize: 17.0)
         label.setContentHuggingPriority(UILayoutPriority(rawValue: 249), for: .horizontal)
         label.setContentHuggingPriority(UILayoutPriority(rawValue: 249), for: .vertical)
         return label
@@ -68,6 +72,8 @@ extension IterableInboxCell {
     private static func createSubTitleLabel() -> UILabel {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.systemFont(ofSize: 13.0)
+        label.textColor = UIColor.lightGray
         label.setContentHuggingPriority(UILayoutPriority(rawValue: 249), for: .horizontal)
         label.setContentHuggingPriority(UILayoutPriority(rawValue: 249), for: .vertical)
         return label
@@ -76,6 +82,8 @@ extension IterableInboxCell {
     private static func createCreatedAtLabel() -> UILabel {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.systemFont(ofSize: 10.0)
+        label.textColor = UIColor.lightGray
         label.setContentHuggingPriority(UILayoutPriority(rawValue: 249), for: .horizontal)
         label.setContentHuggingPriority(UILayoutPriority(rawValue: 249), for: .vertical)
         return label
