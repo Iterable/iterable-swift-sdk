@@ -146,12 +146,6 @@ public enum JsonKey: String, JsonKeyRepresentable {
     
     public enum ActionButton {
         static let identifier = "identifier"
-        static let buttonType = "buttonType"
-        static let title = "title"
-        static let openApp = "openApp"
-        static let requiresUnlock = "requiresUnlock"
-        static let inputTitle = "inputTitle"
-        static let inputPlaceholder = "inputPlaceholder"
         static let action = "action"
     }
     
@@ -192,9 +186,6 @@ public enum JsonKey: String, JsonKeyRepresentable {
     
     public enum Payload {
         static let metadata = "itbl"
-        static let messageId = "messageId"
-        static let deepLinkUrl = "url"
-        static let attachmentUrl = "attachment-url"
         static let actionButtons = "actionButtons"
         static let defaultAction = "defaultAction"
     }
