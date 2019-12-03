@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UIKit
 
 struct DeviceInfo: Codable {
     let mobileDeviceType = MobileDeviceType.iOS

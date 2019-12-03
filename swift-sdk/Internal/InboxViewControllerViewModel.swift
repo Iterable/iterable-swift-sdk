@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol InboxViewControllerViewModelDelegate: AnyObject {
     // All these methods should be called on the main thread

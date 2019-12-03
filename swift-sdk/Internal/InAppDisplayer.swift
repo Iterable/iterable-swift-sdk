@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UIKit
 
 enum ShowResult {
     case shown(Future<URL, IterableError>)

@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UIKit
 
 public extension Array {
     func take(_ size: Int) -> [[Element]] {

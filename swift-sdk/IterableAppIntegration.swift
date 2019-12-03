@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UIKit
 import UserNotifications
 
 @objc public class IterableAppIntegration: NSObject {

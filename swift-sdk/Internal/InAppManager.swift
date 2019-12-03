@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol NotificationCenterProtocol {
     func addObserver(_ observer: Any, selector: Selector, name: Notification.Name?, object: Any?)
