@@ -302,28 +302,11 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: apiClient.track(inAppClick: messageId, clickedUrl: clickedUrl))
     }
     
-    func trackInAppClick(_ message: IterableInAppMessage, location: InAppLocation = .inApp, clickedUrl: String) {
-        let result = apiClient.track(inAppClick: InAppMessageContext.from(message: message, location: location),
-                                     clickedUrl: clickedUrl)
-        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"),
-                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"),
-                                 forResult: result)
-    }
-    
-    func trackInAppClick(_ message: IterableInAppMessage, location: InAppLocation = .inApp, inboxSessionId: String?, clickedUrl: String) {
+    func trackInAppClick(_ message: IterableInAppMessage, location: InAppLocation = .inApp, inboxSessionId: String? = nil, clickedUrl: String) {
         let result = apiClient.track(inAppClick: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId),
                                      clickedUrl: clickedUrl)
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"),
-                                 forResult: result)
-    }
-    
-    func trackInAppClose(_ message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppCloseSource? = nil, clickedUrl: String? = nil) {
-        let result = apiClient.track(inAppClose: InAppMessageContext.from(message: message, location: location),
-                                     source: source,
-                                     clickedUrl: clickedUrl)
-        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClose"),
-                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClose"),
                                  forResult: result)
     }
     
