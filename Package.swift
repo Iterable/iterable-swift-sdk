@@ -12,9 +12,15 @@ let package = Package(
             name: "IterableSDK",
             targets: ["IterableSDK"]
         ),
+        .library(
+            name: "IterableAppExtensions",
+            targets: ["IterableAppExtensions"]
+        ),
     ],
     targets: [
         .target(name: "IterableSDK",
                 path: "swift-sdk"),
+        .target(name: "IterableAppExtensions",
+                path: "notification-extension"),
     ]
 )
