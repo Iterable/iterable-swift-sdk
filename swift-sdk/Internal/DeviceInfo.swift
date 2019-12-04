@@ -61,6 +61,10 @@ struct DeviceInfo : Codable {
             return "CarPlay"
         case .unspecified:
             return "Unknown"
+        #if swift(>=5.0)
+        @unknown default:
+            return "Unknown"
+        #endif
         }
     }
 }

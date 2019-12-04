@@ -147,6 +147,10 @@ struct IterableAppIntegrationInternal {
                     performDefaultNotificationAction(userInfo)
                 }
                 break
+            #if swift(>=5.0)
+            @unknown default:
+                break
+            #endif
             }
         }
         
