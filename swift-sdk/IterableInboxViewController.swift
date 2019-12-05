@@ -10,6 +10,12 @@ import UIKit
     /// View delegate must have a public `required` initializer.
     @objc init()
     
+    /// By default, messages are sorted chronologically.
+    /// If you don't want inbox messages to be sorted chronologically, return a relevant comparator here.
+    /// For example, if you want the latest messages to be displayed first, return `IterableInboxViewController.Comparator.descending`,
+    /// You may also return any other custom comparator as per your need.
+    @objc optional var comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)? { get }
+    
     /// Use this method to override the default display for message creation time. Return nil if you don't want to display time.
     /// - parameter forMessage: IterableInboxMessage
     /// - returns: The string value to display or nil to not display date
@@ -39,6 +45,20 @@ open class IterableInboxViewController: UITableViewController {
         case nav
     }
     
+    /// By default, messages are sorted chronologically.
+    /// This enumeration has sample comparators that can be used by `IterableInboxViewControllerViewDelegate`.
+    public enum Comparator {
+        /// Descending by `createdAt`
+        public static let descending: (IterableInAppMessage, IterableInAppMessage) -> Bool = {
+            $0.createdAt ?? Date.distantPast > $1.createdAt ?? Date.distantPast
+        }
+        
+        /// Ascending by `createdAt`
+        public static let ascending: (IterableInAppMessage, IterableInAppMessage) -> Bool = {
+            $0.createdAt ?? Date.distantPast < $1.createdAt ?? Date.distantPast
+        }
+    }
+    
     // MARK: Settable properties
     
     /// If you want to use a custom layout for your inbox TableViewCell
@@ -60,7 +80,13 @@ open class IterableInboxViewController: UITableViewController {
     
     /// Set this property to override default inbox display behavior. You should set either this property
     /// or `viewDelegateClassName`property but not both.
-    public weak var viewDelegate: IterableInboxViewControllerViewDelegate?
+    public weak var viewDelegate: IterableInboxViewControllerViewDelegate? {
+        didSet {
+            if let viewDelegate = viewDelegate, let comparator = viewDelegate.comparator {
+                viewModel.comparator = comparator
+            }
+        }
+    }
     
     /// Set this property if you want to set the class name in Storyboard and want `IterableInboxViewController` to create a
     /// view delegate class for you.
