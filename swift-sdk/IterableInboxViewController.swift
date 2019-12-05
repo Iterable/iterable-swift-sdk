@@ -12,9 +12,16 @@ import UIKit
     
     /// By default, messages are sorted chronologically.
     /// If you don't want inbox messages to be sorted chronologically, return a relevant comparator here.
-    /// For example, if you want the latest messages to be displayed first, return `IterableInboxViewController.Comparator.descending`,
+    /// For example, if you want the latest messages to be displayed first, return `IterableInboxViewController.SampleComparator.descending`,
     /// You may also return any other custom comparator as per your need.
     @objc optional var comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)? { get }
+    
+    /// By default, all messages are shown.
+    /// If you want to control which messages are to be shown, return a filter here.
+    /// For example, if you want to only show messages which have a customPayload json with {"messageType": "promotional"},
+    /// you can do so by setting `filter = IterableInboxViewController.SampleFilter.usingCustomPayload(key: "messageType", value: "promotional")`.
+    /// Please note that you can create your own custom filters which can be functions or closures.
+    @objc optional var filter: ((IterableInAppMessage) -> Bool)? { get }
     
     /// Use this method to override the default display for message creation time. Return nil if you don't want to display time.
     /// - parameter forMessage: IterableInboxMessage
@@ -47,7 +54,8 @@ open class IterableInboxViewController: UITableViewController {
     
     /// By default, messages are sorted chronologically.
     /// This enumeration has sample comparators that can be used by `IterableInboxViewControllerViewDelegate`.
-    public enum Comparator {
+    /// You can create your own comparators which can be functions or closures
+    public enum SampleComparator {
         /// Descending by `createdAt`
         public static let descending: (IterableInAppMessage, IterableInAppMessage) -> Bool = {
             $0.createdAt ?? Date.distantPast > $1.createdAt ?? Date.distantPast
@@ -56,6 +64,21 @@ open class IterableInboxViewController: UITableViewController {
         /// Ascending by `createdAt`
         public static let ascending: (IterableInAppMessage, IterableInAppMessage) -> Bool = {
             $0.createdAt ?? Date.distantPast < $1.createdAt ?? Date.distantPast
+        }
+    }
+    
+    /// By default, all messages are shown
+    /// This enumeration shows how to write a sample filter which can be used by `IterableInboxViewControllerViewDelegate`.
+    /// You can create your own filters which can be functions or closures.
+    public enum SampleFilter {
+        public static func usingCustomPayload(key: String, value: String) -> ((IterableInAppMessage) -> Bool)? {
+            return {
+                guard let payload = $0.customPayload as? [String: AnyHashable], let jsonValue = payload[key] as? String else {
+                    return false
+                }
+                
+                return jsonValue == value
+            }
         }
     }
     
