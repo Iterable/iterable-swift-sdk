@@ -15,6 +15,7 @@ protocol InboxViewControllerViewModelDelegate: AnyObject {
 
 protocol InboxViewControllerViewModelProtocol {
     var delegate: InboxViewControllerViewModelDelegate? { get set }
+    var comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)? { get set }
     var numMessages: Int { get }
     var unreadCount: Int { get }
     func message(atRow row: Int) -> InboxMessageViewModel
@@ -33,6 +34,14 @@ protocol InboxViewControllerViewModelProtocol {
 
 class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     weak var delegate: InboxViewControllerViewModelDelegate?
+    
+    var comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)? {
+        didSet {
+            if let comparator = comparator {
+                messages.sort { comparator($0.iterableMessage, $1.iterableMessage) }
+            }
+        }
+    }
     
     init() {
         ITBInfo()
@@ -195,6 +204,9 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         ITBInfo()
         let oldSectionedValues = AbstractDiffCalculator<Int, InboxMessageViewModel>.buildSectionedValues(values: messages, sectionIndex: 0)
         newMessages = IterableAPI.inAppManager.getInboxMessages().map { InboxMessageViewModel(message: $0) }
+        if let comparator = comparator {
+            newMessages.sort { comparator($0.iterableMessage, $1.iterableMessage) }
+        }
         let newSectionedValues = AbstractDiffCalculator<Int, InboxMessageViewModel>.buildSectionedValues(values: newMessages, sectionIndex: 0)
         
         let diff = Dwifft.diff(lhs: oldSectionedValues, rhs: newSectionedValues)
