@@ -543,7 +543,7 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		AC2263FA20CF4B84009800EB /* InApp */ = {
+		AC2263FA20CF4B84009800EB /* In-app */ = {
 			isa = PBXGroup;
 			children = (
 				AC4B039122A8743F0043185B /* EmptyInAppManager.swift */,
@@ -558,7 +558,7 @@
 				ACB8273E22372A5C00DB17D3 /* IterableHtmlMessageViewController.swift */,
 				AC426225238C27DD00164121 /* IterableInboxCell+Layout.swift */,
 			);
-			name = InApp;
+			name = "In-app";
 			sourceTree = "<group>";
 		};
 		AC31B03D232AB37C00BE25EB /* Inbox */ = {
@@ -624,7 +624,7 @@
 				AC845105228DF5360052BB8F /* API Client */,
 				AC0248062279132400495FB9 /* Dwifft */,
 				AC426CC5211B5527002EDBE8 /* Fp */,
-				AC2263FA20CF4B84009800EB /* InApp */,
+				AC2263FA20CF4B84009800EB /* In-app */,
 				AC7A525F227BB9B80064D67E /* Initialization */,
 				ACE34AB121376ACB00691224 /* Local Storage */,
 				AC3C10F7213F43AC00A9B839 /* Logging */,

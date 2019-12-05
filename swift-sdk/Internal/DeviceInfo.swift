@@ -38,6 +38,7 @@ struct DeviceInfo: Codable {
         // Therefore, the conversion from secondsFomGMT to timezoneOffsetMinutes is as follows.
         let secondsFromGMT = TimeZone.current.secondsFromGMT()
         let timezoneOffsetMinutes = (-1.0 * Float(secondsFromGMT) / 60.0)
+        
         return DeviceFp(userInterfaceIdiom: getUserInterfaceIdiom(),
                         screenWidth: String(Float(screen.bounds.width)),
                         screenHeight: String(Float(screen.bounds.height)),

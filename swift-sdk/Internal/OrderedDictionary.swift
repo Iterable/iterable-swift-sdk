@@ -20,6 +20,7 @@ public struct OrderedDictionary<K: Hashable, V> {
         get {
             return dict[key]
         }
+        
         set(newValue) {
             if newValue == nil {
                 dict.removeValue(forKey: key)
@@ -60,10 +61,12 @@ extension OrderedDictionary: Sequence {
             guard counter < self.keys.count else {
                 return nil
             }
+            
             let key = self.keys[counter]
             guard let value = self.dict[key] else {
                 return nil
             }
+            
             counter += 1
             return (key, value)
         }
@@ -74,11 +77,13 @@ extension OrderedDictionary: CustomStringConvertible {
     public var description: String {
         return keys.map {
             var valueToDisplay = ""
+            
             if let value = dict[$0] as? CustomStringConvertible {
                 valueToDisplay = value.description
             } else {
                 valueToDisplay = "nil"
             }
+            
             return "\($0) : \(valueToDisplay)"
         }.joined(separator: ", ")
     }
@@ -87,6 +92,7 @@ extension OrderedDictionary: CustomStringConvertible {
 extension OrderedDictionary: ExpressibleByDictionaryLiteral {
     public init(dictionaryLiteral elements: (K, V)...) {
         self.init()
+        
         for (key, value) in elements {
             self[key] = value
         }

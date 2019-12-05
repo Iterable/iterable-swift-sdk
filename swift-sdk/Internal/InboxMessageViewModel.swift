@@ -27,9 +27,11 @@ class InboxMessageViewModel {
         guard let imageUrlString = imageUrl else {
             return false
         }
+        
         guard let _ = URL(string: imageUrlString) else {
             return false
         }
+        
         return true
     }
     

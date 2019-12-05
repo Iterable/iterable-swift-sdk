@@ -57,19 +57,24 @@ open class IterableInboxNavigationViewController: UINavigationController {
     /// This initializer should be used when initializing from Code.
     public init() {
         ITBInfo()
+        
         super.init(nibName: nil, bundle: nil)
+        
         setup()
     }
     
     /// This initializer will be called when initializing from storyboard
     public required init?(coder aDecoder: NSCoder) {
         ITBInfo()
+        
         super.init(coder: aDecoder)
+        
         setup()
     }
     
     open override func viewDidLoad() {
         ITBInfo()
+        
         super.viewDidLoad()
         
         // Add "Done" button if this view is being presented by another view controller
@@ -79,6 +84,7 @@ open class IterableInboxNavigationViewController: UINavigationController {
             guard let strongSelf = self, strongSelf.viewControllers.count > 0 else {
                 return
             }
+            
             if let _ = strongSelf.presentingViewController {
                 let viewController = strongSelf.viewControllers[0]
                 if viewController.navigationItem.leftBarButtonItem == nil, viewController.navigationItem.rightBarButtonItem == nil {
@@ -90,6 +96,7 @@ open class IterableInboxNavigationViewController: UINavigationController {
     
     open override func viewWillAppear(_ animated: Bool) {
         ITBInfo()
+        
         super.viewWillAppear(animated)
         
         inboxViewController?.viewModel.viewWillAppear()
@@ -97,6 +104,7 @@ open class IterableInboxNavigationViewController: UINavigationController {
     
     open override func viewWillDisappear(_ animated: Bool) {
         ITBInfo()
+        
         super.viewWillDisappear(animated)
         
         inboxViewController?.viewModel.viewWillDisappear()
@@ -105,7 +113,9 @@ open class IterableInboxNavigationViewController: UINavigationController {
     /// Do not use this
     private override init(rootViewController: UIViewController) {
         ITBInfo()
+        
         super.init(rootViewController: rootViewController)
+        
         setup()
     }
     
@@ -118,6 +128,7 @@ open class IterableInboxNavigationViewController: UINavigationController {
     
     private func setup() {
         let inboxViewController: IterableInboxViewController
+        
         if viewControllers.count > 0 {
             // Means this view controller was initialized in code and we have set
             // the rootViewController.
@@ -125,9 +136,11 @@ open class IterableInboxNavigationViewController: UINavigationController {
                 assertionFailure("RootViewController must be of type IterableInboxViewController")
                 return
             }
+            
             inboxViewController = viewController
         } else {
             inboxViewController = IterableInboxViewController(style: .plain)
+            
             viewControllers.append(inboxViewController)
         }
         
@@ -136,6 +149,7 @@ open class IterableInboxNavigationViewController: UINavigationController {
     
     @objc private func onDoneTapped() {
         ITBInfo()
+        
         presentingViewController?.dismiss(animated: true)
     }
     

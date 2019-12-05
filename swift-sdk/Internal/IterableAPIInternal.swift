@@ -283,6 +283,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                         forResult: apiClient.getInAppMessages(count))
     }
     
+    // deprecated
     func trackInAppOpen(_ messageId: String) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppOpen"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"),
@@ -296,6 +297,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: result)
     }
     
+    // deprecated
     func trackInAppClick(_ messageId: String, clickedUrl: String) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"),
@@ -369,12 +371,12 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         InAppDisplayer.showSystemNotification(withTitle: title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
     }
     
-    func getAndTrack(deeplink: URL, callbackBlock: @escaping ITEActionBlock) {
-        deeplinkManager.getAndTrack(deeplink: deeplink, callbackBlock: callbackBlock)
+    func getAndTrack(deepLink: URL, callbackBlock: @escaping ITEActionBlock) {
+        deepLinkManager.getAndTrack(deepLink: deepLink, callbackBlock: callbackBlock)
     }
     
     @discardableResult func handleUniversalLink(_ url: URL) -> Bool {
-        return deeplinkManager.handleUniversalLink(url, urlDelegate: config.urlDelegate, urlOpener: AppUrlOpener())
+        return deepLinkManager.handleUniversalLink(url, urlDelegate: config.urlDelegate, urlOpener: AppUrlOpener())
     }
     
     @discardableResult private static func call(successHandler onSuccess: OnSuccessHandler? = nil, andFailureHandler onFailure: OnFailureHandler? = nil, forResult result: Future<SendRequestValue, SendRequestError>) -> Future<SendRequestValue, SendRequestError> {
@@ -394,7 +396,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     private let inAppDisplayer: InAppDisplayerProtocol
     
-    private var deeplinkManager: IterableDeepLinkManager
+    private var deepLinkManager: IterableDeepLinkManager
     
     private var _email: String?
     private var _userId: String?
@@ -533,7 +535,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         localStorage = dependencyContainer.localStorage
         inAppDisplayer = dependencyContainer.inAppDisplayer
         urlOpener = dependencyContainer.urlOpener
-        deeplinkManager = IterableDeepLinkManager()
+        deepLinkManager = IterableDeepLinkManager()
     }
     
     func start() -> Future<Bool, Error> {
@@ -541,8 +543,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         // sdk version
         updateSDKVersion()
         
-        // check for deferred deeplinking
-        checkForDeferredDeeplink()
+        // check for deferred deep linking
+        checkForDeferredDeepLink()
         
         // get email and userId from UserDefaults if present
         retrieveEmailAndUserId()
@@ -579,7 +581,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    private func checkForDeferredDeeplink() {
+    private func checkForDeferredDeepLink() {
         guard config.checkForDeferredDeeplink else {
             return
         }

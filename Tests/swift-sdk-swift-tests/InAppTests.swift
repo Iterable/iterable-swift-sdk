@@ -1277,7 +1277,11 @@ class InAppTests: XCTestCase {
         
         emptyManager.remove(message: getEmptyInAppMessage())
         
+        emptyManager.remove(message: getEmptyInAppMessage(), location: .inApp)
+        
         emptyManager.remove(message: getEmptyInAppMessage(), location: .inApp, source: .deleteButton)
+        
+        emptyManager.remove(message: getEmptyInAppMessage(), location: .inApp, source: .deleteButton, inboxSessionId: nil)
         
         emptyManager.set(read: true, forMessage: getEmptyInAppMessage())
         

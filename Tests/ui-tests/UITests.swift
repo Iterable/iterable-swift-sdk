@@ -65,7 +65,7 @@ class UITests: XCTestCase {
         app.launch()
     }
     
-    func testSendNotificationOpenDeeplink() {
+    func testSendNotificationOpenDeepLink() {
         allowNotificationsIfNeeded()
         
         app.buttons["Send Notification"].tap()
@@ -78,7 +78,7 @@ class UITests: XCTestCase {
         // Give one second pause before interacting
         sleep(1)
         
-        let button = SpringBoardNotification(springboard: springboard).buttonOpenDeeplink
+        let button = SpringBoardNotification(springboard: springboard).buttonOpenDeepLink
         button.tap()
         
         // Give some time to open
@@ -214,7 +214,7 @@ struct SpringBoardNotification {
         return springboard.buttons["Open Safari"].firstMatch
     }
     
-    var buttonOpenDeeplink: XCUIElement {
+    var buttonOpenDeepLink: XCUIElement {
         return springboard.buttons["Open Deeplink"].firstMatch
     }
     

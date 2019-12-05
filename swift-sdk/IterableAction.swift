@@ -51,6 +51,7 @@ import Foundation
         guard let typeFromDict = dictionary["type"] as? String else {
             return nil
         }
+        
         type = typeFromDict
         data = dictionary["data"] as? String
     }

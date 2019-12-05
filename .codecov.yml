@@ -1,6 +1,10 @@
 ignore:
-  - "Tests"
+  - "build"  
   - "host-app"
+  - "images"
   - "inbox-ui-tests-app"
+  - "Pods"
   - "swift-sdk/Internal/Dwifft"
-  
+  - "sample-apps"
+  - "scripts"
+  - "Tests"

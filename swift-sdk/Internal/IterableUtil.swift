@@ -40,7 +40,8 @@ enum IterableResult<T, E> {
     
     /// int is milliseconds since epoch.
     static func date(fromInt int: Int) -> Date {
-        let seconds = Double(int) / 1000.0 // millis -> seconds
+        let seconds = Double(int) / 1000.0 // ms -> seconds
+        
         return Date(timeIntervalSince1970: seconds)
     }
     
@@ -78,10 +79,11 @@ enum IterableResult<T, E> {
         return { _ in
             if let customActionDelegate = customActionDelegate {
                 _ = customActionDelegate.handle(iterableCustomAction: context.action, inContext: context)
+                
                 return true
-            } else {
-                return false
             }
+            
+            return false
         }
     }
 }

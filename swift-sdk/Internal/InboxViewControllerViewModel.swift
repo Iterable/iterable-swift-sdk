@@ -45,9 +45,11 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     init() {
         ITBInfo()
+        
         if let _ = IterableAPI.internalImplementation {
             messages = IterableAPI.inAppManager.getInboxMessages().map { InboxMessageViewModel(message: $0) }
         }
+        
         NotificationCenter.default.addObserver(self, selector: #selector(onInboxChanged(notification:)), name: .iterableInboxChanged, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppWillEnterForeground(notification:)), name: UIApplication.willEnterForegroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppDidEnterBackground(notification:)), name: UIApplication.didEnterBackgroundNotification, object: nil)
@@ -92,12 +94,12 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     func createInboxMessageViewController(for message: InboxMessageViewModel, withInboxMode inboxMode: IterableInboxViewController.InboxMode) -> UIViewController? {
-        guard let inappManager = IterableAPI.inAppManager as? IterableInAppManagerProtocolInternal else {
-            ITBError("Unexpected inappManager type")
+        guard let inAppManager = IterableAPI.inAppManager as? IterableInAppManagerProtocolInternal else {
+            ITBError("Unexpected inAppManager type")
             return nil
         }
         
-        return inappManager.createInboxMessageViewController(for: message.iterableMessage, withInboxMode: inboxMode, inboxSessionId: sessionManager.sessionStartInfo?.id)
+        return inAppManager.createInboxMessageViewController(for: message.iterableMessage, withInboxMode: inboxMode, inboxSessionId: sessionManager.sessionStartInfo?.id)
     }
     
     func beganUpdates() {
@@ -123,6 +125,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     private func updateVisibleRows() {
         ITBDebug()
+        
         guard sessionManager.isTracking else {
             ITBInfo("Not tracking session")
             return
@@ -155,6 +158,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         guard let row = messages.firstIndex(where: { $0.iterableMessage.messageId == messageId }) else {
             return
         }
+        
         let message = messages[row]
         message.imageData = data
         
@@ -170,13 +174,16 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
             guard index < messages.count else {
                 return nil
             }
+            
             let message = messages[index].iterableMessage
+            
             return InboxImpressionTracker.RowInfo(messageId: message.messageId, silentInbox: message.silentInbox)
         }
     }
     
     private func startSession() {
         ITBInfo()
+        
         sessionManager.startSession(visibleRows: getVisibleRows())
     }
     
@@ -194,6 +201,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
                                                 endTotalMessageCount: IterableAPI.inAppManager.getInboxMessages().count,
                                                 endUnreadMessageCount: IterableAPI.inAppManager.getUnreadInboxMessagesCount(),
                                                 impressions: sessionInfo.impressions.map { $0.toIterableInboxImpression() })
+        
         IterableAPI.internalImplementation?.track(inboxSession: inboxSession)
     }
     
@@ -207,14 +215,19 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     private func updateView() {
         ITBInfo()
+        
         let oldSectionedValues = AbstractDiffCalculator<Int, InboxMessageViewModel>.buildSectionedValues(values: messages, sectionIndex: 0)
+        
         newMessages = IterableAPI.inAppManager.getInboxMessages().map { InboxMessageViewModel(message: $0) }
+        
         if let comparator = comparator {
             newMessages.sort { comparator($0.iterableMessage, $1.iterableMessage) }
         }
+        
         let newSectionedValues = AbstractDiffCalculator<Int, InboxMessageViewModel>.buildSectionedValues(values: newMessages, sectionIndex: 0)
         
         let diff = Dwifft.diff(lhs: oldSectionedValues, rhs: newSectionedValues)
+        
         if diff.count > 0 {
             delegate?.onViewModelChanged(diff: diff)
             updateVisibleRows()

@@ -60,14 +60,17 @@ class InAppDisplayer: InAppDisplayerProtocol {
         let baseNotification = createResult.viewController
         
         topViewController.definesPresentationContext = true
+        
         if #available(iOS 13, *) {
             baseNotification.view.backgroundColor = UIColor.systemBackground.withAlphaComponent(CGFloat(backgroundAlpha))
         } else {
             baseNotification.view.backgroundColor = UIColor.white.withAlphaComponent(CGFloat(backgroundAlpha))
         }
+        
         baseNotification.modalPresentationStyle = .overCurrentContext
         
         topViewController.present(baseNotification, animated: false)
+        
         return .shown(createResult.futureClickedURL)
     }
     
@@ -112,6 +115,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
         }
         
         var topViewController = rootViewController
+        
         while topViewController.presentedViewController != nil {
             topViewController = topViewController.presentedViewController!
         }

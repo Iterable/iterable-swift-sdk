@@ -86,7 +86,9 @@ struct APNSTypeChecker: APNSTypeCheckerProtocol {
     
     private static func scan(string: String, begin: String, end: String) -> String? {
         let scanner = Scanner(string: string)
+        
         var buffer: NSString?
+        
         guard
             scanner.scanUpTo(begin, into: nil),
             scanner.scanUpTo(end, into: &buffer),
