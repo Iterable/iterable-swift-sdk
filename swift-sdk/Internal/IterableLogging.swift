@@ -31,6 +31,8 @@ public class DefaultLogDelegate: IterableLogDelegate {
 
 /// Will log everything
 public class AllLogDelegate: IterableLogDelegate {
+    public init() {}
+    
     public func log(level: LogLevel = .info, message: String) {
         let markedMessage = IterableLogUtil.markedMessage(level: level, message: message)
         print(markedMessage)
@@ -39,7 +41,9 @@ public class AllLogDelegate: IterableLogDelegate {
 
 /// Will log nothing
 public class NoneLogDelegate: IterableLogDelegate {
-    public func log(level: LogLevel = .info, message: String) {
+    public init() {}
+    
+    public func log(level _: LogLevel = .info, message _: String) {
         // Do nothing
     }
 }
