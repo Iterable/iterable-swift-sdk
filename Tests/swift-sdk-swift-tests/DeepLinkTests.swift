@@ -25,8 +25,8 @@ class DeepLinkTests: XCTestCase {
     private let redirectRequest = "https://httpbin.org/redirect-to?url=http://example.com"
     private let exampleUrl = "http://example.com"
     
-    func testUniversalDeeplinkRewrite() {
-        let expectation1 = expectation(description: "testUniversalDeeplinkRewrite")
+    func testUniversalDeepLinkRewrite() {
+        let expectation1 = expectation(description: "testUniversalDeepLinkRewrite")
         
         let redirectLocation = "https://links.iterable.com/api/docs#!/email"
         let campaignId = 83306
@@ -37,7 +37,7 @@ class DeepLinkTests: XCTestCase {
         
         IterableAPI.handle(universalLink: URL(string: iterableRewriteURL)!)
         
-        IterableAPI.internalImplementation?.getAndTrack(deeplink: URL(string: iterableRewriteURL)!) { redirectUrl in
+        IterableAPI.internalImplementation?.getAndTrack(deepLink: URL(string: iterableRewriteURL)!) { redirectUrl in
             XCTAssertEqual(redirectUrl, redirectLocation)
             XCTAssertTrue(Thread.isMainThread)
             expectation1.fulfill()
@@ -46,12 +46,12 @@ class DeepLinkTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
-    func testUniversalDeeplinkNoRewrite() {
-        let expectation1 = expectation(description: "testUniversalDeeplinkNoRewrite")
+    func testUniversalDeepLinkNoRewrite() {
+        let expectation1 = expectation(description: "testUniversalDeepLinkNoRewrite")
         
         setupStubResponse()
         
-        IterableAPI.internalImplementation?.getAndTrack(deeplink: URL(string: iterableNoRewriteURL)!) { redirectUrl in
+        IterableAPI.internalImplementation?.getAndTrack(deepLink: URL(string: iterableNoRewriteURL)!) { redirectUrl in
             XCTAssertEqual(redirectUrl, self.iterableNoRewriteURL)
             XCTAssertTrue(Thread.isMainThread)
             expectation1.fulfill()
@@ -96,7 +96,7 @@ class DeepLinkTests: XCTestCase {
         
         setupRedirectStubResponse(location: redirectLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
         
-        IterableAPI.internalImplementation?.getAndTrack(deeplink: URL(string: iterableRewriteURL)!) { _ in
+        IterableAPI.internalImplementation?.getAndTrack(deepLink: URL(string: iterableRewriteURL)!) { _ in
             XCTAssertEqual(IterableAPI.attributionInfo?.campaignId, NSNumber(value: campaignId))
             XCTAssertEqual(IterableAPI.attributionInfo?.templateId, NSNumber(value: templateId))
             XCTAssertEqual(IterableAPI.attributionInfo?.messageId, messageId)
@@ -113,7 +113,7 @@ class DeepLinkTests: XCTestCase {
         
         setupStubResponse()
         
-        IterableAPI.internalImplementation?.getAndTrack(deeplink: URL(string: redirectRequest)!) { redirectUrl in
+        IterableAPI.internalImplementation?.getAndTrack(deepLink: URL(string: redirectRequest)!) { redirectUrl in
             XCTAssertNotEqual(redirectUrl, self.exampleUrl)
             XCTAssertEqual(redirectUrl, self.redirectRequest)
             expectation1.fulfill()
