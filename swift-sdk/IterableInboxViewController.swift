@@ -198,8 +198,8 @@ open class IterableInboxViewController: UITableViewController {
     
     // MARK: - UITableViewDataSource (Required Functions)
     
-    open override func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        return viewModel.numMessages
+    open override func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return viewModel.numRows(in: section)
     }
     
     open override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

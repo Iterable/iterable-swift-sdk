@@ -16,7 +16,7 @@ protocol InboxViewControllerViewModelDelegate: AnyObject {
 protocol InboxViewControllerViewModelProtocol {
     var delegate: InboxViewControllerViewModelDelegate? { get set }
     var comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)? { get set }
-    var numMessages: Int { get }
+    func numRows(in section: Int) -> Int
     var unreadCount: Int { get }
     func message(atIndexPath indexPath: IndexPath) -> InboxMessageViewModel
     func remove(atIndexPath indexPath: IndexPath)
@@ -64,8 +64,8 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         NotificationCenter.default.removeObserver(self)
     }
     
-    var numMessages: Int {
-        return allMessages().count
+    func numRows(in section: Int) -> Int {
+        sectionedMessages[section].1.count
     }
     
     var unreadCount: Int {
