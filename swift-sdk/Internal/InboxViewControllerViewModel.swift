@@ -18,7 +18,7 @@ protocol InboxViewControllerViewModelProtocol {
     var comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)? { get set }
     var numMessages: Int { get }
     var unreadCount: Int { get }
-    func message(atRow row: Int) -> InboxMessageViewModel
+    func message(atIndexPath indexPath: IndexPath) -> InboxMessageViewModel
     func remove(atRow row: Int)
     func set(read: Bool, forMessage message: InboxMessageViewModel)
     func createInboxMessageViewController(for message: InboxMessageViewModel, withInboxMode inboxMode: IterableInboxViewController.InboxMode) -> UIViewController?
@@ -72,8 +72,8 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         return allMessages().filter { $0.read == false }.count
     }
     
-    func message(atRow row: Int) -> InboxMessageViewModel {
-        let message = allMessages()[row]
+    func message(atIndexPath indexPath: IndexPath) -> InboxMessageViewModel {
+        let message = sectionedMessages[indexPath.section].1[indexPath.row]
         loadImageIfNecessary(message)
         return message
     }

@@ -203,7 +203,7 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     open override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let message = viewModel.message(atRow: indexPath.row)
+        let message = viewModel.message(atIndexPath: indexPath)
         let cell = cellLoader.loadCell(for: message.iterableMessage, forTableView: tableView, atIndexPath: indexPath)
         
         configure(cell: cell, forMessage: message)
@@ -234,7 +234,7 @@ open class IterableInboxViewController: UITableViewController {
             tableView.deselectRow(at: indexPath, animated: true)
         }
         
-        let message = viewModel.message(atRow: indexPath.row)
+        let message = viewModel.message(atIndexPath: indexPath)
         
         if let viewController = viewModel.createInboxMessageViewController(for: message, withInboxMode: inboxMode) {
             viewModel.set(read: true, forMessage: message)
