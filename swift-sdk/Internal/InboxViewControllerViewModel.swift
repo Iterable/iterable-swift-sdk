@@ -37,17 +37,13 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     var comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)? {
         didSet {
-            if let comparator = comparator {
-                messages.sort { comparator($0.iterableMessage, $1.iterableMessage) }
-            }
+            sectionedMessages = sortAndFilter(messages: allMessages())
         }
     }
     
     var filter: ((IterableInAppMessage) -> Bool)? {
         didSet {
-            if let filter = filter {
-                messages = messages.filter { filter($0.iterableMessage) }
-            }
+            sectionedMessages = sortAndFilter(messages: allMessages())
         }
     }
     
@@ -55,7 +51,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         ITBInfo()
         
         if let _ = IterableAPI.internalImplementation {
-            messages = IterableAPI.inAppManager.getInboxMessages().map { InboxMessageViewModel(message: $0) }
+            sectionedMessages = sortAndFilter(messages: getMessages())
         }
         
         NotificationCenter.default.addObserver(self, selector: #selector(onInboxChanged(notification:)), name: .iterableInboxChanged, object: nil)
@@ -69,21 +65,21 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     var numMessages: Int {
-        return messages.count
+        return allMessages().count
     }
     
     var unreadCount: Int {
-        return messages.filter { $0.read == false }.count
+        return allMessages().filter { $0.read == false }.count
     }
     
     func message(atRow row: Int) -> InboxMessageViewModel {
-        let message = messages[row]
+        let message = allMessages()[row]
         loadImageIfNecessary(message)
         return message
     }
     
     func remove(atRow row: Int) {
-        IterableAPI.inAppManager.remove(message: messages[row].iterableMessage,
+        IterableAPI.inAppManager.remove(message: allMessages()[row].iterableMessage,
                                         location: .inbox,
                                         source: .inboxSwipe,
                                         inboxSessionId: sessionManager.sessionStartInfo?.id)
@@ -111,7 +107,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     func beganUpdates() {
-        messages = newMessages
+        sectionedMessages = newSectionedMessages
     }
     
     func endedUpdates() {}
@@ -163,11 +159,10 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     private func setImageData(_ data: Data, forMessageId messageId: String) {
-        guard let row = messages.firstIndex(where: { $0.iterableMessage.messageId == messageId }) else {
+        guard let row = allMessages().firstIndex(where: { $0.iterableMessage.messageId == messageId }) else {
             return
         }
-        
-        let message = messages[row]
+        let message = allMessages()[row]
         message.imageData = data
         
         delegate?.onImageLoaded(forRow: row)
@@ -179,12 +174,10 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         }
         
         return delegate.currentlyVisibleRowIndices.compactMap { index in
-            guard index < messages.count else {
+            guard index < allMessages().count else {
                 return nil
             }
-            
-            let message = messages[index].iterableMessage
-            
+            let message = allMessages()[index].iterableMessage
             return InboxImpressionTracker.RowInfo(messageId: message.messageId, silentInbox: message.silentInbox)
         }
     }
@@ -223,23 +216,9 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     private func updateView() {
         ITBInfo()
+        newSectionedMessages = sortAndFilter(messages: getMessages())
         
-        let oldSectionedValues = AbstractDiffCalculator<Int, InboxMessageViewModel>.buildSectionedValues(values: messages, sectionIndex: 0)
-        
-        newMessages = IterableAPI.inAppManager.getInboxMessages().map { InboxMessageViewModel(message: $0) }
-        
-        if let comparator = comparator {
-            newMessages.sort { comparator($0.iterableMessage, $1.iterableMessage) }
-        }
-      
-        if let filter = filter {
-            newMessages = newMessages.filter { filter($0.iterableMessage) }
-        }
-        
-        let newSectionedValues = AbstractDiffCalculator<Int, InboxMessageViewModel>.buildSectionedValues(values: newMessages, sectionIndex: 0)
-        
-        let diff = Dwifft.diff(lhs: oldSectionedValues, rhs: newSectionedValues)
-        
+        let diff = Dwifft.diff(lhs: sectionedMessages, rhs: newSectionedMessages)
         if diff.count > 0 {
             delegate?.onViewModelChanged(diff: diff)
             updateVisibleRows()
@@ -265,7 +244,44 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         }
     }
     
-    private var messages = [InboxMessageViewModel]()
-    private var newMessages = [InboxMessageViewModel]()
+    private func getMessages() -> [InboxMessageViewModel] {
+        IterableAPI.inAppManager.getInboxMessages().map { InboxMessageViewModel(message: $0) }
+    }
+    
+    private func allMessages() -> [InboxMessageViewModel] {
+        return sectionedMessages.values
+    }
+    
+    private func sortAndFilter(messages: [InboxMessageViewModel]) -> SectionedValues<Int, InboxMessageViewModel> {
+        return SectionedValues(values: filteredMessages(messages: messages),
+                               valueToSection: { _ in 0 },
+                               sortSections: { $0 < $1 },
+                               sortValues: createComparator())
+    }
+    
+    private func filteredMessages(messages: [InboxMessageViewModel]) -> [InboxMessageViewModel] {
+        guard let filter = self.filter else {
+            return messages
+        }
+        
+        return messages.filter { filter($0.iterableMessage) }
+    }
+    
+    private func createComparator() -> (InboxMessageViewModel, InboxMessageViewModel) -> Bool {
+        if let comparator = self.comparator {
+            return { comparator($0.iterableMessage, $1.iterableMessage) }
+        } else {
+            return { IterableInboxViewController.DefaultComparator.ascending($0.iterableMessage, $1.iterableMessage) }
+        }
+    }
+    
+    private var sectionedMessages = SectionedValues<Int, InboxMessageViewModel>()
+    private var newSectionedMessages = SectionedValues<Int, InboxMessageViewModel>()
     private var sessionManager = InboxSessionManager()
+}
+
+extension SectionedValues {
+    var values: [Value] {
+        return sectionsAndValues.flatMap { $0.1 }
+    }
 }
