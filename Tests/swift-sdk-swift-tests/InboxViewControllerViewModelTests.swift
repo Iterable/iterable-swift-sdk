@@ -23,7 +23,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let expectation1 = expectation(description: "testDescendingSorting")
         
         let model = InboxViewControllerViewModel()
-        model.comparator = IterableInboxViewController.SampleComparator.descending
+        model.comparator = IterableInboxViewController.DefaultComparator.descending
         
         let fetcher = MockInAppFetcher()
         
@@ -67,7 +67,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let expectation1 = expectation(description: "testAscendingSorting")
         
         let model = InboxViewControllerViewModel()
-        model.comparator = IterableInboxViewController.SampleComparator.ascending
+        model.comparator = IterableInboxViewController.DefaultComparator.ascending
         
         let fetcher = MockInAppFetcher()
         
@@ -242,7 +242,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let expectation1 = expectation(description: "testSampleFilter")
         
         let model = InboxViewControllerViewModel()
-        model.filter = IterableInboxViewController.SampleFilter.usingCustomPayload(key: "messageType", value: "promotional")
+        model.filter = IterableInboxViewController.DefaultFilter.usingCustomPayload(key: "messageType", value: "promotional")
         
         let fetcher = MockInAppFetcher()
         
