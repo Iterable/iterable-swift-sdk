@@ -99,7 +99,7 @@ struct RequestCreator {
             JsonKey.dataFields.jsonKey: dataFields,
         ]
         
-        var body: [AnyHashable: Any] = [:]
+        var body = [AnyHashable: Any]()
         
         body[JsonKey.device.jsonKey] = deviceDictionary
         
@@ -118,7 +118,7 @@ struct RequestCreator {
             return .failure(IterableError.general(description: "Both email and userId are nil"))
         }
         
-        var body: [AnyHashable: Any] = [:]
+        var body = [AnyHashable: Any]()
         
         body[JsonKey.dataFields.jsonKey] = dataFields
         body[JsonKey.mergeNestedObjects.jsonKey] = NSNumber(value: mergeNestedObjects)
@@ -143,7 +143,7 @@ struct RequestCreator {
             itemsToSerialize.append(item.toDictionary())
         }
         
-        var apiUserDict: [AnyHashable: Any] = [:]
+        var apiUserDict = [AnyHashable: Any]()
         
         apiUserDict.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
@@ -159,9 +159,8 @@ struct RequestCreator {
     }
     
     func createTrackPushOpenRequest(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?) -> Result<IterableRequest, IterableError> {
-        var body: [AnyHashable: Any] = [:]
-        
-        var reqDataFields: [AnyHashable: Any] = [:]
+        var body = [AnyHashable: Any]()
+        var reqDataFields = [AnyHashable: Any]()
         
         if let dataFields = dataFields {
             reqDataFields = dataFields
@@ -193,7 +192,8 @@ struct RequestCreator {
             return .failure(IterableError.general(description: "Both email and userId are nil"))
         }
         
-        var body: [AnyHashable: Any] = [:]
+        var body = [AnyHashable: Any]()
+        
         body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         body.setValue(for: .eventName, value: eventName)
         
@@ -210,7 +210,7 @@ struct RequestCreator {
             return .failure(IterableError.general(description: "Both email and userId are nil"))
         }
         
-        var body: [AnyHashable: Any] = [:]
+        var body = [AnyHashable: Any]()
         
         body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
@@ -255,7 +255,7 @@ struct RequestCreator {
             return .failure(IterableError.general(description: "Both email and userId are nil"))
         }
         
-        var body: [AnyHashable: Any] = [:]
+        var body = [AnyHashable: Any]()
         
         body.setValue(for: .messageId, value: messageId)
         
@@ -274,7 +274,7 @@ struct RequestCreator {
             return .failure(IterableError.general(description: "Both email and userId are nil"))
         }
         
-        var body: [AnyHashable: Any] = [:]
+        var body = [AnyHashable: Any]()
         
         body.setValue(for: .messageId, value: inAppMessageContext.messageId)
         
@@ -297,7 +297,7 @@ struct RequestCreator {
             return .failure(IterableError.general(description: "Both email and userId are nil"))
         }
         
-        var body: [AnyHashable: Any] = [:]
+        var body = [AnyHashable: Any]()
         
         body.setValue(for: .messageId, value: messageId)
         body.setValue(for: .clickedUrl, value: clickedUrl)
@@ -317,7 +317,7 @@ struct RequestCreator {
             return .failure(IterableError.general(description: "Both email and userId are nil"))
         }
         
-        var body: [AnyHashable: Any] = [:]
+        var body = [AnyHashable: Any]()
         
         body.setValue(for: .messageId, value: inAppMessageContext.messageId)
         
@@ -341,7 +341,7 @@ struct RequestCreator {
             return .failure(IterableError.general(description: "Both email and userId are nil"))
         }
         
-        var body: [AnyHashable: Any] = [:]
+        var body = [AnyHashable: Any]()
         
         body.setValue(for: .messageId, value: inAppMessageContext.messageId)
         
@@ -371,7 +371,7 @@ struct RequestCreator {
             return .failure(IterableError.general(description: "Both email and userId are nil"))
         }
         
-        var body: [AnyHashable: Any] = [:]
+        var body = [AnyHashable: Any]()
         
         body.setValue(for: .messageId, value: inAppMessageContext.messageId)
         
@@ -389,7 +389,7 @@ struct RequestCreator {
             return .failure(IterableError.general(description: "Both email and userId are nil"))
         }
         
-        var body: [AnyHashable: Any] = [:]
+        var body = [AnyHashable: Any]()
         
         body.setValue(for: .messageId, value: messageId)
         
@@ -404,7 +404,7 @@ struct RequestCreator {
             return .failure(IterableError.general(description: "Both email and userId are nil"))
         }
         
-        var body: [AnyHashable: Any] = [:]
+        var body = [AnyHashable: Any]()
         
         body.setValue(for: .messageId, value: inAppMessageContext.messageId)
         
@@ -442,7 +442,7 @@ struct RequestCreator {
             return .failure(IterableError.general(description: "expecting session end time"))
         }
         
-        var body: [AnyHashable: Any] = [:]
+        var body = [AnyHashable: Any]()
         
         body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
@@ -461,7 +461,7 @@ struct RequestCreator {
     }
     
     func createDisableDeviceRequest(forAllUsers allUsers: Bool, hexToken: String) -> Result<IterableRequest, IterableError> {
-        var body: [AnyHashable: Any] = [:]
+        var body = [AnyHashable: Any]()
         
         body.setValue(for: .token, value: hexToken)
         
