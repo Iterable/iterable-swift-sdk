@@ -19,7 +19,7 @@ protocol InboxViewControllerViewModelProtocol {
     var numMessages: Int { get }
     var unreadCount: Int { get }
     func message(atIndexPath indexPath: IndexPath) -> InboxMessageViewModel
-    func remove(atRow row: Int)
+    func remove(atIndexPath indexPath: IndexPath)
     func set(read: Bool, forMessage message: InboxMessageViewModel)
     func createInboxMessageViewController(for message: InboxMessageViewModel, withInboxMode inboxMode: IterableInboxViewController.InboxMode) -> UIViewController?
     func refresh() -> Future<Bool, Error> // Talks to the server and refreshes
@@ -78,13 +78,14 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         return message
     }
     
-    func remove(atRow row: Int) {
-        IterableAPI.inAppManager.remove(message: allMessages()[row].iterableMessage,
+    func remove(atIndexPath indexPath: IndexPath) {
+        let message = sectionedMessages[indexPath.section].1[indexPath.row]
+        IterableAPI.inAppManager.remove(message: message.iterableMessage,
                                         location: .inbox,
                                         source: .inboxSwipe,
                                         inboxSessionId: sessionManager.sessionStartInfo?.id)
     }
-    
+
     func set(read _: Bool, forMessage message: InboxMessageViewModel) {
         IterableAPI.inAppManager.set(read: true, forMessage: message.iterableMessage)
     }

@@ -223,7 +223,7 @@ open class IterableInboxViewController: UITableViewController {
     
     open override func tableView(_: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            viewModel.remove(atRow: indexPath.row)
+            viewModel.remove(atIndexPath: indexPath)
         }
     }
     
