@@ -86,8 +86,8 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
                                         inboxSessionId: sessionManager.sessionStartInfo?.id)
     }
 
-    func set(read _: Bool, forMessage message: InboxMessageViewModel) {
-        IterableAPI.inAppManager.set(read: true, forMessage: message.iterableMessage)
+    func set(read: Bool, forMessage message: InboxMessageViewModel) {
+        IterableAPI.inAppManager.set(read: read, forMessage: message.iterableMessage)
     }
     
     func refresh() -> Future<Bool, Error> {

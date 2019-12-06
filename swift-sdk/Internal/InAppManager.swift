@@ -165,18 +165,19 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     
     func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource, inboxSessionId: String? = nil) {
         ITBInfo()
-        
+
         removePrivate(message: message, location: location, source: source, inboxSessionId: inboxSessionId)
     }
-    
-    func set(read _: Bool, forMessage message: IterableInAppMessage) {
-        updateMessage(message, read: true).onSuccess { _ in
+
+
+    func set(read: Bool, forMessage message: IterableInAppMessage) {
+        updateMessage(message, read: read).onSuccess { _ in
             self.callbackQueue.async {
                 self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
             }
         }
     }
-    
+
     func isOkToShowNow(message: IterableInAppMessage) -> Bool {
         guard displayer.isShowingInApp() == false else {
             ITBInfo("showing another")
