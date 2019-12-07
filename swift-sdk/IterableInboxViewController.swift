@@ -214,7 +214,7 @@ open class IterableInboxViewController: UITableViewController {
     // MARK: - UITableViewDataSource (Optional Functions)
     
     open override func numberOfSections(in _: UITableView) -> Int {
-        return 1
+        return viewModel.numSections
     }
     
     open override func tableView(_: UITableView, canEditRowAt _: IndexPath) -> Bool {
@@ -385,15 +385,14 @@ extension IterableInboxViewController: InboxViewControllerViewModelDelegate {
         updateUnreadBadgeCount()
     }
     
-    func onImageLoaded(forRow row: Int) {
+    func onImageLoaded(for indexPath: IndexPath) {
         ITBInfo()
-        
         guard Thread.isMainThread else {
             ITBError("\(#function) must be called from main thread")
             return
         }
         
-        tableView.reloadRows(at: [IndexPath(row: row, section: 0)], with: .automatic)
+        tableView.reloadRows(at: [indexPath], with: .automatic)
     }
     
     var currentlyVisibleRowIndices: [Int] {

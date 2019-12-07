@@ -9,13 +9,14 @@ import UIKit
 protocol InboxViewControllerViewModelDelegate: AnyObject {
     // All these methods should be called on the main thread
     func onViewModelChanged(diff: [SectionedDiffStep<Int, InboxMessageViewModel>])
-    func onImageLoaded(forRow row: Int)
+    func onImageLoaded(for indexPath: IndexPath)
     var currentlyVisibleRowIndices: [Int] { get }
 }
 
 protocol InboxViewControllerViewModelProtocol {
     var delegate: InboxViewControllerViewModelDelegate? { get set }
     var comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)? { get set }
+    var numSections: Int { get }
     func numRows(in section: Int) -> Int
     var unreadCount: Int { get }
     func message(atIndexPath indexPath: IndexPath) -> InboxMessageViewModel
@@ -62,6 +63,10 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     deinit {
         ITBInfo()
         NotificationCenter.default.removeObserver(self)
+    }
+    
+    var numSections: Int {
+        sectionedMessages.sections.count
     }
     
     func numRows(in section: Int) -> Int {
@@ -160,13 +165,25 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     private func setImageData(_ data: Data, forMessageId messageId: String) {
-        guard let row = allMessages().firstIndex(where: { $0.iterableMessage.messageId == messageId }) else {
+        guard let indexPath = findIndexPath(for: messageId) else {
             return
         }
-        let message = allMessages()[row]
-        message.imageData = data
         
-        delegate?.onImageLoaded(forRow: row)
+        let message = sectionedMessages[indexPath.section].1[indexPath.row]
+        message.imageData = data
+        delegate?.onImageLoaded(for: indexPath)
+    }
+    
+    private func findIndexPath(for messageId: String) -> IndexPath? {
+        var section = -1
+        for sectionAndValue in sectionedMessages.sectionsAndValues {
+            section += 1
+            let (_, values) = sectionAndValue
+            if let row = values.firstIndex(where: { $0.iterableMessage.messageId == messageId }) {
+                return IndexPath(row: row, section: section)
+            }
+        }
+        return nil
     }
     
     private func getVisibleRows() -> [InboxImpressionTracker.RowInfo] {
@@ -255,10 +272,26 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     private func sortAndFilter(messages: [InboxMessageViewModel]) -> SectionedValues<Int, InboxMessageViewModel> {
         return SectionedValues(values: filteredMessages(messages: messages),
-                               valueToSection: { _ in 0 },
+                               valueToSection: valueToSection(message:),
                                sortSections: { $0 < $1 },
                                sortValues: createComparator())
     }
+    
+    // :tqm
+    private func valueToSection(message: InboxMessageViewModel) -> Int {
+        let hash = message.iterableMessage.messageId.hashValue
+        if hash % 2  == 0 {
+            return 0
+        } else {
+            return 1
+        }
+//        return random(withMax: 2)
+    }
+    
+    private func random(withMax max: Int) -> Int {
+        return Int(arc4random_uniform(UInt32(max)))
+    }
+
     
     private func filteredMessages(messages: [InboxMessageViewModel]) -> [InboxMessageViewModel] {
         guard let filter = self.filter else {
