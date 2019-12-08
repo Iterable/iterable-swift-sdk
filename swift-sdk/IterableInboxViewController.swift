@@ -123,7 +123,7 @@ open class IterableInboxViewController: UITableViewController {
         public static var localizedShortDateShortTIme: (IterableInAppMessage) -> String? = {
             $0.createdAt.map { DateFormatter.localizedString(from: $0, dateStyle: .short, timeStyle: .short) }
         }
-
+        
         /// This date mapper is used If you do not set `dateMapper` property for `IterableInboxViewControllerViewDelegate`.
         public static var localizedMediumDateShortTIme: (IterableInAppMessage) -> String? = {
             $0.createdAt.map { DateFormatter.localizedString(from: $0, dateStyle: .medium, timeStyle: .short) }
@@ -165,7 +165,7 @@ open class IterableInboxViewController: UITableViewController {
     
     /// Set this property to override default inbox display behavior. You should set either this property
     /// or `viewDelegateClassName`property but not both.
-    public weak var viewDelegate: IterableInboxViewControllerViewDelegate? {
+    public var viewDelegate: IterableInboxViewControllerViewDelegate? {
         didSet {
             guard let viewDelegate = self.viewDelegate else {
                 return
@@ -339,9 +339,6 @@ open class IterableInboxViewController: UITableViewController {
     /// Set this mode to `nav` to push inbox message into navigation stack.
     private var inboxMode = InboxMode.popup
     
-    // we need this variable because we are instantiating the delegate class
-    private var strongViewDelegate: IterableInboxViewControllerViewDelegate?
-    
     private var cellLoader: CellLoader!
     
     deinit {
@@ -429,10 +426,7 @@ open class IterableInboxViewController: UITableViewController {
             return
         }
         
-        let delegateObject = delegateClass.init()
-        
-        strongViewDelegate = delegateObject
-        viewDelegate = strongViewDelegate
+        viewDelegate = delegateClass.init()
     }
 }
 
