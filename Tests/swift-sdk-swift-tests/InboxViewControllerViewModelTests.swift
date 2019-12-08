@@ -55,8 +55,8 @@ class InboxViewControllerViewModelTests: XCTestCase {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             model.beganUpdates()
-            XCTAssertEqual(model.message(atRow: 0).iterableMessage.messageId, "message2")
-            XCTAssertEqual(model.message(atRow: 1).iterableMessage.messageId, "message1")
+            XCTAssertEqual(model.message(atIndexPath: IndexPath(row: 0, section: 0)).iterableMessage.messageId, "message2")
+            XCTAssertEqual(model.message(atIndexPath: IndexPath(row: 1, section: 0)).iterableMessage.messageId, "message1")
             expectation1.fulfill()
         }
         
@@ -99,8 +99,8 @@ class InboxViewControllerViewModelTests: XCTestCase {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             model.beganUpdates()
-            XCTAssertEqual(model.message(atRow: 0).iterableMessage.messageId, "message1")
-            XCTAssertEqual(model.message(atRow: 1).iterableMessage.messageId, "message2")
+            XCTAssertEqual(model.message(atIndexPath: IndexPath(row: 0, section: 0)).iterableMessage.messageId, "message1")
+            XCTAssertEqual(model.message(atIndexPath: IndexPath(row: 1, section: 0)).iterableMessage.messageId, "message2")
             expectation1.fulfill()
         }
         
@@ -142,8 +142,8 @@ class InboxViewControllerViewModelTests: XCTestCase {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             model.beganUpdates()
-            XCTAssertEqual(model.message(atRow: 0).iterableMessage.messageId, "message1")
-            XCTAssertEqual(model.message(atRow: 1).iterableMessage.messageId, "message2")
+            XCTAssertEqual(model.message(atIndexPath: IndexPath(row: 0, section: 0)).iterableMessage.messageId, "message1")
+            XCTAssertEqual(model.message(atIndexPath: IndexPath(row: 1, section: 0)).iterableMessage.messageId, "message2")
             expectation1.fulfill()
         }
         
@@ -185,9 +185,9 @@ class InboxViewControllerViewModelTests: XCTestCase {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             model.beganUpdates()
-            XCTAssertEqual(model.numMessages, 2)
-            XCTAssertEqual(model.message(atRow: 0).iterableMessage.messageId, "message1")
-            XCTAssertEqual(model.message(atRow: 1).iterableMessage.messageId, "message2")
+            XCTAssertEqual(model.numRows(in: 0), 2)
+            XCTAssertEqual(model.message(atIndexPath: IndexPath(row: 0, section: 0)).iterableMessage.messageId, "message1")
+            XCTAssertEqual(model.message(atIndexPath: IndexPath(row: 1, section: 0)).iterableMessage.messageId, "message2")
             expectation1.fulfill()
         }
         
@@ -230,8 +230,8 @@ class InboxViewControllerViewModelTests: XCTestCase {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             model.beganUpdates()
-            XCTAssertEqual(model.numMessages, 1)
-            XCTAssertEqual(model.message(atRow: 0).iterableMessage.messageId, "message1")
+            XCTAssertEqual(model.numRows(in: 0), 1)
+            XCTAssertEqual(model.message(atIndexPath: IndexPath(row: 0, section: 0)).iterableMessage.messageId, "message1")
             expectation1.fulfill()
         }
         
@@ -242,7 +242,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let expectation1 = expectation(description: "testSampleFilter")
         
         let model = InboxViewControllerViewModel()
-        model.filter = IterableInboxViewController.DefaultFilter.usingCustomPayload(key: "messageType", value: "promotional")
+        model.filter = IterableInboxViewController.DefaultFilter.usingCustomPayloadMessageType(in: "promotional")
         
         let fetcher = MockInAppFetcher()
         
@@ -274,8 +274,8 @@ class InboxViewControllerViewModelTests: XCTestCase {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             model.beganUpdates()
-            XCTAssertEqual(model.numMessages, 1)
-            XCTAssertEqual(model.message(atRow: 0).iterableMessage.messageId, "message2")
+            XCTAssertEqual(model.numRows(in: 0), 1)
+            XCTAssertEqual(model.message(atIndexPath: IndexPath(row: 0, section: 0)).iterableMessage.messageId, "message2")
             expectation1.fulfill()
         }
         

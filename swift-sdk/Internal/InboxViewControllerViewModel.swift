@@ -16,6 +16,8 @@ protocol InboxViewControllerViewModelDelegate: AnyObject {
 protocol InboxViewControllerViewModelProtocol {
     var delegate: InboxViewControllerViewModelDelegate? { get set }
     var comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)? { get set }
+    var filter: ((IterableInAppMessage) -> Bool)? { get set }
+    var sectionMapper: ((IterableInAppMessage) -> Int)? { get set }
     var numSections: Int { get }
     func numRows(in section: Int) -> Int
     var unreadCount: Int { get }
@@ -43,6 +45,12 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     var filter: ((IterableInAppMessage) -> Bool)? {
+        didSet {
+            sectionedMessages = sortAndFilter(messages: allMessages())
+        }
+    }
+    
+    var sectionMapper: ((IterableInAppMessage) -> Int)? {
         didSet {
             sectionedMessages = sortAndFilter(messages: allMessages())
         }
@@ -90,7 +98,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
                                         source: .inboxSwipe,
                                         inboxSessionId: sessionManager.sessionStartInfo?.id)
     }
-
+    
     func set(read: Bool, forMessage message: InboxMessageViewModel) {
         IterableAPI.inAppManager.set(read: read, forMessage: message.iterableMessage)
     }
@@ -272,26 +280,10 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     private func sortAndFilter(messages: [InboxMessageViewModel]) -> SectionedValues<Int, InboxMessageViewModel> {
         return SectionedValues(values: filteredMessages(messages: messages),
-                               valueToSection: valueToSection(message:),
+                               valueToSection: createSectionMapper(),
                                sortSections: { $0 < $1 },
                                sortValues: createComparator())
     }
-    
-    // :tqm
-    private func valueToSection(message: InboxMessageViewModel) -> Int {
-        let hash = message.iterableMessage.messageId.hashValue
-        if hash % 2  == 0 {
-            return 0
-        } else {
-            return 1
-        }
-//        return random(withMax: 2)
-    }
-    
-    private func random(withMax max: Int) -> Int {
-        return Int(arc4random_uniform(UInt32(max)))
-    }
-
     
     private func filteredMessages(messages: [InboxMessageViewModel]) -> [InboxMessageViewModel] {
         guard let filter = self.filter else {
@@ -306,6 +298,14 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
             return { comparator($0.iterableMessage, $1.iterableMessage) }
         } else {
             return { IterableInboxViewController.DefaultComparator.ascending($0.iterableMessage, $1.iterableMessage) }
+        }
+    }
+    
+    private func createSectionMapper() -> (InboxMessageViewModel) -> Int {
+        if let sectionMapper = self.sectionMapper {
+            return { sectionMapper($0.iterableMessage) }
+        } else {
+            return { _ in 0 }
         }
     }
     

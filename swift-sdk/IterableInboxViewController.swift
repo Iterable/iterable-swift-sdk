@@ -19,8 +19,8 @@ import UIKit
     /// By default, all messages are shown.
     /// If you want to control which messages are to be shown, return a filter here.
     /// For example, if you want to only show messages which have a customPayload json with {"messageType": "promotional"},
-    /// you can do so by setting `filter = IterableInboxViewController.DefaultFilter.usingCustomPayload(key: "messageType", value: "promotional")`.
-    /// Please note that you can create your own custom filters which can be functions or closures.
+    /// you can do so by setting `filter = IterableInboxViewController.DefaultFilter.usingCustomPayloadMessageType(in: "promotional")`.
+    /// Please note that you can create your own custom filters.
     @objc optional var filter: ((IterableInAppMessage) -> Bool)? { get }
     
     /// Use this method to override the default display for message creation time. Return nil if you don't want to display time.
@@ -32,6 +32,14 @@ import UIKit
     /// - parameter forCell: The table view cell to render
     /// - parameter withMessage: IterableInAppMessage
     @objc optional func renderAdditionalFields(forCell cell: IterableInboxCell, withMessage message: IterableInAppMessage)
+    
+    /// If you want to have multiple sections for your inbox, use a mapper which returns the section number for an inbox message.
+    /// Please note that there is no need to worry about actual section numbers, section numbers are *relative* not absolute.
+    /// As long as all messages in a section are mapped to the same number things will be fine.
+    /// For example, your mapper can return `4` for message1 and message2 and `5` for message3. In this case message1 and message2 will be in section 0
+    /// and message3 will be in section 1 eventhough the mappings are for `4` and `5`.
+    /// Please see `IterableInboxViewController.DefaultSectionMapper.usingCustomPayloadMessageSection` for an example of mapper.
+    @objc optional var messageToSectionMapper: ((IterableInAppMessage) -> Int)? { get }
     
     /// Use this property only when you  have more than one type of custom table view cells.
     /// For example, if you have inbox cells of one type to show  informational mesages,
@@ -71,14 +79,30 @@ open class IterableInboxViewController: UITableViewController {
     /// This enumeration shows how to write a sample filter which can be used by `IterableInboxViewControllerViewDelegate`.
     /// You can create your own filters which can be functions or closures.
     public enum DefaultFilter {
-        public static func usingCustomPayload(key: String, value: String) -> ((IterableInAppMessage) -> Bool)? {
+        /// This filter looks at `customPayload` of inbox message and assumes that the json key `messageType` holds the type of message
+        /// and it returns true for message of particular message type(s).
+        /// - parameter in: The message type(s) that should be shown.
+        public static func usingCustomPayloadMessageType(in messageTypes: String...) -> ((IterableInAppMessage) -> Bool) {
             return {
-                guard let payload = $0.customPayload as? [String: AnyHashable], let jsonValue = payload[key] as? String else {
+                guard let payload = $0.customPayload as? [String: AnyHashable], let messageType = payload["messageType"] as? String else {
                     return false
                 }
                 
-                return jsonValue == value
+                return messageTypes.first(where: { $0 == messageType }).map { _ in true } ?? false
             }
+        }
+    }
+    
+    /// By default, all messages are in one section.
+    /// This enumeration has sample mappers which map inbox messages to section number. This can be used by `IterableInboxViewControllerViewDelegate`.
+    public enum DefaultSectionMapper {
+        /// This mapper looks at `customPayload` of inbox message and assumes that json key `messageSection` holds the section number.
+        /// e.g., An inbox message with custom payload  `{messageSection: 2}` will return 2 as section
+        public static var usingCustomPayloadMessageSection: ((IterableInAppMessage) -> Int) = { message in
+            guard let payload = message.customPayload as? [String: AnyHashable], let section = payload["messageSection"] as? Int else {
+                return 0
+            }
+            return section
         }
     }
     
@@ -105,8 +129,17 @@ open class IterableInboxViewController: UITableViewController {
     /// or `viewDelegateClassName`property but not both.
     public weak var viewDelegate: IterableInboxViewControllerViewDelegate? {
         didSet {
-            if let viewDelegate = viewDelegate, let comparator = viewDelegate.comparator {
+            guard let viewDelegate = self.viewDelegate else {
+                return
+            }
+            if let comparator = viewDelegate.comparator {
                 viewModel.comparator = comparator
+            }
+            if let filter = viewDelegate.filter {
+                viewModel.filter = filter
+            }
+            if let sectionMapper = viewDelegate.messageToSectionMapper {
+                viewModel.sectionMapper = sectionMapper
             }
         }
     }
