@@ -17,14 +17,14 @@ import UIKit
     /// For example, if you want to only show messages which have a customPayload json with {"messageType": "promotional"},  you can do so by setting
     /// `filter = IterableInboxViewController.DefaultFilter.usingCustomPayloadMessageType(in: "promotional")`.
     /// Please note that you can create your own custom filters.
-    @objc optional var filter: ((IterableInAppMessage) -> Bool)? { get }
+    @objc optional var filter: (IterableInAppMessage) -> Bool { get }
     
     /// By default, messages are sorted chronologically.
     /// If you don't want inbox messages to be sorted chronologically, return a relevant comparator here.
     /// For example, if you want the latest messages to be displayed you can do so by setting
     /// `comparator = IterableInboxViewController.DefaultComparator.descending`,
     /// You may also return any other custom comparator as per your need.
-    @objc optional var comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)? { get }
+    @objc optional var comparator: (IterableInAppMessage, IterableInAppMessage) -> Bool { get }
     
     /// If you want to have multiple sections for your inbox, use a mapper which returns the section number for an inbox message.
     /// Please note that there is no need to worry about actual section numbers, section numbers are *relative*, not absolute.
@@ -33,20 +33,20 @@ import UIKit
     /// and message3 will be in section 1 eventhough the mappings are for `4` and `5`.
     /// If your custom payload has {"messageSection": 2} etc. You can set
     /// `messageToSectionMapper = IterableInboxViewController.DefaultSectionMapper.usingCustomPayloadMessageSection`.
-    @objc optional var messageToSectionMapper: ((IterableInAppMessage) -> Int)? { get }
+    @objc optional var messageToSectionMapper: (IterableInAppMessage) -> Int { get }
     
     /// Use this property only when you  have more than one type of custom table view cells.
     /// For example, if you have inbox cells of one type to show  informational mesages,
     /// and inbox cells of another type to show discount messages.
     /// Please note that you must declare all custom nib names here.
     /// - returns: a list of all custom nib names.
-    @objc optional var customNibNames: [String]? { get }
-
+    @objc optional var customNibNames: [String] { get }
+    
     /// A mapper that maps an inbox message to a custom nib.
     /// This goes hand in hand with `customNibNames` property above.
     /// For example, if your custom payload has {"customInboxCell": "CustomInboxCell3"} you can use
     /// `customNibNameMapper = IterableInboxViewController.DefaultNibNameMapper.usingCustomPayloadNibName`
-    @objc optional var customNibNameMapper: ((IterableInAppMessage) -> String?) { get }
+    @objc optional var customNibNameMapper: (IterableInAppMessage) -> String? { get }
     
     /// Use this method to override the default display for message creation time. Return nil if you don't want to display time.
     /// - parameter forMessage: IterableInboxMessage
@@ -518,8 +518,7 @@ private struct CellLoader {
         guard let viewDelegate = viewDelegate else {
             return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
         }
-        
-        guard let modifier1 = viewDelegate.customNibNames, let customNibNames = modifier1, customNibNames.count > 0 else {
+        guard let customNibNames = viewDelegate.customNibNames, customNibNames.count > 0 else {
             return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
         }
         guard let customNibNameMapper = viewDelegate.customNibNameMapper, let customNibName = customNibNameMapper(message) else {
@@ -541,8 +540,7 @@ private struct CellLoader {
         guard let viewDelegate = viewDelegate else {
             return
         }
-        
-        guard let modifier = viewDelegate.customNibNames, let customNibNames = modifier, customNibNames.count > 0 else {
+        guard let customNibNames = viewDelegate.customNibNames, customNibNames.count > 0 else {
             return
         }
         
