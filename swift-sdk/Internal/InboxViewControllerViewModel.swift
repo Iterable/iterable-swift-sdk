@@ -43,6 +43,14 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         }
     }
     
+    var filter: ((IterableInAppMessage) -> Bool)? {
+        didSet {
+            if let filter = filter {
+                messages = messages.filter { filter($0.iterableMessage) }
+            }
+        }
+    }
+    
     init() {
         ITBInfo()
         if let _ = IterableAPI.internalImplementation {
@@ -207,6 +215,10 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         if let comparator = comparator {
             newMessages.sort { comparator($0.iterableMessage, $1.iterableMessage) }
         }
+        if let filter = filter {
+            newMessages = newMessages.filter { filter($0.iterableMessage) }
+        }
+        
         let newSectionedValues = AbstractDiffCalculator<Int, InboxMessageViewModel>.buildSectionedValues(values: newMessages, sectionIndex: 0)
         
         let diff = Dwifft.diff(lhs: oldSectionedValues, rhs: newSectionedValues)
