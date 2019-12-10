@@ -511,7 +511,7 @@ import UIKit
      */
     @available(*, deprecated, message: "Please use IterableAPI.handle(universalLink:) method instead.")
     @objc(getAndTrackDeeplink:callbackBlock:) public static func getAndTrack(deeplink webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {
-        internalImplementation?.getAndTrack(deeplink: webpageURL, callbackBlock: callbackBlock)
+        internalImplementation?.getAndTrack(deepLink: webpageURL, callbackBlock: callbackBlock)
     }
     
     /**
@@ -540,6 +540,7 @@ import UIKit
             assertionFailure("IterableAPI is not initialized yet. In-app will not work now.")
             return EmptyInAppManager()
         }
+        
         return internalImplementation.inAppManager
     }
     

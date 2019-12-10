@@ -100,6 +100,7 @@ class IterableHtmlMessageViewController: UIViewController {
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
+        
         if let webView = webView {
             resizeWebView(webView)
         }

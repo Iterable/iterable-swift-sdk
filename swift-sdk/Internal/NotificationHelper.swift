@@ -100,6 +100,7 @@ struct ITBLSilentPushNotificationInfo {
         }
         
         let silentPushNotificationInfo = ITBLSilentPushNotificationInfo(notificationType: silentPushNotificationType, messageId: notification[Keys.messageId.rawValue] as? String)
+        
         return silentPushNotificationInfo
     }
     

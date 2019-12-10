@@ -119,6 +119,7 @@ open class IterableInboxViewController: UITableViewController {
             guard let viewDelegateClassName = viewDelegateClassName else {
                 return
             }
+            
             instantiateViewDelegate(withClassName: viewDelegateClassName)
         }
     }
@@ -152,6 +153,7 @@ open class IterableInboxViewController: UITableViewController {
     
     open override func viewDidLoad() {
         ITBInfo()
+        
         super.viewDidLoad()
         
         tableView.rowHeight = UITableView.automaticDimension
@@ -170,6 +172,7 @@ open class IterableInboxViewController: UITableViewController {
     
     open override func viewWillAppear(_ animated: Bool) {
         ITBInfo()
+        
         super.viewWillAppear(animated)
         
         // Set footer view so that we don't see table view separators
@@ -185,6 +188,7 @@ open class IterableInboxViewController: UITableViewController {
     
     open override func viewWillDisappear(_ animated: Bool) {
         ITBInfo()
+        
         super.viewWillDisappear(animated)
         
         if navigationController == nil {
@@ -242,6 +246,7 @@ open class IterableInboxViewController: UITableViewController {
                 } else {
                     viewController.modalPresentationStyle = .overFullScreen
                 }
+                
                 present(viewController, animated: true)
             }
         }
@@ -251,6 +256,7 @@ open class IterableInboxViewController: UITableViewController {
     
     open override func scrollViewDidScroll(_: UIScrollView) {
         ITBDebug()
+        
         viewModel.visibleRowsChanged()
     }
     
@@ -297,11 +303,13 @@ open class IterableInboxViewController: UITableViewController {
     
     private func setCreatedAt(cell: IterableInboxCell, message: InboxMessageViewModel) {
         let value: String?
+        
         if let modifier = viewDelegate?.displayDate(forMessage:) {
             value = modifier(message.iterableMessage)
         } else {
             value = IterableInboxViewController.defaultValueToDisplay(forCreatedAt: message.iterableMessage.createdAt)
         }
+        
         IterableInboxViewController.set(value: value, forLabel: cell.createdAtLbl)
     }
     
@@ -341,6 +349,7 @@ open class IterableInboxViewController: UITableViewController {
         guard let createdAt = createdAt else {
             return nil
         }
+        
         return DateFormatter.localizedString(from: createdAt, dateStyle: .medium, timeStyle: .short)
     }
     
@@ -349,6 +358,7 @@ open class IterableInboxViewController: UITableViewController {
             assertionFailure("Module name is missing. 'viewDelegateClassName' must be of the form $package_name.$class_name")
             return
         }
+        
         guard let delegateClass = NSClassFromString(className) as? IterableInboxViewControllerViewDelegate.Type else {
             // we can't use IterableLog here because this happens from storyboard before logging is initialized.
             assertionFailure("Could not initialize dynamic class: \(className), please check module name and protocol \(IterableInboxViewControllerViewDelegate.self) conformanace.")
@@ -429,6 +439,7 @@ extension IterableInboxViewController: InboxViewControllerViewModelDelegate {
         
         let cellRect = tableView.rectForRow(at: indexPath)
         let convertedRect = tableView.convert(cellRect, to: tableView.superview)
+        
         return newRect.contains(convertedRect) ? indexPath.row : nil
     }
 }
@@ -452,12 +463,15 @@ private struct CellLoader {
         guard let viewDelegate = viewDelegate else {
             return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
         }
+        
         guard let modifier1 = viewDelegate.customNibNames, let customNibNames = modifier1, customNibNames.count > 0 else {
             return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
         }
+        
         guard let modifier2 = viewDelegate.customNibName(for:), let customNibName = modifier2(message) else {
             return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
         }
+        
         guard let cell = tableView.dequeueReusableCell(withIdentifier: customNibName, for: indexPath) as? IterableInboxCell else {
             ITBError("Please make sure that an the nib: \(customNibName) is present in the main bundle")
             return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
@@ -473,6 +487,7 @@ private struct CellLoader {
         guard let viewDelegate = viewDelegate else {
             return
         }
+        
         guard let modifier = viewDelegate.customNibNames, let customNibNames = modifier, customNibNames.count > 0 else {
             return
         }
@@ -493,6 +508,7 @@ private struct CellLoader {
             }
         } else {
             let bundle = Bundle(for: IterableInboxViewController.self)
+            
             if CellLoader.nibExists(inBundle: bundle, withNibName: iterableCellNibName) {
                 let nib = UINib(nibName: iterableCellNibName, bundle: bundle)
                 tableView.register(nib, forCellReuseIdentifier: defaultCellReuseIdentifier)
@@ -514,6 +530,7 @@ private struct CellLoader {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: defaultCellReuseIdentifier, for: indexPath) as? IterableInboxCell else {
             fatalError("Please make sure that an the nib: \(cellNibName ?? iterableCellNibName) is present in the main bundle")
         }
+        
         return cell
     }
 }

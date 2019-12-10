@@ -121,11 +121,13 @@ extension IterableInAppTrigger: Codable {
     public convenience init(from decoder: Decoder) {
         guard let container = try? decoder.container(keyedBy: CodingKeys.self) else {
             self.init(dict: IterableInAppTrigger.createDefaultTriggerDict())
+            
             return
         }
         
         guard let data = try? container.decode(Data.self, forKey: .data) else {
             self.init(dict: IterableInAppTrigger.createDefaultTriggerDict())
+            
             return
         }
         
@@ -137,12 +139,14 @@ extension IterableInAppTrigger: Codable {
             }
         } catch {
             ITBError(error.localizedDescription)
+            
             self.init(dict: IterableInAppTrigger.createDefaultTriggerDict())
         }
     }
     
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        
         if let data = try? JSONSerialization.data(withJSONObject: dict, options: []) {
             try? container.encode(data, forKey: .data)
         }
@@ -159,6 +163,7 @@ extension IterableHtmlInAppContent: Codable {
     static func htmlContent(from decoder: Decoder) -> IterableHtmlInAppContent {
         guard let container = try? decoder.container(keyedBy: CodingKeys.self) else {
             ITBError("Can not decode, returning default")
+            
             return IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
         }
         
@@ -171,6 +176,7 @@ extension IterableHtmlInAppContent: Codable {
     
     static func encode(htmlContent: IterableHtmlInAppContent, to encoder: Encoder) {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        
         try? container.encode(htmlContent.edgeInsets, forKey: .edgeInsets)
         try? container.encode(htmlContent.backgroundAlpha, forKey: .backgroundAlpha)
         try? container.encode(htmlContent.html, forKey: .html)
@@ -178,6 +184,7 @@ extension IterableHtmlInAppContent: Codable {
     
     public convenience init(from decoder: Decoder) {
         let htmlContent = IterableHtmlInAppContent.htmlContent(from: decoder)
+        
         self.init(edgeInsets: htmlContent.edgeInsets, backgroundAlpha: htmlContent.backgroundAlpha, html: htmlContent.html)
     }
     
@@ -197,6 +204,7 @@ extension IterableInboxMetadata: Codable {
         guard let container = try? decoder.container(keyedBy: CodingKeys.self) else {
             ITBError("Can not decode, returning default")
             self.init(title: nil, subtitle: nil, icon: nil)
+            
             return
         }
         
@@ -242,6 +250,7 @@ extension IterableInAppMessage: Codable {
             self.init(messageId: "",
                       campaignId: "",
                       content: IterableInAppMessage.createDefaultContent())
+            
             return
         }
         
@@ -321,6 +330,7 @@ extension IterableInAppMessage: Codable {
     private static func decodeContent(from container: KeyedDecodingContainer<IterableInAppMessage.CodingKeys>) -> IterableInAppContent {
         guard let contentContainer = try? container.nestedContainer(keyedBy: ContentCodingKeys.self, forKey: .content) else {
             ITBError()
+            
             return createDefaultContent()
         }
         

@@ -84,7 +84,6 @@ struct InAppMessageContext {
         var context = [AnyHashable: Any]()
         
         context.setValue(for: .saveToInbox, value: saveToInbox)
-        
         context.setValue(for: .silentInbox, value: silentInbox)
         
         if let location = location {

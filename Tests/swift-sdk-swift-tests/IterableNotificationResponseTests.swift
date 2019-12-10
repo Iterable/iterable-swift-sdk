@@ -237,7 +237,7 @@ class IterableNotificationResponseTests: XCTestCase {
         XCTAssertNil(IterableAPI.attributionInfo)
     }
     
-    func testLegacyDeeplinkPayload() {
+    func testLegacyDeepLinkPayload() {
         guard #available(iOS 10.0, *) else {
             return
         }

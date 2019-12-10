@@ -15,6 +15,7 @@ struct MessagesProcessor {
          inAppDisplayChecker: InAppDisplayChecker,
          messagesMap: OrderedDictionary<String, IterableInAppMessage>) {
         ITBInfo()
+        
         self.inAppDelegate = inAppDelegate
         self.inAppDisplayChecker = inAppDisplayChecker
         self.messagesMap = messagesMap
@@ -22,6 +23,7 @@ struct MessagesProcessor {
     
     mutating func processMessages() -> MessagesProcessorResult {
         ITBDebug()
+        
         switch processNextMessage() {
         case let .show(message):
             updateMessage(message, didProcessTrigger: true, consumed: !message.saveToInbox)
@@ -43,6 +45,7 @@ struct MessagesProcessor {
     
     private func processNextMessage() -> ProcessNextMessageResult {
         ITBDebug()
+        
         guard let message = getFirstProcessableTriggeredMessage() else {
             ITBDebug("No message to process, totalMessages: \(messagesMap.values.count)") //ttt
             return .none
@@ -61,6 +64,7 @@ struct MessagesProcessor {
             }
         } else {
             ITBDebug("Not ok to show now")
+            
             return .wait
         }
     }
@@ -75,7 +79,9 @@ struct MessagesProcessor {
     
     private mutating func updateMessage(_ message: IterableInAppMessage, didProcessTrigger: Bool? = nil, consumed: Bool? = nil) {
         ITBDebug()
+        
         let toUpdate = message
+        
         if let didProcessTrigger = didProcessTrigger {
             toUpdate.didProcessTrigger = didProcessTrigger
         }
@@ -120,6 +126,7 @@ struct MessagesObtainedHandler {
     private mutating func removeDeletedMessages(messagesFromServer messages: [IterableInAppMessage]) -> Int {
         var inboxCount = 0
         let removedMessages = getRemovedMessages(messagesFromServer: messages)
+        
         removedMessages.forEach {
             if $0.saveToInbox == true {
                 inboxCount += 1

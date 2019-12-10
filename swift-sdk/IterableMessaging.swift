@@ -145,10 +145,10 @@ public extension Notification.Name {
 
 /// A message is comprised of content and whether this message was skipped.
 @objcMembers public final class IterableInAppMessage: NSObject {
-    /// the id for the inApp message
+    /// the ID for the in-app message
     public let messageId: String
     
-    /// the campaign id for this message
+    /// the campaign ID for this message
     public let campaignId: String
     
     /// when to trigger this in-app
@@ -157,7 +157,7 @@ public extension Notification.Name {
     /// when was this message created
     public let createdAt: Date?
     
-    /// when to expire this in-app, nil means do not expire
+    /// when to expire this in-app (nil means do not expire)
     public let expiresAt: Date?
     
     /// The content of the in-app message
@@ -257,10 +257,10 @@ public extension Notification.Name {
 
 /// Encapsulates an Inbox impression of a message
 @objcMembers public final class IterableInboxImpression: NSObject, Codable {
-    /// The message id of message
+    /// The message ID of message
     public let messageId: String
     
-    /// Whether the message was silent delivered to inbox
+    /// Whether the message was silently delivered to inbox
     public let silentInbox: Bool
     
     /// How many times this message was displayed in inbox

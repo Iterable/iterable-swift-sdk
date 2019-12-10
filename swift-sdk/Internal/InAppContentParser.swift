@@ -16,6 +16,7 @@ enum InAppContentParseResult {
 struct InAppContentParser {
     static func parse(contentDict: [AnyHashable: Any]) -> InAppContentParseResult {
         let contentType: IterableInAppContentType
+        
         if let contentTypeStr = contentDict[JsonKey.InApp.type] as? String {
             contentType = IterableInAppContentType.from(string: contentTypeStr)
         } else {
@@ -53,6 +54,7 @@ struct HtmlContentParser {
         }
         
         var padding = UIEdgeInsets.zero
+        
         if let topPadding = dict[PADDING_TOP] {
             padding.top = CGFloat(decodePadding(topPadding))
         }
@@ -108,9 +110,9 @@ struct HtmlContentParser {
         } else {
             if let percentage = dict[IN_APP_PERCENTAGE] as? NSNumber {
                 return percentage.intValue
-            } else {
-                return 0
             }
+            
+            return 0
         }
     }
     

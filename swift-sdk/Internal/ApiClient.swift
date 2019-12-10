@@ -28,10 +28,12 @@ protocol ApiClientProtocol: AnyObject {
     
     func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError>
     
+    // deprecated
     func track(inAppOpen messageId: String) -> Future<SendRequestValue, SendRequestError>
     
     func track(inAppOpen inAppMessageContext: InAppMessageContext) -> Future<SendRequestValue, SendRequestError>
     
+    // deprecated
     func track(inAppClick messageId: String, clickedUrl: String) -> Future<SendRequestValue, SendRequestError>
     
     func track(inAppClick inAppMessageContext: InAppMessageContext, clickedUrl: String) -> Future<SendRequestValue, SendRequestError>
@@ -129,6 +131,7 @@ class ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: createRequestCreator().createGetInAppMessagesRequest(count))
     }
     
+    // deprecated
     func track(inAppOpen messageId: String) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppOpenRequest(messageId))
     }
@@ -137,6 +140,7 @@ class ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppOpenRequest(inAppMessageContext: inAppMessageContext))
     }
     
+    // deprecated
     func track(inAppClick messageId: String, clickedUrl: String) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(messageId, clickedUrl: clickedUrl))
     }
@@ -203,7 +207,7 @@ class ApiClient: ApiClientProtocol {
         return RequestCreator(apiKey: apiKey, auth: authProvider.auth, deviceMetadata: deviceMetadata)
     }
     
-    func createIterableHeaders() -> [String: String] {
+    private func createIterableHeaders() -> [String: String] {
         return [JsonKey.contentType.jsonKey: JsonValue.applicationJson.jsonStringValue,
                 JsonKey.Header.sdkPlatform: JsonValue.iOS.jsonStringValue,
                 JsonKey.Header.sdkVersion: IterableAPI.sdkVersion,

@@ -10,8 +10,8 @@ import Foundation
  */
 @objc public protocol IterableURLDelegate: AnyObject {
     /**
-     * Callback called for a deeplink action. Return true to override default behavior
-     * - parameter url:     Deeplink URL
+     * Callback called for a deep link action. Return true to override default behavior
+     * - parameter url:     Deep link URL
      * - parameter context:  Metadata containing the original action and the source: push or universal link.
      * - returns: Boolean value. Return true if the URL was handled to override default behavior.
      */
@@ -110,7 +110,7 @@ import Foundation
     /// notification tokens.
     public var autoPushRegistration = true
     
-    /// When set to true, it will check for deferred deeplinks on first time app launch
+    /// When set to true, it will check for deferred deep links on first time app launch
     /// after installation from the App Store.
     public var checkForDeferredDeeplink = false
     
