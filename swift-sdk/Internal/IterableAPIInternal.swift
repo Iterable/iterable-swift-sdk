@@ -289,10 +289,11 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: apiClient.track(inAppOpen: messageId))
     }
     
-    func trackInAppOpen(_ message: IterableInAppMessage, location: InAppLocation) {
+    func trackInAppOpen(_ message: IterableInAppMessage, location: InAppLocation, inboxSessionId: String? = nil) {
+        let result = apiClient.track(inAppOpen: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId))
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppOpen"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"),
-                                 forResult: apiClient.track(inAppOpen: InAppMessageContext.from(message: message, location: location)))
+                                 forResult: result)
     }
     
     func trackInAppClick(_ messageId: String, clickedUrl: String) {
@@ -301,14 +302,16 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: apiClient.track(inAppClick: messageId, clickedUrl: clickedUrl))
     }
     
-    func trackInAppClick(_ message: IterableInAppMessage, location: InAppLocation = .inApp, clickedUrl: String) {
+    func trackInAppClick(_ message: IterableInAppMessage, location: InAppLocation = .inApp, inboxSessionId: String? = nil, clickedUrl: String) {
+        let result = apiClient.track(inAppClick: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId),
+                                     clickedUrl: clickedUrl)
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"),
-                                 forResult: apiClient.track(inAppClick: InAppMessageContext.from(message: message, location: location), clickedUrl: clickedUrl))
+                                 forResult: result)
     }
     
-    func trackInAppClose(_ message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppCloseSource? = nil, clickedUrl: String? = nil) {
-        let result = apiClient.track(inAppClose: InAppMessageContext.from(message: message, location: location),
+    func trackInAppClose(_ message: IterableInAppMessage, location: InAppLocation = .inApp, inboxSessionId: String? = nil, source: InAppCloseSource? = nil, clickedUrl: String? = nil) {
+        let result = apiClient.track(inAppClose: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId),
                                      source: source,
                                      clickedUrl: clickedUrl)
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClose"),
@@ -337,9 +340,11 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource? = nil) {
+        let result = apiClient.inAppConsume(inAppMessageContext: InAppMessageContext.from(message: message, location: location),
+                                            source: source)
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "inAppConsumeWithSource"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "inAppConsumeWithSource"),
-                                 forResult: apiClient.inAppConsume(inAppMessageContext: InAppMessageContext.from(message: message, location: location), source: source))
+                                 forResult: result)
     }
     
     private func disableDevice(forAllUsers allUsers: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {

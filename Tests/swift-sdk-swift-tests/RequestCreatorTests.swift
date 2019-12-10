@@ -9,13 +9,15 @@ import XCTest
 
 class RequestCreatorTests: XCTestCase {
     func testTrackInboxSession() {
+        let inboxSessionId = IterableUtil.generateUUID()
         let startDate = Date()
         let endDate = startDate.addingTimeInterval(60 * 5)
         let impressions = [
             IterableInboxImpression(messageId: "message1", silentInbox: true, displayCount: 2, displayDuration: 1.23),
             IterableInboxImpression(messageId: "message2", silentInbox: false, displayCount: 3, displayDuration: 2.34),
         ]
-        let inboxSession = IterableInboxSession(sessionStartTime: startDate,
+        let inboxSession = IterableInboxSession(id: inboxSessionId,
+                                                sessionStartTime: startDate,
                                                 sessionEndTime: endDate,
                                                 startTotalMessageCount: 15,
                                                 startUnreadMessageCount: 5,
@@ -28,6 +30,7 @@ class RequestCreatorTests: XCTestCase {
         
         let body = urlRequest.bodyDict
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.email), value: auth.email, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.inboxSessionId), value: inboxSession.id, inDictionary: body)
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.inboxSessionStart), value: IterableUtil.int(fromDate: startDate), inDictionary: body)
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.inboxSessionEnd), value: IterableUtil.int(fromDate: endDate), inDictionary: body)
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.startTotalMessageCount), value: inboxSession.startTotalMessageCount, inDictionary: body)
@@ -38,6 +41,111 @@ class RequestCreatorTests: XCTestCase {
         TestUtils.validateDeviceInfo(inBody: body)
         
         validateImpressions(impressions, inBody: body)
+    }
+    
+    func testTrackInAppOpenRequest() {
+        let messageId = "rsj5ktry6hm"
+        let campaignId = "3562"
+        let inboxSessionId = "9fn38m945ug9r8th"
+        let location = InAppLocation.inbox
+        let locValue = location.jsonValue as! String
+        
+        let message = IterableInAppMessage(messageId: messageId, campaignId: campaignId, content: getEmptyInAppContent())
+        
+        let messageContext1 = InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId)
+        let request1 = convertToUrlRequest(createRequestCreator().createTrackInAppOpenRequest(inAppMessageContext: messageContext1))
+        TestUtils.validateHeader(request1, apiKey)
+        TestUtils.validate(request: request1, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackInAppOpen)
+        
+        let body1 = request1.bodyDict
+        TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(.messageId), value: messageId, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(.inboxSessionId), value: inboxSessionId, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(locationKeyPath), value: locValue, inDictionary: body1)
+        
+        let messageContext2 = InAppMessageContext.from(message: message, location: location)
+        let request2 = convertToUrlRequest(createRequestCreator().createTrackInAppOpenRequest(inAppMessageContext: messageContext2))
+        TestUtils.validateHeader(request2, apiKey)
+        TestUtils.validate(request: request2, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackInAppOpen)
+        
+        let body2 = request2.bodyDict
+        TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body2)
+        TestUtils.validateMatch(keyPath: KeyPath(.messageId), value: messageId, inDictionary: body2)
+        TestUtils.validateNil(keyPath: KeyPath(.inboxSessionId), inDictionary: body2)
+        TestUtils.validateMatch(keyPath: KeyPath(locationKeyPath), value: locValue, inDictionary: body2)
+    }
+    
+    func testTrackInAppClickRequest() {
+        let messageId = "rsj5ktry6hm"
+        let campaignId = "3562"
+        let inboxSessionId = "9fn38m945ug9r8th"
+        let clickedUrl = "https://github.com/"
+        let inboxLoc = InAppLocation.inbox
+        let inboxLocValue = inboxLoc.jsonValue as! String
+        
+        let message = IterableInAppMessage(messageId: messageId, campaignId: campaignId, content: getEmptyInAppContent())
+        
+        let messageContext1 = InAppMessageContext.from(message: message, location: inboxLoc, inboxSessionId: inboxSessionId)
+        let request1 = convertToUrlRequest(createRequestCreator().createTrackInAppClickRequest(inAppMessageContext: messageContext1, clickedUrl: clickedUrl))
+        TestUtils.validateHeader(request1, apiKey)
+        TestUtils.validate(request: request1, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackInAppClick)
+        
+        let body1 = request1.bodyDict
+        TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(.messageId), value: messageId, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(.inboxSessionId), value: inboxSessionId, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(.clickedUrl), value: clickedUrl, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(locationKeyPath), value: inboxLocValue, inDictionary: body1)
+        
+        let messageContext2 = InAppMessageContext.from(message: message, location: inboxLoc)
+        let request2 = convertToUrlRequest(createRequestCreator().createTrackInAppClickRequest(inAppMessageContext: messageContext2, clickedUrl: clickedUrl))
+        TestUtils.validateHeader(request2, apiKey)
+        TestUtils.validate(request: request2, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackInAppClick)
+        
+        let body2 = request2.bodyDict
+        TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body2)
+        TestUtils.validateMatch(keyPath: KeyPath(.messageId), value: messageId, inDictionary: body2)
+        TestUtils.validateNil(keyPath: KeyPath(.inboxSessionId), inDictionary: body2)
+        TestUtils.validateMatch(keyPath: KeyPath(.clickedUrl), value: clickedUrl, inDictionary: body2)
+        TestUtils.validateMatch(keyPath: KeyPath(locationKeyPath), value: inboxLocValue, inDictionary: body2)
+    }
+    
+    func testTrackInAppCloseRequest() {
+        let messageId = "rsj5ktry6hm"
+        let campaignId = "3562"
+        let inboxSessionId = "9fn38m945ug9r8th"
+        let clickedUrl = "https://github.com/"
+        
+        let inAppLoc = InAppLocation.inApp
+        let inboxLoc = InAppLocation.inbox
+        let inAppLocValue = inAppLoc.jsonValue as! String
+        let inboxLocValue = inboxLoc.jsonValue as! String
+        
+        let message = IterableInAppMessage(messageId: messageId, campaignId: campaignId, content: getEmptyInAppContent())
+        
+        let messageContext1 = InAppMessageContext.from(message: message, location: inboxLoc, inboxSessionId: inboxSessionId)
+        let request1 = convertToUrlRequest(createRequestCreator().createTrackInAppCloseRequest(inAppMessageContext: messageContext1, source: .back, clickedUrl: clickedUrl))
+        TestUtils.validateHeader(request1, apiKey)
+        TestUtils.validate(request: request1, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackInAppClose)
+        
+        let body1 = request1.bodyDict
+        TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(.messageId), value: messageId, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(.inboxSessionId), value: inboxSessionId, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(.clickedUrl), value: clickedUrl, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(locationKeyPath), value: inboxLocValue, inDictionary: body1)
+        
+        let messageContext2 = InAppMessageContext.from(message: message, location: inAppLoc)
+        let request2 = convertToUrlRequest(createRequestCreator().createTrackInAppCloseRequest(inAppMessageContext: messageContext2, source: .link, clickedUrl: nil))
+        TestUtils.validateHeader(request2, apiKey)
+        TestUtils.validate(request: request2, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackInAppClose)
+        
+        let body2 = request2.bodyDict
+        TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body2)
+        TestUtils.validateMatch(keyPath: KeyPath(.messageId), value: messageId, inDictionary: body2)
+        TestUtils.validateNil(keyPath: KeyPath(.inboxSessionId), inDictionary: body2)
+        TestUtils.validateNil(keyPath: KeyPath(.clickedUrl), inDictionary: body2)
+        TestUtils.validateMatch(keyPath: KeyPath(locationKeyPath), value: inAppLocValue, inDictionary: body2)
     }
     
     func testGetInAppMessagesRequestFailure() {
@@ -71,6 +179,10 @@ class RequestCreatorTests: XCTestCase {
     }
     
     private let apiKey = "zee-api-key"
+    
+    private let email = "user@example.com"
+    
+    private let locationKeyPath = "\(JsonKey.inAppMessageContext.jsonKey).\(JsonKey.inAppLocation.jsonKey)"
     
     private func validateImpressions(_ impressions: [IterableInboxImpression], inBody body: [String: Any]) {
         guard let impressionsFromBody = body["impressions"] as? [[String: Any]] else {
@@ -114,10 +226,14 @@ class RequestCreatorTests: XCTestCase {
                          networkSession: networkSession,
                          deviceMetadata: IterableAPI.internalImplementation!.deviceMetadata)
     }
+    
+    private func getEmptyInAppContent() -> IterableHtmlInAppContent {
+        return IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
+    }
 }
 
 extension RequestCreatorTests: AuthProvider {
     var auth: Auth {
-        return Auth(userId: nil, email: "user@example.com")
+        return Auth(userId: nil, email: email)
     }
 }

@@ -11,7 +11,7 @@ class EmptyInAppManager: IterableInAppManagerProtocolInternal {
         return Promise<Bool, Error>(value: true)
     }
     
-    func createInboxMessageViewController(for _: IterableInAppMessage, withInboxMode _: IterableInboxViewController.InboxMode) -> UIViewController? {
+    func createInboxMessageViewController(for _: IterableInAppMessage, withInboxMode _: IterableInboxViewController.InboxMode, inboxSessionId: String? = nil) -> UIViewController? {
         ITBError("Can't create VC")
         return nil
     }
@@ -33,6 +33,8 @@ class EmptyInAppManager: IterableInAppManagerProtocolInternal {
     func remove(message _: IterableInAppMessage, location _: InAppLocation) {}
     
     func remove(message _: IterableInAppMessage, location _: InAppLocation, source _: InAppDeleteSource) {}
+    
+    func remove(message _: IterableInAppMessage, location _: InAppLocation, source _: InAppDeleteSource, inboxSessionId _: String?) {}
     
     func set(read _: Bool, forMessage _: IterableInAppMessage) {}
     

@@ -44,6 +44,12 @@ import UIKit
     /// - parameter source: The source of deletion `inboxSwipe` or `deleteButton`.`
     @objc(removeMessage:location:source:) func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource)
     
+    /// - parameter message: The message to remove.
+    /// - parameter location: The location from where this message was shown. `inbox` or `inApp`.
+    /// - parameter source: The source of deletion `inboxSwipe` or `deleteButton`.`
+    /// - parameter inboxSessionId: The ID of the inbox session that the message originates from.
+    @objc(removeMessage:location:source:inboxSessionId:) func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource, inboxSessionId: String?)
+    
     /// - parameter read: Whether this inbox message was read
     /// - parameter message: The inbox message
     @objc(setRead:forMessage:) func set(read: Bool, forMessage message: IterableInAppMessage)
@@ -206,6 +212,9 @@ public extension Notification.Name {
 
 /// Encapsulates Inbox Session
 @objcMembers public final class IterableInboxSession: NSObject, Codable {
+    /// UUID of the session
+    public let id: String?
+    
     /// Start time of session
     public let sessionStartTime: Date?
     
@@ -227,13 +236,15 @@ public extension Notification.Name {
     /// Array of impressions for inbox messages
     public let impressions: [IterableInboxImpression]
     
-    public init(sessionStartTime: Date? = nil,
+    public init(id: String? = nil,
+                sessionStartTime: Date? = nil,
                 sessionEndTime: Date? = nil,
                 startTotalMessageCount: Int = 0,
                 startUnreadMessageCount: Int = 0,
                 endTotalMessageCount: Int = 0,
                 endUnreadMessageCount: Int = 0,
                 impressions: [IterableInboxImpression] = []) {
+        self.id = id
         self.sessionStartTime = sessionStartTime
         self.sessionEndTime = sessionEndTime
         self.startTotalMessageCount = startTotalMessageCount
