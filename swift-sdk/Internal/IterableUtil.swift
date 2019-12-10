@@ -77,13 +77,13 @@ enum IterableResult<T, E> {
     // converts from IterableCustomActionDelegate to CustomActionHandler
     static func customActionHandler(fromCustomActionDelegate customActionDelegate: IterableCustomActionDelegate?, inContext context: IterableActionContext) -> CustomActionHandler {
         return { _ in
-            if let customActionDelegate = customActionDelegate {
-                _ = customActionDelegate.handle(iterableCustomAction: context.action, inContext: context)
-                
-                return true
+            guard let customActionDelegate = customActionDelegate else {
+                return false
             }
             
-            return false
+            _ = customActionDelegate.handle(iterableCustomAction: context.action, inContext: context)
+            
+            return true
         }
     }
 }
