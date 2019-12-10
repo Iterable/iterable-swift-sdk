@@ -228,12 +228,12 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         
         newMessages = IterableAPI.inAppManager.getInboxMessages().map { InboxMessageViewModel(message: $0) }
         
-        if let comparator = comparator {
-            newMessages.sort { comparator($0.iterableMessage, $1.iterableMessage) }
-        }
-      
         if let filter = filter {
             newMessages = newMessages.filter { filter($0.iterableMessage) }
+        }
+        
+        if let comparator = comparator {
+            newMessages.sort { comparator($0.iterableMessage, $1.iterableMessage) }
         }
         
         let newSectionedValues = AbstractDiffCalculator<Int, InboxMessageViewModel>.buildSectionedValues(values: newMessages, sectionIndex: 0)
