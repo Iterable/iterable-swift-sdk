@@ -12,7 +12,7 @@ jobs:
     - name: Run unit tests
       run: |
         cd ..
-        xcodebuild test -workspace swift-sdk -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone Xs' -enableCodeCoverage YES
+        xcodebuild test -workspace swift-sdk.workspace -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone Xs' -enableCodeCoverage YES
 
   # lint:
   #   needs: build
