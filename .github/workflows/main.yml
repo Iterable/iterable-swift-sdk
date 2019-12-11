@@ -16,21 +16,20 @@ jobs:
 
     - name: Run unit tests
       run: |
-        cd ..
         echo $PWD
         ls $PWD
         xcodebuild test -workspace swift-sdk.workspace -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone Xs' -enableCodeCoverage YES
 
-  # lint:
-  #   needs: build
-  #   runs-on: macos-latest
-  #   steps:
-  #   - name: CocoaPods library lint action
-  #     uses: ty0x2333/cocoapods-action@0.2.0
-  #     with:
-  #       workspace: swift-sdk
-  #       additional_build_params: -destination 'platform=iOS Simulator,name=iPhone 11,OS=13.0'
+  lint:
+    # needs: test
+    runs-on: macos-latest
+    steps:
+    - name: CocoaPods library lint action
+      uses: ty0x2333/cocoapods-action@0.2.0
+      with:
+        workspace: swift-sdk
+        additional_build_params: -destination 'platform=iOS Simulator,name=iPhone 11,OS=13.0'
 
   # coverage:
-    # needs: test
+    # needs: lint
     # runs-on: macos-latest
