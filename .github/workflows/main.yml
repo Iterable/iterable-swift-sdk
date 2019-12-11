@@ -1,4 +1,4 @@
-name: Build + Test + Send Coverage
+name: Build + Test + Lint + Report
 
 on: [push]
 
@@ -7,16 +7,21 @@ jobs:
   #   runs-on: macos-latest
   #   steps:
 
-
   test:
-    # needs: build
     runs-on: macos-latest
+    name: Run unit tests
     steps:
-    - name: CocoaPods Action
-      uses: ty0x2333/cocoapods-action@0.2.0
-      with:
-        workspace: swift-sdk
-        additional_build_params: -destination 'platform=iOS Simulator,name=iPhone 11,OS=13.0'
+      run: xcodebuild test -workspace swift-sdk.xcworkspace -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone Xs' -enableCodeCoverage YES
+
+  # lint:
+  #   needs: build
+  #   runs-on: macos-latest
+  #   steps:
+  #   - name: CocoaPods Action
+  #     uses: ty0x2333/cocoapods-action@0.2.0
+  #     with:
+  #       workspace: swift-sdk
+  #       additional_build_params: -destination 'platform=iOS Simulator,name=iPhone 11,OS=13.0'
 
   # coverage:
     # needs: test
