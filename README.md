@@ -296,7 +296,11 @@ IterableConfig *config = [[IterableConfig alloc] init];
 [IterableAPI initializeWithApiKey:@"<your-api-key>" launchOptions:launchOptions config:config]
 ```
 
-> &#x26A0; In past versions of the SDK, the `pushIntegrationName` needed to be set, but this is not necessary anymore, unless the config is referencing an existing integration or you have custom integration names. By default, the `pushIntegrationName` is set to the bundle ID of the app; this is what we recommend. To view your existing integrations, navigate to **Settings > Mobile Apps**.
+> &#x26A0; In prior versions of the SDK, it was necessary to explicitly set the 
+> `IterableAPI.pushIntegrationName` property. This property now defaults to 
+> the bundle ID of the app, so it's no longer necessary modify it unless you're
+> using a custom integration name (different from the bundle ID). To view your 
+> existing integrations, navigate to **Settings > Mobile Apps**.
 
 ### 3. Set a userId or email
 
