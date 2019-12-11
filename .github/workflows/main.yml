@@ -8,13 +8,13 @@ jobs:
     
     steps:
     - name: Run unit tests
-      run: xcodebuild test -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone Xs' -enableCodeCoverage YES
+      run: xcodebuild test -workspace swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone Xs' -enableCodeCoverage YES
 
   # lint:
   #   needs: build
   #   runs-on: macos-latest
   #   steps:
-  #   - name: CocoaPods Action
+  #   - name: CocoaPods library lint action
   #     uses: ty0x2333/cocoapods-action@0.2.0
   #     with:
   #       workspace: swift-sdk
