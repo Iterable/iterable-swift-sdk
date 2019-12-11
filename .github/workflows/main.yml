@@ -1,14 +1,14 @@
-name: Swift
+name: main
 
 on: [push]
 
 jobs:
   build:
-
     runs-on: macOS-latest
-
     steps:
     - name: CocoaPods Action
       uses: ty0x2333/cocoapods-action@0.2.0
       with:
-        lint:  
+        workspace: swift-sdk
+        lint: true
+        test: true
