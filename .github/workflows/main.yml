@@ -1,10 +1,6 @@
-name: Build, test and send coverage for SDK
+name: Build + Test + Send Coverage
 
 on: [push]
-
-# build
-# run tests
-# send out coverage reports
 
 jobs:
   # build:
@@ -20,6 +16,7 @@ jobs:
       uses: ty0x2333/cocoapods-action@0.2.0
       with:
         workspace: swift-sdk
+        scheme: swift-sdk
         additional_build_params: -destination 'platform=iOS Simulator,name=iPhone 11,OS=13.0'
 
   # coverage:
