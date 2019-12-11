@@ -8,10 +8,7 @@ jobs:
     
     steps:
     - name: Run unit tests
-      run: |
-        # cd ..
-        echo $PWD
-        xcodebuild test -workspace swift-sdk.xcworkspace -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone Xs' -enableCodeCoverage YES
+      run: xcodebuild test -workspace swift-sdk.xcworkspace -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone Xs' -enableCodeCoverage YES
 
   # lint:
   #   # needs: test
