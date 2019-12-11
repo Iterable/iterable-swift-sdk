@@ -7,6 +7,10 @@ jobs:
     runs-on: macos-latest
     
     steps:
+    - name: dir
+      run: |
+        echo $PWD
+        sudo ls $PWD
     - name: Run unit tests
       run: xcodebuild test -workspace swift-sdk.xcworkspace -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone Xs' -enableCodeCoverage YES
 
