@@ -13,7 +13,8 @@ jobs:
 
 
   test:
-    needs: build
+    # needs: build
+    runs-on: macos-latest
     steps:
     - name: CocoaPods Action
       uses: ty0x2333/cocoapods-action@0.2.0
@@ -22,3 +23,4 @@ jobs:
 
   # coverage:
     # needs: test
+    # runs-on: macos-latest
