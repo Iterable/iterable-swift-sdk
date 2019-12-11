@@ -1,14 +1,23 @@
-name: main
+name: Build, test and send coverage for SDK
 
 on: [push]
 
+# build
+# run tests
+# send out coverage reports
+
 jobs:
   build:
-    runs-on: macOS-latest
+    runs-on: macos-latest
+    
+
+  test:
+    needs: build
     steps:
     - name: CocoaPods Action
       uses: ty0x2333/cocoapods-action@0.2.0
       with:
-        workspace: swift-sdk
-        lint: true
-        test: true
+        additional_build_params: -destination 'platform=iOS Simulator,name=iPhone 11,OS=13.0'
+
+  # coverage:
+    # needs: test
