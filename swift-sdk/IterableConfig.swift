@@ -84,12 +84,14 @@ import Foundation
     /**
      * You don't have to set this variable. Set this value only if you are an existing Iterable customer who has already setup mobile integrations in Iterable Web UI.
      * In that case, set this variable to the push integration name that you have set for 'APNS' in Iterable Web UI.
+     * To view your existing integrations, navigate to Settings > Mobile Apps
      */
     public var pushIntegrationName: String?
     
     /**
      * You don't have to set this variable. Set this value only if you are an existing Iterable customer who has already setup mobile integrations in Iterable Web UI.
      * In that case, set this variable to the push integration name that you have set for 'APNS_SANDBOX' in Iterable Web UI.
+     * To view your existing integrations, navigate to Settings > Mobile Apps
      */
     public var sandboxPushIntegrationName: String?
     
