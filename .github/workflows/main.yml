@@ -10,7 +10,9 @@ jobs:
     - name: wat
       run: echo $PWD
     - name: Run unit tests
-      run: xcodebuild test -workspace swift-sdk -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone Xs' -enableCodeCoverage YES
+      run: |
+        cd ..
+        xcodebuild test -workspace swift-sdk -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone Xs' -enableCodeCoverage YES
 
   # lint:
   #   needs: build
