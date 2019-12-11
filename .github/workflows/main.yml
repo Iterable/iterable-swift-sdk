@@ -1,18 +1,14 @@
-name: Build + Test + Lint + Report
+name: Test + Lint + Report
 
 on: [push]
 
 jobs:
-  # build:
-  #   runs-on: macos-latest
-  #   steps:
-
   test:
     runs-on: macos-latest
     
     steps:
     - name: Run unit tests
-      run: xcodebuild test -workspace swift-sdk.xcworkspace -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone Xs' -enableCodeCoverage YES
+      run: xcodebuild test -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone Xs' -enableCodeCoverage YES
 
   # lint:
   #   needs: build
