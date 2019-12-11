@@ -8,7 +8,7 @@ jobs:
     
     steps:
     - name: Run unit tests
-      run: xcodebuild test -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone Xs' -enableCodeCoverage YES
+      run: xcodebuild test -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone Xs' -enableCodeCoverage YES
 
   # lint:
   #   needs: build
