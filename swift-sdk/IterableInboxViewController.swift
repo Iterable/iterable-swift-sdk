@@ -42,7 +42,7 @@ import UIKit
     /// if you want show short date and time.
     @objc optional var dateMapper: (IterableInAppMessage) -> String? { get }
     
-    /// Use this property only when you  have more than one type of custom table view cells.
+    /// Use this property only when you have more than one type of custom table view cells.
     /// For example, if you have inbox cells of one type to show  informational mesages,
     /// and inbox cells of another type to show discount messages.
     /// Please note that you must declare all custom nib names here.
@@ -72,7 +72,7 @@ open class IterableInboxViewController: UITableViewController {
     /// This enumeration shows how to write a sample filter which can be used by `IterableInboxViewControllerViewDelegate`.
     /// You can create your own filters which can be functions or closures.
     public enum DefaultFilter {
-        /// This filter looks at `customPayload` of inbox message and assumes that the json key `messageType` holds the type of message
+        /// This filter looks at `customPayload` of inbox message and assumes that the JSON key `messageType` holds the type of message
         /// and it returns true for message of particular message type(s).
         /// e.g., if you set `filter = IterableInboxViewController.DefaultFilter.usingCustomPayloadMessageType(in: "transactional", "promotional")`
         /// you will be able to see messages with custom payload {"messageType": "transactional"} or {"messageType": "promotional"}
@@ -120,12 +120,12 @@ open class IterableInboxViewController: UITableViewController {
     /// Default date mappers that you can use as sample for `IterableInboxViewControllerViewDelegate`.
     public enum DefaultDateMapper {
         /// short date and short time
-        public static var localizedShortDateShortTIme: (IterableInAppMessage) -> String? = {
+        public static var localizedShortDateShortTime: (IterableInAppMessage) -> String? = {
             $0.createdAt.map { DateFormatter.localizedString(from: $0, dateStyle: .short, timeStyle: .short) }
         }
         
         /// This date mapper is used If you do not set `dateMapper` property for `IterableInboxViewControllerViewDelegate`.
-        public static var localizedMediumDateShortTIme: (IterableInAppMessage) -> String? = {
+        public static var localizedMediumDateShortTime: (IterableInAppMessage) -> String? = {
             $0.createdAt.map { DateFormatter.localizedString(from: $0, dateStyle: .medium, timeStyle: .short) }
         }
     }
@@ -364,7 +364,7 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     private func setCreatedAt(cell: IterableInboxCell, message: InboxMessageViewModel) {
-        let dateMapper = viewDelegate?.dateMapper ?? DefaultDateMapper.localizedMediumDateShortTIme
+        let dateMapper = viewDelegate?.dateMapper ?? DefaultDateMapper.localizedMediumDateShortTime
         IterableInboxViewController.set(value: dateMapper(message.iterableMessage), forLabel: cell.createdAtLbl)
     }
     
