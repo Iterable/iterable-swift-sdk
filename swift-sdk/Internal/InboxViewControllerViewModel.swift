@@ -42,7 +42,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         self.comparator = comparator
         self.filter = filter
         self.sectionMapper = sectionMapper
-        sectionedMessages = sortAndFilter(messages: allMessages())
+        sectionedMessages = sortAndFilter(messages: allMessagesInSections())
     }
     
     init() {
@@ -71,7 +71,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     var unreadCount: Int {
-        return allMessages().filter { $0.read == false }.count
+        return allMessagesInSections().values.filter { $0.read == false }.count
     }
     
     func message(atIndexPath indexPath: IndexPath) -> InboxMessageViewModel {
@@ -189,10 +189,11 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         }
         
         return view.currentlyVisibleRowIndices.compactMap { index in
-            guard index < allMessages().count else {
+            let allMessages = allMessagesInSections()
+            guard index < allMessages.count else {
                 return nil
             }
-            let message = allMessages()[index].iterableMessage
+            let message = allMessages[index].iterableMessage
             return InboxImpressionTracker.RowInfo(messageId: message.messageId, silentInbox: message.silentInbox)
         }
     }
@@ -263,10 +264,6 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         IterableAPI.inAppManager.getInboxMessages().map { InboxMessageViewModel(message: $0) }
     }
     
-    private func allMessages() -> [InboxMessageViewModel] {
-        return sectionedMessages.values
-    }
-    
     private func sortAndFilter(messages: [InboxMessageViewModel]) -> SectionedValues<Int, InboxMessageViewModel> {
         return SectionedValues(values: filteredMessages(messages: messages),
                                valueToSection: createSectionMapper(),
@@ -296,6 +293,10 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         } else {
             return { _ in 0 }
         }
+    }
+    
+    private func allMessagesInSections() -> [InboxMessageViewModel] {
+        sectionedMessages.values
     }
     
     private var comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)?
