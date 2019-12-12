@@ -71,7 +71,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     var unreadCount: Int {
-        return allMessagesInSections().values.filter { $0.read == false }.count
+        return allMessagesInSections().filter { $0.read == false }.count
     }
     
     func message(atIndexPath indexPath: IndexPath) -> InboxMessageViewModel {
