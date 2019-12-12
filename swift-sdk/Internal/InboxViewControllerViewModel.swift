@@ -299,9 +299,9 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         sectionedMessages.values
     }
     
-    private var comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)?
-    private var filter: ((IterableInAppMessage) -> Bool)?
-    private var sectionMapper: ((IterableInAppMessage) -> Int)?
+    var comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)?
+    var filter: ((IterableInAppMessage) -> Bool)?
+    var sectionMapper: ((IterableInAppMessage) -> Int)?
     
     private var sectionedMessages = SectionedValues<Int, InboxMessageViewModel>()
     private var newSectionedMessages = SectionedValues<Int, InboxMessageViewModel>()
