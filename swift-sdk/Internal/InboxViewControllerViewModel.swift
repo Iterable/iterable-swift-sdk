@@ -6,7 +6,7 @@
 import Foundation
 import UIKit
 
-protocol InboxViewControllerViewModelDelegate: AnyObject {
+protocol InboxViewControllerViewModelView: AnyObject {
     // All these methods should be called on the main thread
     func onViewModelChanged(diff: [SectionedDiffStep<Int, InboxMessageViewModel>])
     func onImageLoaded(for indexPath: IndexPath)
@@ -14,10 +14,10 @@ protocol InboxViewControllerViewModelDelegate: AnyObject {
 }
 
 protocol InboxViewControllerViewModelProtocol {
-    var delegate: InboxViewControllerViewModelDelegate? { get set }
-    var comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)? { get set }
-    var filter: ((IterableInAppMessage) -> Bool)? { get set }
-    var sectionMapper: ((IterableInAppMessage) -> Int)? { get set }
+    var view: InboxViewControllerViewModelView? { get set }
+    func set(comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)?,
+             filter: ((IterableInAppMessage) -> Bool)?,
+             sectionMapper: ((IterableInAppMessage) -> Int)?)
     var numSections: Int { get }
     func numRows(in section: Int) -> Int
     var unreadCount: Int { get }
@@ -36,24 +36,13 @@ protocol InboxViewControllerViewModelProtocol {
 }
 
 class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
-    weak var delegate: InboxViewControllerViewModelDelegate?
+    weak var view: InboxViewControllerViewModelView?
     
-    var comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)? {
-        didSet {
-            sectionedMessages = sortAndFilter(messages: allMessages())
-        }
-    }
-    
-    var filter: ((IterableInAppMessage) -> Bool)? {
-        didSet {
-            sectionedMessages = sortAndFilter(messages: allMessages())
-        }
-    }
-    
-    var sectionMapper: ((IterableInAppMessage) -> Int)? {
-        didSet {
-            sectionedMessages = sortAndFilter(messages: allMessages())
-        }
+    func set(comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)?, filter: ((IterableInAppMessage) -> Bool)?, sectionMapper: ((IterableInAppMessage) -> Int)?) {
+        self.comparator = comparator
+        self.filter = filter
+        self.sectionMapper = sectionMapper
+        sectionedMessages = sortAndFilter(messages: allMessages())
     }
     
     init() {
@@ -179,7 +168,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         
         let message = sectionedMessages[indexPath.section].1[indexPath.row]
         message.imageData = data
-        delegate?.onImageLoaded(for: indexPath)
+        view?.onImageLoaded(for: indexPath)
     }
     
     private func findIndexPath(for messageId: String) -> IndexPath? {
@@ -195,11 +184,11 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     private func getVisibleRows() -> [InboxImpressionTracker.RowInfo] {
-        guard let delegate = delegate else {
+        guard let view = view else {
             return []
         }
         
-        return delegate.currentlyVisibleRowIndices.compactMap { index in
+        return view.currentlyVisibleRowIndices.compactMap { index in
             guard index < allMessages().count else {
                 return nil
             }
@@ -246,7 +235,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         
         let diff = Dwifft.diff(lhs: sectionedMessages, rhs: newSectionedMessages)
         if diff.count > 0 {
-            delegate?.onViewModelChanged(diff: diff)
+            view?.onViewModelChanged(diff: diff)
             updateVisibleRows()
         }
     }
@@ -308,6 +297,10 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
             return { _ in 0 }
         }
     }
+    
+    private var comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)?
+    private var filter: ((IterableInAppMessage) -> Bool)?
+    private var sectionMapper: ((IterableInAppMessage) -> Int)?
     
     private var sectionedMessages = SectionedValues<Int, InboxMessageViewModel>()
     private var newSectionedMessages = SectionedValues<Int, InboxMessageViewModel>()

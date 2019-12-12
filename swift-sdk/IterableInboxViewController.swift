@@ -170,15 +170,9 @@ open class IterableInboxViewController: UITableViewController {
             guard let viewDelegate = self.viewDelegate else {
                 return
             }
-            if let comparator = viewDelegate.comparator {
-                viewModel.comparator = comparator
-            }
-            if let filter = viewDelegate.filter {
-                viewModel.filter = filter
-            }
-            if let sectionMapper = viewDelegate.messageToSectionMapper {
-                viewModel.sectionMapper = sectionMapper
-            }
+            viewModel.set(comparator: viewDelegate.comparator,
+                          filter: viewDelegate.filter,
+                          sectionMapper: viewDelegate.messageToSectionMapper)
         }
     }
     
@@ -205,21 +199,21 @@ open class IterableInboxViewController: UITableViewController {
         ITBInfo()
         viewModel = InboxViewControllerViewModel()
         super.init(style: style)
-        viewModel.delegate = self
+        viewModel.view = self
     }
     
     public required init?(coder aDecoder: NSCoder) {
         ITBInfo()
         viewModel = InboxViewControllerViewModel()
         super.init(coder: aDecoder)
-        viewModel.delegate = self
+        viewModel.view = self
     }
     
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         ITBInfo()
         viewModel = InboxViewControllerViewModel()
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-        viewModel.delegate = self
+        viewModel.view = self
     }
     
     open override func viewDidLoad() {
@@ -430,7 +424,7 @@ open class IterableInboxViewController: UITableViewController {
     }
 }
 
-extension IterableInboxViewController: InboxViewControllerViewModelDelegate {
+extension IterableInboxViewController: InboxViewControllerViewModelView {
     func onViewModelChanged(diff: [SectionedDiffStep<Int, InboxMessageViewModel>]) {
         ITBInfo()
         
