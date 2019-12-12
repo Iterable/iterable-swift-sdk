@@ -165,11 +165,10 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     
     func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource, inboxSessionId: String? = nil) {
         ITBInfo()
-
+        
         removePrivate(message: message, location: location, source: source, inboxSessionId: inboxSessionId)
     }
-
-
+    
     func set(read: Bool, forMessage message: IterableInAppMessage) {
         updateMessage(message, read: read).onSuccess { _ in
             self.callbackQueue.async {
@@ -177,7 +176,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
             }
         }
     }
-
+    
     func isOkToShowNow(message: IterableInAppMessage) -> Bool {
         guard displayer.isShowingInApp() == false else {
             ITBInfo("showing another")
