@@ -283,7 +283,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         if let comparator = self.comparator {
             return { comparator($0.iterableMessage, $1.iterableMessage) }
         } else {
-            return { IterableInboxViewController.DefaultComparator.ascending($0.iterableMessage, $1.iterableMessage) }
+            return { IterableInboxViewController.DefaultComparator.descending($0.iterableMessage, $1.iterableMessage) }
         }
     }
     
