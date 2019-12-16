@@ -107,7 +107,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
-    func testNoSorting() {
+    func testNoSortingIsDescending() {
         let expectation1 = expectation(description: "testNoSorting")
         
         let model = InboxViewControllerViewModel()
@@ -142,8 +142,8 @@ class InboxViewControllerViewModelTests: XCTestCase {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             model.beganUpdates()
-            XCTAssertEqual(model.message(atIndexPath: IndexPath(row: 0, section: 0)).iterableMessage.messageId, "message1")
-            XCTAssertEqual(model.message(atIndexPath: IndexPath(row: 1, section: 0)).iterableMessage.messageId, "message2")
+            XCTAssertEqual(model.message(atIndexPath: IndexPath(row: 0, section: 0)).iterableMessage.messageId, "message2")
+            XCTAssertEqual(model.message(atIndexPath: IndexPath(row: 1, section: 0)).iterableMessage.messageId, "message1")
             expectation1.fulfill()
         }
         
@@ -186,8 +186,8 @@ class InboxViewControllerViewModelTests: XCTestCase {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             model.beganUpdates()
             XCTAssertEqual(model.numRows(in: 0), 2)
-            XCTAssertEqual(model.message(atIndexPath: IndexPath(row: 0, section: 0)).iterableMessage.messageId, "message1")
-            XCTAssertEqual(model.message(atIndexPath: IndexPath(row: 1, section: 0)).iterableMessage.messageId, "message2")
+            XCTAssertEqual(model.message(atIndexPath: IndexPath(row: 0, section: 0)).iterableMessage.messageId, "message2")
+            XCTAssertEqual(model.message(atIndexPath: IndexPath(row: 1, section: 0)).iterableMessage.messageId, "message1")
             expectation1.fulfill()
         }
         
