@@ -59,6 +59,7 @@
 		AC4095A422B18B9D006EF67C /* InboxViewControllerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4095A322B18B9D006EF67C /* InboxViewControllerViewModel.swift */; };
 		AC426226238C27DD00164121 /* IterableInboxCell+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC426225238C27DD00164121 /* IterableInboxCell+Layout.swift */; };
 		AC426CC4211B5497002EDBE8 /* ServerResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC426CC3211B5497002EDBE8 /* ServerResponse.swift */; };
+		AC43E7FF23A8C2C0008917E2 /* image.jpg in Resources */ = {isa = PBXBuildFile; fileRef = AC74FE1E23A8C0DB004AC442 /* image.jpg */; };
 		AC4B039622A8743F0043185B /* InAppManager+Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4B039322A8743F0043185B /* InAppManager+Functions.swift */; };
 		AC64626B2140AACF0046E1BD /* IterableAPIResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC64626A2140AACF0046E1BD /* IterableAPIResponseTests.swift */; };
 		AC684A86222EF75C00F29749 /* InAppMessageParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC684A85222EF75C00F29749 /* InAppMessageParser.swift */; };
@@ -80,7 +81,6 @@
 		AC738CE72315A54100B96B2D /* CommonMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F942166EC880099A184 /* CommonMocks.swift */; };
 		AC738CE82315A5B600B96B2D /* CommonExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F9C2167E9FD0099A184 /* CommonExtensions.swift */; };
 		AC738CEA2315A8B200B96B2D /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC738CE92315A8B200B96B2D /* MainViewController.swift */; };
-		AC74FE1D23A8B7AD004AC442 /* image.jpg in Resources */ = {isa = PBXBuildFile; fileRef = AC74FE1B23A8B60D004AC442 /* image.jpg */; };
 		AC750A4A234CD67900561902 /* InAppHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC750A49234CD67900561902 /* InAppHelperTests.swift */; };
 		AC776DA22118B86600C27C27 /* DeviceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC776DA12118B86600C27C27 /* DeviceInfo.swift */; };
 		AC776DA4211A17C700C27C27 /* IterableRequestUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC776DA3211A17C700C27C27 /* IterableRequestUtilTests.swift */; };
@@ -303,7 +303,7 @@
 		AC72A0C520CF4CB9004D7997 /* IterableAPIInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPIInternal.swift; sourceTree = "<group>"; };
 		AC72A0C620CF4CB9004D7997 /* IterableAppIntegration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAppIntegration.swift; sourceTree = "<group>"; };
 		AC738CE92315A8B200B96B2D /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
-		AC74FE1B23A8B60D004AC442 /* image.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = image.jpg; path = ../../../../../../../playgrounds/MyPlayground.playground/Resources/image.jpg; sourceTree = "<group>"; };
+		AC74FE1E23A8C0DB004AC442 /* image.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = image.jpg; sourceTree = "<group>"; };
 		AC750A49234CD67900561902 /* InAppHelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppHelperTests.swift; sourceTree = "<group>"; };
 		AC776DA12118B86600C27C27 /* DeviceInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceInfo.swift; sourceTree = "<group>"; };
 		AC776DA3211A17C700C27C27 /* IterableRequestUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableRequestUtilTests.swift; sourceTree = "<group>"; };
@@ -444,7 +444,7 @@
 		00B6FACF210E8B10007535CF /* Test Files */ = {
 			isa = PBXGroup;
 			children = (
-				AC74FE1B23A8B60D004AC442 /* image.jpg */,
+				AC74FE1E23A8C0DB004AC442 /* image.jpg */,
 				AC7B142F20D02CE200877BFE /* Info.plist */,
 				00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */,
 				00B6FACD210E874D007535CF /* prod-1.mobileprovision */,
@@ -1118,7 +1118,7 @@
 			files = (
 				00B6FACE210E88ED007535CF /* prod-1.mobileprovision in Resources */,
 				00B6FAD1210E8D90007535CF /* dev-1.mobileprovision in Resources */,
-				AC74FE1D23A8B7AD004AC442 /* image.jpg in Resources */,
+				AC43E7FF23A8C2C0008917E2 /* image.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -320,7 +320,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-
+    
     private class MockViewModelView: InboxViewControllerViewModelView {
         let currentlyVisibleRowIndices: [Int] = []
         
