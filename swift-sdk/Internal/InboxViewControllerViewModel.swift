@@ -152,9 +152,14 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     private func loadImage(forMessageId messageId: String, fromUrl url: URL) {
+        // it appears that networkSession returns small chunk of informational data for non-existing images
+        let minDataSize = 5
         if let networkSession = IterableAPI.internalImplementation?.networkSession {
-            NetworkHelper.getData(fromUrl: url, usingSession: networkSession).onSuccess { [weak self] in
-                self?.setImageData($0, forMessageId: messageId)
+            NetworkHelper.getData(fromUrl: url, usingSession: networkSession).onSuccess { [weak self] data in
+                guard data.count > minDataSize else {
+                    return
+                }
+                self?.setImageData(data, forMessageId: messageId)
             }.onError {
                 ITBError($0.localizedDescription)
             }

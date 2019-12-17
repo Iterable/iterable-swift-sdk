@@ -321,6 +321,46 @@ class InboxViewControllerViewModelTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
+    func testImageLoadingForNonExistingImage() {
+        let expectation1 = expectation(description: "testImageLoadingForNonExistingImage")
+        expectation1.isInverted = true
+        
+        let model = InboxViewControllerViewModel()
+        let mockView = MockViewModelView()
+        mockView.onImageLoadedCallback = { indexPath in
+            XCTAssertNotNil(model.message(atIndexPath: indexPath).imageData)
+            expectation1.fulfill()
+        }
+        model.view = mockView
+        
+        let fetcher = MockInAppFetcher()
+        
+        IterableAPI.initializeForTesting(
+            inAppFetcher: fetcher
+        )
+        
+        let imageLocation = "file:///something.png"
+        
+        let messages = [
+            IterableInAppMessage(messageId: "message1",
+                                 campaignId: "",
+                                 trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
+                                 content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
+                                 saveToInbox: true,
+                                 inboxMetadata: IterableInboxMetadata(title: "inbox title", subtitle: "inbox subtitle", icon: imageLocation),
+                                 customPayload: ["messageType": "transactional"]),
+        ]
+        fetcher.mockMessagesAvailableFromServer(messages: messages)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            model.beganUpdates()
+            XCTAssertEqual(model.numRows(in: 0), 1)
+            XCTAssertEqual(model.message(atIndexPath: IndexPath(row: 0, section: 0)).iterableMessage.messageId, "message1")
+        }
+        
+        wait(for: [expectation1], timeout: 5.0)
+    }
+    
     private class MockViewModelView: InboxViewControllerViewModelView {
         let currentlyVisibleRowIndices: [Int] = []
         
