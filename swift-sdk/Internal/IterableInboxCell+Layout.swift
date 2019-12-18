@@ -66,6 +66,7 @@ extension IterableInboxCell {
         label.font = UIFont.boldSystemFont(ofSize: 17.0)
         label.setContentHuggingPriority(UILayoutPriority(rawValue: 249), for: .horizontal)
         label.setContentHuggingPriority(UILayoutPriority(rawValue: 249), for: .vertical)
+        label.numberOfLines = 3
         return label
     }
     
@@ -76,6 +77,7 @@ extension IterableInboxCell {
         label.textColor = UIColor.lightGray
         label.setContentHuggingPriority(UILayoutPriority(rawValue: 249), for: .horizontal)
         label.setContentHuggingPriority(UILayoutPriority(rawValue: 249), for: .vertical)
+        label.numberOfLines = 3
         return label
     }
     
@@ -120,6 +122,7 @@ extension IterableInboxCell {
         heightConstraint.isActive = true
         iconImageView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         iconImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        view.widthAnchor.constraint(greaterThanOrEqualTo: iconImageView.widthAnchor).isActive = true
         return view
     }
 }
