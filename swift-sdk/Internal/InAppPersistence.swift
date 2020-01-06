@@ -6,34 +6,6 @@
 import Foundation
 import UIKit
 
-// Adhering to Codable
-extension UIEdgeInsets {
-    enum CodingKeys: String, CodingKey {
-        case top
-        case left
-        case bottom
-        case right
-    }
-    
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        let top = try container.decode(Double.self, forKey: .top)
-        let left = try container.decode(Double.self, forKey: .left)
-        let bottom = try container.decode(Double.self, forKey: .bottom)
-        let right = try container.decode(Double.self, forKey: .right)
-        
-        self.init(top: CGFloat(top), left: CGFloat(left), bottom: CGFloat(bottom), right: CGFloat(right))
-    }
-    
-    public func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(Double(top), forKey: .top)
-        try container.encode(Double(left), forKey: .left)
-        try container.encode(Double(bottom), forKey: .bottom)
-        try container.encode(Double(right), forKey: .right)
-    }
-}
-
 // This is needed because String(describing: ...) returns wrong
 // value for this enum when it is exposed to Objective C
 extension IterableInAppContentType: CustomStringConvertible {
