@@ -281,4 +281,99 @@ class InboxViewControllerViewModelTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
+    
+    func testImageLoadingForExistingImage() {
+        let expectation1 = expectation(description: "testImageLoadingForExistingImage")
+        
+        let model = InboxViewControllerViewModel()
+        
+        let mockView = MockViewModelView()
+        mockView.onImageLoadedCallback = { indexPath in
+            XCTAssertNotNil(model.message(atIndexPath: indexPath).imageData)
+            expectation1.fulfill()
+        }
+        model.view = mockView
+        
+        let mockNetworkSession = MockNetworkSession(statusCode: 200, data: Data(repeating: 0, count: 100))
+        let fetcher = MockInAppFetcher()
+        IterableAPI.initializeForTesting(
+            networkSession: mockNetworkSession,
+            inAppFetcher: fetcher
+        )
+        
+        let imageLocation = Bundle(for: type(of: self)).url(forResource: "image", withExtension: "jpg")!.absoluteString
+        
+        let messages = [
+            IterableInAppMessage(messageId: "message1",
+                                 campaignId: "",
+                                 trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
+                                 content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
+                                 saveToInbox: true,
+                                 inboxMetadata: IterableInboxMetadata(title: "inbox title", subtitle: "inbox subtitle", icon: imageLocation),
+                                 customPayload: ["messageType": "transactional"]),
+        ]
+        fetcher.mockMessagesAvailableFromServer(messages: messages)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            model.beganUpdates()
+            XCTAssertEqual(model.numRows(in: 0), 1)
+            XCTAssertEqual(model.message(atIndexPath: IndexPath(row: 0, section: 0)).iterableMessage.messageId, "message1")
+        }
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+    
+    func testImageLoadingForNonExistingImage() {
+        let expectation1 = expectation(description: "testImageLoadingForNonExistingImage")
+        expectation1.isInverted = true
+        
+        let model = InboxViewControllerViewModel()
+        
+        let mockView = MockViewModelView()
+        mockView.onImageLoadedCallback = { indexPath in
+            XCTAssertNotNil(model.message(atIndexPath: indexPath).imageData)
+            expectation1.fulfill()
+        }
+        model.view = mockView
+        
+        let mockNetworkSession = MockNetworkSession(statusCode: 404, data: nil)
+        let fetcher = MockInAppFetcher()
+        IterableAPI.initializeForTesting(
+            networkSession: mockNetworkSession,
+            inAppFetcher: fetcher
+        )
+        
+        let imageLocation = "file:///something.png"
+        
+        let messages = [
+            IterableInAppMessage(messageId: "message1",
+                                 campaignId: "",
+                                 trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
+                                 content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
+                                 saveToInbox: true,
+                                 inboxMetadata: IterableInboxMetadata(title: "inbox title", subtitle: "inbox subtitle", icon: imageLocation),
+                                 customPayload: ["messageType": "transactional"]),
+        ]
+        fetcher.mockMessagesAvailableFromServer(messages: messages)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            model.beganUpdates()
+            XCTAssertEqual(model.numRows(in: 0), 1)
+            XCTAssertEqual(model.message(atIndexPath: IndexPath(row: 0, section: 0)).iterableMessage.messageId, "message1")
+        }
+        
+        wait(for: [expectation1], timeout: 5.0)
+    }
+    
+    private class MockViewModelView: InboxViewControllerViewModelView {
+        let currentlyVisibleRowIndices: [Int] = []
+        
+        var onImageLoadedCallback: ((IndexPath) -> Void)?
+        
+        func onViewModelChanged(diff _: [SectionedDiffStep<Int, InboxMessageViewModel>]) {}
+        
+        func onImageLoaded(for indexPath: IndexPath) {
+            onImageLoadedCallback?(indexPath)
+        }
+    }
 }
