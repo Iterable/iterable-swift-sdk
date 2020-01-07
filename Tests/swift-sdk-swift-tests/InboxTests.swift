@@ -1,7 +1,6 @@
 //
 //  Created by Tapash Majumder on 3/6/19.
 //  Copyright © 2019 Iterable. All rights reserved.
-//  :tqm force a build.
 
 import XCTest
 
