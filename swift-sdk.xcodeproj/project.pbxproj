@@ -113,6 +113,8 @@
 		ACA8D1AB21966555001B1332 /* InAppManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA8D1AA21966555001B1332 /* InAppManager.swift */; };
 		ACAA816E231163660035C743 /* RequestCreatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAA816D231163660035C743 /* RequestCreatorTests.swift */; };
 		ACB8273F22372A5C00DB17D3 /* IterableHtmlMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB8273E22372A5C00DB17D3 /* IterableHtmlMessageViewController.swift */; };
+		ACBDDE5C23C4EDEC0008CC4D /* InboxCustomizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBDDE5B23C4EDEC0008CC4D /* InboxCustomizationTests.swift */; };
+		ACBDDE5F23C4F02C0008CC4D /* customization-1.json in Resources */ = {isa = PBXBuildFile; fileRef = ACBDDE5E23C4F02C0008CC4D /* customization-1.json */; };
 		ACC51A6B22A879070095E81F /* EmptyInAppManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4B039122A8743F0043185B /* EmptyInAppManager.swift */; };
 		ACC6A84F2323910D003CC4BE /* UITestsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC6A84E2323910D003CC4BE /* UITestsHelper.swift */; };
 		ACC6A8502323910D003CC4BE /* UITestsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC6A84E2323910D003CC4BE /* UITestsHelper.swift */; };
@@ -338,6 +340,8 @@
 		ACA8D1AA21966555001B1332 /* InAppManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppManager.swift; sourceTree = "<group>"; };
 		ACAA816D231163660035C743 /* RequestCreatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestCreatorTests.swift; sourceTree = "<group>"; };
 		ACB8273E22372A5C00DB17D3 /* IterableHtmlMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableHtmlMessageViewController.swift; sourceTree = "<group>"; };
+		ACBDDE5B23C4EDEC0008CC4D /* InboxCustomizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxCustomizationTests.swift; sourceTree = "<group>"; };
+		ACBDDE5E23C4F02C0008CC4D /* customization-1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "customization-1.json"; sourceTree = "<group>"; };
 		ACC6A84E2323910D003CC4BE /* UITestsHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITestsHelper.swift; sourceTree = "<group>"; };
 		ACC6A851232407B5003CC4BE /* InboxUITestsHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxUITestsHelper.swift; sourceTree = "<group>"; };
 		ACC87763215C20B50097E29B /* ui-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ui-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -754,6 +758,14 @@
 			path = common;
 			sourceTree = "<group>";
 		};
+		ACBDDE5D23C4EFB40008CC4D /* Test Files */ = {
+			isa = PBXGroup;
+			children = (
+				ACBDDE5E23C4F02C0008CC4D /* customization-1.json */,
+			);
+			name = "Test Files";
+			sourceTree = "<group>";
+		};
 		ACC87764215C20B50097E29B /* ui-tests */ = {
 			isa = PBXGroup;
 			children = (
@@ -783,9 +795,11 @@
 		ACDA976F23159C39004C412E /* inbox-ui-tests-app-ui-tests */ = {
 			isa = PBXGroup;
 			children = (
+				ACBDDE5D23C4EFB40008CC4D /* Test Files */,
 				ACDA977023159C39004C412E /* InboxUITests.swift */,
 				ACDA977223159C39004C412E /* Info.plist */,
 				ACC6A851232407B5003CC4BE /* InboxUITestsHelper.swift */,
+				ACBDDE5B23C4EDEC0008CC4D /* InboxCustomizationTests.swift */,
 			);
 			path = "inbox-ui-tests-app-ui-tests";
 			sourceTree = "<group>";
@@ -1157,6 +1171,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ACBDDE5F23C4F02C0008CC4D /* customization-1.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1448,6 +1463,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ACBDDE5C23C4EDEC0008CC4D /* InboxCustomizationTests.swift in Sources */,
 				ACC6A852232407B5003CC4BE /* InboxUITestsHelper.swift in Sources */,
 				AC19520D231D9AC600CD5B61 /* Common.swift in Sources */,
 				AC195210231DAD6B00CD5B61 /* TestUtils.swift in Sources */,
