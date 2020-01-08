@@ -9,13 +9,6 @@ import Foundation
 import XCTest
 
 struct UITestsHelper {
-    // singleton application instance
-    static var globalApplication: XCUIApplication = {
-        let app = XCUIApplication()
-        app.launch()
-        return app
-    }()
-    
     static func gotoTab(_ tabName: String, inApp app: XCUIApplication) {
         app.tabBars.buttons[tabName].tap()
     }
@@ -107,13 +100,11 @@ extension XCUIElement {
 
 let uiElementWaitTimeout = 15.0
 
-protocol IterableUITestsProtocol: AnyObject {}
+protocol IterableUITestsProtocol: AnyObject {
+    var app: XCUIApplication! { get }
+}
 
 extension IterableUITestsProtocol where Self: XCTestCase {
-    var app: XCUIApplication { // Just a shortcut to global app
-        return UITestsHelper.globalApplication
-    }
-    
     func waitForElementToAppear(_ element: XCUIElement, fail: Bool = true) {
         let exists = element.waitForExistence(timeout: uiElementWaitTimeout)
         

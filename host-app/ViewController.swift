@@ -61,6 +61,7 @@ class ViewController: UIViewController {
         
         let html = """
             <a href="http://website/resource#something">Click Me</a>
+            <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>
         """
         if case let ShowResult.shown(futureClickedUrl) = InAppDisplayer.showIterableHtmlMessage(html) {
             futureClickedUrl.onSuccess { url in
