@@ -181,7 +181,7 @@ public extension Notification.Name {
     internal var consumed: Bool = false
     
     /// Whether this inbox message has been read
-    public internal(set) var read: Bool = false
+    public var read: Bool = false
     
     /// Whether this message will be delivered silently to inbox
     public var silentInbox: Bool {
@@ -197,7 +197,8 @@ public extension Notification.Name {
          content: IterableInAppContent,
          saveToInbox: Bool = false,
          inboxMetadata: IterableInboxMetadata? = nil,
-         customPayload: [AnyHashable: Any]? = nil) {
+         customPayload: [AnyHashable: Any]? = nil,
+         read: Bool = false) {
         self.messageId = messageId
         self.campaignId = campaignId
         self.trigger = trigger
@@ -207,6 +208,7 @@ public extension Notification.Name {
         self.saveToInbox = saveToInbox
         self.inboxMetadata = inboxMetadata
         self.customPayload = customPayload
+        self.read = read
     }
 }
 

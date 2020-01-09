@@ -104,6 +104,7 @@ public enum JsonKey: String, JsonKeyRepresentable {
     case silentInbox
     case inAppLocation = "location"
     case clickedUrl
+    case read
     
     case inboxSessionStart
     case inboxSessionEnd
