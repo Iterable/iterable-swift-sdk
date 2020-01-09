@@ -270,6 +270,10 @@ class MockInAppFetcher: InAppFetcherProtocol {
         messagesMap[message.messageId] = message
     }
     
+    var messages: [IterableInAppMessage] {
+        messagesMap.values
+    }
+    
     private var messagesMap = OrderedDictionary<String, IterableInAppMessage>()
 }
 

@@ -1,0 +1,16 @@
+{"inAppMessages":
+[
+    {
+        "saveToInbox": true,
+        "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href='https://www.site2.com'>Click Here</a>"},
+        "trigger": {"type": "never"},
+        "messageId": "message5",
+        "campaignId": "campaign4",
+        "inboxMetadata": {
+            "title": "Fifth message",
+            "subtitle": "Fifth message subtitle"
+        },
+        "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+    },
+]
+}

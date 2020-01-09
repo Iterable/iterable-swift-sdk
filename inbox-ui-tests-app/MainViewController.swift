@@ -18,6 +18,11 @@ class MainViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
     
+    @IBAction func loadDataset1Tapped(_: Any) {
+        ITBInfo()
+        AppDelegate.sharedInstance.loadDataset(number: 1)
+    }
+    
     @IBAction func showInboxTap(_: UIButton) {
         ITBInfo()
         tabBarController?.selectedIndex = 0
@@ -31,13 +36,23 @@ class MainViewController: UIViewController {
     
     @IBAction func addInboxMessageTap(_: UIButton) {
         ITBInfo()
-        
         AppDelegate.sharedInstance.addInboxMessage()
     }
     
     @IBAction func addMessageToServer(_: Any) {
         ITBInfo()
-        
         AppDelegate.sharedInstance.addMessageToServer()
+    }
+    
+    @IBAction func showCustomInboxTap(_: Any) {
+        ITBInfo()
+        AppDelegate.sharedInstance.loadCustomInboxMessages()
+        tabBarController?.selectedIndex = 0
+        
+        let inboxNavController = IterableInboxNavigationViewController()
+        inboxNavController.isPopup = false
+        inboxNavController.navTitle = "Inbox"
+        
+        present(inboxNavController, animated: true)
     }
 }

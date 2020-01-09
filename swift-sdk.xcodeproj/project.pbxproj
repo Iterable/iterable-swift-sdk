@@ -87,6 +87,9 @@
 		AC776DA6211A1B8A00C27C27 /* IterableRequestUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC776DA5211A1B8A00C27C27 /* IterableRequestUtil.swift */; };
 		AC7A5261227BB9D10064D67E /* DependencyContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7A5260227BB9D10064D67E /* DependencyContainer.swift */; };
 		AC7B143020D02CE200877BFE /* IterableSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2263DF20CF49B8009800EB /* IterableSDK.framework */; };
+		AC7B4AF923C6547A00DB4758 /* CustomInboxCell3.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7B4AF823C6547A00DB4758 /* CustomInboxCell3.swift */; };
+		AC7B4B0423C6FB6D00DB4758 /* inbox-messages-1.json in Resources */ = {isa = PBXBuildFile; fileRef = AC7B4B0223C6FB6D00DB4758 /* inbox-messages-1.json */; };
+		AC7B4B0523C6FB6D00DB4758 /* inbox-messages-2.json in Resources */ = {isa = PBXBuildFile; fileRef = AC7B4B0323C6FB6D00DB4758 /* inbox-messages-2.json */; };
 		AC819184227138EF0014955E /* Dwifft.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC819183227138E60014955E /* Dwifft.swift */; };
 		AC819186227139230014955E /* SectionedValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC819185227139230014955E /* SectionedValues.swift */; };
 		AC81918822713A110014955E /* Dwifft+UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC81918722713A110014955E /* Dwifft+UIKit.swift */; };
@@ -313,6 +316,10 @@
 		AC7A5260227BB9D10064D67E /* DependencyContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependencyContainer.swift; sourceTree = "<group>"; };
 		AC7B142B20D02CE200877BFE /* swift-sdk-swift-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "swift-sdk-swift-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC7B142F20D02CE200877BFE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AC7B4AF723C6547A00DB4758 /* CustomInboxCell3.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CustomInboxCell3.xib; sourceTree = "<group>"; };
+		AC7B4AF823C6547A00DB4758 /* CustomInboxCell3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomInboxCell3.swift; sourceTree = "<group>"; };
+		AC7B4B0223C6FB6D00DB4758 /* inbox-messages-1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "inbox-messages-1.json"; sourceTree = "<group>"; };
+		AC7B4B0323C6FB6D00DB4758 /* inbox-messages-2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "inbox-messages-2.json"; sourceTree = "<group>"; };
 		AC819183227138E60014955E /* Dwifft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dwifft.swift; sourceTree = "<group>"; };
 		AC819185227139230014955E /* SectionedValues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SectionedValues.swift; sourceTree = "<group>"; };
 		AC81918722713A110014955E /* Dwifft+UIKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dwifft+UIKit.swift"; sourceTree = "<group>"; };
@@ -698,6 +705,23 @@
 			path = "swift-sdk-swift-tests";
 			sourceTree = "<group>";
 		};
+		AC7B4B0023C6F99200DB4758 /* Test Files */ = {
+			isa = PBXGroup;
+			children = (
+				AC7B4B0223C6FB6D00DB4758 /* inbox-messages-1.json */,
+				AC7B4B0323C6FB6D00DB4758 /* inbox-messages-2.json */,
+			);
+			name = "Test Files";
+			sourceTree = "<group>";
+		};
+		AC7B4B0123C6F9B500DB4758 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				ACDA976723159C39004C412E /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 		AC845105228DF5360052BB8F /* API Client */ = {
 			isa = PBXGroup;
 			children = (
@@ -780,14 +804,17 @@
 		ACDA975A23159C37004C412E /* inbox-ui-tests-app */ = {
 			isa = PBXGroup;
 			children = (
-				ACDA975B23159C37004C412E /* AppDelegate.swift */,
+				AC7B4B0123C6F9B500DB4758 /* Supporting Files */,
+				AC7B4B0023C6F99200DB4758 /* Test Files */,
+				AC7B4AF823C6547A00DB4758 /* CustomInboxCell3.swift */,
+				AC7B4AF723C6547A00DB4758 /* CustomInboxCell3.xib */,
 				ACDA976223159C39004C412E /* Assets.xcassets */,
-				ACDA976723159C39004C412E /* Info.plist */,
 				ACDA976423159C39004C412E /* LaunchScreen.storyboard */,
 				ACDA975F23159C37004C412E /* Main.storyboard */,
 				AC738CE92315A8B200B96B2D /* MainViewController.swift */,
 				AC2A2989231D44C00070A9C3 /* NetworkDetailViewController.swift */,
 				AC2A2987231CFAC40070A9C3 /* NetworkTableViewController.swift */,
+				ACDA975B23159C37004C412E /* AppDelegate.swift */,
 			);
 			path = "inbox-ui-tests-app";
 			sourceTree = "<group>";
@@ -795,9 +822,9 @@
 		ACDA976F23159C39004C412E /* inbox-ui-tests-app-ui-tests */ = {
 			isa = PBXGroup;
 			children = (
+				ACDA977223159C39004C412E /* Info.plist */,
 				ACBDDE5D23C4EFB40008CC4D /* Test Files */,
 				ACDA977023159C39004C412E /* InboxUITests.swift */,
-				ACDA977223159C39004C412E /* Info.plist */,
 				ACC6A851232407B5003CC4BE /* InboxUITestsHelper.swift */,
 				ACBDDE5B23C4EDEC0008CC4D /* InboxCustomizationTests.swift */,
 			);
@@ -1162,7 +1189,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				ACDA976623159C39004C412E /* LaunchScreen.storyboard in Resources */,
+				AC7B4B0523C6FB6D00DB4758 /* inbox-messages-2.json in Resources */,
 				ACDA976323159C39004C412E /* Assets.xcassets in Resources */,
+				AC7B4B0423C6FB6D00DB4758 /* inbox-messages-1.json in Resources */,
 				ACDA976123159C37004C412E /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1456,6 +1485,7 @@
 				AC738CE82315A5B600B96B2D /* CommonExtensions.swift in Sources */,
 				AC738CE72315A54100B96B2D /* CommonMocks.swift in Sources */,
 				AC738CEA2315A8B200B96B2D /* MainViewController.swift in Sources */,
+				AC7B4AF923C6547A00DB4758 /* CustomInboxCell3.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
