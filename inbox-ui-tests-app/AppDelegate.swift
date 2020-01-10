@@ -1,7 +1,4 @@
 //
-//  AppDelegate.swift
-//  inbox-ui-tests-app
-//
 //  Created by Tapash Majumder on 8/27/19.
 //  Copyright © 2019 Iterable. All rights reserved.
 //
@@ -81,10 +78,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func addMessageToServer() {
         // mocks message added to server but not client since no sync has happened yet
         mockInAppFetcher.add(message: createNewMessage())
-    }
-    
-    func loadCustomInboxMessages() {
-        loadDataset(number: 2)
     }
     
     private func createNewMessage() -> IterableInAppMessage {

@@ -198,7 +198,7 @@ class NetworkDetailViewController: UITableViewController {
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="eGn-zM-0ZP">
-                                <rect key="frame" x="126" y="359.5" width="162" height="182"/>
+                                <rect key="frame" x="126" y="340.5" width="162" height="220"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Rd-VH-zxG">
                                         <rect key="frame" x="30" y="0.0" width="102" height="30"/>
@@ -207,32 +207,39 @@ class NetworkDetailViewController: UITableViewController {
                                             <action selector="loadDataset1Tapped:" destination="UpA-wW-DMA" eventType="touchUpInside" id="Bk4-vl-JZ1"/>
                                         </connections>
                                     </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ul6-zz-0HM">
+                                        <rect key="frame" x="29" y="38" width="104" height="30"/>
+                                        <state key="normal" title="Load Dataset 2"/>
+                                        <connections>
+                                            <action selector="loadDataset2Tapped:" destination="UpA-wW-DMA" eventType="touchUpInside" id="dWN-a0-IAJ"/>
+                                        </connections>
+                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EC9-JJ-Tlq">
-                                        <rect key="frame" x="41.5" y="38" width="79" height="30"/>
+                                        <rect key="frame" x="41.5" y="76" width="79" height="30"/>
                                         <state key="normal" title="Show Inbox"/>
                                         <connections>
                                             <action selector="showInboxTap:" destination="UpA-wW-DMA" eventType="touchUpInside" id="iO9-3U-nib"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Cf5-1D-zj5">
-                                        <rect key="frame" x="13.5" y="76" width="135" height="30"/>
+                                        <rect key="frame" x="13.5" y="114" width="135" height="30"/>
                                         <state key="normal" title="Add Inbox Message"/>
                                         <connections>
                                             <action selector="addInboxMessageTap:" destination="UpA-wW-DMA" eventType="touchUpInside" id="gzx-ks-LaA"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f72-kd-osF">
-                                        <rect key="frame" x="0.0" y="114" width="162" height="30"/>
+                                        <rect key="frame" x="0.0" y="152" width="162" height="30"/>
                                         <state key="normal" title="Add Message To Server"/>
                                         <connections>
                                             <action selector="addMessageToServer:" destination="UpA-wW-DMA" eventType="touchUpInside" id="bCB-dh-No5"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pxq-MP-JUL">
-                                        <rect key="frame" x="12.5" y="152" width="137" height="30"/>
-                                        <state key="normal" title="Show Custom Inbox"/>
+                                        <rect key="frame" x="7.5" y="190" width="147" height="30"/>
+                                        <state key="normal" title="Show Custom Inbox 1"/>
                                         <connections>
-                                            <action selector="showCustomInboxTap:" destination="UpA-wW-DMA" eventType="touchUpInside" id="f4L-4l-t9v"/>
+                                            <action selector="showCustomInbox1Tap:" destination="UpA-wW-DMA" eventType="touchUpInside" id="f4L-4l-t9v"/>
                                         </connections>
                                     </button>
                                 </subviews>

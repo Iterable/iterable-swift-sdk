@@ -9,14 +9,10 @@ import XCTest
 
 class IterableInboxViewControllerUITests: XCTestCase {
     private static var timeout = 15.0
-    private var app: XCUIApplication!
-    private let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+    private lazy var app: XCUIApplication! = UITestsGlobal.application
     
     override func setUp() {
         continueAfterFailure = false
-        
-        app = XCUIApplication()
-        app.launch()
     }
     
     func testMessageDeleteButton() {

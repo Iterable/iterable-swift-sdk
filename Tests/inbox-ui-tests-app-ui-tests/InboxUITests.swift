@@ -8,13 +8,11 @@ import XCTest
 @testable import IterableSDK
 
 class InboxUITests: XCTestCase, IterableInboxUITestsProtocol {
-    var app: XCUIApplication!
+    lazy var app: XCUIApplication! = UITestsGlobal.application
     
     override func setUp() {
         // In UI tests it is usually best to stop immediately when a failure occurs.
         continueAfterFailure = false
-        app = XCUIApplication()
-        app.launch()
         
         clearNetwork()
     }

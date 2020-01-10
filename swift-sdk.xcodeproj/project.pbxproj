@@ -90,6 +90,7 @@
 		AC7B4AF923C6547A00DB4758 /* CustomInboxCell3.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7B4AF823C6547A00DB4758 /* CustomInboxCell3.swift */; };
 		AC7B4B0423C6FB6D00DB4758 /* inbox-messages-1.json in Resources */ = {isa = PBXBuildFile; fileRef = AC7B4B0223C6FB6D00DB4758 /* inbox-messages-1.json */; };
 		AC7B4B0523C6FB6D00DB4758 /* inbox-messages-2.json in Resources */ = {isa = PBXBuildFile; fileRef = AC7B4B0323C6FB6D00DB4758 /* inbox-messages-2.json */; };
+		AC7B4B0623C791FD00DB4758 /* CustomInboxCell3.xib in Resources */ = {isa = PBXBuildFile; fileRef = AC7B4AF723C6547A00DB4758 /* CustomInboxCell3.xib */; };
 		AC819184227138EF0014955E /* Dwifft.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC819183227138E60014955E /* Dwifft.swift */; };
 		AC819186227139230014955E /* SectionedValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC819185227139230014955E /* SectionedValues.swift */; };
 		AC81918822713A110014955E /* Dwifft+UIKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC81918722713A110014955E /* Dwifft+UIKit.swift */; };
@@ -1193,6 +1194,7 @@
 				ACDA976323159C39004C412E /* Assets.xcassets in Resources */,
 				AC7B4B0423C6FB6D00DB4758 /* inbox-messages-1.json in Resources */,
 				ACDA976123159C37004C412E /* Main.storyboard in Resources */,
+				AC7B4B0623C791FD00DB4758 /* CustomInboxCell3.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

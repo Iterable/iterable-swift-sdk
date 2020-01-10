@@ -14,13 +14,16 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         ITBInfo()
         super.viewDidLoad()
-        
-        // Do any additional setup after loading the view.
     }
     
     @IBAction func loadDataset1Tapped(_: Any) {
         ITBInfo()
         AppDelegate.sharedInstance.loadDataset(number: 1)
+    }
+    
+    @IBAction func loadDataset2Tapped(_: Any) {
+        ITBInfo()
+        AppDelegate.sharedInstance.loadDataset(number: 2)
     }
     
     @IBAction func showInboxTap(_: UIButton) {
@@ -44,15 +47,22 @@ class MainViewController: UIViewController {
         AppDelegate.sharedInstance.addMessageToServer()
     }
     
-    @IBAction func showCustomInboxTap(_: Any) {
+    @IBAction func showCustomInbox1Tap(_: Any) {
         ITBInfo()
-        AppDelegate.sharedInstance.loadCustomInboxMessages()
         tabBarController?.selectedIndex = 0
         
         let inboxNavController = IterableInboxNavigationViewController()
         inboxNavController.isPopup = false
         inboxNavController.navTitle = "Inbox"
+        inboxNavController.viewDelegate = ViewDelegate1()
         
         present(inboxNavController, animated: true)
     }
+}
+
+public class ViewDelegate1: IterableInboxViewControllerViewDelegate {
+    public required init() {}
+    
+    public let customNibNames: [String] = ["CustomInboxCell3"]
+    public let customNibNameMapper: (IterableInAppMessage) -> String? = IterableInboxViewController.DefaultNibNameMapper.usingCustomPayloadNibName
 }
