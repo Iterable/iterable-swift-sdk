@@ -11,6 +11,7 @@ enum TabName: String {
     case
         home = "Home",
         inbox = "Inbox",
+        customInbox = "Custom Inbox",
         network = "Network"
 }
 

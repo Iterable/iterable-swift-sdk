@@ -25,7 +25,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         mockInAppFetcher = MockInAppFetcher()
-        mockNetworkSession = MockNetworkSession(statusCode: 200)
+        mockNetworkSession = MockNetworkSession(statusCode: 200, urlPatternDataMapping: createUrlToDataMapper())
         mockNetworkSession.callback = { _, _, _ in
             self.logRequest()
         }
@@ -103,10 +103,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func loadMessages(from file: String, withExtension extension: String) -> [IterableInAppMessage] {
-        let path = Bundle(for: type(of: self)).path(forResource: file, ofType: `extension`)!
-        let data = FileManager.default.contents(atPath: path)!
+        let data = loadData(from: file, withExtension: `extension`)
         let payload = try! JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
         return InAppTestHelper.inAppMessages(fromPayload: payload)
+    }
+    
+    private func loadData(from file: String, withExtension extension: String) -> Data {
+        let path = Bundle(for: type(of: self)).path(forResource: file, ofType: `extension`)!
+        return FileManager.default.contents(atPath: path)!
+    }
+    
+    private func createUrlToDataMapper() -> [String: Data?] {
+        var mapper = [String: Data?]()
+        mapper[#"mocha.png"#] = loadData(from: "mocha", withExtension: "png")
+        mapper[".*"] = nil
+        return mapper
     }
 }
 

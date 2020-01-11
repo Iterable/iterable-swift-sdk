@@ -370,6 +370,7 @@ open class IterableInboxViewController: UITableViewController {
     
     private func loadCellImage(cell: IterableInboxCell, message: InboxMessageViewModel) {
         cell.iconImageView?.clipsToBounds = true
+        cell.iconImageView?.isAccessibilityElement = true
         
         if message.hasValidImageUrl() {
             cell.iconContainerView?.isHidden = false
@@ -378,6 +379,7 @@ open class IterableInboxViewController: UITableViewController {
             if let data = message.imageData {
                 cell.iconImageView?.backgroundColor = nil
                 cell.iconImageView?.image = UIImage(data: data)
+                cell.iconImageView?.accessibilityLabel = "icon-image-\(message.iterableMessage.messageId)"
             } else {
                 cell.iconImageView?.backgroundColor = UIColor(hex: "EEEEEE") // loading image
                 cell.iconImageView?.image = nil
@@ -397,15 +399,6 @@ open class IterableInboxViewController: UITableViewController {
             label?.isHidden = true
             label?.text = nil
         }
-    }
-    
-    // By default show locale specific medium date
-    private static func defaultValueToDisplay(forCreatedAt createdAt: Date?) -> String? {
-        guard let createdAt = createdAt else {
-            return nil
-        }
-        
-        return DateFormatter.localizedString(from: createdAt, dateStyle: .medium, timeStyle: .short)
     }
     
     private func instantiateViewDelegate(withClassName className: String) {

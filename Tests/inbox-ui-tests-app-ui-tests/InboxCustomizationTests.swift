@@ -27,4 +27,21 @@ class InboxCustomizationTests: XCTestCase, IterableInboxUITestsProtocol {
         
         app.button(withText: "Done").tap()
     }
+    
+    func testCustomInboxCellWithViewDelegateClassName() {
+        gotoTab(.home)
+        app.button(withText: "Load Dataset 2").tap()
+        
+        gotoTab(.customInbox)
+        
+        app.tableCell(withText: "Buy Now").waitToAppear()
+    }
+    
+    func testImageLoading() {
+        gotoTab(.home)
+        app.button(withText: "Load Dataset 3").tap()
+        
+        gotoTab(.inbox)
+        XCTAssertTrue(app.images["icon-image-message3-1"].exists)
+    }
 }

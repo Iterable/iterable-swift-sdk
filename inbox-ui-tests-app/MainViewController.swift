@@ -26,6 +26,11 @@ class MainViewController: UIViewController {
         AppDelegate.sharedInstance.loadDataset(number: 2)
     }
     
+    @IBAction func loadDataset3Tapped(_: Any) {
+        ITBInfo()
+        AppDelegate.sharedInstance.loadDataset(number: 3)
+    }
+    
     @IBAction func showInboxTap(_: UIButton) {
         ITBInfo()
         tabBarController?.selectedIndex = 0
