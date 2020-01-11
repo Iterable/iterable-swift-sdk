@@ -522,7 +522,6 @@ private struct CellLoader {
         return cell
     }
     
-    private let iterableCellNibName = "IterableInboxCell"
     private let defaultCellReuseIdentifier = "inboxCell"
     
     private func registerCustomCells(forTableView tableView: UITableView) {
@@ -548,14 +547,7 @@ private struct CellLoader {
                 fatalError("Cannot find nib: \(cellNibName) in main bundle.")
             }
         } else {
-            let bundle = Bundle(for: IterableInboxViewController.self)
-            
-            if CellLoader.nibExists(inBundle: bundle, withNibName: iterableCellNibName) {
-                let nib = UINib(nibName: iterableCellNibName, bundle: bundle)
-                tableView.register(nib, forCellReuseIdentifier: defaultCellReuseIdentifier)
-            } else {
-                tableView.register(IterableInboxCell.self, forCellReuseIdentifier: defaultCellReuseIdentifier)
-            }
+            tableView.register(IterableInboxCell.self, forCellReuseIdentifier: defaultCellReuseIdentifier)
         }
     }
     
@@ -569,7 +561,7 @@ private struct CellLoader {
     
     private func loadDefaultCell(forTableView tableView: UITableView, atIndexPath indexPath: IndexPath) -> IterableInboxCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: defaultCellReuseIdentifier, for: indexPath) as? IterableInboxCell else {
-            fatalError("Please make sure that an the nib: \(cellNibName ?? iterableCellNibName) is present in the main bundle")
+            fatalError("Could not load default cell")
         }
         
         return cell
