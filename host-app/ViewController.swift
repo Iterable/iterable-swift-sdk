@@ -1,7 +1,4 @@
 //
-//  ViewController.swift
-//  host-app
-//
 //  Created by Tapash Majumder on 6/27/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //

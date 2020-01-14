@@ -113,3 +113,11 @@ extension IterableUITestsProtocol where Self: XCTestCase {
         }
     }
 }
+
+struct UITestsGlobal {
+    static let application: XCUIApplication = {
+        let app = XCUIApplication()
+        app.launch()
+        return app
+    }()
+}

@@ -365,6 +365,52 @@ class InboxViewControllerViewModelTests: XCTestCase {
         wait(for: [expectation1], timeout: 5.0)
     }
     
+    func testSampleSectionMapper() {
+        let expectation1 = expectation(description: "testSampleSectionMapper")
+        
+        let model = InboxViewControllerViewModel()
+        model.sectionMapper = IterableInboxViewController.DefaultSectionMapper.usingCustomPayloadMessageSection
+        
+        let fetcher = MockInAppFetcher()
+        
+        IterableAPI.initializeForTesting(
+            inAppFetcher: fetcher
+        )
+        
+        let date1 = Date()
+        let date2 = date1.addingTimeInterval(5.0)
+        let messages = [
+            IterableInAppMessage(messageId: "message1",
+                                 campaignId: "",
+                                 trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
+                                 createdAt: date1,
+                                 content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
+                                 saveToInbox: true,
+                                 inboxMetadata: nil,
+                                 customPayload: ["messageSection": 1]),
+            IterableInAppMessage(messageId: "message2",
+                                 campaignId: "",
+                                 trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
+                                 createdAt: date2,
+                                 content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
+                                 saveToInbox: true,
+                                 inboxMetadata: nil,
+                                 customPayload: nil),
+        ]
+        fetcher.mockMessagesAvailableFromServer(messages: messages)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            model.beganUpdates()
+            XCTAssertEqual(model.numRows(in: 0), 1)
+            XCTAssertEqual(model.numRows(in: 1), 1)
+            XCTAssertEqual(model.message(atIndexPath: IndexPath(row: 0, section: 0)).iterableMessage.messageId, "message2")
+            XCTAssertEqual(model.message(atIndexPath: IndexPath(row: 0, section: 1)).iterableMessage.messageId, "message1")
+            expectation1.fulfill()
+        }
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+    
     private class MockViewModelView: InboxViewControllerViewModelView {
         let currentlyVisibleRowIndices: [Int] = []
         

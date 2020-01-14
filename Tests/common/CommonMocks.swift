@@ -149,13 +149,13 @@ public class MockPushTracker: NSObject, PushTrackerProtocol {
 }
 
 class MockNetworkSession: NetworkSessionProtocol {
+    var urlPatternDataMapping: [String: Data?]?
     var url: URL?
     var request: URLRequest?
     var callback: ((Data?, URLResponse?, Error?) -> Void)?
     var requestCallback: ((URLRequest) -> Void)?
     
     var statusCode: Int
-    var data: Data? // This is data returned
     var error: Error?
     
     convenience init(statusCode: Int = 200) {
@@ -170,9 +170,13 @@ class MockNetworkSession: NetworkSessionProtocol {
                   error: error)
     }
     
-    init(statusCode: Int, data: Data?, error: Error? = nil) {
+    convenience init(statusCode: Int, data: Data?, error: Error? = nil) {
+        self.init(statusCode: statusCode, urlPatternDataMapping: [".*": data], error: error)
+    }
+    
+    init(statusCode: Int, urlPatternDataMapping: [String: Data?]?, error: Error? = nil) {
         self.statusCode = statusCode
-        self.data = data
+        self.urlPatternDataMapping = urlPatternDataMapping
         self.error = error
     }
     
@@ -181,9 +185,10 @@ class MockNetworkSession: NetworkSessionProtocol {
             self.request = request
             self.requestCallback?(request)
             let response = HTTPURLResponse(url: request.url!, statusCode: self.statusCode, httpVersion: "HTTP/1.1", headerFields: [:])
-            completionHandler(self.data, response, self.error)
+            let data = self.data(for: request.url?.absoluteString)
+            completionHandler(data, response, self.error)
             
-            self.callback?(self.data, response, self.error)
+            self.callback?(data, response, self.error)
         }
     }
     
@@ -191,9 +196,10 @@ class MockNetworkSession: NetworkSessionProtocol {
         DispatchQueue.main.async {
             self.url = url
             let response = HTTPURLResponse(url: url, statusCode: self.statusCode, httpVersion: "HTTP/1.1", headerFields: [:])
-            completionHandler(self.data, response, self.error)
+            let data = self.data(for: url.absoluteString)
+            completionHandler(data, response, self.error)
             
-            self.callback?(self.data, response, self.error)
+            self.callback?(data, response, self.error)
         }
     }
     
@@ -203,6 +209,23 @@ class MockNetworkSession: NetworkSessionProtocol {
     
     static func json(fromData data: Data) -> [AnyHashable: Any] {
         return try! JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
+    }
+    
+    private func data(for urlAbsoluteString: String?) -> Data? {
+        guard let urlAbsoluteString = urlAbsoluteString else {
+            return nil
+        }
+        guard let mapping = urlPatternDataMapping else {
+            return nil
+        }
+        
+        for pattern in mapping.keys {
+            if urlAbsoluteString.range(of: pattern, options: [.regularExpression]) != nil {
+                return mapping[pattern] ?? nil
+            }
+        }
+        
+        return nil
     }
 }
 
@@ -268,6 +291,10 @@ class MockInAppFetcher: InAppFetcherProtocol {
     
     func add(message: IterableInAppMessage) {
         messagesMap[message.messageId] = message
+    }
+    
+    var messages: [IterableInAppMessage] {
+        messagesMap.values
     }
     
     private var messagesMap = OrderedDictionary<String, IterableInAppMessage>()

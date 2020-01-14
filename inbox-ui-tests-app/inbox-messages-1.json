@@ -1,0 +1,44 @@
+{ "inAppMessages": [
+    {
+        "saveToInbox": true,
+        "content": {
+            "contentType": "html",
+            "html": "<a href='https://www.site1.com'>Click Here1</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"
+        },
+        "trigger": {"type": "never"},
+        "messageId": "message1",
+        "campaignId": "campaign1",
+        "inboxMetadata": {
+            "title": "title1",
+            "subtitle": "subTitle1"
+        }
+    },
+    {
+        "saveToInbox": true,
+        "content": {
+            "contentType": "html",
+            "html": "<a href='https://www.site2.com'>Click Here2</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"
+        },
+        "trigger": {"type": "never"},
+        "messageId": "message2",
+        "campaignId": "campaign2",
+        "inboxMetadata": {
+            "title": "title2",
+            "subtitle": "subTitle2"
+        }
+    },
+    {
+        "saveToInbox": true,
+        "content": {
+            "contentType": "html",
+            "html": "<a href='https://www.site3.com'>Click Here3</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"},
+        "trigger": {"type": "never"},
+        "messageId": "message3",
+        "campaignId": "campaign3",
+        "inboxMetadata": {
+            "title": "title3",
+            "subtitle": "subTitle3"
+        }
+    },
+]
+}
