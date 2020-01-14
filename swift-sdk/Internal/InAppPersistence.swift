@@ -249,11 +249,11 @@ extension IterableInAppMessage: Codable {
                   content: content,
                   saveToInbox: saveToInbox,
                   inboxMetadata: inboxMetadata,
-                  customPayload: customPayload)
+                  customPayload: customPayload,
+                  read: read)
         
         self.didProcessTrigger = didProcessTrigger
         self.consumed = consumed
-        self.read = read
     }
     
     public func encode(to encoder: Encoder) {
