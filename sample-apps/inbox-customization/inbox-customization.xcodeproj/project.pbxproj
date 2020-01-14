@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		ACC55E0223CD7DB600CE77C6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC55E0123CD7DB600CE77C6 /* AppDelegate.swift */; };
-		ACC55E0423CD7DB600CE77C6 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC55E0323CD7DB600CE77C6 /* SceneDelegate.swift */; };
 		ACC55E0623CD7DB600CE77C6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC55E0523CD7DB600CE77C6 /* ViewController.swift */; };
 		ACC55E0923CD7DB600CE77C6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACC55E0723CD7DB600CE77C6 /* Main.storyboard */; };
 		ACC55E0B23CD7DBA00CE77C6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ACC55E0A23CD7DBA00CE77C6 /* Assets.xcassets */; };
@@ -18,7 +17,6 @@
 /* Begin PBXFileReference section */
 		ACC55DFE23CD7DB600CE77C6 /* inbox-customization.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "inbox-customization.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ACC55E0123CD7DB600CE77C6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		ACC55E0323CD7DB600CE77C6 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		ACC55E0523CD7DB600CE77C6 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		ACC55E0823CD7DB600CE77C6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		ACC55E0A23CD7DBA00CE77C6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -57,14 +55,21 @@
 			isa = PBXGroup;
 			children = (
 				ACC55E0123CD7DB600CE77C6 /* AppDelegate.swift */,
-				ACC55E0323CD7DB600CE77C6 /* SceneDelegate.swift */,
 				ACC55E0523CD7DB600CE77C6 /* ViewController.swift */,
 				ACC55E0723CD7DB600CE77C6 /* Main.storyboard */,
-				ACC55E0A23CD7DBA00CE77C6 /* Assets.xcassets */,
 				ACC55E0C23CD7DBA00CE77C6 /* LaunchScreen.storyboard */,
-				ACC55E0F23CD7DBA00CE77C6 /* Info.plist */,
+				ACC55E0A23CD7DBA00CE77C6 /* Assets.xcassets */,
+				ACC55E1523CD801E00CE77C6 /* Supporting Files */,
 			);
 			path = "inbox-customization";
+			sourceTree = "<group>";
+		};
+		ACC55E1523CD801E00CE77C6 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				ACC55E0F23CD7DBA00CE77C6 /* Info.plist */,
+			);
+			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -140,7 +145,6 @@
 			files = (
 				ACC55E0623CD7DB600CE77C6 /* ViewController.swift in Sources */,
 				ACC55E0223CD7DB600CE77C6 /* AppDelegate.swift in Sources */,
-				ACC55E0423CD7DB600CE77C6 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

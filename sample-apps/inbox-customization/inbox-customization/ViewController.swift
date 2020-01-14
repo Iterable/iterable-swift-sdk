@@ -1,7 +1,4 @@
 //
-//  ViewController.swift
-//  inbox-customization
-//
 //  Created by Tapash Majumder on 1/14/20.
 //  Copyright © 2020 Iterable. All rights reserved.
 //
