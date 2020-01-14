@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -12,6 +12,7 @@
 		ACC55E0923CD7DB600CE77C6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACC55E0723CD7DB600CE77C6 /* Main.storyboard */; };
 		ACC55E0B23CD7DBA00CE77C6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ACC55E0A23CD7DBA00CE77C6 /* Assets.xcassets */; };
 		ACC55E0E23CD7DBA00CE77C6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACC55E0C23CD7DBA00CE77C6 /* LaunchScreen.storyboard */; };
+		ACC55E1D23CD871E00CE77C6 /* IterableSDK in Frameworks */ = {isa = PBXBuildFile; productRef = ACC55E1C23CD871E00CE77C6 /* IterableSDK */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ACC55E1D23CD871E00CE77C6 /* IterableSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -40,6 +42,7 @@
 			children = (
 				ACC55E0023CD7DB600CE77C6 /* inbox-customization */,
 				ACC55DFF23CD7DB600CE77C6 /* Products */,
+				ACC55E1B23CD871E00CE77C6 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -72,6 +75,13 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		ACC55E1B23CD871E00CE77C6 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -88,6 +98,9 @@
 			dependencies = (
 			);
 			name = "inbox-customization";
+			packageProductDependencies = (
+				ACC55E1C23CD871E00CE77C6 /* IterableSDK */,
+			);
 			productName = "inbox-customization";
 			productReference = ACC55DFE23CD7DB600CE77C6 /* inbox-customization.app */;
 			productType = "com.apple.product-type.application";
@@ -116,6 +129,9 @@
 				Base,
 			);
 			mainGroup = ACC55DF523CD7DB600CE77C6;
+			packageReferences = (
+				ACC55E1623CD86B400CE77C6 /* XCRemoteSwiftPackageReference "swift-sdk" */,
+			);
 			productRefGroup = ACC55DFF23CD7DB600CE77C6 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -342,6 +358,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		ACC55E1623CD86B400CE77C6 /* XCRemoteSwiftPackageReference "swift-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Iterable/swift-sdk";
+			requirement = {
+				branch = inbox;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		ACC55E1C23CD871E00CE77C6 /* IterableSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ACC55E1623CD86B400CE77C6 /* XCRemoteSwiftPackageReference "swift-sdk" */;
+			productName = IterableSDK;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = ACC55DF623CD7DB600CE77C6 /* Project object */;
 }

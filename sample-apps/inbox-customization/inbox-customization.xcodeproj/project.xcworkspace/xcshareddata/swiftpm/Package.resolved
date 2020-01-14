@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "IterableSDK",
+        "repositoryURL": "https://github.com/Iterable/swift-sdk",
+        "state": {
+          "branch": "inbox",
+          "revision": "c6ffa0ff18e53233b4029daae1723da5199e5dcb",
+          "version": null
+        }
+      }
+    ]
+  },
+  "version": 1
+}
