@@ -17,6 +17,9 @@
 		ACC55E2023CE1B5900CE77C6 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC55E1F23CE1B5900CE77C6 /* DataManager.swift */; };
 		ACC55E2323CE1C4600CE77C6 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC55E2223CE1C4600CE77C6 /* MockNetworkSession.swift */; };
 		ACE78E3423CF990200492D03 /* mocha.png in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3323CF990200492D03 /* mocha.png */; };
+		ACE78E3A23D0288400492D03 /* inbox-messages-2.json in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3723D0288400492D03 /* inbox-messages-2.json */; };
+		ACE78E3B23D0288400492D03 /* inbox-messages-3.json in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3823D0288400492D03 /* inbox-messages-3.json */; };
+		ACE78E3C23D0288400492D03 /* inbox-messages-1.json in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3923D0288400492D03 /* inbox-messages-1.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +34,9 @@
 		ACC55E1F23CE1B5900CE77C6 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		ACC55E2223CE1C4600CE77C6 /* MockNetworkSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockNetworkSession.swift; sourceTree = "<group>"; };
 		ACE78E3323CF990200492D03 /* mocha.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mocha.png; sourceTree = "<group>"; };
+		ACE78E3723D0288400492D03 /* inbox-messages-2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "inbox-messages-2.json"; sourceTree = "<group>"; };
+		ACE78E3823D0288400492D03 /* inbox-messages-3.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "inbox-messages-3.json"; sourceTree = "<group>"; };
+		ACE78E3923D0288400492D03 /* inbox-messages-1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "inbox-messages-1.json"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +100,9 @@
 		ACC55E2123CE1C2500CE77C6 /* Mock Data */ = {
 			isa = PBXGroup;
 			children = (
+				ACE78E3923D0288400492D03 /* inbox-messages-1.json */,
+				ACE78E3723D0288400492D03 /* inbox-messages-2.json */,
+				ACE78E3823D0288400492D03 /* inbox-messages-3.json */,
 				ACE78E3323CF990200492D03 /* mocha.png */,
 				ACC55E1F23CE1B5900CE77C6 /* DataManager.swift */,
 				ACC55E2223CE1C4600CE77C6 /* MockNetworkSession.swift */,
@@ -166,7 +175,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ACE78E3C23D0288400492D03 /* inbox-messages-1.json in Resources */,
 				ACE78E3423CF990200492D03 /* mocha.png in Resources */,
+				ACE78E3A23D0288400492D03 /* inbox-messages-2.json in Resources */,
+				ACE78E3B23D0288400492D03 /* inbox-messages-3.json in Resources */,
 				ACC55E0E23CD7DBA00CE77C6 /* LaunchScreen.storyboard in Resources */,
 				ACC55E0B23CD7DBA00CE77C6 /* Assets.xcassets in Resources */,
 				ACC55E0923CD7DB600CE77C6 /* Main.storyboard in Resources */,

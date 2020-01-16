@@ -19,6 +19,7 @@ final class DataManager {
                                       networkSession: DataManager.shared.mockNetworkSession,
                                       inAppFetcher: DataManager.shared.mockInAppFetcher)
         IterableAPI.email = "user@example.com"
+        DataManager.shared.loadMessages(from: "inbox-messages-1", withExtension: "json")
     }
     
     func loadMessages(from file: String, withExtension ext: String) {
@@ -45,7 +46,7 @@ final class DataManager {
 
 struct DemoDependencyContainer: DependencyContainerProtocol {
     func createInAppFetcher(apiClient: ApiClientProtocol) -> InAppFetcherProtocol {
-        return InAppFetcher(apiClient: apiClient)
+        return inAppFetcher
     }
     
     let dateProvider: DateProviderProtocol = SystemDateProvider()
