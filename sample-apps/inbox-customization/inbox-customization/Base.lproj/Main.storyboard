@@ -18,11 +18,22 @@
                     <connections>
                         <segue destination="KFO-by-C9K" kind="relationship" relationship="viewControllers" id="A2T-Xc-oGB"/>
                         <segue destination="oVf-jP-hU4" kind="relationship" relationship="viewControllers" id="SRW-oN-xJI"/>
+                        <segue destination="ZCF-Ok-EfA" kind="relationship" relationship="viewControllers" id="tPJ-La-t0b"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fnM-Fs-0It" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-1841" y="105"/>
+        </scene>
+        <!--AdvancedInbox-->
+        <scene sceneID="1k6-BI-nRJ">
+            <objects>
+                <viewControllerPlaceholder storyboardName="AdvancedInbox" referencedIdentifier="AdvancedInbox" id="ZCF-Ok-EfA" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Item" id="VjA-Rl-drU"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Uux-Kw-DwY" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1263" y="-160"/>
         </scene>
         <!--SimpleInbox-->
         <scene sceneID="Fae-4S-4ee">

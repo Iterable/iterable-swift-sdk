@@ -55,6 +55,9 @@
             "title": "Buy latte",
             "subtitle": "Latte is tasty. From our farm to your table. Get some today.",
             "icon": "https://somewhere.com/latte.png"
+        },
+        "customPayload": {
+            "customCellName": "AdvancedInboxCell"
         }
     },
 ]

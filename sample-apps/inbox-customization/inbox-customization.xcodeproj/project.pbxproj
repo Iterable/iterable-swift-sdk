@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		AC98362123CE1F88003B225B /* MockInAppFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC98362023CE1F88003B225B /* MockInAppFetcher.swift */; };
+		ACAA450923D0A9310004E347 /* AdvancedInboxCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = ACAA450823D0A9310004E347 /* AdvancedInboxCell.xib */; };
+		ACAA450B23D0AB9C0004E347 /* AdvancedInboxCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAA450A23D0AB9C0004E347 /* AdvancedInboxCell.swift */; };
+		ACAA450D23D0B6F80004E347 /* AdvancedInboxViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAA450C23D0B6F80004E347 /* AdvancedInboxViewDelegate.swift */; };
+		ACAA450F23D0BA720004E347 /* AdvancedInbox.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACAA450E23D0BA720004E347 /* AdvancedInbox.storyboard */; };
 		ACC55E0223CD7DB600CE77C6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC55E0123CD7DB600CE77C6 /* AppDelegate.swift */; };
 		ACC55E0623CD7DB600CE77C6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC55E0523CD7DB600CE77C6 /* ViewController.swift */; };
 		ACC55E0923CD7DB600CE77C6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACC55E0723CD7DB600CE77C6 /* Main.storyboard */; };
@@ -31,6 +35,11 @@
 
 /* Begin PBXFileReference section */
 		AC98362023CE1F88003B225B /* MockInAppFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockInAppFetcher.swift; sourceTree = "<group>"; };
+		ACAA450723D0A8370004E347 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		ACAA450823D0A9310004E347 /* AdvancedInboxCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AdvancedInboxCell.xib; sourceTree = "<group>"; };
+		ACAA450A23D0AB9C0004E347 /* AdvancedInboxCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedInboxCell.swift; sourceTree = "<group>"; };
+		ACAA450C23D0B6F80004E347 /* AdvancedInboxViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedInboxViewDelegate.swift; sourceTree = "<group>"; };
+		ACAA450E23D0BA720004E347 /* AdvancedInbox.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AdvancedInbox.storyboard; sourceTree = "<group>"; };
 		ACC55DFE23CD7DB600CE77C6 /* inbox-customization.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "inbox-customization.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ACC55E0123CD7DB600CE77C6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		ACC55E0523CD7DB600CE77C6 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -66,6 +75,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		ACAA450623D0A7C30004E347 /* Advanced Inbox */ = {
+			isa = PBXGroup;
+			children = (
+				ACAA450723D0A8370004E347 /* README.md */,
+				ACAA450E23D0BA720004E347 /* AdvancedInbox.storyboard */,
+				ACAA450823D0A9310004E347 /* AdvancedInboxCell.xib */,
+				ACAA450A23D0AB9C0004E347 /* AdvancedInboxCell.swift */,
+				ACAA450C23D0B6F80004E347 /* AdvancedInboxViewDelegate.swift */,
+			);
+			path = "Advanced Inbox";
+			sourceTree = "<group>";
+		};
 		ACC55DF523CD7DB600CE77C6 = {
 			isa = PBXGroup;
 			children = (
@@ -154,6 +175,7 @@
 			children = (
 				ACE78E3D23D02FEF00492D03 /* Simple Inbox */,
 				ACE78E4023D0354800492D03 /* Custom Inbox */,
+				ACAA450623D0A7C30004E347 /* Advanced Inbox */,
 			);
 			path = "Custom Inboxes";
 			sourceTree = "<group>";
@@ -224,8 +246,10 @@
 			files = (
 				ACE78E3C23D0288400492D03 /* inbox-messages-1.json in Resources */,
 				ACE78E4A23D063BD00492D03 /* black-coffee.png in Resources */,
+				ACAA450923D0A9310004E347 /* AdvancedInboxCell.xib in Resources */,
 				ACE78E3423CF990200492D03 /* mocha.png in Resources */,
 				ACE78E3A23D0288400492D03 /* inbox-messages-2.json in Resources */,
+				ACAA450F23D0BA720004E347 /* AdvancedInbox.storyboard in Resources */,
 				ACE78E4223D036C500492D03 /* CustomInbox1.storyboard in Resources */,
 				ACE78E3B23D0288400492D03 /* inbox-messages-3.json in Resources */,
 				ACE78E4E23D0A53300492D03 /* latte.png in Resources */,
@@ -246,7 +270,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ACAA450D23D0B6F80004E347 /* AdvancedInboxViewDelegate.swift in Sources */,
 				ACC55E0623CD7DB600CE77C6 /* ViewController.swift in Sources */,
+				ACAA450B23D0AB9C0004E347 /* AdvancedInboxCell.swift in Sources */,
 				ACC55E2023CE1B5900CE77C6 /* DataManager.swift in Sources */,
 				ACC55E0223CD7DB600CE77C6 /* AppDelegate.swift in Sources */,
 				AC98362123CE1F88003B225B /* MockInAppFetcher.swift in Sources */,
