@@ -20,6 +20,7 @@
 		ACE78E3A23D0288400492D03 /* inbox-messages-2.json in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3723D0288400492D03 /* inbox-messages-2.json */; };
 		ACE78E3B23D0288400492D03 /* inbox-messages-3.json in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3823D0288400492D03 /* inbox-messages-3.json */; };
 		ACE78E3C23D0288400492D03 /* inbox-messages-1.json in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3923D0288400492D03 /* inbox-messages-1.json */; };
+		ACE78E3F23D0306300492D03 /* SimpleInbox.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3E23D0306300492D03 /* SimpleInbox.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +38,7 @@
 		ACE78E3723D0288400492D03 /* inbox-messages-2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "inbox-messages-2.json"; sourceTree = "<group>"; };
 		ACE78E3823D0288400492D03 /* inbox-messages-3.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "inbox-messages-3.json"; sourceTree = "<group>"; };
 		ACE78E3923D0288400492D03 /* inbox-messages-1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "inbox-messages-1.json"; sourceTree = "<group>"; };
+		ACE78E3E23D0306300492D03 /* SimpleInbox.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = SimpleInbox.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +73,7 @@
 		ACC55E0023CD7DB600CE77C6 /* inbox-customization */ = {
 			isa = PBXGroup;
 			children = (
+				ACE78E3D23D02FEF00492D03 /* Simple Inbox */,
 				ACC55E2123CE1C2500CE77C6 /* Mock Data */,
 				ACC55E0123CD7DB600CE77C6 /* AppDelegate.swift */,
 				ACC55E0523CD7DB600CE77C6 /* ViewController.swift */,
@@ -109,6 +112,14 @@
 				AC98362023CE1F88003B225B /* MockInAppFetcher.swift */,
 			);
 			path = "Mock Data";
+			sourceTree = "<group>";
+		};
+		ACE78E3D23D02FEF00492D03 /* Simple Inbox */ = {
+			isa = PBXGroup;
+			children = (
+				ACE78E3E23D0306300492D03 /* SimpleInbox.storyboard */,
+			);
+			path = "Simple Inbox";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -182,6 +193,7 @@
 				ACC55E0E23CD7DBA00CE77C6 /* LaunchScreen.storyboard in Resources */,
 				ACC55E0B23CD7DBA00CE77C6 /* Assets.xcassets in Resources */,
 				ACC55E0923CD7DB600CE77C6 /* Main.storyboard in Resources */,
+				ACE78E3F23D0306300492D03 /* SimpleInbox.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

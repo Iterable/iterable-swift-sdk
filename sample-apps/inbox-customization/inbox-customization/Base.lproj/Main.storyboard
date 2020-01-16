@@ -16,30 +16,22 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBar>
                     <connections>
-                        <segue destination="Cce-ge-saX" kind="relationship" relationship="viewControllers" id="rkX-WM-oGX"/>
+                        <segue destination="KFO-by-C9K" kind="relationship" relationship="viewControllers" id="A2T-Xc-oGB"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fnM-Fs-0It" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-1841" y="105"/>
         </scene>
-        <!--Item-->
-        <scene sceneID="dBA-Fp-5KM">
+        <!--SimpleInbox-->
+        <scene sceneID="Fae-4S-4ee">
             <objects>
-                <navigationController id="Cce-ge-saX" customClass="IterableInboxNavigationViewController" customModule="IterableSDK" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Item" id="2Jc-kC-74D"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="jID-QM-zuh">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                    <userDefinedRuntimeAttributes>
-                        <userDefinedRuntimeAttribute type="string" keyPath="navTitle" value="Inbox"/>
-                        <userDefinedRuntimeAttribute type="boolean" keyPath="isPopup" value="NO"/>
-                    </userDefinedRuntimeAttributes>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="DJj-ba-yGQ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <viewControllerPlaceholder storyboardName="SimpleInbox" referencedIdentifier="SimpleInbox" id="KFO-by-C9K" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Item" id="Yzo-cd-gUy"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="69p-vh-GgX" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1069" y="102"/>
+            <point key="canvasLocation" x="-1305" y="-234"/>
         </scene>
     </scenes>
 </document>
