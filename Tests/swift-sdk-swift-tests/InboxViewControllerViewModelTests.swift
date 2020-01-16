@@ -412,7 +412,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
     }
     
     private class MockViewModelView: InboxViewControllerViewModelView {
-        let currentlyVisibleRowIndices: [Int] = []
+        let currentlyVisibleRowIndexPaths: [IndexPath] = []
         
         var onImageLoadedCallback: ((IndexPath) -> Void)?
         

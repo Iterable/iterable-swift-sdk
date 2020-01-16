@@ -10,7 +10,7 @@ protocol InboxViewControllerViewModelView: AnyObject {
     // All these methods should be called on the main thread
     func onViewModelChanged(diff: [SectionedDiffStep<Int, InboxMessageViewModel>])
     func onImageLoaded(for indexPath: IndexPath)
-    var currentlyVisibleRowIndices: [Int] { get }
+    var currentlyVisibleRowIndexPaths: [IndexPath] { get }
 }
 
 protocol InboxViewControllerViewModelProtocol {
@@ -188,12 +188,16 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
             return []
         }
         
-        return view.currentlyVisibleRowIndices.compactMap { index in
-            let allMessages = allMessagesInSections()
-            guard index < allMessages.count else {
+        return view.currentlyVisibleRowIndexPaths.compactMap { indexPath in
+            guard indexPath.section < sectionedMessages.sectionsAndValues.count else {
                 return nil
             }
-            let message = allMessages[index].iterableMessage
+            let sectionMessages = sectionedMessages.sectionsAndValues[indexPath.section].1
+            guard indexPath.row < sectionMessages.count else {
+                return nil
+            }
+            
+            let message = sectionMessages[indexPath.row].iterableMessage
             return InboxImpressionTracker.RowInfo(messageId: message.messageId, silentInbox: message.silentInbox)
         }
     }
