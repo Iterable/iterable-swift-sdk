@@ -7,25 +7,26 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Simple Inbox-->
-        <scene sceneID="eLf-6N-pv0">
+        <!--Custom Inbox-->
+        <scene sceneID="PjQ-ZX-3kQ">
             <objects>
-                <viewController storyboardIdentifier="SimpleInbox" id="i9O-0h-F20" customClass="IterableInboxNavigationViewController" customModule="IterableSDK" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="exe-2K-Ib9">
+                <viewController storyboardIdentifier="CustomInbox1" id="tnn-Vq-UwR" customClass="IterableInboxNavigationViewController" customModule="IterableSDK" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="zbF-BW-DKm">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
-                        <viewLayoutGuide key="safeArea" id="3yS-E3-Dbw"/>
+                        <viewLayoutGuide key="safeArea" id="sFw-lR-ZHo"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Simple Inbox" image="Mail" id="u5r-so-CAZ"/>
+                    <tabBarItem key="tabBarItem" title="Custom Inbox" image="Mail" id="5Ku-oQ-ruO"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <userDefinedRuntimeAttributes>
-                        <userDefinedRuntimeAttribute type="string" keyPath="navTitle" value="Simple Inbox"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="cellNibName" value="CustomInboxCell1"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="navTitle" value="Custom Inbox"/>
                     </userDefinedRuntimeAttributes>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Ftx-B8-GHR" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="enG-0r-NRj" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="90" y="150"/>
+            <point key="canvasLocation" x="-9" y="-60"/>
         </scene>
     </scenes>
     <resources>

@@ -21,6 +21,8 @@
 		ACE78E3B23D0288400492D03 /* inbox-messages-3.json in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3823D0288400492D03 /* inbox-messages-3.json */; };
 		ACE78E3C23D0288400492D03 /* inbox-messages-1.json in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3923D0288400492D03 /* inbox-messages-1.json */; };
 		ACE78E3F23D0306300492D03 /* SimpleInbox.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3E23D0306300492D03 /* SimpleInbox.storyboard */; };
+		ACE78E4223D036C500492D03 /* CustomInbox1.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E4123D036C500492D03 /* CustomInbox1.storyboard */; };
+		ACE78E4423D036ED00492D03 /* CustomInboxCell1.xib in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E4323D036ED00492D03 /* CustomInboxCell1.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +41,8 @@
 		ACE78E3823D0288400492D03 /* inbox-messages-3.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "inbox-messages-3.json"; sourceTree = "<group>"; };
 		ACE78E3923D0288400492D03 /* inbox-messages-1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "inbox-messages-1.json"; sourceTree = "<group>"; };
 		ACE78E3E23D0306300492D03 /* SimpleInbox.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = SimpleInbox.storyboard; sourceTree = "<group>"; };
+		ACE78E4123D036C500492D03 /* CustomInbox1.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = CustomInbox1.storyboard; sourceTree = "<group>"; };
+		ACE78E4323D036ED00492D03 /* CustomInboxCell1.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CustomInboxCell1.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,6 +77,7 @@
 		ACC55E0023CD7DB600CE77C6 /* inbox-customization */ = {
 			isa = PBXGroup;
 			children = (
+				ACE78E4023D0354800492D03 /* Custom Inbox */,
 				ACE78E3D23D02FEF00492D03 /* Simple Inbox */,
 				ACC55E2123CE1C2500CE77C6 /* Mock Data */,
 				ACC55E0123CD7DB600CE77C6 /* AppDelegate.swift */,
@@ -120,6 +125,15 @@
 				ACE78E3E23D0306300492D03 /* SimpleInbox.storyboard */,
 			);
 			path = "Simple Inbox";
+			sourceTree = "<group>";
+		};
+		ACE78E4023D0354800492D03 /* Custom Inbox */ = {
+			isa = PBXGroup;
+			children = (
+				ACE78E4323D036ED00492D03 /* CustomInboxCell1.xib */,
+				ACE78E4123D036C500492D03 /* CustomInbox1.storyboard */,
+			);
+			path = "Custom Inbox";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -189,9 +203,11 @@
 				ACE78E3C23D0288400492D03 /* inbox-messages-1.json in Resources */,
 				ACE78E3423CF990200492D03 /* mocha.png in Resources */,
 				ACE78E3A23D0288400492D03 /* inbox-messages-2.json in Resources */,
+				ACE78E4223D036C500492D03 /* CustomInbox1.storyboard in Resources */,
 				ACE78E3B23D0288400492D03 /* inbox-messages-3.json in Resources */,
 				ACC55E0E23CD7DBA00CE77C6 /* LaunchScreen.storyboard in Resources */,
 				ACC55E0B23CD7DBA00CE77C6 /* Assets.xcassets in Resources */,
+				ACE78E4423D036ED00492D03 /* CustomInboxCell1.xib in Resources */,
 				ACC55E0923CD7DB600CE77C6 /* Main.storyboard in Resources */,
 				ACE78E3F23D0306300492D03 /* SimpleInbox.storyboard in Resources */,
 			);
