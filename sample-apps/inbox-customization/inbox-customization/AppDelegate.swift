@@ -11,13 +11,11 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+    func application(_: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+
+        DataManager.initializeIterableApi(launchOptions: launchOptions)
         
-        IterableAPI.initialize(apiKey: "undefined")
-        IterableAPI.email = "user@example.com"
         return true
     }
-
 }
 

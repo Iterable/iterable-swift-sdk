@@ -7,15 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AC98362123CE1F88003B225B /* MockInAppFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC98362023CE1F88003B225B /* MockInAppFetcher.swift */; };
 		ACC55E0223CD7DB600CE77C6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC55E0123CD7DB600CE77C6 /* AppDelegate.swift */; };
 		ACC55E0623CD7DB600CE77C6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC55E0523CD7DB600CE77C6 /* ViewController.swift */; };
 		ACC55E0923CD7DB600CE77C6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACC55E0723CD7DB600CE77C6 /* Main.storyboard */; };
 		ACC55E0B23CD7DBA00CE77C6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ACC55E0A23CD7DBA00CE77C6 /* Assets.xcassets */; };
 		ACC55E0E23CD7DBA00CE77C6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACC55E0C23CD7DBA00CE77C6 /* LaunchScreen.storyboard */; };
 		ACC55E1D23CD871E00CE77C6 /* IterableSDK in Frameworks */ = {isa = PBXBuildFile; productRef = ACC55E1C23CD871E00CE77C6 /* IterableSDK */; };
+		ACC55E2023CE1B5900CE77C6 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC55E1F23CE1B5900CE77C6 /* DataManager.swift */; };
+		ACC55E2323CE1C4600CE77C6 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC55E2223CE1C4600CE77C6 /* MockNetworkSession.swift */; };
+		ACE78E3423CF990200492D03 /* mocha.png in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3323CF990200492D03 /* mocha.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AC98362023CE1F88003B225B /* MockInAppFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockInAppFetcher.swift; sourceTree = "<group>"; };
 		ACC55DFE23CD7DB600CE77C6 /* inbox-customization.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "inbox-customization.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ACC55E0123CD7DB600CE77C6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		ACC55E0523CD7DB600CE77C6 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -23,6 +28,9 @@
 		ACC55E0A23CD7DBA00CE77C6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		ACC55E0D23CD7DBA00CE77C6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		ACC55E0F23CD7DBA00CE77C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		ACC55E1F23CE1B5900CE77C6 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
+		ACC55E2223CE1C4600CE77C6 /* MockNetworkSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockNetworkSession.swift; sourceTree = "<group>"; };
+		ACE78E3323CF990200492D03 /* mocha.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mocha.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +65,7 @@
 		ACC55E0023CD7DB600CE77C6 /* inbox-customization */ = {
 			isa = PBXGroup;
 			children = (
+				ACC55E2123CE1C2500CE77C6 /* Mock Data */,
 				ACC55E0123CD7DB600CE77C6 /* AppDelegate.swift */,
 				ACC55E0523CD7DB600CE77C6 /* ViewController.swift */,
 				ACC55E0723CD7DB600CE77C6 /* Main.storyboard */,
@@ -80,6 +89,17 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		ACC55E2123CE1C2500CE77C6 /* Mock Data */ = {
+			isa = PBXGroup;
+			children = (
+				ACE78E3323CF990200492D03 /* mocha.png */,
+				ACC55E1F23CE1B5900CE77C6 /* DataManager.swift */,
+				ACC55E2223CE1C4600CE77C6 /* MockNetworkSession.swift */,
+				AC98362023CE1F88003B225B /* MockInAppFetcher.swift */,
+			);
+			path = "Mock Data";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -146,6 +166,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ACE78E3423CF990200492D03 /* mocha.png in Resources */,
 				ACC55E0E23CD7DBA00CE77C6 /* LaunchScreen.storyboard in Resources */,
 				ACC55E0B23CD7DBA00CE77C6 /* Assets.xcassets in Resources */,
 				ACC55E0923CD7DB600CE77C6 /* Main.storyboard in Resources */,
@@ -160,7 +181,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				ACC55E0623CD7DB600CE77C6 /* ViewController.swift in Sources */,
+				ACC55E2023CE1B5900CE77C6 /* DataManager.swift in Sources */,
 				ACC55E0223CD7DB600CE77C6 /* AppDelegate.swift in Sources */,
+				AC98362123CE1F88003B225B /* MockInAppFetcher.swift in Sources */,
+				ACC55E2323CE1C4600CE77C6 /* MockNetworkSession.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
