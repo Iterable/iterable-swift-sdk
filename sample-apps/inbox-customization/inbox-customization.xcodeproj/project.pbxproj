@@ -23,6 +23,7 @@
 		ACE78E3F23D0306300492D03 /* SimpleInbox.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3E23D0306300492D03 /* SimpleInbox.storyboard */; };
 		ACE78E4223D036C500492D03 /* CustomInbox1.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E4123D036C500492D03 /* CustomInbox1.storyboard */; };
 		ACE78E4423D036ED00492D03 /* CustomInboxCell1.xib in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E4323D036ED00492D03 /* CustomInboxCell1.xib */; };
+		ACE78E4723D050BD00492D03 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E4623D050BD00492D03 /* README.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,6 +44,8 @@
 		ACE78E3E23D0306300492D03 /* SimpleInbox.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = SimpleInbox.storyboard; sourceTree = "<group>"; };
 		ACE78E4123D036C500492D03 /* CustomInbox1.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = CustomInbox1.storyboard; sourceTree = "<group>"; };
 		ACE78E4323D036ED00492D03 /* CustomInboxCell1.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CustomInboxCell1.xib; sourceTree = "<group>"; };
+		ACE78E4623D050BD00492D03 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		ACE78E4823D053DD00492D03 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,8 +80,7 @@
 		ACC55E0023CD7DB600CE77C6 /* inbox-customization */ = {
 			isa = PBXGroup;
 			children = (
-				ACE78E4023D0354800492D03 /* Custom Inbox */,
-				ACE78E3D23D02FEF00492D03 /* Simple Inbox */,
+				ACE78E4523D0397E00492D03 /* Custom Inboxes */,
 				ACC55E2123CE1C2500CE77C6 /* Mock Data */,
 				ACC55E0123CD7DB600CE77C6 /* AppDelegate.swift */,
 				ACC55E0523CD7DB600CE77C6 /* ViewController.swift */,
@@ -122,6 +124,7 @@
 		ACE78E3D23D02FEF00492D03 /* Simple Inbox */ = {
 			isa = PBXGroup;
 			children = (
+				ACE78E4623D050BD00492D03 /* README.md */,
 				ACE78E3E23D0306300492D03 /* SimpleInbox.storyboard */,
 			);
 			path = "Simple Inbox";
@@ -130,10 +133,20 @@
 		ACE78E4023D0354800492D03 /* Custom Inbox */ = {
 			isa = PBXGroup;
 			children = (
+				ACE78E4823D053DD00492D03 /* README.md */,
 				ACE78E4323D036ED00492D03 /* CustomInboxCell1.xib */,
 				ACE78E4123D036C500492D03 /* CustomInbox1.storyboard */,
 			);
 			path = "Custom Inbox";
+			sourceTree = "<group>";
+		};
+		ACE78E4523D0397E00492D03 /* Custom Inboxes */ = {
+			isa = PBXGroup;
+			children = (
+				ACE78E3D23D02FEF00492D03 /* Simple Inbox */,
+				ACE78E4023D0354800492D03 /* Custom Inbox */,
+			);
+			path = "Custom Inboxes";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -209,6 +222,7 @@
 				ACC55E0B23CD7DBA00CE77C6 /* Assets.xcassets in Resources */,
 				ACE78E4423D036ED00492D03 /* CustomInboxCell1.xib in Resources */,
 				ACC55E0923CD7DB600CE77C6 /* Main.storyboard in Resources */,
+				ACE78E4723D050BD00492D03 /* README.md in Resources */,
 				ACE78E3F23D0306300492D03 /* SimpleInbox.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

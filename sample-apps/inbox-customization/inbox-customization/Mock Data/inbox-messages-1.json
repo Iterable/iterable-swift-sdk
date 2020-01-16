@@ -3,14 +3,15 @@
         "saveToInbox": true,
         "content": {
             "contentType": "html",
-            "html": "<a href='https://www.site1.com'>Click Here1</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"
+            "html": "<a href='iterable://dismiss'>Click Here1</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"
         },
         "trigger": {"type": "never"},
         "messageId": "message1",
         "campaignId": "campaign1",
         "inboxMetadata": {
-            "title": "title1",
-            "subtitle": "subTitle1"
+            "title": "Buy Mocha",
+            "subtitle": "Mocha coffee is on sale now. This is an awesome opportunity for you.",
+            "icon": "https://somewhere.com/mocha.png"
         }
     },
     {
