@@ -24,6 +24,9 @@
 		ACE78E4223D036C500492D03 /* CustomInbox1.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E4123D036C500492D03 /* CustomInbox1.storyboard */; };
 		ACE78E4423D036ED00492D03 /* CustomInboxCell1.xib in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E4323D036ED00492D03 /* CustomInboxCell1.xib */; };
 		ACE78E4723D050BD00492D03 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E4623D050BD00492D03 /* README.md */; };
+		ACE78E4A23D063BD00492D03 /* black-coffee.png in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E4923D063AE00492D03 /* black-coffee.png */; };
+		ACE78E4C23D0A25400492D03 /* cappuccino.png in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E4B23D0A24800492D03 /* cappuccino.png */; };
+		ACE78E4E23D0A53300492D03 /* latte.png in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E4D23D0A52E00492D03 /* latte.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +49,9 @@
 		ACE78E4323D036ED00492D03 /* CustomInboxCell1.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CustomInboxCell1.xib; sourceTree = "<group>"; };
 		ACE78E4623D050BD00492D03 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		ACE78E4823D053DD00492D03 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		ACE78E4923D063AE00492D03 /* black-coffee.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "black-coffee.png"; sourceTree = "<group>"; };
+		ACE78E4B23D0A24800492D03 /* cappuccino.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cappuccino.png; sourceTree = "<group>"; };
+		ACE78E4D23D0A52E00492D03 /* latte.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = latte.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +120,9 @@
 				ACE78E3723D0288400492D03 /* inbox-messages-2.json */,
 				ACE78E3823D0288400492D03 /* inbox-messages-3.json */,
 				ACE78E3323CF990200492D03 /* mocha.png */,
+				ACE78E4923D063AE00492D03 /* black-coffee.png */,
+				ACE78E4B23D0A24800492D03 /* cappuccino.png */,
+				ACE78E4D23D0A52E00492D03 /* latte.png */,
 				ACC55E1F23CE1B5900CE77C6 /* DataManager.swift */,
 				ACC55E2223CE1C4600CE77C6 /* MockNetworkSession.swift */,
 				AC98362023CE1F88003B225B /* MockInAppFetcher.swift */,
@@ -214,11 +223,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				ACE78E3C23D0288400492D03 /* inbox-messages-1.json in Resources */,
+				ACE78E4A23D063BD00492D03 /* black-coffee.png in Resources */,
 				ACE78E3423CF990200492D03 /* mocha.png in Resources */,
 				ACE78E3A23D0288400492D03 /* inbox-messages-2.json in Resources */,
 				ACE78E4223D036C500492D03 /* CustomInbox1.storyboard in Resources */,
 				ACE78E3B23D0288400492D03 /* inbox-messages-3.json in Resources */,
+				ACE78E4E23D0A53300492D03 /* latte.png in Resources */,
 				ACC55E0E23CD7DBA00CE77C6 /* LaunchScreen.storyboard in Resources */,
+				ACE78E4C23D0A25400492D03 /* cappuccino.png in Resources */,
 				ACC55E0B23CD7DBA00CE77C6 /* Assets.xcassets in Resources */,
 				ACE78E4423D036ED00492D03 /* CustomInboxCell1.xib in Resources */,
 				ACC55E0923CD7DB600CE77C6 /* Main.storyboard in Resources */,

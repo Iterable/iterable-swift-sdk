@@ -39,6 +39,9 @@ final class DataManager {
     private static func createUrlToDataMapper() -> [String: Data?] {
         var mapper = [String: Data?]()
         mapper[#"mocha.png"#] = DataManager.loadData(from: "mocha", withExtension: "png")
+        mapper[#"black-coffee.png"#] = DataManager.loadData(from: "black-coffee", withExtension: "png")
+        mapper[#"cappuccino.png"#] = DataManager.loadData(from: "cappuccino", withExtension: "png")
+        mapper[#"latte.png"#] = DataManager.loadData(from: "latte", withExtension: "png")
         mapper[".*"] = nil
         return mapper
     }

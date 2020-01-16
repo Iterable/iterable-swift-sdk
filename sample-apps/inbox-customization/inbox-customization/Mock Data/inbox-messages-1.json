@@ -9,7 +9,7 @@
         "messageId": "message1",
         "campaignId": "campaign1",
         "inboxMetadata": {
-            "title": "Buy Mocha",
+            "title": "Buy mocha",
             "subtitle": "Mocha coffee is on sale now. This is an awesome opportunity for you.",
             "icon": "https://somewhere.com/mocha.png"
         }
@@ -18,27 +18,43 @@
         "saveToInbox": true,
         "content": {
             "contentType": "html",
-            "html": "<a href='https://www.site2.com'>Click Here2</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"
+            "html": "<a href='iterable://dismiss'>Click Here2</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"
         },
         "trigger": {"type": "never"},
         "messageId": "message2",
         "campaignId": "campaign2",
         "inboxMetadata": {
-            "title": "title2",
-            "subtitle": "subTitle2"
+            "title": "Buy black coffee",
+            "subtitle": "Black coffee is good for weight loss. Buy now. Regret later.",
+            "icon": "https://somewhere.com/black-coffee.png"
         }
     },
     {
         "saveToInbox": true,
         "content": {
             "contentType": "html",
-            "html": "<a href='https://www.site3.com'>Click Here3</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"},
+            "html": "<a href='iterable://dismiss'>Click Here3</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"},
         "trigger": {"type": "never"},
         "messageId": "message3",
         "campaignId": "campaign3",
         "inboxMetadata": {
-            "title": "title3",
-            "subtitle": "subTitle3"
+            "title": "Buy cappuccino",
+            "subtitle": "Cappuccino is good for your soul. Act now. Time is limited.",
+            "icon": "https://somewhere.com/cappuccino.png"
+        }
+    },
+    {
+        "saveToInbox": true,
+        "content": {
+            "contentType": "html",
+            "html": "<a href='iterable://dismiss'>Click Here4</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"},
+        "trigger": {"type": "never"},
+        "messageId": "message4",
+        "campaignId": "campaign4",
+        "inboxMetadata": {
+            "title": "Buy latte",
+            "subtitle": "Latte is tasty. From our farm to your table. Get some today.",
+            "icon": "https://somewhere.com/latte.png"
         }
     },
 ]
