@@ -440,7 +440,7 @@ extension IterableInboxViewController: InboxViewControllerViewModelView {
         tableView.reloadRows(at: [indexPath], with: .automatic)
     }
     
-    var currentlyVisibleRowIndices: [Int] {
+    var currentlyVisibleRowIndexPaths: [IndexPath] {
         return tableView.indexPathsForVisibleRows?.compactMap(isRowVisible(atIndexPath:)) ?? []
     }
     
@@ -467,7 +467,7 @@ extension IterableInboxViewController: InboxViewControllerViewModelView {
         viewModel.endedUpdates()
     }
     
-    private func isRowVisible(atIndexPath indexPath: IndexPath) -> Int? {
+    private func isRowVisible(atIndexPath indexPath: IndexPath) -> IndexPath? {
         let topMargin = CGFloat(10.0)
         let bottomMargin = CGFloat(10.0)
         let frame = tableView.frame
@@ -484,7 +484,7 @@ extension IterableInboxViewController: InboxViewControllerViewModelView {
         let cellRect = tableView.rectForRow(at: indexPath)
         let convertedRect = tableView.convert(cellRect, to: tableView.superview)
         
-        return newRect.contains(convertedRect) ? indexPath.row : nil
+        return newRect.contains(convertedRect) ? indexPath : nil
     }
 }
 
