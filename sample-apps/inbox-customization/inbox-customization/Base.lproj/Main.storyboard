@@ -3,6 +3,7 @@
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -16,6 +17,7 @@
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </tabBar>
                     <connections>
+                        <segue destination="vrt-M8-Y9O" kind="relationship" relationship="viewControllers" id="te7-5y-uVq"/>
                         <segue destination="KFO-by-C9K" kind="relationship" relationship="viewControllers" id="A2T-Xc-oGB"/>
                         <segue destination="oVf-jP-hU4" kind="relationship" relationship="viewControllers" id="SRW-oN-xJI"/>
                         <segue destination="ZCF-Ok-EfA" kind="relationship" relationship="viewControllers" id="tPJ-La-t0b"/>
@@ -33,7 +35,79 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Uux-Kw-DwY" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1263" y="-160"/>
+            <point key="canvasLocation" x="-1286" y="380"/>
+        </scene>
+        <!--Main View Controller-->
+        <scene sceneID="YYU-HN-4MH">
+            <objects>
+                <viewController id="IMo-X7-Wfe" customClass="MainViewController" customModule="inbox_customization" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="sXK-ip-Vcc">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="xpI-cR-rQn">
+                                <rect key="frame" x="127" y="390.5" width="160" height="120"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NOp-9K-ovK">
+                                        <rect key="frame" x="0.0" y="0.0" width="160" height="30"/>
+                                        <state key="normal" title="Simple Inbox"/>
+                                        <connections>
+                                            <action selector="simpleInboxTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="gnp-Wa-Ah8"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QsU-YC-5M9">
+                                        <rect key="frame" x="0.0" y="30" width="160" height="30"/>
+                                        <state key="normal" title="Simple Inbox 2"/>
+                                        <connections>
+                                            <action selector="simpleInbox2Tapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="sI5-nw-pOI"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IYv-Yj-to6">
+                                        <rect key="frame" x="0.0" y="60" width="160" height="30"/>
+                                        <state key="normal" title="Inbox With Custom Cell"/>
+                                        <connections>
+                                            <action selector="inboxWithCustomCellTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="rLc-f2-9pA"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Jyj-fe-g1J">
+                                        <rect key="frame" x="0.0" y="90" width="160" height="30"/>
+                                        <state key="normal" title="Change Date Format"/>
+                                        <connections>
+                                            <action selector="changeDateFormatTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="2HJ-49-jrW"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="xpI-cR-rQn" firstAttribute="centerY" secondItem="2YF-iu-gk6" secondAttribute="centerY" id="Cct-ai-dwK"/>
+                            <constraint firstItem="xpI-cR-rQn" firstAttribute="centerX" secondItem="2YF-iu-gk6" secondAttribute="centerX" id="sSi-gD-wUB"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="2YF-iu-gk6"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="bYR-IY-rN8"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="NZx-VM-wL4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-254" y="-27"/>
+        </scene>
+        <!--Home-->
+        <scene sceneID="U7q-mz-YbW">
+            <objects>
+                <navigationController id="vrt-M8-Y9O" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Home" image="Home" id="A2w-gw-bKp"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Tf6-L0-C0v">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="IMo-X7-Wfe" kind="relationship" relationship="rootViewController" id="87L-78-zhv"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="DNH-A8-BKZ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1074" y="-27"/>
         </scene>
         <!--SimpleInbox-->
         <scene sceneID="Fae-4S-4ee">
@@ -43,7 +117,7 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="69p-vh-GgX" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1305" y="-234"/>
+            <point key="canvasLocation" x="-1299" y="308"/>
         </scene>
         <!--CustomInbox-->
         <scene sceneID="VpQ-im-kZK">
@@ -53,7 +127,10 @@
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Mgv-Ng-xQm" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1296" y="-198"/>
+            <point key="canvasLocation" x="-1300" y="341"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="Home" width="22" height="22"/>
+    </resources>
 </document>

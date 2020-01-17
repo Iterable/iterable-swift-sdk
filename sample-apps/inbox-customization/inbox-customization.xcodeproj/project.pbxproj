@@ -12,8 +12,8 @@
 		ACAA450B23D0AB9C0004E347 /* AdvancedInboxCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAA450A23D0AB9C0004E347 /* AdvancedInboxCell.swift */; };
 		ACAA450D23D0B6F80004E347 /* AdvancedInboxViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAA450C23D0B6F80004E347 /* AdvancedInboxViewDelegate.swift */; };
 		ACAA450F23D0BA720004E347 /* AdvancedInbox.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACAA450E23D0BA720004E347 /* AdvancedInbox.storyboard */; };
+		ACBEB60123D233D40046B5A1 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBEB60023D233D40046B5A1 /* MainViewController.swift */; };
 		ACC55E0223CD7DB600CE77C6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC55E0123CD7DB600CE77C6 /* AppDelegate.swift */; };
-		ACC55E0623CD7DB600CE77C6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC55E0523CD7DB600CE77C6 /* ViewController.swift */; };
 		ACC55E0923CD7DB600CE77C6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACC55E0723CD7DB600CE77C6 /* Main.storyboard */; };
 		ACC55E0B23CD7DBA00CE77C6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ACC55E0A23CD7DBA00CE77C6 /* Assets.xcassets */; };
 		ACC55E0E23CD7DBA00CE77C6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACC55E0C23CD7DBA00CE77C6 /* LaunchScreen.storyboard */; };
@@ -40,9 +40,9 @@
 		ACAA450A23D0AB9C0004E347 /* AdvancedInboxCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedInboxCell.swift; sourceTree = "<group>"; };
 		ACAA450C23D0B6F80004E347 /* AdvancedInboxViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedInboxViewDelegate.swift; sourceTree = "<group>"; };
 		ACAA450E23D0BA720004E347 /* AdvancedInbox.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AdvancedInbox.storyboard; sourceTree = "<group>"; };
+		ACBEB60023D233D40046B5A1 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		ACC55DFE23CD7DB600CE77C6 /* inbox-customization.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "inbox-customization.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ACC55E0123CD7DB600CE77C6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		ACC55E0523CD7DB600CE77C6 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		ACC55E0823CD7DB600CE77C6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		ACC55E0A23CD7DBA00CE77C6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		ACC55E0D23CD7DBA00CE77C6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -108,13 +108,13 @@
 			isa = PBXGroup;
 			children = (
 				ACE78E4523D0397E00492D03 /* Custom Inboxes */,
-				ACC55E2123CE1C2500CE77C6 /* Mock Data */,
 				ACC55E0123CD7DB600CE77C6 /* AppDelegate.swift */,
-				ACC55E0523CD7DB600CE77C6 /* ViewController.swift */,
+				ACBEB60023D233D40046B5A1 /* MainViewController.swift */,
 				ACC55E0723CD7DB600CE77C6 /* Main.storyboard */,
 				ACC55E0C23CD7DBA00CE77C6 /* LaunchScreen.storyboard */,
 				ACC55E0A23CD7DBA00CE77C6 /* Assets.xcassets */,
 				ACC55E1523CD801E00CE77C6 /* Supporting Files */,
+				ACC55E2123CE1C2500CE77C6 /* Mock Data */,
 			);
 			path = "inbox-customization";
 			sourceTree = "<group>";
@@ -271,12 +271,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				ACAA450D23D0B6F80004E347 /* AdvancedInboxViewDelegate.swift in Sources */,
-				ACC55E0623CD7DB600CE77C6 /* ViewController.swift in Sources */,
 				ACAA450B23D0AB9C0004E347 /* AdvancedInboxCell.swift in Sources */,
 				ACC55E2023CE1B5900CE77C6 /* DataManager.swift in Sources */,
 				ACC55E0223CD7DB600CE77C6 /* AppDelegate.swift in Sources */,
 				AC98362123CE1F88003B225B /* MockInAppFetcher.swift in Sources */,
 				ACC55E2323CE1C4600CE77C6 /* MockNetworkSession.swift in Sources */,
+				ACBEB60123D233D40046B5A1 /* MainViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
