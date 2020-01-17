@@ -10,7 +10,7 @@
         <!--Custom Inbox-->
         <scene sceneID="PjQ-ZX-3kQ">
             <objects>
-                <viewController storyboardIdentifier="CustomInbox1" id="tnn-Vq-UwR" customClass="IterableInboxNavigationViewController" customModule="IterableSDK" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="CustomInbox" id="tnn-Vq-UwR" customClass="IterableInboxNavigationViewController" customModule="IterableSDK" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="zbF-BW-DKm">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -20,7 +20,7 @@
                     <tabBarItem key="tabBarItem" title="Custom Inbox" image="Mail" id="5Ku-oQ-ruO"/>
                     <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
                     <userDefinedRuntimeAttributes>
-                        <userDefinedRuntimeAttribute type="string" keyPath="cellNibName" value="CustomInboxCell1"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="cellNibName" value="CustomInboxCell"/>
                         <userDefinedRuntimeAttribute type="string" keyPath="navTitle" value="Custom Inbox"/>
                     </userDefinedRuntimeAttributes>
                 </viewController>

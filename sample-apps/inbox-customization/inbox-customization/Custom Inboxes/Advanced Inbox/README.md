@@ -1,4 +1,4 @@
-# Custom Inbox
+# Advanced Inbox
 
 You will need to create a custom UITableViewCell. Easiest way is to copy the file `CustomInboxCell1.xib` that is present in this directory (of this README file that you are reading) to your project. 
 

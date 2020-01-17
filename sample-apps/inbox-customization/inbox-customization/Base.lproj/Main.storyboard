@@ -45,10 +45,10 @@
             </objects>
             <point key="canvasLocation" x="-1305" y="-234"/>
         </scene>
-        <!--CustomInbox1-->
+        <!--CustomInbox-->
         <scene sceneID="VpQ-im-kZK">
             <objects>
-                <viewControllerPlaceholder storyboardName="CustomInbox1" referencedIdentifier="CustomInbox1" id="oVf-jP-hU4" sceneMemberID="viewController">
+                <viewControllerPlaceholder storyboardName="CustomInbox" referencedIdentifier="CustomInbox" id="oVf-jP-hU4" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Item" id="mYG-PD-CoS"/>
                 </viewControllerPlaceholder>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Mgv-Ng-xQm" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
