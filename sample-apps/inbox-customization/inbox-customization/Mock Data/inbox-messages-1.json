@@ -12,7 +12,12 @@
             "title": "Buy mocha",
             "subtitle": "Mocha coffee is on sale now. This is an awesome opportunity for you.",
             "icon": "https://somewhere.com/mocha.png"
-        }
+        },
+        "customPayload": {
+            "discount": "10%",
+            "customCellName": "AdvancedInboxCell",
+            "messageSection": 0
+        },
     },
     {
         "saveToInbox": true,
@@ -27,7 +32,12 @@
             "title": "Buy black coffee",
             "subtitle": "Black coffee is good for weight loss. Buy now. Regret later.",
             "icon": "https://somewhere.com/black-coffee.png"
-        }
+        },
+        "customPayload": {
+            "discount": "20%",
+            "customCellName": "AdvancedInboxCell",
+            "messageSection": 0
+        },
     },
     {
         "saveToInbox": true,
@@ -41,7 +51,10 @@
             "title": "Buy cappuccino",
             "subtitle": "Cappuccino is good for your soul. Act now. Time is limited.",
             "icon": "https://somewhere.com/cappuccino.png"
-        }
+        },
+        "customPayload": {
+            "messageSection": 1
+        },
     },
     {
         "saveToInbox": true,
@@ -57,8 +70,8 @@
             "icon": "https://somewhere.com/latte.png"
         },
         "customPayload": {
-            "customCellName": "AdvancedInboxCell"
-        }
+            "messageSection": 1
+        },
     },
 ]
 }
