@@ -45,8 +45,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="xpI-cR-rQn">
-                                <rect key="frame" x="125.5" y="360.5" width="163" height="180"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="xpI-cR-rQn">
+                                <rect key="frame" x="125.5" y="278" width="163" height="345"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NOp-9K-ovK">
                                         <rect key="frame" x="0.0" y="0.0" width="163" height="30"/>
@@ -56,38 +56,52 @@
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QsU-YC-5M9">
-                                        <rect key="frame" x="0.0" y="30" width="163" height="30"/>
+                                        <rect key="frame" x="0.0" y="45" width="163" height="30"/>
                                         <state key="normal" title="Simple Inbox 2"/>
                                         <connections>
                                             <action selector="simpleInbox2Tapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="sI5-nw-pOI"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IYv-Yj-to6">
-                                        <rect key="frame" x="0.0" y="60" width="163" height="30"/>
+                                        <rect key="frame" x="0.0" y="90" width="163" height="30"/>
                                         <state key="normal" title="Inbox With Custom Cell"/>
                                         <connections>
                                             <action selector="inboxWithCustomCellTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="rLc-f2-9pA"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Jyj-fe-g1J">
-                                        <rect key="frame" x="0.0" y="90" width="163" height="30"/>
+                                        <rect key="frame" x="0.0" y="135" width="163" height="30"/>
                                         <state key="normal" title="Change Date Format"/>
                                         <connections>
                                             <action selector="changeDateFormatTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="2HJ-49-jrW"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Njl-Jv-SUr">
-                                        <rect key="frame" x="0.0" y="120" width="163" height="30"/>
+                                        <rect key="frame" x="0.0" y="180" width="163" height="30"/>
                                         <state key="normal" title="Sort By Date Ascending"/>
                                         <connections>
                                             <action selector="sortByDateAscendingTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="rcz-E8-SqB"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3AP-FE-nfC">
-                                        <rect key="frame" x="0.0" y="150" width="163" height="30"/>
+                                        <rect key="frame" x="0.0" y="225" width="163" height="30"/>
                                         <state key="normal" title="Sort By Title Ascending"/>
                                         <connections>
                                             <action selector="sortByTitleAscendingTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="wXr-6Q-raf"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dbU-vZ-vR0">
+                                        <rect key="frame" x="0.0" y="270" width="163" height="30"/>
+                                        <state key="normal" title="Filter By Message Type"/>
+                                        <connections>
+                                            <action selector="filterByMessageTypeTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="4Rn-GA-Uyq"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OGq-Si-MFR">
+                                        <rect key="frame" x="0.0" y="315" width="163" height="30"/>
+                                        <state key="normal" title="Filter By Message Title"/>
+                                        <connections>
+                                            <action selector="filterByMessageTitleTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="soh-4v-voJ"/>
                                         </connections>
                                     </button>
                                 </subviews>

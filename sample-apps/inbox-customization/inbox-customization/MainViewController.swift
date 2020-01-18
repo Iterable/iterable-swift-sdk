@@ -43,7 +43,7 @@ class MainViewController: UIViewController {
     /// To change the date format, you will have to set the `dateMapper`property of view delegate.
     @IBAction private func changeDateFormatTapped() {
         let viewController = IterableInboxNavigationViewController()
-        viewController.viewDelegate = ChangeDateInboxViewDelegate()
+        viewController.viewDelegate = FormatDateInboxViewDelegate()
         present(viewController, animated: true)
     }
     
@@ -61,12 +61,28 @@ class MainViewController: UIViewController {
         present(viewController, animated: true)
     }
 
+    /// To filter by messages which, set the `filter` property of view delegate.
+    /// In this example, we show how to show only messages that have "messageType" set to "promotional" or messageType set to "transactional".
+    @IBAction private func filterByMessageTypeTapped() {
+        let viewController = IterableInboxNavigationViewController()
+        viewController.viewDelegate = FilterByMessageTypeInboxViewDelegate()
+        present(viewController, animated: true)
+    }
+
+    /// To filter by messages which, set the `filter` property of view delegate.
+    /// In this example, we show how to show only messages that have "mocha" in their title.
+    @IBAction private func filterByMessageTitleTapped() {
+        let viewController = IterableInboxNavigationViewController()
+        viewController.viewDelegate = FilterByMessageTitleInboxViewDelegate()
+        present(viewController, animated: true)
+    }
+
     @objc private func onDoneTapped() {
         dismiss(animated: true)
     }
 }
 
-public class ChangeDateInboxViewDelegate: IterableInboxViewControllerViewDelegate {
+public class FormatDateInboxViewDelegate: IterableInboxViewControllerViewDelegate {
     public required init() {
     }
     
@@ -100,5 +116,24 @@ public class SortByTitleAscendingInboxViewDelegate: IterableInboxViewControllerV
         }
 
         return title1.caseInsensitiveCompare(title2) == .orderedAscending
+    }
+}
+
+public class FilterByMessageTypeInboxViewDelegate: IterableInboxViewControllerViewDelegate {
+    public required init() {
+    }
+
+    public let filter = IterableInboxViewController.DefaultFilter.usingCustomPayloadMessageType(in: "promotional", "transactional")
+}
+
+public class FilterByMessageTitleInboxViewDelegate: IterableInboxViewControllerViewDelegate {
+    public required init() {
+    }
+
+    public let filter: (IterableInAppMessage) -> Bool = { message in
+        guard let title = message.inboxMetadata?.title else {
+            return false
+        }
+        return title.contains("mocha")
     }
 }

@@ -15,6 +15,7 @@
             "icon": "https://somewhere.com/mocha.png"
         },
         "customPayload": {
+            "messageType": "promotional",
             "discount": "10%",
             "customCellName": "AdvancedInboxCell",
             "messageSection": 0
@@ -36,6 +37,7 @@
             "icon": "https://somewhere.com/black-coffee.png"
         },
         "customPayload": {
+            "messageType": "promotional",
             "discount": "20%",
             "customCellName": "AdvancedInboxCell",
             "messageSection": 0
