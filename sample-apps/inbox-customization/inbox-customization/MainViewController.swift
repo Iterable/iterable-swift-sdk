@@ -33,17 +33,31 @@ class MainViewController: UIViewController {
         present(navController, animated: true)
     }
     
-    /// If you want to replace the table view cell with your own custom cell.
+    /// To replace the table view cell with your own custom cell, set the `cellNibName` property
     @IBAction private func inboxWithCustomCellTapped() {
         let viewController = IterableInboxNavigationViewController()
         viewController.cellNibName = "CustomInboxCell"
         present(viewController, animated: true)
     }
 
-    /// If you want to replace the table view cell with your own custom cell.
+    /// To change the date format, you will have to set the `dateMapper`property of view delegate.
     @IBAction private func changeDateFormatTapped() {
         let viewController = IterableInboxNavigationViewController()
         viewController.viewDelegate = ChangeDateInboxViewDelegate()
+        present(viewController, animated: true)
+    }
+    
+    /// To change sort order of messages, set the `comparator` property of view delegate.
+    @IBAction private func sortByDateAscendingTapped() {
+        let viewController = IterableInboxNavigationViewController()
+        viewController.viewDelegate = SortByDateAscendingInboxViewDelegate()
+        present(viewController, animated: true)
+    }
+
+    /// To change sort order of messages, set the `comparator` property of view delegate.
+    @IBAction private func sortByTitleAscendingTapped() {
+        let viewController = IterableInboxNavigationViewController()
+        viewController.viewDelegate = SortByTitleAscendingInboxViewDelegate()
         present(viewController, animated: true)
     }
 
@@ -63,5 +77,28 @@ public class ChangeDateInboxViewDelegate: IterableInboxViewControllerViewDelegat
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .full
         return formatter.localizedString(for: createdAt, relativeTo: Date())
+    }
+}
+
+public class SortByDateAscendingInboxViewDelegate: IterableInboxViewControllerViewDelegate {
+    public required init() {
+    }
+    
+    public let comparator = IterableInboxViewController.DefaultComparator.ascending
+}
+
+public class SortByTitleAscendingInboxViewDelegate: IterableInboxViewControllerViewDelegate {
+    public required init() {
+    }
+    
+    public let comparator: (IterableInAppMessage, IterableInAppMessage) -> Bool = { message1, message2 in
+        guard let title1 = message1.inboxMetadata?.title else {
+            return true
+        }
+        guard let title2 = message2.inboxMetadata?.title else {
+            return false
+        }
+
+        return title1.caseInsensitiveCompare(title2) == .orderedAscending
     }
 }
