@@ -13,7 +13,7 @@ public class AdvancedInboxViewDelegate: IterableInboxViewControllerViewDelegate 
     
     public let messageToSectionMapper: ((IterableInAppMessage) -> Int) = IterableInboxViewController.DefaultSectionMapper.usingCustomPayloadMessageSection
 
-    public let customNibNames: [String] = ["CustomInboxCell", "AdvancedInboxCell"]
+    public let customNibNames: [String] = ["CustomInboxCell", "AdvancedInboxCell", "CustomInboxCell1", "CustomInboxCell2"]
 
     public let customNibNameMapper: ((IterableInAppMessage) -> String?) = IterableInboxViewController.DefaultNibNameMapper.usingCustomPayloadNibName
 

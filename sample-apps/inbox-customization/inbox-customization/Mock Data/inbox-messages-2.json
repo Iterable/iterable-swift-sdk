@@ -1,45 +1,88 @@
 { "inAppMessages": [
     {
+        "createdAt": 1579577586000,
         "saveToInbox": true,
         "content": {
             "contentType": "html",
-            "html": "<a href='https://www.site1.com'>Click Here1</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"
-        },
+            "html": "<a href='iterable://dismiss'>Click Here4</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"},
         "trigger": {"type": "never"},
-        "messageId": "message1",
-        "campaignId": "campaign1",
+        "messageId": "message2-4",
+        "campaignId": "campaign2-4",
         "inboxMetadata": {
-            "title": "title1",
-            "subtitle": "subTitle1"
+            "title": "First message with dark background",
+            "subtitle": "This message will be rendered with a dark background.",
+            "icon": "https://somewhere.com/latte.png"
         },
-        "customPayload": {"customCellName": "CustomInboxCell3"}
+        "customPayload": {
+            "messageType": "promotional",
+            "discount": "20%",
+            "customCellName": "CustomInboxCell2",
+            "messageSection": 0
+        },
     },
     {
+        "createdAt": 1579477586000,
         "saveToInbox": true,
         "content": {
             "contentType": "html",
-            "html": "<a href='https://www.site2.com'>Click Here2</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"
-        },
+            "html": "<a href='iterable://dismiss'>Click Here3</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"},
         "trigger": {"type": "never"},
-        "messageId": "message2",
-        "campaignId": "campaign2",
+        "messageId": "message2-3",
+        "campaignId": "campaign2-3",
         "inboxMetadata": {
-            "title": "title2",
-            "subtitle": "subTitle2"
-        }
+            "title": "First message with light background",
+            "subtitle": "This message will be rendered with a light background.",
+            "icon": "https://somewhere.com/cappuccino.png"
+        },
+        "customPayload": {
+            "messageType": "promotional",
+            "discount": "20%",
+            "customCellName": "CustomInboxCell1",
+            "messageSection": 0
+        },
     },
     {
+        "createdAt": 1579377586000,
         "saveToInbox": true,
         "content": {
             "contentType": "html",
-            "html": "<a href='https://www.site3.com'>Click Here3</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"},
+            "html": "<a href='iterable://dismiss'>Click Here2</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"
+        },
         "trigger": {"type": "never"},
-        "messageId": "message3",
-        "campaignId": "campaign3",
+        "messageId": "message2-2",
+        "campaignId": "campaign2-2",
         "inboxMetadata": {
-            "title": "title3",
-            "subtitle": "subTitle3"
-        }
+            "title": "Second message with dark background",
+            "subtitle": "This message will be rendered with a dark background.",
+            "icon": "https://somewhere.com/black-coffee.png"
+        },
+        "customPayload": {
+            "messageType": "promotional",
+            "discount": "20%",
+            "customCellName": "CustomInboxCell2",
+            "messageSection": 0
+        },
+    },
+    {
+        "createdAt": 1579277586000,
+        "saveToInbox": true,
+        "content": {
+            "contentType": "html",
+            "html": "<a href='iterable://dismiss'>Click Here1</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"
+        },
+        "trigger": {"type": "never"},
+        "messageId": "message2-1",
+        "campaignId": "campaign2-1",
+        "inboxMetadata": {
+            "title": "Message with no customization",
+            "subtitle": "This will use default cell with white background.",
+            "icon": "https://somewhere.com/mocha.png"
+        },
+        "customPayload": {
+            "messageType": "promotional",
+            "discount": "10%",
+            "messageSection": 0
+        },
     },
 ]
 }

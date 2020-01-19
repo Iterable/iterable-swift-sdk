@@ -18,6 +18,10 @@ class MainViewController: UIViewController {
     /// The simplest of inbox.
     /// Inbox looks best when embedded in a navigation controller. It has a `Done` button.
     @IBAction private func simpleInboxTapped() {
+        // <ignore -- data loading>
+        loadDataset1()
+        // </ignore -- data loading>
+
         let viewController = IterableInboxNavigationViewController()
         present(viewController, animated: true)
     }
@@ -26,6 +30,10 @@ class MainViewController: UIViewController {
     /// use your own navigation controller instead, set `IterableInboxViewController` as the root view controller of the navigation controller.
     /// You have to make sure there is a button to dismiss the inbox.
     @IBAction private func simpleInbox2Tapped() {
+        // <ignore -- data loading>
+        loadDataset1()
+        // </ignore -- data loading>
+
         let viewController = IterableInboxViewController()
         let navController = UINavigationController(rootViewController: viewController)
         let barButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(onDoneTapped))
@@ -33,15 +41,25 @@ class MainViewController: UIViewController {
         present(navController, animated: true)
     }
     
-    /// To replace the table view cell with your own custom cell, set the `cellNibName` property
+    /// To replace the table view cell with your own custom cell, set the `cellNibName` property.
+    /// In this example, make sure that an xib with name `CustomInboxCell2.xib` is present.
+    /// IMP: Also, make sure that in `file inspector` for the xib file `target membership` is checked. Otherwise the file will not be copied.
     @IBAction private func inboxWithCustomCellTapped() {
+        // <ignore -- data loading>
+        loadDataset1()
+        // </ignore -- data loading>
+
         let viewController = IterableInboxNavigationViewController()
-        viewController.cellNibName = "CustomInboxCell"
+        viewController.cellNibName = "CustomInboxCell2"
         present(viewController, animated: true)
     }
 
     /// To change the date format, you will have to set the `dateMapper`property of view delegate.
     @IBAction private func changeDateFormatTapped() {
+        // <ignore -- data loading>
+        loadDataset1()
+        // </ignore -- data loading>
+
         let viewController = IterableInboxNavigationViewController()
         viewController.viewDelegate = FormatDateInboxViewDelegate()
         present(viewController, animated: true)
@@ -49,6 +67,10 @@ class MainViewController: UIViewController {
     
     /// To change sort order of messages, set the `comparator` property of view delegate.
     @IBAction private func sortByDateAscendingTapped() {
+        // <ignore -- data loading>
+        loadDataset1()
+        // </ignore -- data loading>
+
         let viewController = IterableInboxNavigationViewController()
         viewController.viewDelegate = SortByDateAscendingInboxViewDelegate()
         present(viewController, animated: true)
@@ -56,6 +78,10 @@ class MainViewController: UIViewController {
 
     /// To change sort order of messages, set the `comparator` property of view delegate.
     @IBAction private func sortByTitleAscendingTapped() {
+        // <ignore -- data loading>
+        loadDataset1()
+        // </ignore -- data loading>
+
         let viewController = IterableInboxNavigationViewController()
         viewController.viewDelegate = SortByTitleAscendingInboxViewDelegate()
         present(viewController, animated: true)
@@ -64,6 +90,10 @@ class MainViewController: UIViewController {
     /// To filter by messages which, set the `filter` property of view delegate.
     /// In this example, we show how to show only messages that have "messageType" set to "promotional" or messageType set to "transactional".
     @IBAction private func filterByMessageTypeTapped() {
+        // <ignore -- data loading>
+        loadDataset1()
+        // </ignore -- data loading>
+
         let viewController = IterableInboxNavigationViewController()
         viewController.viewDelegate = FilterByMessageTypeInboxViewDelegate()
         present(viewController, animated: true)
@@ -72,13 +102,36 @@ class MainViewController: UIViewController {
     /// To filter by messages which, set the `filter` property of view delegate.
     /// In this example, we show how to show only messages that have "mocha" in their title.
     @IBAction private func filterByMessageTitleTapped() {
+        // <ignore -- data loading>
+        loadDataset1()
+        // </ignore -- data loading>
+
         let viewController = IterableInboxNavigationViewController()
         viewController.viewDelegate = FilterByMessageTitleInboxViewDelegate()
         present(viewController, animated: true)
     }
 
+    @IBAction private func multipleCellTypesTapped() {
+        // <ignore -- data loading>
+        loadDataset2()
+        // </ignore -- data loading>
+
+        let viewController = IterableInboxNavigationViewController()
+        viewController.viewDelegate = MultipleCellTypesInboxViewDelegate()
+        present(viewController, animated: true)
+    }
+    
+    // MARK: private funcations
     @objc private func onDoneTapped() {
         dismiss(animated: true)
+    }
+
+    private func loadDataset1() {
+        DataManager.shared.loadMessages(from: "inbox-messages-1", withExtension: "json")
+    }
+    
+    private func loadDataset2() {
+        DataManager.shared.loadMessages(from: "inbox-messages-2", withExtension: "json")
     }
 }
 
@@ -136,4 +189,13 @@ public class FilterByMessageTitleInboxViewDelegate: IterableInboxViewControllerV
         }
         return title.contains("mocha")
     }
+}
+
+public class MultipleCellTypesInboxViewDelegate: IterableInboxViewControllerViewDelegate {
+    public required init() {
+    }
+
+    public let customNibNames = ["CustomInboxCell1", "CustomInboxCell2", "AdvancedInboxCell", "CustomInboxCell"]
+    
+    public let customNibNameMapper = IterableInboxViewController.DefaultNibNameMapper.usingCustomPayloadNibName
 }
