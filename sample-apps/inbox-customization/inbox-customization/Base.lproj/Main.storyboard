@@ -67,7 +67,7 @@
                                         <rect key="frame" x="0.0" y="76" width="163" height="30"/>
                                         <state key="normal" title="Inbox With Custom Cell"/>
                                         <connections>
-                                            <action selector="inboxWithCustomCellTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="rLc-f2-9pA"/>
+                                            <action selector="onInboxWithCustomCellTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="rLc-f2-9pA"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Jyj-fe-g1J">

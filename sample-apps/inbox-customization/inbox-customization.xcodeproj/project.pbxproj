@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		AC98362123CE1F88003B225B /* MockInAppFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC98362023CE1F88003B225B /* MockInAppFetcher.swift */; };
 		ACA0C17C23D30CDF006DA992 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0C17B23D30CDF006DA992 /* MainTabBarController.swift */; };
+		ACA0C17F23D43943006DA992 /* Inbox With Custom Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0C17E23D43943006DA992 /* Inbox With Custom Cell.swift */; };
+		ACA0C18123D43B0A006DA992 /* DarkInboxCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = ACA0C18023D43AC8006DA992 /* DarkInboxCell.xib */; };
 		ACAA450923D0A9310004E347 /* AdvancedInboxCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = ACAA450823D0A9310004E347 /* AdvancedInboxCell.xib */; };
 		ACAA450B23D0AB9C0004E347 /* AdvancedInboxCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAA450A23D0AB9C0004E347 /* AdvancedInboxCell.swift */; };
 		ACAA450D23D0B6F80004E347 /* AdvancedInboxViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAA450C23D0B6F80004E347 /* AdvancedInboxViewDelegate.swift */; };
@@ -39,6 +41,8 @@
 /* Begin PBXFileReference section */
 		AC98362023CE1F88003B225B /* MockInAppFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockInAppFetcher.swift; sourceTree = "<group>"; };
 		ACA0C17B23D30CDF006DA992 /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
+		ACA0C17E23D43943006DA992 /* Inbox With Custom Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Inbox With Custom Cell.swift"; sourceTree = "<group>"; };
+		ACA0C18023D43AC8006DA992 /* DarkInboxCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DarkInboxCell.xib; sourceTree = "<group>"; };
 		ACAA450723D0A8370004E347 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		ACAA450823D0A9310004E347 /* AdvancedInboxCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AdvancedInboxCell.xib; sourceTree = "<group>"; };
 		ACAA450A23D0AB9C0004E347 /* AdvancedInboxCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedInboxCell.swift; sourceTree = "<group>"; };
@@ -81,6 +85,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		ACA0C17D23D4391E006DA992 /* Inbox With Custom Cell */ = {
+			isa = PBXGroup;
+			children = (
+				ACA0C17E23D43943006DA992 /* Inbox With Custom Cell.swift */,
+				ACA0C18023D43AC8006DA992 /* DarkInboxCell.xib */,
+			);
+			path = "Inbox With Custom Cell";
+			sourceTree = "<group>";
+		};
 		ACAA450623D0A7C30004E347 /* Advanced Inbox */ = {
 			isa = PBXGroup;
 			children = (
@@ -122,6 +135,7 @@
 		ACC55E0023CD7DB600CE77C6 /* inbox-customization */ = {
 			isa = PBXGroup;
 			children = (
+				ACA0C17D23D4391E006DA992 /* Inbox With Custom Cell */,
 				ACBEB60223D2EDF20046B5A1 /* Custom Inbox Cells */,
 				ACE78E4523D0397E00492D03 /* Custom Inbox Tabs */,
 				ACC55E0123CD7DB600CE77C6 /* AppDelegate.swift */,
@@ -263,6 +277,7 @@
 			files = (
 				ACBEB60523D2F2460046B5A1 /* CustomInboxCell1.xib in Resources */,
 				ACE78E3C23D0288400492D03 /* inbox-messages-1.json in Resources */,
+				ACA0C18123D43B0A006DA992 /* DarkInboxCell.xib in Resources */,
 				ACE78E4A23D063BD00492D03 /* black-coffee.png in Resources */,
 				ACAA450923D0A9310004E347 /* AdvancedInboxCell.xib in Resources */,
 				ACE78E3423CF990200492D03 /* mocha.png in Resources */,
@@ -292,6 +307,7 @@
 				ACAA450D23D0B6F80004E347 /* AdvancedInboxViewDelegate.swift in Sources */,
 				ACAA450B23D0AB9C0004E347 /* AdvancedInboxCell.swift in Sources */,
 				ACA0C17C23D30CDF006DA992 /* MainTabBarController.swift in Sources */,
+				ACA0C17F23D43943006DA992 /* Inbox With Custom Cell.swift in Sources */,
 				ACC55E2023CE1B5900CE77C6 /* DataManager.swift in Sources */,
 				ACC55E0223CD7DB600CE77C6 /* AppDelegate.swift in Sources */,
 				AC98362123CE1F88003B225B /* MockInAppFetcher.swift in Sources */,

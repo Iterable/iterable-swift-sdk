@@ -41,19 +41,6 @@ class MainViewController: UIViewController {
         present(navController, animated: true)
     }
     
-    /// To replace the table view cell with your own custom cell, set the `cellNibName` property.
-    /// In this example, make sure that an xib with name `CustomInboxCell2.xib` is present.
-    /// IMP: Also, make sure that in `file inspector` for the xib file `target membership` is checked. Otherwise the file will not be copied.
-    @IBAction private func inboxWithCustomCellTapped() {
-        // <ignore -- data loading>
-        loadDataset1()
-        // </ignore -- data loading>
-
-        let viewController = IterableInboxNavigationViewController()
-        viewController.cellNibName = "CustomInboxCell2"
-        present(viewController, animated: true)
-    }
-
     /// To change the date format, you will have to set the `dateMapper`property of view delegate.
     @IBAction private func changeDateFormatTapped() {
         // <ignore -- data loading>
@@ -126,11 +113,11 @@ class MainViewController: UIViewController {
         dismiss(animated: true)
     }
 
-    private func loadDataset1() {
+    func loadDataset1() {
         DataManager.shared.loadMessages(from: "inbox-messages-1", withExtension: "json")
     }
     
-    private func loadDataset2() {
+    func loadDataset2() {
         DataManager.shared.loadMessages(from: "inbox-messages-2", withExtension: "json")
     }
 }
