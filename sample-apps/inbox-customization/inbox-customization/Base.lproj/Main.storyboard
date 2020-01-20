@@ -47,7 +47,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="xpI-cR-rQn">
-                                <rect key="frame" x="125.5" y="290.5" width="163" height="372"/>
+                                <rect key="frame" x="125.5" y="271.5" width="163" height="410"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NOp-9K-ovK">
                                         <rect key="frame" x="0.0" y="0.0" width="163" height="30"/>
@@ -117,6 +117,13 @@
                                         <state key="normal" title="Additional Fields"/>
                                         <connections>
                                             <action selector="onInboxWithAdditionalFieldsTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="LVP-BJ-lcl"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RTf-tQ-tuZ">
+                                        <rect key="frame" x="0.0" y="380" width="163" height="30"/>
+                                        <state key="normal" title="Multiple Sections"/>
+                                        <connections>
+                                            <action selector="onMultipleSectionsTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="bg4-Ik-nBN"/>
                                         </connections>
                                     </button>
                                 </subviews>
