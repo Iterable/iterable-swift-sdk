@@ -19,7 +19,7 @@ class MainViewController: UIViewController {
     /// Inbox looks best when embedded in a navigation controller. It has a `Done` button.
     @IBAction private func simpleInboxTapped() {
         // <ignore -- data loading>
-        loadDataset1()
+        loadDataset(number: 1)
         // </ignore -- data loading>
 
         let viewController = IterableInboxNavigationViewController()
@@ -31,7 +31,7 @@ class MainViewController: UIViewController {
     /// You have to make sure there is a button to dismiss the inbox.
     @IBAction private func simpleInbox2Tapped() {
         // <ignore -- data loading>
-        loadDataset1()
+        loadDataset(number: 1)
         // </ignore -- data loading>
 
         let viewController = IterableInboxViewController()
@@ -44,7 +44,7 @@ class MainViewController: UIViewController {
     /// To change the date format, you will have to set the `dateMapper`property of view delegate.
     @IBAction private func changeDateFormatTapped() {
         // <ignore -- data loading>
-        loadDataset1()
+        loadDataset(number: 1)
         // </ignore -- data loading>
 
         let viewController = IterableInboxNavigationViewController()
@@ -55,7 +55,7 @@ class MainViewController: UIViewController {
     /// To change sort order of messages, set the `comparator` property of view delegate.
     @IBAction private func sortByDateAscendingTapped() {
         // <ignore -- data loading>
-        loadDataset1()
+        loadDataset(number: 1)
         // </ignore -- data loading>
 
         let viewController = IterableInboxNavigationViewController()
@@ -66,7 +66,7 @@ class MainViewController: UIViewController {
     /// To change sort order of messages, set the `comparator` property of view delegate.
     @IBAction private func sortByTitleAscendingTapped() {
         // <ignore -- data loading>
-        loadDataset1()
+        loadDataset(number: 1)
         // </ignore -- data loading>
 
         let viewController = IterableInboxNavigationViewController()
@@ -78,7 +78,7 @@ class MainViewController: UIViewController {
     /// In this example, we show how to show only messages that have "messageType" set to "promotional" or messageType set to "transactional".
     @IBAction private func filterByMessageTypeTapped() {
         // <ignore -- data loading>
-        loadDataset1()
+        loadDataset(number: 1)
         // </ignore -- data loading>
 
         let viewController = IterableInboxNavigationViewController()
@@ -90,7 +90,7 @@ class MainViewController: UIViewController {
     /// In this example, we show how to show only messages that have "mocha" in their title.
     @IBAction private func filterByMessageTitleTapped() {
         // <ignore -- data loading>
-        loadDataset1()
+        loadDataset(number: 1)
         // </ignore -- data loading>
 
         let viewController = IterableInboxNavigationViewController()
@@ -100,7 +100,7 @@ class MainViewController: UIViewController {
 
     @IBAction private func multipleCellTypesTapped() {
         // <ignore -- data loading>
-        loadDataset2()
+        loadDataset(number: 2)
         // </ignore -- data loading>
 
         let viewController = IterableInboxNavigationViewController()
@@ -113,12 +113,8 @@ class MainViewController: UIViewController {
         dismiss(animated: true)
     }
 
-    func loadDataset1() {
-        DataManager.shared.loadMessages(from: "inbox-messages-1", withExtension: "json")
-    }
-    
-    func loadDataset2() {
-        DataManager.shared.loadMessages(from: "inbox-messages-2", withExtension: "json")
+    func loadDataset(number: Int) {
+        DataManager.shared.loadMessages(from: "inbox-messages-\(number)", withExtension: "json")
     }
 }
 
