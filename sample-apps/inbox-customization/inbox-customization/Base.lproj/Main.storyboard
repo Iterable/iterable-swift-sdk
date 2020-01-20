@@ -95,7 +95,7 @@
                                         <rect key="frame" x="0.0" y="228" width="163" height="30"/>
                                         <state key="normal" title="Filter By Message Type"/>
                                         <connections>
-                                            <action selector="filterByMessageTypeTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="4Rn-GA-Uyq"/>
+                                            <action selector="onFilterByMessageTypeTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="how-g2-sL2"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OGq-Si-MFR">
