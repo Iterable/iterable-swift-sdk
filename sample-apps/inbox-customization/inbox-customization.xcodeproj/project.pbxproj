@@ -14,6 +14,7 @@
 		AC61FAA323D5CEE500F458F8 /* Sort By Date Ascending.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC61FAA223D5CEE500F458F8 /* Sort By Date Ascending.swift */; };
 		AC61FAA623D5CF7000F458F8 /* Change Date Format.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC61FAA523D5CF7000F458F8 /* Change Date Format.swift */; };
 		AC61FAA923D5D02B00F458F8 /* Simple Inbox 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC61FAA823D5D02B00F458F8 /* Simple Inbox 2.swift */; };
+		AC61FAAC23D5D0CF00F458F8 /* Simple Inbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC61FAAB23D5D0CF00F458F8 /* Simple Inbox.swift */; };
 		AC98362123CE1F88003B225B /* MockInAppFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC98362023CE1F88003B225B /* MockInAppFetcher.swift */; };
 		ACA0C17C23D30CDF006DA992 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0C17B23D30CDF006DA992 /* MainTabBarController.swift */; };
 		ACA0C17F23D43943006DA992 /* Inbox With Custom Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0C17E23D43943006DA992 /* Inbox With Custom Cell.swift */; };
@@ -56,6 +57,7 @@
 		AC61FAA223D5CEE500F458F8 /* Sort By Date Ascending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sort By Date Ascending.swift"; sourceTree = "<group>"; };
 		AC61FAA523D5CF7000F458F8 /* Change Date Format.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Change Date Format.swift"; sourceTree = "<group>"; };
 		AC61FAA823D5D02B00F458F8 /* Simple Inbox 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Simple Inbox 2.swift"; sourceTree = "<group>"; };
+		AC61FAAB23D5D0CF00F458F8 /* Simple Inbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Simple Inbox.swift"; sourceTree = "<group>"; };
 		AC98362023CE1F88003B225B /* MockInAppFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockInAppFetcher.swift; sourceTree = "<group>"; };
 		ACA0C17B23D30CDF006DA992 /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		ACA0C17E23D43943006DA992 /* Inbox With Custom Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Inbox With Custom Cell.swift"; sourceTree = "<group>"; };
@@ -163,6 +165,14 @@
 			path = "Simple Inbox 2";
 			sourceTree = "<group>";
 		};
+		AC61FAAA23D5D0C300F458F8 /* Simple Inbox */ = {
+			isa = PBXGroup;
+			children = (
+				AC61FAAB23D5D0CF00F458F8 /* Simple Inbox.swift */,
+			);
+			path = "Simple Inbox";
+			sourceTree = "<group>";
+		};
 		ACA0C17D23D4391E006DA992 /* Inbox With Custom Cell */ = {
 			isa = PBXGroup;
 			children = (
@@ -214,6 +224,7 @@
 		ACC55E0023CD7DB600CE77C6 /* inbox-customization */ = {
 			isa = PBXGroup;
 			children = (
+				AC61FAAA23D5D0C300F458F8 /* Simple Inbox */,
 				AC61FAA723D5D01900F458F8 /* Simple Inbox 2 */,
 				ACA0C17D23D4391E006DA992 /* Inbox With Custom Cell */,
 				AC61FAA423D5CF6100F458F8 /* Change Date Format */,
@@ -408,6 +419,7 @@
 				AC61FA9D23D5CD2000F458F8 /* FilterByMessageType.swift in Sources */,
 				AC61FAA923D5D02B00F458F8 /* Simple Inbox 2.swift in Sources */,
 				AC61FAA023D5CE4400F458F8 /* Sort By Title Ascending.swift in Sources */,
+				AC61FAAC23D5D0CF00F458F8 /* Simple Inbox.swift in Sources */,
 				ACA0C18423D43C24006DA992 /* Inbox With Additional Fields.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
