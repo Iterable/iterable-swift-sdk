@@ -74,7 +74,7 @@
                                         <rect key="frame" x="0.0" y="114" width="163" height="30"/>
                                         <state key="normal" title="Change Date Format"/>
                                         <connections>
-                                            <action selector="changeDateFormatTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="2HJ-49-jrW"/>
+                                            <action selector="onChangeDateFormatTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="0IA-kG-BYe"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Njl-Jv-SUr">

@@ -1,0 +1,35 @@
+//
+//  Created by Tapash Majumder on 1/20/20.
+//  Copyright © 2020 Iterable. All rights reserved.
+//
+
+import Foundation
+
+import IterableSDK
+
+extension MainViewController {
+    /// To change the date format, you will have to set the `dateMapper`property of view delegate.
+    @IBAction private func onChangeDateFormatTapped() {
+        // <ignore -- data loading>
+        loadDataset(number: 1)
+        // </ignore -- data loading>
+
+        let viewController = IterableInboxNavigationViewController()
+        viewController.viewDelegate = FormatDateInboxViewDelegate()
+        present(viewController, animated: true)
+    }
+}
+
+public class FormatDateInboxViewDelegate: IterableInboxViewControllerViewDelegate {
+    public required init() {
+    }
+    
+    public let dateMapper: (IterableInAppMessage) -> String? = { message in
+        guard let createdAt = message.createdAt else {
+            return nil
+        }
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .full
+        return formatter.localizedString(for: createdAt, relativeTo: Date())
+    }
+}
