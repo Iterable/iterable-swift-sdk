@@ -38,7 +38,7 @@
             </objects>
             <point key="canvasLocation" x="-1286" y="380"/>
         </scene>
-        <!--Main View Controller-->
+        <!--Inbox Customization-->
         <scene sceneID="YYU-HN-4MH">
             <objects>
                 <viewController id="IMo-X7-Wfe" customClass="MainViewController" customModule="inbox_customization" customModuleProvider="target" sceneMemberID="viewController">
@@ -47,7 +47,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="xpI-cR-rQn">
-                                <rect key="frame" x="125.5" y="264.5" width="163" height="372"/>
+                                <rect key="frame" x="125.5" y="290.5" width="163" height="372"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NOp-9K-ovK">
                                         <rect key="frame" x="0.0" y="0.0" width="163" height="30"/>
@@ -129,7 +129,7 @@
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="2YF-iu-gk6"/>
                     </view>
-                    <navigationItem key="navigationItem" id="bYR-IY-rN8"/>
+                    <navigationItem key="navigationItem" title="Inbox Customization" id="bYR-IY-rN8"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NZx-VM-wL4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
@@ -140,8 +140,8 @@
             <objects>
                 <navigationController id="vrt-M8-Y9O" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Home" image="Home" id="A2w-gw-bKp"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Tf6-L0-C0v">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" largeTitles="YES" id="Tf6-L0-C0v">
+                        <rect key="frame" x="0.0" y="44" width="414" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>

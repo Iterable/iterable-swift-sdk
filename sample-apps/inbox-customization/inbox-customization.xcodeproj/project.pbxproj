@@ -224,6 +224,7 @@
 		ACC55E0023CD7DB600CE77C6 /* inbox-customization */ = {
 			isa = PBXGroup;
 			children = (
+				ACE78E4523D0397E00492D03 /* Custom Inbox Tabs */,
 				AC61FAAA23D5D0C300F458F8 /* Simple Inbox */,
 				AC61FAA723D5D01900F458F8 /* Simple Inbox 2 */,
 				ACA0C17D23D4391E006DA992 /* Inbox With Custom Cell */,
@@ -234,7 +235,6 @@
 				AC61FA9823D5A88F00F458F8 /* Filter By Message Title */,
 				AC61FA9523D5A66D00F458F8 /* Inbox With Multiple Cell Types */,
 				ACA0C18223D43C04006DA992 /* Inbox With Additional Fields */,
-				ACE78E4523D0397E00492D03 /* Custom Inbox Tabs */,
 				ACC55E0123CD7DB600CE77C6 /* AppDelegate.swift */,
 				ACBEB60023D233D40046B5A1 /* MainViewController.swift */,
 				ACC55E0723CD7DB600CE77C6 /* Main.storyboard */,
