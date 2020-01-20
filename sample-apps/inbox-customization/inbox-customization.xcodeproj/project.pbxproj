@@ -10,6 +10,7 @@
 		AC61FA9723D5A69A00F458F8 /* Inbox With Multiple Cell Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC61FA9623D5A69A00F458F8 /* Inbox With Multiple Cell Types.swift */; };
 		AC61FA9A23D5A90600F458F8 /* Filter By Message Title.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC61FA9923D5A90600F458F8 /* Filter By Message Title.swift */; };
 		AC61FA9D23D5CD2000F458F8 /* FilterByMessageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC61FA9C23D5CD2000F458F8 /* FilterByMessageType.swift */; };
+		AC61FAA023D5CE4400F458F8 /* Sort By Title Ascending.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC61FA9F23D5CE4400F458F8 /* Sort By Title Ascending.swift */; };
 		AC98362123CE1F88003B225B /* MockInAppFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC98362023CE1F88003B225B /* MockInAppFetcher.swift */; };
 		ACA0C17C23D30CDF006DA992 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0C17B23D30CDF006DA992 /* MainTabBarController.swift */; };
 		ACA0C17F23D43943006DA992 /* Inbox With Custom Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0C17E23D43943006DA992 /* Inbox With Custom Cell.swift */; };
@@ -48,6 +49,7 @@
 		AC61FA9623D5A69A00F458F8 /* Inbox With Multiple Cell Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Inbox With Multiple Cell Types.swift"; sourceTree = "<group>"; };
 		AC61FA9923D5A90600F458F8 /* Filter By Message Title.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Filter By Message Title.swift"; sourceTree = "<group>"; };
 		AC61FA9C23D5CD2000F458F8 /* FilterByMessageType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterByMessageType.swift; sourceTree = "<group>"; };
+		AC61FA9F23D5CE4400F458F8 /* Sort By Title Ascending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sort By Title Ascending.swift"; sourceTree = "<group>"; };
 		AC98362023CE1F88003B225B /* MockInAppFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockInAppFetcher.swift; sourceTree = "<group>"; };
 		ACA0C17B23D30CDF006DA992 /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		ACA0C17E23D43943006DA992 /* Inbox With Custom Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Inbox With Custom Cell.swift"; sourceTree = "<group>"; };
@@ -123,6 +125,14 @@
 			path = "Filter By Message Type";
 			sourceTree = "<group>";
 		};
+		AC61FA9E23D5CE2900F458F8 /* Sort By Title Ascending */ = {
+			isa = PBXGroup;
+			children = (
+				AC61FA9F23D5CE4400F458F8 /* Sort By Title Ascending.swift */,
+			);
+			path = "Sort By Title Ascending";
+			sourceTree = "<group>";
+		};
 		ACA0C17D23D4391E006DA992 /* Inbox With Custom Cell */ = {
 			isa = PBXGroup;
 			children = (
@@ -174,6 +184,7 @@
 		ACC55E0023CD7DB600CE77C6 /* inbox-customization */ = {
 			isa = PBXGroup;
 			children = (
+				AC61FA9E23D5CE2900F458F8 /* Sort By Title Ascending */,
 				AC61FA9B23D5CD0300F458F8 /* Filter By Message Type */,
 				AC61FA9823D5A88F00F458F8 /* Filter By Message Title */,
 				AC61FA9523D5A66D00F458F8 /* Inbox With Multiple Cell Types */,
@@ -360,6 +371,7 @@
 				ACC55E2323CE1C4600CE77C6 /* MockNetworkSession.swift in Sources */,
 				ACBEB60123D233D40046B5A1 /* MainViewController.swift in Sources */,
 				AC61FA9D23D5CD2000F458F8 /* FilterByMessageType.swift in Sources */,
+				AC61FAA023D5CE4400F458F8 /* Sort By Title Ascending.swift in Sources */,
 				ACA0C18423D43C24006DA992 /* Inbox With Additional Fields.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

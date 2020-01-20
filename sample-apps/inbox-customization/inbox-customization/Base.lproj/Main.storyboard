@@ -88,7 +88,7 @@
                                         <rect key="frame" x="0.0" y="190" width="163" height="30"/>
                                         <state key="normal" title="Sort By Title Ascending"/>
                                         <connections>
-                                            <action selector="sortByTitleAscendingTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="wXr-6Q-raf"/>
+                                            <action selector="onSortByTitleAscendingTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="ZVR-5m-HDz"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dbU-vZ-vR0">
