@@ -27,6 +27,7 @@
 		AC61FAC223D614AC00F458F8 /* sort-by-date-ascending-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = AC61FAC123D6149E00F458F8 /* sort-by-date-ascending-messages.json */; };
 		AC61FAC423D6337700F458F8 /* sort-by-title-ascending-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = AC61FAC323D6336400F458F8 /* sort-by-title-ascending-messages.json */; };
 		AC61FAC623D6351D00F458F8 /* filter-by-message-type-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = AC61FAC523D6347B00F458F8 /* filter-by-message-type-messages.json */; };
+		AC61FAC823D6368D00F458F8 /* filter-by-message-title-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = AC61FAC723D6367D00F458F8 /* filter-by-message-title-messages.json */; };
 		AC98362123CE1F88003B225B /* MockInAppFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC98362023CE1F88003B225B /* MockInAppFetcher.swift */; };
 		ACA0C17C23D30CDF006DA992 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0C17B23D30CDF006DA992 /* MainTabBarController.swift */; };
 		ACA0C17F23D43943006DA992 /* Inbox With Custom Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0C17E23D43943006DA992 /* Inbox With Custom Cell.swift */; };
@@ -82,6 +83,7 @@
 		AC61FAC123D6149E00F458F8 /* sort-by-date-ascending-messages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "sort-by-date-ascending-messages.json"; sourceTree = "<group>"; };
 		AC61FAC323D6336400F458F8 /* sort-by-title-ascending-messages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "sort-by-title-ascending-messages.json"; sourceTree = "<group>"; };
 		AC61FAC523D6347B00F458F8 /* filter-by-message-type-messages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "filter-by-message-type-messages.json"; sourceTree = "<group>"; };
+		AC61FAC723D6367D00F458F8 /* filter-by-message-title-messages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "filter-by-message-title-messages.json"; sourceTree = "<group>"; };
 		AC98362023CE1F88003B225B /* MockInAppFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockInAppFetcher.swift; sourceTree = "<group>"; };
 		ACA0C17B23D30CDF006DA992 /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		ACA0C17E23D43943006DA992 /* Inbox With Custom Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Inbox With Custom Cell.swift"; sourceTree = "<group>"; };
@@ -145,6 +147,7 @@
 			isa = PBXGroup;
 			children = (
 				AC61FA9923D5A90600F458F8 /* Filter By Message Title.swift */,
+				AC61FAC723D6367D00F458F8 /* filter-by-message-title-messages.json */,
 			);
 			path = "Filter By Message Title";
 			sourceTree = "<group>";
@@ -417,6 +420,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC61FAB723D60EC000F458F8 /* advanced-inbox-tab-messages.json in Resources */,
+				AC61FAC823D6368D00F458F8 /* filter-by-message-title-messages.json in Resources */,
 				ACBEB60523D2F2460046B5A1 /* CustomInboxCell1.xib in Resources */,
 				ACE78E3C23D0288400492D03 /* inbox-messages-1.json in Resources */,
 				ACA0C18123D43B0A006DA992 /* DarkInboxCell.xib in Resources */,

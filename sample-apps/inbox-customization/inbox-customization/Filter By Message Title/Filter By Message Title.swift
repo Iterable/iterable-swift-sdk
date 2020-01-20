@@ -12,7 +12,7 @@ extension MainViewController {
     /// In this example, we show how to show only messages that have "mocha" in their title.
     @IBAction private func onFilterByMessageTitleTapped() {
         // <ignore -- data loading>
-        loadDataset(number: 1)
+        DataManager.shared.loadMessages(from: "filter-by-message-title-messages", withExtension: "json")
         // </ignore -- data loading>
 
         let viewController = IterableInboxNavigationViewController()
