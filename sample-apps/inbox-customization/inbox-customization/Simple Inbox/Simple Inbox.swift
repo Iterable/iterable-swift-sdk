@@ -12,7 +12,7 @@ extension MainViewController {
     /// Inbox looks best when embedded in a navigation controller. It has a `Done` button.
     @IBAction private func onSimpleInboxTapped() {
         // <ignore -- data loading>
-        loadDataset(number: 1)
+        DataManager.shared.loadMessages(from: "simple-inbox-messages", withExtension: "json")
         // </ignore -- data loading>
 
         let viewController = IterableInboxNavigationViewController()
