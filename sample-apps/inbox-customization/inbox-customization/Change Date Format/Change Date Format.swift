@@ -11,7 +11,7 @@ extension MainViewController {
     /// To change the date format, you will have to set the `dateMapper`property of view delegate.
     @IBAction private func onChangeDateFormatTapped() {
         // <ignore -- data loading>
-        loadDataset(number: 1)
+        DataManager.shared.loadMessages(from: "change-date-format-messages", withExtension: "json")
         // </ignore -- data loading>
 
         let viewController = IterableInboxNavigationViewController()
