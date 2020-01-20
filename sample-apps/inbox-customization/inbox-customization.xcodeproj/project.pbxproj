@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AC61FA9723D5A69A00F458F8 /* Inbox With Multiple Cell Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC61FA9623D5A69A00F458F8 /* Inbox With Multiple Cell Types.swift */; };
+		AC61FA9A23D5A90600F458F8 /* Filter By Message Title.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC61FA9923D5A90600F458F8 /* Filter By Message Title.swift */; };
 		AC98362123CE1F88003B225B /* MockInAppFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC98362023CE1F88003B225B /* MockInAppFetcher.swift */; };
 		ACA0C17C23D30CDF006DA992 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0C17B23D30CDF006DA992 /* MainTabBarController.swift */; };
 		ACA0C17F23D43943006DA992 /* Inbox With Custom Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0C17E23D43943006DA992 /* Inbox With Custom Cell.swift */; };
@@ -42,6 +44,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AC61FA9623D5A69A00F458F8 /* Inbox With Multiple Cell Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Inbox With Multiple Cell Types.swift"; sourceTree = "<group>"; };
+		AC61FA9923D5A90600F458F8 /* Filter By Message Title.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Filter By Message Title.swift"; sourceTree = "<group>"; };
 		AC98362023CE1F88003B225B /* MockInAppFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockInAppFetcher.swift; sourceTree = "<group>"; };
 		ACA0C17B23D30CDF006DA992 /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		ACA0C17E23D43943006DA992 /* Inbox With Custom Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Inbox With Custom Cell.swift"; sourceTree = "<group>"; };
@@ -91,6 +95,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		AC61FA9523D5A66D00F458F8 /* Inbox With Multiple Cell Types */ = {
+			isa = PBXGroup;
+			children = (
+				AC61FA9623D5A69A00F458F8 /* Inbox With Multiple Cell Types.swift */,
+				ACBEB60323D2F1470046B5A1 /* CustomInboxCell1.xib */,
+				ACBEB60423D2F17F0046B5A1 /* CustomInboxCell2.xib */,
+			);
+			path = "Inbox With Multiple Cell Types";
+			sourceTree = "<group>";
+		};
+		AC61FA9823D5A88F00F458F8 /* Filter By Message Title */ = {
+			isa = PBXGroup;
+			children = (
+				AC61FA9923D5A90600F458F8 /* Filter By Message Title.swift */,
+			);
+			path = "Filter By Message Title";
+			sourceTree = "<group>";
+		};
 		ACA0C17D23D4391E006DA992 /* Inbox With Custom Cell */ = {
 			isa = PBXGroup;
 			children = (
@@ -122,15 +144,6 @@
 			path = "Advanced Inbox";
 			sourceTree = "<group>";
 		};
-		ACBEB60223D2EDF20046B5A1 /* Custom Inbox Cells */ = {
-			isa = PBXGroup;
-			children = (
-				ACBEB60323D2F1470046B5A1 /* CustomInboxCell1.xib */,
-				ACBEB60423D2F17F0046B5A1 /* CustomInboxCell2.xib */,
-			);
-			path = "Custom Inbox Cells";
-			sourceTree = "<group>";
-		};
 		ACC55DF523CD7DB600CE77C6 = {
 			isa = PBXGroup;
 			children = (
@@ -151,9 +164,10 @@
 		ACC55E0023CD7DB600CE77C6 /* inbox-customization */ = {
 			isa = PBXGroup;
 			children = (
+				AC61FA9823D5A88F00F458F8 /* Filter By Message Title */,
+				AC61FA9523D5A66D00F458F8 /* Inbox With Multiple Cell Types */,
 				ACA0C18223D43C04006DA992 /* Inbox With Additional Fields */,
 				ACA0C17D23D4391E006DA992 /* Inbox With Custom Cell */,
-				ACBEB60223D2EDF20046B5A1 /* Custom Inbox Cells */,
 				ACE78E4523D0397E00492D03 /* Custom Inbox Tabs */,
 				ACC55E0123CD7DB600CE77C6 /* AppDelegate.swift */,
 				ACBEB60023D233D40046B5A1 /* MainViewController.swift */,
@@ -327,9 +341,11 @@
 				ACA0C17C23D30CDF006DA992 /* MainTabBarController.swift in Sources */,
 				ACA0C17F23D43943006DA992 /* Inbox With Custom Cell.swift in Sources */,
 				ACC55E2023CE1B5900CE77C6 /* DataManager.swift in Sources */,
+				AC61FA9A23D5A90600F458F8 /* Filter By Message Title.swift in Sources */,
 				ACC55E0223CD7DB600CE77C6 /* AppDelegate.swift in Sources */,
 				AC98362123CE1F88003B225B /* MockInAppFetcher.swift in Sources */,
 				ACA0C18823D43CA9006DA992 /* AdditionalFieldsInboxCell.swift in Sources */,
+				AC61FA9723D5A69A00F458F8 /* Inbox With Multiple Cell Types.swift in Sources */,
 				ACC55E2323CE1C4600CE77C6 /* MockNetworkSession.swift in Sources */,
 				ACBEB60123D233D40046B5A1 /* MainViewController.swift in Sources */,
 				ACA0C18423D43C24006DA992 /* Inbox With Additional Fields.swift in Sources */,

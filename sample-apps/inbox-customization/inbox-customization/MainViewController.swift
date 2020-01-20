@@ -86,28 +86,6 @@ class MainViewController: UIViewController {
         present(viewController, animated: true)
     }
 
-    /// To filter by messages which, set the `filter` property of view delegate.
-    /// In this example, we show how to show only messages that have "mocha" in their title.
-    @IBAction private func filterByMessageTitleTapped() {
-        // <ignore -- data loading>
-        loadDataset(number: 1)
-        // </ignore -- data loading>
-
-        let viewController = IterableInboxNavigationViewController()
-        viewController.viewDelegate = FilterByMessageTitleInboxViewDelegate()
-        present(viewController, animated: true)
-    }
-
-    @IBAction private func multipleCellTypesTapped() {
-        // <ignore -- data loading>
-        loadDataset(number: 2)
-        // </ignore -- data loading>
-
-        let viewController = IterableInboxNavigationViewController()
-        viewController.viewDelegate = MultipleCellTypesInboxViewDelegate()
-        present(viewController, animated: true)
-    }
-    
     // MARK: private funcations
     @objc private func onDoneTapped() {
         dismiss(animated: true)
@@ -160,25 +138,4 @@ public class FilterByMessageTypeInboxViewDelegate: IterableInboxViewControllerVi
     }
 
     public let filter = IterableInboxViewController.DefaultFilter.usingCustomPayloadMessageType(in: "promotional", "transactional")
-}
-
-public class FilterByMessageTitleInboxViewDelegate: IterableInboxViewControllerViewDelegate {
-    public required init() {
-    }
-
-    public let filter: (IterableInAppMessage) -> Bool = { message in
-        guard let title = message.inboxMetadata?.title else {
-            return false
-        }
-        return title.contains("mocha")
-    }
-}
-
-public class MultipleCellTypesInboxViewDelegate: IterableInboxViewControllerViewDelegate {
-    public required init() {
-    }
-
-    public let customNibNames = ["CustomInboxCell1", "CustomInboxCell2", "AdvancedInboxCell", "CustomInboxCell"]
-    
-    public let customNibNameMapper = IterableInboxViewController.DefaultNibNameMapper.usingCustomPayloadNibName
 }

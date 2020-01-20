@@ -14,10 +14,7 @@
             "icon": "https://somewhere.com/latte.png"
         },
         "customPayload": {
-            "messageType": "promotional",
-            "discount": "20%",
             "customCellName": "CustomInboxCell2",
-            "messageSection": 0
         },
     },
     {
@@ -35,10 +32,7 @@
             "icon": "https://somewhere.com/cappuccino.png"
         },
         "customPayload": {
-            "messageType": "promotional",
-            "discount": "20%",
             "customCellName": "CustomInboxCell1",
-            "messageSection": 0
         },
     },
     {
@@ -57,10 +51,7 @@
             "icon": "https://somewhere.com/black-coffee.png"
         },
         "customPayload": {
-            "messageType": "promotional",
-            "discount": "20%",
             "customCellName": "CustomInboxCell2",
-            "messageSection": 0
         },
     },
     {
@@ -77,11 +68,6 @@
             "title": "Message with no customization",
             "subtitle": "This will use default cell with white background.",
             "icon": "https://somewhere.com/mocha.png"
-        },
-        "customPayload": {
-            "messageType": "promotional",
-            "discount": "10%",
-            "messageSection": 0
         },
     },
 ]

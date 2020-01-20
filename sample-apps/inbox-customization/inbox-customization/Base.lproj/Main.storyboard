@@ -102,14 +102,14 @@
                                         <rect key="frame" x="0.0" y="266" width="163" height="30"/>
                                         <state key="normal" title="Filter By Message Title"/>
                                         <connections>
-                                            <action selector="filterByMessageTitleTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="soh-4v-voJ"/>
+                                            <action selector="onFilterByMessageTitleTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="QWg-CT-YMf"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dbh-L5-Zh3">
                                         <rect key="frame" x="0.0" y="304" width="163" height="30"/>
                                         <state key="normal" title="Multiple Cell Types"/>
                                         <connections>
-                                            <action selector="multipleCellTypesTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="FH9-es-sF0"/>
+                                            <action selector="onInboxWithMultipleCellTypesTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="iiz-EH-TXC"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Art-m4-zJ3">
