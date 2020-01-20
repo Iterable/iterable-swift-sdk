@@ -17,7 +17,15 @@ class MainTabBarController: UITabBarController {
 
 extension MainTabBarController: UITabBarControllerDelegate {
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-        DataManager.shared.loadMessages(from: "inbox-messages-1", withExtension: "json")
+        if selectedIndex == 1 {
+            DataManager.shared.loadMessages(from: "simple-inbox-tab-messages", withExtension: "json")
+        } else if selectedIndex == 2 {
+            DataManager.shared.loadMessages(from: "custom-inbox-tab-messages", withExtension: "json")
+        } else if selectedIndex == 3 {
+            DataManager.shared.loadMessages(from: "advanced-inbox-tab-messages", withExtension: "json")
+        } else {
+            DataManager.shared.loadMessages(from: "inbox-messages-1", withExtension: "json")
+        }
     }
 }
 
