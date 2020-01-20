@@ -15,7 +15,7 @@
 		AC61FAA623D5CF7000F458F8 /* Change Date Format.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC61FAA523D5CF7000F458F8 /* Change Date Format.swift */; };
 		AC61FAA923D5D02B00F458F8 /* Simple Inbox Without Nav.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC61FAA823D5D02B00F458F8 /* Simple Inbox Without Nav.swift */; };
 		AC61FAAC23D5D0CF00F458F8 /* Simple Inbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC61FAAB23D5D0CF00F458F8 /* Simple Inbox.swift */; };
-		AC61FAAE23D5D58500F458F8 /* inbox-messages-4.json in Resources */ = {isa = PBXBuildFile; fileRef = AC61FAAD23D5D57300F458F8 /* inbox-messages-4.json */; };
+		AC61FAAE23D5D58500F458F8 /* multiple-sections-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = AC61FAAD23D5D57300F458F8 /* multiple-sections-messages.json */; };
 		AC61FAB123D5D6F600F458F8 /* Multiple Sections.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC61FAB023D5D6F600F458F8 /* Multiple Sections.swift */; };
 		AC61FAB323D60D3E00F458F8 /* simple-inbox-tab-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = AC61FAB223D60D3A00F458F8 /* simple-inbox-tab-messages.json */; };
 		AC61FAB523D60E8200F458F8 /* custom-inbox-tab-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = AC61FAB423D60E7500F458F8 /* custom-inbox-tab-messages.json */; };
@@ -71,7 +71,7 @@
 		AC61FAA523D5CF7000F458F8 /* Change Date Format.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Change Date Format.swift"; sourceTree = "<group>"; };
 		AC61FAA823D5D02B00F458F8 /* Simple Inbox Without Nav.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Simple Inbox Without Nav.swift"; sourceTree = "<group>"; };
 		AC61FAAB23D5D0CF00F458F8 /* Simple Inbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Simple Inbox.swift"; sourceTree = "<group>"; };
-		AC61FAAD23D5D57300F458F8 /* inbox-messages-4.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "inbox-messages-4.json"; sourceTree = "<group>"; };
+		AC61FAAD23D5D57300F458F8 /* multiple-sections-messages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "multiple-sections-messages.json"; sourceTree = "<group>"; };
 		AC61FAB023D5D6F600F458F8 /* Multiple Sections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Multiple Sections.swift"; sourceTree = "<group>"; };
 		AC61FAB223D60D3A00F458F8 /* simple-inbox-tab-messages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "simple-inbox-tab-messages.json"; sourceTree = "<group>"; };
 		AC61FAB423D60E7500F458F8 /* custom-inbox-tab-messages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "custom-inbox-tab-messages.json"; sourceTree = "<group>"; };
@@ -211,6 +211,7 @@
 			isa = PBXGroup;
 			children = (
 				AC61FAB023D5D6F600F458F8 /* Multiple Sections.swift */,
+				AC61FAAD23D5D57300F458F8 /* multiple-sections-messages.json */,
 			);
 			path = "Multiple Sections";
 			sourceTree = "<group>";
@@ -311,7 +312,6 @@
 			isa = PBXGroup;
 			children = (
 				ACE78E3923D0288400492D03 /* inbox-messages-1.json */,
-				AC61FAAD23D5D57300F458F8 /* inbox-messages-4.json */,
 				ACE78E3323CF990200492D03 /* mocha.png */,
 				ACE78E4923D063AE00492D03 /* black-coffee.png */,
 				ACE78E4B23D0A24800492D03 /* cappuccino.png */,
@@ -432,7 +432,7 @@
 				ACAA450F23D0BA720004E347 /* AdvancedInbox.storyboard in Resources */,
 				AC61FAB923D611D600F458F8 /* simple-inbox-messages.json in Resources */,
 				ACE78E4223D036C500492D03 /* CustomInbox.storyboard in Resources */,
-				AC61FAAE23D5D58500F458F8 /* inbox-messages-4.json in Resources */,
+				AC61FAAE23D5D58500F458F8 /* multiple-sections-messages.json in Resources */,
 				ACBEB60623D2F24A0046B5A1 /* CustomInboxCell2.xib in Resources */,
 				AC61FAB523D60E8200F458F8 /* custom-inbox-tab-messages.json in Resources */,
 				ACE78E3B23D0288400492D03 /* inbox-with-additional-fields-messages.json in Resources */,

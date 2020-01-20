@@ -13,7 +13,7 @@ extension MainViewController {
     /// Inbox looks best when embedded in a navigation controller. It has a `Done` button.
     @IBAction private func onMultipleSectionsTapped() {
         // <ignore -- data loading>
-        loadDataset(number: 4)
+        DataManager.shared.loadMessages(from: "multiple-sections-messages", withExtension: "json")
         // </ignore -- data loading>
 
         let viewController = IterableInboxViewController(style: .grouped)
