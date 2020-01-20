@@ -26,27 +26,8 @@ class MainViewController: UIViewController {
         present(viewController, animated: true)
     }
 
-    /// If for some reason you can't use the  provided `IterableInboxNavigationViewController` and you want to
-    /// use your own navigation controller instead, set `IterableInboxViewController` as the root view controller of the navigation controller.
-    /// You have to make sure there is a button to dismiss the inbox.
-    @IBAction private func simpleInbox2Tapped() {
-        // <ignore -- data loading>
-        loadDataset(number: 1)
-        // </ignore -- data loading>
-
-        let viewController = IterableInboxViewController()
-        let navController = UINavigationController(rootViewController: viewController)
-        let barButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(onDoneTapped))
-        viewController.navigationItem.rightBarButtonItem = barButtonItem
-        present(navController, animated: true)
-    }
     
     
-    // MARK: private funcations
-    @objc private func onDoneTapped() {
-        dismiss(animated: true)
-    }
-
     func loadDataset(number: Int) {
         DataManager.shared.loadMessages(from: "inbox-messages-\(number)", withExtension: "json")
     }

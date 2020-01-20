@@ -60,7 +60,7 @@
                                         <rect key="frame" x="0.0" y="38" width="163" height="30"/>
                                         <state key="normal" title="Simple Inbox 2"/>
                                         <connections>
-                                            <action selector="simpleInbox2Tapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="sI5-nw-pOI"/>
+                                            <action selector="onSimpleInbox2Tapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="QRa-HO-MBc"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IYv-Yj-to6">
