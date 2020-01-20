@@ -81,7 +81,7 @@
                                         <rect key="frame" x="0.0" y="152" width="163" height="30"/>
                                         <state key="normal" title="Sort By Date Ascending"/>
                                         <connections>
-                                            <action selector="sortByDateAscendingTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="rcz-E8-SqB"/>
+                                            <action selector="onSortByDateAscendingTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="ZEm-FM-p3Q"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3AP-FE-nfC">

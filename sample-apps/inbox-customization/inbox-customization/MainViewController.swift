@@ -52,17 +52,6 @@ class MainViewController: UIViewController {
         present(viewController, animated: true)
     }
     
-    /// To change sort order of messages, set the `comparator` property of view delegate.
-    @IBAction private func sortByDateAscendingTapped() {
-        // <ignore -- data loading>
-        loadDataset(number: 1)
-        // </ignore -- data loading>
-
-        let viewController = IterableInboxNavigationViewController()
-        viewController.viewDelegate = SortByDateAscendingInboxViewDelegate()
-        present(viewController, animated: true)
-    }
-
     // MARK: private funcations
     @objc private func onDoneTapped() {
         dismiss(animated: true)
@@ -85,12 +74,5 @@ public class FormatDateInboxViewDelegate: IterableInboxViewControllerViewDelegat
         formatter.unitsStyle = .full
         return formatter.localizedString(for: createdAt, relativeTo: Date())
     }
-}
-
-public class SortByDateAscendingInboxViewDelegate: IterableInboxViewControllerViewDelegate {
-    public required init() {
-    }
-    
-    public let comparator = IterableInboxViewController.DefaultComparator.ascending
 }
 
