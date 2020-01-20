@@ -14,7 +14,7 @@ extension MainViewController {
     /// You have to make sure there is a button to dismiss the inbox.
     @IBAction private func onSimpleInbox2Tapped() {
         // <ignore -- data loading>
-        loadDataset(number: 1)
+        DataManager.shared.loadMessages(from: "simple-inbox-without-nav-messages", withExtension: "json")
         // </ignore -- data loading>
 
         let viewController = IterableInboxViewController()
