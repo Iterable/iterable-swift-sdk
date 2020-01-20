@@ -210,7 +210,7 @@
 			path = "Inbox With Additional Fields";
 			sourceTree = "<group>";
 		};
-		ACAA450623D0A7C30004E347 /* Advanced Inbox */ = {
+		ACAA450623D0A7C30004E347 /* Advanced Inbox Tab */ = {
 			isa = PBXGroup;
 			children = (
 				ACAA450723D0A8370004E347 /* README.md */,
@@ -220,7 +220,7 @@
 				ACAA450C23D0B6F80004E347 /* AdvancedInboxViewDelegate.swift */,
 				AC61FAB623D60EB200F458F8 /* advanced-inbox-tab-messages.json */,
 			);
-			path = "Advanced Inbox";
+			path = "Advanced Inbox Tab";
 			sourceTree = "<group>";
 		};
 		ACC55DF523CD7DB600CE77C6 = {
@@ -310,7 +310,7 @@
 			path = "Simple Inbox Tab";
 			sourceTree = "<group>";
 		};
-		ACE78E4023D0354800492D03 /* Custom Inbox */ = {
+		ACE78E4023D0354800492D03 /* Custom Inbox Tab */ = {
 			isa = PBXGroup;
 			children = (
 				ACE78E4823D053DD00492D03 /* README.md */,
@@ -318,15 +318,15 @@
 				ACE78E4123D036C500492D03 /* CustomInbox.storyboard */,
 				AC61FAB423D60E7500F458F8 /* custom-inbox-tab-messages.json */,
 			);
-			path = "Custom Inbox";
+			path = "Custom Inbox Tab";
 			sourceTree = "<group>";
 		};
 		ACE78E4523D0397E00492D03 /* Custom Inbox Tabs */ = {
 			isa = PBXGroup;
 			children = (
 				ACE78E3D23D02FEF00492D03 /* Simple Inbox Tab */,
-				ACE78E4023D0354800492D03 /* Custom Inbox */,
-				ACAA450623D0A7C30004E347 /* Advanced Inbox */,
+				ACE78E4023D0354800492D03 /* Custom Inbox Tab */,
+				ACAA450623D0A7C30004E347 /* Advanced Inbox Tab */,
 			);
 			path = "Custom Inbox Tabs";
 			sourceTree = "<group>";

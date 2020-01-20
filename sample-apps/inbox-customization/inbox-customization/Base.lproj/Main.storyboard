@@ -47,7 +47,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="xpI-cR-rQn">
-                                <rect key="frame" x="125.5" y="271.5" width="163" height="410"/>
+                                <rect key="frame" x="125.5" y="245.5" width="163" height="410"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NOp-9K-ovK">
                                         <rect key="frame" x="0.0" y="0.0" width="163" height="30"/>
@@ -147,8 +147,8 @@
             <objects>
                 <navigationController id="vrt-M8-Y9O" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="Home" image="Home" id="A2w-gw-bKp"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" largeTitles="YES" id="Tf6-L0-C0v">
-                        <rect key="frame" x="0.0" y="44" width="414" height="96"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Tf6-L0-C0v">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
