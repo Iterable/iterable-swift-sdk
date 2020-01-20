@@ -14,7 +14,7 @@ extension MainViewController {
     /// This is needed so that the xib file is copied to the project.
     @IBAction private func onInboxWithAdditionalFieldsTapped() {
         // <ignore -- data loading>
-        loadDataset(number: 3)
+        DataManager.shared.loadMessages(from: "inbox-with-additional-fields-messages", withExtension: "json")
         // </ignore -- data loading>
 
         let viewController = IterableInboxNavigationViewController()
