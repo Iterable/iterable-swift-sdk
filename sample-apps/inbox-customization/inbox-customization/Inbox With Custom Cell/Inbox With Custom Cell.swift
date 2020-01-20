@@ -13,7 +13,7 @@ extension MainViewController {
     /// IMP: Also, make sure that in `file inspector` for the xib file `target membership` is checked. Otherwise the file will not be copied.
     @IBAction private func onInboxWithCustomCellTapped() {
         // <ignore -- data loading>
-        loadDataset(number: 1)
+        DataManager.shared.loadMessages(from: "inbox-with-custom-cell-messages", withExtension: "json")
         // </ignore -- data loading>
 
         let viewController = IterableInboxNavigationViewController()
