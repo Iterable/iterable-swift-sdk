@@ -12,7 +12,7 @@ extension MainViewController {
     /// In this example, we show how to show only messages that have "messageType" set to "promotional" or messageType set to "transactional".
     @IBAction private func onFilterByMessageTypeTapped() {
         // <ignore -- data loading>
-        loadDataset(number: 1)
+        DataManager.shared.loadMessages(from: "filter-by-message-type-messages", withExtension: "json")
         // </ignore -- data loading>
 
         let viewController = IterableInboxNavigationViewController()
