@@ -14,7 +14,7 @@ extension MainViewController {
     /// This is needed so that the xib file is copied to the project.
     @IBAction private func onInboxWithMultipleCellTypesTapped() {
         // <ignore -- data loading>
-        loadDataset(number: 2)
+        DataManager.shared.loadMessages(from: "inbox-with-multiple-cell-types-messages", withExtension: "json")
         // </ignore -- data loading>
 
         let viewController = IterableInboxNavigationViewController()

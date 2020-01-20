@@ -50,7 +50,7 @@
 		ACC55E2023CE1B5900CE77C6 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC55E1F23CE1B5900CE77C6 /* DataManager.swift */; };
 		ACC55E2323CE1C4600CE77C6 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC55E2223CE1C4600CE77C6 /* MockNetworkSession.swift */; };
 		ACE78E3423CF990200492D03 /* mocha.png in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3323CF990200492D03 /* mocha.png */; };
-		ACE78E3A23D0288400492D03 /* inbox-messages-2.json in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3723D0288400492D03 /* inbox-messages-2.json */; };
+		ACE78E3A23D0288400492D03 /* inbox-with-multiple-cell-types-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3723D0288400492D03 /* inbox-with-multiple-cell-types-messages.json */; };
 		ACE78E3B23D0288400492D03 /* inbox-messages-3.json in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3823D0288400492D03 /* inbox-messages-3.json */; };
 		ACE78E3C23D0288400492D03 /* inbox-messages-1.json in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3923D0288400492D03 /* inbox-messages-1.json */; };
 		ACE78E3F23D0306300492D03 /* SimpleInbox.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3E23D0306300492D03 /* SimpleInbox.storyboard */; };
@@ -108,7 +108,7 @@
 		ACC55E1F23CE1B5900CE77C6 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		ACC55E2223CE1C4600CE77C6 /* MockNetworkSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockNetworkSession.swift; sourceTree = "<group>"; };
 		ACE78E3323CF990200492D03 /* mocha.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mocha.png; sourceTree = "<group>"; };
-		ACE78E3723D0288400492D03 /* inbox-messages-2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "inbox-messages-2.json"; sourceTree = "<group>"; };
+		ACE78E3723D0288400492D03 /* inbox-with-multiple-cell-types-messages.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "inbox-with-multiple-cell-types-messages.json"; sourceTree = "<group>"; };
 		ACE78E3823D0288400492D03 /* inbox-messages-3.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "inbox-messages-3.json"; sourceTree = "<group>"; };
 		ACE78E3923D0288400492D03 /* inbox-messages-1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "inbox-messages-1.json"; sourceTree = "<group>"; };
 		ACE78E3E23D0306300492D03 /* SimpleInbox.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = SimpleInbox.storyboard; sourceTree = "<group>"; };
@@ -139,6 +139,7 @@
 				AC61FA9623D5A69A00F458F8 /* Inbox With Multiple Cell Types.swift */,
 				ACBEB60323D2F1470046B5A1 /* CustomInboxCell1.xib */,
 				ACBEB60423D2F17F0046B5A1 /* CustomInboxCell2.xib */,
+				ACE78E3723D0288400492D03 /* inbox-with-multiple-cell-types-messages.json */,
 			);
 			path = "Inbox With Multiple Cell Types";
 			sourceTree = "<group>";
@@ -309,7 +310,6 @@
 			isa = PBXGroup;
 			children = (
 				ACE78E3923D0288400492D03 /* inbox-messages-1.json */,
-				ACE78E3723D0288400492D03 /* inbox-messages-2.json */,
 				ACE78E3823D0288400492D03 /* inbox-messages-3.json */,
 				AC61FAAD23D5D57300F458F8 /* inbox-messages-4.json */,
 				ACE78E3323CF990200492D03 /* mocha.png */,
@@ -428,7 +428,7 @@
 				ACAA450923D0A9310004E347 /* AdvancedInboxCell.xib in Resources */,
 				ACE78E3423CF990200492D03 /* mocha.png in Resources */,
 				ACA0C18623D43C8C006DA992 /* AdditionalFieldsInboxCell.xib in Resources */,
-				ACE78E3A23D0288400492D03 /* inbox-messages-2.json in Resources */,
+				ACE78E3A23D0288400492D03 /* inbox-with-multiple-cell-types-messages.json in Resources */,
 				ACAA450F23D0BA720004E347 /* AdvancedInbox.storyboard in Resources */,
 				AC61FAB923D611D600F458F8 /* simple-inbox-messages.json in Resources */,
 				ACE78E4223D036C500492D03 /* CustomInbox.storyboard in Resources */,
