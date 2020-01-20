@@ -25,6 +25,7 @@
 		AC61FABD23D6137E00F458F8 /* inbox-with-custom-cell-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = AC61FABC23D6136900F458F8 /* inbox-with-custom-cell-messages.json */; };
 		AC61FAC023D6146C00F458F8 /* change-date-format-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = AC61FABE23D6142400F458F8 /* change-date-format-messages.json */; };
 		AC61FAC223D614AC00F458F8 /* sort-by-date-ascending-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = AC61FAC123D6149E00F458F8 /* sort-by-date-ascending-messages.json */; };
+		AC61FAC423D6337700F458F8 /* sort-by-title-ascending-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = AC61FAC323D6336400F458F8 /* sort-by-title-ascending-messages.json */; };
 		AC98362123CE1F88003B225B /* MockInAppFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC98362023CE1F88003B225B /* MockInAppFetcher.swift */; };
 		ACA0C17C23D30CDF006DA992 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0C17B23D30CDF006DA992 /* MainTabBarController.swift */; };
 		ACA0C17F23D43943006DA992 /* Inbox With Custom Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0C17E23D43943006DA992 /* Inbox With Custom Cell.swift */; };
@@ -78,6 +79,7 @@
 		AC61FABC23D6136900F458F8 /* inbox-with-custom-cell-messages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "inbox-with-custom-cell-messages.json"; sourceTree = "<group>"; };
 		AC61FABE23D6142400F458F8 /* change-date-format-messages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "change-date-format-messages.json"; sourceTree = "<group>"; };
 		AC61FAC123D6149E00F458F8 /* sort-by-date-ascending-messages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "sort-by-date-ascending-messages.json"; sourceTree = "<group>"; };
+		AC61FAC323D6336400F458F8 /* sort-by-title-ascending-messages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "sort-by-title-ascending-messages.json"; sourceTree = "<group>"; };
 		AC98362023CE1F88003B225B /* MockInAppFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockInAppFetcher.swift; sourceTree = "<group>"; };
 		ACA0C17B23D30CDF006DA992 /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
 		ACA0C17E23D43943006DA992 /* Inbox With Custom Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Inbox With Custom Cell.swift"; sourceTree = "<group>"; };
@@ -157,6 +159,7 @@
 			isa = PBXGroup;
 			children = (
 				AC61FA9F23D5CE4400F458F8 /* Sort By Title Ascending.swift */,
+				AC61FAC323D6336400F458F8 /* sort-by-title-ascending-messages.json */,
 			);
 			path = "Sort By Title Ascending";
 			sourceTree = "<group>";
@@ -428,6 +431,7 @@
 				ACE78E3B23D0288400492D03 /* inbox-messages-3.json in Resources */,
 				AC61FAC023D6146C00F458F8 /* change-date-format-messages.json in Resources */,
 				ACE78E4E23D0A53300492D03 /* latte.png in Resources */,
+				AC61FAC423D6337700F458F8 /* sort-by-title-ascending-messages.json in Resources */,
 				ACC55E0E23CD7DBA00CE77C6 /* LaunchScreen.storyboard in Resources */,
 				ACE78E4C23D0A25400492D03 /* cappuccino.png in Resources */,
 				ACC55E0B23CD7DBA00CE77C6 /* Assets.xcassets in Resources */,

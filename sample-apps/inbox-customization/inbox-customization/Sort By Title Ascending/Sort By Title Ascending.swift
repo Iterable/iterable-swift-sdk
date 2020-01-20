@@ -11,7 +11,7 @@ extension MainViewController {
     /// To change sort order of messages, set the `comparator` property of view delegate.
     @IBAction private func onSortByTitleAscendingTapped() {
         // <ignore -- data loading>
-        loadDataset(number: 1)
+        DataManager.shared.loadMessages(from: "sort-by-title-ascending-messages", withExtension: "json")
         // </ignore -- data loading>
 
         let viewController = IterableInboxNavigationViewController()
