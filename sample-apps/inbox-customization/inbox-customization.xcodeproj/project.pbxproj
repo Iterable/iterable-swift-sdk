@@ -52,7 +52,7 @@
 		ACE78E3423CF990200492D03 /* mocha.png in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3323CF990200492D03 /* mocha.png */; };
 		ACE78E3A23D0288400492D03 /* inbox-with-multiple-cell-types-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3723D0288400492D03 /* inbox-with-multiple-cell-types-messages.json */; };
 		ACE78E3B23D0288400492D03 /* inbox-with-additional-fields-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3823D0288400492D03 /* inbox-with-additional-fields-messages.json */; };
-		ACE78E3C23D0288400492D03 /* inbox-messages-1.json in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3923D0288400492D03 /* inbox-messages-1.json */; };
+		ACE78E3C23D0288400492D03 /* inbox-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3923D0288400492D03 /* inbox-messages.json */; };
 		ACE78E3F23D0306300492D03 /* SimpleInbox.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3E23D0306300492D03 /* SimpleInbox.storyboard */; };
 		ACE78E4223D036C500492D03 /* CustomInbox.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E4123D036C500492D03 /* CustomInbox.storyboard */; };
 		ACE78E4423D036ED00492D03 /* CustomInboxCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E4323D036ED00492D03 /* CustomInboxCell.xib */; };
@@ -110,7 +110,7 @@
 		ACE78E3323CF990200492D03 /* mocha.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mocha.png; sourceTree = "<group>"; };
 		ACE78E3723D0288400492D03 /* inbox-with-multiple-cell-types-messages.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "inbox-with-multiple-cell-types-messages.json"; sourceTree = "<group>"; };
 		ACE78E3823D0288400492D03 /* inbox-with-additional-fields-messages.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "inbox-with-additional-fields-messages.json"; sourceTree = "<group>"; };
-		ACE78E3923D0288400492D03 /* inbox-messages-1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "inbox-messages-1.json"; sourceTree = "<group>"; };
+		ACE78E3923D0288400492D03 /* inbox-messages.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "inbox-messages.json"; sourceTree = "<group>"; };
 		ACE78E3E23D0306300492D03 /* SimpleInbox.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = SimpleInbox.storyboard; sourceTree = "<group>"; };
 		ACE78E4123D036C500492D03 /* CustomInbox.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = CustomInbox.storyboard; sourceTree = "<group>"; };
 		ACE78E4323D036ED00492D03 /* CustomInboxCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CustomInboxCell.xib; sourceTree = "<group>"; };
@@ -311,7 +311,7 @@
 		ACC55E2123CE1C2500CE77C6 /* Mock Data */ = {
 			isa = PBXGroup;
 			children = (
-				ACE78E3923D0288400492D03 /* inbox-messages-1.json */,
+				ACE78E3923D0288400492D03 /* inbox-messages.json */,
 				ACE78E3323CF990200492D03 /* mocha.png */,
 				ACE78E4923D063AE00492D03 /* black-coffee.png */,
 				ACE78E4B23D0A24800492D03 /* cappuccino.png */,
@@ -422,7 +422,7 @@
 				AC61FAB723D60EC000F458F8 /* advanced-inbox-tab-messages.json in Resources */,
 				AC61FAC823D6368D00F458F8 /* filter-by-message-title-messages.json in Resources */,
 				ACBEB60523D2F2460046B5A1 /* CustomInboxCell1.xib in Resources */,
-				ACE78E3C23D0288400492D03 /* inbox-messages-1.json in Resources */,
+				ACE78E3C23D0288400492D03 /* inbox-messages.json in Resources */,
 				ACA0C18123D43B0A006DA992 /* DarkInboxCell.xib in Resources */,
 				ACE78E4A23D063BD00492D03 /* black-coffee.png in Resources */,
 				ACAA450923D0A9310004E347 /* AdvancedInboxCell.xib in Resources */,

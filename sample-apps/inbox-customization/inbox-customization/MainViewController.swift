@@ -7,17 +7,8 @@ import UIKit
 
 import IterableSDK
 
+/// Add code for this class is using "extension" files in separate folders.
 class MainViewController: UIViewController {
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-    }
-    
-    func loadDataset(number: Int) {
-        DataManager.shared.loadMessages(from: "inbox-messages-\(number)", withExtension: "json")
-    }
 }
 
 

@@ -19,7 +19,7 @@ final class DataManager {
                                       networkSession: DataManager.shared.mockNetworkSession,
                                       inAppFetcher: DataManager.shared.mockInAppFetcher)
         IterableAPI.email = "user@example.com"
-        DataManager.shared.loadMessages(from: "inbox-messages-1", withExtension: "json")
+        DataManager.shared.loadMessages(from: "inbox-messages", withExtension: "json")
     }
     
     func loadMessages(from file: String, withExtension ext: String) {

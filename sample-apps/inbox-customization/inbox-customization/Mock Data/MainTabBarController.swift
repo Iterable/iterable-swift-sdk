@@ -24,7 +24,7 @@ extension MainTabBarController: UITabBarControllerDelegate {
         } else if selectedIndex == 3 {
             DataManager.shared.loadMessages(from: "advanced-inbox-tab-messages", withExtension: "json")
         } else {
-            DataManager.shared.loadMessages(from: "inbox-messages-1", withExtension: "json")
+            DataManager.shared.loadMessages(from: "inbox-messages", withExtension: "json")
         }
     }
 }
