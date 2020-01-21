@@ -1,0 +1,71 @@
+{ "inAppMessages": [
+    {
+        "createdAt": 1579277586000,
+        "saveToInbox": true,
+        "content": {
+            "contentType": "html",
+            "html": "<a href='iterable://dismiss'>Click Here1</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"
+        },
+        "trigger": {"type": "never"},
+        "messageId": "m13",
+        "campaignId": "c13",
+        "inboxMetadata": {
+            "title": "This is a promotional message",
+            "subtitle": "Mocha coffee is on sale now. This is an awesome opportunity for you.",
+            "icon": "https://somewhere.com/mocha.png"
+        },
+        "customPayload": {
+            "messageType": "promotional",
+        },
+    },
+    {
+        "createdAt": 1579377586000,
+        "saveToInbox": true,
+        "content": {
+            "contentType": "html",
+            "html": "<a href='iterable://dismiss'>Click Here2</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"
+        },
+        "trigger": {"type": "never"},
+        "messageId": "m14",
+        "campaignId": "c14",
+        "inboxMetadata": {
+            "title": "This is a transactional message",
+            "subtitle": "You just bought some black coffee. Here is your receipt.",
+            "icon": "https://somewhere.com/black-coffee.png"
+        },
+        "customPayload": {
+            "messageType": "transactional",
+        },
+    },
+    {
+        "createdAt": 1579477586000,
+        "saveToInbox": true,
+        "content": {
+            "contentType": "html",
+            "html": "<a href='iterable://dismiss'>Click Here3</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"},
+        "trigger": {"type": "never"},
+        "messageId": "m15",
+        "campaignId": "c15",
+        "inboxMetadata": {
+            "title": "Buy cappuccino",
+            "subtitle": "Cappuccino is good for your soul. Act now. Time is limited.",
+            "icon": "https://somewhere.com/cappuccino.png"
+        },
+    },
+    {
+        "createdAt": 1579577586000,
+        "saveToInbox": true,
+        "content": {
+            "contentType": "html",
+            "html": "<a href='iterable://dismiss'>Click Here4</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"},
+        "trigger": {"type": "never"},
+        "messageId": "m16",
+        "campaignId": "c16",
+        "inboxMetadata": {
+            "title": "Buy latte",
+            "subtitle": "Latte is tasty. From our farm to your table. Get some today.",
+            "icon": "https://somewhere.com/latte.png"
+        },
+    },
+]
+}

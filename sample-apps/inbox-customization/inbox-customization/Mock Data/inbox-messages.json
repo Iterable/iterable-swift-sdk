@@ -1,0 +1,83 @@
+{ "inAppMessages": [
+    {
+        "createdAt": 1579277586000,
+        "saveToInbox": true,
+        "content": {
+            "contentType": "html",
+            "html": "<a href='iterable://dismiss'>Click Here1</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"
+        },
+        "trigger": {"type": "never"},
+        "messageId": "message1",
+        "campaignId": "campaign1",
+        "inboxMetadata": {
+            "title": "Buy mocha",
+            "subtitle": "Mocha coffee is on sale now. This is an awesome opportunity for you.",
+            "icon": "https://somewhere.com/mocha.png"
+        },
+        "customPayload": {
+            "messageType": "promotional",
+            "discount": "10%",
+            "customCellName": "AdvancedInboxCell",
+            "messageSection": 0
+        },
+    },
+    {
+        "createdAt": 1579377586000,
+        "saveToInbox": true,
+        "content": {
+            "contentType": "html",
+            "html": "<a href='iterable://dismiss'>Click Here2</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"
+        },
+        "trigger": {"type": "never"},
+        "messageId": "message2",
+        "campaignId": "campaign2",
+        "inboxMetadata": {
+            "title": "Buy black coffee",
+            "subtitle": "Black coffee is good for weight loss. Buy now. Regret later.",
+            "icon": "https://somewhere.com/black-coffee.png"
+        },
+        "customPayload": {
+            "messageType": "promotional",
+            "discount": "20%",
+            "customCellName": "AdvancedInboxCell",
+            "messageSection": 0
+        },
+    },
+    {
+        "createdAt": 1579477586000,
+        "saveToInbox": true,
+        "content": {
+            "contentType": "html",
+            "html": "<a href='iterable://dismiss'>Click Here3</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"},
+        "trigger": {"type": "never"},
+        "messageId": "message3",
+        "campaignId": "campaign3",
+        "inboxMetadata": {
+            "title": "Buy cappuccino",
+            "subtitle": "Cappuccino is good for your soul. Act now. Time is limited.",
+            "icon": "https://somewhere.com/cappuccino.png"
+        },
+        "customPayload": {
+            "messageSection": 1
+        },
+    },
+    {
+        "createdAt": 1579577586000,
+        "saveToInbox": true,
+        "content": {
+            "contentType": "html",
+            "html": "<a href='iterable://dismiss'>Click Here4</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"},
+        "trigger": {"type": "never"},
+        "messageId": "message4",
+        "campaignId": "campaign4",
+        "inboxMetadata": {
+            "title": "Buy latte",
+            "subtitle": "Latte is tasty. From our farm to your table. Get some today.",
+            "icon": "https://somewhere.com/latte.png"
+        },
+        "customPayload": {
+            "messageSection": 1
+        },
+    },
+]
+}

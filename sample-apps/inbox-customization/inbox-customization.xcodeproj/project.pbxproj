@@ -1,0 +1,702 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 52;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		AC61FA9723D5A69A00F458F8 /* Inbox With Multiple Cell Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC61FA9623D5A69A00F458F8 /* Inbox With Multiple Cell Types.swift */; };
+		AC61FA9A23D5A90600F458F8 /* Filter By Message Title.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC61FA9923D5A90600F458F8 /* Filter By Message Title.swift */; };
+		AC61FA9D23D5CD2000F458F8 /* FilterByMessageType.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC61FA9C23D5CD2000F458F8 /* FilterByMessageType.swift */; };
+		AC61FAA023D5CE4400F458F8 /* Sort By Title Ascending.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC61FA9F23D5CE4400F458F8 /* Sort By Title Ascending.swift */; };
+		AC61FAA323D5CEE500F458F8 /* Sort By Date Ascending.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC61FAA223D5CEE500F458F8 /* Sort By Date Ascending.swift */; };
+		AC61FAA623D5CF7000F458F8 /* Change Date Format.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC61FAA523D5CF7000F458F8 /* Change Date Format.swift */; };
+		AC61FAA923D5D02B00F458F8 /* Simple Inbox Without Nav.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC61FAA823D5D02B00F458F8 /* Simple Inbox Without Nav.swift */; };
+		AC61FAAC23D5D0CF00F458F8 /* Simple Inbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC61FAAB23D5D0CF00F458F8 /* Simple Inbox.swift */; };
+		AC61FAAE23D5D58500F458F8 /* multiple-sections-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = AC61FAAD23D5D57300F458F8 /* multiple-sections-messages.json */; };
+		AC61FAB123D5D6F600F458F8 /* Multiple Sections.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC61FAB023D5D6F600F458F8 /* Multiple Sections.swift */; };
+		AC61FAB323D60D3E00F458F8 /* simple-inbox-tab-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = AC61FAB223D60D3A00F458F8 /* simple-inbox-tab-messages.json */; };
+		AC61FAB523D60E8200F458F8 /* custom-inbox-tab-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = AC61FAB423D60E7500F458F8 /* custom-inbox-tab-messages.json */; };
+		AC61FAB723D60EC000F458F8 /* advanced-inbox-tab-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = AC61FAB623D60EB200F458F8 /* advanced-inbox-tab-messages.json */; };
+		AC61FAB923D611D600F458F8 /* simple-inbox-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = AC61FAB823D611C900F458F8 /* simple-inbox-messages.json */; };
+		AC61FABB23D612E100F458F8 /* simple-inbox-without-nav-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = AC61FABA23D612A500F458F8 /* simple-inbox-without-nav-messages.json */; };
+		AC61FABD23D6137E00F458F8 /* inbox-with-custom-cell-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = AC61FABC23D6136900F458F8 /* inbox-with-custom-cell-messages.json */; };
+		AC61FAC023D6146C00F458F8 /* change-date-format-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = AC61FABE23D6142400F458F8 /* change-date-format-messages.json */; };
+		AC61FAC223D614AC00F458F8 /* sort-by-date-ascending-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = AC61FAC123D6149E00F458F8 /* sort-by-date-ascending-messages.json */; };
+		AC61FAC423D6337700F458F8 /* sort-by-title-ascending-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = AC61FAC323D6336400F458F8 /* sort-by-title-ascending-messages.json */; };
+		AC61FAC623D6351D00F458F8 /* filter-by-message-type-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = AC61FAC523D6347B00F458F8 /* filter-by-message-type-messages.json */; };
+		AC61FAC823D6368D00F458F8 /* filter-by-message-title-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = AC61FAC723D6367D00F458F8 /* filter-by-message-title-messages.json */; };
+		AC98362123CE1F88003B225B /* MockInAppFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC98362023CE1F88003B225B /* MockInAppFetcher.swift */; };
+		ACA0C17C23D30CDF006DA992 /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0C17B23D30CDF006DA992 /* MainTabBarController.swift */; };
+		ACA0C17F23D43943006DA992 /* Inbox With Custom Cell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0C17E23D43943006DA992 /* Inbox With Custom Cell.swift */; };
+		ACA0C18123D43B0A006DA992 /* DarkInboxCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = ACA0C18023D43AC8006DA992 /* DarkInboxCell.xib */; };
+		ACA0C18423D43C24006DA992 /* Inbox With Additional Fields.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0C18323D43C24006DA992 /* Inbox With Additional Fields.swift */; };
+		ACA0C18623D43C8C006DA992 /* AdditionalFieldsInboxCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = ACA0C18523D43C7A006DA992 /* AdditionalFieldsInboxCell.xib */; };
+		ACA0C18823D43CA9006DA992 /* AdditionalFieldsInboxCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA0C18723D43CA9006DA992 /* AdditionalFieldsInboxCell.swift */; };
+		ACAA450923D0A9310004E347 /* AdvancedInboxCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = ACAA450823D0A9310004E347 /* AdvancedInboxCell.xib */; };
+		ACAA450B23D0AB9C0004E347 /* AdvancedInboxCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAA450A23D0AB9C0004E347 /* AdvancedInboxCell.swift */; };
+		ACAA450D23D0B6F80004E347 /* AdvancedInboxViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAA450C23D0B6F80004E347 /* AdvancedInboxViewDelegate.swift */; };
+		ACAA450F23D0BA720004E347 /* AdvancedInbox.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACAA450E23D0BA720004E347 /* AdvancedInbox.storyboard */; };
+		ACBEB60123D233D40046B5A1 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBEB60023D233D40046B5A1 /* MainViewController.swift */; };
+		ACBEB60523D2F2460046B5A1 /* CustomInboxCell1.xib in Resources */ = {isa = PBXBuildFile; fileRef = ACBEB60323D2F1470046B5A1 /* CustomInboxCell1.xib */; };
+		ACBEB60623D2F24A0046B5A1 /* CustomInboxCell2.xib in Resources */ = {isa = PBXBuildFile; fileRef = ACBEB60423D2F17F0046B5A1 /* CustomInboxCell2.xib */; };
+		ACC55E0223CD7DB600CE77C6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC55E0123CD7DB600CE77C6 /* AppDelegate.swift */; };
+		ACC55E0923CD7DB600CE77C6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACC55E0723CD7DB600CE77C6 /* Main.storyboard */; };
+		ACC55E0B23CD7DBA00CE77C6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ACC55E0A23CD7DBA00CE77C6 /* Assets.xcassets */; };
+		ACC55E0E23CD7DBA00CE77C6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACC55E0C23CD7DBA00CE77C6 /* LaunchScreen.storyboard */; };
+		ACC55E1D23CD871E00CE77C6 /* IterableSDK in Frameworks */ = {isa = PBXBuildFile; productRef = ACC55E1C23CD871E00CE77C6 /* IterableSDK */; };
+		ACC55E2023CE1B5900CE77C6 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC55E1F23CE1B5900CE77C6 /* DataManager.swift */; };
+		ACC55E2323CE1C4600CE77C6 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC55E2223CE1C4600CE77C6 /* MockNetworkSession.swift */; };
+		ACE78E3423CF990200492D03 /* mocha.png in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3323CF990200492D03 /* mocha.png */; };
+		ACE78E3A23D0288400492D03 /* inbox-with-multiple-cell-types-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3723D0288400492D03 /* inbox-with-multiple-cell-types-messages.json */; };
+		ACE78E3B23D0288400492D03 /* inbox-with-additional-fields-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3823D0288400492D03 /* inbox-with-additional-fields-messages.json */; };
+		ACE78E3C23D0288400492D03 /* inbox-messages.json in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3923D0288400492D03 /* inbox-messages.json */; };
+		ACE78E3F23D0306300492D03 /* SimpleInbox.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3E23D0306300492D03 /* SimpleInbox.storyboard */; };
+		ACE78E4223D036C500492D03 /* CustomInbox.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E4123D036C500492D03 /* CustomInbox.storyboard */; };
+		ACE78E4423D036ED00492D03 /* CustomInboxCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E4323D036ED00492D03 /* CustomInboxCell.xib */; };
+		ACE78E4723D050BD00492D03 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E4623D050BD00492D03 /* README.md */; };
+		ACE78E4A23D063BD00492D03 /* black-coffee.png in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E4923D063AE00492D03 /* black-coffee.png */; };
+		ACE78E4C23D0A25400492D03 /* cappuccino.png in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E4B23D0A24800492D03 /* cappuccino.png */; };
+		ACE78E4E23D0A53300492D03 /* latte.png in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E4D23D0A52E00492D03 /* latte.png */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		AC61FA9623D5A69A00F458F8 /* Inbox With Multiple Cell Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Inbox With Multiple Cell Types.swift"; sourceTree = "<group>"; };
+		AC61FA9923D5A90600F458F8 /* Filter By Message Title.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Filter By Message Title.swift"; sourceTree = "<group>"; };
+		AC61FA9C23D5CD2000F458F8 /* FilterByMessageType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterByMessageType.swift; sourceTree = "<group>"; };
+		AC61FA9F23D5CE4400F458F8 /* Sort By Title Ascending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sort By Title Ascending.swift"; sourceTree = "<group>"; };
+		AC61FAA223D5CEE500F458F8 /* Sort By Date Ascending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sort By Date Ascending.swift"; sourceTree = "<group>"; };
+		AC61FAA523D5CF7000F458F8 /* Change Date Format.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Change Date Format.swift"; sourceTree = "<group>"; };
+		AC61FAA823D5D02B00F458F8 /* Simple Inbox Without Nav.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Simple Inbox Without Nav.swift"; sourceTree = "<group>"; };
+		AC61FAAB23D5D0CF00F458F8 /* Simple Inbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Simple Inbox.swift"; sourceTree = "<group>"; };
+		AC61FAAD23D5D57300F458F8 /* multiple-sections-messages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "multiple-sections-messages.json"; sourceTree = "<group>"; };
+		AC61FAB023D5D6F600F458F8 /* Multiple Sections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Multiple Sections.swift"; sourceTree = "<group>"; };
+		AC61FAB223D60D3A00F458F8 /* simple-inbox-tab-messages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "simple-inbox-tab-messages.json"; sourceTree = "<group>"; };
+		AC61FAB423D60E7500F458F8 /* custom-inbox-tab-messages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "custom-inbox-tab-messages.json"; sourceTree = "<group>"; };
+		AC61FAB623D60EB200F458F8 /* advanced-inbox-tab-messages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "advanced-inbox-tab-messages.json"; sourceTree = "<group>"; };
+		AC61FAB823D611C900F458F8 /* simple-inbox-messages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "simple-inbox-messages.json"; sourceTree = "<group>"; };
+		AC61FABA23D612A500F458F8 /* simple-inbox-without-nav-messages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "simple-inbox-without-nav-messages.json"; sourceTree = "<group>"; };
+		AC61FABC23D6136900F458F8 /* inbox-with-custom-cell-messages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "inbox-with-custom-cell-messages.json"; sourceTree = "<group>"; };
+		AC61FABE23D6142400F458F8 /* change-date-format-messages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "change-date-format-messages.json"; sourceTree = "<group>"; };
+		AC61FAC123D6149E00F458F8 /* sort-by-date-ascending-messages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "sort-by-date-ascending-messages.json"; sourceTree = "<group>"; };
+		AC61FAC323D6336400F458F8 /* sort-by-title-ascending-messages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "sort-by-title-ascending-messages.json"; sourceTree = "<group>"; };
+		AC61FAC523D6347B00F458F8 /* filter-by-message-type-messages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "filter-by-message-type-messages.json"; sourceTree = "<group>"; };
+		AC61FAC723D6367D00F458F8 /* filter-by-message-title-messages.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "filter-by-message-title-messages.json"; sourceTree = "<group>"; };
+		AC98362023CE1F88003B225B /* MockInAppFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockInAppFetcher.swift; sourceTree = "<group>"; };
+		ACA0C17B23D30CDF006DA992 /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
+		ACA0C17E23D43943006DA992 /* Inbox With Custom Cell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Inbox With Custom Cell.swift"; sourceTree = "<group>"; };
+		ACA0C18023D43AC8006DA992 /* DarkInboxCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DarkInboxCell.xib; sourceTree = "<group>"; };
+		ACA0C18323D43C24006DA992 /* Inbox With Additional Fields.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Inbox With Additional Fields.swift"; sourceTree = "<group>"; };
+		ACA0C18523D43C7A006DA992 /* AdditionalFieldsInboxCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AdditionalFieldsInboxCell.xib; sourceTree = "<group>"; };
+		ACA0C18723D43CA9006DA992 /* AdditionalFieldsInboxCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdditionalFieldsInboxCell.swift; sourceTree = "<group>"; };
+		ACAA450723D0A8370004E347 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		ACAA450823D0A9310004E347 /* AdvancedInboxCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AdvancedInboxCell.xib; sourceTree = "<group>"; };
+		ACAA450A23D0AB9C0004E347 /* AdvancedInboxCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedInboxCell.swift; sourceTree = "<group>"; };
+		ACAA450C23D0B6F80004E347 /* AdvancedInboxViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdvancedInboxViewDelegate.swift; sourceTree = "<group>"; };
+		ACAA450E23D0BA720004E347 /* AdvancedInbox.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = AdvancedInbox.storyboard; sourceTree = "<group>"; };
+		ACBEB60023D233D40046B5A1 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		ACBEB60323D2F1470046B5A1 /* CustomInboxCell1.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CustomInboxCell1.xib; sourceTree = "<group>"; };
+		ACBEB60423D2F17F0046B5A1 /* CustomInboxCell2.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CustomInboxCell2.xib; sourceTree = "<group>"; };
+		ACC55DFE23CD7DB600CE77C6 /* inbox-customization.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "inbox-customization.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		ACC55E0123CD7DB600CE77C6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		ACC55E0823CD7DB600CE77C6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		ACC55E0A23CD7DBA00CE77C6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		ACC55E0D23CD7DBA00CE77C6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		ACC55E0F23CD7DBA00CE77C6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		ACC55E1F23CE1B5900CE77C6 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
+		ACC55E2223CE1C4600CE77C6 /* MockNetworkSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockNetworkSession.swift; sourceTree = "<group>"; };
+		ACE78E3323CF990200492D03 /* mocha.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mocha.png; sourceTree = "<group>"; };
+		ACE78E3723D0288400492D03 /* inbox-with-multiple-cell-types-messages.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "inbox-with-multiple-cell-types-messages.json"; sourceTree = "<group>"; };
+		ACE78E3823D0288400492D03 /* inbox-with-additional-fields-messages.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "inbox-with-additional-fields-messages.json"; sourceTree = "<group>"; };
+		ACE78E3923D0288400492D03 /* inbox-messages.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "inbox-messages.json"; sourceTree = "<group>"; };
+		ACE78E3E23D0306300492D03 /* SimpleInbox.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = SimpleInbox.storyboard; sourceTree = "<group>"; };
+		ACE78E4123D036C500492D03 /* CustomInbox.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = CustomInbox.storyboard; sourceTree = "<group>"; };
+		ACE78E4323D036ED00492D03 /* CustomInboxCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CustomInboxCell.xib; sourceTree = "<group>"; };
+		ACE78E4623D050BD00492D03 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		ACE78E4823D053DD00492D03 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		ACE78E4923D063AE00492D03 /* black-coffee.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "black-coffee.png"; sourceTree = "<group>"; };
+		ACE78E4B23D0A24800492D03 /* cappuccino.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cappuccino.png; sourceTree = "<group>"; };
+		ACE78E4D23D0A52E00492D03 /* latte.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = latte.png; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		ACC55DFB23CD7DB600CE77C6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ACC55E1D23CD871E00CE77C6 /* IterableSDK in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		AC61FA9523D5A66D00F458F8 /* Inbox With Multiple Cell Types */ = {
+			isa = PBXGroup;
+			children = (
+				AC61FA9623D5A69A00F458F8 /* Inbox With Multiple Cell Types.swift */,
+				ACBEB60323D2F1470046B5A1 /* CustomInboxCell1.xib */,
+				ACBEB60423D2F17F0046B5A1 /* CustomInboxCell2.xib */,
+				ACE78E3723D0288400492D03 /* inbox-with-multiple-cell-types-messages.json */,
+			);
+			path = "Inbox With Multiple Cell Types";
+			sourceTree = "<group>";
+		};
+		AC61FA9823D5A88F00F458F8 /* Filter By Message Title */ = {
+			isa = PBXGroup;
+			children = (
+				AC61FA9923D5A90600F458F8 /* Filter By Message Title.swift */,
+				AC61FAC723D6367D00F458F8 /* filter-by-message-title-messages.json */,
+			);
+			path = "Filter By Message Title";
+			sourceTree = "<group>";
+		};
+		AC61FA9B23D5CD0300F458F8 /* Filter By Message Type */ = {
+			isa = PBXGroup;
+			children = (
+				AC61FA9C23D5CD2000F458F8 /* FilterByMessageType.swift */,
+				AC61FAC523D6347B00F458F8 /* filter-by-message-type-messages.json */,
+			);
+			path = "Filter By Message Type";
+			sourceTree = "<group>";
+		};
+		AC61FA9E23D5CE2900F458F8 /* Sort By Title Ascending */ = {
+			isa = PBXGroup;
+			children = (
+				AC61FA9F23D5CE4400F458F8 /* Sort By Title Ascending.swift */,
+				AC61FAC323D6336400F458F8 /* sort-by-title-ascending-messages.json */,
+			);
+			path = "Sort By Title Ascending";
+			sourceTree = "<group>";
+		};
+		AC61FAA123D5CED600F458F8 /* Sort By Date Ascending */ = {
+			isa = PBXGroup;
+			children = (
+				AC61FAA223D5CEE500F458F8 /* Sort By Date Ascending.swift */,
+				AC61FAC123D6149E00F458F8 /* sort-by-date-ascending-messages.json */,
+			);
+			path = "Sort By Date Ascending";
+			sourceTree = "<group>";
+		};
+		AC61FAA423D5CF6100F458F8 /* Change Date Format */ = {
+			isa = PBXGroup;
+			children = (
+				AC61FAA523D5CF7000F458F8 /* Change Date Format.swift */,
+				AC61FABE23D6142400F458F8 /* change-date-format-messages.json */,
+			);
+			path = "Change Date Format";
+			sourceTree = "<group>";
+		};
+		AC61FAA723D5D01900F458F8 /* Simple Inbox Without Nav */ = {
+			isa = PBXGroup;
+			children = (
+				AC61FAA823D5D02B00F458F8 /* Simple Inbox Without Nav.swift */,
+				AC61FABA23D612A500F458F8 /* simple-inbox-without-nav-messages.json */,
+			);
+			path = "Simple Inbox Without Nav";
+			sourceTree = "<group>";
+		};
+		AC61FAAA23D5D0C300F458F8 /* Simple Inbox */ = {
+			isa = PBXGroup;
+			children = (
+				AC61FAAB23D5D0CF00F458F8 /* Simple Inbox.swift */,
+				AC61FAB823D611C900F458F8 /* simple-inbox-messages.json */,
+			);
+			path = "Simple Inbox";
+			sourceTree = "<group>";
+		};
+		AC61FAAF23D5D68E00F458F8 /* Multiple Sections */ = {
+			isa = PBXGroup;
+			children = (
+				AC61FAB023D5D6F600F458F8 /* Multiple Sections.swift */,
+				AC61FAAD23D5D57300F458F8 /* multiple-sections-messages.json */,
+			);
+			path = "Multiple Sections";
+			sourceTree = "<group>";
+		};
+		ACA0C17D23D4391E006DA992 /* Inbox With Custom Cell */ = {
+			isa = PBXGroup;
+			children = (
+				ACA0C17E23D43943006DA992 /* Inbox With Custom Cell.swift */,
+				ACA0C18023D43AC8006DA992 /* DarkInboxCell.xib */,
+				AC61FABC23D6136900F458F8 /* inbox-with-custom-cell-messages.json */,
+			);
+			path = "Inbox With Custom Cell";
+			sourceTree = "<group>";
+		};
+		ACA0C18223D43C04006DA992 /* Inbox With Additional Fields */ = {
+			isa = PBXGroup;
+			children = (
+				ACA0C18323D43C24006DA992 /* Inbox With Additional Fields.swift */,
+				ACA0C18723D43CA9006DA992 /* AdditionalFieldsInboxCell.swift */,
+				ACA0C18523D43C7A006DA992 /* AdditionalFieldsInboxCell.xib */,
+				ACE78E3823D0288400492D03 /* inbox-with-additional-fields-messages.json */,
+			);
+			path = "Inbox With Additional Fields";
+			sourceTree = "<group>";
+		};
+		ACAA450623D0A7C30004E347 /* Advanced Inbox Tab */ = {
+			isa = PBXGroup;
+			children = (
+				ACAA450723D0A8370004E347 /* README.md */,
+				ACAA450E23D0BA720004E347 /* AdvancedInbox.storyboard */,
+				ACAA450823D0A9310004E347 /* AdvancedInboxCell.xib */,
+				ACAA450A23D0AB9C0004E347 /* AdvancedInboxCell.swift */,
+				ACAA450C23D0B6F80004E347 /* AdvancedInboxViewDelegate.swift */,
+				AC61FAB623D60EB200F458F8 /* advanced-inbox-tab-messages.json */,
+			);
+			path = "Advanced Inbox Tab";
+			sourceTree = "<group>";
+		};
+		ACC55DF523CD7DB600CE77C6 = {
+			isa = PBXGroup;
+			children = (
+				ACC55E0023CD7DB600CE77C6 /* inbox-customization */,
+				ACC55DFF23CD7DB600CE77C6 /* Products */,
+				ACC55E1B23CD871E00CE77C6 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		ACC55DFF23CD7DB600CE77C6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				ACC55DFE23CD7DB600CE77C6 /* inbox-customization.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		ACC55E0023CD7DB600CE77C6 /* inbox-customization */ = {
+			isa = PBXGroup;
+			children = (
+				ACE78E4523D0397E00492D03 /* Custom Inbox Tabs */,
+				AC61FAAA23D5D0C300F458F8 /* Simple Inbox */,
+				AC61FAA723D5D01900F458F8 /* Simple Inbox Without Nav */,
+				ACA0C17D23D4391E006DA992 /* Inbox With Custom Cell */,
+				AC61FAA423D5CF6100F458F8 /* Change Date Format */,
+				AC61FAA123D5CED600F458F8 /* Sort By Date Ascending */,
+				AC61FA9E23D5CE2900F458F8 /* Sort By Title Ascending */,
+				AC61FA9B23D5CD0300F458F8 /* Filter By Message Type */,
+				AC61FA9823D5A88F00F458F8 /* Filter By Message Title */,
+				AC61FA9523D5A66D00F458F8 /* Inbox With Multiple Cell Types */,
+				ACA0C18223D43C04006DA992 /* Inbox With Additional Fields */,
+				AC61FAAF23D5D68E00F458F8 /* Multiple Sections */,
+				ACC55E0123CD7DB600CE77C6 /* AppDelegate.swift */,
+				ACBEB60023D233D40046B5A1 /* MainViewController.swift */,
+				ACC55E0723CD7DB600CE77C6 /* Main.storyboard */,
+				ACC55E0C23CD7DBA00CE77C6 /* LaunchScreen.storyboard */,
+				ACC55E0A23CD7DBA00CE77C6 /* Assets.xcassets */,
+				ACC55E1523CD801E00CE77C6 /* Supporting Files */,
+				ACC55E2123CE1C2500CE77C6 /* Mock Data */,
+			);
+			path = "inbox-customization";
+			sourceTree = "<group>";
+		};
+		ACC55E1523CD801E00CE77C6 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				ACC55E0F23CD7DBA00CE77C6 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		ACC55E1B23CD871E00CE77C6 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		ACC55E2123CE1C2500CE77C6 /* Mock Data */ = {
+			isa = PBXGroup;
+			children = (
+				ACE78E3923D0288400492D03 /* inbox-messages.json */,
+				ACE78E3323CF990200492D03 /* mocha.png */,
+				ACE78E4923D063AE00492D03 /* black-coffee.png */,
+				ACE78E4B23D0A24800492D03 /* cappuccino.png */,
+				ACE78E4D23D0A52E00492D03 /* latte.png */,
+				ACC55E1F23CE1B5900CE77C6 /* DataManager.swift */,
+				ACC55E2223CE1C4600CE77C6 /* MockNetworkSession.swift */,
+				AC98362023CE1F88003B225B /* MockInAppFetcher.swift */,
+				ACA0C17B23D30CDF006DA992 /* MainTabBarController.swift */,
+			);
+			path = "Mock Data";
+			sourceTree = "<group>";
+		};
+		ACE78E3D23D02FEF00492D03 /* Simple Inbox Tab */ = {
+			isa = PBXGroup;
+			children = (
+				ACE78E4623D050BD00492D03 /* README.md */,
+				ACE78E3E23D0306300492D03 /* SimpleInbox.storyboard */,
+				AC61FAB223D60D3A00F458F8 /* simple-inbox-tab-messages.json */,
+			);
+			path = "Simple Inbox Tab";
+			sourceTree = "<group>";
+		};
+		ACE78E4023D0354800492D03 /* Custom Inbox Tab */ = {
+			isa = PBXGroup;
+			children = (
+				ACE78E4823D053DD00492D03 /* README.md */,
+				ACE78E4323D036ED00492D03 /* CustomInboxCell.xib */,
+				ACE78E4123D036C500492D03 /* CustomInbox.storyboard */,
+				AC61FAB423D60E7500F458F8 /* custom-inbox-tab-messages.json */,
+			);
+			path = "Custom Inbox Tab";
+			sourceTree = "<group>";
+		};
+		ACE78E4523D0397E00492D03 /* Custom Inbox Tabs */ = {
+			isa = PBXGroup;
+			children = (
+				ACE78E3D23D02FEF00492D03 /* Simple Inbox Tab */,
+				ACE78E4023D0354800492D03 /* Custom Inbox Tab */,
+				ACAA450623D0A7C30004E347 /* Advanced Inbox Tab */,
+			);
+			path = "Custom Inbox Tabs";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		ACC55DFD23CD7DB600CE77C6 /* inbox-customization */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = ACC55E1223CD7DBA00CE77C6 /* Build configuration list for PBXNativeTarget "inbox-customization" */;
+			buildPhases = (
+				ACC55DFA23CD7DB600CE77C6 /* Sources */,
+				ACC55DFB23CD7DB600CE77C6 /* Frameworks */,
+				ACC55DFC23CD7DB600CE77C6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "inbox-customization";
+			packageProductDependencies = (
+				ACC55E1C23CD871E00CE77C6 /* IterableSDK */,
+			);
+			productName = "inbox-customization";
+			productReference = ACC55DFE23CD7DB600CE77C6 /* inbox-customization.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		ACC55DF623CD7DB600CE77C6 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1130;
+				LastUpgradeCheck = 1130;
+				ORGANIZATIONNAME = Iterable;
+				TargetAttributes = {
+					ACC55DFD23CD7DB600CE77C6 = {
+						CreatedOnToolsVersion = 11.3;
+					};
+				};
+			};
+			buildConfigurationList = ACC55DF923CD7DB600CE77C6 /* Build configuration list for PBXProject "inbox-customization" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = ACC55DF523CD7DB600CE77C6;
+			packageReferences = (
+				ACC55E1623CD86B400CE77C6 /* XCRemoteSwiftPackageReference "swift-sdk" */,
+			);
+			productRefGroup = ACC55DFF23CD7DB600CE77C6 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				ACC55DFD23CD7DB600CE77C6 /* inbox-customization */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		ACC55DFC23CD7DB600CE77C6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AC61FAB723D60EC000F458F8 /* advanced-inbox-tab-messages.json in Resources */,
+				AC61FAC823D6368D00F458F8 /* filter-by-message-title-messages.json in Resources */,
+				ACBEB60523D2F2460046B5A1 /* CustomInboxCell1.xib in Resources */,
+				ACE78E3C23D0288400492D03 /* inbox-messages.json in Resources */,
+				ACA0C18123D43B0A006DA992 /* DarkInboxCell.xib in Resources */,
+				ACE78E4A23D063BD00492D03 /* black-coffee.png in Resources */,
+				ACAA450923D0A9310004E347 /* AdvancedInboxCell.xib in Resources */,
+				ACE78E3423CF990200492D03 /* mocha.png in Resources */,
+				ACA0C18623D43C8C006DA992 /* AdditionalFieldsInboxCell.xib in Resources */,
+				ACE78E3A23D0288400492D03 /* inbox-with-multiple-cell-types-messages.json in Resources */,
+				ACAA450F23D0BA720004E347 /* AdvancedInbox.storyboard in Resources */,
+				AC61FAB923D611D600F458F8 /* simple-inbox-messages.json in Resources */,
+				ACE78E4223D036C500492D03 /* CustomInbox.storyboard in Resources */,
+				AC61FAAE23D5D58500F458F8 /* multiple-sections-messages.json in Resources */,
+				ACBEB60623D2F24A0046B5A1 /* CustomInboxCell2.xib in Resources */,
+				AC61FAB523D60E8200F458F8 /* custom-inbox-tab-messages.json in Resources */,
+				ACE78E3B23D0288400492D03 /* inbox-with-additional-fields-messages.json in Resources */,
+				AC61FAC023D6146C00F458F8 /* change-date-format-messages.json in Resources */,
+				ACE78E4E23D0A53300492D03 /* latte.png in Resources */,
+				AC61FAC423D6337700F458F8 /* sort-by-title-ascending-messages.json in Resources */,
+				ACC55E0E23CD7DBA00CE77C6 /* LaunchScreen.storyboard in Resources */,
+				ACE78E4C23D0A25400492D03 /* cappuccino.png in Resources */,
+				ACC55E0B23CD7DBA00CE77C6 /* Assets.xcassets in Resources */,
+				ACE78E4423D036ED00492D03 /* CustomInboxCell.xib in Resources */,
+				AC61FABB23D612E100F458F8 /* simple-inbox-without-nav-messages.json in Resources */,
+				ACC55E0923CD7DB600CE77C6 /* Main.storyboard in Resources */,
+				ACE78E4723D050BD00492D03 /* README.md in Resources */,
+				AC61FAB323D60D3E00F458F8 /* simple-inbox-tab-messages.json in Resources */,
+				AC61FAC223D614AC00F458F8 /* sort-by-date-ascending-messages.json in Resources */,
+				AC61FABD23D6137E00F458F8 /* inbox-with-custom-cell-messages.json in Resources */,
+				ACE78E3F23D0306300492D03 /* SimpleInbox.storyboard in Resources */,
+				AC61FAC623D6351D00F458F8 /* filter-by-message-type-messages.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		ACC55DFA23CD7DB600CE77C6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ACAA450D23D0B6F80004E347 /* AdvancedInboxViewDelegate.swift in Sources */,
+				ACAA450B23D0AB9C0004E347 /* AdvancedInboxCell.swift in Sources */,
+				ACA0C17C23D30CDF006DA992 /* MainTabBarController.swift in Sources */,
+				ACA0C17F23D43943006DA992 /* Inbox With Custom Cell.swift in Sources */,
+				AC61FAA323D5CEE500F458F8 /* Sort By Date Ascending.swift in Sources */,
+				ACC55E2023CE1B5900CE77C6 /* DataManager.swift in Sources */,
+				AC61FAB123D5D6F600F458F8 /* Multiple Sections.swift in Sources */,
+				AC61FA9A23D5A90600F458F8 /* Filter By Message Title.swift in Sources */,
+				ACC55E0223CD7DB600CE77C6 /* AppDelegate.swift in Sources */,
+				AC98362123CE1F88003B225B /* MockInAppFetcher.swift in Sources */,
+				ACA0C18823D43CA9006DA992 /* AdditionalFieldsInboxCell.swift in Sources */,
+				AC61FA9723D5A69A00F458F8 /* Inbox With Multiple Cell Types.swift in Sources */,
+				ACC55E2323CE1C4600CE77C6 /* MockNetworkSession.swift in Sources */,
+				AC61FAA623D5CF7000F458F8 /* Change Date Format.swift in Sources */,
+				ACBEB60123D233D40046B5A1 /* MainViewController.swift in Sources */,
+				AC61FA9D23D5CD2000F458F8 /* FilterByMessageType.swift in Sources */,
+				AC61FAA923D5D02B00F458F8 /* Simple Inbox Without Nav.swift in Sources */,
+				AC61FAA023D5CE4400F458F8 /* Sort By Title Ascending.swift in Sources */,
+				AC61FAAC23D5D0CF00F458F8 /* Simple Inbox.swift in Sources */,
+				ACA0C18423D43C24006DA992 /* Inbox With Additional Fields.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		ACC55E0723CD7DB600CE77C6 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				ACC55E0823CD7DB600CE77C6 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		ACC55E0C23CD7DBA00CE77C6 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				ACC55E0D23CD7DBA00CE77C6 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		ACC55E1023CD7DBA00CE77C6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		ACC55E1123CD7DBA00CE77C6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		ACC55E1323CD7DBA00CE77C6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = BP98Z28R86;
+				INFOPLIST_FILE = "inbox-customization/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "iterable.inbox-customization";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		ACC55E1423CD7DBA00CE77C6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = BP98Z28R86;
+				INFOPLIST_FILE = "inbox-customization/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "iterable.inbox-customization";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		ACC55DF923CD7DB600CE77C6 /* Build configuration list for PBXProject "inbox-customization" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ACC55E1023CD7DBA00CE77C6 /* Debug */,
+				ACC55E1123CD7DBA00CE77C6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		ACC55E1223CD7DBA00CE77C6 /* Build configuration list for PBXNativeTarget "inbox-customization" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ACC55E1323CD7DBA00CE77C6 /* Debug */,
+				ACC55E1423CD7DBA00CE77C6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		ACC55E1623CD86B400CE77C6 /* XCRemoteSwiftPackageReference "swift-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Iterable/swift-sdk";
+			requirement = {
+				branch = inbox;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		ACC55E1C23CD871E00CE77C6 /* IterableSDK */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ACC55E1623CD86B400CE77C6 /* XCRemoteSwiftPackageReference "swift-sdk" */;
+			productName = IterableSDK;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = ACC55DF623CD7DB600CE77C6 /* Project object */;
+}
