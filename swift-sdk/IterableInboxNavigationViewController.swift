@@ -53,14 +53,14 @@ open class IterableInboxNavigationViewController: UINavigationController {
     }
     
     /// Whether we should we show large titles for inbox.
-     /// This does not have any effect
-     @IBInspectable public var largeTitles: Bool = false {
-         didSet {
-             if #available(iOS 11.0, *) {
-                 navigationBar.prefersLargeTitles = largeTitles
-             }
-         }
-     }
+    /// This does not have any effect below iOS 11.
+    @IBInspectable public var largeTitles: Bool = false {
+        didSet {
+            if #available(iOS 11.0, *) {
+                navigationBar.prefersLargeTitles = largeTitles
+            }
+        }
+    }
      
     // MARK: Initializers
     
