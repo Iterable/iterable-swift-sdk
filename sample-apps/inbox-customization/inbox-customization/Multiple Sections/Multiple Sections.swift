@@ -15,7 +15,7 @@ extension MainViewController {
         // <ignore -- data loading>
         DataManager.shared.loadMessages(from: "multiple-sections-messages", withExtension: "json")
         // </ignore -- data loading>
-
+        
         let viewController = IterableInboxViewController(style: .grouped)
         viewController.viewDelegate = MultipleSectionsViewDelegate()
         let navController = UINavigationController(rootViewController: viewController)
@@ -23,16 +23,16 @@ extension MainViewController {
         viewController.navigationItem.rightBarButtonItem = barButtonItem
         present(navController, animated: true)
     }
-
+    
     // MARK: private funcations
+    
     @objc private func onDoneTapped() {
         dismiss(animated: true)
     }
 }
 
 public class MultipleSectionsViewDelegate: IterableInboxViewControllerViewDelegate {
-    public required init() {
-    }
+    public required init() {}
     
     /// This mapper looks at `customPayload` of inbox message and assumes that json key `messageSection` holds the section number.
     /// e.g., An inbox message with custom payload  `{"messageSection": 2}` will return 2 as section.

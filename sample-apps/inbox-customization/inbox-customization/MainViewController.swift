@@ -8,7 +8,4 @@ import UIKit
 import IterableSDK
 
 /// Add code for this class is using "extension" files in separate folders.
-class MainViewController: UIViewController {
-}
-
-
+class MainViewController: UIViewController {}

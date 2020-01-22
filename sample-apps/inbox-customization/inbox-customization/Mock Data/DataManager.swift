@@ -3,8 +3,8 @@
 //  Copyright © 2020 Iterable. All rights reserved.
 //
 
-import UIKit
 import Foundation
+import UIKit
 
 @testable import IterableSDK
 
@@ -12,7 +12,7 @@ final class DataManager {
     static let shared = DataManager()
     var mockNetworkSession: MockNetworkSession
     var mockInAppFetcher: MockInAppFetcher
-
+    
     static func initializeIterableApi(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
         IterableAPI.initializeForDemo(apiKey: "",
                                       launchOptions: launchOptions,
@@ -48,7 +48,7 @@ final class DataManager {
 }
 
 struct DemoDependencyContainer: DependencyContainerProtocol {
-    func createInAppFetcher(apiClient: ApiClientProtocol) -> InAppFetcherProtocol {
+    func createInAppFetcher(apiClient _: ApiClientProtocol) -> InAppFetcherProtocol {
         return inAppFetcher
     }
     
@@ -62,7 +62,7 @@ struct DemoDependencyContainer: DependencyContainerProtocol {
     let applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared
     let notificationCenter: NotificationCenterProtocol = NotificationCenter.default
     let apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker()
-
+    
     init(networkSession: NetworkSessionProtocol, inAppFetcher: InAppFetcherProtocol) {
         self.networkSession = networkSession
         self.inAppFetcher = inAppFetcher
@@ -87,4 +87,3 @@ extension IterableAPI {
         _ = internalImplementation?.start()
     }
 }
-

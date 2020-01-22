@@ -13,7 +13,7 @@ extension MainViewController {
         // <ignore -- data loading>
         DataManager.shared.loadMessages(from: "change-date-format-messages", withExtension: "json")
         // </ignore -- data loading>
-
+        
         let viewController = IterableInboxNavigationViewController()
         viewController.viewDelegate = FormatDateInboxViewDelegate()
         present(viewController, animated: true)
@@ -21,8 +21,7 @@ extension MainViewController {
 }
 
 public class FormatDateInboxViewDelegate: IterableInboxViewControllerViewDelegate {
-    public required init() {
-    }
+    public required init() {}
     
     public let dateMapper: (IterableInAppMessage) -> String? = { message in
         guard let createdAt = message.createdAt else {

@@ -10,7 +10,7 @@ import IterableSDK
 class AdditionalFieldsInboxCell: IterableInboxCell {
     @IBOutlet weak var discountLbl: UILabel!
     
-    @IBAction func buyNowTapped(_ sender: UIButton) {
+    @IBAction func buyNowTapped(_: UIButton) {
         ITBInfo()
     }
 }

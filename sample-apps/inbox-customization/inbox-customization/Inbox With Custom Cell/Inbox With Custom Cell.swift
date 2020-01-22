@@ -15,10 +15,9 @@ extension MainViewController {
         // <ignore -- data loading>
         DataManager.shared.loadMessages(from: "inbox-with-custom-cell-messages", withExtension: "json")
         // </ignore -- data loading>
-
+        
         let viewController = IterableInboxNavigationViewController()
         viewController.cellNibName = "DarkInboxCell"
         present(viewController, animated: true)
     }
-
 }

@@ -16,15 +16,16 @@ extension MainViewController {
         // <ignore -- data loading>
         DataManager.shared.loadMessages(from: "simple-inbox-without-nav-messages", withExtension: "json")
         // </ignore -- data loading>
-
+        
         let viewController = IterableInboxViewController()
         let navController = UINavigationController(rootViewController: viewController)
         let barButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(onDoneTapped))
         viewController.navigationItem.rightBarButtonItem = barButtonItem
         present(navController, animated: true)
     }
-
+    
     // MARK: private funcations
+    
     @objc private func onDoneTapped() {
         dismiss(animated: true)
     }

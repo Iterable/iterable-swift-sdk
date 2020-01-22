@@ -16,18 +16,16 @@ extension MainViewController {
         // <ignore -- data loading>
         DataManager.shared.loadMessages(from: "inbox-with-multiple-cell-types-messages", withExtension: "json")
         // </ignore -- data loading>
-
+        
         let viewController = IterableInboxNavigationViewController()
         viewController.viewDelegate = MultipleCellTypesInboxViewDelegate()
         present(viewController, animated: true)
     }
-
 }
 
 public class MultipleCellTypesInboxViewDelegate: IterableInboxViewControllerViewDelegate {
-    public required init() {
-    }
-
+    public required init() {}
+    
     public let customNibNames = ["CustomInboxCell1", "CustomInboxCell2", "AdvancedInboxCell", "CustomInboxCell"]
     
     public let customNibNameMapper = IterableInboxViewController.DefaultNibNameMapper.usingCustomPayloadNibName

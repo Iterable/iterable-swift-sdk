@@ -8,15 +8,14 @@ import Foundation
 import IterableSDK
 
 public class AdvancedInboxViewDelegate: IterableInboxViewControllerViewDelegate {
-    public required init() {
-    }
+    public required init() {}
     
     public let messageToSectionMapper: ((IterableInAppMessage) -> Int) = IterableInboxViewController.DefaultSectionMapper.usingCustomPayloadMessageSection
-
+    
     public let customNibNames: [String] = ["CustomInboxCell", "AdvancedInboxCell", "CustomInboxCell1", "CustomInboxCell2"]
-
+    
     public let customNibNameMapper: ((IterableInAppMessage) -> String?) = IterableInboxViewController.DefaultNibNameMapper.usingCustomPayloadNibName
-
+    
     public func renderAdditionalFields(forCell cell: IterableInboxCell, withMessage message: IterableInAppMessage) {
         guard
             let customCell = cell as? AdvancedInboxCell,
@@ -24,7 +23,7 @@ public class AdvancedInboxViewDelegate: IterableInboxViewControllerViewDelegate 
             let discount = payload["discount"] as? String else {
             return
         }
-
+        
         customCell.discountLbl?.text = "\(discount)"
     }
 }

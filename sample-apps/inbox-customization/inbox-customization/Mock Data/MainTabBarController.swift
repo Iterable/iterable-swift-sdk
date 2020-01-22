@@ -6,17 +6,16 @@
 import UIKit
 
 class MainTabBarController: UITabBarController {
-
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        self.delegate = self
+        
+        delegate = self
         // Do any additional setup after loading the view.
     }
 }
 
 extension MainTabBarController: UITabBarControllerDelegate {
-    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+    func tabBarController(_: UITabBarController, didSelect _: UIViewController) {
         if selectedIndex == 1 {
             DataManager.shared.loadMessages(from: "simple-inbox-tab-messages", withExtension: "json")
         } else if selectedIndex == 2 {
@@ -28,4 +27,3 @@ extension MainTabBarController: UITabBarControllerDelegate {
         }
     }
 }
-

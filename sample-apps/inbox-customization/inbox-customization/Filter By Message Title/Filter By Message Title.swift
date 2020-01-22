@@ -14,7 +14,7 @@ extension MainViewController {
         // <ignore -- data loading>
         DataManager.shared.loadMessages(from: "filter-by-message-title-messages", withExtension: "json")
         // </ignore -- data loading>
-
+        
         let viewController = IterableInboxNavigationViewController()
         viewController.viewDelegate = FilterByMessageTitleInboxViewDelegate()
         present(viewController, animated: true)
@@ -22,9 +22,8 @@ extension MainViewController {
 }
 
 public class FilterByMessageTitleInboxViewDelegate: IterableInboxViewControllerViewDelegate {
-    public required init() {
-    }
-
+    public required init() {}
+    
     public let filter: (IterableInAppMessage) -> Bool = { message in
         guard let title = message.inboxMetadata?.title else {
             return false

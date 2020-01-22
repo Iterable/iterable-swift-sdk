@@ -14,7 +14,7 @@ extension MainViewController {
         // <ignore -- data loading>
         DataManager.shared.loadMessages(from: "simple-inbox-messages", withExtension: "json")
         // </ignore -- data loading>
-
+        
         let viewController = IterableInboxNavigationViewController()
         present(viewController, animated: true)
     }

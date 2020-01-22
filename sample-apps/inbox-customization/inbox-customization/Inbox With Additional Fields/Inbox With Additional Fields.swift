@@ -16,18 +16,16 @@ extension MainViewController {
         // <ignore -- data loading>
         DataManager.shared.loadMessages(from: "inbox-with-additional-fields-messages", withExtension: "json")
         // </ignore -- data loading>
-
+        
         let viewController = IterableInboxNavigationViewController()
         viewController.cellNibName = "AdditionalFieldsInboxCell"
         viewController.viewDelegate = InboxWithAdditionalFieldsViewDelegate()
         present(viewController, animated: true)
     }
-
 }
 
 public class InboxWithAdditionalFieldsViewDelegate: IterableInboxViewControllerViewDelegate {
-    public required init() {
-    }
+    public required init() {}
     
     public func renderAdditionalFields(forCell cell: IterableInboxCell, withMessage message: IterableInAppMessage) {
         guard
@@ -36,7 +34,7 @@ public class InboxWithAdditionalFieldsViewDelegate: IterableInboxViewControllerV
             let discount = payload["discount"] as? String else {
             return
         }
-
+        
         customCell.discountLbl?.text = "\(discount)"
     }
 }

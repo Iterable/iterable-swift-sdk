@@ -13,7 +13,7 @@ extension MainViewController {
         // <ignore -- data loading>
         DataManager.shared.loadMessages(from: "sort-by-date-ascending-messages", withExtension: "json")
         // </ignore -- data loading>
-
+        
         let viewController = IterableInboxNavigationViewController()
         viewController.viewDelegate = SortByDateAscendingInboxViewDelegate()
         present(viewController, animated: true)
@@ -21,9 +21,7 @@ extension MainViewController {
 }
 
 public class SortByDateAscendingInboxViewDelegate: IterableInboxViewControllerViewDelegate {
-    public required init() {
-    }
+    public required init() {}
     
     public let comparator = IterableInboxViewController.DefaultComparator.ascending
 }
-

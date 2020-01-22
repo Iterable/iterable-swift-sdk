@@ -14,7 +14,7 @@ extension MainViewController {
         // <ignore -- data loading>
         DataManager.shared.loadMessages(from: "filter-by-message-type-messages", withExtension: "json")
         // </ignore -- data loading>
-
+        
         let viewController = IterableInboxNavigationViewController()
         viewController.viewDelegate = FilterByMessageTypeInboxViewDelegate()
         present(viewController, animated: true)
@@ -22,8 +22,7 @@ extension MainViewController {
 }
 
 public class FilterByMessageTypeInboxViewDelegate: IterableInboxViewControllerViewDelegate {
-    public required init() {
-    }
-
+    public required init() {}
+    
     public let filter = IterableInboxViewController.DefaultFilter.usingCustomPayloadMessageType(in: "promotional", "transactional")
 }
