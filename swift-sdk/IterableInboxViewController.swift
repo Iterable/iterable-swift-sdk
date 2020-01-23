@@ -245,8 +245,10 @@ open class IterableInboxViewController: UITableViewController {
         if tableView.tableFooterView == nil {
             tableView.tableFooterView = UIView()
         }
-        
-        if navigationController == nil {
+
+        /// if nav is of type `IterableInboxNavigationViewController` then
+        /// `viewWillAppear` will be called from there. Otherwise we have to call it here.
+        if !isNavControllerIterableNavController() {
             viewModel.viewWillAppear()
         }
     }
@@ -256,7 +258,9 @@ open class IterableInboxViewController: UITableViewController {
         
         super.viewWillDisappear(animated)
         
-        if navigationController == nil {
+        /// if nav is of type `IterableInboxNavigationViewController` then
+        /// `viewWillAppear` will be called from there. Otherwise we have to call it here.
+        if !isNavControllerIterableNavController() {
             viewModel.viewWillDisappear()
         }
     }
@@ -414,6 +418,13 @@ open class IterableInboxViewController: UITableViewController {
         }
         
         viewDelegate = delegateClass.init()
+    }
+    
+    private func isNavControllerIterableNavController() -> Bool {
+        if let _ = navigationController as? IterableInboxNavigationViewController {
+            return true
+        }
+        return false
     }
 }
 
