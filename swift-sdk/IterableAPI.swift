@@ -353,8 +353,8 @@ public final class IterableAPI : NSObject {
      
      - remark: passing in an empty array will clear subscription list, passing in nil will not modify the list
      */
-    @objc(updateSubscriptions:unsubscribedChannelIds:unsubscribedMessageTypeIds:) public static func updateSubscriptions(_ emailListIds: [String]?, unsubscribedChannelIds: [String]?, unsubscribedMessageTypeIds: [String]?) {
-        internalImplementation?.updateSubscriptions(emailListIds, unsubscribedChannelIds: unsubscribedChannelIds, unsubscribedMessageTypeIds: unsubscribedMessageTypeIds)
+    @objc(updateSubscriptions:templateId:emailListIds:unsubscribedChannelIds:unsubscribedMessageTypeIds:subscribedMessageTypeIds:) public static func updateSubscriptions(campaignId: NSNumber?, templateId: NSNumber?, emailListIds: [NSNumber]?, unsubscribedChannelIds: [NSNumber]?, unsubscribedMessageTypeIds: [NSNumber]?, subscribedMessageTypeIds: [NSNumber]?) {
+        internalImplementation?.updateSubscriptions(campaignId: campaignId, templateId: templateId, emailListIds: emailListIds, unsubscribedChannelIds: unsubscribedChannelIds, unsubscribedMessageTypeIds: unsubscribedMessageTypeIds, subscribedMessageTypeIds: subscribedMessageTypeIds)
     }
     
     //MARK: In-App Notifications
