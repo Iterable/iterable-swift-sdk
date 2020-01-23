@@ -61,6 +61,15 @@ open class IterableInboxNavigationViewController: UINavigationController {
             }
         }
     }
+
+    /// Whether to show different sections as grouped.
+    @IBInspectable public var groupSections: Bool = false {
+        didSet {
+            if groupSections {
+                initializeGroupedInbox()
+            }
+        }
+    }
      
     // MARK: Initializers
     
@@ -161,6 +170,23 @@ open class IterableInboxNavigationViewController: UINavigationController {
         ITBInfo()
         
         presentingViewController?.dismiss(animated: true)
+    }
+    
+    private func initializeGroupedInbox() {
+        let inboxViewController = IterableInboxViewController(style: .grouped)
+        copyProperties(inboxViewController: inboxViewController)
+        viewControllers = [inboxViewController]
+    }
+    
+    private func copyProperties(inboxViewController: IterableInboxViewController) {
+        inboxViewController.cellNibName = cellNibName
+        if let navTitle = navTitle {
+            inboxViewController.navigationItem.title = navTitle
+        }
+        inboxViewController.isPopup = isPopup
+        inboxViewController.viewDelegate = viewDelegate
+        inboxViewController.viewDelegateClassName = viewDelegateClassName
+        
     }
     
     private var inboxViewController: IterableInboxViewController? {
