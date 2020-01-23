@@ -259,7 +259,7 @@ open class IterableInboxViewController: UITableViewController {
         super.viewWillDisappear(animated)
         
         /// if nav is of type `IterableInboxNavigationViewController` then
-        /// `viewWillAppear` will be called from there. Otherwise we have to call it here.
+        /// `viewWillDisappear` will be called from there. Otherwise we have to call it here.
         if !isNavControllerIterableNavController() {
             viewModel.viewWillDisappear()
         }
