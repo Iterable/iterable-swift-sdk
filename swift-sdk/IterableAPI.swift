@@ -353,18 +353,18 @@ import UIKit
      - remark: passing in an empty array will clear subscription list, passing in nil will not modify the list
      */
     @objc(updateSubscriptions:templateId:emailListIds:unsubscribedChannelIds:unsubscribedMessageTypeIds:subscribedMessageTypeIds:)
-    public static func updateSubscriptions(_ campaignId: NSNumber?,
-                                           templateId: NSNumber?,
-                                           emailListIds: [NSNumber]?,
+    public static func updateSubscriptions(_ emailListIds: [NSNumber]?,
                                            unsubscribedChannelIds: [NSNumber]?,
                                            unsubscribedMessageTypeIds: [NSNumber]?,
-                                           subscribedMessageTypeIds: [NSNumber]?) {
-        internalImplementation?.updateSubscriptions(campaignId,
-                                                    templateId: templateId,
-                                                    emailListIds: emailListIds,
+                                           subscribedMessageTypeIds: [NSNumber]?,
+                                           campaignId: NSNumber?,
+                                           templateId: NSNumber?) {
+        internalImplementation?.updateSubscriptions(emailListIds,
                                                     unsubscribedChannelIds: unsubscribedChannelIds,
                                                     unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
-                                                    subscribedMessageTypeIds: subscribedMessageTypeIds)
+                                                    subscribedMessageTypeIds: subscribedMessageTypeIds,
+                                                    campaignId: campaignId,
+                                                    templateId: templateId)
     }
     
     // MARK: In-App Notifications

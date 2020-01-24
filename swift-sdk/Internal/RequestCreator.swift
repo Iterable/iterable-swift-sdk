@@ -204,12 +204,12 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: Const.Path.trackEvent, body: body)))
     }
     
-    func createUpdateSubscriptionsRequest(_ campaignId: NSNumber?,
-                                          templateId: NSNumber?,
-                                          emailListIds: [NSNumber]?,
-                                          unsubscribedChannelIds: [NSNumber]?,
-                                          unsubscribedMessageTypeIds: [NSNumber]?,
-                                          subscribedMessageTypeIds: [NSNumber]?) -> Result<IterableRequest, IterableError> {
+    func createUpdateSubscriptionsRequest(_ emailListIds: [NSNumber]? = nil,
+                                          unsubscribedChannelIds: [NSNumber]? = nil,
+                                          unsubscribedMessageTypeIds: [NSNumber]? = nil,
+                                          subscribedMessageTypeIds: [NSNumber]? = nil,
+                                          campaignId: NSNumber? = nil,
+                                          templateId: NSNumber? = nil) -> Result<IterableRequest, IterableError> {
         guard let keyValueForCurrentUser = keyValueForCurrentUser else {
             ITBError("Both email and userId are nil")
             return .failure(IterableError.general(description: "Both email and userId are nil"))
@@ -218,14 +218,6 @@ struct RequestCreator {
         var body = [AnyHashable: Any]()
         
         body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
-        
-        if let campaignId = campaignId?.intValue {
-            body[JsonKey.campaignId.jsonKey] = campaignId
-        }
-        
-        if let templateId = templateId?.intValue {
-            body[JsonKey.templateId.jsonKey] = templateId
-        }
         
         if let emailListIds = emailListIds {
             body[JsonKey.emailListIds.jsonKey] = emailListIds
@@ -241,6 +233,14 @@ struct RequestCreator {
         
         if let subscribedMessageTypeIds = subscribedMessageTypeIds {
             body[JsonKey.subscribedMessageTypeIds.jsonKey] = subscribedMessageTypeIds
+        }
+        
+        if let campaignId = campaignId?.intValue {
+            body[JsonKey.campaignId.jsonKey] = campaignId
+        }
+        
+        if let templateId = templateId?.intValue {
+            body[JsonKey.templateId.jsonKey] = templateId
         }
         
         return .success(.post(createPostRequest(path: Const.Path.updateSubscriptions, body: body)))

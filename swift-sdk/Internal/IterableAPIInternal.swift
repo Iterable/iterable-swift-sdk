@@ -267,20 +267,20 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: apiClient.track(event: eventName, dataFields: dataFields))
     }
     
-    func updateSubscriptions(_ campaignId: NSNumber?,
-                             templateId: NSNumber?,
-                             emailListIds: [NSNumber]?,
+    func updateSubscriptions(_ emailListIds: [NSNumber]?,
                              unsubscribedChannelIds: [NSNumber]?,
                              unsubscribedMessageTypeIds: [NSNumber]?,
-                             subscribedMessageTypeIds: [NSNumber]?) {
+                             subscribedMessageTypeIds: [NSNumber]?,
+                             campaignId: NSNumber?,
+                             templateId: NSNumber?) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "updateSubscriptions"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "updateSubscriptions"),
-                                 forResult: apiClient.updateSubscriptions(campaignId,
-                                                                          templateId: templateId,
-                                                                          emailListIds: emailListIds,
+                                 forResult: apiClient.updateSubscriptions(emailListIds,
                                                                           unsubscribedChannelIds: unsubscribedChannelIds,
                                                                           unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
-                                                                          subscribedMessageTypeIds: subscribedMessageTypeIds))
+                                                                          subscribedMessageTypeIds: subscribedMessageTypeIds,
+                                                                          campaignId: campaignId,
+                                                                          templateId: templateId))
     }
     
     @discardableResult func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError> {
