@@ -383,17 +383,14 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         }
     }
     
-    func updateSubscriptions(campaignId: NSNumber?, templateId: NSNumber?, emailListIds: [NSNumber]?, unsubscribedChannelIds: [NSNumber]?, unsubscribedMessageTypeIds: [NSNumber]?, subscribedMessageTypeIds: [NSNumber]?) {
+    func updateSubscriptions(_ emailListIds: [NSNumber]? = nil,
+                             unsubscribedChannelIds: [NSNumber]? = nil,
+                             unsubscribedMessageTypeIds: [NSNumber]? = nil,
+                             subscribedMessageTypeIds: [NSNumber]? = nil,
+                             campaignId: NSNumber? = nil,
+                             templateId: NSNumber? = nil) {
         var dictionary = [AnyHashable : Any]()
         addEmailOrUserId(args: &dictionary)
-        
-        if let campaignId = campaignId?.intValue {
-            dictionary[.ITBL_KEY_CAMPAIGN_ID] = campaignId
-        }
-        
-        if let templateId = templateId?.intValue {
-            dictionary[.ITBL_KEY_TEMPLATE_ID] = templateId
-        }
         
         if let emailListIds = emailListIds {
             dictionary[.ITBL_KEY_EMAIL_LIST_IDS] = emailListIds
@@ -409,6 +406,14 @@ final class IterableAPIInternal : NSObject, PushTrackerProtocol {
         
         if let subscribedMessageTypeIds = subscribedMessageTypeIds {
             dictionary[.ITBL_KEY_SUB_MESSAGE] = subscribedMessageTypeIds
+        }
+        
+        if let campaignId = campaignId?.intValue {
+            dictionary[.ITBL_KEY_CAMPAIGN_ID] = campaignId
+        }
+        
+        if let templateId = templateId?.intValue {
+            dictionary[.ITBL_KEY_TEMPLATE_ID] = templateId
         }
         
         if let request = createPostRequest(forPath: .ITBL_PATH_UPDATE_SUBSCRIPTIONS, withBody: dictionary) {
