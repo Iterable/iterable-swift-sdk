@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.1.4
+#### Fixed
+- Fixed the function signature of the `updateSubscriptions` call (thanks, Conor!)
+
 ## 6.1.3
 #### Changed
 - Converted a log message variable to be interpreted as an UTF8 String (thanks, chunkyguy!)
