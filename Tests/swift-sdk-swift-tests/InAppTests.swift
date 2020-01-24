@@ -1262,7 +1262,7 @@ class InAppTests: XCTestCase {
         
         let emptyManager = EmptyInAppManager()
         
-        emptyManager.start()
+        _ = emptyManager.start()
         
         XCTAssertNil(emptyManager.createInboxMessageViewController(for: getEmptyInAppMessage(), withInboxMode: .nav))
         
