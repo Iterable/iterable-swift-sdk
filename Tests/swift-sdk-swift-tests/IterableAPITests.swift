@@ -769,9 +769,11 @@ class IterableAPITests: XCTestCase {
     
     func testUpdateSubscriptions() {
         let expectation1 = expectation(description: "update subscriptions")
-        let emailListIds = ["user1@example.com"]
-        let unsubscriptedChannelIds = ["channedl1", "channel2"]
-        let unsubscribedMessageTypeIds = ["messageType1", "messageType2"]
+        let campaignId = NSNumber(value: 23)
+        let templateId = NSNumber(value: 10)
+        let emailListIds = [NSNumber(value: 382)]
+        let unsubscriptedChannelIds = [NSNumber(value: 7845), NSNumber(value: 1048)]
+        let unsubscribedMessageTypeIds = [NSNumber(value: 5671), NSNumber(value: 9087)]
         
         let networkSession = MockNetworkSession(statusCode: 200)
         networkSession.callback = { _, _, _ in
@@ -782,15 +784,18 @@ class IterableAPITests: XCTestCase {
                                queryParams: [])
             
             let body = networkSession.getRequestBody() as! [String: Any]
+            TestUtils.validateMatch(keyPath: KeyPath(JsonKey.campaignId.jsonKey), value: campaignId, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(JsonKey.templateId.jsonKey), value: templateId, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(JsonKey.emailListIds.jsonKey), value: emailListIds, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(JsonKey.unsubscribedChannelIds.jsonKey), value: unsubscriptedChannelIds, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(JsonKey.unsubscribedMessageTypeIds.jsonKey), value: unsubscribedMessageTypeIds, inDictionary: body)
             expectation1.fulfill()
         }
+        
         let config = IterableConfig()
         TestUtils.getTestUserDefaults().set("user1@example.com", forKey: Const.UserDefaults.emailKey)
         IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
-        IterableAPI.updateSubscriptions(emailListIds, unsubscribedChannelIds: unsubscriptedChannelIds, unsubscribedMessageTypeIds: unsubscribedMessageTypeIds)
+        IterableAPI.updateSubscriptions(campaignId, templateId: templateId, emailListIds: emailListIds, unsubscribedChannelIds: unsubscriptedChannelIds, unsubscribedMessageTypeIds: unsubscribedMessageTypeIds, subscribedMessageTypeIds: nil)
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     

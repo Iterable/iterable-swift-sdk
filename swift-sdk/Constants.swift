@@ -81,6 +81,7 @@ public enum JsonKey: String, JsonKeyRepresentable {
     case emailListIds
     case unsubscribedChannelIds
     case unsubscribedMessageTypeIds
+    case subscribedMessageTypeIds
     case preferUserId
     
     case mergeNestedObjects

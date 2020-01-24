@@ -267,10 +267,20 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: apiClient.track(event: eventName, dataFields: dataFields))
     }
     
-    func updateSubscriptions(_ emailListIds: [String]?, unsubscribedChannelIds: [String]?, unsubscribedMessageTypeIds: [String]?) {
+    func updateSubscriptions(_ campaignId: NSNumber?,
+                             templateId: NSNumber?,
+                             emailListIds: [NSNumber]?,
+                             unsubscribedChannelIds: [NSNumber]?,
+                             unsubscribedMessageTypeIds: [NSNumber]?,
+                             subscribedMessageTypeIds: [NSNumber]?) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "updateSubscriptions"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "updateSubscriptions"),
-                                 forResult: apiClient.updateSubscriptions(emailListIds, unsubscribedChannelIds: unsubscribedChannelIds, unsubscribedMessageTypeIds: unsubscribedMessageTypeIds))
+                                 forResult: apiClient.updateSubscriptions(campaignId,
+                                                                          templateId: templateId,
+                                                                          emailListIds: emailListIds,
+                                                                          unsubscribedChannelIds: unsubscribedChannelIds,
+                                                                          unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
+                                                                          subscribedMessageTypeIds: subscribedMessageTypeIds))
     }
     
     @discardableResult func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError> {

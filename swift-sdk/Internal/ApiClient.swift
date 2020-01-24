@@ -24,7 +24,12 @@ protocol ApiClientProtocol: AnyObject {
     
     func track(event eventName: String, dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError>
     
-    func updateSubscriptions(_ emailListIds: [String]?, unsubscribedChannelIds: [String]?, unsubscribedMessageTypeIds: [String]?) -> Future<SendRequestValue, SendRequestError>
+    func updateSubscriptions(_ campaignId: NSNumber?,
+                             templateId: NSNumber?,
+                             emailListIds: [NSNumber]?,
+                             unsubscribedChannelIds: [NSNumber]?,
+                             unsubscribedMessageTypeIds: [NSNumber]?,
+                             subscribedMessageTypeIds: [NSNumber]?) -> Future<SendRequestValue, SendRequestError>
     
     func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError>
     
@@ -123,8 +128,18 @@ class ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: createRequestCreator().createTrackEventRequest(eventName, dataFields: dataFields))
     }
     
-    func updateSubscriptions(_ emailListIds: [String]?, unsubscribedChannelIds: [String]?, unsubscribedMessageTypeIds: [String]?) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createUpdateSubscriptionsRequest(emailListIds, unsubscribedChannelIds: unsubscribedChannelIds, unsubscribedMessageTypeIds: unsubscribedMessageTypeIds))
+    func updateSubscriptions(_ campaignId: NSNumber?,
+                             templateId: NSNumber?,
+                             emailListIds: [NSNumber]?,
+                             unsubscribedChannelIds: [NSNumber]?,
+                             unsubscribedMessageTypeIds: [NSNumber]?,
+                             subscribedMessageTypeIds: [NSNumber]?) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createUpdateSubscriptionsRequest(campaignId,
+                                                                                                   templateId: templateId,
+                                                                                                   emailListIds: emailListIds,
+                                                                                                   unsubscribedChannelIds: unsubscribedChannelIds,
+                                                                                                   unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
+                                                                                                   subscribedMessageTypeIds: subscribedMessageTypeIds))
     }
     
     func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError> {
