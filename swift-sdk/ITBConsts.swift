@@ -60,6 +60,7 @@ public extension AnyHashable {
     static let ITBL_KEY_TOTAL = "total"
     static let ITBL_KEY_UNSUB_CHANNEL = "unsubscribedChannelIds"
     static let ITBL_KEY_UNSUB_MESSAGE = "unsubscribedMessageTypeIds"
+    static let ITBL_KEY_SUB_MESSAGE = "subscribedMessageTypeIds"
     static let ITBL_KEY_USER = "user"
     static let ITBL_KEY_USER_ID = "userId"
     static let ITBL_KEY_ACTION_IDENTIFIER = "actionIdentifier"

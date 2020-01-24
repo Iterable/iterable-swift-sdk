@@ -616,9 +616,11 @@ class IterableAPITests: XCTestCase {
     
     func testUpdateSubscriptions() {
         let expectation1 = expectation(description: "update subscriptions")
-        let emailListIds = ["user1@example.com"]
-        let unsubscriptedChannelIds = ["channedl1", "channel2"]
-        let unsubscribedMessageTypeIds = ["messageType1" ,"messageType2"]
+        let emailListIds = [NSNumber(value: 382)]
+        let unsubscriptedChannelIds = [NSNumber(value: 7845), NSNumber(value: 1048)]
+        let unsubscribedMessageTypeIds = [NSNumber(value: 5671), NSNumber(value: 9087)]
+        let campaignId = NSNumber(value: 23)
+        let templateId = NSNumber(value: 10)
         
         let networkSession = MockNetworkSession(statusCode: 200)
         networkSession.callback = {(_,_,_) in
@@ -632,12 +634,19 @@ class IterableAPITests: XCTestCase {
             TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_EMAIL_LIST_IDS), value: emailListIds, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_UNSUB_CHANNEL), value: unsubscriptedChannelIds, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_UNSUB_MESSAGE), value: unsubscribedMessageTypeIds, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_CAMPAIGN_ID), value: campaignId, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(AnyHashable.ITBL_KEY_TEMPLATE_ID), value: templateId, inDictionary: body)
             expectation1.fulfill()
         }
         let config = IterableConfig()
         TestUtils.getTestUserDefaults().set("user1@example.com", forKey: .ITBL_USER_DEFAULTS_EMAIL_KEY)
         IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config:config, networkSession: networkSession)
-        IterableAPI.updateSubscriptions(emailListIds, unsubscribedChannelIds: unsubscriptedChannelIds, unsubscribedMessageTypeIds: unsubscribedMessageTypeIds)
+        IterableAPI.updateSubscriptions(emailListIds,
+                                        unsubscribedChannelIds: unsubscriptedChannelIds,
+                                        unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
+                                        subscribedMessageTypeIds: nil,
+                                        campaignId: campaignId,
+                                        templateId: templateId)
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
