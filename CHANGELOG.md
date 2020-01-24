@@ -5,6 +5,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## 6.1.4
 #### Fixed
 - Fixed the function signature of the `updateSubscriptions` call (thanks, Conor!)
+- Fixed `NoneLogDelegate` not being usable for `IterableConfig.logDelegate` (thanks, katebertelsen!)
 
 ## 6.1.3
 #### Changed
