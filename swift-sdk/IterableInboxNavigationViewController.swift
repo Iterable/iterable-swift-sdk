@@ -61,7 +61,7 @@ open class IterableInboxNavigationViewController: UINavigationController {
             }
         }
     }
-
+    
     /// Whether to show different sections as grouped.
     @IBInspectable public var groupSections: Bool = false {
         didSet {
@@ -70,7 +70,7 @@ open class IterableInboxNavigationViewController: UINavigationController {
             }
         }
     }
-     
+    
     // MARK: Initializers
     
     /// This initializer should be used when initializing from Code.
@@ -186,7 +186,6 @@ open class IterableInboxNavigationViewController: UINavigationController {
         inboxViewController.isPopup = isPopup
         inboxViewController.viewDelegate = viewDelegate
         inboxViewController.viewDelegateClassName = viewDelegateClassName
-        
     }
     
     private var inboxViewController: IterableInboxViewController? {

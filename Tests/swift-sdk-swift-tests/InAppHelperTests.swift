@@ -119,7 +119,7 @@ class InAppHelperTests: XCTestCase {
             fatalError()
         }
         
-        func updateSubscriptions(_: [String]?, unsubscribedChannelIds _: [String]?, unsubscribedMessageTypeIds _: [String]?) -> Future<SendRequestValue, SendRequestError> {
+        func updateSubscriptions(_: [NSNumber]?, unsubscribedChannelIds _: [NSNumber]?, unsubscribedMessageTypeIds _: [NSNumber]?, subscribedMessageTypeIds _: [NSNumber]?, campaignId _: NSNumber?, templateId _: NSNumber?) -> Future<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
