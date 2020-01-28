@@ -155,10 +155,10 @@ class IterableAPIResponseTests: XCTestCase {
         let responseTime = 2.0
         let timeout = 0.1
         
-        OHHTTPStubs.stubRequests(passingTest: { (_) -> Bool in
+        HTTPStubs.stubRequests(passingTest: { (_) -> Bool in
             true
-        }) { (_) -> OHHTTPStubsResponse in
-            let response = OHHTTPStubsResponse(data: try! JSONSerialization.data(withJSONObject: [:], options: []), statusCode: 200, headers: nil)
+        }) { (_) -> HTTPStubsResponse in
+            let response = HTTPStubsResponse(data: try! JSONSerialization.data(withJSONObject: [:], options: []), statusCode: 200, headers: nil)
             response.requestTime = 0.0
             response.responseTime = responseTime
             return response
