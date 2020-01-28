@@ -68,22 +68,6 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                               appPackageName: Bundle.main.appPackageName ?? "")
     }
     
-    weak var urlDelegate: IterableURLDelegate? {
-        get {
-            return config.urlDelegate
-        } set {
-            config.urlDelegate = newValue
-        }
-    }
-    
-    weak var customActionDelegate: IterableCustomActionDelegate? {
-        get {
-            return config.customActionDelegate
-        } set {
-            config.customActionDelegate = newValue
-        }
-    }
-    
     var lastPushPayload: [AnyHashable: Any]? {
         return localStorage.getPayload(currentDate: dateProvider.currentDate)
     }
@@ -635,7 +619,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         DispatchQueue.main.async {
             IterableActionRunner.execute(action: action,
                                          context: context,
-                                         urlHandler: IterableUtil.urlHandler(fromUrlDelegate: self.urlDelegate, inContext: context),
+                                         urlHandler: IterableUtil.urlHandler(fromUrlDelegate: self.config.urlDelegate, inContext: context),
                                          urlOpener: self.urlOpener)
         }
     }
