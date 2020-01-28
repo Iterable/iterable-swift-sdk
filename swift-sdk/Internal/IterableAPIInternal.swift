@@ -176,32 +176,20 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    func trackPurchase(_ total: NSNumber, items: [CommerceItem]) {
-        trackPurchase(total, items: items, dataFields: nil)
-    }
-    
-    func trackPurchase(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) {
-        trackPurchase(total, items: items, dataFields: dataFields, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackPurchase"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPurchase"))
-    }
-    
-    func trackPurchase(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func trackPurchase(_ total: NSNumber,
+                       items: [CommerceItem],
+                       dataFields: [AnyHashable: Any]? = nil,
+                       onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSucess(identifier: "trackPurchase"),
+                       onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "trackPurchase")) {
         IterableAPIInternal.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
                                  forResult: apiClient.track(purchase: total, items: items, dataFields: dataFields))
     }
     
-    func trackPushOpen(_ userInfo: [AnyHashable: Any]) {
-        trackPushOpen(userInfo, dataFields: nil)
-    }
-    
-    func trackPushOpen(_ userInfo: [AnyHashable: Any], dataFields: [AnyHashable: Any]?) {
-        trackPushOpen(userInfo,
-                      dataFields: dataFields,
-                      onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackPushOpen"),
-                      onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPushOpen"))
-    }
-    
-    func trackPushOpen(_ userInfo: [AnyHashable: Any], dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func trackPushOpen(_ userInfo: [AnyHashable: Any],
+                       dataFields: [AnyHashable: Any]?,
+                       onSuccess: OnSuccessHandler?,
+                       onFailure: OnFailureHandler?) {
         save(pushPayload: userInfo)
         if let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: userInfo), metadata.isRealCampaignNotification() {
             trackPushOpen(metadata.campaignId, templateId: metadata.templateId, messageId: metadata.messageId, appAlreadyRunning: false, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
@@ -210,11 +198,13 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?) {
-        trackPushOpen(campaignId, templateId: templateId, messageId: messageId, appAlreadyRunning: appAlreadyRunning, dataFields: dataFields, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackPushOpen"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPushOpen"))
-    }
-    
-    func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func trackPushOpen(_ campaignId: NSNumber,
+                       templateId: NSNumber?,
+                       messageId: String?,
+                       appAlreadyRunning: Bool,
+                       dataFields: [AnyHashable: Any]?,
+                       onSuccess: OnSuccessHandler?,
+                       onFailure: OnFailureHandler?) {
         IterableAPIInternal.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
                                  forResult: apiClient.track(pushOpen: campaignId,
@@ -466,7 +456,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         _ = inAppManager.scheduleSync()
     }
     
-    private static func defaultOnSucess(identifier: String) -> OnSuccessHandler {
+    static func defaultOnSucess(identifier: String) -> OnSuccessHandler {
         return { data in
             if let data = data {
                 ITBInfo("\(identifier) succeeded, got response: \(data)")
@@ -476,7 +466,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    private static func defaultOnFailure(identifier: String) -> OnFailureHandler {
+    static func defaultOnFailure(identifier: String) -> OnFailureHandler {
         return { reason, data in
             var toLog = "\(identifier) failed:"
             if let reason = reason {
