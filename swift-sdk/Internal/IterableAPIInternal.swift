@@ -257,16 +257,6 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                                                           templateId: templateId))
     }
     
-    @discardableResult func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError> {
-        return getInAppMessages(count, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "getMessages"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "getMessages"))
-    }
-    
-    @discardableResult func getInAppMessages(_ count: NSNumber, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        return IterableAPIInternal.call(successHandler: onSuccess,
-                                        andFailureHandler: onFailure,
-                                        forResult: apiClient.getInAppMessages(count))
-    }
-    
     // deprecated
     func trackInAppOpen(_ messageId: String) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppOpen"),
