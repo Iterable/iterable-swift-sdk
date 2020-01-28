@@ -10,6 +10,6 @@ script:
   # simulator unit testing (through travis-ci)
   - xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11' -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES GCC_GENERATE_TEST_COVERAGE_FILES=YES | xcpretty -f `xcpretty-travis-formatter`
 
-#  - pod lib lint
+  - pod lib lint
 
-#  - bash <(curl -s https://codecov.io/bash) -J 'swift-sdk'
+  - bash <(curl -s https://codecov.io/bash) -J 'swift-sdk'
