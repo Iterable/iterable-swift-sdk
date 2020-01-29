@@ -178,11 +178,83 @@ class RequestCreatorTests: XCTestCase {
         XCTAssertEqual(args[JsonKey.InApp.count], inAppMessageRequestCount.stringValue)
     }
     
+    func testTrackEventRequest() {
+        let eventName = "dsfsdf"
+        
+        let request = convertToUrlRequest(createRequestCreator().createTrackEventRequest(eventName, dataFields: nil))
+        
+        TestUtils.validateHeader(request, apiKey)
+        TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackEvent)
+        
+        let body = request.bodyDict
+        TestUtils.validateMatch(keyPath: KeyPath(.eventName), value: eventName, inDictionary: body)
+        TestUtils.validateNil(keyPath: KeyPath(.dataFields), inDictionary: body)
+    }
+    
+    func testTrackInAppDeliveryRequest() {
+        let messageId = IterableUtil.generateUUID()
+        let campaignId = IterableUtil.generateUUID()
+        
+        let message = IterableInAppMessage(messageId: messageId, campaignId: campaignId, content: getEmptyInAppContent())
+        let messageContext = InAppMessageContext.from(message: message, location: nil)
+        let request = convertToUrlRequest(createRequestCreator().createTrackInAppDeliveryRequest(inAppMessageContext: messageContext))
+        
+        TestUtils.validateHeader(request, apiKey)
+        TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackInAppDelivery)
+        
+        let body = request.bodyDict
+        TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(.messageId), value: messageId, inDictionary: body)
+        TestUtils.validateDeviceInfo(inBody: body)
+    }
+    
+    func testTrackInAppConsumeRequest() {
+        let messageId = IterableUtil.generateUUID()
+        
+        let request = convertToUrlRequest(createRequestCreator().createInAppConsumeRequest(messageId))
+        
+        TestUtils.validateHeader(request, apiKey)
+        TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.inAppConsume)
+        
+        TestUtils.validateMatch(keyPath: KeyPath(.messageId), value: messageId, inDictionary: request.bodyDict)
+    }
+    
+    func testUpdateSubscriptionsRequest() {
+        let emailListIds = [NSNumber(value: 382), NSNumber(value: 517)]
+        let unsubscriptedChannelIds = [NSNumber(value: 7845), NSNumber(value: 1048)]
+        let unsubscribedMessageTypeIds = [NSNumber(value: 5671), NSNumber(value: 9087)]
+        let subscribedMessageTypeIds = [NSNumber(value: 8923), NSNumber(value: 2940)]
+        let campaignId = NSNumber(value: 23)
+        let templateId = NSNumber(value: 10)
+        
+        let request = convertToUrlRequest(createRequestCreator().createUpdateSubscriptionsRequest(emailListIds,
+                                                                                                  unsubscribedChannelIds: unsubscriptedChannelIds,
+                                                                                                  unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
+                                                                                                  subscribedMessageTypeIds: subscribedMessageTypeIds,
+                                                                                                  campaignId: campaignId,
+                                                                                                  templateId: templateId))
+        
+        TestUtils.validateHeader(request, apiKey)
+        TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.updateSubscriptions)
+        
+        let body = request.bodyDict
+        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.emailListIds.jsonKey), value: emailListIds, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.unsubscribedChannelIds.jsonKey), value: unsubscriptedChannelIds, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.unsubscribedMessageTypeIds.jsonKey), value: unsubscribedMessageTypeIds, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.subscribedMessageTypeIds.jsonKey), value: subscribedMessageTypeIds, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.campaignId.jsonKey), value: campaignId, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.templateId.jsonKey), value: templateId, inDictionary: body)
+    }
+    
     private let apiKey = "zee-api-key"
     
     private let email = "user@example.com"
     
     private let locationKeyPath = "\(JsonKey.inAppMessageContext.jsonKey).\(JsonKey.inAppLocation.jsonKey)"
+    
+    private let deviceMetadata = DeviceMetadata(deviceId: IterableUtil.generateUUID(),
+                                                platform: JsonValue.iOS.jsonStringValue,
+                                                appPackageName: Bundle.main.appPackageName ?? "")
     
     private func validateImpressions(_ impressions: [IterableInboxImpression], inBody body: [String: Any]) {
         guard let impressionsFromBody = body["impressions"] as? [[String: Any]] else {
