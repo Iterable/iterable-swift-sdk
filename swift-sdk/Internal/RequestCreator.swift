@@ -166,7 +166,7 @@ struct RequestCreator {
             reqDataFields = dataFields
         }
         
-        reqDataFields["appAlreadyRunning"] = appAlreadyRunning
+        reqDataFields[JsonKey.appAlreadyRunning.jsonKey] = appAlreadyRunning
         body[JsonKey.dataFields.jsonKey] = reqDataFields
         
         if let keyValueForCurrentUser = keyValueForCurrentUser {

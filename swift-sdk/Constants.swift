@@ -138,6 +138,7 @@ public enum JsonKey: String, JsonKeyRepresentable {
     case eventName
     case actionIdentifier
     case userText
+    case appAlreadyRunning
     
     case html
     
