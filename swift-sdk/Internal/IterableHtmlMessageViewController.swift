@@ -98,14 +98,6 @@ class IterableHtmlMessageViewController: UIViewController {
         webView?.layoutSubviews()
     }
     
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        
-        if let webView = webView {
-            resizeWebView(webView)
-        }
-    }
-    
     open override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
@@ -138,7 +130,6 @@ class IterableHtmlMessageViewController: UIViewController {
     private let futureClickedURL: Promise<URL, IterableError>
     private var webView: WKWebView?
     private var location: IterableMessageLocation = .full
-    private var loaded = false
     private var linkClicked = false
     private var clickedLink: String?
     
@@ -148,10 +139,6 @@ class IterableHtmlMessageViewController: UIViewController {
      - parameter: aWebView the webview
      */
     private func resizeWebView(_ aWebView: WKWebView) {
-        guard loaded else {
-            return
-        }
-        
         guard location != .full else {
             webView?.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
             return
@@ -217,8 +204,6 @@ class IterableHtmlMessageViewController: UIViewController {
 
 extension IterableHtmlMessageViewController: WKNavigationDelegate {
     func webView(_: WKWebView, didFinish _: WKNavigation!) {
-        loaded = true
-        
         if let myWebview = self.webView {
             resizeWebView(myWebview)
         }
