@@ -157,7 +157,7 @@ class IterableHtmlMessageViewController: UIViewController {
             return
         }
         
-        aWebView.evaluateJavaScript("document.body.offsetHeight", completionHandler: { (height, error) in
+        aWebView.evaluateJavaScript("document.body.offsetHeight", completionHandler: { height, _ in
             guard let floatHeight = height as? CGFloat, floatHeight >= 20 else {
                 ITBError("unable to get height")
                 return
@@ -175,13 +175,13 @@ class IterableHtmlMessageViewController: UIViewController {
         let notificationWidth = 100 - (parameters.padding.left + parameters.padding.right)
         let screenWidth = view.bounds.width
         webView.frame.size.width = screenWidth * notificationWidth / 100
-
+        
         // Position webview
         var center = view.center
-
+        
         // set center x
         center.x = screenWidth * (parameters.padding.left + notificationWidth / 2) / 100
-
+        
         // set center y
         let halfWebViewHeight = webView.frame.height / 2
         switch location {
