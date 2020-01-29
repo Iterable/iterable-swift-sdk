@@ -158,7 +158,7 @@ class IterableHtmlMessageViewController: UIViewController {
         }
         
         aWebView.evaluateJavaScript("document.body.offsetHeight", completionHandler: { (height, error) in
-            guard let floatHeight = height as? CGFloat, floatHeight > 20 else {
+            guard let floatHeight = height as? CGFloat, floatHeight >= 20 else {
                 ITBError("unable to get height")
                 return
             }
@@ -168,25 +168,38 @@ class IterableHtmlMessageViewController: UIViewController {
     
     private func resize(webView: WKWebView, withHeight height: CGFloat) {
         ITBInfo("height: \(height)")
+        // set the height
         webView.frame.size.height = height
+        
+        // now set the width
         let notificationWidth = 100 - (parameters.padding.left + parameters.padding.right)
         let screenWidth = view.bounds.width
         webView.frame.size.width = screenWidth * notificationWidth / 100
-        
-        let resizeCenterX = screenWidth * (parameters.padding.left + notificationWidth / 2) / 100
-        
+
         // Position webview
         var center = view.center
-        let webViewHeight = webView.frame.height / 2
+
+        // set center x
+        center.x = screenWidth * (parameters.padding.left + notificationWidth / 2) / 100
+
+        // set center y
+        let halfWebViewHeight = webView.frame.height / 2
         switch location {
         case .top:
-            center.y = webViewHeight
+            if #available(iOS 11, *) {
+                center.y = halfWebViewHeight + view.safeAreaInsets.top
+            } else {
+                center.y = halfWebViewHeight
+            }
         case .bottom:
-            center.y = view.frame.height - webViewHeight
-        case .center, .full: break
+            if #available(iOS 11, *) {
+                center.y = view.frame.height - halfWebViewHeight - view.safeAreaInsets.bottom
+            } else {
+                center.y = view.frame.height - halfWebViewHeight
+            }
+        default: break
         }
         
-        center.x = resizeCenterX
         webView.center = center
     }
     
