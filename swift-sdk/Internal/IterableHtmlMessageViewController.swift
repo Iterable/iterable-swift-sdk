@@ -157,23 +157,27 @@ class IterableHtmlMessageViewController: UIViewController {
             return
         }
         
-        // Resizes the frame to match the HTML content with a max of the screen size.
-        var frame = aWebView.frame
-        frame.size.height = 1
-        aWebView.frame = frame
-        let fittingSize = aWebView.scrollView.contentSize
-        frame.size = fittingSize
+        aWebView.evaluateJavaScript("document.body.offsetHeight", completionHandler: { (height, error) in
+            guard let floatHeight = height as? CGFloat, floatHeight > 20 else {
+                ITBError("unable to get height")
+                return
+            }
+            self.resize(webView: aWebView, withHeight: floatHeight)
+        })
+    }
+    
+    private func resize(webView: WKWebView, withHeight height: CGFloat) {
+        ITBInfo("height: \(height)")
+        webView.frame.size.height = height
         let notificationWidth = 100 - (parameters.padding.left + parameters.padding.right)
         let screenWidth = view.bounds.width
-        frame.size.width = screenWidth * notificationWidth / 100
-        frame.size.height = min(frame.height, view.bounds.height)
-        aWebView.frame = frame
+        webView.frame.size.width = screenWidth * notificationWidth / 100
         
         let resizeCenterX = screenWidth * (parameters.padding.left + notificationWidth / 2) / 100
         
         // Position webview
         var center = view.center
-        let webViewHeight = aWebView.frame.height / 2
+        let webViewHeight = webView.frame.height / 2
         switch location {
         case .top:
             center.y = webViewHeight
@@ -183,7 +187,7 @@ class IterableHtmlMessageViewController: UIViewController {
         }
         
         center.x = resizeCenterX
-        aWebView.center = center
+        webView.center = center
     }
     
     private static func padding(fromPadding padding: UIEdgeInsets) -> UIEdgeInsets {
@@ -201,6 +205,7 @@ class IterableHtmlMessageViewController: UIViewController {
 extension IterableHtmlMessageViewController: WKNavigationDelegate {
     func webView(_: WKWebView, didFinish _: WKNavigation!) {
         loaded = true
+        
         if let myWebview = self.webView {
             resizeWebView(myWebview)
         }
