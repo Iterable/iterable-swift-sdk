@@ -122,13 +122,6 @@ class IterableInAppHTMLViewController: UIViewController {
     }
     
     override var prefersStatusBarHidden: Bool {return true}
-
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        if let webView = webView {
-            resizeWebView(webView)
-        }
-    }
     
     private let htmlString: String
     private var insetPadding: UIEdgeInsets = UIEdgeInsets.zero
@@ -136,7 +129,6 @@ class IterableInAppHTMLViewController: UIViewController {
     private var trackParams: IterableNotificationMetadata?
     private var webView: WKWebView?
     private var location: InAppNotificationType = .full
-    private var loaded = false
     
     required init?(coder aDecoder: NSCoder) {
         self.htmlString = aDecoder.decodeObject(forKey: "htmlString") as? String ?? ""
@@ -150,47 +142,62 @@ class IterableInAppHTMLViewController: UIViewController {
      - parameter: aWebView the webview
      */
     private func resizeWebView(_ aWebView: WKWebView) {
-        guard loaded else {
-            return
-        }
         guard location != .full else {
             webView?.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
             return
         }
         
-        // Resizes the frame to match the HTML content with a max of the screen size.
-        var frame = aWebView.frame
-        frame.size.height = 1
-        aWebView.frame = frame;
-        let fittingSize = aWebView.scrollView.contentSize
-        frame.size = fittingSize
+        aWebView.evaluateJavaScript("document.body.offsetHeight", completionHandler: { height, _ in
+            guard let floatHeight = height as? CGFloat, floatHeight >= 20 else {
+                ITBError("unable to get height")
+                return
+            }
+            self.resize(webView: aWebView, withHeight: floatHeight)
+        })
+    }
+    
+    private func resize(webView: WKWebView, withHeight height: CGFloat) {
+        ITBInfo("height: \(height)")
+        // set the height
+        webView.frame.size.height = height
+        
+        // now set the width
         let notificationWidth = 100 - (insetPadding.left + insetPadding.right)
         let screenWidth = view.bounds.width
-        frame.size.width = screenWidth*notificationWidth/100
-        frame.size.height = min(frame.height, self.view.bounds.height)
-        aWebView.frame = frame;
+        webView.frame.size.width = screenWidth * notificationWidth / 100
         
-        let resizeCenterX = screenWidth*(insetPadding.left + notificationWidth/2)/100
-
         // Position webview
-        var center = self.view.center
-        let webViewHeight = aWebView.frame.height/2
+        var center = view.center
+        
+        // set center x
+        center.x = screenWidth * (insetPadding.left + notificationWidth / 2) / 100
+        
+        // set center y
+        let halfWebViewHeight = webView.frame.height / 2
         switch location {
         case .top:
-            center.y = webViewHeight
+            if #available(iOS 11, *) {
+                center.y = halfWebViewHeight + view.safeAreaInsets.top
+            } else {
+                center.y = halfWebViewHeight
+            }
         case .bottom:
-            center.y = view.frame.height - webViewHeight
-        case .center,.full: break
+            if #available(iOS 11, *) {
+                center.y = view.frame.height - halfWebViewHeight - view.safeAreaInsets.bottom
+            } else {
+                center.y = view.frame.height - halfWebViewHeight
+            }
+        default: break
         }
-        center.x = resizeCenterX;
-        aWebView.center = center;
+        
+        webView.center = center
     }
 }
 
 extension IterableInAppHTMLViewController : WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         ITBInfo()
-        loaded = true
+        
         if let myWebview = self.webView {
             resizeWebView(myWebview)
         }
