@@ -7,8 +7,6 @@
 #import <XCTest/XCTest.h>
 
 #import <asl.h>
-#import <OHHTTPStubs.h>
-#import <OHHTTPStubs/NSURLRequest+HTTPBodyTesting.h>
 
 #import "swift_sdk_objc_tests-Swift.h"
 
