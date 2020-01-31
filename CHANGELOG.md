@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.1.5
+#### Fixed
+- Fixed in-apps where display types that were not `fullScreen` were not displaying properly or becoming unresponsive.
+
 ## 6.1.4
 #### Fixed
 - Fixed the function signature of the `updateSubscriptions` call (thanks, Conor!)
