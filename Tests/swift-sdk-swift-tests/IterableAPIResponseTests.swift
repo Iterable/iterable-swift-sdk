@@ -144,10 +144,10 @@ class IterableAPIResponseTests: XCTestCase {
     func testNetworkTimeoutResponse() {
         let xpectation = expectation(description: "timeout network response")
         
-        OHHTTPStubs.stubRequests(passingTest: { (request) -> Bool in
+        HTTPStubs.stubRequests(passingTest: { (request) -> Bool in
             return true
-        }) { (request) -> OHHTTPStubsResponse in
-            let response = OHHTTPStubsResponse(data: try! JSONSerialization.data(withJSONObject: [:], options: []), statusCode: 200, headers: nil)
+        }) { (request) -> HTTPStubsResponse in
+            let response = HTTPStubsResponse(data: try! JSONSerialization.data(withJSONObject: [:], options: []), statusCode: 200, headers: nil)
             response.requestTime = 0.0
             response.responseTime = 2.0
             return response

@@ -123,10 +123,10 @@ class DeeplinkTests: XCTestCase {
     }
     
     private func setupRedirectStubResponse(location: String, campaignId: Int, templateId: Int, messageId: String) {
-        OHHTTPStubs.stubRequests(passingTest: { (request) -> Bool in
+        HTTPStubs.stubRequests(passingTest: { (request) -> Bool in
             return true
-        }) { (request) -> OHHTTPStubsResponse in
-            return OHHTTPStubsResponse(data: try! JSONSerialization.data(withJSONObject: [:], options: []), statusCode: 301, headers: [
+        }) { (request) -> HTTPStubsResponse in
+            return HTTPStubsResponse(data: try! JSONSerialization.data(withJSONObject: [:], options: []), statusCode: 301, headers: [
                 "Location" : location,
                 "Set-Cookie" : self.createCookieValue(nameValuePairs: "iterableEmailCampaignId", campaignId, "iterableTemplateId", templateId, "iterableMessageId", messageId)
                 ])
@@ -134,10 +134,10 @@ class DeeplinkTests: XCTestCase {
     }
 
     private func setupStubResponse() {
-        OHHTTPStubs.stubRequests(passingTest: { (request) -> Bool in
+        HTTPStubs.stubRequests(passingTest: { (request) -> Bool in
             return true
-        }) { (request) -> OHHTTPStubsResponse in
-            return OHHTTPStubsResponse(data: try! JSONSerialization.data(withJSONObject: [:], options: []), statusCode: 200, headers: nil)
+        }) { (request) -> HTTPStubsResponse in
+            return HTTPStubsResponse(data: try! JSONSerialization.data(withJSONObject: [:], options: []), statusCode: 200, headers: nil)
         }
     }
 
