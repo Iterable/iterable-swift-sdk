@@ -9,21 +9,17 @@ import UIKit
 import IterableSDK
 
 extension MainViewController {
-    /// The simplest of inbox.
-    /// Inbox looks best when embedded in a navigation controller. It has a `Done` button.
     @IBAction private func onMultipleSectionsTapped() {
         // <ignore -- data loading>
         DataManager.shared.loadMessages(from: "multiple-sections-messages", withExtension: "json")
         // </ignore -- data loading>
         
-        let viewController = IterableInboxViewController(style: .grouped)
+        let viewController = IterableInboxNavigationViewController()
         viewController.viewDelegate = MultipleSectionsViewDelegate()
-        let navController = UINavigationController(rootViewController: viewController)
-        let barButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(onDoneTapped))
-        viewController.navigationItem.rightBarButtonItem = barButtonItem
-        present(navController, animated: true)
+        viewController.groupSections = true
+        present(viewController, animated: true)
     }
-    
+
     // MARK: private funcations
     
     @objc private func onDoneTapped() {
