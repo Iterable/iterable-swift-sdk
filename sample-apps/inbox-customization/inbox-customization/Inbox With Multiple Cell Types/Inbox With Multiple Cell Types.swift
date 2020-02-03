@@ -7,11 +7,11 @@ import Foundation
 
 import IterableSDK
 
+/// To disolay different table view cells for different message types, set `customNibNamesMapper` property of view delegate.
+/// This mapper is a closure which takes an `IterableInboxMessage` and returns an optional `String`.
+/// Return  the nib name for an inbox message to use that table view cell nib file.
+/// Return `nil` to use the default table view cell.
 extension MainViewController {
-    /// To render addtional fields in your table view cell, create a new table view cell with the addtional fields.
-    /// Also create a view delegate with `renderAddtionalFields` metthod of `IterableInboxViewControllerViewDelegate`.
-    /// IMP: Make sure that in the `file inspector` for the table view cell file, `target membership` is checked.
-    /// This is needed so that the xib file is copied to the project.
     @IBAction private func onInboxWithMultipleCellTypesTapped() {
         // <ignore -- data loading>
         DataManager.shared.loadMessages(from: "inbox-with-multiple-cell-types-messages", withExtension: "json")

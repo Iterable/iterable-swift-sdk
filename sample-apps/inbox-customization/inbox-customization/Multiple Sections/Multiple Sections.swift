@@ -8,6 +8,8 @@ import UIKit
 
 import IterableSDK
 
+/// To display an inbox message in a section use `messageToSectionMaper` property of the view delegate.
+/// This mapper is a closure which takes an `IterableInboxMessage` and returns an `Int`.
 extension MainViewController {
     @IBAction private func onMultipleSectionsTapped() {
         // <ignore -- data loading>

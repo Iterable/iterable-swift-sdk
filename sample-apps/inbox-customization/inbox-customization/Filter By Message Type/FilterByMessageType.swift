@@ -7,9 +7,9 @@ import Foundation
 
 import IterableSDK
 
+/// To filter by messages which, set the `filter` property of view delegate.
+/// In this example, we show how to show only messages that have "messageType" set to "promotional" or messageType set to "transactional".
 extension MainViewController {
-    /// To filter by messages which, set the `filter` property of view delegate.
-    /// In this example, we show how to show only messages that have "messageType" set to "promotional" or messageType set to "transactional".
     @IBAction private func onFilterByMessageTypeTapped() {
         // <ignore -- data loading>
         DataManager.shared.loadMessages(from: "filter-by-message-type-messages", withExtension: "json")
