@@ -140,6 +140,7 @@ extension IterableAPI {
                                                      launchOptions: launchOptions,
                                                      config: config,
                                                      dependencyContainer: mockDependencyContainer)
-        internalImplementation?.start()
+        
+        internalImplementation?.start().wait()
     }
 }

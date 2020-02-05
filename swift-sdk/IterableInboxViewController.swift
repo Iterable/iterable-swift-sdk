@@ -5,21 +5,60 @@
 
 import UIKit
 
-/// Use this protocol to override the default inbox display behavior
+/// Use this protocol to override the default inbox display behavior.
+/// Please note that almost properties are `optional` which means that you don't have to
+/// implement them if the default behavior works for you.
 @objc public protocol IterableInboxViewControllerViewDelegate: AnyObject {
-    /// Use this method to override the default display for message creation time. Return nil if you don't want to display time.
-    /// - parameter forMessage: IterableInboxMessage
-    /// - returns: The string value to display or nil to not display date
-    @objc optional func displayDate(forMessage message: IterableInAppMessage) -> String?
+    /// View delegate must have a public `required` initializer.
+    @objc init()
+    
+    /// By default, all messages are shown.
+    /// If you want to control which messages are to be shown, return a filter here.
+    /// For example, if you want to only show messages which have a customPayload json with {"messageType": "promotional"},  you can do so by setting
+    /// `filter = IterableInboxViewController.DefaultFilter.usingCustomPayloadMessageType(in: "promotional")`.
+    /// Please note that you can create your own custom filters.
+    @objc optional var filter: (IterableInAppMessage) -> Bool { get }
+    
+    /// By default, messages are sorted chronologically.
+    /// If you don't want inbox messages to be sorted chronologically, return a relevant comparator here.
+    /// For example, if you want the latest messages to be displayed you can do so by setting
+    /// `comparator = IterableInboxViewController.DefaultComparator.descending`,
+    /// You may also return any other custom comparator as per your need.
+    @objc optional var comparator: (IterableInAppMessage, IterableInAppMessage) -> Bool { get }
+    
+    /// If you want to have multiple sections for your inbox, use a mapper which returns the section number for an inbox message.
+    /// Please note that there is no need to worry about actual section numbers, section numbers are *relative*, not absolute.
+    /// As long as all messages in a section are mapped to the same number things will be fine.
+    /// For example, your mapper can return `4` for message1 and message2 and `5` for message3. In this case message1 and message2 will be in section 0
+    /// and message3 will be in section 1 eventhough the mappings are for `4` and `5`.
+    /// If your custom payload has {"messageSection": 2} etc. You can set
+    /// `messageToSectionMapper = IterableInboxViewController.DefaultSectionMapper.usingCustomPayloadMessageSection`.
+    @objc optional var messageToSectionMapper: (IterableInAppMessage) -> Int { get }
+    
+    /// By default message creation time is shown as medium date and short time.
+    /// Use this method to override the default display for message creation time.
+    /// Return nil if you don't want to display time.
+    /// For example, set `dateMapper = IterableInboxViewController.DefaultDateMapper.localizedShortDateShortTime`
+    /// if you want show short date and time.
+    @objc optional var dateMapper: (IterableInAppMessage) -> String? { get }
+    
+    /// Use this property only when you have more than one type of custom table view cells.
+    /// For example, if you have inbox cells of one type to show  informational mesages,
+    /// and inbox cells of another type to show discount messages.
+    /// Please note that you must declare all custom nib names here.
+    /// - returns: a list of all custom nib names.
+    @objc optional var customNibNames: [String] { get }
+    
+    /// A mapper that maps an inbox message to a custom nib.
+    /// This goes hand in hand with `customNibNames` property above.
+    /// For example, if your custom payload has {"customInboxCell": "CustomInboxCell3"} you can use
+    /// `customNibNameMapper = IterableInboxViewController.DefaultNibNameMapper.usingCustomPayloadNibName`
+    @objc optional var customNibNameMapper: (IterableInAppMessage) -> String? { get }
     
     /// Use this method to render any additional custom fields other than title, subtitle and createAt.
     /// - parameter forCell: The table view cell to render
     /// - parameter withMessage: IterableInAppMessage
     @objc optional func renderAdditionalFields(forCell cell: IterableInboxCell, withMessage message: IterableInAppMessage)
-    
-    /// Implement this method if you want `IterableInboxViewController` to create an instance of the view delegate class
-    /// This method is used when `viewDelegateClassName` property is set.
-    @objc optional static func createInstance() -> IterableInboxViewControllerViewDelegate
 }
 
 @IBDesignable
@@ -29,31 +68,126 @@ open class IterableInboxViewController: UITableViewController {
         case nav
     }
     
+    /// By default, all messages are shown
+    /// This enumeration shows how to write a sample filter which can be used by `IterableInboxViewControllerViewDelegate`.
+    /// You can create your own filters which can be functions or closures.
+    public enum DefaultFilter {
+        /// This filter looks at `customPayload` of inbox message and assumes that the JSON key `messageType` holds the type of message
+        /// and it returns true for message of particular message type(s).
+        /// e.g., if you set `filter = IterableInboxViewController.DefaultFilter.usingCustomPayloadMessageType(in: "transactional", "promotional")`
+        /// you will be able to see messages with custom payload {"messageType": "transactional"} or {"messageType": "promotional"}
+        /// but you will not be able to see messages with custom payload {"messageType": "newsFeed"}
+        /// - parameter in: The message type(s) that should be shown.
+        public static func usingCustomPayloadMessageType(in messageTypes: String...) -> ((IterableInAppMessage) -> Bool) {
+            return {
+                guard let payload = $0.customPayload as? [String: AnyHashable], let messageType = payload["messageType"] as? String else {
+                    return false
+                }
+                
+                return messageTypes.first(where: { $0 == messageType }).map { _ in true } ?? false
+            }
+        }
+    }
+    
+    /// By default, messages are sorted chronologically.
+    /// This enumeration has sample comparators that can be used by `IterableInboxViewControllerViewDelegate`.
+    /// You can create your own comparators which can be functions or closures
+    public enum DefaultComparator {
+        /// Descending by `createdAt`
+        public static let descending: (IterableInAppMessage, IterableInAppMessage) -> Bool = {
+            $0.createdAt ?? Date.distantPast > $1.createdAt ?? Date.distantPast
+        }
+        
+        /// Ascending by `createdAt`
+        public static let ascending: (IterableInAppMessage, IterableInAppMessage) -> Bool = {
+            $0.createdAt ?? Date.distantPast < $1.createdAt ?? Date.distantPast
+        }
+    }
+    
+    /// By default, all messages are in one section.
+    /// This enumeration has sample mappers which map inbox messages to section number. This can be used by `IterableInboxViewControllerViewDelegate`.
+    public enum DefaultSectionMapper {
+        /// This mapper looks at `customPayload` of inbox message and assumes that json key `messageSection` holds the section number.
+        /// e.g., An inbox message with custom payload  `{"messageSection": 2}` will return 2 as section.
+        public static var usingCustomPayloadMessageSection: ((IterableInAppMessage) -> Int) = { message in
+            guard let payload = message.customPayload as? [String: AnyHashable], let section = payload["messageSection"] as? Int else {
+                return 0
+            }
+            return section
+        }
+    }
+    
+    /// Default date mappers that you can use as sample for `IterableInboxViewControllerViewDelegate`.
+    public enum DefaultDateMapper {
+        /// short date and short time
+        public static var localizedShortDateShortTime: (IterableInAppMessage) -> String? = {
+            $0.createdAt.map { DateFormatter.localizedString(from: $0, dateStyle: .short, timeStyle: .short) }
+        }
+        
+        /// This date mapper is used If you do not set `dateMapper` property for `IterableInboxViewControllerViewDelegate`.
+        public static var localizedMediumDateShortTime: (IterableInAppMessage) -> String? = {
+            $0.createdAt.map { DateFormatter.localizedString(from: $0, dateStyle: .medium, timeStyle: .short) }
+        }
+    }
+    
+    /// Use nib name maper only when you have multiple types of messages.
+    public enum DefaultNibNameMapper {
+        /// This mapper looks at `customPayload` of inbox message and assumes that json key `customCellName` holds the custom nib name for the message.
+        /// e.g., An inbox message with custom payload `{"customCellName": "CustomInboxCell3"}` will return `CustomInboxCell3` as the custom nib name.
+        public static var usingCustomPayloadNibName: ((IterableInAppMessage) -> String?) = {
+            guard
+                let payload = $0.customPayload as? [String: AnyHashable],
+                let customNibName = payload["customCellName"] as? String else {
+                return nil
+            }
+            return customNibName
+        }
+    }
+    
     // MARK: Settable properties
+    
+    /// If you want to use a custom layout for your inbox TableViewCell
+    /// this is the variable you should override. Please note that this assumes
+    /// that the nib is present in the main bundle.
+    @IBInspectable public var cellNibName: String? = nil
+    
+    /// Set this to `true` to show a popup when an inbox message is selected in the list.
+    /// Set this to `false`to push inbox message into navigation stack.
+    @IBInspectable public var isPopup: Bool = true {
+        didSet {
+            if isPopup {
+                inboxMode = .popup
+            } else {
+                inboxMode = .nav
+            }
+        }
+    }
     
     /// Set this property to override default inbox display behavior. You should set either this property
     /// or `viewDelegateClassName`property but not both.
-    public weak var viewDelegate: IterableInboxViewControllerViewDelegate?
+    public var viewDelegate: IterableInboxViewControllerViewDelegate? {
+        didSet {
+            guard let viewDelegate = self.viewDelegate else {
+                return
+            }
+            viewModel.set(comparator: viewDelegate.comparator,
+                          filter: viewDelegate.filter,
+                          sectionMapper: viewDelegate.messageToSectionMapper)
+        }
+    }
     
     /// Set this property if you want to set the class name in Storyboard and want `IterableInboxViewController` to create a
     /// view delegate class for you.
+    /// The class name must include the package name as well, e.g., MyModule.CustomInboxViewDelegate
     @IBInspectable public var viewDelegateClassName: String? {
         didSet {
             guard let viewDelegateClassName = viewDelegateClassName else {
                 return
             }
+            
             instantiateViewDelegate(withClassName: viewDelegateClassName)
         }
     }
-    
-    /// If you want to use a custom layout for your inbox TableViewCell
-    /// this is the variable you should override. Please note that this assumes
-    /// that the XIB is present in the main bundle.
-    @IBInspectable public var cellNibName: String? = nil
-    
-    /// Set this mode to `popup` to show a popup when an inbox message is selected in the list.
-    /// Set this mode to `nav` to push inbox message into navigation stack.
-    public var inboxMode = InboxMode.popup
     
     /// You can override these insertion/deletion animations for custom ones
     public var insertionAnimation = UITableView.RowAnimation.automatic
@@ -65,25 +199,26 @@ open class IterableInboxViewController: UITableViewController {
         ITBInfo()
         viewModel = InboxViewControllerViewModel()
         super.init(style: style)
-        viewModel.delegate = self
+        viewModel.view = self
     }
     
     public required init?(coder aDecoder: NSCoder) {
         ITBInfo()
         viewModel = InboxViewControllerViewModel()
         super.init(coder: aDecoder)
-        viewModel.delegate = self
+        viewModel.view = self
     }
     
     public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         ITBInfo()
         viewModel = InboxViewControllerViewModel()
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-        viewModel.delegate = self
+        viewModel.view = self
     }
     
     open override func viewDidLoad() {
         ITBInfo()
+        
         super.viewDidLoad()
         
         tableView.rowHeight = UITableView.automaticDimension
@@ -94,11 +229,13 @@ open class IterableInboxViewController: UITableViewController {
         refreshControl.addTarget(self, action: #selector(handleRefreshControl), for: .valueChanged)
         tableView.refreshControl = refreshControl
         
-        registerTableViewCell()
+        cellLoader = CellLoader(viewDelegate: viewDelegate, cellNibName: cellNibName)
+        cellLoader.registerCells(forTableView: tableView)
     }
     
     open override func viewWillAppear(_ animated: Bool) {
         ITBInfo()
+        
         super.viewWillAppear(animated)
         
         // Set footer view so that we don't see table view separators
@@ -107,32 +244,36 @@ open class IterableInboxViewController: UITableViewController {
             tableView.tableFooterView = UIView()
         }
         
-        if navigationController == nil {
+        /// if nav is of type `IterableInboxNavigationViewController` then
+        /// `viewWillAppear` will be called from there. Otherwise we have to call it here.
+        if !isNavControllerIterableNavController() {
             viewModel.viewWillAppear()
         }
     }
     
     open override func viewWillDisappear(_ animated: Bool) {
         ITBInfo()
+        
         super.viewWillDisappear(animated)
         
-        if navigationController == nil {
+        /// if nav is of type `IterableInboxNavigationViewController` then
+        /// `viewWillDisappear` will be called from there. Otherwise we have to call it here.
+        if !isNavControllerIterableNavController() {
             viewModel.viewWillDisappear()
         }
     }
     
     // MARK: - UITableViewDataSource (Required Functions)
     
-    open override func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        return viewModel.numMessages
+    open override func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return viewModel.numRows(in: section)
     }
     
     open override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "inboxCell", for: indexPath) as? IterableInboxCell else {
-            fatalError("Please make sure that an the nib: \(cellNibName!) is present in the main bundle")
-        }
+        let message = viewModel.message(atIndexPath: indexPath)
+        let cell = cellLoader.loadCell(for: message.iterableMessage, forTableView: tableView, atIndexPath: indexPath)
         
-        configure(cell: cell, forMessage: viewModel.message(atRow: indexPath.row))
+        configure(cell: cell, forMessage: message)
         
         return cell
     }
@@ -140,7 +281,7 @@ open class IterableInboxViewController: UITableViewController {
     // MARK: - UITableViewDataSource (Optional Functions)
     
     open override func numberOfSections(in _: UITableView) -> Int {
-        return 1
+        return viewModel.numSections
     }
     
     open override func tableView(_: UITableView, canEditRowAt _: IndexPath) -> Bool {
@@ -149,7 +290,7 @@ open class IterableInboxViewController: UITableViewController {
     
     open override func tableView(_: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            viewModel.remove(atRow: indexPath.row)
+            viewModel.remove(atIndexPath: indexPath)
         }
     }
     
@@ -160,7 +301,7 @@ open class IterableInboxViewController: UITableViewController {
             tableView.deselectRow(at: indexPath, animated: true)
         }
         
-        let message = viewModel.message(atRow: indexPath.row)
+        let message = viewModel.message(atIndexPath: indexPath)
         
         if let viewController = viewModel.createInboxMessageViewController(for: message, withInboxMode: inboxMode) {
             viewModel.set(read: true, forMessage: message)
@@ -172,6 +313,7 @@ open class IterableInboxViewController: UITableViewController {
                 } else {
                     viewController.modalPresentationStyle = .overFullScreen
                 }
+                
                 present(viewController, animated: true)
             }
         }
@@ -181,6 +323,7 @@ open class IterableInboxViewController: UITableViewController {
     
     open override func scrollViewDidScroll(_: UIScrollView) {
         ITBDebug()
+        
         viewModel.visibleRowsChanged()
     }
     
@@ -188,21 +331,14 @@ open class IterableInboxViewController: UITableViewController {
     
     var viewModel: InboxViewControllerViewModelProtocol
     
-    private let iterableCellNibName = "IterableInboxCell"
+    /// Set this mode to `popup` to show a popup when an inbox message is selected in the list.
+    /// Set this mode to `nav` to push inbox message into navigation stack.
+    private var inboxMode = InboxMode.popup
     
-    // we need this variable because we are instantiating the delegate class
-    private var strongViewDelegate: IterableInboxViewControllerViewDelegate?
+    private var cellLoader: CellLoader!
     
     deinit {
         ITBInfo()
-    }
-    
-    private func registerTableViewCell() {
-        let cellNibName = self.cellNibName ?? iterableCellNibName
-        let bundle = self.cellNibName == nil ? Bundle(for: IterableInboxViewController.self) : Bundle.main
-        
-        let nib = UINib(nibName: cellNibName, bundle: bundle)
-        tableView.register(nib, forCellReuseIdentifier: "inboxCell")
     }
     
     @objc private func handleRefreshControl() {
@@ -229,17 +365,13 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     private func setCreatedAt(cell: IterableInboxCell, message: InboxMessageViewModel) {
-        let value: String?
-        if let modifier = viewDelegate?.displayDate(forMessage:) {
-            value = modifier(message.iterableMessage)
-        } else {
-            value = IterableInboxViewController.defaultValueToDisplay(forCreatedAt: message.iterableMessage.createdAt)
-        }
-        IterableInboxViewController.set(value: value, forLabel: cell.createdAtLbl)
+        let dateMapper = viewDelegate?.dateMapper ?? DefaultDateMapper.localizedMediumDateShortTime
+        IterableInboxViewController.set(value: dateMapper(message.iterableMessage), forLabel: cell.createdAtLbl)
     }
     
     private func loadCellImage(cell: IterableInboxCell, message: InboxMessageViewModel) {
         cell.iconImageView?.clipsToBounds = true
+        cell.iconImageView?.isAccessibilityElement = true
         
         if message.hasValidImageUrl() {
             cell.iconContainerView?.isHidden = false
@@ -248,6 +380,7 @@ open class IterableInboxViewController: UITableViewController {
             if let data = message.imageData {
                 cell.iconImageView?.backgroundColor = nil
                 cell.iconImageView?.image = UIImage(data: data)
+                cell.iconImageView?.accessibilityLabel = "icon-image-\(message.iterableMessage.messageId)"
             } else {
                 cell.iconImageView?.backgroundColor = UIColor(hex: "EEEEEE") // loading image
                 cell.iconImageView?.image = nil
@@ -269,31 +402,30 @@ open class IterableInboxViewController: UITableViewController {
         }
     }
     
-    // By default show locale specific medium date
-    private static func defaultValueToDisplay(forCreatedAt createdAt: Date?) -> String? {
-        guard let createdAt = createdAt else {
-            return nil
-        }
-        return DateFormatter.localizedString(from: createdAt, dateStyle: .medium, timeStyle: .short)
-    }
-    
     private func instantiateViewDelegate(withClassName className: String) {
-        guard let delegateClass = NSClassFromString(className) as? IterableInboxViewControllerViewDelegate.Type else {
-            // we can't use IterableLog here because this happens from storyboard before logging is initialized.
-            print("❤️: Could not initialize dynamic class: \(className), please check protocol \(IterableInboxViewControllerViewDelegate.self) conformanace.")
-            return
-        }
-        guard let delegateObject = delegateClass.createInstance?() else {
-            print("❤️: 'createInstance()' method is not defined in '\(className)'")
+        guard className.split(separator: ".").count > 1 else {
+            assertionFailure("Module name is missing. 'viewDelegateClassName' must be of the form $package_name.$class_name")
             return
         }
         
-        strongViewDelegate = delegateObject
-        viewDelegate = strongViewDelegate
+        guard let delegateClass = NSClassFromString(className) as? IterableInboxViewControllerViewDelegate.Type else {
+            // we can't use IterableLog here because this happens from storyboard before logging is initialized.
+            assertionFailure("Could not initialize dynamic class: \(className), please check module name and protocol \(IterableInboxViewControllerViewDelegate.self) conformanace.")
+            return
+        }
+        
+        viewDelegate = delegateClass.init()
+    }
+    
+    private func isNavControllerIterableNavController() -> Bool {
+        if let _ = navigationController as? IterableInboxNavigationViewController {
+            return true
+        }
+        return false
     }
 }
 
-extension IterableInboxViewController: InboxViewControllerViewModelDelegate {
+extension IterableInboxViewController: InboxViewControllerViewModelView {
     func onViewModelChanged(diff: [SectionedDiffStep<Int, InboxMessageViewModel>]) {
         ITBInfo()
         
@@ -306,18 +438,17 @@ extension IterableInboxViewController: InboxViewControllerViewModelDelegate {
         updateUnreadBadgeCount()
     }
     
-    func onImageLoaded(forRow row: Int) {
+    func onImageLoaded(for indexPath: IndexPath) {
         ITBInfo()
-        
         guard Thread.isMainThread else {
             ITBError("\(#function) must be called from main thread")
             return
         }
         
-        tableView.reloadRows(at: [IndexPath(row: row, section: 0)], with: .automatic)
+        tableView.reloadRows(at: [indexPath], with: .automatic)
     }
     
-    var currentlyVisibleRowIndices: [Int] {
+    var currentlyVisibleRowIndexPaths: [IndexPath] {
         return tableView.indexPathsForVisibleRows?.compactMap(isRowVisible(atIndexPath:)) ?? []
     }
     
@@ -344,7 +475,7 @@ extension IterableInboxViewController: InboxViewControllerViewModelDelegate {
         viewModel.endedUpdates()
     }
     
-    private func isRowVisible(atIndexPath indexPath: IndexPath) -> Int? {
+    private func isRowVisible(atIndexPath indexPath: IndexPath) -> IndexPath? {
         let topMargin = CGFloat(10.0)
         let bottomMargin = CGFloat(10.0)
         let frame = tableView.frame
@@ -360,6 +491,87 @@ extension IterableInboxViewController: InboxViewControllerViewModelDelegate {
         
         let cellRect = tableView.rectForRow(at: indexPath)
         let convertedRect = tableView.convert(cellRect, to: tableView.superview)
-        return newRect.contains(convertedRect) ? indexPath.row : nil
+        
+        return newRect.contains(convertedRect) ? indexPath : nil
+    }
+}
+
+private struct CellLoader {
+    weak var viewDelegate: IterableInboxViewControllerViewDelegate?
+    let cellNibName: String?
+    
+    init(viewDelegate: IterableInboxViewControllerViewDelegate?,
+         cellNibName: String?) {
+        self.viewDelegate = viewDelegate
+        self.cellNibName = cellNibName
+    }
+    
+    func registerCells(forTableView tableView: UITableView) {
+        registerDefaultCell(forTableView: tableView)
+        registerCustomCells(forTableView: tableView)
+    }
+    
+    func loadCell(for message: IterableInAppMessage, forTableView tableView: UITableView, atIndexPath indexPath: IndexPath) -> IterableInboxCell {
+        guard let viewDelegate = viewDelegate else {
+            return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
+        }
+        guard let customNibNames = viewDelegate.customNibNames, customNibNames.count > 0 else {
+            return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
+        }
+        guard let customNibNameMapper = viewDelegate.customNibNameMapper, let customNibName = customNibNameMapper(message) else {
+            return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
+        }
+        
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: customNibName, for: indexPath) as? IterableInboxCell else {
+            ITBError("Please make sure that an the nib: \(customNibName) is present in the main bundle")
+            return loadDefaultCell(forTableView: tableView, atIndexPath: indexPath)
+        }
+        
+        return cell
+    }
+    
+    private let defaultCellReuseIdentifier = "inboxCell"
+    
+    private func registerCustomCells(forTableView tableView: UITableView) {
+        guard let viewDelegate = viewDelegate else {
+            return
+        }
+        guard let customNibNames = viewDelegate.customNibNames, customNibNames.count > 0 else {
+            return
+        }
+        
+        customNibNames.forEach { customNibName in
+            let nib = UINib(nibName: customNibName, bundle: Bundle.main)
+            tableView.register(nib, forCellReuseIdentifier: customNibName)
+        }
+    }
+    
+    private func registerDefaultCell(forTableView tableView: UITableView) {
+        if let cellNibName = self.cellNibName {
+            if CellLoader.nibExists(inBundle: Bundle.main, withNibName: cellNibName) {
+                let nib = UINib(nibName: cellNibName, bundle: Bundle.main)
+                tableView.register(nib, forCellReuseIdentifier: defaultCellReuseIdentifier)
+            } else {
+                fatalError("Cannot find nib: \(cellNibName) in main bundle.")
+            }
+        } else {
+            tableView.register(IterableInboxCell.self, forCellReuseIdentifier: defaultCellReuseIdentifier)
+        }
+    }
+    
+    private static func nibExists(inBundle bundle: Bundle, withNibName nibName: String) -> Bool {
+        guard let path = bundle.path(forResource: nibName, ofType: "nib") else {
+            return false
+        }
+        
+        return FileManager.default.fileExists(atPath: path)
+    }
+    
+    private func loadDefaultCell(forTableView tableView: UITableView, atIndexPath indexPath: IndexPath) -> IterableInboxCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: defaultCellReuseIdentifier, for: indexPath) as? IterableInboxCell else {
+            fatalError("Could not load default cell")
+        }
+        
+        return cell
     }
 }

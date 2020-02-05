@@ -35,6 +35,20 @@ class InboxMessageViewModelTests: XCTestCase {
         XCTAssertTrue(inboxMessageViewModel.read)
     }
     
+    func testHasValidImageUrl() {
+        let messageWithNoIcon = generateMessage(with: IterableInboxMetadata(title: "title", subtitle: "subtitle", icon: nil))
+        let inboxMessageViewModelNoIcon = InboxMessageViewModel(message: messageWithNoIcon)
+        XCTAssertFalse(inboxMessageViewModelNoIcon.hasValidImageUrl())
+        
+        let messageWithInvalidUrl = generateMessage(with: IterableInboxMetadata(title: "title", subtitle: "subtitle", icon: ""))
+        let inboxMessageViewModelWithInvalidUrl = InboxMessageViewModel(message: messageWithInvalidUrl)
+        XCTAssertFalse(inboxMessageViewModelWithInvalidUrl.hasValidImageUrl())
+        
+        let messageWithIcon = generateMessage(with: IterableInboxMetadata(title: "title", subtitle: "subtitle", icon: "https://image.com"))
+        let inboxMessageViewModelWithIcon = InboxMessageViewModel(message: messageWithIcon)
+        XCTAssertTrue(inboxMessageViewModelWithIcon.hasValidImageUrl())
+    }
+    
     func testHasher() {
         let message1 = IterableInAppMessage(messageId: "939fi9kj92kd",
                                             campaignId: "45820",
@@ -79,6 +93,13 @@ class InboxMessageViewModelTests: XCTestCase {
         XCTAssertFalse(inboxMessageViewModel1 == inboxMessageViewModel1Read)
         
         XCTAssertFalse(inboxMessageViewModel1 == inboxMessageViewModel2)
+    }
+    
+    private func generateMessage(with metadata: IterableInboxMetadata) -> IterableInAppMessage {
+        return IterableInAppMessage(messageId: IterableUtil.generateUUID(),
+                                    campaignId: IterableUtil.generateUUID(),
+                                    content: createDefaultContent(),
+                                    inboxMetadata: metadata)
     }
     
     private func createDefaultContent() -> IterableInAppContent {

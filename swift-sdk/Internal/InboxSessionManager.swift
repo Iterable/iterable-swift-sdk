@@ -12,6 +12,7 @@ class InboxSessionManager {
     }
     
     struct SessionStartInfo {
+        let id: String
         let startTime: Date
         let totalMessageCount: Int
         let unreadMessageCount: Int
@@ -30,17 +31,22 @@ class InboxSessionManager {
             ITBError("Expecting impressionTracker here.")
             return
         }
+        
         impressionTracker.updateVisibleRows(visibleRows: visibleRows)
     }
     
     func startSession(visibleRows: [InboxImpressionTracker.RowInfo]) {
         ITBInfo()
+        
         guard isTracking == false else {
             ITBError("Session started twice")
             return
         }
+        
         ITBInfo("Session Start")
-        sessionStartInfo = SessionStartInfo(startTime: Date(),
+        
+        sessionStartInfo = SessionStartInfo(id: IterableUtil.generateUUID(),
+                                            startTime: Date(),
                                             totalMessageCount: IterableAPI.inAppManager.getInboxMessages().count,
                                             unreadMessageCount: IterableAPI.inAppManager.getUnreadInboxMessagesCount())
         impressionTracker = InboxImpressionTracker()
@@ -52,11 +58,13 @@ class InboxSessionManager {
             ITBError("Session ended without start")
             return nil
         }
+        
         ITBInfo("Session End")
         
         let sessionInfo = SessionInfo(startInfo: sessionStartInfo, impressions: impressionTracker.endSession())
         self.sessionStartInfo = nil
         self.impressionTracker = nil
+        
         return sessionInfo
     }
 }

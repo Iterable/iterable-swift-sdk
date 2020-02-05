@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol NotificationCenterProtocol {
     func addObserver(_ observer: Any, selector: Selector, name: Notification.Name?, object: Any?)
@@ -20,13 +21,13 @@ protocol InAppDisplayChecker {
 }
 
 protocol IterableInAppManagerProtocolInternal: IterableInAppManagerProtocol, InAppNotifiable, InAppDisplayChecker {
-    func start()
+    func start() -> Future<Bool, Error>
     /// This will create a ViewController which displays an inbox message.
     /// This ViewController would typically be pushed into the navigation stack.
     /// - parameter message: The message to show.
     /// - parameter inboxMode:
     /// - returns: UIViewController which displays the message.
-    func createInboxMessageViewController(for message: IterableInAppMessage, withInboxMode inboxMode: IterableInboxViewController.InboxMode) -> UIViewController?
+    func createInboxMessageViewController(for message: IterableInAppMessage, withInboxMode inboxMode: IterableInboxViewController.InboxMode, inboxSessionId: String?) -> UIViewController?
 }
 
 class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
@@ -44,6 +45,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
          dateProvider: DateProviderProtocol,
          retryInterval: Double) {
         ITBInfo()
+        
         self.apiClient = apiClient
         self.deviceMetadata = deviceMetadata
         self.fetcher = fetcher
@@ -70,17 +72,20 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     
     deinit {
         ITBInfo()
+        
         notificationCenter.removeObserver(self)
     }
     
-    func start() {
+    func start() -> Future<Bool, Error> {
         ITBInfo()
+        
         if messagesMap.values.filter({ $0.saveToInbox == true }).count > 0 {
             callbackQueue.async {
                 self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
             }
         }
-        _ = scheduleSync()
+        
+        return scheduleSync()
     }
     
     func getMessages() -> [IterableInAppMessage] {
@@ -91,6 +96,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     
     func getInboxMessages() -> [IterableInAppMessage] {
         ITBInfo()
+        
         return Array(messagesMap.values.filter { InAppManager.isValid(message: $0, currentDate: self.dateProvider.currentDate) && $0.saveToInbox == true })
     }
     
@@ -98,7 +104,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         return getInboxMessages().filter { $0.read == false }.count
     }
     
-    func createInboxMessageViewController(for message: IterableInAppMessage, withInboxMode inboxMode: IterableInboxViewController.InboxMode) -> UIViewController? {
+    func createInboxMessageViewController(for message: IterableInAppMessage, withInboxMode inboxMode: IterableInboxViewController.InboxMode, inboxSessionId: String? = nil) -> UIViewController? {
         guard let content = message.content as? IterableHtmlInAppContent else {
             ITBError("Invalid Content in message")
             return nil
@@ -107,22 +113,26 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
                                                                       padding: content.edgeInsets,
                                                                       messageMetadata: IterableInAppMessageMetadata(message: message, location: .inbox),
-                                                                      isModal: inboxMode == .popup)
+                                                                      isModal: inboxMode == .popup,
+                                                                      inboxSessionId: inboxSessionId)
         let createResult = IterableHtmlMessageViewController.create(parameters: parameters)
         let viewController = createResult.viewController
         
         createResult.futureClickedURL.onSuccess { url in
             ITBInfo()
+            
             // in addition perform action or url delegate task
             self.handle(clickedUrl: url, forMessage: message, location: .inbox)
         }
         
         viewController.navigationItem.title = message.inboxMetadata?.title
+        
         return viewController
     }
     
     func show(message: IterableInAppMessage) {
         ITBInfo()
+        
         show(message: message, consume: true, callback: nil)
     }
     
@@ -153,8 +163,14 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         removePrivate(message: message, location: location, source: source)
     }
     
-    func set(read _: Bool, forMessage message: IterableInAppMessage) {
-        updateMessage(message, read: true).onSuccess { _ in
+    func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource, inboxSessionId: String? = nil) {
+        ITBInfo()
+        
+        removePrivate(message: message, location: location, source: source, inboxSessionId: inboxSessionId)
+    }
+    
+    func set(read: Bool, forMessage message: IterableInAppMessage) {
+        updateMessage(message, read: read).onSuccess { _ in
             self.callbackQueue.async {
                 self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
             }
@@ -166,10 +182,12 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
             ITBInfo("showing another")
             return false
         }
+        
         guard message.didProcessTrigger == false else {
             ITBInfo("message with id: \(message.messageId) is already processed")
             return false
         }
+        
         guard getInAppShowingWaitTimeInterval() <= 0 else {
             ITBInfo("can't display within retryInterval window")
             return false
@@ -180,7 +198,9 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     
     @objc private func onAppEnteredForeground(notification _: Notification) {
         ITBInfo()
+        
         let waitTime = InAppManager.getWaitTimeInterval(fromLastTime: lastSyncTime, currentTime: dateProvider.currentDate, gap: moveToForegroundSyncInterval)
+        
         if waitTime <= 0 {
             _ = scheduleSync()
         } else {
@@ -191,8 +211,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     private func synchronize(appIsActive: Bool) -> Future<Bool, Error> {
         ITBInfo()
         
-        return
-            fetcher.fetch()
+        return fetcher.fetch()
             .map { self.mergeMessages($0) }
             .map { self.processMergedMessages(appIsActive: appIsActive, mergeMessagesResult: $0) }
     }
@@ -200,6 +219,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     // messages are new messages coming from the server
     private func mergeMessages(_ messages: [IterableInAppMessage]) -> MergeMessagesResult {
         var messagesObtainedHandler = MessagesObtainedHandler(messagesMap: messagesMap, messages: messages)
+        
         return messagesObtainedHandler.handle()
     }
     
@@ -211,11 +231,13 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         }
         
         finishSync(inboxChanged: mergeMessagesResult.inboxChanged)
+        
         return true
     }
     
     private func finishSync(inboxChanged: Bool) {
         ITBInfo()
+        
         if inboxChanged {
             callbackQueue.async {
                 self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
@@ -246,6 +268,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         var processor = MessagesProcessor(inAppDelegate: inAppDelegate, inAppDisplayChecker: self, messagesMap: messagesMap)
         let messagesProcessorResult = processor.processMessages()
         self.messagesMap = getMessagesMap(fromMessagesProcessorResult: messagesProcessorResult)
+        
         showMessage(fromMessagesProcessorResult: messagesProcessorResult)
     }
     
@@ -294,6 +317,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         ITBDebug()
         
         let waitTimeInterval = getInAppShowingWaitTimeInterval()
+        
         if waitTimeInterval > 0 {
             ITBDebug("Need to wait for: \(waitTimeInterval)")
             scheduleQueue.asyncAfter(deadline: .now() + waitTimeInterval) {
@@ -314,11 +338,14 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
                                                   didProcessTrigger: Bool? = nil,
                                                   consumed: Bool? = nil) -> Future<Bool, IterableError> {
         ITBDebug()
+        
         let result = Promise<Bool, IterableError>()
+        
         updateQueue.async {
             self.updateMessageSync(message, read: read, didProcessTrigger: didProcessTrigger, consumed: consumed)
             result.resolve(with: true)
         }
+        
         return result
     }
     
@@ -327,16 +354,21 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
                                    didProcessTrigger: Bool? = nil,
                                    consumed: Bool? = nil) {
         ITBDebug()
+        
         let toUpdate = message
+        
         if let read = read {
             toUpdate.read = read
         }
+        
         if let didProcessTrigger = didProcessTrigger {
             toUpdate.didProcessTrigger = didProcessTrigger
         }
+        
         if let consumed = consumed {
             toUpdate.consumed = consumed
         }
+        
         messagesMap.updateValue(toUpdate, forKey: message.messageId)
         persister.persist(messagesMap.values)
     }
@@ -353,6 +385,7 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
         if let lastTime = lastTime {
             // if it has been shown once
             let nextShowingTime = Date(timeInterval: gap + 0.1, since: lastTime)
+            
             if currentTime >= nextShowingTime {
                 return 0.0
             } else {
@@ -421,18 +454,20 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
     
     private func initializeMessagesMap() {
         let messages = persister.getMessages()
+        
         for message in messages {
             messagesMap[message.messageId] = message
         }
     }
     
     // From client side
-    private func removePrivate(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource? = nil) {
+    private func removePrivate(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource? = nil, inboxSessionId: String? = nil) {
         ITBInfo()
         
         updateMessage(message, didProcessTrigger: true, consumed: true)
-        let messageContext = InAppMessageContext.from(message: message, location: location)
+        let messageContext = InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId)
         apiClient?.inAppConsume(inAppMessageContext: messageContext, source: source)
+        
         callbackQueue.async {
             self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
         }
@@ -455,9 +490,11 @@ class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
             return Promise(value: applicationStateProvider.applicationState == .active)
         } else {
             let result = Promise<Bool, Error>()
+            
             DispatchQueue.main.async {
                 result.resolve(with: applicationStateProvider.applicationState == .active)
             }
+            
             return result
         }
     }
@@ -500,6 +537,7 @@ extension InAppManager: InAppNotifiable {
         ITBInfo()
         
         let result = Promise<Bool, Error>()
+        
         syncQueue.async {
             if let syncResult = self.syncResult {
                 if syncResult.isResolved() {
@@ -516,6 +554,7 @@ extension InAppManager: InAppNotifiable {
                 result.reject(with: error)
             }
         }
+        
         return result
     }
     
@@ -529,6 +568,7 @@ extension InAppManager: InAppNotifiable {
                 self.persister.persist(self.messagesMap.values)
             }
         }
+        
         callbackQueue.async {
             self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
         }
@@ -538,6 +578,7 @@ extension InAppManager: InAppNotifiable {
         ITBInfo()
         
         let result = Promise<Bool, Error>()
+        
         syncQueue.async {
             self.messagesMap.reset()
             self.persister.persist(self.messagesMap.values)
@@ -547,6 +588,7 @@ extension InAppManager: InAppNotifiable {
                 result.resolve(with: true)
             }
         }
+        
         return result
     }
 }

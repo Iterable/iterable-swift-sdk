@@ -60,11 +60,15 @@ struct InAppMessageContext {
     let silentInbox: Bool
     let location: InAppLocation?
     
-    static func from(message: IterableInAppMessage, location: InAppLocation?) -> InAppMessageContext {
+    /// the inbox session ID associated with this in-app message (nil if standalone)
+    var inboxSessionId: String?
+    
+    static func from(message: IterableInAppMessage, location: InAppLocation?, inboxSessionId: String? = nil) -> InAppMessageContext {
         return InAppMessageContext(messageId: message.messageId,
                                    saveToInbox: message.saveToInbox,
                                    silentInbox: message.silentInbox,
-                                   location: location)
+                                   location: location,
+                                   inboxSessionId: inboxSessionId)
     }
     
     // For backward compatibility, assume .inApp
@@ -72,14 +76,14 @@ struct InAppMessageContext {
         return InAppMessageContext(messageId: messageId,
                                    saveToInbox: false,
                                    silentInbox: false,
-                                   location: .inApp)
+                                   location: .inApp,
+                                   inboxSessionId: nil)
     }
     
     func toMessageContextDictionary() -> [AnyHashable: Any] {
         var context = [AnyHashable: Any]()
         
         context.setValue(for: .saveToInbox, value: saveToInbox)
-        
         context.setValue(for: .silentInbox, value: silentInbox)
         
         if let location = location {

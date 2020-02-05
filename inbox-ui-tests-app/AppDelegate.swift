@@ -1,7 +1,4 @@
 //
-//  AppDelegate.swift
-//  inbox-ui-tests-app
-//
 //  Created by Tapash Majumder on 8/27/19.
 //  Copyright © 2019 Iterable. All rights reserved.
 //
@@ -27,10 +24,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
-        
-        mockInAppFetcher = MockInAppFetcher(messages: InAppTestHelper.inAppMessages(fromPayload: createPayload()))
-        mockNetworkSession = MockNetworkSession(statusCode: 200)
+        mockInAppFetcher = MockInAppFetcher()
+        mockNetworkSession = MockNetworkSession(statusCode: 200, urlPatternDataMapping: createUrlToDataMapper())
         mockNetworkSession.callback = { _, _, _ in
             self.logRequest()
         }
@@ -44,8 +39,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                          networkSession: mockNetworkSession,
                                          inAppFetcher: mockInAppFetcher,
                                          urlOpener: AppUrlOpener())
-        
-        _ = mockInAppFetcher.fetch()
         
         return true
     }
@@ -72,40 +65,34 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
     
+    func loadDataset(number: Int) {
+        let messages = loadMessages(from: "inbox-messages-\(number)", withExtension: "json")
+        mockInAppFetcher.mockMessagesAvailableFromServer(messages: messages)
+    }
+    
     func addInboxMessage() {
         ITBInfo()
-        let (max, message) = createNextMessage()
-        mockInAppFetcher.mockMessagesAvailableFromServer(messages: InAppTestHelper.inAppMessages(fromPayload: createPayload()) + [message]).onSuccess { _ in
-            self.indices.append(max)
-        }
+        mockInAppFetcher.mockMessagesAvailableFromServer(messages: mockInAppFetcher.messages + [createNewMessage()])
     }
     
     func addMessageToServer() {
-        // mocks message added to server
-        
-        mockInAppFetcher.add(message: createNextMessage().1)
+        // mocks message added to server but not client since no sync has happened yet
+        mockInAppFetcher.add(message: createNewMessage())
     }
     
-    private var indices = [1, 2, 3]
-    
-    private func createNextMessage() -> (Int, IterableInAppMessage) {
-        let max = indices.max().map { $0 + 1 } ?? 1
-        
+    private func createNewMessage() -> IterableInAppMessage {
         let html = """
         <body bgColor="#FFF">
             <div style="width:100px;height:100px;position:absolute;margin:auto;top:0;bottom:0;left:0;right:0;"><a href="iterable://delete">Delete</a></div>
         </body>
         """
-        return (max, IterableInAppMessage(messageId: "message\(max)",
-                                          campaignId: "campaign\(max)",
-                                          trigger: IterableInAppTrigger.neverTrigger,
-                                          content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 1.0, html: html),
-                                          saveToInbox: true,
-                                          inboxMetadata: IterableInboxMetadata(title: "title\(max)", subtitle: "subTitle\(max)")))
-    }
-    
-    private func createPayload() -> [AnyHashable: Any] {
-        return TestInAppPayloadGenerator.createPayloadWithUrl(indices: indices, triggerType: .never, saveToInbox: true)
+        let id = IterableUtil.generateUUID()
+        return IterableInAppMessage(messageId: "message-\(id)",
+                                    campaignId: "campaign-\(id)",
+                                    trigger: IterableInAppTrigger.neverTrigger,
+                                    content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 1.0, html: html),
+                                    saveToInbox: true,
+                                    inboxMetadata: IterableInboxMetadata(title: "title-\(id)", subtitle: "subTitle-\(id)"))
     }
     
     private func logRequest() {
@@ -113,6 +100,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let serializableRequest = request.createSerializableRequest()
         networkTableViewController.requests.append(serializableRequest)
         networkTableViewController.tableView.reloadData()
+    }
+    
+    private func loadMessages(from file: String, withExtension extension: String) -> [IterableInAppMessage] {
+        let data = loadData(from: file, withExtension: `extension`)
+        let payload = try! JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
+        return InAppTestHelper.inAppMessages(fromPayload: payload)
+    }
+    
+    private func loadData(from file: String, withExtension extension: String) -> Data {
+        let path = Bundle(for: type(of: self)).path(forResource: file, ofType: `extension`)!
+        return FileManager.default.contents(atPath: path)!
+    }
+    
+    private func createUrlToDataMapper() -> [String: Data?] {
+        var mapper = [String: Data?]()
+        mapper[#"mocha.png"#] = loadData(from: "mocha", withExtension: "png")
+        mapper[".*"] = nil
+        return mapper
     }
 }
 

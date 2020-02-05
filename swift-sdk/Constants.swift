@@ -81,6 +81,7 @@ public enum JsonKey: String, JsonKeyRepresentable {
     case emailListIds
     case unsubscribedChannelIds
     case unsubscribedMessageTypeIds
+    case subscribedMessageTypeIds
     case preferUserId
     
     case mergeNestedObjects
@@ -98,11 +99,13 @@ public enum JsonKey: String, JsonKeyRepresentable {
     case campaignId
     case templateId
     case messageId
+    case inboxSessionId
     
     case saveToInbox
     case silentInbox
     case inAppLocation = "location"
     case clickedUrl
+    case read
     
     case inboxSessionStart
     case inboxSessionEnd
@@ -135,6 +138,7 @@ public enum JsonKey: String, JsonKeyRepresentable {
     case eventName
     case actionIdentifier
     case userText
+    case appAlreadyRunning
     
     case html
     
@@ -146,12 +150,6 @@ public enum JsonKey: String, JsonKeyRepresentable {
     
     public enum ActionButton {
         static let identifier = "identifier"
-        static let buttonType = "buttonType"
-        static let title = "title"
-        static let openApp = "openApp"
-        static let requiresUnlock = "requiresUnlock"
-        static let inputTitle = "inputTitle"
-        static let inputPlaceholder = "inputPlaceholder"
         static let action = "action"
     }
     
@@ -192,9 +190,6 @@ public enum JsonKey: String, JsonKeyRepresentable {
     
     public enum Payload {
         static let metadata = "itbl"
-        static let messageId = "messageId"
-        static let deepLinkUrl = "url"
-        static let attachmentUrl = "attachment-url"
         static let actionButtons = "actionButtons"
         static let defaultAction = "defaultAction"
     }

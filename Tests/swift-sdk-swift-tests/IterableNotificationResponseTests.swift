@@ -186,7 +186,7 @@ class IterableNotificationResponseTests: XCTestCase {
         XCTAssertNil(IterableAPI.attributionInfo)
     }
     
-    func testLegacyDeeplinkPayload() {
+    func testLegacyDeepLinkPayload() {
         let messageId = UUID().uuidString
         let userInfo: [AnyHashable: Any] = [
             "itbl": [

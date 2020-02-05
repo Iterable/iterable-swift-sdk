@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol DependencyContainerProtocol {
     var dateProvider: DateProviderProtocol { get }

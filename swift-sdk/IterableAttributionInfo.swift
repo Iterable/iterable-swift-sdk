@@ -13,9 +13,7 @@ import Foundation
     }
     
     @objc public var campaignId: NSNumber
-    
     @objc public var templateId: NSNumber
-    
     @objc public var messageId: String
     
     @objc public init(campaignId: NSNumber, templateId: NSNumber, messageId: String) {

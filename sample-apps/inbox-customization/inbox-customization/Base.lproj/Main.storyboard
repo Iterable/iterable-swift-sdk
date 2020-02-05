@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="FMX-bi-28b">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="Stack View standard spacing" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Main Tab Bar Controller-->
+        <scene sceneID="Ps1-p3-YKu">
+            <objects>
+                <tabBarController id="FMX-bi-28b" customClass="MainTabBarController" customModule="inbox_customization" customModuleProvider="target" sceneMemberID="viewController">
+                    <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="irm-dU-OMd">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="49"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </tabBar>
+                    <connections>
+                        <segue destination="vrt-M8-Y9O" kind="relationship" relationship="viewControllers" id="te7-5y-uVq"/>
+                        <segue destination="KFO-by-C9K" kind="relationship" relationship="viewControllers" id="A2T-Xc-oGB"/>
+                        <segue destination="oVf-jP-hU4" kind="relationship" relationship="viewControllers" id="SRW-oN-xJI"/>
+                        <segue destination="ZCF-Ok-EfA" kind="relationship" relationship="viewControllers" id="tPJ-La-t0b"/>
+                    </connections>
+                </tabBarController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="fnM-Fs-0It" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1841" y="105"/>
+        </scene>
+        <!--AdvancedInbox-->
+        <scene sceneID="1k6-BI-nRJ">
+            <objects>
+                <viewControllerPlaceholder storyboardName="AdvancedInbox" referencedIdentifier="AdvancedInbox" id="ZCF-Ok-EfA" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Item" id="VjA-Rl-drU"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Uux-Kw-DwY" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1286" y="380"/>
+        </scene>
+        <!--Inbox Customization-->
+        <scene sceneID="YYU-HN-4MH">
+            <objects>
+                <viewController id="IMo-X7-Wfe" customClass="MainViewController" customModule="inbox_customization" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="sXK-ip-Vcc">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="xpI-cR-rQn">
+                                <rect key="frame" x="118.5" y="245.5" width="177" height="410"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NOp-9K-ovK">
+                                        <rect key="frame" x="0.0" y="0.0" width="177" height="30"/>
+                                        <state key="normal" title="Simple Inbox"/>
+                                        <connections>
+                                            <action selector="onSimpleInboxTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="L42-kN-YdT"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QsU-YC-5M9">
+                                        <rect key="frame" x="0.0" y="38" width="177" height="30"/>
+                                        <state key="normal" title="Simple Inbox Without Nav"/>
+                                        <connections>
+                                            <action selector="onSimpleInbox2Tapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="QRa-HO-MBc"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IYv-Yj-to6">
+                                        <rect key="frame" x="0.0" y="76" width="177" height="30"/>
+                                        <state key="normal" title="Inbox With Custom Cell"/>
+                                        <connections>
+                                            <action selector="onInboxWithCustomCellTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="rLc-f2-9pA"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Jyj-fe-g1J">
+                                        <rect key="frame" x="0.0" y="114" width="177" height="30"/>
+                                        <state key="normal" title="Change Date Format"/>
+                                        <connections>
+                                            <action selector="onChangeDateFormatTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="0IA-kG-BYe"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Njl-Jv-SUr">
+                                        <rect key="frame" x="0.0" y="152" width="177" height="30"/>
+                                        <state key="normal" title="Sort By Date Ascending"/>
+                                        <connections>
+                                            <action selector="onSortByDateAscendingTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="ZEm-FM-p3Q"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3AP-FE-nfC">
+                                        <rect key="frame" x="0.0" y="190" width="177" height="30"/>
+                                        <state key="normal" title="Sort By Title Ascending"/>
+                                        <connections>
+                                            <action selector="onSortByTitleAscendingTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="ZVR-5m-HDz"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dbU-vZ-vR0">
+                                        <rect key="frame" x="0.0" y="228" width="177" height="30"/>
+                                        <state key="normal" title="Filter By Message Type"/>
+                                        <connections>
+                                            <action selector="onFilterByMessageTypeTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="how-g2-sL2"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OGq-Si-MFR">
+                                        <rect key="frame" x="0.0" y="266" width="177" height="30"/>
+                                        <state key="normal" title="Filter By Message Title"/>
+                                        <connections>
+                                            <action selector="onFilterByMessageTitleTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="QWg-CT-YMf"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dbh-L5-Zh3">
+                                        <rect key="frame" x="0.0" y="304" width="177" height="30"/>
+                                        <state key="normal" title="Multiple Cell Types"/>
+                                        <connections>
+                                            <action selector="onInboxWithMultipleCellTypesTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="iiz-EH-TXC"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Art-m4-zJ3">
+                                        <rect key="frame" x="0.0" y="342" width="177" height="30"/>
+                                        <state key="normal" title="Additional Fields"/>
+                                        <connections>
+                                            <action selector="onInboxWithAdditionalFieldsTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="LVP-BJ-lcl"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RTf-tQ-tuZ">
+                                        <rect key="frame" x="0.0" y="380" width="177" height="30"/>
+                                        <state key="normal" title="Multiple Sections"/>
+                                        <connections>
+                                            <action selector="onMultipleSectionsTapped" destination="IMo-X7-Wfe" eventType="touchUpInside" id="bg4-Ik-nBN"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="xpI-cR-rQn" firstAttribute="centerY" secondItem="2YF-iu-gk6" secondAttribute="centerY" id="Cct-ai-dwK"/>
+                            <constraint firstItem="xpI-cR-rQn" firstAttribute="centerX" secondItem="2YF-iu-gk6" secondAttribute="centerX" id="sSi-gD-wUB"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="2YF-iu-gk6"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Inbox Customization" id="bYR-IY-rN8"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="NZx-VM-wL4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-254" y="-27"/>
+        </scene>
+        <!--Home-->
+        <scene sceneID="U7q-mz-YbW">
+            <objects>
+                <navigationController id="vrt-M8-Y9O" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Home" image="Home" id="A2w-gw-bKp"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Tf6-L0-C0v">
+                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="IMo-X7-Wfe" kind="relationship" relationship="rootViewController" id="87L-78-zhv"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="DNH-A8-BKZ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1074" y="-27"/>
+        </scene>
+        <!--SimpleInbox-->
+        <scene sceneID="Fae-4S-4ee">
+            <objects>
+                <viewControllerPlaceholder storyboardName="SimpleInbox" referencedIdentifier="SimpleInbox" id="KFO-by-C9K" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Item" id="Yzo-cd-gUy"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="69p-vh-GgX" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1299" y="308"/>
+        </scene>
+        <!--CustomInbox-->
+        <scene sceneID="VpQ-im-kZK">
+            <objects>
+                <viewControllerPlaceholder storyboardName="CustomInbox" referencedIdentifier="CustomInbox" id="oVf-jP-hU4" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="Item" id="mYG-PD-CoS"/>
+                </viewControllerPlaceholder>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Mgv-Ng-xQm" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1300" y="341"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="Home" width="22" height="22"/>
+    </resources>
+</document>

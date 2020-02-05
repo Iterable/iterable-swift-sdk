@@ -8,13 +8,19 @@ import XCTest
 @testable import IterableSDK
 
 class InboxUITests: XCTestCase, IterableInboxUITestsProtocol {
+    lazy var app: XCUIApplication! = UITestsGlobal.application
+    
     override func setUp() {
         // In UI tests it is usually best to stop immediately when a failure occurs.
         continueAfterFailure = false
+        
         clearNetwork()
     }
     
     func testShowInboxMessages() {
+        gotoTab(.home)
+        app.button(withText: "Load Dataset 1").tap()
+        
         gotoTab(.inbox)
         
         app.tableCell(withText: "title1").tap()
@@ -30,6 +36,7 @@ class InboxUITests: XCTestCase, IterableInboxUITestsProtocol {
     
     func testShowInboxOnButtonClick() {
         gotoTab(.home)
+        app.button(withText: "Load Dataset 1").tap()
         
         app.button(withText: "Show Inbox").tap()
         
@@ -47,6 +54,9 @@ class InboxUITests: XCTestCase, IterableInboxUITestsProtocol {
     }
     
     func testTrackSession() {
+        gotoTab(.home)
+        app.button(withText: "Load Dataset 1").tap()
+        
         gotoTab(.inbox)
         sleep(2)
         gotoTab(.network)
@@ -75,6 +85,9 @@ class InboxUITests: XCTestCase, IterableInboxUITestsProtocol {
     }
     
     func testDeleteActionDeleteButton() {
+        gotoTab(.home)
+        app.button(withText: "Load Dataset 1").tap()
+        
         gotoTab(.inbox)
         let count1 = app.tables.cells.count
         
@@ -98,6 +111,7 @@ class InboxUITests: XCTestCase, IterableInboxUITestsProtocol {
     
     func testPullToRefresh() {
         gotoTab(.home)
+        app.button(withText: "Load Dataset 1").tap()
         app.button(withText: "Add Message To Server").tap()
         
         gotoTab(.inbox)

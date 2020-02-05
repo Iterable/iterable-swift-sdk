@@ -15,6 +15,7 @@ struct InAppMessageParser {
     static func parse(payload: [AnyHashable: Any]) -> [IterableResult<IterableInAppMessage, ParseError>] {
         return getInAppDicts(fromPayload: payload).map {
             let oneJson = preProcessOneJson(fromJson: $0)
+            
             return parseOneMessage(fromJson: oneJson)
         }
     }
@@ -31,6 +32,7 @@ struct InAppMessageParser {
     //! ! Remove when we have backend support
     private static func preProcessOneJson(fromJson json: [AnyHashable: Any]) -> [AnyHashable: Any] {
         var result = json
+        
         guard var customPayloadDict = json[JsonKey.InApp.customPayload] as? [AnyHashable: Any] else {
             return result
         }
@@ -85,6 +87,7 @@ struct InAppMessageParser {
         }
         
         let content: IterableInAppContent
+        
         switch InAppContentParser.parse(contentDict: contentDict) {
         case let .success(parsedContent):
             content = parsedContent
@@ -93,6 +96,7 @@ struct InAppMessageParser {
         }
         
         let campaignId: String
+        
         if let theCampaignId = json[JsonKey.campaignId.jsonKey] as? String {
             campaignId = theCampaignId
         } else {
@@ -106,6 +110,7 @@ struct InAppMessageParser {
         let customPayload = parseCustomPayload(fromPayload: json)
         let createdAt = parseTime(withKey: .inboxCreatedAt, fromJson: json)
         let expiresAt = parseTime(withKey: .inboxExpiresAt, fromJson: json)
+        let read = json[JsonKey.read.jsonKey] as? Bool ?? false
         
         return .success(IterableInAppMessage(messageId: messageId,
                                              campaignId: campaignId,
@@ -115,7 +120,8 @@ struct InAppMessageParser {
                                              content: content,
                                              saveToInbox: saveToInbox,
                                              inboxMetadata: inboxMetadata,
-                                             customPayload: customPayload))
+                                             customPayload: customPayload,
+                                             read: read))
     }
     
     private static func parseTime(withKey key: JsonKey, fromJson json: [AnyHashable: Any]) -> Date? {

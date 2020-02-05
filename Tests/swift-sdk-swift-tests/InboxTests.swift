@@ -8,6 +8,12 @@ import XCTest
 @testable import IterableSDK
 
 class InboxTests: XCTestCase {
+    override class func setUp() {
+        super.setUp()
+        TestUtils.clearTestUserDefaults()
+        IterableAPI.internalImplementation = nil
+    }
+    
     func testInboxOrdering() {
         let expectation1 = expectation(description: "testInboxOrdering")
         let mockInAppFetcher = MockInAppFetcher()
@@ -117,6 +123,37 @@ class InboxTests: XCTestCase {
                 XCTAssertEqual(unreadMessages.count, 1)
                 XCTAssertEqual(unreadMessages[0].read, false)
                 expectation1.fulfill()
+            }
+        }
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+    
+    func testReceiveReadMessage() {
+        let expectation1 = expectation(description: "testReceiveReadMessage")
+        let mockInAppFetcher = MockInAppFetcher()
+        
+        IterableAPI.initializeForTesting(inAppFetcher: mockInAppFetcher)
+        
+        let payload = """
+            {"inAppMessages": [{
+                "saveToInbox": true,
+                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "trigger": {"type": "never"},
+                "messageId": "23fuih4evr0kn",
+                "campaignId": "2308",
+                "read": true
+                }]
+            }
+        """.toJsonDict()
+        
+        mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { _ in
+            let messages = IterableAPI.inAppManager.getInboxMessages()
+            
+            if let msg = messages.first, msg.read {
+                expectation1.fulfill()
+            } else {
+                XCTFail()
             }
         }
         

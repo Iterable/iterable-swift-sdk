@@ -1,0 +1,74 @@
+{ "inAppMessages": [
+    {
+        "createdAt": 1579577586000,
+        "saveToInbox": true,
+        "content": {
+            "contentType": "html",
+            "html": "<a href='iterable://dismiss'>Click Here4</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"},
+        "trigger": {"type": "never"},
+        "messageId": "message2-4",
+        "campaignId": "campaign2-4",
+        "inboxMetadata": {
+            "title": "First message with dark background",
+            "subtitle": "This message will be rendered with a dark background.",
+            "icon": "https://somewhere.com/latte.png"
+        },
+        "customPayload": {
+            "customCellName": "CustomInboxCell2",
+        },
+    },
+    {
+        "createdAt": 1579477586000,
+        "saveToInbox": true,
+        "content": {
+            "contentType": "html",
+            "html": "<a href='iterable://dismiss'>Click Here3</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"},
+        "trigger": {"type": "never"},
+        "messageId": "message2-3",
+        "campaignId": "campaign2-3",
+        "inboxMetadata": {
+            "title": "First message with light background",
+            "subtitle": "This message will be rendered with a light background.",
+            "icon": "https://somewhere.com/cappuccino.png"
+        },
+        "customPayload": {
+            "customCellName": "CustomInboxCell1",
+        },
+    },
+    {
+        "createdAt": 1579377586000,
+        "saveToInbox": true,
+        "content": {
+            "contentType": "html",
+            "html": "<a href='iterable://dismiss'>Click Here2</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"
+        },
+        "trigger": {"type": "never"},
+        "messageId": "message2-2",
+        "campaignId": "campaign2-2",
+        "inboxMetadata": {
+            "title": "Second message with dark background",
+            "subtitle": "This message will be rendered with a dark background.",
+            "icon": "https://somewhere.com/black-coffee.png"
+        },
+        "customPayload": {
+            "customCellName": "CustomInboxCell2",
+        },
+    },
+    {
+        "createdAt": 1579277586000,
+        "saveToInbox": true,
+        "content": {
+            "contentType": "html",
+            "html": "<a href='iterable://dismiss'>Click Here1</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"
+        },
+        "trigger": {"type": "never"},
+        "messageId": "message2-1",
+        "campaignId": "campaign2-1",
+        "inboxMetadata": {
+            "title": "Message with no customization",
+            "subtitle": "This will use default cell with white background.",
+            "icon": "https://somewhere.com/mocha.png"
+        },
+    },
+]
+}

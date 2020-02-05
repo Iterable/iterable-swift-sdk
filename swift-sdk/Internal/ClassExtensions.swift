@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UIKit
 
 public extension Array {
     func take(_ size: Int) -> [[Element]] {
@@ -66,6 +67,7 @@ extension Encodable {
         guard let data = try? JSONEncoder().encode(self) else {
             return nil
         }
+        
         return try? JSONSerialization.jsonObject(with: data, options: [.allowFragments]) as? [String: Any]
     }
 }

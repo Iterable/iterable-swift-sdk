@@ -5,6 +5,7 @@
 // This file contains InApp and Inbox messaging classes.
 
 import Foundation
+import UIKit
 
 /// `show` to show the inApp otherwise `skip` to skip.
 @objc public enum InAppShowResponse: Int {
@@ -42,6 +43,12 @@ import Foundation
     /// - parameter location: The location from where this message was shown. `inbox` or `inApp`.
     /// - parameter source: The source of deletion `inboxSwipe` or `deleteButton`.`
     @objc(removeMessage:location:source:) func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource)
+    
+    /// - parameter message: The message to remove.
+    /// - parameter location: The location from where this message was shown. `inbox` or `inApp`.
+    /// - parameter source: The source of deletion `inboxSwipe` or `deleteButton`.`
+    /// - parameter inboxSessionId: The ID of the inbox session that the message originates from.
+    @objc(removeMessage:location:source:inboxSessionId:) func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource, inboxSessionId: String?)
     
     /// - parameter read: Whether this inbox message was read
     /// - parameter message: The inbox message
@@ -138,10 +145,10 @@ public extension Notification.Name {
 
 /// A message is comprised of content and whether this message was skipped.
 @objcMembers public final class IterableInAppMessage: NSObject {
-    /// the id for the inApp message
+    /// the ID for the in-app message
     public let messageId: String
     
-    /// the campaign id for this message
+    /// the campaign ID for this message
     public let campaignId: String
     
     /// when to trigger this in-app
@@ -150,7 +157,7 @@ public extension Notification.Name {
     /// when was this message created
     public let createdAt: Date?
     
-    /// when to expire this in-app, nil means do not expire
+    /// when to expire this in-app (nil means do not expire)
     public let expiresAt: Date?
     
     /// The content of the in-app message
@@ -174,7 +181,7 @@ public extension Notification.Name {
     internal var consumed: Bool = false
     
     /// Whether this inbox message has been read
-    public internal(set) var read: Bool = false
+    public var read: Bool = false
     
     /// Whether this message will be delivered silently to inbox
     public var silentInbox: Bool {
@@ -190,7 +197,8 @@ public extension Notification.Name {
          content: IterableInAppContent,
          saveToInbox: Bool = false,
          inboxMetadata: IterableInboxMetadata? = nil,
-         customPayload: [AnyHashable: Any]? = nil) {
+         customPayload: [AnyHashable: Any]? = nil,
+         read: Bool = false) {
         self.messageId = messageId
         self.campaignId = campaignId
         self.trigger = trigger
@@ -200,11 +208,15 @@ public extension Notification.Name {
         self.saveToInbox = saveToInbox
         self.inboxMetadata = inboxMetadata
         self.customPayload = customPayload
+        self.read = read
     }
 }
 
 /// Encapsulates Inbox Session
 @objcMembers public final class IterableInboxSession: NSObject, Codable {
+    /// UUID of the session
+    public let id: String?
+    
     /// Start time of session
     public let sessionStartTime: Date?
     
@@ -226,13 +238,15 @@ public extension Notification.Name {
     /// Array of impressions for inbox messages
     public let impressions: [IterableInboxImpression]
     
-    public init(sessionStartTime: Date? = nil,
+    public init(id: String? = nil,
+                sessionStartTime: Date? = nil,
                 sessionEndTime: Date? = nil,
                 startTotalMessageCount: Int = 0,
                 startUnreadMessageCount: Int = 0,
                 endTotalMessageCount: Int = 0,
                 endUnreadMessageCount: Int = 0,
                 impressions: [IterableInboxImpression] = []) {
+        self.id = id
         self.sessionStartTime = sessionStartTime
         self.sessionEndTime = sessionEndTime
         self.startTotalMessageCount = startTotalMessageCount
@@ -245,10 +259,10 @@ public extension Notification.Name {
 
 /// Encapsulates an Inbox impression of a message
 @objcMembers public final class IterableInboxImpression: NSObject, Codable {
-    /// The message id of message
+    /// The message ID of message
     public let messageId: String
     
-    /// Whether the message was silent delivered to inbox
+    /// Whether the message was silently delivered to inbox
     public let silentInbox: Bool
     
     /// How many times this message was displayed in inbox

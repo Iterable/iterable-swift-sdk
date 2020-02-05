@@ -157,11 +157,11 @@ Then, follow these steps:
     use_frameworks!
 
     target 'swift-sample-app' do
-    pod 'Iterable-iOS-SDK'
+        pod 'Iterable-iOS-SDK'
     end
 
     target 'swift-sample-app-notification-extension' do
-    pod 'Iterable-iOS-AppExtensions'
+        pod 'Iterable-iOS-AppExtensions'
     end
     ```
 
@@ -201,7 +201,7 @@ Attached to the release, you will find two framework bundles:
 
 ## Migrating from a version prior to 6.1.0
 
-- Version 6.1.0 of the SDK requires Xcode 10.2.
+- Version 6.1.0 of the SDK requires Xcode 10.2 or above.
 
 - In-app messages: `spawnInAppNotification`
 
@@ -286,24 +286,29 @@ Iterable API key:
     
 ```swift
 let config = IterableConfig()
-config.pushIntegrationName = "<your-iterable-push-integration-name>"
-IterableAPI.initialize(apiKey: "<your-api-key>", launchOptions: launchOptions, config:config)
+IterableAPI.initialize(apiKey: "<your-api-key>", launchOptions: launchOptions, config: config)
 ```
     
 *Objective-C*
     
 ```objc
 IterableConfig *config = [[IterableConfig alloc] init];
-config.pushIntegrationName = @"<your-iterable-push-integration-name>";
 [IterableAPI initializeWithApiKey:@"<your-api-key>" launchOptions:launchOptions config:config]
 ```
+
+> &#x26A0; In prior versions of the SDK, it was necessary to explicitly set the 
+> `IterableAPI.pushIntegrationName` property. This property now defaults to 
+> the bundle ID of the app, so it's no longer necessary modify it unless you're
+> using a custom integration name (different from the bundle ID). To view your 
+> existing integrations, navigate to **Settings > Mobile Apps**.
 
 ### 3. Set a userId or email
 
 Once you have an email address or user ID for your app's current user, set
 `IterableAPI.email` or `IterableAPI.userId`. For example:
 
-> &#x26A0; Don't specify both email and userId in the same session, as they will be treated as different users by the SDK. Only use one type of identifier, email or userId, to identify the user.
+> &#x26A0; Don't specify both `email` and `userId` in the same session, as they will be treated as different users by the SDK. Only use one type of identifier, `email` or `userId`, to identify the user.
+
 *Swift*
     
 ```swift
@@ -317,7 +322,7 @@ IterableAPI.email = @"user@example.com";
 ```
 
 Your app will not be able to receive push notifications until you set 
-one of thes values.
+one of these values.
 
 ### 4. Fetch a device token from Apple
 
@@ -437,6 +442,7 @@ import UserNotifications
 import IterableAppExtensions
 
 class NotificationService: ITBNotificationServiceExtension {
+    // ...
 }
 ```
 
@@ -528,25 +534,25 @@ Iterable's iOS SDK.
     
 Push notifications and action buttons may have `openUrl` actions attached to them. When a URL is specified, the SDK first calls the `urlDelegate` object specified on your `IterableConfig` object. You can use this delegate to handle `openUrl` actions the same way as you handle normal deep links. If the delegate is not set or if it returns `false` (the default), the SDK will open the URL with Safari. If, upon receiving a deep link, you want to navigate to a specific view controller in your app, do so in the `urlDelegate`. 
     
-In the code below, `DeepLinkHandler` is a custom handler which is reponsible for deep link navigation. You have to provide an implementation for deep link navigation. Please see the [sample application](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app/swift-sample-app/DeeplinkHandler.swift) for a reference implementation for `DeeplinkHandler`.
+In the code below, `DeepLinkHandler` is a custom handler which is reponsible for deep link navigation. You have to provide an implementation for deep link navigation. Please see the [sample application](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app/swift-sample-app/DeeplinkHandler.swift) for a reference implementation for `DeepLinkHandler`.
     
 *Swift*
     
 ```swift
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-    ...
+    // ...
     // Initialize Iterable API
     let config = IterableConfig()
-    ...
+    // ...
     config.urlDelegate = self
-    IterableAPI.initialize(apiKey: apiKey, launchOptions:launchOptions, config: config)
-    ...
+    IterableAPI.initialize(apiKey: apiKey, launchOptions: launchOptions, config: config)
+    // ...
 }
 
 // Iterable URL Delegate. It will be called when you receive 
 // an `openUrl` event from push notification.
 func handle(iterableURL url: URL, inContext context: IterableActionContext) -> Bool {
-    return DeeplinkHandler.handle(url: url)
+    return DeepLinkHandler.handle(url: url)
 }
 ```
     
@@ -554,18 +560,18 @@ func handle(iterableURL url: URL, inContext context: IterableActionContext) -> B
     
 ```objc
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    ...
+    // ...
     // Initialize Iterable SDK
     IterableConfig *config = [[IterableConfig alloc] init];
-    ...
+    // ...
     config.urlDelegate = self;
     [IterableAPI initializeWithApiKey:@"YOUR API KEY" launchOptions:launchOptions config:config];
-    ...
+    // ...
 }
     
 - (BOOL)handleIterableURL:(NSURL *)url context:(IterableActionContext *)context {
-    // Assuming you have a DeeplinkHandler class that handles all deep link URLs and navigates to the right place in the app
-    return [DeeplinkHandler handleUrl:url];
+    // Assuming you have a DeepLinkHandler class that handles all deep link URLs and navigates to the right place in the app
+    return [DeepLinkHandler handleUrl:url];
 }
 ```
         
@@ -795,7 +801,7 @@ let inboxViewController = IterableInboxNavigationViewController()
 present(inboxViewController, animated: true)
 ```
 
-#### Mobile Inbox customization options
+#### Mobile inbox customization options
 
 The SDK provides various ways to customize the inbox's interface to match your brand's styles. For simpler customization needs, specify a custom `cellNibName` (and corresponding XIB file) on the `IterableInboxNavigationController`. For more advanced scenarios, define a class that inherits from `IterableInboxViewController` or `IterableInboxNavigationController` and override existing methods as necessary.
 
@@ -828,7 +834,7 @@ Important event properties:
 
 - `eventType` - `inAppSend`
 - `createdAt` - when the in-app message was sent
-- `campaignId`- the in-app message campaign ID
+- `campaignId` - the in-app message campaign ID
 
 ##### In-App Delivery
 
@@ -860,7 +866,7 @@ Important event properties:
 
 - `eventType` - `inAppOpen`
 - `createdAt` - when the in-app message was opened
-- `campaignId`- the in-app message campaign ID
+- `campaignId` - the in-app message campaign ID
 
 ##### In-App Click
 
@@ -870,7 +876,7 @@ Important event properties:
 
 - `eventType` - `inAppClick`
 - `createdAt` - when the button in the in-app message was tapped
-- `campaignId`- the in-app message campaign ID
+- `campaignId` - the in-app message campaign ID
 - `clickedUrl` - the URL associated with the tapped link/button
 
 ##### In-App Close
@@ -881,7 +887,7 @@ Important event properties:
 
 - `eventType` - `inAppClose`
 - `createdAt` - when the in-app message was closed
-- `campaignId`- the in-app message campaign ID
+- `campaignId` - the in-app message campaign ID
 - `closeAction` - the type of item the user tapped: `link` (for buttons/links), `back` for a navigation controller back button, or `other`
 
 ##### In-App Delete 
@@ -892,7 +898,7 @@ Important event properties:
 
 - `eventType` - `inAppDelete`
 - `createdAt` - when the in-app message was deleted
-- `campaignId`- the in-app campaign ID
+- `campaignId` - the in-app campaign ID
 - `deleteAction` - how the message was deleted (`inbox-swipe` if the user swiped left in the inbox and tapped **Delete**, or `delete-button` if the user tapped a button/link with URL `iterable://delete`).
 
 ##### Inbox Session
@@ -902,7 +908,7 @@ This event captures information about an inbox session, which starts when a user
 Important event properties
 
 - `eventType` - `inboxSession`
-- `campaignId`- the in-app campaign id
+- `campaignId` - the in-app campaign ID
 - `inboxSessionStart` - when the session started
 - `inboxSessionEnd` - when the session ended
 - `uniqueImpressionCount` - no of unique messages visible in the Inbox message list to the user during the inbox session
@@ -932,7 +938,7 @@ Iterable will track uninstalls with no additional work by you.
 
 To do this, Iterable sends a silent push notification some time (currently, 12 hours) after a campaign has been sent. Based on this silent push notification, if Iterable receives feedback that the device token is no longer valid, it assigns an uninstall to the device based on the prior campaign. Similarly, if a "real" campaign uncovers an invalid device token, it will also check for a prior (within 12 hours) campaign to mark as the cause for the uninstall. If there was no recent campaign, Iterable still tracks the uninstall, but does not attribute it to a campaign.
 
-NOTE: Currently, Apple has changed the way device tokens expire, so they may take up to 8 days to detect if they are invalid. This does mean that uninstall tracking may not be accurately attributable to campaigns sent within that period of time.
+> &#x26A0; Apple has changed the way device tokens expire, so they may take up to 8 days to detect if they are invalid. This does mean that uninstall tracking may not be accurately attributable to campaigns sent within that period of time.
 
 ## Additional information
 

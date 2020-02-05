@@ -24,14 +24,21 @@ protocol ApiClientProtocol: AnyObject {
     
     func track(event eventName: String, dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError>
     
-    func updateSubscriptions(_ emailListIds: [String]?, unsubscribedChannelIds: [String]?, unsubscribedMessageTypeIds: [String]?) -> Future<SendRequestValue, SendRequestError>
+    func updateSubscriptions(_ emailListIds: [NSNumber]?,
+                             unsubscribedChannelIds: [NSNumber]?,
+                             unsubscribedMessageTypeIds: [NSNumber]?,
+                             subscribedMessageTypeIds: [NSNumber]?,
+                             campaignId: NSNumber?,
+                             templateId: NSNumber?) -> Future<SendRequestValue, SendRequestError>
     
     func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError>
     
+    // deprecated
     func track(inAppOpen messageId: String) -> Future<SendRequestValue, SendRequestError>
     
     func track(inAppOpen inAppMessageContext: InAppMessageContext) -> Future<SendRequestValue, SendRequestError>
     
+    // deprecated
     func track(inAppClick messageId: String, clickedUrl: String) -> Future<SendRequestValue, SendRequestError>
     
     func track(inAppClick inAppMessageContext: InAppMessageContext, clickedUrl: String) -> Future<SendRequestValue, SendRequestError>
@@ -121,14 +128,25 @@ class ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: createRequestCreator().createTrackEventRequest(eventName, dataFields: dataFields))
     }
     
-    func updateSubscriptions(_ emailListIds: [String]?, unsubscribedChannelIds: [String]?, unsubscribedMessageTypeIds: [String]?) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createUpdateSubscriptionsRequest(emailListIds, unsubscribedChannelIds: unsubscribedChannelIds, unsubscribedMessageTypeIds: unsubscribedMessageTypeIds))
+    func updateSubscriptions(_ emailListIds: [NSNumber]? = nil,
+                             unsubscribedChannelIds: [NSNumber]? = nil,
+                             unsubscribedMessageTypeIds: [NSNumber]? = nil,
+                             subscribedMessageTypeIds: [NSNumber]? = nil,
+                             campaignId: NSNumber? = nil,
+                             templateId: NSNumber? = nil) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createUpdateSubscriptionsRequest(emailListIds,
+                                                                                                   unsubscribedChannelIds: unsubscribedChannelIds,
+                                                                                                   unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
+                                                                                                   subscribedMessageTypeIds: subscribedMessageTypeIds,
+                                                                                                   campaignId: campaignId,
+                                                                                                   templateId: templateId))
     }
     
     func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createGetInAppMessagesRequest(count))
     }
     
+    // deprecated
     func track(inAppOpen messageId: String) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppOpenRequest(messageId))
     }
@@ -137,6 +155,7 @@ class ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppOpenRequest(inAppMessageContext: inAppMessageContext))
     }
     
+    // deprecated
     func track(inAppClick messageId: String, clickedUrl: String) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(messageId, clickedUrl: clickedUrl))
     }
@@ -203,7 +222,7 @@ class ApiClient: ApiClientProtocol {
         return RequestCreator(apiKey: apiKey, auth: authProvider.auth, deviceMetadata: deviceMetadata)
     }
     
-    func createIterableHeaders() -> [String: String] {
+    private func createIterableHeaders() -> [String: String] {
         return [JsonKey.contentType.jsonKey: JsonValue.applicationJson.jsonStringValue,
                 JsonKey.Header.sdkPlatform: JsonValue.iOS.jsonStringValue,
                 JsonKey.Header.sdkVersion: IterableAPI.sdkVersion,

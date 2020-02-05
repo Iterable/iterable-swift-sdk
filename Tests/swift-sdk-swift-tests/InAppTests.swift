@@ -10,6 +10,7 @@ import XCTest
 class InAppTests: XCTestCase {
     override class func setUp() {
         super.setUp()
+        TestUtils.clearTestUserDefaults()
         IterableAPI.internalImplementation = nil
     }
     
@@ -371,6 +372,8 @@ class InAppTests: XCTestCase {
         let iterableDeleteUrl = "iterable://delete"
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShow.onSuccess { _ in
+            let count = IterableAPI.inAppManager.getMessages().count
+            XCTAssertEqual(count, 1)
             mockInAppDisplayer.click(url: URL(string: iterableDeleteUrl)!)
         }
         
@@ -400,8 +403,6 @@ class InAppTests: XCTestCase {
         """.toJsonDict()
         
         mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { _ in
-            let messages = IterableAPI.inAppManager.getMessages()
-            XCTAssertEqual(messages.count, 1)
             expectation1.fulfill()
         }
         
@@ -1099,6 +1100,7 @@ class InAppTests: XCTestCase {
             networkSession: mockNetworkSession,
             inAppFetcher: mockInAppFetcher
         )
+        IterableAPI.email = "user@example.com"
         
         let payloadFromServer = """
         {"inAppMessages":
@@ -1260,7 +1262,7 @@ class InAppTests: XCTestCase {
         
         let emptyManager = EmptyInAppManager()
         
-        emptyManager.start()
+        _ = emptyManager.start()
         
         XCTAssertNil(emptyManager.createInboxMessageViewController(for: getEmptyInAppMessage(), withInboxMode: .nav))
         
@@ -1275,7 +1277,11 @@ class InAppTests: XCTestCase {
         
         emptyManager.remove(message: getEmptyInAppMessage())
         
+        emptyManager.remove(message: getEmptyInAppMessage(), location: .inApp)
+        
         emptyManager.remove(message: getEmptyInAppMessage(), location: .inApp, source: .deleteButton)
+        
+        emptyManager.remove(message: getEmptyInAppMessage(), location: .inApp, source: .deleteButton, inboxSessionId: nil)
         
         emptyManager.set(read: true, forMessage: getEmptyInAppMessage())
         

@@ -65,11 +65,13 @@ class InboxImpressionTracker {
         }
         
         let impression: Impression
+        
         if let existing = impressions[row] {
             impression = Impression(messageId: row.messageId, silentInbox: row.silentInbox, displayCount: existing.displayCount + 1, duration: existing.duration + duration)
         } else {
             impression = Impression(messageId: row.messageId, silentInbox: row.silentInbox, displayCount: 1, duration: duration)
         }
+        
         impressions[row] = impression
     }
     

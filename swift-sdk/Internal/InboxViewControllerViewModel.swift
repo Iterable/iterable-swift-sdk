@@ -4,20 +4,25 @@
 //
 
 import Foundation
+import UIKit
 
-protocol InboxViewControllerViewModelDelegate: AnyObject {
+protocol InboxViewControllerViewModelView: AnyObject {
     // All these methods should be called on the main thread
     func onViewModelChanged(diff: [SectionedDiffStep<Int, InboxMessageViewModel>])
-    func onImageLoaded(forRow row: Int)
-    var currentlyVisibleRowIndices: [Int] { get }
+    func onImageLoaded(for indexPath: IndexPath)
+    var currentlyVisibleRowIndexPaths: [IndexPath] { get }
 }
 
 protocol InboxViewControllerViewModelProtocol {
-    var delegate: InboxViewControllerViewModelDelegate? { get set }
-    var numMessages: Int { get }
+    var view: InboxViewControllerViewModelView? { get set }
+    func set(comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)?,
+             filter: ((IterableInAppMessage) -> Bool)?,
+             sectionMapper: ((IterableInAppMessage) -> Int)?)
+    var numSections: Int { get }
+    func numRows(in section: Int) -> Int
     var unreadCount: Int { get }
-    func message(atRow row: Int) -> InboxMessageViewModel
-    func remove(atRow row: Int)
+    func message(atIndexPath indexPath: IndexPath) -> InboxMessageViewModel
+    func remove(atIndexPath indexPath: IndexPath)
     func set(read: Bool, forMessage message: InboxMessageViewModel)
     func createInboxMessageViewController(for message: InboxMessageViewModel, withInboxMode inboxMode: IterableInboxViewController.InboxMode) -> UIViewController?
     func refresh() -> Future<Bool, Error> // Talks to the server and refreshes
@@ -31,13 +36,22 @@ protocol InboxViewControllerViewModelProtocol {
 }
 
 class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
-    weak var delegate: InboxViewControllerViewModelDelegate?
+    weak var view: InboxViewControllerViewModelView?
+    
+    func set(comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)?, filter: ((IterableInAppMessage) -> Bool)?, sectionMapper: ((IterableInAppMessage) -> Int)?) {
+        self.comparator = comparator
+        self.filter = filter
+        self.sectionMapper = sectionMapper
+        sectionedMessages = sortAndFilter(messages: allMessagesInSections())
+    }
     
     init() {
         ITBInfo()
+        
         if let _ = IterableAPI.internalImplementation {
-            messages = IterableAPI.inAppManager.getInboxMessages().map { InboxMessageViewModel(message: $0) }
+            sectionedMessages = sortAndFilter(messages: getMessages())
         }
+        
         NotificationCenter.default.addObserver(self, selector: #selector(onInboxChanged(notification:)), name: .iterableInboxChanged, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppWillEnterForeground(notification:)), name: UIApplication.willEnterForegroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(onAppDidEnterBackground(notification:)), name: UIApplication.didEnterBackgroundNotification, object: nil)
@@ -48,26 +62,34 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         NotificationCenter.default.removeObserver(self)
     }
     
-    var numMessages: Int {
-        return messages.count
+    var numSections: Int {
+        sectionedMessages.sections.count
+    }
+    
+    func numRows(in section: Int) -> Int {
+        sectionedMessages[section].1.count
     }
     
     var unreadCount: Int {
-        return messages.filter { $0.read == false }.count
+        return allMessagesInSections().filter { $0.read == false }.count
     }
     
-    func message(atRow row: Int) -> InboxMessageViewModel {
-        let message = messages[row]
+    func message(atIndexPath indexPath: IndexPath) -> InboxMessageViewModel {
+        let message = sectionedMessages[indexPath.section].1[indexPath.row]
         loadImageIfNecessary(message)
         return message
     }
     
-    func remove(atRow row: Int) {
-        IterableAPI.inAppManager.remove(message: messages[row].iterableMessage, location: .inbox, source: .inboxSwipe)
+    func remove(atIndexPath indexPath: IndexPath) {
+        let message = sectionedMessages[indexPath.section].1[indexPath.row]
+        IterableAPI.inAppManager.remove(message: message.iterableMessage,
+                                        location: .inbox,
+                                        source: .inboxSwipe,
+                                        inboxSessionId: sessionManager.sessionStartInfo?.id)
     }
     
-    func set(read _: Bool, forMessage message: InboxMessageViewModel) {
-        IterableAPI.inAppManager.set(read: true, forMessage: message.iterableMessage)
+    func set(read: Bool, forMessage message: InboxMessageViewModel) {
+        IterableAPI.inAppManager.set(read: read, forMessage: message.iterableMessage)
     }
     
     func refresh() -> Future<Bool, Error> {
@@ -79,15 +101,16 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     func createInboxMessageViewController(for message: InboxMessageViewModel, withInboxMode inboxMode: IterableInboxViewController.InboxMode) -> UIViewController? {
-        guard let inappManager = IterableAPI.inAppManager as? IterableInAppManagerProtocolInternal else {
-            ITBError("Unexpected inappManager type")
+        guard let inAppManager = IterableAPI.inAppManager as? IterableInAppManagerProtocolInternal else {
+            ITBError("Unexpected inAppManager type")
             return nil
         }
-        return inappManager.createInboxMessageViewController(for: message.iterableMessage, withInboxMode: inboxMode)
+        
+        return inAppManager.createInboxMessageViewController(for: message.iterableMessage, withInboxMode: inboxMode, inboxSessionId: sessionManager.sessionStartInfo?.id)
     }
     
     func beganUpdates() {
-        messages = newMessages
+        sectionedMessages = newSectionedMessages
     }
     
     func endedUpdates() {}
@@ -109,6 +132,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     private func updateVisibleRows() {
         ITBDebug()
+        
         guard sessionManager.isTracking else {
             ITBInfo("Not tracking session")
             return
@@ -138,31 +162,49 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     private func setImageData(_ data: Data, forMessageId messageId: String) {
-        guard let row = messages.firstIndex(where: { $0.iterableMessage.messageId == messageId }) else {
+        guard let indexPath = findIndexPath(for: messageId) else {
             return
         }
-        let message = messages[row]
-        message.imageData = data
         
-        delegate?.onImageLoaded(forRow: row)
+        let message = sectionedMessages[indexPath.section].1[indexPath.row]
+        message.imageData = data
+        view?.onImageLoaded(for: indexPath)
+    }
+    
+    private func findIndexPath(for messageId: String) -> IndexPath? {
+        var section = -1
+        for sectionAndValue in sectionedMessages.sectionsAndValues {
+            section += 1
+            let (_, values) = sectionAndValue
+            if let row = values.firstIndex(where: { $0.iterableMessage.messageId == messageId }) {
+                return IndexPath(row: row, section: section)
+            }
+        }
+        return nil
     }
     
     private func getVisibleRows() -> [InboxImpressionTracker.RowInfo] {
-        guard let delegate = delegate else {
+        guard let view = view else {
             return []
         }
         
-        return delegate.currentlyVisibleRowIndices.compactMap { index in
-            guard index < messages.count else {
+        return view.currentlyVisibleRowIndexPaths.compactMap { indexPath in
+            guard indexPath.section < sectionedMessages.sectionsAndValues.count else {
                 return nil
             }
-            let message = messages[index].iterableMessage
+            let sectionMessages = sectionedMessages.sectionsAndValues[indexPath.section].1
+            guard indexPath.row < sectionMessages.count else {
+                return nil
+            }
+            
+            let message = sectionMessages[indexPath.row].iterableMessage
             return InboxImpressionTracker.RowInfo(messageId: message.messageId, silentInbox: message.silentInbox)
         }
     }
     
     private func startSession() {
         ITBInfo()
+        
         sessionManager.startSession(visibleRows: getVisibleRows())
     }
     
@@ -172,13 +214,15 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
             return
         }
         
-        let inboxSession = IterableInboxSession(sessionStartTime: sessionInfo.startInfo.startTime,
+        let inboxSession = IterableInboxSession(id: sessionInfo.startInfo.id,
+                                                sessionStartTime: sessionInfo.startInfo.startTime,
                                                 sessionEndTime: Date(),
                                                 startTotalMessageCount: sessionInfo.startInfo.totalMessageCount,
                                                 startUnreadMessageCount: sessionInfo.startInfo.unreadMessageCount,
                                                 endTotalMessageCount: IterableAPI.inAppManager.getInboxMessages().count,
                                                 endUnreadMessageCount: IterableAPI.inAppManager.getUnreadInboxMessagesCount(),
                                                 impressions: sessionInfo.impressions.map { $0.toIterableInboxImpression() })
+        
         IterableAPI.internalImplementation?.track(inboxSession: inboxSession)
     }
     
@@ -192,13 +236,11 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     private func updateView() {
         ITBInfo()
-        let oldSectionedValues = AbstractDiffCalculator<Int, InboxMessageViewModel>.buildSectionedValues(values: messages, sectionIndex: 0)
-        newMessages = IterableAPI.inAppManager.getInboxMessages().map { InboxMessageViewModel(message: $0) }
-        let newSectionedValues = AbstractDiffCalculator<Int, InboxMessageViewModel>.buildSectionedValues(values: newMessages, sectionIndex: 0)
+        newSectionedMessages = sortAndFilter(messages: getMessages())
         
-        let diff = Dwifft.diff(lhs: oldSectionedValues, rhs: newSectionedValues)
+        let diff = Dwifft.diff(lhs: sectionedMessages, rhs: newSectionedMessages)
         if diff.count > 0 {
-            delegate?.onViewModelChanged(diff: diff)
+            view?.onViewModelChanged(diff: diff)
             updateVisibleRows()
         }
     }
@@ -222,7 +264,56 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         }
     }
     
-    private var messages = [InboxMessageViewModel]()
-    private var newMessages = [InboxMessageViewModel]()
+    private func getMessages() -> [InboxMessageViewModel] {
+        IterableAPI.inAppManager.getInboxMessages().map { InboxMessageViewModel(message: $0) }
+    }
+    
+    private func sortAndFilter(messages: [InboxMessageViewModel]) -> SectionedValues<Int, InboxMessageViewModel> {
+        return SectionedValues(values: filteredMessages(messages: messages),
+                               valueToSection: createSectionMapper(),
+                               sortSections: { $0 < $1 },
+                               sortValues: createComparator())
+    }
+    
+    private func filteredMessages(messages: [InboxMessageViewModel]) -> [InboxMessageViewModel] {
+        guard let filter = self.filter else {
+            return messages
+        }
+        
+        return messages.filter { filter($0.iterableMessage) }
+    }
+    
+    private func createComparator() -> (InboxMessageViewModel, InboxMessageViewModel) -> Bool {
+        if let comparator = self.comparator {
+            return { comparator($0.iterableMessage, $1.iterableMessage) }
+        } else {
+            return { IterableInboxViewController.DefaultComparator.descending($0.iterableMessage, $1.iterableMessage) }
+        }
+    }
+    
+    private func createSectionMapper() -> (InboxMessageViewModel) -> Int {
+        if let sectionMapper = self.sectionMapper {
+            return { sectionMapper($0.iterableMessage) }
+        } else {
+            return { _ in 0 }
+        }
+    }
+    
+    private func allMessagesInSections() -> [InboxMessageViewModel] {
+        sectionedMessages.values
+    }
+    
+    var comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)?
+    var filter: ((IterableInAppMessage) -> Bool)?
+    var sectionMapper: ((IterableInAppMessage) -> Int)?
+    
+    private var sectionedMessages = SectionedValues<Int, InboxMessageViewModel>()
+    private var newSectionedMessages = SectionedValues<Int, InboxMessageViewModel>()
     private var sessionManager = InboxSessionManager()
+}
+
+extension SectionedValues {
+    var values: [Value] {
+        return sectionsAndValues.flatMap { $0.1 }
+    }
 }

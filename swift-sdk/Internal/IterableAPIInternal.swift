@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UIKit
 import UserNotifications
 
 struct DeviceMetadata: Codable {
@@ -65,22 +66,6 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         return DeviceMetadata(deviceId: deviceId,
                               platform: JsonValue.iOS.jsonStringValue,
                               appPackageName: Bundle.main.appPackageName ?? "")
-    }
-    
-    weak var urlDelegate: IterableURLDelegate? {
-        get {
-            return config.urlDelegate
-        } set {
-            config.urlDelegate = newValue
-        }
-    }
-    
-    weak var customActionDelegate: IterableCustomActionDelegate? {
-        get {
-            return config.customActionDelegate
-        } set {
-            config.customActionDelegate = newValue
-        }
     }
     
     var lastPushPayload: [AnyHashable: Any]? {
@@ -191,32 +176,20 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    func trackPurchase(_ total: NSNumber, items: [CommerceItem]) {
-        trackPurchase(total, items: items, dataFields: nil)
-    }
-    
-    func trackPurchase(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) {
-        trackPurchase(total, items: items, dataFields: dataFields, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackPurchase"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPurchase"))
-    }
-    
-    func trackPurchase(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func trackPurchase(_ total: NSNumber,
+                       items: [CommerceItem],
+                       dataFields: [AnyHashable: Any]? = nil,
+                       onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSucess(identifier: "trackPurchase"),
+                       onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "trackPurchase")) {
         IterableAPIInternal.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
                                  forResult: apiClient.track(purchase: total, items: items, dataFields: dataFields))
     }
     
-    func trackPushOpen(_ userInfo: [AnyHashable: Any]) {
-        trackPushOpen(userInfo, dataFields: nil)
-    }
-    
-    func trackPushOpen(_ userInfo: [AnyHashable: Any], dataFields: [AnyHashable: Any]?) {
-        trackPushOpen(userInfo,
-                      dataFields: dataFields,
-                      onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackPushOpen"),
-                      onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPushOpen"))
-    }
-    
-    func trackPushOpen(_ userInfo: [AnyHashable: Any], dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func trackPushOpen(_ userInfo: [AnyHashable: Any],
+                       dataFields: [AnyHashable: Any]?,
+                       onSuccess: OnSuccessHandler?,
+                       onFailure: OnFailureHandler?) {
         save(pushPayload: userInfo)
         if let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: userInfo), metadata.isRealCampaignNotification() {
             trackPushOpen(metadata.campaignId, templateId: metadata.templateId, messageId: metadata.messageId, appAlreadyRunning: false, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
@@ -225,11 +198,13 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?) {
-        trackPushOpen(campaignId, templateId: templateId, messageId: messageId, appAlreadyRunning: appAlreadyRunning, dataFields: dataFields, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackPushOpen"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPushOpen"))
-    }
-    
-    func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func trackPushOpen(_ campaignId: NSNumber,
+                       templateId: NSNumber?,
+                       messageId: String?,
+                       appAlreadyRunning: Bool,
+                       dataFields: [AnyHashable: Any]?,
+                       onSuccess: OnSuccessHandler?,
+                       onFailure: OnFailureHandler?) {
         IterableAPIInternal.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
                                  forResult: apiClient.track(pushOpen: campaignId,
@@ -266,48 +241,53 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: apiClient.track(event: eventName, dataFields: dataFields))
     }
     
-    func updateSubscriptions(_ emailListIds: [String]?, unsubscribedChannelIds: [String]?, unsubscribedMessageTypeIds: [String]?) {
+    func updateSubscriptions(_ emailListIds: [NSNumber]?,
+                             unsubscribedChannelIds: [NSNumber]?,
+                             unsubscribedMessageTypeIds: [NSNumber]?,
+                             subscribedMessageTypeIds: [NSNumber]?,
+                             campaignId: NSNumber?,
+                             templateId: NSNumber?) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "updateSubscriptions"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "updateSubscriptions"),
-                                 forResult: apiClient.updateSubscriptions(emailListIds, unsubscribedChannelIds: unsubscribedChannelIds, unsubscribedMessageTypeIds: unsubscribedMessageTypeIds))
+                                 forResult: apiClient.updateSubscriptions(emailListIds,
+                                                                          unsubscribedChannelIds: unsubscribedChannelIds,
+                                                                          unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
+                                                                          subscribedMessageTypeIds: subscribedMessageTypeIds,
+                                                                          campaignId: campaignId,
+                                                                          templateId: templateId))
     }
     
-    @discardableResult func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError> {
-        return getInAppMessages(count, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "getMessages"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "getMessages"))
-    }
-    
-    @discardableResult func getInAppMessages(_ count: NSNumber, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        return IterableAPIInternal.call(successHandler: onSuccess,
-                                        andFailureHandler: onFailure,
-                                        forResult: apiClient.getInAppMessages(count))
-    }
-    
+    // deprecated
     func trackInAppOpen(_ messageId: String) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppOpen"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"),
                                  forResult: apiClient.track(inAppOpen: messageId))
     }
     
-    func trackInAppOpen(_ message: IterableInAppMessage, location: InAppLocation) {
+    func trackInAppOpen(_ message: IterableInAppMessage, location: InAppLocation, inboxSessionId: String? = nil) {
+        let result = apiClient.track(inAppOpen: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId))
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppOpen"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"),
-                                 forResult: apiClient.track(inAppOpen: InAppMessageContext.from(message: message, location: location)))
+                                 forResult: result)
     }
     
+    // deprecated
     func trackInAppClick(_ messageId: String, clickedUrl: String) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"),
                                  forResult: apiClient.track(inAppClick: messageId, clickedUrl: clickedUrl))
     }
     
-    func trackInAppClick(_ message: IterableInAppMessage, location: InAppLocation = .inApp, clickedUrl: String) {
+    func trackInAppClick(_ message: IterableInAppMessage, location: InAppLocation = .inApp, inboxSessionId: String? = nil, clickedUrl: String) {
+        let result = apiClient.track(inAppClick: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId),
+                                     clickedUrl: clickedUrl)
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"),
-                                 forResult: apiClient.track(inAppClick: InAppMessageContext.from(message: message, location: location), clickedUrl: clickedUrl))
+                                 forResult: result)
     }
     
-    func trackInAppClose(_ message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppCloseSource? = nil, clickedUrl: String? = nil) {
-        let result = apiClient.track(inAppClose: InAppMessageContext.from(message: message, location: location),
+    func trackInAppClose(_ message: IterableInAppMessage, location: InAppLocation = .inApp, inboxSessionId: String? = nil, source: InAppCloseSource? = nil, clickedUrl: String? = nil) {
+        let result = apiClient.track(inAppClose: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId),
                                      source: source,
                                      clickedUrl: clickedUrl)
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClose"),
@@ -336,9 +316,11 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource? = nil) {
+        let result = apiClient.inAppConsume(inAppMessageContext: InAppMessageContext.from(message: message, location: location),
+                                            source: source)
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "inAppConsumeWithSource"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "inAppConsumeWithSource"),
-                                 forResult: apiClient.inAppConsume(inAppMessageContext: InAppMessageContext.from(message: message, location: location), source: source))
+                                 forResult: result)
     }
     
     private func disableDevice(forAllUsers allUsers: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
@@ -363,12 +345,12 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         InAppDisplayer.showSystemNotification(withTitle: title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
     }
     
-    func getAndTrack(deeplink: URL, callbackBlock: @escaping ITEActionBlock) {
-        deeplinkManager.getAndTrack(deeplink: deeplink, callbackBlock: callbackBlock)
+    func getAndTrack(deepLink: URL, callbackBlock: @escaping ITEActionBlock) {
+        deepLinkManager.getAndTrack(deepLink: deepLink, callbackBlock: callbackBlock)
     }
     
     @discardableResult func handleUniversalLink(_ url: URL) -> Bool {
-        return deeplinkManager.handleUniversalLink(url, urlDelegate: config.urlDelegate, urlOpener: AppUrlOpener())
+        return deepLinkManager.handleUniversalLink(url, urlDelegate: config.urlDelegate, urlOpener: AppUrlOpener())
     }
     
     @discardableResult private static func call(successHandler onSuccess: OnSuccessHandler? = nil, andFailureHandler onFailure: OnFailureHandler? = nil, forResult result: Future<SendRequestValue, SendRequestError>) -> Future<SendRequestValue, SendRequestError> {
@@ -388,7 +370,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     private let inAppDisplayer: InAppDisplayerProtocol
     
-    private var deeplinkManager: IterableDeepLinkManager
+    private var deepLinkManager: IterableDeepLinkManager
     
     private var _email: String?
     private var _userId: String?
@@ -464,7 +446,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         _ = inAppManager.scheduleSync()
     }
     
-    private static func defaultOnSucess(identifier: String) -> OnSuccessHandler {
+    static func defaultOnSucess(identifier: String) -> OnSuccessHandler {
         return { data in
             if let data = data {
                 ITBInfo("\(identifier) succeeded, got response: \(data)")
@@ -474,7 +456,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    private static func defaultOnFailure(identifier: String) -> OnFailureHandler {
+    static func defaultOnFailure(identifier: String) -> OnFailureHandler {
         return { reason, data in
             var toLog = "\(identifier) failed:"
             if let reason = reason {
@@ -527,16 +509,16 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         localStorage = dependencyContainer.localStorage
         inAppDisplayer = dependencyContainer.inAppDisplayer
         urlOpener = dependencyContainer.urlOpener
-        deeplinkManager = IterableDeepLinkManager()
+        deepLinkManager = IterableDeepLinkManager()
     }
     
-    func start() {
+    func start() -> Future<Bool, Error> {
         ITBInfo()
         // sdk version
         updateSDKVersion()
         
-        // check for deferred deeplinking
-        checkForDeferredDeeplink()
+        // check for deferred deep linking
+        checkForDeferredDeepLink()
         
         // get email and userId from UserDefaults if present
         retrieveEmailAndUserId()
@@ -553,7 +535,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         
         handle(launchOptions: launchOptions)
         
-        inAppManager.start()
+        return inAppManager.start()
     }
     
     private func handle(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
@@ -573,7 +555,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    private func checkForDeferredDeeplink() {
+    private func checkForDeferredDeepLink() {
         guard config.checkForDeferredDeeplink else {
             return
         }
@@ -617,7 +599,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         DispatchQueue.main.async {
             IterableActionRunner.execute(action: action,
                                          context: context,
-                                         urlHandler: IterableUtil.urlHandler(fromUrlDelegate: self.urlDelegate, inContext: context),
+                                         urlHandler: IterableUtil.urlHandler(fromUrlDelegate: self.config.urlDelegate, inContext: context),
                                          urlOpener: self.urlOpener)
         }
     }

@@ -37,6 +37,7 @@ struct IterableRequestUtil {
         var request = URLRequest(url: url)
         addHeaders(headers: headers, toRequest: &request)
         request.httpMethod = Const.Http.GET
+        
         return request
     }
     
@@ -78,14 +79,18 @@ struct IterableRequestUtil {
     
     private static func pathCombine(path1: String, path2: String) -> String {
         var result = path1
+        
         if result.hasSuffix("/") {
             result.removeLast()
         }
+        
         // result has no ending slashes, add one if needed
         if !result.isEmpty, !path2.isEmpty, !path2.hasPrefix("/") {
             result.append("/")
         }
+        
         result.append(path2)
+        
         return result
     }
 }

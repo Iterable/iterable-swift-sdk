@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="bj6-kS-Oax">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15702" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="bj6-kS-Oax">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15704"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="Stack View standard spacing" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -26,7 +26,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="914" y="199"/>
+            <point key="canvasLocation" x="958" y="-112"/>
         </scene>
         <!--Network Table View Controller-->
         <scene sceneID="lsa-ix-gqR">
@@ -46,7 +46,7 @@
                                 <rect key="frame" x="0.0" y="28" width="414" height="100"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="fus-vc-WYy" id="zS7-ZF-I0M">
-                                    <rect key="frame" x="0.0" y="0.0" width="382.5" height="100"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="383" height="100"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="wpG-23-YfB">
@@ -85,7 +85,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="frK-IF-Rtm" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1844.9275362318842" y="860.49107142857144"/>
+            <point key="canvasLocation" x="1248" y="1190"/>
         </scene>
         <!--Network Detail View Controller-->
         <scene sceneID="RUy-K5-TXU">
@@ -161,13 +161,14 @@ class NetworkDetailViewController: UITableViewController {
                             <outlet property="delegate" destination="awR-Ah-l2b" id="IMd-1T-8EK"/>
                         </connections>
                     </tableView>
+                    <navigationItem key="navigationItem" id="nt8-ri-e0x"/>
                     <connections>
                         <outlet property="bodyLbl" destination="7Gy-6o-a5R" id="Ixq-iY-GoD"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b54-CA-90N" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2746" y="860"/>
+            <point key="canvasLocation" x="2261" y="1190"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="zmK-60-o17">
@@ -182,12 +183,34 @@ class NetworkDetailViewController: UITableViewController {
                     <connections>
                         <segue destination="LaA-pi-fh3" kind="relationship" relationship="viewControllers" id="yh0-r5-UFs"/>
                         <segue destination="BYZ-38-t0r" kind="relationship" relationship="viewControllers" id="K1v-wK-9qE"/>
+                        <segue destination="KcJ-c0-NOK" kind="relationship" relationship="viewControllers" id="mJR-ok-2uQ"/>
                         <segue destination="iPF-0d-gDn" kind="relationship" relationship="viewControllers" id="rFP-zW-o4d"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ZyT-UD-BcN" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="137.68115942028987" y="138.61607142857142"/>
+        </scene>
+        <!--Custom Inbox-->
+        <scene sceneID="aAe-XX-z1A">
+            <objects>
+                <viewController id="KcJ-c0-NOK" customClass="IterableInboxNavigationViewController" customModule="IterableSDK" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="tTd-AI-GQO">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <viewLayoutGuide key="safeArea" id="Lxh-xJ-T2C"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Custom Inbox" id="edA-oV-AW8"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="string" keyPath="viewDelegateClassName" value="inbox_ui_tests_app.ViewDelegate1"/>
+                        <userDefinedRuntimeAttribute type="boolean" keyPath="isPopup" value="NO"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="navTitle" value="Custom Inbox"/>
+                    </userDefinedRuntimeAttributes>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="G5a-VW-0vz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="958" y="543"/>
         </scene>
         <!--Main View Controller-->
         <scene sceneID="WmK-Vs-MsR">
@@ -198,27 +221,55 @@ class NetworkDetailViewController: UITableViewController {
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="eGn-zM-0ZP">
-                                <rect key="frame" x="126" y="397.5" width="162" height="106"/>
+                                <rect key="frame" x="126" y="321.5" width="162" height="258"/>
                                 <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4Rd-VH-zxG">
+                                        <rect key="frame" x="30" y="0.0" width="102" height="30"/>
+                                        <state key="normal" title="Load Dataset 1"/>
+                                        <connections>
+                                            <action selector="loadDataset1Tapped:" destination="UpA-wW-DMA" eventType="touchUpInside" id="Bk4-vl-JZ1"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ul6-zz-0HM">
+                                        <rect key="frame" x="29" y="38" width="104" height="30"/>
+                                        <state key="normal" title="Load Dataset 2"/>
+                                        <connections>
+                                            <action selector="loadDataset2Tapped:" destination="UpA-wW-DMA" eventType="touchUpInside" id="dWN-a0-IAJ"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="efd-C4-076">
+                                        <rect key="frame" x="29" y="76" width="104" height="30"/>
+                                        <state key="normal" title="Load Dataset 3"/>
+                                        <connections>
+                                            <action selector="loadDataset3Tapped:" destination="UpA-wW-DMA" eventType="touchUpInside" id="xwQ-aW-mUn"/>
+                                        </connections>
+                                    </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EC9-JJ-Tlq">
-                                        <rect key="frame" x="41.5" y="0.0" width="79" height="30"/>
+                                        <rect key="frame" x="41.5" y="114" width="79" height="30"/>
                                         <state key="normal" title="Show Inbox"/>
                                         <connections>
                                             <action selector="showInboxTap:" destination="UpA-wW-DMA" eventType="touchUpInside" id="iO9-3U-nib"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Cf5-1D-zj5">
-                                        <rect key="frame" x="13.5" y="38" width="135" height="30"/>
+                                        <rect key="frame" x="13.5" y="152" width="135" height="30"/>
                                         <state key="normal" title="Add Inbox Message"/>
                                         <connections>
                                             <action selector="addInboxMessageTap:" destination="UpA-wW-DMA" eventType="touchUpInside" id="gzx-ks-LaA"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f72-kd-osF">
-                                        <rect key="frame" x="0.0" y="76" width="162" height="30"/>
+                                        <rect key="frame" x="0.0" y="190" width="162" height="30"/>
                                         <state key="normal" title="Add Message To Server"/>
                                         <connections>
                                             <action selector="addMessageToServer:" destination="UpA-wW-DMA" eventType="touchUpInside" id="bCB-dh-No5"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Pxq-MP-JUL">
+                                        <rect key="frame" x="7.5" y="228" width="147" height="30"/>
+                                        <state key="normal" title="Show Custom Inbox 1"/>
+                                        <connections>
+                                            <action selector="showCustomInbox1Tap:" destination="UpA-wW-DMA" eventType="touchUpInside" id="f4L-4l-t9v"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -247,7 +298,7 @@ class NetworkDetailViewController: UITableViewController {
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hoA-jS-PgX" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1658" y="-454"/>
+            <point key="canvasLocation" x="1601" y="-762"/>
         </scene>
         <!--Home-->
         <scene sceneID="VSL-wG-ec7">
@@ -266,7 +317,7 @@ class NetworkDetailViewController: UITableViewController {
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="g4G-cn-2HS" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="907" y="-454"/>
+            <point key="canvasLocation" x="946" y="-762"/>
         </scene>
         <!--Network-->
         <scene sceneID="mZq-wC-qKa">
@@ -285,7 +336,7 @@ class NetworkDetailViewController: UITableViewController {
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tuf-iQ-Ciy" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="934.78260869565224" y="860.49107142857144"/>
+            <point key="canvasLocation" x="138" y="1190"/>
         </scene>
     </scenes>
 </document>

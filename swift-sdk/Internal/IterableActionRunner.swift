@@ -4,6 +4,7 @@
 //
 
 import Foundation
+import UIKit
 
 public typealias UrlHandler = (URL) -> Bool
 public typealias CustomActionHandler = (String) -> Bool

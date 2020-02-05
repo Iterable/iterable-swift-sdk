@@ -1,7 +1,4 @@
 //
-//  ViewController.swift
-//  host-app
-//
 //  Created by Tapash Majumder on 6/27/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
@@ -61,6 +58,7 @@ class ViewController: UIViewController {
         
         let html = """
             <a href="http://website/resource#something">Click Me</a>
+            <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>
         """
         if case let ShowResult.shown(futureClickedUrl) = InAppDisplayer.showIterableHtmlMessage(html) {
             futureClickedUrl.onSuccess { url in
@@ -107,7 +105,7 @@ class ViewController: UIViewController {
         config.inAppDelegate = mockInAppDelegate
         let payload = ["inAppMessages": [[
             "content": [
-                "html": "<a href='https://www.google.com/q=something'>Click Here</a>",
+                "html": "<body style='height:100px'><a href='https://www.google.com/q=something'>Click Here</a></body><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>",
                 "inAppDisplaySettings": ["backgroundAlpha": 0.5, "left": ["percentage": 60], "right": ["percentage": 60], "bottom": ["displayOption": "AutoExpand"], "top": ["displayOption": "AutoExpand"]],
             ],
             "messageId": "messageId",
@@ -164,7 +162,10 @@ class ViewController: UIViewController {
         
         let messageId = "zeeMessageId"
         let html = """
+            <body style='height:100px'>
             <a href="http://website/resource#something">Click Me</a>
+            <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>
+            </body>
         """
         let content = IterableHtmlInAppContent(edgeInsets: UIEdgeInsets(top: -1, left: 10, bottom: -1, right: 10), backgroundAlpha: 0.5, html: html)
         let message = IterableInAppMessage(messageId: messageId, campaignId: "zeeCampaignId", content: content)
