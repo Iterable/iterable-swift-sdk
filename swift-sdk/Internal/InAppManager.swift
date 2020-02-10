@@ -20,7 +20,7 @@ protocol InAppDisplayChecker {
     func isOkToShowNow(message: IterableInAppMessage) -> Bool
 }
 
-protocol IterableInAppManagerProtocolInternal: IterableInAppManagerProtocol, InAppNotifiable, InAppDisplayChecker {
+protocol IterableInternalInAppManagerProtocol: IterableInAppManagerProtocol, InAppNotifiable, InAppDisplayChecker {
     func start() -> Future<Bool, Error>
     /// This will create a ViewController which displays an inbox message.
     /// This ViewController would typically be pushed into the navigation stack.
@@ -28,9 +28,14 @@ protocol IterableInAppManagerProtocolInternal: IterableInAppManagerProtocol, InA
     /// - parameter inboxMode:
     /// - returns: UIViewController which displays the message.
     func createInboxMessageViewController(for message: IterableInAppMessage, withInboxMode inboxMode: IterableInboxViewController.InboxMode, inboxSessionId: String?) -> UIViewController?
+    /// - parameter message: The message to remove.
+    /// - parameter location: The location from where this message was shown. `inbox` or `inApp`.
+    /// - parameter source: The source of deletion `inboxSwipe` or `deleteButton`.`
+    /// - parameter inboxSessionId: The ID of the inbox session that the message originates from.
+    func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource, inboxSessionId: String?)
 }
 
-class InAppManager: NSObject, IterableInAppManagerProtocolInternal {
+class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     init(apiClient: ApiClientProtocol,
          deviceMetadata: DeviceMetadata,
          fetcher: InAppFetcherProtocol,

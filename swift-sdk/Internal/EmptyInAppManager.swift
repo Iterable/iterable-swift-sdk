@@ -6,7 +6,7 @@
 import Foundation
 import UIKit
 
-class EmptyInAppManager: IterableInAppManagerProtocolInternal {
+class EmptyInAppManager: IterableInternalInAppManagerProtocol {
     func start() -> Future<Bool, Error> {
         return Promise<Bool, Error>(value: true)
     }

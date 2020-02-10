@@ -311,7 +311,7 @@ open class IterableInboxViewController: UITableViewController {
                 navigationController?.pushViewController(viewController, animated: true)
             } else {
                 setModalPresentationStyle(for: viewController)
-
+                
                 present(viewController, animated: true)
             }
         }
