@@ -21,7 +21,7 @@ extension MainViewController {
         viewController.groupSections = true
         present(viewController, animated: true)
     }
-
+    
     // MARK: private funcations
     
     @objc private func onDoneTapped() {

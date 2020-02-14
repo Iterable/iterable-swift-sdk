@@ -88,7 +88,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         return Auth(userId: userId, email: email)
     }
     
-    lazy var inAppManager: IterableInAppManagerProtocolInternal = {
+    lazy var inAppManager: IterableInternalInAppManagerProtocol = {
         self.dependencyContainer.createInAppManager(config: self.config, apiClient: self.apiClient, deviceMetadata: deviceMetadata)
     }()
     
