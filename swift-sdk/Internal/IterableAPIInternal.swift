@@ -178,7 +178,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
-                       dataFields: [AnyHashable: Any]? = nil,
+                       dataFields: [AnyHashable: Any]?,
                        onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSucess(identifier: "trackPurchase"),
                        onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "trackPurchase")) {
         IterableAPIInternal.call(successHandler: onSuccess,
@@ -227,10 +227,6 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    func track(_ eventName: String) {
-        track(eventName, dataFields: nil)
-    }
-    
     func track(_ eventName: String, dataFields: [AnyHashable: Any]?) {
         track(eventName, dataFields: dataFields, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "track"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "track"))
     }
@@ -257,7 +253,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                                                           templateId: templateId))
     }
     
-    // deprecated
+    // deprecated - will be removed in version 6.3.x or above
     func trackInAppOpen(_ messageId: String) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppOpen"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"),
@@ -271,7 +267,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: result)
     }
     
-    // deprecated
+    // deprecated - will be removed in version 6.3.x or above
     func trackInAppClick(_ messageId: String, clickedUrl: String) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSucess(identifier: "trackInAppClick"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"),
@@ -341,10 +337,12 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken))
     }
     
+    // deprecated - will be removed in version 6.3.x or above
     func showSystemNotification(withTitle title: String, body: String, buttonLeft: String? = nil, buttonRight: String? = nil, callbackBlock: ITEActionBlock?) {
         InAppDisplayer.showSystemNotification(withTitle: title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
     }
     
+    // deprecated - will be removed in version 6.3.x or above
     func getAndTrack(deepLink: URL, callbackBlock: @escaping ITEActionBlock) {
         deepLinkManager.getAndTrack(deepLink: deepLink, callbackBlock: callbackBlock)
     }
