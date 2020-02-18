@@ -1,6 +1,6 @@
 # Advanced Inbox
 
-The protocol `IterableInboxViewControllerViewDelegate` defines properties of `IterableInboxViewController` that can be modified. For example, if you want to only show certain messages in  inbox, you can set the `filter` property to define inbox messages that will be shown. Or, if you want to sort messages by a different order, you can set the `comparator` property. To achieve this you will have to set `viewDelegate` property of `IterableInboxViewController` to an implementation of `IterableInboxViewControllerViewDelegate`.
+The protocol `IterableInboxViewControllerViewDelegate` defines properties of `IterableInboxViewController` that can be modified. For example, if you want to only show certain messages in inbox, you can set the `filter` property to define inbox messages that will be shown. Or, if you want to sort messages by a different order, you can set the `comparator` property. To achieve this you will have to set `viewDelegate` property of `IterableInboxViewController` to an implementation of `IterableInboxViewControllerViewDelegate`.
 
 In this example we show you how to set `viewDelegate` property of `IterableInboxViewController` to a custom implementation of  `IterableInboxViewControllerViewDelegate`. Step by step instructions are below:
 
@@ -16,4 +16,4 @@ In this example we show you how to set `viewDelegate` property of `IterableInbox
     3. Set `Group Sections` to `On`.
     4. Set `Large Titles` to `On`.
 
-3. Create a custom xib file called `AdvancedInboxCell.xib` (or whatever name you choose) by copying the example file here. Change the layout and add extra fields if necessary. Connect the outlets for your extra fields. Other outlets will be already connected. In order to load this custom cell you will need to set `customNibNameMapper` to load this nib. See `AdvancedInboxViewDelegate` class regarding how to do this.
+3. Create a custom xib file called `AdvancedInboxCell.xib` (or whatever name you choose) by copying the example file here. Follow instructions for copying xib file from `Custom Inbox Tab` README file. Change the layout and add extra fields if necessary. Connect the outlets for your extra fields. Other outlets will be already connected. In order to load this custom cell you will need to set `customNibNameMapper` to load this nib. See `AdvancedInboxViewDelegate` class regarding how to do this.
