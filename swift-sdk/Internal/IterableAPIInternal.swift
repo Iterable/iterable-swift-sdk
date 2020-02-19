@@ -178,7 +178,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
-                       dataFields: [AnyHashable: Any]?,
+                       dataFields: [AnyHashable: Any]? = nil,
                        onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSucess(identifier: "trackPurchase"),
                        onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "trackPurchase")) {
         IterableAPIInternal.call(successHandler: onSuccess,
@@ -227,7 +227,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    func track(_ eventName: String, dataFields: [AnyHashable: Any]?) {
+    func track(_ eventName: String, dataFields: [AnyHashable: Any]? = nil) {
         track(eventName, dataFields: dataFields, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "track"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "track"))
     }
     
