@@ -413,7 +413,7 @@ import UIKit
      
      - remark: passing in an empty array will clear subscription list, passing in nil will not modify the list
      */
-    @objc(updateSubscriptions:templateId:emailListIds:unsubscribedChannelIds:unsubscribedMessageTypeIds:subscribedMessageTypeIds:)
+    @objc(updateSubscriptions:unsubscribedChannelIds:unsubscribedMessageTypeIds:subscribedMessageTypeIds:campaignIds:templateId:)
     public static func updateSubscriptions(_ emailListIds: [NSNumber]?,
                                            unsubscribedChannelIds: [NSNumber]?,
                                            unsubscribedMessageTypeIds: [NSNumber]?,

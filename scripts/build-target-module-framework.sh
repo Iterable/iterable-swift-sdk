@@ -19,8 +19,8 @@ UNIVERSAL_OUTPUTFOLDER=${BUILD_DIR}/${CONFIGURATION}-universal
 mkdir -p "${UNIVERSAL_OUTPUTFOLDER}"
 
 # Step 1. Build Device and Simulator versions
-xcodebuild -target "${TARGET}" ONLY_ACTIVE_ARCH=NO -configuration ${CONFIGURATION} -sdk iphoneos  BUILD_DIR="${BUILD_DIR}" BUILD_ROOT="${BUILD_DIR}" BITCODE_GENERATION_MODE=bitcode clean build 
-xcodebuild -target "${TARGET}" -configuration ${CONFIGURATION} -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO BUILD_DIR="${BUILD_DIR}" BUILD_ROOT="${BUILD_DIR}" BITCODE_GENERATION_MODE=bitcode clean build
+xcodebuild -target "${TARGET}" -configuration ${CONFIGURATION} ONLY_ACTIVE_ARCH=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES BUILD_DIR="${BUILD_DIR}" BUILD_ROOT="${BUILD_DIR}" BITCODE_GENERATION_MODE=bitcode clean build -sdk iphoneos
+xcodebuild -target "${TARGET}" -configuration ${CONFIGURATION} ONLY_ACTIVE_ARCH=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES BUILD_DIR="${BUILD_DIR}" BUILD_ROOT="${BUILD_DIR}" BITCODE_GENERATION_MODE=bitcode clean build -sdk iphonesimulator
 
 # Step 2. Copy the framework structure (from iphoneos build) to the universal folder
 cp -R "${BUILD_DIR}/${CONFIGURATION}-iphoneos/${MODULE_NAME}.framework" "${UNIVERSAL_OUTPUTFOLDER}/"
@@ -28,7 +28,7 @@ cp -R "${BUILD_DIR}/${CONFIGURATION}-iphoneos/${MODULE_NAME}.framework" "${UNIVE
 # Step 3. Copy Swift modules from iphonesimulator build (if it exists) to the copied framework directory
 SIMULATOR_SWIFT_MODULES_DIR="${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${MODULE_NAME}.framework/Modules/${MODULE_NAME}.swiftmodule/."
 if [ -d "${SIMULATOR_SWIFT_MODULES_DIR}" ]; then
-cp -R "${SIMULATOR_SWIFT_MODULES_DIR}" "${UNIVERSAL_OUTPUTFOLDER}/${MODULE_NAME}.framework/Modules/${MODULE_NAME}.swiftmodule"
+    cp -R "${SIMULATOR_SWIFT_MODULES_DIR}" "${UNIVERSAL_OUTPUTFOLDER}/${MODULE_NAME}.framework/Modules/${MODULE_NAME}.swiftmodule"
 fi
 
 # Step 4. Create universal binary file using lipo and place the combined executable in the copied framework directory
