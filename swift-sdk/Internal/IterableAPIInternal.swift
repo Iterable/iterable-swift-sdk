@@ -92,13 +92,9 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         self.dependencyContainer.createInAppManager(config: self.config, apiClient: self.apiClient, deviceMetadata: deviceMetadata)
     }()
     
-    func register(token: Data) {
-        register(token: token,
-                 onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "registerToken"),
-                 onFailure: IterableAPIInternal.defaultOnFailure(identifier: "registerToken"))
-    }
-    
-    func register(token: Data, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func register(token: Data,
+                  onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSucess(identifier: "registerToken"),
+                  onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "registerToken")) {
         guard let appName = pushIntegrationName else {
             ITBError("registerToken: appName is nil")
             onFailure?("Not registering device token - appName must not be nil", nil)
@@ -142,19 +138,13 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                                                       notificationsEnabled: notificationsEnabled))
     }
     
-    func disableDeviceForCurrentUser() {
-        disableDeviceForCurrentUser(withOnSuccess: IterableAPIInternal.defaultOnSucess(identifier: "disableDevice"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "disableDevice"))
-    }
-    
-    func disableDeviceForAllUsers() {
-        disableDeviceForAllUsers(withOnSuccess: IterableAPIInternal.defaultOnSucess(identifier: "disableDevice"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "disableDevice"))
-    }
-    
-    func disableDeviceForCurrentUser(withOnSuccess onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func disableDeviceForCurrentUser(withOnSuccess onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSucess(identifier: "disableDevice"),
+                                     onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "disableDevice")) {
         disableDevice(forAllUsers: false, onSuccess: onSuccess, onFailure: onFailure)
     }
     
-    func disableDeviceForAllUsers(withOnSuccess onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func disableDeviceForAllUsers(withOnSuccess onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSucess(identifier: "disableDevice"),
+                                  onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "disableDevice")) {
         disableDevice(forAllUsers: true, onSuccess: onSuccess, onFailure: onFailure)
     }
     
@@ -227,11 +217,10 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    func track(_ eventName: String, dataFields: [AnyHashable: Any]? = nil) {
-        track(eventName, dataFields: dataFields, onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "track"), onFailure: IterableAPIInternal.defaultOnFailure(identifier: "track"))
-    }
-    
-    func track(_ eventName: String, dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    func track(_ eventName: String,
+               dataFields: [AnyHashable: Any]? = nil,
+               onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSucess(identifier: "track"),
+               onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "track")) {
         IterableAPIInternal.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
                                  forResult: apiClient.track(event: eventName, dataFields: dataFields))
@@ -319,7 +308,9 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: result)
     }
     
-    private func disableDevice(forAllUsers allUsers: Bool, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    private func disableDevice(forAllUsers allUsers: Bool,
+                               onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSucess(identifier: "disableDevice"),
+                               onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "disableDevice")) {
         guard let hexToken = hexToken else {
             ITBError("Device not registered.")
             onFailure?("Device not registered.", nil)
@@ -373,9 +364,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     private var _email: String?
     private var _userId: String?
     
-    /**
-     The hex representation of this device token
-     */
+    // the hex representation of this device token
     private var hexToken: String?
     
     private var notificationStateProvider: NotificationStateProviderProtocol
@@ -394,9 +383,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     private var dependencyContainer: DependencyContainerProtocol
     
-    /**
-     * Returns the push integration name for this app depending on the config options
-     */
+    // returns the push integration name for this app depending on the config options
     private var pushIntegrationName: String? {
         if let pushIntegrationName = config.pushIntegrationName, let sandboxPushIntegrationName = config.sandboxPushIntegrationName {
             switch config.pushPlatform {
@@ -490,7 +477,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     // MARK: Initialization
     
-    // Package private method. Do not call this directly.
+    // package private method. Do not call this directly.
     init(apiKey: String,
          launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
          config: IterableConfig = IterableConfig(),
