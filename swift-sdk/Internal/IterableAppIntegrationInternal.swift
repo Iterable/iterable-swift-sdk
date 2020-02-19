@@ -84,7 +84,7 @@ extension PushTrackerProtocol {
                        dataFields: [AnyHashable: Any]? = nil) {
         trackPushOpen(userInfo,
                       dataFields: dataFields,
-                      onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackPushOpen"),
+                      onSuccess: IterableAPIInternal.defaultOnSuccess(identifier: "trackPushOpen"),
                       onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPushOpen"))
     }
     
@@ -98,7 +98,7 @@ extension PushTrackerProtocol {
                       messageId: messageId,
                       appAlreadyRunning: appAlreadyRunning,
                       dataFields: dataFields,
-                      onSuccess: IterableAPIInternal.defaultOnSucess(identifier: "trackPushOpen"),
+                      onSuccess: IterableAPIInternal.defaultOnSuccess(identifier: "trackPushOpen"),
                       onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPushOpen"))
     }
 }
