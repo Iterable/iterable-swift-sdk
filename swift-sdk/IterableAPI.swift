@@ -112,7 +112,7 @@ import UIKit
      - onFailure:   OnFailureHandler to invoke if token registration fails
      */
     @objc(registerToken:onSuccess:OnFailure:)
-    public static func register(token: Data, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    public static func register(token: Data, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) {
         internalImplementation?.register(token: token, onSuccess: onSuccess, onFailure: onFailure)
     }
     
@@ -171,8 +171,8 @@ import UIKit
     @objc(updateUser:mergeNestedObjects:onSuccess:onFailure:)
     public static func updateUser(_ dataFields: [AnyHashable: Any],
                                   mergeNestedObjects: Bool,
-                                  onSuccess: OnSuccessHandler?,
-                                  onFailure: OnFailureHandler?) {
+                                  onSuccess: OnSuccessHandler? = nil,
+                                  onFailure: OnFailureHandler? = nil) {
         internalImplementation?.updateUser(dataFields,
                                            mergeNestedObjects: mergeNestedObjects,
                                            onSuccess: onSuccess,
