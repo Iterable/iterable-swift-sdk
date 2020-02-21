@@ -33,12 +33,12 @@ protocol ApiClientProtocol: AnyObject {
     
     func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError>
     
-    // deprecated
+    // deprecated - will be removed in version 6.3.x or above
     func track(inAppOpen messageId: String) -> Future<SendRequestValue, SendRequestError>
     
     func track(inAppOpen inAppMessageContext: InAppMessageContext) -> Future<SendRequestValue, SendRequestError>
     
-    // deprecated
+    // deprecated - will be removed in version 6.3.x or above
     func track(inAppClick messageId: String, clickedUrl: String) -> Future<SendRequestValue, SendRequestError>
     
     func track(inAppClick inAppMessageContext: InAppMessageContext, clickedUrl: String) -> Future<SendRequestValue, SendRequestError>
@@ -146,7 +146,7 @@ class ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: createRequestCreator().createGetInAppMessagesRequest(count))
     }
     
-    // deprecated
+    // deprecated - will be removed in version 6.3.x or above
     func track(inAppOpen messageId: String) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppOpenRequest(messageId))
     }
@@ -155,7 +155,7 @@ class ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppOpenRequest(inAppMessageContext: inAppMessageContext))
     }
     
-    // deprecated
+    // deprecated - will be removed in version 6.3.x or above
     func track(inAppClick messageId: String, clickedUrl: String) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(messageId, clickedUrl: clickedUrl))
     }
