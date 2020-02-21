@@ -310,11 +310,7 @@ open class IterableInboxViewController: UITableViewController {
             if inboxMode == .nav {
                 navigationController?.pushViewController(viewController, animated: true)
             } else {
-                if #available(iOS 13.0, *) {
-                    viewController.modalPresentationStyle = .overCurrentContext
-                } else {
-                    viewController.modalPresentationStyle = .overFullScreen
-                }
+                setModalPresentationStyle(for: viewController)
                 
                 present(viewController, animated: true)
             }
@@ -425,6 +421,13 @@ open class IterableInboxViewController: UITableViewController {
             return true
         }
         return false
+    }
+    
+    private func setModalPresentationStyle(for viewController: UIViewController) {
+        guard #available(iOS 13.0, *) else {
+            viewController.modalPresentationStyle = .overFullScreen
+            return
+        }
     }
 }
 

@@ -7,9 +7,9 @@ import Foundation
 
 import IterableSDK
 
+/// To filter by messages which, set the `filter` property of view delegate.
+/// In this example, we show how to show only messages that have "mocha" in their title.
 extension MainViewController {
-    /// To filter by messages which, set the `filter` property of view delegate.
-    /// In this example, we show how to show only messages that have "mocha" in their title.
     @IBAction private func onFilterByMessageTitleTapped() {
         // <ignore -- data loading>
         DataManager.shared.loadMessages(from: "filter-by-message-title-messages", withExtension: "json")

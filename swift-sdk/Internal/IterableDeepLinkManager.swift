@@ -14,6 +14,8 @@ class IterableDeepLinkManager: NSObject {
      
      - remark:            passes the string of the redirected URL to the callback
      */
+    
+    // deprecated - will be removed in version 6.3.x or above
     func getAndTrack(deepLink: URL, callbackBlock: @escaping ITEActionBlock) {
         resolve(appLinkURL: deepLink) { resolvedUrl in
             callbackBlock(resolvedUrl?.absoluteString)

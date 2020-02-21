@@ -82,10 +82,10 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     func remove(atIndexPath indexPath: IndexPath) {
         let message = sectionedMessages[indexPath.section].1[indexPath.row]
-        IterableAPI.inAppManager.remove(message: message.iterableMessage,
-                                        location: .inbox,
-                                        source: .inboxSwipe,
-                                        inboxSessionId: sessionManager.sessionStartInfo?.id)
+        internalInAppManager?.remove(message: message.iterableMessage,
+                                     location: .inbox,
+                                     source: .inboxSwipe,
+                                     inboxSessionId: sessionManager.sessionStartInfo?.id)
     }
     
     func set(read: Bool, forMessage message: InboxMessageViewModel) {
@@ -101,12 +101,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     func createInboxMessageViewController(for message: InboxMessageViewModel, withInboxMode inboxMode: IterableInboxViewController.InboxMode) -> UIViewController? {
-        guard let inAppManager = IterableAPI.inAppManager as? IterableInAppManagerProtocolInternal else {
-            ITBError("Unexpected inAppManager type")
-            return nil
-        }
-        
-        return inAppManager.createInboxMessageViewController(for: message.iterableMessage, withInboxMode: inboxMode, inboxSessionId: sessionManager.sessionStartInfo?.id)
+        return internalInAppManager?.createInboxMessageViewController(for: message.iterableMessage, withInboxMode: inboxMode, inboxSessionId: sessionManager.sessionStartInfo?.id)
     }
     
     func beganUpdates() {
@@ -310,6 +305,14 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     private var sectionedMessages = SectionedValues<Int, InboxMessageViewModel>()
     private var newSectionedMessages = SectionedValues<Int, InboxMessageViewModel>()
     private var sessionManager = InboxSessionManager()
+    
+    private var internalInAppManager: IterableInternalInAppManagerProtocol? {
+        guard let internalInAppManager = IterableAPI.inAppManager as? IterableInternalInAppManagerProtocol else {
+            ITBError("Unexpected inAppManager type")
+            return nil
+        }
+        return internalInAppManager
+    }
 }
 
 extension SectionedValues {

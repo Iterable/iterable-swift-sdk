@@ -7,9 +7,9 @@ import Foundation
 
 import IterableSDK
 
+/// The simplest of inbox.
+/// Inbox looks best when embedded in a navigation controller. It has a `Done` button.
 extension MainViewController {
-    /// The simplest of inbox.
-    /// Inbox looks best when embedded in a navigation controller. It has a `Done` button.
     @IBAction private func onSimpleInboxTapped() {
         // <ignore -- data loading>
         DataManager.shared.loadMessages(from: "simple-inbox-messages", withExtension: "json")

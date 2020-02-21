@@ -98,14 +98,6 @@ class IterableHtmlMessageViewController: UIViewController {
         webView?.layoutSubviews()
     }
     
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        
-        if let webView = webView {
-            resizeWebView(webView)
-        }
-    }
-    
     open override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
@@ -138,7 +130,6 @@ class IterableHtmlMessageViewController: UIViewController {
     private let futureClickedURL: Promise<URL, IterableError>
     private var webView: WKWebView?
     private var location: IterableMessageLocation = .full
-    private var loaded = false
     private var linkClicked = false
     private var clickedLink: String?
     
@@ -148,42 +139,55 @@ class IterableHtmlMessageViewController: UIViewController {
      - parameter: aWebView the webview
      */
     private func resizeWebView(_ aWebView: WKWebView) {
-        guard loaded else {
-            return
-        }
-        
         guard location != .full else {
             webView?.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
             return
         }
         
-        // Resizes the frame to match the HTML content with a max of the screen size.
-        var frame = aWebView.frame
-        frame.size.height = 1
-        aWebView.frame = frame
-        let fittingSize = aWebView.scrollView.contentSize
-        frame.size = fittingSize
+        aWebView.evaluateJavaScript("document.body.offsetHeight", completionHandler: { height, _ in
+            guard let floatHeight = height as? CGFloat, floatHeight >= 20 else {
+                ITBError("unable to get height")
+                return
+            }
+            self.resize(webView: aWebView, withHeight: floatHeight)
+        })
+    }
+    
+    private func resize(webView: WKWebView, withHeight height: CGFloat) {
+        ITBInfo("height: \(height)")
+        // set the height
+        webView.frame.size.height = height
+        
+        // now set the width
         let notificationWidth = 100 - (parameters.padding.left + parameters.padding.right)
         let screenWidth = view.bounds.width
-        frame.size.width = screenWidth * notificationWidth / 100
-        frame.size.height = min(frame.height, view.bounds.height)
-        aWebView.frame = frame
-        
-        let resizeCenterX = screenWidth * (parameters.padding.left + notificationWidth / 2) / 100
+        webView.frame.size.width = screenWidth * notificationWidth / 100
         
         // Position webview
         var center = view.center
-        let webViewHeight = aWebView.frame.height / 2
+        
+        // set center x
+        center.x = screenWidth * (parameters.padding.left + notificationWidth / 2) / 100
+        
+        // set center y
+        let halfWebViewHeight = webView.frame.height / 2
         switch location {
         case .top:
-            center.y = webViewHeight
+            if #available(iOS 11, *) {
+                center.y = halfWebViewHeight + view.safeAreaInsets.top
+            } else {
+                center.y = halfWebViewHeight
+            }
         case .bottom:
-            center.y = view.frame.height - webViewHeight
-        case .center, .full: break
+            if #available(iOS 11, *) {
+                center.y = view.frame.height - halfWebViewHeight - view.safeAreaInsets.bottom
+            } else {
+                center.y = view.frame.height - halfWebViewHeight
+            }
+        default: break
         }
         
-        center.x = resizeCenterX
-        aWebView.center = center
+        webView.center = center
     }
     
     private static func padding(fromPadding padding: UIEdgeInsets) -> UIEdgeInsets {
@@ -200,7 +204,6 @@ class IterableHtmlMessageViewController: UIViewController {
 
 extension IterableHtmlMessageViewController: WKNavigationDelegate {
     func webView(_: WKWebView, didFinish _: WKNavigation!) {
-        loaded = true
         if let myWebview = self.webView {
             resizeWebView(myWebview)
         }

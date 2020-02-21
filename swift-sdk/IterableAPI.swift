@@ -40,7 +40,7 @@ import UIKit
     /// - parameter launchOptions: The launchOptions coming from application:didLaunching:withOptions
     /// - parameter config: Iterable config object.
     public static func initialize(apiKey: String,
-                                  launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
+                                  launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
                                   config: IterableConfig = IterableConfig()) {
         internalImplementation = IterableAPIInternal(apiKey: apiKey, launchOptions: launchOptions, config: config)
         _ = internalImplementation?.start()
@@ -95,7 +95,8 @@ import UIKit
      `application:didRegisterForRemoteNotificationsWithDeviceToken`
      after registering for remote notifications
      */
-    @objc(registerToken:) public static func register(token: Data) {
+    @objc(registerToken:)
+    public static func register(token: Data) {
         internalImplementation?.register(token: token)
     }
     
@@ -110,7 +111,8 @@ import UIKit
      - onSuccess:   OnSuccessHandler to invoke if token registration is successful
      - onFailure:   OnFailureHandler to invoke if token registration fails
      */
-    @objc(registerToken:onSuccess:OnFailure:) public static func register(token: Data, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) {
+    @objc(registerToken:onSuccess:OnFailure:)
+    public static func register(token: Data, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) {
         internalImplementation?.register(token: token, onSuccess: onSuccess, onFailure: onFailure)
     }
     
@@ -166,8 +168,15 @@ import UIKit
      - seeAlso: OnSuccessHandler
      - seeAlso: OnFailureHandler
      */
-    @objc(updateUser:mergeNestedObjects:onSuccess:onFailure:) public static func updateUser(_ dataFields: [AnyHashable: Any], mergeNestedObjects: Bool, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) {
-        internalImplementation?.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects, onSuccess: onSuccess, onFailure: onFailure)
+    @objc(updateUser:mergeNestedObjects:onSuccess:onFailure:)
+    public static func updateUser(_ dataFields: [AnyHashable: Any],
+                                  mergeNestedObjects: Bool,
+                                  onSuccess: OnSuccessHandler? = nil,
+                                  onFailure: OnFailureHandler? = nil) {
+        internalImplementation?.updateUser(dataFields,
+                                           mergeNestedObjects: mergeNestedObjects,
+                                           onSuccess: onSuccess,
+                                           onFailure: onFailure)
     }
     
     /**
@@ -183,7 +192,8 @@ import UIKit
      - seeAlso: OnSuccessHandler
      - seeAlso: OnFailureHandler
      */
-    @objc(updateEmail:onSuccess:onFailure:) public static func updateEmail(_ newEmail: String, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    @objc(updateEmail:onSuccess:onFailure:)
+    public static func updateEmail(_ newEmail: String, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         internalImplementation?.updateEmail(newEmail, onSuccess: onSuccess, onFailure: onFailure)
     }
     
@@ -197,8 +207,9 @@ import UIKit
      
      - seeAlso: CommerceItem
      */
-    @objc(trackPurchase:items:) public static func track(purchase withTotal: NSNumber, items: [CommerceItem]) {
-        track(purchase: withTotal, items: items, dataFields: nil)
+    @objc(trackPurchase:items:)
+    public static func track(purchase withTotal: NSNumber, items: [CommerceItem]) {
+        internalImplementation?.trackPurchase(withTotal, items: items)
     }
     
     /**
@@ -212,7 +223,8 @@ import UIKit
      
      - seeAlso: CommerceItem
      */
-    @objc(trackPurchase:items:dataFields:) public static func track(purchase withTotal: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) {
+    @objc(trackPurchase:items:dataFields:)
+    public static func track(purchase withTotal: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) {
         internalImplementation?.trackPurchase(withTotal, items: items, dataFields: dataFields)
     }
     
@@ -229,8 +241,17 @@ import UIKit
      
      - seeAlso: CommerceItem, OnSuccessHandler, OnFailureHandler
      */
-    @objc(trackPurchase:items:dataFields:onSuccess:onFailure:) public static func track(purchase withTotal: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        internalImplementation?.trackPurchase(withTotal, items: items, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
+    @objc(trackPurchase:items:dataFields:onSuccess:onFailure:)
+    public static func track(purchase withTotal: NSNumber,
+                             items: [CommerceItem],
+                             dataFields: [AnyHashable: Any]?,
+                             onSuccess: OnSuccessHandler?,
+                             onFailure: OnFailureHandler?) {
+        internalImplementation?.trackPurchase(withTotal,
+                                              items: items,
+                                              dataFields: dataFields,
+                                              onSuccess: onSuccess,
+                                              onFailure: onFailure)
     }
     
     /**
@@ -240,8 +261,9 @@ import UIKit
      
      - parameter userInfo:    the push notification payload
      */
-    @objc(trackPushOpen:) public static func track(pushOpen userInfo: [AnyHashable: Any]) {
-        track(pushOpen: userInfo, dataFields: nil)
+    @objc(trackPushOpen:)
+    public static func track(pushOpen userInfo: [AnyHashable: Any]) {
+        internalImplementation?.trackPushOpen(userInfo)
     }
     
     /**
@@ -252,7 +274,8 @@ import UIKit
      - parameter userInfo:    the push notification payload
      - parameter dataFields:  a `Dictionary` containing any additional information to save along with the event
      */
-    @objc(trackPushOpen:dataFields:) public static func track(pushOpen userInfo: [AnyHashable: Any], dataFields: [AnyHashable: Any]?) {
+    @objc(trackPushOpen:dataFields:)
+    public static func track(pushOpen userInfo: [AnyHashable: Any], dataFields: [AnyHashable: Any]?) {
         internalImplementation?.trackPushOpen(userInfo, dataFields: dataFields)
     }
     
@@ -269,8 +292,15 @@ import UIKit
      - SeeAlso: OnSuccessHandler
      - SeeAlso: OnFailureHandler
      */
-    @objc(trackPushOpen:dataFields:onSuccess:onFailure:) public static func track(pushOpen userInfo: [AnyHashable: Any], dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        internalImplementation?.trackPushOpen(userInfo, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
+    @objc(trackPushOpen:dataFields:onSuccess:onFailure:)
+    public static func track(pushOpen userInfo: [AnyHashable: Any],
+                             dataFields: [AnyHashable: Any]?,
+                             onSuccess: OnSuccessHandler?,
+                             onFailure: OnFailureHandler?) {
+        internalImplementation?.trackPushOpen(userInfo,
+                                              dataFields: dataFields,
+                                              onSuccess: onSuccess,
+                                              onFailure: onFailure)
     }
     
     /**
@@ -284,8 +314,17 @@ import UIKit
      - appAlreadyRunning:   This will get merged into the dataFields. Whether the app is already running when the notification was received
      - dataFields:          A `Dictionary` containing any additional information to save along with the event
      */
-    @objc(trackPushOpen:templateId:messageId:appAlreadyRunning:dataFields:) public static func track(pushOpen campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?) {
-        internalImplementation?.trackPushOpen(campaignId, templateId: templateId, messageId: messageId, appAlreadyRunning: appAlreadyRunning, dataFields: dataFields)
+    @objc(trackPushOpen:templateId:messageId:appAlreadyRunning:dataFields:)
+    public static func track(pushOpen campaignId: NSNumber,
+                             templateId: NSNumber?,
+                             messageId: String?,
+                             appAlreadyRunning: Bool,
+                             dataFields: [AnyHashable: Any]?) {
+        internalImplementation?.trackPushOpen(campaignId,
+                                              templateId: templateId,
+                                              messageId: messageId,
+                                              appAlreadyRunning: appAlreadyRunning,
+                                              dataFields: dataFields)
     }
     
     /**
@@ -301,8 +340,21 @@ import UIKit
      - seeAlso: OnSuccessHandler
      - seeAlso: OnFailureHandler
      */
-    @objc(trackPushOpen:templateId:messageId:appAlreadyRunning:dataFields:onSuccess:onFailure:) public static func track(pushOpen campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        internalImplementation?.trackPushOpen(campaignId, templateId: templateId, messageId: messageId, appAlreadyRunning: appAlreadyRunning, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
+    @objc(trackPushOpen:templateId:messageId:appAlreadyRunning:dataFields:onSuccess:onFailure:)
+    public static func track(pushOpen campaignId: NSNumber,
+                             templateId: NSNumber?,
+                             messageId: String?,
+                             appAlreadyRunning: Bool,
+                             dataFields: [AnyHashable: Any]?,
+                             onSuccess: OnSuccessHandler?,
+                             onFailure: OnFailureHandler?) {
+        internalImplementation?.trackPushOpen(campaignId,
+                                              templateId: templateId,
+                                              messageId: messageId,
+                                              appAlreadyRunning: appAlreadyRunning,
+                                              dataFields: dataFields,
+                                              onSuccess: onSuccess,
+                                              onFailure: onFailure)
     }
     
     /**
@@ -312,7 +364,8 @@ import UIKit
      
      - parameter eventName:   Name of the event
      */
-    @objc(track:) public static func track(event eventName: String) {
+    @objc(track:)
+    public static func track(event eventName: String) {
         internalImplementation?.track(eventName)
     }
     
@@ -324,7 +377,8 @@ import UIKit
      - parameter eventName:   Name of the event
      - parameter dataFields:  A `Dictionary` containing any additional information to save along with the event
      */
-    @objc(track:dataFields:) public static func track(event eventName: String, dataFields: [AnyHashable: Any]?) {
+    @objc(track:dataFields:)
+    public static func track(event eventName: String, dataFields: [AnyHashable: Any]?) {
         internalImplementation?.track(eventName, dataFields: dataFields)
     }
     
@@ -338,8 +392,15 @@ import UIKit
      - onSuccess:           OnSuccessHandler to invoke if the open is tracked successfully
      - onFailure:           OnFailureHandler to invoke if tracking the open fails
      */
-    @objc(track:dataFields:onSuccess:onFailure:) public static func track(event eventName: String, dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
-        internalImplementation?.track(eventName, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
+    @objc(track:dataFields:onSuccess:onFailure:)
+    public static func track(event eventName: String,
+                             dataFields: [AnyHashable: Any]?,
+                             onSuccess: OnSuccessHandler?,
+                             onFailure: OnFailureHandler?) {
+        internalImplementation?.track(eventName,
+                                      dataFields: dataFields,
+                                      onSuccess: onSuccess,
+                                      onFailure: onFailure)
     }
     
     /**
@@ -352,7 +413,7 @@ import UIKit
      
      - remark: passing in an empty array will clear subscription list, passing in nil will not modify the list
      */
-    @objc(updateSubscriptions:templateId:emailListIds:unsubscribedChannelIds:unsubscribedMessageTypeIds:subscribedMessageTypeIds:)
+    @objc(updateSubscriptions:unsubscribedChannelIds:unsubscribedMessageTypeIds:subscribedMessageTypeIds:campaignIds:templateId:)
     public static func updateSubscriptions(_ emailListIds: [NSNumber]?,
                                            unsubscribedChannelIds: [NSNumber]?,
                                            unsubscribedMessageTypeIds: [NSNumber]?,
@@ -370,12 +431,14 @@ import UIKit
     // MARK: In-App Notifications
     
     /**
-     Deprecated.
      Tracks an InAppOpen event.
      - parameter messageId:       The messageId of the notification
      */
+    
+    // deprecated - will be removed in version 6.3.x or above
     @available(*, deprecated, message: "Use IterableAPI.track(inAppOpen:location:) method instead.")
-    @objc(trackInAppOpen:) public static func track(inAppOpen messageId: String) {
+    @objc(trackInAppOpen:)
+    public static func track(inAppOpen messageId: String) {
         internalImplementation?.trackInAppOpen(messageId)
     }
     
@@ -387,19 +450,22 @@ import UIKit
      - parameter message:       The Iterable in-app message
      - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
      */
-    @objc(trackInAppOpen:location:) public static func track(inAppOpen message: IterableInAppMessage, location: InAppLocation = .inApp) {
+    @objc(trackInAppOpen:location:)
+    public static func track(inAppOpen message: IterableInAppMessage, location: InAppLocation = .inApp) {
         internalImplementation?.trackInAppOpen(message, location: location)
     }
     
     /**
-     Deprecated.
      Tracks an InAppClick event
      
      - parameter messageId:       The messageId of the notification
      - parameter buttonURL:     The url of the button that was clicked
      */
+    
+    // deprecated - will be removed in version 6.3.x or above
     @available(*, deprecated, message: "Use IterableAPI.track(inAppClick:location:clickedUrl) method instead.")
-    @objc(trackInAppClick:buttonURL:) public static func track(inAppClick messageId: String, buttonURL: String) {
+    @objc(trackInAppClick:buttonURL:)
+    public static func track(inAppClick messageId: String, buttonURL: String) {
         internalImplementation?.trackInAppClick(messageId, clickedUrl: buttonURL)
     }
     
@@ -422,7 +488,8 @@ import UIKit
      - parameter message:       The in-app message
      - parameter clickedUrl:    The url that was clicked to close the in-app. It will be `nil` when message is closed on clicking `back`.
      */
-    @objc(trackInAppClose:clickedUrl:) public static func track(inAppClose message: IterableInAppMessage, clickedUrl: String?) {
+    @objc(trackInAppClose:clickedUrl:)
+    public static func track(inAppClose message: IterableInAppMessage, clickedUrl: String?) {
         internalImplementation?.trackInAppClose(message, clickedUrl: clickedUrl)
     }
     
@@ -450,13 +517,15 @@ import UIKit
     }
     
     /**
-     Deprecated.
      Consumes the notification and removes it from the list of inAppMessages
      
      - parameter messageId:       The messageId of the notification
      */
+    
+    // deprecated - will be removed in version 6.3.x or above
     @available(*, deprecated, message: "Use IterableAPI.inAppConsume(message:location:source:) method instead.")
-    @objc(inAppConsume:) public static func inAppConsume(messageId: String) {
+    @objc(inAppConsume:)
+    public static func inAppConsume(messageId: String) {
         internalImplementation?.inAppConsume(messageId)
     }
     
@@ -466,7 +535,8 @@ import UIKit
      - parameter message:       The Iterable message that is being consumed
      - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
      */
-    @objc(inAppConsume:location:) public static func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp) {
+    @objc(inAppConsume:location:)
+    public static func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp) {
         internalImplementation?.inAppConsume(message: message, location: location)
     }
     
@@ -477,7 +547,8 @@ import UIKit
      - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
      - parameter source:        The source of deletion `inboxSwipe` or `deleteButton`.
      */
-    @objc(inAppConsume:location:source:) public static func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource) {
+    @objc(inAppConsume:location:source:)
+    public static func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource) {
         internalImplementation?.inAppConsume(message: message, location: location, source: source)
     }
     
@@ -492,6 +563,8 @@ import UIKit
      
      - remark:            passes the string of the button clicked to the callbackBlock
      */
+    
+    // deprecated - will be removed in version 6.3.x or above
     @available(*, deprecated, message: "Please use UIAlertController to show system notifiation.")
     public static func showSystemNotification(withTitle title: String, body: String, button: String?, callbackBlock: ITEActionBlock?) {
         internalImplementation?.showSystemNotification(withTitle: title, body: body, buttonLeft: button, callbackBlock: callbackBlock)
@@ -509,6 +582,8 @@ import UIKit
      
      - remark:            passes the string of the button clicked to the callbackBlock
      */
+    
+    // deprecated - will be removed in version 6.3.x or above
     @available(*, deprecated, message: "Please use UIAlertController to show system notifiation.")
     public static func showSystemNotification(withTitle title: String, body: String, buttonLeft: String?, buttonRight: String?, callbackBlock: ITEActionBlock?) {
         internalImplementation?.showSystemNotification(withTitle: title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
@@ -520,8 +595,11 @@ import UIKit
      - parameter webpageURL:      the URL that was clicked
      - parameter callbackBlock:   the callback to send after the webpageURL is called
      */
+    
+    // deprecated - will be removed in version 6.3.x or above
     @available(*, deprecated, message: "Please use IterableAPI.handle(universalLink:) method instead.")
-    @objc(getAndTrackDeeplink:callbackBlock:) public static func getAndTrack(deeplink webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {
+    @objc(getAndTrackDeeplink:callbackBlock:)
+    public static func getAndTrack(deeplink webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {
         internalImplementation?.getAndTrack(deepLink: webpageURL, callbackBlock: callbackBlock)
     }
     
@@ -534,7 +612,9 @@ import UIKit
      - parameter url: the URL obtained from `UserActivity.webpageURL`
      - returns: true if it is an Iterable link, or the value returned from `IterableURLDelegate` otherwise
      */
-    @objc(handleUniversalLink:) @discardableResult public static func handle(universalLink url: URL) -> Bool {
+    @objc(handleUniversalLink:)
+    @discardableResult
+    public static func handle(universalLink url: URL) -> Bool {
         return internalImplementation?.handleUniversalLink(url) ?? false
     }
     

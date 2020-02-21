@@ -2,6 +2,20 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.1.5
+#### Fixed
+- Fixed in-apps where display types that were not `fullScreen` were not displaying properly or becoming unresponsive.
+
+## 6.1.4
+#### Fixed
+- Fixed the function signature of the `updateSubscriptions` call (thanks, Conor!)
+- Fixed `NoneLogDelegate` not being usable for `IterableConfig.logDelegate` (thanks, katebertelsen!)
+
+## 6.1.3
+#### Changed
+- Converted a log message variable to be interpreted as an UTF8 String (thanks, chunkyguy!)
+- Enabled BUILD_LIBRARY_FOR_DISTRIBUTION for better compatibility across development environments
+
 ## 6.2.0-beta1
 #### Added
 - [Mobile inbox](https://github.com/Iterable/swift-sdk/tree/inbox#mobile-inbox)

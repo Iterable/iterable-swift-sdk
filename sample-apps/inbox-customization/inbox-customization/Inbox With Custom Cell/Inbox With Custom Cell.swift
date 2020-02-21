@@ -7,10 +7,10 @@ import Foundation
 
 import IterableSDK
 
+/// To replace the table view cell with your own custom cell, set the `cellNibName` property.
+/// In this example, make sure that an xib with name `DarkInboxCell.xib` is present.
+/// IMP: Also, make sure that in `file inspector` for the xib file `target membership` is checked. Otherwise the file will not be copied.
 extension MainViewController {
-    /// To replace the table view cell with your own custom cell, set the `cellNibName` property.
-    /// In this example, make sure that an xib with name `CustomInboxCell2.xib` is present.
-    /// IMP: Also, make sure that in `file inspector` for the xib file `target membership` is checked. Otherwise the file will not be copied.
     @IBAction private func onInboxWithCustomCellTapped() {
         // <ignore -- data loading>
         DataManager.shared.loadMessages(from: "inbox-with-custom-cell-messages", withExtension: "json")

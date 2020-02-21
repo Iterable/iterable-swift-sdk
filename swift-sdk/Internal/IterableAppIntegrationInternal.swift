@@ -73,13 +73,34 @@ struct UserNotificationResponse: NotificationResponseProtocol {
 }
 
 /// Abstraction of PushTacking
-@objc public protocol PushTrackerProtocol: AnyObject {
-    @objc var lastPushPayload: [AnyHashable: Any]? { get }
-    @objc func trackPushOpen(_ userInfo: [AnyHashable: Any])
-    @objc func trackPushOpen(_ userInfo: [AnyHashable: Any], dataFields: [AnyHashable: Any]?)
-    @objc func trackPushOpen(_ userInfo: [AnyHashable: Any], dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?)
-    @objc func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?)
-    @objc func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?)
+public protocol PushTrackerProtocol: AnyObject {
+    var lastPushPayload: [AnyHashable: Any]? { get }
+    func trackPushOpen(_ userInfo: [AnyHashable: Any], dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?)
+    func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?)
+}
+
+extension PushTrackerProtocol {
+    func trackPushOpen(_ userInfo: [AnyHashable: Any],
+                       dataFields: [AnyHashable: Any]? = nil) {
+        trackPushOpen(userInfo,
+                      dataFields: dataFields,
+                      onSuccess: IterableAPIInternal.defaultOnSuccess(identifier: "trackPushOpen"),
+                      onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPushOpen"))
+    }
+    
+    func trackPushOpen(_ campaignId: NSNumber,
+                       templateId: NSNumber? = nil,
+                       messageId: String? = nil,
+                       appAlreadyRunning: Bool = false,
+                       dataFields: [AnyHashable: Any]? = nil) {
+        trackPushOpen(campaignId,
+                      templateId: templateId,
+                      messageId: messageId,
+                      appAlreadyRunning: appAlreadyRunning,
+                      dataFields: dataFields,
+                      onSuccess: IterableAPIInternal.defaultOnSuccess(identifier: "trackPushOpen"),
+                      onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPushOpen"))
+    }
 }
 
 /// Abstraction of applicationState

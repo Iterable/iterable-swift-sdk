@@ -7,8 +7,8 @@ import Foundation
 
 import IterableSDK
 
+/// To change the date format, you will have to set the `dateMapper`property of view delegate.
 extension MainViewController {
-    /// To change the date format, you will have to set the `dateMapper`property of view delegate.
     @IBAction private func onChangeDateFormatTapped() {
         // <ignore -- data loading>
         DataManager.shared.loadMessages(from: "change-date-format-messages", withExtension: "json")

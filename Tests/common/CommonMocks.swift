@@ -91,7 +91,6 @@ public class MockUrlOpener: NSObject, UrlOpenerProtocol {
     }
 }
 
-@objcMembers
 public class MockPushTracker: NSObject, PushTrackerProtocol {
     var campaignId: NSNumber?
     var templateId: NSNumber?
@@ -102,15 +101,10 @@ public class MockPushTracker: NSObject, PushTrackerProtocol {
     var onFailure: OnFailureHandler?
     public var lastPushPayload: [AnyHashable: Any]?
     
-    public func trackPushOpen(_ userInfo: [AnyHashable: Any]) {
-        trackPushOpen(userInfo, dataFields: nil)
-    }
-    
-    public func trackPushOpen(_ userInfo: [AnyHashable: Any], dataFields: [AnyHashable: Any]?) {
-        trackPushOpen(userInfo, dataFields: dataFields, onSuccess: nil, onFailure: nil)
-    }
-    
-    public func trackPushOpen(_ userInfo: [AnyHashable: Any], dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    public func trackPushOpen(_ userInfo: [AnyHashable: Any],
+                              dataFields: [AnyHashable: Any]?,
+                              onSuccess: OnSuccessHandler?,
+                              onFailure: OnFailureHandler?) {
         // save payload
         lastPushPayload = userInfo
         
@@ -119,10 +113,6 @@ public class MockPushTracker: NSObject, PushTrackerProtocol {
         } else {
             onFailure?("Not tracking push open - payload is not an Iterable notification, or a test/proof/ghost push", nil)
         }
-    }
-    
-    public func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?) {
-        trackPushOpen(campaignId, templateId: templateId, messageId: messageId, appAlreadyRunning: appAlreadyRunning, dataFields: dataFields, onSuccess: nil, onFailure: nil)
     }
     
     public func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
@@ -276,7 +266,7 @@ class MockInAppFetcher: InAppFetcherProtocol {
         
         let result = Promise<Int, Error>()
         
-        let inAppManager = (IterableAPI.inAppManager as! IterableInAppManagerProtocolInternal)
+        let inAppManager = (IterableAPI.inAppManager as! IterableInternalInAppManagerProtocol)
         inAppManager.scheduleSync().onSuccess { _ in
             result.resolve(with: inAppManager.getMessages().count)
         }

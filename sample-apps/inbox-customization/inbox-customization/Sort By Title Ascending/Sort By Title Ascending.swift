@@ -7,8 +7,8 @@ import Foundation
 
 import IterableSDK
 
+/// To change sort order of messages, set the `comparator` property of view delegate.
 extension MainViewController {
-    /// To change sort order of messages, set the `comparator` property of view delegate.
     @IBAction private func onSortByTitleAscendingTapped() {
         // <ignore -- data loading>
         DataManager.shared.loadMessages(from: "sort-by-title-ascending-messages", withExtension: "json")
