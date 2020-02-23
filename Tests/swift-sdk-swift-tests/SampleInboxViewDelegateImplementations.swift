@@ -41,4 +41,18 @@ public enum SampleInboxViewDelegateImplementations {
             return section
         }
     }
+    
+    /// Use nib name maper only when you have multiple types of messages.
+    public enum NibNameMapper {
+        /// This mapper looks at `customPayload` of inbox message and assumes that json key `customCellName` holds the custom nib name for the message.
+        /// e.g., An inbox message with custom payload `{"customCellName": "CustomInboxCell3"}` will return `CustomInboxCell3` as the custom nib name.
+        public static var usingCustomPayloadNibName: ((IterableInAppMessage) -> String?) = {
+            guard
+                let payload = $0.customPayload as? [String: AnyHashable],
+                let customNibName = payload["customCellName"] as? String else {
+                return nil
+            }
+            return customNibName
+        }
+    }
 }

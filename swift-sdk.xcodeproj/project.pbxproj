@@ -120,6 +120,7 @@
 		ACAA816E231163660035C743 /* RequestCreatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAA816D231163660035C743 /* RequestCreatorTests.swift */; };
 		ACACA91823E0947C00B9E8DF /* OHHTTPStubsSwift in Frameworks */ = {isa = PBXBuildFile; productRef = ACACA91723E0947C00B9E8DF /* OHHTTPStubsSwift */; };
 		ACB37AB0240268A60093A8EA /* SampleInboxViewDelegateImplementations.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB37AAF240268A60093A8EA /* SampleInboxViewDelegateImplementations.swift */; };
+		ACB37AB124026C1E0093A8EA /* SampleInboxViewDelegateImplementations.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB37AAF240268A60093A8EA /* SampleInboxViewDelegateImplementations.swift */; };
 		ACB8273F22372A5C00DB17D3 /* IterableHtmlMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB8273E22372A5C00DB17D3 /* IterableHtmlMessageViewController.swift */; };
 		ACBDDE5C23C4EDEC0008CC4D /* InboxCustomizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBDDE5B23C4EDEC0008CC4D /* InboxCustomizationTests.swift */; };
 		ACC51A6B22A879070095E81F /* EmptyInAppManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4B039122A8743F0043185B /* EmptyInAppManager.swift */; };
@@ -1447,6 +1448,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ACB37AB124026C1E0093A8EA /* SampleInboxViewDelegateImplementations.swift in Sources */,
 				AC19520E231DAB7B00CD5B61 /* Constants.swift in Sources */,
 				AC2A298A231D44C00070A9C3 /* NetworkDetailViewController.swift in Sources */,
 				AC738CE62315A52A00B96B2D /* Common.swift in Sources */,

@@ -14,6 +14,7 @@ import UIKit
     
     /// By default, all messages are shown.
     /// If you want to control which messages are to be shown, return a filter here.
+    /// You can see an example of how to set a custom filter in our `inbox-customization` sample app.
     @objc optional var filter: (IterableInAppMessage) -> Bool { get }
     
     /// By default, messages are sorted chronologically.
@@ -28,6 +29,7 @@ import UIKit
     /// As long as all messages in a section are mapped to the same number things will be fine.
     /// For example, your mapper can return `4` for message1 and message2 and `5` for message3. In this case message1 and message2 will be in section 0
     /// and message3 will be in section 1 eventhough the mappings are for `4` and `5`.
+    /// You can see an example of how to set a custom section mapper in our `inbox-customization` sample app.
     @objc optional var messageToSectionMapper: (IterableInAppMessage) -> Int { get }
     
     /// By default message creation time is shown as medium date and short time.
@@ -46,8 +48,7 @@ import UIKit
     
     /// A mapper that maps an inbox message to a custom nib.
     /// This goes hand in hand with `customNibNames` property above.
-    /// For example, if your custom payload has {"customInboxCell": "CustomInboxCell3"} you can use
-    /// `customNibNameMapper = IterableInboxViewController.DefaultNibNameMapper.usingCustomPayloadNibName`
+    /// You can see an example of how to set a custom nib name mapper in our `inbox-customization` sample app.
     @objc optional var customNibNameMapper: (IterableInAppMessage) -> String? { get }
     
     /// Use this method to render any additional custom fields other than title, subtitle and createAt.
@@ -88,20 +89,6 @@ open class IterableInboxViewController: UITableViewController {
         /// This date mapper is used If you do not set `dateMapper` property for `IterableInboxViewControllerViewDelegate`.
         public static var localizedMediumDateShortTime: (IterableInAppMessage) -> String? = {
             $0.createdAt.map { DateFormatter.localizedString(from: $0, dateStyle: .medium, timeStyle: .short) }
-        }
-    }
-    
-    /// Use nib name maper only when you have multiple types of messages.
-    public enum DefaultNibNameMapper {
-        /// This mapper looks at `customPayload` of inbox message and assumes that json key `customCellName` holds the custom nib name for the message.
-        /// e.g., An inbox message with custom payload `{"customCellName": "CustomInboxCell3"}` will return `CustomInboxCell3` as the custom nib name.
-        public static var usingCustomPayloadNibName: ((IterableInAppMessage) -> String?) = {
-            guard
-                let payload = $0.customPayload as? [String: AnyHashable],
-                let customNibName = payload["customCellName"] as? String else {
-                return nil
-            }
-            return customNibName
         }
     }
     
