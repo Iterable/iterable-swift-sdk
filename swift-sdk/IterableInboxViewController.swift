@@ -14,9 +14,6 @@ import UIKit
     
     /// By default, all messages are shown.
     /// If you want to control which messages are to be shown, return a filter here.
-    /// For example, if you want to only show messages which have a customPayload json with {"messageType": "promotional"},  you can do so by setting
-    /// `filter = IterableInboxViewController.DefaultFilter.usingCustomPayloadMessageType(in: "promotional")`.
-    /// Please note that you can create your own custom filters.
     @objc optional var filter: (IterableInAppMessage) -> Bool { get }
     
     /// By default, messages are sorted chronologically.
@@ -66,27 +63,6 @@ open class IterableInboxViewController: UITableViewController {
     public enum InboxMode {
         case popup
         case nav
-    }
-    
-    /// By default, all messages are shown
-    /// This enumeration shows how to write a sample filter which can be used by `IterableInboxViewControllerViewDelegate`.
-    /// You can create your own filters which can be functions or closures.
-    public enum DefaultFilter {
-        /// This filter looks at `customPayload` of inbox message and assumes that the JSON key `messageType` holds the type of message
-        /// and it returns true for message of particular message type(s).
-        /// e.g., if you set `filter = IterableInboxViewController.DefaultFilter.usingCustomPayloadMessageType(in: "transactional", "promotional")`
-        /// you will be able to see messages with custom payload {"messageType": "transactional"} or {"messageType": "promotional"}
-        /// but you will not be able to see messages with custom payload {"messageType": "newsFeed"}
-        /// - parameter in: The message type(s) that should be shown.
-        public static func usingCustomPayloadMessageType(in messageTypes: String...) -> ((IterableInAppMessage) -> Bool) {
-            return {
-                guard let payload = $0.customPayload as? [String: AnyHashable], let messageType = payload["messageType"] as? String else {
-                    return false
-                }
-                
-                return messageTypes.first(where: { $0 == messageType }).map { _ in true } ?? false
-            }
-        }
     }
     
     /// By default, messages are sorted chronologically.

@@ -242,7 +242,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let expectation1 = expectation(description: "testSampleFilter")
         
         let model = InboxViewControllerViewModel()
-        model.filter = IterableInboxViewController.DefaultFilter.usingCustomPayloadMessageType(in: "promotional")
+        model.filter = SampleInboxViewDelegateImplementations.Filter.usingCustomPayloadMessageType(in: "promotional")
         
         let fetcher = MockInAppFetcher()
         
