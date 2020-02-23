@@ -98,6 +98,15 @@ class IterableHtmlMessageViewController: UIViewController {
         webView?.layoutSubviews()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        guard let webView = self.webView else {
+            return
+        }
+        resizeWebView(webView)
+    }
+    
     open override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
