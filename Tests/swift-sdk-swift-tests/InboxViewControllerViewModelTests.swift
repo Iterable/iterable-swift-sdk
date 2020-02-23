@@ -369,7 +369,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let expectation1 = expectation(description: "testSampleSectionMapper")
         
         let model = InboxViewControllerViewModel()
-        model.sectionMapper = IterableInboxViewController.DefaultSectionMapper.usingCustomPayloadMessageSection
+        model.sectionMapper = SampleInboxViewDelegateImplementations.SectionMapper.usingCustomPayloadMessageSection
         
         let fetcher = MockInAppFetcher()
         

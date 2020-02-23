@@ -28,8 +28,6 @@ import UIKit
     /// As long as all messages in a section are mapped to the same number things will be fine.
     /// For example, your mapper can return `4` for message1 and message2 and `5` for message3. In this case message1 and message2 will be in section 0
     /// and message3 will be in section 1 eventhough the mappings are for `4` and `5`.
-    /// If your custom payload has {"messageSection": 2} etc. You can set
-    /// `messageToSectionMapper = IterableInboxViewController.DefaultSectionMapper.usingCustomPayloadMessageSection`.
     @objc optional var messageToSectionMapper: (IterableInAppMessage) -> Int { get }
     
     /// By default message creation time is shown as medium date and short time.
@@ -77,19 +75,6 @@ open class IterableInboxViewController: UITableViewController {
         /// Ascending by `createdAt`
         public static let ascending: (IterableInAppMessage, IterableInAppMessage) -> Bool = {
             $0.createdAt ?? Date.distantPast < $1.createdAt ?? Date.distantPast
-        }
-    }
-    
-    /// By default, all messages are in one section.
-    /// This enumeration has sample mappers which map inbox messages to section number. This can be used by `IterableInboxViewControllerViewDelegate`.
-    public enum DefaultSectionMapper {
-        /// This mapper looks at `customPayload` of inbox message and assumes that json key `messageSection` holds the section number.
-        /// e.g., An inbox message with custom payload  `{"messageSection": 2}` will return 2 as section.
-        public static var usingCustomPayloadMessageSection: ((IterableInAppMessage) -> Int) = { message in
-            guard let payload = message.customPayload as? [String: AnyHashable], let section = payload["messageSection"] as? Int else {
-                return 0
-            }
-            return section
         }
     }
     

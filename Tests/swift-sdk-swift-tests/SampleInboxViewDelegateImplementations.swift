@@ -28,4 +28,17 @@ public enum SampleInboxViewDelegateImplementations {
             }
         }
     }
+    
+    /// By default, all messages are in one section.
+    /// This enumeration has sample mappers which map inbox messages to section number. This can be used by `IterableInboxViewControllerViewDelegate`.
+    public enum SectionMapper {
+        /// This mapper looks at `customPayload` of inbox message and assumes that json key `messageSection` holds the section number.
+        /// e.g., An inbox message with custom payload  `{"messageSection": 2}` will return 2 as section.
+        public static var usingCustomPayloadMessageSection: ((IterableInAppMessage) -> Int) = { message in
+            guard let payload = message.customPayload as? [String: AnyHashable], let section = payload["messageSection"] as? Int else {
+                return 0
+            }
+            return section
+        }
+    }
 }
