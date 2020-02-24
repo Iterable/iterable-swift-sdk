@@ -4,11 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 6.2.0
 #### Added
-- Mobile Inbox general availability
-	- inbox customization support added
-	- inbox customization sample project added
-	- in-app impression and inbox session tracking added
-- Swift Package Manager support added
+- Moved Mobile Inbox support to GA (no longer in beta), and:
+	- Added support for various ways to customize the default interface for a mobile inbox
+	- Added a sample project that demonstrates how to customize the default interface for a mobile inbox
+	- Added tracking for inbox sessions (when the inbox is visible in the app) and inbox message impressions (when a individual message's item is visible in the mobile inbox message list)
+- Added support for Swift Package Manager
 
 #### Deprecated
 Please see each method's source code documentation for details.
