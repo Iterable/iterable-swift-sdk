@@ -14,9 +14,7 @@ import UIKit
     
     /// By default, all messages are shown.
     /// If you want to control which messages are to be shown, return a filter here.
-    /// For example, if you want to only show messages which have a customPayload json with {"messageType": "promotional"},  you can do so by setting
-    /// `filter = IterableInboxViewController.DefaultFilter.usingCustomPayloadMessageType(in: "promotional")`.
-    /// Please note that you can create your own custom filters.
+    /// You can see an example of how to set a custom filter in our `inbox-customization` sample app.
     @objc optional var filter: (IterableInAppMessage) -> Bool { get }
     
     /// By default, messages are sorted chronologically.
@@ -31,8 +29,7 @@ import UIKit
     /// As long as all messages in a section are mapped to the same number things will be fine.
     /// For example, your mapper can return `4` for message1 and message2 and `5` for message3. In this case message1 and message2 will be in section 0
     /// and message3 will be in section 1 eventhough the mappings are for `4` and `5`.
-    /// If your custom payload has {"messageSection": 2} etc. You can set
-    /// `messageToSectionMapper = IterableInboxViewController.DefaultSectionMapper.usingCustomPayloadMessageSection`.
+    /// You can see an example of how to set a custom section mapper in our `inbox-customization` sample app.
     @objc optional var messageToSectionMapper: (IterableInAppMessage) -> Int { get }
     
     /// By default message creation time is shown as medium date and short time.
@@ -51,8 +48,7 @@ import UIKit
     
     /// A mapper that maps an inbox message to a custom nib.
     /// This goes hand in hand with `customNibNames` property above.
-    /// For example, if your custom payload has {"customInboxCell": "CustomInboxCell3"} you can use
-    /// `customNibNameMapper = IterableInboxViewController.DefaultNibNameMapper.usingCustomPayloadNibName`
+    /// You can see an example of how to set a custom nib name mapper in our `inbox-customization` sample app.
     @objc optional var customNibNameMapper: (IterableInAppMessage) -> String? { get }
     
     /// Use this method to render any additional custom fields other than title, subtitle and createAt.
@@ -66,27 +62,6 @@ open class IterableInboxViewController: UITableViewController {
     public enum InboxMode {
         case popup
         case nav
-    }
-    
-    /// By default, all messages are shown
-    /// This enumeration shows how to write a sample filter which can be used by `IterableInboxViewControllerViewDelegate`.
-    /// You can create your own filters which can be functions or closures.
-    public enum DefaultFilter {
-        /// This filter looks at `customPayload` of inbox message and assumes that the JSON key `messageType` holds the type of message
-        /// and it returns true for message of particular message type(s).
-        /// e.g., if you set `filter = IterableInboxViewController.DefaultFilter.usingCustomPayloadMessageType(in: "transactional", "promotional")`
-        /// you will be able to see messages with custom payload {"messageType": "transactional"} or {"messageType": "promotional"}
-        /// but you will not be able to see messages with custom payload {"messageType": "newsFeed"}
-        /// - parameter in: The message type(s) that should be shown.
-        public static func usingCustomPayloadMessageType(in messageTypes: String...) -> ((IterableInAppMessage) -> Bool) {
-            return {
-                guard let payload = $0.customPayload as? [String: AnyHashable], let messageType = payload["messageType"] as? String else {
-                    return false
-                }
-                
-                return messageTypes.first(where: { $0 == messageType }).map { _ in true } ?? false
-            }
-        }
     }
     
     /// By default, messages are sorted chronologically.
@@ -104,19 +79,6 @@ open class IterableInboxViewController: UITableViewController {
         }
     }
     
-    /// By default, all messages are in one section.
-    /// This enumeration has sample mappers which map inbox messages to section number. This can be used by `IterableInboxViewControllerViewDelegate`.
-    public enum DefaultSectionMapper {
-        /// This mapper looks at `customPayload` of inbox message and assumes that json key `messageSection` holds the section number.
-        /// e.g., An inbox message with custom payload  `{"messageSection": 2}` will return 2 as section.
-        public static var usingCustomPayloadMessageSection: ((IterableInAppMessage) -> Int) = { message in
-            guard let payload = message.customPayload as? [String: AnyHashable], let section = payload["messageSection"] as? Int else {
-                return 0
-            }
-            return section
-        }
-    }
-    
     /// Default date mappers that you can use as sample for `IterableInboxViewControllerViewDelegate`.
     public enum DefaultDateMapper {
         /// short date and short time
@@ -127,20 +89,6 @@ open class IterableInboxViewController: UITableViewController {
         /// This date mapper is used If you do not set `dateMapper` property for `IterableInboxViewControllerViewDelegate`.
         public static var localizedMediumDateShortTime: (IterableInAppMessage) -> String? = {
             $0.createdAt.map { DateFormatter.localizedString(from: $0, dateStyle: .medium, timeStyle: .short) }
-        }
-    }
-    
-    /// Use nib name maper only when you have multiple types of messages.
-    public enum DefaultNibNameMapper {
-        /// This mapper looks at `customPayload` of inbox message and assumes that json key `customCellName` holds the custom nib name for the message.
-        /// e.g., An inbox message with custom payload `{"customCellName": "CustomInboxCell3"}` will return `CustomInboxCell3` as the custom nib name.
-        public static var usingCustomPayloadNibName: ((IterableInAppMessage) -> String?) = {
-            guard
-                let payload = $0.customPayload as? [String: AnyHashable],
-                let customNibName = payload["customCellName"] as? String else {
-                return nil
-            }
-            return customNibName
         }
     }
     
