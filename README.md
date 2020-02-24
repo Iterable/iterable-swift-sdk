@@ -189,6 +189,35 @@ Attached to the release, you will find two framework bundles:
     
     ![Linking](https://github.com/Iterable/swift-sdk/blob/master/images/build-setting.png?raw=true)
 
+### Beta versions
+
+> &#x26A0; **IMPORTANT**
+> Beta versions of this SDK are subject to Iterable's 
+[Beta Mobile SDK Terms of Service](https://support.iterable.com/hc/articles/360034753412).
+
+To install a beta version of Iterable's iOS SDK, use CocoaPods or Carthage:
+
+- CocoaPods
+
+    Beta versions of the SDK are not pushed as normal releases to CocoaPods.
+    Instead, point CocoaPods to the git tag associated with a specific build.
+    For example, the following **Podfile** entry looks for the SDK build
+    tagged with `6.2.0-beta1`:
+
+    ```
+    pod 'Iterable-iOS-SDK', :git => 'https://github.com/Iterable/swift-sdk.git', :tag => '6.2.0-beta1'
+    ```
+
+- Carthage
+
+    Like CocoaPods, Carthage can install an SDK build associated with a
+    specific git tag. For example, the following **Cartfile** entry looks for
+    an SDK build tagged with `6.2.0-beta1`:
+
+    ```
+    github "Iterable/swift-sdk" ~> 6.2.0-beta1
+    ```
+
 ## Migrating from a version prior to 6.1.0
 
 - Versions 6.1.0+ of the SDK require Xcode 10.2 or higher.
