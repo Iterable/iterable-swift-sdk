@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
 
   s.name         = "Iterable-iOS-SDK"
   s.module_name  = "IterableSDK"
-  s.version      = "6.2.0-beta1"
+  s.version      = "6.2.0"
   s.summary      = "Iterable's official SDK for iOS"
 
   s.description  = <<-DESC
@@ -48,9 +48,7 @@ Pod::Spec.new do |s|
   #
 
   s.author       = { "Tapash Majumder" => "tapash@iterable.com",
-                     "Victor Babenko" => "victor@iterable.com",
-                     "Jay Kim" => "jay.kim@iterable.com",
-                     "David Truong" => "dt@iterable.com" }
+                     "Jay Kim" => "jay.kim@iterable.com" }
 
   # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #

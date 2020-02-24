@@ -7,10 +7,10 @@
 
 - [Installation](#installation)
 - [Installing with a dependency manager](#installing-with-a-dependency-manager)
-    - [Carthage](#carthage)
+    - [Swift Package Manager](#swift-package-manager)
     - [CocoaPods](#cocoapods)
+    - [Carthage](#carthage)
     - [Manual Installation](#manual-installation)
-    - [Beta versions](#beta-versions)
 - [Migrating from a version prior to 6.1.0](#migrating-from-a-version-prior-to-610)
 - [Sample projects](#sample-projects)
 - [Configuring the SDK](#configuring-the-sdk)
@@ -34,68 +34,29 @@ The Iterable iOS SDK is a Swift implementation of an iOS client for Iterable, fo
 
 Before starting with the SDK, you will need to set up Iterable push notifications for your app.
 
-For more information, read Iterable's [Setting up iOS Push Notifications](https://support.iterable.com/hc/articles/115000315806-Setting-Up-iOS-Push-Notifications) guide.
+For more information, read Iterable's [Setting up iOS Push Notifications](https://support.iterable.com/hc/articles/115000315806) guide.
 
 ## Installation
 
-To install this SDK, use [Carthage](https://github.com/Carthage/Carthage), 
-[CocoaPods](https://cocoapods.org/), or install it manually.
+To install this SDK, use [Carthage](https://github.com/Carthage/Carthage), [CocoaPods](https://cocoapods.org/), [Swift Package Manager](https://swift.org/package-manager/) (through Xcode or command line), or install it manually.
 
-### Carthage
+### Swift Package Manager
 
-To use Carthage to install the SDK, first [install Carthage](https://github.com/Carthage/Carthage#installing-carthage). 
-Then, follow these steps:
+In Xcode 11, Apple integrated the Swift Package Manager into Xcode—an
+intuitive, easy way to add dependencies to your project.
 
-1. If it does not yet exist, create a file named **Cartfile** in the same 
-directory as your Xcode project.
+1. To include Iterable's SDK, navigate in Xcode to **File** >
+**Swift Packages** > **Add Package Dependency**.
 
-2. Edit **Cartfile**, adding the following line:
+2. Enter `https://github.com/iterable/swift-sdk` as the package repository URL.
 
-    ```
-    github "Iterable/swift-sdk" ~> 6.1.4
-    ```
+3. Select the version of the SDK you'd like to install (the default settings
+will be set to the latest stable version).
 
-3. In the terminal, in the same directory as your **Cartfile**, run the 
-following command:
+4. Select **IterableSDK**. If necessary for your use case, also select
+**IterableAppExtensions**.
 
-    ```
-    carthage update
-    ```
-
-4. In Xcode, navigate to the **Build Phases** section for your app's target.
-Click the **+** icon and select **New Run Script Phase**. A **Run Script** 
-section will appear.
-
-5. In the **Run Script** section, below the **Shell** input, add the 
-following command: 
-
-    ```
-    /usr/local/bin/carthage copy-frameworks
-    ```
-6. In the **Input Files** section, click **+** and add the following path:
-
-    ```
-    $(SRCROOT)/Carthage/Build/iOS/IterableSDK.framework
-    ```
-
-7. In the **Output Files** section, add the path to the copied framework:
-
-    ```
-    $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/IterableSDK.framework
-    ```
-
-8. Add **&lt;Xcode project directory&gt;/Carthage/Build/iOS/IterableSDK.framework** 
-to your Xcode project by dragging it into the Xcode Project Navigator.
-When prompted by Xcode, add the framework to your app's target.
-
-9. If your app will be using push notifications that contain media
-attachments (images, etc.), repeat steps 6 through 8, substituting
-**IterableAppExtensions.framework** for **IterableSDK.framework**. In step 8, 
-add **IterableAppExtensions.framework** to your project's Notification
-Service Extension target (instead of the app target).
-
-For more information, take a look at the [Carthage](https://github.com/Carthage/Carthage)
-documentation.
+5. Click **Finish**.
 
 ### CocoaPods 
 
@@ -152,6 +113,63 @@ extensions, if necessary):
     use this file instead of the .xcodeproj file.
 
 For more information, take a look at the [CocoaPods](https://cocoapods.org/)
+documentation.
+
+### Carthage
+
+To use Carthage to install the SDK, first [install Carthage](https://github.com/Carthage/Carthage#installing-carthage). 
+Then, follow these steps:
+
+1. If it does not yet exist, create a file named **Cartfile** in the same 
+directory as your Xcode project.
+
+2. Edit **Cartfile**, adding the following line:
+
+    ```
+    github "Iterable/swift-sdk" ~> 6.2.0
+    ```
+
+3. In the terminal, in the same directory as your **Cartfile**, run the 
+following command:
+
+    ```
+    carthage update
+    ```
+
+4. In Xcode, navigate to the **Build Phases** section for your app's target.
+Click the **+** icon and select **New Run Script Phase**. A **Run Script** 
+section will appear.
+
+5. In the **Run Script** section, below the **Shell** input, add the 
+following command: 
+
+    ```
+    /usr/local/bin/carthage copy-frameworks
+    ```
+
+6. In the **Input Files** section, click **+** and add the following path:
+
+    ```
+    $(SRCROOT)/Carthage/Build/iOS/IterableSDK.framework
+    ```
+
+7. In the **Output Files** section, add the path to the copied framework:
+
+    ```
+    $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/IterableSDK.framework
+    ```
+
+8. Add **&lt;Xcode project directory&gt;/Carthage/Build/iOS/IterableSDK.framework** 
+to your Xcode project by dragging it into the Xcode Project Navigator.
+When prompted by Xcode, add the framework to your app's target.
+
+9. If your app will be using push notifications that contain media
+attachments (images, etc.), repeat steps 6 through 8, substituting
+**IterableAppExtensions.framework** for **IterableSDK.framework**. In step 8, 
+add **IterableAppExtensions.framework** to your project's Notification
+Service Extension target (instead of the app target).
+
+For more information, take a look at the [Carthage](https://github.com/Carthage/Carthage)
 documentation.
 
 ### Manual installation
@@ -579,7 +597,7 @@ func handle(iterableURL url: URL, inContext context: IterableActionContext) -> B
 #### Email deep links
     
 For Universal Links to work with email link rewriting, 
-[set up an **apple-app-site-association** file](https://support.iterable.com/hc/articles/115000440206-Setting-up-iOS-Universal-Links)
+[set up an **apple-app-site-association** file](https://support.iterable.com/hc/articles/115000440206)
 in your Iterable project.
 
 When a user clicks a link in an email, the SDK will call the
@@ -808,11 +826,16 @@ Iterable will track uninstalls with no additional work by you.
 
 To do this, Iterable sends a silent push notification some time (currently, 12 hours) after a campaign has been sent. Based on this silent push notification, if Iterable receives feedback that the device token is no longer valid, it assigns an uninstall to the device based on the prior campaign. Similarly, if a "real" campaign uncovers an invalid device token, it will also check for a prior (within 12 hours) campaign to mark as the cause for the uninstall. If there was no recent campaign, Iterable still tracks the uninstall, but does not attribute it to a campaign.
 
-> &#x26A0; Apple has changed the way device tokens expire, so they may take up to 8 days to detect if they are invalid. This does mean that uninstall tracking may not be accurately attributable to campaigns sent within that period of time.
+> &#x26A0; **IMPORTANT**
+> Apple has changed the way device tokens expire, so they may take up to 8 days to detect if they are invalid. This does mean that uninstall tracking may not be accurately attributable to campaigns sent within that period of time.
 
 ## Additional information
 
-For more information, read Iterable's [Mobile Developer Guides](https://support.iterable.com/hc/categories/360002288712)
+For more information, take a look at:
+
+- Iterable's [iOS SDK Release Notes](https://support.iterable.com/hc/articles/360027798391)
+- Iterable's [Setting Up iOS Push Notifications](https://support.iterable.com/hc/articles/115000315806) guide
+- Iterable's [Push Notification Setup FAQs](http://support.iterable.com/hc/articles/206791196)
 
 ## License
 

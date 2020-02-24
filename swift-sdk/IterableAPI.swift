@@ -463,7 +463,7 @@ import UIKit
      */
     
     // deprecated - will be removed in version 6.3.x or above
-    @available(*, deprecated, message: "Use IterableAPI.track(inAppClick:location:clickedUrl) method instead.")
+    @available(*, deprecated, message: "Use IterableAPI.track(inAppClick:location:clickedUrl) instead.")
     @objc(trackInAppClick:buttonURL:)
     public static func track(inAppClick messageId: String, buttonURL: String) {
         internalImplementation?.trackInAppClick(messageId, clickedUrl: buttonURL)
@@ -523,7 +523,7 @@ import UIKit
      */
     
     // deprecated - will be removed in version 6.3.x or above
-    @available(*, deprecated, message: "Use IterableAPI.inAppConsume(message:location:source:) method instead.")
+    @available(*, deprecated, message: "Use IterableAPI.inAppConsume(message:location:source:) instead.")
     @objc(inAppConsume:)
     public static func inAppConsume(messageId: String) {
         internalImplementation?.inAppConsume(messageId)
@@ -565,7 +565,7 @@ import UIKit
      */
     
     // deprecated - will be removed in version 6.3.x or above
-    @available(*, deprecated, message: "Please use UIAlertController to show system notifiation.")
+    @available(*, deprecated, message: "Please use UIAlertController to show system notifications.")
     public static func showSystemNotification(withTitle title: String, body: String, button: String?, callbackBlock: ITEActionBlock?) {
         internalImplementation?.showSystemNotification(withTitle: title, body: body, buttonLeft: button, callbackBlock: callbackBlock)
     }
@@ -584,7 +584,7 @@ import UIKit
      */
     
     // deprecated - will be removed in version 6.3.x or above
-    @available(*, deprecated, message: "Please use UIAlertController to show system notifiation.")
+    @available(*, deprecated, message: "Please use UIAlertController to show system notifications.")
     public static func showSystemNotification(withTitle title: String, body: String, buttonLeft: String?, buttonRight: String?, callbackBlock: ITEActionBlock?) {
         internalImplementation?.showSystemNotification(withTitle: title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
     }
@@ -597,7 +597,7 @@ import UIKit
      */
     
     // deprecated - will be removed in version 6.3.x or above
-    @available(*, deprecated, message: "Please use IterableAPI.handle(universalLink:) method instead.")
+    @available(*, deprecated, message: "Please use IterableAPI.handle(universalLink:) instead.")
     @objc(getAndTrackDeeplink:callbackBlock:)
     public static func getAndTrack(deeplink webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {
         internalImplementation?.getAndTrack(deepLink: webpageURL, callbackBlock: callbackBlock)
