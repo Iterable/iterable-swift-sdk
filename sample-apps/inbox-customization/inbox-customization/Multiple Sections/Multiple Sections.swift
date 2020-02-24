@@ -34,6 +34,10 @@ public class MultipleSectionsViewDelegate: IterableInboxViewControllerViewDelega
     
     /// This mapper looks at `customPayload` of inbox message and assumes that json key `messageSection` holds the section number.
     /// e.g., An inbox message with custom payload  `{"messageSection": 2}` will return 2 as section.
-    /// Feel free to write your own messageToSectionMapper
-    public let messageToSectionMapper: ((IterableInAppMessage) -> Int) = IterableInboxViewController.DefaultSectionMapper.usingCustomPayloadMessageSection
+    public let messageToSectionMapper: (IterableInAppMessage) -> Int = {
+        guard let payload = $0.customPayload as? [String: AnyHashable], let section = payload["messageSection"] as? Int else {
+            return 0
+        }
+        return section
+    }
 }
