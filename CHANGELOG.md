@@ -5,9 +5,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## 6.2.0
 #### Added
 - Moved Mobile Inbox support to GA (no longer in beta), and:
-	- Added support for various ways to customize the default interface for a mobile inbox
-	- Added a sample project that demonstrates how to customize the default interface for a mobile inbox
-	- Added tracking for inbox sessions (when the inbox is visible in the app) and inbox message impressions (when a individual message's item is visible in the mobile inbox message list)
+    - Added support for various ways to customize the default interface for a mobile inbox
+    - Added a sample project that demonstrates how to customize the default interface for a mobile inbox
+    - Added tracking for inbox sessions (when the inbox is visible in the app) and inbox message impressions (when a individual message's item is visible in the mobile inbox message list)
 - Added support for Swift Package Manager
 
 #### Deprecated
@@ -36,9 +36,9 @@ Please see each method's source code documentation for details.
 
 #### Removed
 - `IterableAPI.spawnInAppNotification(_:)`
-	- In-app messages are automatically shown by SDK now. Please check our [migration guide](https://github.com/iterable/swift-sdk/#migrating-in-app-messages-from-the-previous-version-of-the-sdk).
+    - In-app messages are automatically shown by SDK now. Please check our [migration guide](https://github.com/iterable/swift-sdk/#migrating-in-app-messages-from-the-previous-version-of-the-sdk).
 - `IterableAPI.get(inAppMessages:)`
-	- Use `IterableAPI.inAppManager.getMessages()` instead
+    - Use `IterableAPI.inAppManager.getMessages()` instead
 
 #### Changed
  - There is no need to set `IterableConfig.pushIntegrationName` for new projects.
@@ -61,7 +61,7 @@ Please see method documentation for details about how to replace them.
 ## 6.2.0-dev1
 #### Added
 - Inbox
-	- Brand new inbox functionality. Please see documentation for more details.
+    - Brand new inbox functionality. Please see documentation for more details.
 
 ## 6.1.0
 #### Changed
@@ -79,10 +79,10 @@ Please see method documentation for details about how to replace them.
 ## 6.1.0-beta2
 #### Added
 - Support for `action://your-custom-action-name` URL scheme for calling custom actions 
-	- For example, to have `IterableCustomActionDelegate` call a custom `buyCoffee` action when a user taps on an in-app message's **Buy** button.
+    - For example, to have `IterableCustomActionDelegate` call a custom `buyCoffee` action when a user taps on an in-app message's **Buy** button.
 - Support for reserved `itbl://sdk-custom-action` scheme for SDK internal actions.
-	- URL scheme `itbl://sdk-custom-action` is reserved for internal SDK actions. Do not use it for custom actions. 
-	- For example, future versions of the SDK may allow buttons to call href `itbl://delete` to delete an in-app message.
+    - URL scheme `itbl://sdk-custom-action` is reserved for internal SDK actions. Do not use it for custom actions. 
+    - For example, future versions of the SDK may allow buttons to call href `itbl://delete` to delete an in-app message.
 
 #### Fixed
 - Carthage support with Xcode 10.2
@@ -92,9 +92,9 @@ Please see method documentation for details about how to replace them.
 ## 6.1.0-beta1
 #### Added
 - We have improved the in-app messaging implementation significantly. 
-	- The SDK now maintains a local queue and keep it in sync with the server-side queue automatically.
-	- Iterable servers now notify apps via silent push messages whenever the in-app message queue is updated.
-	- In-app messages are shown by default whenever they arrive.
+    - The SDK now maintains a local queue and keep it in sync with the server-side queue automatically.
+    - Iterable servers now notify apps via silent push messages whenever the in-app message queue is updated.
+    - In-app messages are shown by default whenever they arrive.
 - It should be straightforward to migrate to the new implementation. There are, however, some breaking changes. Please see [migration guide](https://github.com/iterable/swift-sdk#Migrating-in-app-messages-from-the-previous-version-of-the-SDK) for more details.
 
 #### Removed
