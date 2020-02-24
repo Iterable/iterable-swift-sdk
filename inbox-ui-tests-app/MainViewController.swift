@@ -69,5 +69,5 @@ public class ViewDelegate1: IterableInboxViewControllerViewDelegate {
     public required init() {}
     
     public let customNibNames: [String] = ["CustomInboxCell3"]
-    public let customNibNameMapper: (IterableInAppMessage) -> String? = IterableInboxViewController.DefaultNibNameMapper.usingCustomPayloadNibName
+    public let customNibNameMapper: (IterableInAppMessage) -> String? = SampleInboxViewDelegateImplementations.NibNameMapper.usingCustomPayloadNibName
 }
