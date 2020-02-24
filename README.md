@@ -812,11 +812,7 @@ To do this, Iterable sends a silent push notification some time (currently, 12 h
 
 ## Additional information
 
-For more information, take a look at:
-
-- Iterable's [iOS SDK Release Notes](https://support.iterable.com/hc/articles/360027798391)
-- Iterable's [Setting Up iOS Push Notifications](https://support.iterable.com/hc/articles/115000315806-Setting-Up-iOS-Push-Notifications) guide
-- Iterable's [Push Notification Setup FAQs](http://support.iterable.com/hc/articles/206791196-Push-Notification-Setup-FAQ-s)
+For more information, read Iterable's [Mobile Developer Guides](https://support.iterable.com/hc/categories/360002288712)
 
 ## License
 
