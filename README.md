@@ -7,9 +7,9 @@
 
 - [Installation](#installation)
 - [Installing with a dependency manager](#installing-with-a-dependency-manager)
-    - [Carthage](#carthage)
-    - [CocoaPods](#cocoapods)
     - [Swift Package Manager](#swift-package-manager)
+    - [CocoaPods](#cocoapods)
+    - [Carthage](#carthage)
     - [Manual Installation](#manual-installation)
 - [Migrating from a version prior to 6.1.0](#migrating-from-a-version-prior-to-610)
 - [Sample projects](#sample-projects)
@@ -40,62 +40,23 @@ For more information, read Iterable's [Setting up iOS Push Notifications](https:
 
 To install this SDK, use [Carthage](https://github.com/Carthage/Carthage), [CocoaPods](https://cocoapods.org/), [Swift Package Manager](https://swift.org/package-manager/) (through Xcode or command line), or install it manually.
 
-### Carthage
+### Swift Package Manager
 
-To use Carthage to install the SDK, first [install Carthage](https://github.com/Carthage/Carthage#installing-carthage). 
-Then, follow these steps:
+In Xcode 11, Apple integrated the Swift Package Manager into Xcode—an
+intuitive, easy way to add dependencies to your project.
 
-1. If it does not yet exist, create a file named **Cartfile** in the same 
-directory as your Xcode project.
+1. To include Iterable's SDK, navigate in Xcode to **File** >
+**Swift Packages** > **Add Package Dependency**.
 
-2. Edit **Cartfile**, adding the following line:
+2. Enter `https://github.com/iterable/swift-sdk` as the package repository URL.
 
-    ```
-    github "Iterable/swift-sdk" ~> 6.2.0
-    ```
+3. Select the version of the SDK you'd like to install (the default settings
+will be set to the latest stable version).
 
-3. In the terminal, in the same directory as your **Cartfile**, run the 
-following command:
+4. Select **IterableSDK**. If necessary for your use case, also select
+**IterableAppExtensions**.
 
-    ```
-    carthage update
-    ```
-
-4. In Xcode, navigate to the **Build Phases** section for your app's target.
-Click the **+** icon and select **New Run Script Phase**. A **Run Script** 
-section will appear.
-
-5. In the **Run Script** section, below the **Shell** input, add the 
-following command: 
-
-    ```
-    /usr/local/bin/carthage copy-frameworks
-    ```
-
-6. In the **Input Files** section, click **+** and add the following path:
-
-    ```
-    $(SRCROOT)/Carthage/Build/iOS/IterableSDK.framework
-    ```
-
-7. In the **Output Files** section, add the path to the copied framework:
-
-    ```
-    $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/IterableSDK.framework
-    ```
-
-8. Add **&lt;Xcode project directory&gt;/Carthage/Build/iOS/IterableSDK.framework** 
-to your Xcode project by dragging it into the Xcode Project Navigator.
-When prompted by Xcode, add the framework to your app's target.
-
-9. If your app will be using push notifications that contain media
-attachments (images, etc.), repeat steps 6 through 8, substituting
-**IterableAppExtensions.framework** for **IterableSDK.framework**. In step 8, 
-add **IterableAppExtensions.framework** to your project's Notification
-Service Extension target (instead of the app target).
-
-For more information, take a look at the [Carthage](https://github.com/Carthage/Carthage)
-documentation.
+5. Click **Finish**.
 
 ### CocoaPods 
 
@@ -154,23 +115,62 @@ extensions, if necessary):
 For more information, take a look at the [CocoaPods](https://cocoapods.org/)
 documentation.
 
-### Swift Package Manager
+### Carthage
 
-In Xcode 11, Apple integrated the Swift Package Manager into Xcode—an
-intuitive, easy way to add dependencies to your project.
+To use Carthage to install the SDK, first [install Carthage](https://github.com/Carthage/Carthage#installing-carthage). 
+Then, follow these steps:
 
-1. To include Iterable's SDK, navigate in Xcode to **File** >
-**Swift Packages** > **Add Package Dependency**.
+1. If it does not yet exist, create a file named **Cartfile** in the same 
+directory as your Xcode project.
 
-2. Enter `https://github.com/iterable/swift-sdk` as the package repository URL.
+2. Edit **Cartfile**, adding the following line:
 
-3. Select the version of the SDK you'd like to install (the default settings
-will be set to the latest stable version).
+    ```
+    github "Iterable/swift-sdk" ~> 6.2.0
+    ```
 
-4. Select **IterableSDK**. If necessary for your use case, also select
-**IterableAppExtensions**.
+3. In the terminal, in the same directory as your **Cartfile**, run the 
+following command:
 
-5. Click **Finish**.
+    ```
+    carthage update
+    ```
+
+4. In Xcode, navigate to the **Build Phases** section for your app's target.
+Click the **+** icon and select **New Run Script Phase**. A **Run Script** 
+section will appear.
+
+5. In the **Run Script** section, below the **Shell** input, add the 
+following command: 
+
+    ```
+    /usr/local/bin/carthage copy-frameworks
+    ```
+
+6. In the **Input Files** section, click **+** and add the following path:
+
+    ```
+    $(SRCROOT)/Carthage/Build/iOS/IterableSDK.framework
+    ```
+
+7. In the **Output Files** section, add the path to the copied framework:
+
+    ```
+    $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/IterableSDK.framework
+    ```
+
+8. Add **&lt;Xcode project directory&gt;/Carthage/Build/iOS/IterableSDK.framework** 
+to your Xcode project by dragging it into the Xcode Project Navigator.
+When prompted by Xcode, add the framework to your app's target.
+
+9. If your app will be using push notifications that contain media
+attachments (images, etc.), repeat steps 6 through 8, substituting
+**IterableAppExtensions.framework** for **IterableSDK.framework**. In step 8, 
+add **IterableAppExtensions.framework** to your project's Notification
+Service Extension target (instead of the app target).
+
+For more information, take a look at the [Carthage](https://github.com/Carthage/Carthage)
+documentation.
 
 ### Manual installation
 
