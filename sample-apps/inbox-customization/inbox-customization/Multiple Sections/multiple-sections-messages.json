@@ -1,0 +1,77 @@
+{ "inAppMessages": [
+    {
+        "createdAt": 1579577586000,
+        "saveToInbox": true,
+        "content": {
+            "contentType": "html",
+            "html": "<a href='iterable://dismiss'>Click Here4</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"},
+        "trigger": {"type": "never"},
+        "messageId": "message4-4",
+        "campaignId": "campaign4-4",
+        "inboxMetadata": {
+            "title": "Section 1, Message 1",
+            "subtitle": "This is the first message of first section.",
+            "icon": "https://somewhere.com/latte.png"
+        },
+        "customPayload": {
+            "messageSection": 0
+        },
+    },
+    {
+        "createdAt": 1579477586000,
+        "saveToInbox": true,
+        "content": {
+            "contentType": "html",
+            "html": "<a href='iterable://dismiss'>Click Here3</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"},
+        "trigger": {"type": "never"},
+        "messageId": "message4-3",
+        "campaignId": "campaign4-3",
+        "inboxMetadata": {
+            "title": "Section 2, Message 1",
+            "subtitle": "This is the first message of the second section.",
+            "icon": "https://somewhere.com/cappuccino.png"
+        },
+        "customPayload": {
+            "messageSection": 1
+        },
+    },
+    {
+        "createdAt": 1579377586000,
+        "saveToInbox": true,
+        "content": {
+            "contentType": "html",
+            "html": "<a href='iterable://dismiss'>Click Here2</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"
+        },
+        "trigger": {"type": "never"},
+        "messageId": "message4-2",
+        "campaignId": "campaign4-2",
+        "inboxMetadata": {
+            "title": "Section 3, Message 1.",
+            "subtitle": "This is the first message of the third section.",
+            "icon": "https://somewhere.com/black-coffee.png"
+        },
+        "customPayload": {
+            "messageSection": 2
+        },
+    },
+    {
+        "createdAt": 1579277586000,
+        "saveToInbox": true,
+        "content": {
+            "contentType": "html",
+            "html": "<a href='iterable://dismiss'>Click Here1</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"
+        },
+        "trigger": {"type": "never"},
+        "messageId": "message4-1",
+        "campaignId": "campaign4-1",
+        "inboxMetadata": {
+            "title": "Section 3, Message 2",
+            "subtitle": "This is the second message of third section.",
+            "icon": "https://somewhere.com/mocha.png"
+        },
+        "customPayload": {
+            "messageSection": 2
+        },
+    },
+]
+}

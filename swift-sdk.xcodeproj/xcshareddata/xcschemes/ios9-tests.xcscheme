@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0940"
+   LastUpgradeVersion = "1020"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -85,19 +85,18 @@
             </BuildableReference>
             <SkippedTests>
                <Test
+                  Identifier = "InAppParsingTests">
+               </Test>
+               <Test
+                  Identifier = "InAppTests">
+               </Test>
+               <Test
+                  Identifier = "InboxTests">
+               </Test>
+               <Test
                   Identifier = "LoggingTests">
                </Test>
             </SkippedTests>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AC7B143920D02D8700877BFE"
-               BuildableName = "swift-sdk-objc-tests.xctest"
-               BlueprintName = "swift-sdk-objc-tests"
-               ReferencedContainer = "container:swift-sdk.xcodeproj">
-            </BuildableReference>
          </TestableReference>
       </Testables>
       <MacroExpansion>

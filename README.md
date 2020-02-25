@@ -3,6 +3,29 @@
 [![pod](https://badge.fury.io/co/Iterable-iOS-SDK.svg)](https://cocoapods.org/pods/Iterable-iOS-SDK)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 
+# Table of contents
+
+- [Installation](#installation)
+- [Installing with a dependency manager](#installing-with-a-dependency-manager)
+    - [Swift Package Manager](#swift-package-manager)
+    - [CocoaPods](#cocoapods)
+    - [Carthage](#carthage)
+    - [Manual Installation](#manual-installation)
+- [Migrating from a version prior to 6.1.0](#migrating-from-a-version-prior-to-610)
+- [Sample projects](#sample-projects)
+- [Configuring the SDK](#configuring-the-sdk)
+- [Using the SDK](#using-the-sdk)
+    - [Push notifications](#push-notifications)
+    - [Deep links](#deep-links)
+    - [In-app messages](#in-app-messages)
+    - [Mobile inbox](#mobile-inbox)
+    - [Custom events](#custom-events)
+    - [User fields](#user-fields)
+    - [Uninstall tracking](#uninstall-tracking)
+- [Additional information](#additional-information)
+- [License](#license)
+- [Want to Contribute?](#want-to-contribute)
+
 # Iterable iOS SDK
 
 The Iterable iOS SDK is a Swift implementation of an iOS client for Iterable, for iOS versions 9.0 and higher.
@@ -11,68 +34,29 @@ The Iterable iOS SDK is a Swift implementation of an iOS client for Iterable, fo
 
 Before starting with the SDK, you will need to set up Iterable push notifications for your app.
 
-For more information, read Iterable's [Setting up iOS Push Notifications](https://support.iterable.com/hc/articles/115000315806-Setting-Up-iOS-Push-Notifications) guide.
+For more information, read Iterable's [Setting up iOS Push Notifications](https://support.iterable.com/hc/articles/115000315806) guide.
 
-## Installing with a dependency manager
+## Installation
 
-Iterable's iOS SDK can be installed using [Carthage](https://github.com/Carthage/Carthage) 
-or [CocoaPods](https://cocoapods.org/).
- 
-### Carthage
+To install this SDK, use [Carthage](https://github.com/Carthage/Carthage), [CocoaPods](https://cocoapods.org/), [Swift Package Manager](https://swift.org/package-manager/) (through Xcode or command line), or install it manually.
 
-To use Carthage to install Iterable's iOS SDK, first [install Carthage](https://github.com/Carthage/Carthage#installing-carthage).
-Then, follow these steps:
+### Swift Package Manager
 
-1. If it does not yet exist, create a file named **Cartfile** in the same 
-directory as your Xcode project.
+In Xcode 11, Apple integrated the Swift Package Manager into Xcode—an
+intuitive, easy way to add dependencies to your project.
 
-2. Edit **Cartfile**, adding the following line:
+1. To include Iterable's SDK, navigate in Xcode to **File** >
+**Swift Packages** > **Add Package Dependency**.
 
-    ```
-    github "Iterable/swift-sdk" ~> 6.1.4
-    ```
+2. Enter `https://github.com/iterable/swift-sdk` as the package repository URL.
 
-3. In the terminal, in the same directory as your **Cartfile**, run the 
-following command:
+3. Select the version of the SDK you'd like to install (the default settings
+will be set to the latest stable version).
 
-    ```
-    carthage update
-    ```
+4. Select **IterableSDK**. If necessary for your use case, also select
+**IterableAppExtensions**.
 
-4. In Xcode, navigate to the **Build Phases** section for your app's target.
-Click the **+** icon and select **New Run Script Phase**. A **Run Script** 
-section will appear.
-
-5. In the **Run Script** section, below the **Shell** input, add the 
-following command: 
-
-    ```
-    /usr/local/bin/carthage copy-frameworks
-    ```
-6. In the **Input Files** section, click **+** and add the following path:
-
-    ```
-    $(SRCROOT)/Carthage/Build/iOS/IterableSDK.framework
-    ```
-
-7. In the **Output Files** section, add the path to the copied framework:
-
-    ```
-    $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/IterableSDK.framework
-    ```
-
-8. Add **&lt;Xcode project directory&gt;/Carthage/Build/iOS/IterableSDK.framework** 
-to your Xcode project by dragging it into the Xcode Project Navigator.
-When prompted by Xcode, add the framework to your app's target.
-
-9. If your app will be using push notifications that contain media
-attachments (images, etc.), repeat steps 6 through 8, substituting
-**IterableAppExtensions.framework** for **IterableSDK.framework**. In step 8, 
-add **IterableAppExtensions.framework** to your project's Notification
-Service Extension target (instead of the app target).
-
-For more information, take a look at the [Carthage](https://github.com/Carthage/Carthage)
-documentation.
+5. Click **Finish**.
 
 ### CocoaPods 
 
@@ -106,11 +90,11 @@ Then, follow these steps:
     use_frameworks!
 
     target 'swift-sample-app' do
-    pod 'Iterable-iOS-SDK'
+        pod 'Iterable-iOS-SDK'
     end
 
     target 'swift-sample-app-notification-extension' do
-    pod 'Iterable-iOS-AppExtensions'
+        pod 'Iterable-iOS-AppExtensions'
     end
     ```
 
@@ -131,7 +115,64 @@ extensions, if necessary):
 For more information, take a look at the [CocoaPods](https://cocoapods.org/)
 documentation.
 
-## Installing manually
+### Carthage
+
+To use Carthage to install the SDK, first [install Carthage](https://github.com/Carthage/Carthage#installing-carthage). 
+Then, follow these steps:
+
+1. If it does not yet exist, create a file named **Cartfile** in the same 
+directory as your Xcode project.
+
+2. Edit **Cartfile**, adding the following line:
+
+    ```
+    github "Iterable/swift-sdk" ~> 6.2.0
+    ```
+
+3. In the terminal, in the same directory as your **Cartfile**, run the 
+following command:
+
+    ```
+    carthage update
+    ```
+
+4. In Xcode, navigate to the **Build Phases** section for your app's target.
+Click the **+** icon and select **New Run Script Phase**. A **Run Script** 
+section will appear.
+
+5. In the **Run Script** section, below the **Shell** input, add the 
+following command: 
+
+    ```
+    /usr/local/bin/carthage copy-frameworks
+    ```
+
+6. In the **Input Files** section, click **+** and add the following path:
+
+    ```
+    $(SRCROOT)/Carthage/Build/iOS/IterableSDK.framework
+    ```
+
+7. In the **Output Files** section, add the path to the copied framework:
+
+    ```
+    $(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)/IterableSDK.framework
+    ```
+
+8. Add **&lt;Xcode project directory&gt;/Carthage/Build/iOS/IterableSDK.framework** 
+to your Xcode project by dragging it into the Xcode Project Navigator.
+When prompted by Xcode, add the framework to your app's target.
+
+9. If your app will be using push notifications that contain media
+attachments (images, etc.), repeat steps 6 through 8, substituting
+**IterableAppExtensions.framework** for **IterableSDK.framework**. In step 8, 
+add **IterableAppExtensions.framework** to your project's Notification
+Service Extension target (instead of the app target).
+
+For more information, take a look at the [Carthage](https://github.com/Carthage/Carthage)
+documentation.
+
+### Manual installation
 
 Attached to the release, you will find two framework bundles: 
 **IterableSDK.framework** and **IterableAppExtensions.framework**.
@@ -148,9 +189,38 @@ Attached to the release, you will find two framework bundles:
     
     ![Linking](https://github.com/Iterable/swift-sdk/blob/master/images/build-setting.png?raw=true)
 
+### Beta versions
+
+> &#x26A0; **IMPORTANT**
+> Beta versions of this SDK are subject to Iterable's 
+[Beta Mobile SDK Terms of Service](https://support.iterable.com/hc/articles/360034753412).
+
+To install a beta version of Iterable's iOS SDK, use CocoaPods or Carthage:
+
+- CocoaPods
+
+    Beta versions of the SDK are not pushed as normal releases to CocoaPods.
+    Instead, point CocoaPods to the git tag associated with a specific build.
+    For example, the following **Podfile** entry looks for the SDK build
+    tagged with `6.2.0-beta1`:
+
+    ```
+    pod 'Iterable-iOS-SDK', :git => 'https://github.com/Iterable/swift-sdk.git', :tag => '6.2.0-beta1'
+    ```
+
+- Carthage
+
+    Like CocoaPods, Carthage can install an SDK build associated with a
+    specific git tag. For example, the following **Cartfile** entry looks for
+    an SDK build tagged with `6.2.0-beta1`:
+
+    ```
+    github "Iterable/swift-sdk" ~> 6.2.0-beta1
+    ```
+
 ## Migrating from a version prior to 6.1.0
 
-- Version 6.1.0 of the SDK requires Xcode 10.2.
+- Versions 6.1.0+ of the SDK require Xcode 10.2 or higher.
 
 - In-app messages: `spawnInAppNotification`
 
@@ -235,24 +305,29 @@ Iterable API key:
     
 ```swift
 let config = IterableConfig()
-config.pushIntegrationName = "<your-iterable-push-integration-name>"
-IterableAPI.initialize(apiKey: "<your-api-key>", launchOptions: launchOptions, config:config)
+IterableAPI.initialize(apiKey: "<your-api-key>", launchOptions: launchOptions, config: config)
 ```
     
 *Objective-C*
     
 ```objc
 IterableConfig *config = [[IterableConfig alloc] init];
-config.pushIntegrationName = @"<your-iterable-push-integration-name>";
 [IterableAPI initializeWithApiKey:@"<your-api-key>" launchOptions:launchOptions config:config]
 ```
+
+> &#x26A0; In prior versions of the SDK, it was necessary to explicitly set the 
+> `IterableAPI.pushIntegrationName` property. This property now defaults to 
+> the bundle ID of the app, so it's no longer necessary modify it unless you're
+> using a custom integration name (different from the bundle ID). To view your 
+> existing integrations, navigate to **Settings > Mobile Apps**.
 
 ### 3. Set a userId or email
 
 Once you have an email address or user ID for your app's current user, set
 `IterableAPI.email` or `IterableAPI.userId`. For example:
 
-> &#x26A0; Don't specify both email and userId in the same session, as they will be treated as different users by the SDK. Only use one type of identifier, email or userId, to identify the user.
+> &#x26A0; Don't specify both `email` and `userId` in the same session, as they will be treated as different users by the SDK. Only use one type of identifier, `email` or `userId`, to identify the user.
+
 *Swift*
     
 ```swift
@@ -266,7 +341,7 @@ IterableAPI.email = @"user@example.com";
 ```
 
 Your app will not be able to receive push notifications until you set 
-one of thes values.
+one of these values.
 
 ### 4. Fetch a device token from Apple
 
@@ -386,6 +461,7 @@ import UserNotifications
 import IterableAppExtensions
 
 class NotificationService: ITBNotificationServiceExtension {
+    // ...
 }
 ```
 
@@ -477,25 +553,25 @@ Iterable's iOS SDK.
     
 Push notifications and action buttons may have `openUrl` actions attached to them. When a URL is specified, the SDK first calls the `urlDelegate` object specified on your `IterableConfig` object. You can use this delegate to handle `openUrl` actions the same way as you handle normal deep links. If the delegate is not set or if it returns `false` (the default), the SDK will open the URL with Safari. If, upon receiving a deep link, you want to navigate to a specific view controller in your app, do so in the `urlDelegate`. 
     
-In the code below, `DeepLinkHandler` is a custom handler which is reponsible for deep link navigation. You have to provide an implementation for deep link navigation. Please see the [sample application](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app/swift-sample-app/DeeplinkHandler.swift) for a reference implementation for `DeeplinkHandler`.
+In the code below, `DeepLinkHandler` is a custom handler which is reponsible for deep link navigation. You have to provide an implementation for deep link navigation. Please see the [sample application](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app/swift-sample-app/DeeplinkHandler.swift) for a reference implementation for `DeepLinkHandler`.
     
 *Swift*
     
 ```swift
 func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-    ...
+    // ...
     // Initialize Iterable API
     let config = IterableConfig()
-    ...
+    // ...
     config.urlDelegate = self
-    IterableAPI.initialize(apiKey: apiKey, launchOptions:launchOptions, config: config)
-    ...
+    IterableAPI.initialize(apiKey: apiKey, launchOptions: launchOptions, config: config)
+    // ...
 }
 
 // Iterable URL Delegate. It will be called when you receive 
 // an `openUrl` event from push notification.
 func handle(iterableURL url: URL, inContext context: IterableActionContext) -> Bool {
-    return DeeplinkHandler.handle(url: url)
+    return DeepLinkHandler.handle(url: url)
 }
 ```
     
@@ -503,25 +579,25 @@ func handle(iterableURL url: URL, inContext context: IterableActionContext) -> B
     
 ```objc
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    ...
+    // ...
     // Initialize Iterable SDK
     IterableConfig *config = [[IterableConfig alloc] init];
-    ...
+    // ...
     config.urlDelegate = self;
     [IterableAPI initializeWithApiKey:@"YOUR API KEY" launchOptions:launchOptions config:config];
-    ...
+    // ...
 }
     
 - (BOOL)handleIterableURL:(NSURL *)url context:(IterableActionContext *)context {
-    // Assuming you have a DeeplinkHandler class that handles all deep link URLs and navigates to the right place in the app
-    return [DeeplinkHandler handleUrl:url];
+    // Assuming you have a DeepLinkHandler class that handles all deep link URLs and navigates to the right place in the app
+    return [DeepLinkHandler handleUrl:url];
 }
 ```
         
 #### Email deep links
     
 For Universal Links to work with email link rewriting, 
-[set up an **apple-app-site-association** file](https://support.iterable.com/hc/articles/115000440206-Setting-up-iOS-Universal-Links)
+[set up an **apple-app-site-association** file](https://support.iterable.com/hc/articles/115000440206)
 in your Iterable project.
 
 When a user clicks a link in an email, the SDK will call the
@@ -711,7 +787,21 @@ config.customActionDelegate = YourCustomActionDelegate()
     
 #### Changing the display interval between in-app messages
 
-To customize the time delay between successive in-app messages (default value of 30 seconds), set `IterableConfig.inAppDisplayInterval` to an appropriate value (in seconds). 
+To customize the time delay between successive in-app messages (default value of 30 seconds), set `IterableConfig.inAppDisplayInterval` to an appropriate value (in seconds).
+
+### Mobile Inbox
+
+Apps using version 6.2.0 and later of this SDK can allow users to save in-app
+messages to an inbox. This inbox displays a list of saved in-app messages and
+allows users to read them at their convenience. The SDK provides a default user
+interface for the inbox, which can be customized to match your brand's styles.
+
+To learn more about Mobile Inbox, how to customize it, and events related to 
+its usage, read the following documentation on Iterable's support portal:
+
+- [Mobile Inbox](https://support.iterable.com/hc/articles/360034903151)
+- [Setting up Mobile Inbox on iOS](https://support.iterable.com/hc/articles/360039137271)
+- [Customizing Mobile Inbox on iOS](https://support.iterable.com/hc/articles/360039091471)
 
 ### Custom events
 
@@ -736,13 +826,16 @@ Iterable will track uninstalls with no additional work by you.
 
 To do this, Iterable sends a silent push notification some time (currently, 12 hours) after a campaign has been sent. Based on this silent push notification, if Iterable receives feedback that the device token is no longer valid, it assigns an uninstall to the device based on the prior campaign. Similarly, if a "real" campaign uncovers an invalid device token, it will also check for a prior (within 12 hours) campaign to mark as the cause for the uninstall. If there was no recent campaign, Iterable still tracks the uninstall, but does not attribute it to a campaign.
 
+> &#x26A0; **IMPORTANT**
+> Apple has changed the way device tokens expire, so they may take up to 8 days to detect if they are invalid. This does mean that uninstall tracking may not be accurately attributable to campaigns sent within that period of time.
+
 ## Additional information
 
 For more information, take a look at:
 
 - Iterable's [iOS SDK Release Notes](https://support.iterable.com/hc/articles/360027798391)
-- Iterable's [Setting Up iOS Push Notifications](https://support.iterable.com/hc/articles/115000315806-Setting-Up-iOS-Push-Notifications) guide
-- Iterable's [Push Notification Setup FAQs](http://support.iterable.com/hc/articles/206791196-Push-Notification-Setup-FAQ-s)
+- Iterable's [Setting Up iOS Push Notifications](https://support.iterable.com/hc/articles/115000315806) guide
+- Iterable's [Push Notification Setup FAQs](http://support.iterable.com/hc/articles/206791196)
 
 ## License
 

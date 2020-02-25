@@ -1,22 +1,19 @@
 //
-//
 //  Created by Tapash Majumder on 6/5/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
 import Foundation
 
-@objc public class IterableAttributionInfo : NSObject, Codable {
-    private enum Keys : String {
+@objc public class IterableAttributionInfo: NSObject, Codable {
+    private enum Keys: String {
         case campaignId
         case templateId
         case messageId
     }
     
     @objc public var campaignId: NSNumber
-    
     @objc public var templateId: NSNumber
-    
     @objc public var messageId: String
     
     @objc public init(campaignId: NSNumber, templateId: NSNumber, messageId: String) {
@@ -33,16 +30,16 @@ import Foundation
     
     public required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        self.campaignId = NSNumber(value: try values.decode(Int.self, forKey: .campaignId))
-        self.templateId = NSNumber(value: try values.decode(Int.self, forKey: .templateId))
-        self.messageId = try values.decode(String.self, forKey: .messageId)
+        campaignId = NSNumber(value: try values.decode(Int.self, forKey: .campaignId))
+        templateId = NSNumber(value: try values.decode(Int.self, forKey: .templateId))
+        messageId = try values.decode(String.self, forKey: .messageId)
     }
     
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(self.campaignId.intValue, forKey: .campaignId)
-        try container.encode(self.templateId.intValue, forKey: .templateId)
-        try container.encode(self.messageId, forKey: .messageId)
+        try container.encode(campaignId.intValue, forKey: .campaignId)
+        try container.encode(templateId.intValue, forKey: .templateId)
+        try container.encode(messageId, forKey: .messageId)
     }
     
     public override var description: String {
@@ -50,7 +47,6 @@ import Foundation
     }
 }
 
-func ==(lhs: IterableAttributionInfo, rhs: IterableAttributionInfo) -> Bool {
+func == (lhs: IterableAttributionInfo, rhs: IterableAttributionInfo) -> Bool {
     return lhs.campaignId == rhs.campaignId && lhs.templateId == rhs.templateId && lhs.messageId == rhs.messageId
 }
-

@@ -17,7 +17,7 @@ Pod::Spec.new do |s|
 
   s.name         = "Iterable-iOS-SDK"
   s.module_name  = "IterableSDK"
-  s.version      = "6.1.5"
+  s.version      = "6.2.0"
   s.summary      = "Iterable's official SDK for iOS"
 
   s.description  = <<-DESC
@@ -46,7 +46,9 @@ Pod::Spec.new do |s|
   #  Specify a social_media_url where others can refer to, for example a twitter
   #  profile URL.
   #
-  s.author             = { "Ilya Brin" => "ilya@iterable.com" }
+
+  s.author       = { "Tapash Majumder" => "tapash@iterable.com",
+                     "Jay Kim" => "jay.kim@iterable.com" }
 
   # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
@@ -72,11 +74,13 @@ Pod::Spec.new do |s|
   #  Not including the public_header_files will make all headers public.
   #
 
-  s.source_files  = "swift-sdk/**/*.{h,m,swift}"
+  s.source_files = "swift-sdk/**/*.{h,m,swift}"
+
+  s.resources = ['swift-sdk/Resources/**/*.{storyboard,xib,xcassets}']
 
   s.pod_target_xcconfig = {
-    'SWIFT_VERSION' => '4.2'
+    'SWIFT_VERSION' => '5.2'
   }
 
-  s.swift_version = '4.2'
+  s.swift_version = '5.2'
 end

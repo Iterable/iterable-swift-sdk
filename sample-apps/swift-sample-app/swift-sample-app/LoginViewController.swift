@@ -17,14 +17,14 @@ class LoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Do any additional setup after loading the view.
         switch LoginViewController.checkIterableEmailOrUserId() {
-        case .email(let email):
+        case let .email(email):
             emailAddressTextField.text = email
             emailAddressTextField.isEnabled = false
             logInOutButton.setTitle("Logout", for: .normal)
-        case .userId(let userId):
+        case let .userId(userId):
             userIdTextField.text = userId
             userIdTextField.isEnabled = false
             logInOutButton.setTitle("Logout", for: .normal)
@@ -36,23 +36,21 @@ class LoginViewController: UIViewController {
             logInOutButton.setTitle("Login", for: .normal)
         }
     }
-
-    @IBAction func loginInOutButtonTapped(_ sender: UIButton) {
+    
+    @IBAction func loginInOutButtonTapped(_: UIButton) {
         switch LoginViewController.checkIterableEmailOrUserId() {
-        case .email:
-            // logout
+        case .email: // logout
             IterableAPI.email = nil
-        case .userId:
-            // logout
+        case .userId: // logout
             IterableAPI.userId = nil
-        case .none:
-            // login
+        case .none: // login
             if let text = emailAddressTextField.text, !text.isEmpty {
                 IterableAPI.email = text
             } else if let text = userIdTextField.text, !text.isEmpty {
                 IterableAPI.userId = text
             }
         }
+        
         presentingViewController?.dismiss(animated: true)
     }
     
@@ -61,7 +59,7 @@ class LoginViewController: UIViewController {
         case userId(String)
         case none
         
-        var eitherPresent : Bool {
+        var eitherPresent: Bool {
             switch self {
             case .email, .userId:
                 return true
@@ -70,7 +68,7 @@ class LoginViewController: UIViewController {
             }
         }
     }
-
+    
     class func checkIterableEmailOrUserId() -> IterableEmailOrUserIdCheckResult {
         if let email = IterableAPI.email {
             return .email(email)
@@ -81,8 +79,7 @@ class LoginViewController: UIViewController {
         }
     }
     
-    @IBAction func doneButtonTapped(_ sender: UIBarButtonItem) {
+    @IBAction func doneButtonTapped(_: UIBarButtonItem) {
         presentingViewController?.dismiss(animated: true)
     }
-    
 }

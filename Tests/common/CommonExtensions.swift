@@ -1,5 +1,4 @@
 //
-//
 //  Created by Tapash Majumder on 10/5/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
@@ -9,8 +8,8 @@ import Foundation
 @testable import IterableSDK
 
 extension String {
-    func toJsonDict() -> [AnyHashable : Any] {
-        return try! JSONSerialization.jsonObject(with: self.data(using: .utf8)!, options: []) as! [AnyHashable : Any]
+    func toJsonDict() -> [AnyHashable: Any] {
+        return try! JSONSerialization.jsonObject(with: data(using: .utf8)!, options: []) as! [AnyHashable: Any]
     }
 }
 
@@ -24,80 +23,124 @@ extension Dictionary where Key == AnyHashable {
     }
 }
 
-// Used only by ojbc tests. Remove after converting to Swift.
-extension IterableAPI {
-    @objc public static func initializeForObjcTesting() {
-        internalImplementation = IterableAPIInternal.initializeForTesting()
+extension URLRequest {
+    var serializedString: String {
+        let serializableRequest = createSerializableRequest()
+        let encodedData = try! JSONEncoder().encode(serializableRequest)
+        return String(bytes: encodedData, encoding: .utf8)!
     }
-
-    @objc public static func initializeForObjcTesting(apiKey: String) {
-        internalImplementation = IterableAPIInternal.initializeForTesting(apiKey: apiKey)
+    
+    func createSerializableRequest() -> SerializableRequest {
+        let url = self.url!
+        let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false)!
+        
+        return SerializableRequest(method: httpMethod!,
+                                   host: urlComponents.host!,
+                                   path: urlComponents.path,
+                                   queryParameters: mapQueryItems(urlComponents: urlComponents),
+                                   headers: allHTTPHeaderFields,
+                                   bodyString: getBodyString())
     }
+    
+    private func mapQueryItems(urlComponents: URLComponents) -> [String: String]? {
+        guard let queryItems = urlComponents.queryItems else {
+            return nil
+        }
+        
+        var result = [String: String]()
+        
+        queryItems.forEach { queryItem in
+            if let value = queryItem.value {
+                result[queryItem.name] = value
+            }
+        }
+        
+        return result
+    }
+    
+    private func getBodyString() -> String? {
+        guard let bodyData = httpBody else {
+            return nil
+        }
+        
+        return String(data: bodyData, encoding: .utf8)!
+    }
+}
 
-    @objc public static func initializeForObjcTesting(config: IterableConfig) {
-        internalImplementation = IterableAPIInternal.initializeForTesting(config: config)
+class MockDependencyContainer: DependencyContainerProtocol {
+    let dateProvider: DateProviderProtocol
+    let networkSession: NetworkSessionProtocol
+    let notificationStateProvider: NotificationStateProviderProtocol
+    let localStorage: LocalStorageProtocol
+    let inAppFetcher: InAppFetcherProtocol
+    let inAppDisplayer: InAppDisplayerProtocol
+    let inAppPersister: InAppPersistenceProtocol
+    let urlOpener: UrlOpenerProtocol
+    let applicationStateProvider: ApplicationStateProviderProtocol
+    let notificationCenter: NotificationCenterProtocol
+    let apnsTypeChecker: APNSTypeCheckerProtocol
+    
+    init(dateProvider: DateProviderProtocol,
+         networkSession: NetworkSessionProtocol,
+         notificationStateProvider: NotificationStateProviderProtocol,
+         localStorage: LocalStorageProtocol,
+         inAppFetcher: InAppFetcherProtocol,
+         inAppDisplayer: InAppDisplayerProtocol,
+         inAppPersister: InAppPersistenceProtocol,
+         urlOpener: UrlOpenerProtocol,
+         applicationStateProvider: ApplicationStateProviderProtocol,
+         notificationCenter: NotificationCenterProtocol,
+         apnsTypeChecker: APNSTypeCheckerProtocol) {
+        self.dateProvider = dateProvider
+        self.networkSession = networkSession
+        self.notificationStateProvider = notificationStateProvider
+        self.localStorage = localStorage
+        self.inAppFetcher = inAppFetcher
+        self.inAppDisplayer = inAppDisplayer
+        self.inAppPersister = inAppPersister
+        self.urlOpener = urlOpener
+        self.applicationStateProvider = applicationStateProvider
+        self.notificationCenter = notificationCenter
+        self.apnsTypeChecker = apnsTypeChecker
+    }
+    
+    func createInAppFetcher(apiClient _: ApiClientProtocol) -> InAppFetcherProtocol {
+        return inAppFetcher
     }
 }
 
 extension IterableAPI {
     // Internal Only used in unit tests.
     static func initializeForTesting(apiKey: String = "zeeApiKey",
-                           launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil,
-                           config: IterableConfig = IterableConfig(),
-                           dateProvider: DateProviderProtocol = SystemDateProvider(),
-                           networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = MockNetworkSession(),
-                           notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
-                           inAppSynchronizer: InAppSynchronizerProtocol = MockInAppSynchronizer(),
-                           inAppDisplayer: InAppDisplayerProtocol = MockInAppDisplayer(),
-                           inAppPersister: InAppPersistenceProtocol = MockInAppPesister(),
-                           urlOpener: UrlOpenerProtocol = MockUrlOpener(),
-                           applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
-                           notificationCenter: NotificationCenterProtocol = NotificationCenter.default) {
+                                     launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
+                                     config: IterableConfig = IterableConfig(),
+                                     dateProvider: DateProviderProtocol = SystemDateProvider(),
+                                     networkSession: NetworkSessionProtocol = MockNetworkSession(),
+                                     notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
+                                     inAppFetcher: InAppFetcherProtocol = MockInAppFetcher(),
+                                     inAppDisplayer: InAppDisplayerProtocol = MockInAppDisplayer(),
+                                     inAppPersister: InAppPersistenceProtocol = MockInAppPesister(),
+                                     urlOpener: UrlOpenerProtocol = MockUrlOpener(),
+                                     applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
+                                     notificationCenter: NotificationCenterProtocol = NotificationCenter.default,
+                                     apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker()) {
+        let mockDependencyContainer = MockDependencyContainer(dateProvider: dateProvider,
+                                                              networkSession: networkSession,
+                                                              notificationStateProvider: notificationStateProvider,
+                                                              localStorage: UserDefaultsLocalStorage(userDefaults: TestHelper.getTestUserDefaults()),
+                                                              inAppFetcher: inAppFetcher,
+                                                              inAppDisplayer: inAppDisplayer,
+                                                              inAppPersister: inAppPersister,
+                                                              urlOpener: urlOpener,
+                                                              applicationStateProvider: applicationStateProvider,
+                                                              notificationCenter: notificationCenter,
+                                                              apnsTypeChecker: apnsTypeChecker)
         
-        internalImplementation = IterableAPIInternal.initializeForTesting(apiKey: apiKey,
-                                                                launchOptions: launchOptions,
-                                                                config: config,
-                                                                dateProvider: dateProvider,
-                                                                networkSession: networkSession,
-                                                                notificationStateProvider: notificationStateProvider,
-                                                                inAppSynchronizer: inAppSynchronizer,
-                                                                inAppDisplayer: inAppDisplayer,
-                                                                inAppPersister: inAppPersister,
-                                                                urlOpener: urlOpener,
-                                                                applicationStateProvider: applicationStateProvider,
-                                                                notificationCenter: notificationCenter)
-    }
-}
-
-
-extension IterableAPIInternal {
-    @discardableResult static func initializeForTesting(apiKey: String = "zeeApiKey",
-                                                        launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil,
-                                                        config: IterableConfig = IterableConfig(),
-                                                        dateProvider: DateProviderProtocol = SystemDateProvider(),
-                                                        networkSession: @escaping @autoclosure () -> NetworkSessionProtocol = MockNetworkSession(),
-                                                        notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
-                                                        inAppSynchronizer: InAppSynchronizerProtocol = MockInAppSynchronizer(),
-                                                        inAppDisplayer: InAppDisplayerProtocol = MockInAppDisplayer(),
-                                                        inAppPersister: InAppPersistenceProtocol = MockInAppPesister(),
-                                                        urlOpener: UrlOpenerProtocol = MockUrlOpener(),
-                                                        applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
-                                                        notificationCenter: NotificationCenterProtocol = NotificationCenter.default) -> IterableAPIInternal {
-        queue.sync {
-            _sharedInstance = IterableAPIInternal(apiKey: apiKey,
-                                                  launchOptions: launchOptions,
-                                                  config: config,
-                                                  dateProvider: dateProvider,
-                                                  networkSession: networkSession,
-                                                  notificationStateProvider: notificationStateProvider,
-                                                  localStorage: UserDefaultsLocalStorage(userDefaults: TestHelper.getTestUserDefaults()),
-                                                  inAppSynchronizer: inAppSynchronizer,
-                                                  inAppDisplayer: inAppDisplayer,
-                                                  inAppPersister: inAppPersister,
-                                                  urlOpener: urlOpener,
-                                                  applicationStateProvider: applicationStateProvider,
-                                                  notificationCenter: notificationCenter)
-        }
-        return _sharedInstance!
+        internalImplementation = IterableAPIInternal(apiKey: apiKey,
+                                                     launchOptions: launchOptions,
+                                                     config: config,
+                                                     dependencyContainer: mockDependencyContainer)
+        
+        internalImplementation?.start().wait()
     }
 }

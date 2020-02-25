@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Advanced Inbox-->
+        <scene sceneID="j6n-PD-Cbe">
+            <objects>
+                <viewController storyboardIdentifier="AdvancedInbox" id="Gc6-ey-Ewu" customClass="IterableInboxNavigationViewController" customModule="IterableSDK" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="9A7-V0-gyK">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <viewLayoutGuide key="safeArea" id="XSM-Fg-jEu"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Advanced Inbox" image="Mail" id="oLQ-6w-i2D"/>
+                    <simulatedTabBarMetrics key="simulatedBottomBarMetrics"/>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="boolean" keyPath="groupSections" value="YES"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="viewDelegateClassName" value="inbox_customization.AdvancedInboxViewDelegate"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="navTitle" value="Advanced Inbox"/>
+                        <userDefinedRuntimeAttribute type="boolean" keyPath="largeTitles" value="YES"/>
+                    </userDefinedRuntimeAttributes>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="zzJ-Xh-Yu3" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1468" y="-613"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="Mail" width="29" height="29"/>
+    </resources>
+</document>

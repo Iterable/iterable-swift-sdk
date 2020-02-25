@@ -1,13 +1,15 @@
-osx_image: xcode10.2
+osx_image: xcode11.3
 language: swift
+
+# if debugging this script, don't forget to check the environment vars on https://travis-ci.com/Iterable/swift-sdk/settings
 
 before_install:
   - gem install xcpretty xcpretty-travis-formatter
 
 script:
-  - xcodebuild test -workspace swift-sdk.xcworkspace -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone Xs' -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES GCC_GENERATE_TEST_COVERAGE_FILES=YES | xcpretty -f `xcpretty-travis-formatter`
-  - bash <(curl -s https://codecov.io/bash)
-  - xcodebuild test -workspace swift-sdk.xcworkspace -scheme ios9-tests -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 6s,OS=9.0' -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES GCC_GENERATE_TEST_COVERAGE_FILES=YES | xcpretty -f `xcpretty-travis-formatter`
-  - bash <(curl -s https://codecov.io/bash)
+  # simulator unit testing (through travis-ci)
+  - xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11' -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES GCC_GENERATE_TEST_COVERAGE_FILES=YES | xcpretty -f `xcpretty-travis-formatter`
+
   - pod lib lint
 
+  - bash <(curl -s https://codecov.io/bash) -J 'swift-sdk'

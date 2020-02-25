@@ -21,7 +21,7 @@ struct DeeplinkHandler {
         }
     }
     
-    private static func show(deeplink: Deeplink)  {
+    private static func show(deeplink: Deeplink) {
         if let coffeeType = deeplink.toCoffeeType() {
             // single coffee
             show(coffee: coffeeType)
@@ -55,8 +55,7 @@ struct DeeplinkHandler {
             }
         }
     }
-
-
+    
     // This enum helps with parsing of Deeplinks.
     // Given a URL this enum will return a Deeplink.
     // The deep link comes in as http://domain.com/../mocha
@@ -66,7 +65,7 @@ struct DeeplinkHandler {
         case latte
         case cappuccino
         case black
-        case coffee(q:String?)
+        case coffee(q: String?)
         
         static func from(url: URL) -> Deeplink? {
             let page = url.lastPathComponent.lowercased()
@@ -93,10 +92,10 @@ struct DeeplinkHandler {
             guard let queryItems = components.queryItems else {
                 return .coffee(q: nil)
             }
-            guard let index = queryItems.index(where: {$0.name == "q"}) else {
+            guard let index = queryItems.firstIndex(where: { $0.name == "q" }) else {
                 return .coffee(q: nil)
             }
-
+            
             return .coffee(q: queryItems[index].value)
         }
         
@@ -104,7 +103,7 @@ struct DeeplinkHandler {
         // return nil if it refers to coffee list
         func toCoffeeType() -> CoffeeType? {
             switch self {
-            case .coffee(_):
+            case .coffee:
                 return nil
             case .black:
                 return .black

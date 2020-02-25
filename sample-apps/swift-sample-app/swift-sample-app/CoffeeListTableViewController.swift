@@ -11,14 +11,10 @@ import UIKit
 import IterableSDK
 
 class CoffeeListTableViewController: UITableViewController {
-    let inAppCheckInterval = 5.0
-
     @IBOutlet weak var loginOutBarButton: UIBarButtonItem!
     
-    /**
-     Set this value to show search.
-     */
-    var searchTerm: String? = nil {
+    // Set this value to show search.
+    var searchTerm: String? {
         didSet {
             if let searchTerm = searchTerm, !searchTerm.isEmpty {
                 DispatchQueue.main.async {
@@ -29,10 +25,10 @@ class CoffeeListTableViewController: UITableViewController {
             }
         }
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         searchController = UISearchController(searchResultsController: nil)
         navigationItem.searchController = searchController
         searchController.searchBar.placeholder = "Search"
@@ -50,11 +46,6 @@ class CoffeeListTableViewController: UITableViewController {
         }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-    }
-    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -67,15 +58,12 @@ class CoffeeListTableViewController: UITableViewController {
         }
     }
     
-    // MARK: - Table view data source
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    // MARK: - TableViewDataSourceDelegate Functions
+    
+    override func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
         return filtering ? filteredCoffees.count : coffees.count
     }
-
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "coffeeCell", for: indexPath)
         
@@ -86,16 +74,18 @@ class CoffeeListTableViewController: UITableViewController {
         
         return cell
     }
-
+    
     // MARK: Tap Handlers
-    @IBAction func loginOutBarButtonTapped(_ sender: UIBarButtonItem) {
+    
+    @IBAction func loginOutBarButtonTapped(_: UIBarButtonItem) {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let vc = storyboard.instantiateViewController(withIdentifier: "LoginNavController")
         present(vc, animated: true)
     }
     
     // MARK: - Navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    
+    override func prepare(for segue: UIStoryboardSegue, sender _: Any?) {
         guard let indexPath = tableView.indexPathForSelectedRow else {
             return
         }
@@ -106,13 +96,14 @@ class CoffeeListTableViewController: UITableViewController {
         
         coffeeViewController.coffee = coffees[indexPath.row]
     }
-
+    
     // MARK: Private
+    
     private let coffees: [CoffeeType] = [
         .cappuccino,
         .latte,
         .mocha,
-        .black
+        .black,
     ]
     
     private var filtering = false
@@ -120,19 +111,19 @@ class CoffeeListTableViewController: UITableViewController {
     private var searchController: UISearchController!
 }
 
-extension CoffeeListTableViewController : UISearchControllerDelegate {
-    func willDismissSearchController(_ searchController: UISearchController) {
+extension CoffeeListTableViewController: UISearchControllerDelegate {
+    func willDismissSearchController(_: UISearchController) {
         searchTerm = nil
     }
 }
 
-extension CoffeeListTableViewController : UISearchResultsUpdating {
+extension CoffeeListTableViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         if let text = searchController.searchBar.text, !text.isEmpty {
             filtering = true
-            filteredCoffees = coffees.filter({ (coffeeType) -> Bool in
+            filteredCoffees = coffees.filter { (coffeeType) -> Bool in
                 coffeeType.name.lowercased().contains(text.lowercased())
-            })
+            }
         } else {
             filtering = false
         }
@@ -140,8 +131,7 @@ extension CoffeeListTableViewController : UISearchResultsUpdating {
     }
 }
 
-extension CoffeeListTableViewController : StoryboardInstantiable {
+extension CoffeeListTableViewController: StoryboardInstantiable {
     static var storyboardName = "Main"
     static var storyboardId = "CoffeeListTableViewController"
 }
-

@@ -1,7 +1,4 @@
 //
-//  CommerceItem.swift
-//  new-ios-sdk
-//
 //  Created by Tapash Majumder on 6/6/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
@@ -14,24 +11,24 @@ import UIKit
 @objc public class CommerceItem: NSObject {
     /** id of this product */
     @objc public var id: String
-
+    
     /** name of this product */
     @objc public var name: String
-
+    
     /** price of this product */
     @objc public var price: NSNumber
-
+    
     /** quantity of this product */
     @objc public var quantity: UInt
-
+    
     /**
      Creates a `CommerceItem` with the specified properties
      
      - parameters:
-        - id:          id of the product
-        - name:        name of the product
-        - price:       price of the product
-        - quantity:    quantity of the product
+     - id:          id of the product
+     - name:        name of the product
+     - price:       price of the product
+     - quantity:    quantity of the product
      
      - returns: an instance of `CommerceItem` with the specified properties
      */
@@ -47,12 +44,10 @@ import UIKit
      
      - returns: An NSDictionary representing this item
      */
-    @objc public func toDictionary() -> [AnyHashable : Any] {
-        return [
-            "id": id,
-            "name": name,
-            "price": price,
-            "quantity": quantity
-        ]
+    @objc public func toDictionary() -> [AnyHashable: Any] {
+        return ["id": id,
+                "name": name,
+                "price": price,
+                "quantity": quantity]
     }
 }

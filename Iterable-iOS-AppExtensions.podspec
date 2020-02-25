@@ -17,14 +17,14 @@ Pod::Spec.new do |s|
 
   s.name         = "Iterable-iOS-AppExtensions"
   s.module_name  = "IterableAppExtensions"
-  s.version      = "6.1.5"
+  s.version      = "6.2.0"
   s.summary      = "App Extensions for Iterable SDK"
 
   s.description  = <<-DESC
                    App Extensions for Rich Push notifications with Iterable SDK
                    DESC
 
-  s.homepage     = "https://iterable.com/"
+  s.homepage     = "https://github.com/Iterable/swift-sdk.git"
 
 
   # ―――  Spec License  ――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -47,7 +47,8 @@ Pod::Spec.new do |s|
   #  profile URL.
   #
 
-  s.author             = { "Ilya Brin" => "ilya@iterable.com" }
+  s.author      = { "Tapash Majumder" => "tapash@iterable.com",
+                    "Jay Kim" => "jay.kim@iterable.com" }
 
   # ――― Platform Specifics ――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
@@ -74,14 +75,11 @@ Pod::Spec.new do |s|
   #  Not including the public_header_files will make all headers public.
   #
 
-  s.source_files  = "notification-extension/*.{h,m,swift}", "swift-sdk/ITBConsts.swift", "swift-sdk/IterableConstants.h"
-  # s.exclude_files = "Classes/Exclude"
-
-  # s.public_header_files = "Classes/**/*.h"
+  s.source_files  = "notification-extension/*.{h,m,swift}"
 
   s.pod_target_xcconfig = {
-    'SWIFT_VERSION' => '4.2'
+    'SWIFT_VERSION' => '5.2'
   }
 
-  s.swift_version = '4.2'
+  s.swift_version = '5.2'
 end

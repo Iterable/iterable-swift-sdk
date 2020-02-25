@@ -3,18 +3,16 @@
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
-import XCTest
-
 import Foundation
 import UserNotifications
+import XCTest
 
 @testable import IterableSDK
 
 // Note: This is used only by swift tests. So can't put this in Common
-//
-class MockNotificationStateProvider : NotificationStateProviderProtocol {
-    var notificationsEnabled: Promise<Bool> {
-        let promise = Promise<Bool>()
+class MockNotificationStateProvider: NotificationStateProviderProtocol {
+    var notificationsEnabled: Promise<Bool, Error> {
+        let promise = Promise<Bool, Error>()
         DispatchQueue.main.async {
             promise.resolve(with: self.enabled)
         }
@@ -24,7 +22,7 @@ class MockNotificationStateProvider : NotificationStateProviderProtocol {
     func registerForRemoteNotifications() {
         expectation?.fulfill()
     }
-
+    
     init(enabled: Bool, expectation: XCTestExpectation? = nil) {
         self.enabled = enabled
         self.expectation = expectation
@@ -33,4 +31,3 @@ class MockNotificationStateProvider : NotificationStateProviderProtocol {
     private let enabled: Bool
     private let expectation: XCTestExpectation?
 }
-

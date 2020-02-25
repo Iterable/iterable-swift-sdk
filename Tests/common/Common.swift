@@ -1,5 +1,4 @@
 //
-//
 //  Created by Tapash Majumder on 11/9/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
@@ -24,55 +23,56 @@ struct TestHelper {
     }
 }
 
-class InAppPollingSynchronizer : InAppSynchronizerProtocol {
-    weak var internalApi: IterableAPIInternal?
-    weak var inAppSyncDelegate: InAppSynchronizerDelegate?
+struct InAppTestHelper {
+    static func inAppMessages(fromPayload payload: [AnyHashable: Any]) -> [IterableInAppMessage] {
+        return InAppMessageParser.parse(payload: payload).compactMap(parseResultToOptionalMessage)
+    }
     
-    init() {
-        ITBInfo()
-        if #available(iOS 10.0, *) {
-            Timer.scheduledTimer(withTimeInterval: syncInterval, repeats: true) { [weak self] timer in
-                self?.sync(timer: timer)
-            }
-        } else {
-            // Fallback on earlier versions
-            Timer.scheduledTimer(timeInterval: syncInterval, target: self, selector: #selector(sync(timer:)), userInfo: nil, repeats: true)
+    private static func parseResultToOptionalMessage(result: IterableResult<IterableInAppMessage, InAppMessageParser.ParseError>) -> IterableInAppMessage? {
+        switch result {
+        case .failure:
+            return nil
+        case let .success(message):
+            return message
         }
     }
-    
-    func sync() {
-        guard let internalApi = self.internalApi else {
-            ITBError("Invalid state: expected InternalApi")
-            return
-        }
-        
-        InAppHelper.getInAppMessagesFromServer(internalApi: internalApi, number: numMessages).onSuccess {
-            if $0.count > 0 {
-                self.inAppSyncDelegate?.onInAppMessagesAvailable(messages: $0)
-            }
-            }.onError {
-                ITBError($0.localizedDescription)
-        }
-    }
-    
-    func remove(messageId: String) {
-        inAppSyncDelegate?.onInAppRemoved(messageId: messageId)
-    }
-    
-    @objc private func sync(timer: Timer) {
-        self.timer = timer
-        
-        sync()
-    }
-    
-    deinit {
-        ITBInfo()
-        timer?.invalidate()
-    }
-    
-    // in seconds
-    private let syncInterval = 1.0
-    private let numMessages = 10
-    private var timer: Timer?
 }
 
+struct SerializableRequest: Codable {
+    let method: String
+    let host: String
+    let path: String
+    let queryParameters: [String: String]?
+    let headers: [String: String]?
+    let bodyString: String? // because we can't serialize dictionary with value of type 'Any'
+    
+    var serializedString: String {
+        let encodedData = try! JSONEncoder().encode(self)
+        return String(bytes: encodedData, encoding: .utf8)!
+    }
+    
+    var body: [AnyHashable: Any]? {
+        guard let bodyString = bodyString else {
+            return nil
+        }
+        
+        return try? JSONSerialization.jsonObject(with: bodyString.data(using: .utf8)!, options: []) as? [AnyHashable: Any]
+    }
+    
+    static func create(from string: String) -> SerializableRequest {
+        return try! JSONDecoder().decode(SerializableRequest.self, from: string.data(using: .utf8)!)
+    }
+}
+
+extension SerializableRequest: CustomStringConvertible {
+    var description: String {
+        return """
+        method: \(method),
+        host: \(host),
+        path: \(path),
+        headers: \(headers?.description ?? "nil"),
+        queryParameters: \(queryParameters?.description ?? "nil"),
+        body: \(body?.description ?? "nil")
+        """
+    }
+}

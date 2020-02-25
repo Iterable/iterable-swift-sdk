@@ -1,58 +1,59 @@
 //
-//
 //  Created by Tapash Majumder on 9/5/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
-import XCTest
-
 import OHHTTPStubs
+import XCTest
 
 @testable import IterableSDK
 
 class IterableAPIResponseTests: XCTestCase {
-    func testPlatformAndVersionHeaderInGetRequest() {
-        let request = IterableRequestUtil.createGetRequest(forApiEndPoint: .ITBL_ENDPOINT_API,
-                                                           path: "",
-                                                           args: [AnyHashable.ITBL_KEY_API_KEY: "api_key_here"])!
+    private let apiKey = "zee_api_key"
+    
+    func testHeadersInGetRequest() {
+        let iterableRequest = IterableRequest.get(GetRequest(path: "", args: ["var1": "value1"]))
+        let urlRequest = createApiClient(networkSession: MockNetworkSession(statusCode: 200)).convertToURLRequest(iterableRequest: iterableRequest)!
         
-        XCTAssertEqual(request.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_PLATFORM), .ITBL_PLATFORM_IOS)
-        XCTAssertEqual(request.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_VERSION), IterableAPI.sdkVersion)
+        verifyIterableHeaders(urlRequest)
     }
     
-    func testPlatformAndVersionHeaderInPostRequest() {
-        let request = IterableRequestUtil.createPostRequest(forApiEndPoint: .ITBL_ENDPOINT_API,
-                                                            path: "",
-                                                            apiKey: "api_key_here",
-                                                            args: nil,
-                                                            body: [:])!
+    func testHeadersInPostRequest() {
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: ["var1": "value1"], body: [:]))
+        let urlRequest = createApiClient(networkSession: MockNetworkSession(statusCode: 200)).convertToURLRequest(iterableRequest: iterableRequest)!
         
-        XCTAssertEqual(request.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_PLATFORM), .ITBL_PLATFORM_IOS)
-        XCTAssertEqual(request.value(forHTTPHeaderField: AnyHashable.ITBL_HEADER_SDK_VERSION), IterableAPI.sdkVersion)
+        verifyIterableHeaders(urlRequest)
+    }
+    
+    fileprivate func verifyIterableHeaders(_ urlRequest: URLRequest) {
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.sdkPlatform), JsonValue.iOS.jsonStringValue)
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.sdkVersion), IterableAPI.sdkVersion)
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.apiKey), apiKey)
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: "Content-Type"), "application/json")
     }
     
     func testResponseCode200() {
         let xpectation = expectation(description: "response code 200")
         let networkSession = MockNetworkSession(statusCode: 200)
-        let apiInternal = IterableAPIInternal.initializeForTesting(apiKey: "", networkSession: networkSession)
-        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
-        apiInternal.sendRequest(request,
-                                onSuccess: { (result) in
-                                    xpectation.fulfill()
-        },
-                                onFailure: nil)
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
+        
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onSuccess { _ in
+            xpectation.fulfill()
+        }
+        
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
     func testResponseCode200WithNoData() {
         let xpectation = expectation(description: "no data")
         let networkSession = MockNetworkSession(statusCode: 200, data: nil)
-        let apiInternal = IterableAPIInternal.initializeForTesting(apiKey: "", networkSession: networkSession)
-        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
-        apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
+        
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { sendError in
             xpectation.fulfill()
-            XCTAssert(reason!.lowercased().contains("no data"))
+            XCTAssert(sendError.reason!.lowercased().contains("no data"))
         }
+        
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
@@ -60,106 +61,133 @@ class IterableAPIResponseTests: XCTestCase {
         let xpectation = expectation(description: "invalid json")
         let data = "{'''}}".data(using: .utf8)!
         let networkSession = MockNetworkSession(statusCode: 200, data: data)
-        let apiInternal = IterableAPIInternal.initializeForTesting(apiKey: "", networkSession: networkSession)
-        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
-        apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
+        
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { sendError in
             xpectation.fulfill()
-            XCTAssert(reason!.lowercased().contains("could not parse json"))
+            XCTAssert(sendError.reason!.lowercased().contains("could not parse json"))
         }
+        
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
     func testResponseCode400WithoutMessage() { // 400 = bad reqeust
         let xpectation = expectation(description: "400 without message")
         let networkSession = MockNetworkSession(statusCode: 400)
-        let apiInternal = IterableAPIInternal.initializeForTesting(apiKey: "", networkSession: networkSession)
-        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
-        apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
+        
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { sendError in
             xpectation.fulfill()
-            XCTAssert(reason!.lowercased().contains("invalid request"))
+            XCTAssert(sendError.reason!.lowercased().contains("invalid request"))
         }
+        
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
     func testResponseCode400WitMessage() {
         let xpectation = expectation(description: "400 with message")
-        let networkSession = MockNetworkSession(statusCode: 400, json: ["msg" : "Test error"])
-        let apiInternal = IterableAPIInternal.initializeForTesting(apiKey: "", networkSession: networkSession)
-        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
-        apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
+        let networkSession = MockNetworkSession(statusCode: 400, json: ["msg": "Test error"])
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
+        
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { sendError in
             xpectation.fulfill()
-            XCTAssert(reason!.lowercased().contains("test error"))
+            XCTAssert(sendError.reason!.lowercased().contains("test error"))
         }
+        
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
     func testResponseCode401() { // 401 = unauthorized
         let xpectation = expectation(description: "401")
         let networkSession = MockNetworkSession(statusCode: 401)
-        let apiInternal = IterableAPIInternal.initializeForTesting(apiKey: "", networkSession: networkSession)
-        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
-        apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
+        
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { sendError in
             xpectation.fulfill()
-            XCTAssert(reason!.lowercased().contains("invalid api key"))
+            XCTAssert(sendError.reason!.lowercased().contains("invalid api key"))
         }
+        
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
     func testResponseCode500() { // 500 = internal server error
         let xpectation = expectation(description: "500")
         let networkSession = MockNetworkSession(statusCode: 500)
-        let apiInternal = IterableAPIInternal.initializeForTesting(apiKey: "", networkSession: networkSession)
-        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
-        apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
+        
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { sendError in
             xpectation.fulfill()
-            XCTAssert(reason!.lowercased().contains("internal server error"))
+            XCTAssert(sendError.reason!.lowercased().contains("internal server error"))
         }
+        
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
     func testNon200ResponseCode() { // 302 = redirection
         let xpectation = expectation(description: "non 200")
         let networkSession = MockNetworkSession(statusCode: 302)
-        let apiInternal = IterableAPIInternal.initializeForTesting(apiKey: "", networkSession: networkSession)
-        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
-        apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
+        
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { sendError in
             xpectation.fulfill()
-            XCTAssert(reason!.lowercased().contains("non-200 response"))
+            XCTAssert(sendError.reason!.lowercased().contains("non-200 response"))
         }
+        
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
     func testNoNetworkResponse() {
         let xpectation = expectation(description: "no network response")
         let networkSession = NoNetworkNetworkSession()
-        let apiInternal = IterableAPIInternal.initializeForTesting(apiKey: "", networkSession: networkSession)
-        let request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
-        apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
+        
+        createApiClient(networkSession: networkSession).send(iterableRequest: iterableRequest).onError { sendError in
             xpectation.fulfill()
-            XCTAssert(reason!.lowercased().contains("nsurlerrordomain"))
+            XCTAssert(sendError.reason!.lowercased().contains("nsurlerrordomain"))
         }
+        
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
     func testNetworkTimeoutResponse() {
         let xpectation = expectation(description: "timeout network response")
         
-        HTTPStubs.stubRequests(passingTest: { (request) -> Bool in
-            return true
-        }) { (request) -> HTTPStubsResponse in
+        let responseTime = 2.0
+        let timeout = 0.1
+        
+        HTTPStubs.stubRequests(passingTest: { (_) -> Bool in
+            true
+        }) { (_) -> HTTPStubsResponse in
             let response = HTTPStubsResponse(data: try! JSONSerialization.data(withJSONObject: [:], options: []), statusCode: 200, headers: nil)
             response.requestTime = 0.0
-            response.responseTime = 2.0
+            response.responseTime = responseTime
             return response
         }
+        let networkSession = URLSession(configuration: URLSessionConfiguration.default)
         
-        let apiInternal = IterableAPIInternal.initializeForTesting(apiKey: "", networkSession: URLSession(configuration: URLSessionConfiguration.default))
-        var request = apiInternal.createPostRequest(forPath: "", withBody: [:])!
-        request.timeoutInterval = 0.1
-        apiInternal.sendRequest(request, onSuccess: nil) { (reason, data) in
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
+        
+        let apiClient = createApiClient(networkSession: networkSession)
+        var urlRequest = apiClient.convertToURLRequest(iterableRequest: iterableRequest)!
+        urlRequest.timeoutInterval = timeout
+        
+        NetworkHelper.sendRequest(urlRequest, usingSession: networkSession).onError { sendError in
             xpectation.fulfill()
-            XCTAssert(reason!.lowercased().contains("timed out"))
+            XCTAssert(sendError.reason!.lowercased().contains("timed out"))
         }
+        
         wait(for: [xpectation], timeout: testExpectationTimeout)
+    }
+    
+    private func createApiClient(networkSession: NetworkSessionProtocol) -> ApiClient {
+        class AuthProviderImpl: AuthProvider {
+            let auth: Auth = Auth(userId: nil, email: "user@example.com")
+        }
+        
+        return ApiClient(apiKey: apiKey,
+                         authProvider: AuthProviderImpl(),
+                         endPoint: Endpoint.api,
+                         networkSession: networkSession,
+                         deviceMetadata: IterableAPI.internalImplementation!.deviceMetadata)
     }
 }

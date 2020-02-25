@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0940"
+   LastUpgradeVersion = "1020"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -68,9 +68,18 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      shouldUseLaunchSchemeArgsEnv = "YES"
       codeCoverageEnabled = "YES"
-      onlyGenerateCoverageForSpecifiedTargets = "YES"
-      shouldUseLaunchSchemeArgsEnv = "YES">
+      onlyGenerateCoverageForSpecifiedTargets = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "ACF560D220E443BF000AAC23"
+            BuildableName = "host-app.app"
+            BlueprintName = "host-app"
+            ReferencedContainer = "container:swift-sdk.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <CodeCoverageTargets>
          <BuildableReference
             BuildableIdentifier = "primary"
@@ -102,16 +111,6 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "AC7B143920D02D8700877BFE"
-               BuildableName = "swift-sdk-objc-tests.xctest"
-               BlueprintName = "swift-sdk-objc-tests"
-               ReferencedContainer = "container:swift-sdk.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "ACC87762215C20B50097E29B"
                BuildableName = "ui-tests.xctest"
                BlueprintName = "ui-tests"
@@ -128,18 +127,17 @@
                ReferencedContainer = "container:swift-sdk.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "ACDA976B23159C39004C412E"
+               BuildableName = "inbox-ui-tests-app-ui-tests.xctest"
+               BlueprintName = "inbox-ui-tests-app-ui-tests"
+               ReferencedContainer = "container:swift-sdk.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "ACF560D220E443BF000AAC23"
-            BuildableName = "host-app.app"
-            BlueprintName = "host-app"
-            ReferencedContainer = "container:swift-sdk.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
-      <AdditionalOptions>
-      </AdditionalOptions>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -161,8 +159,6 @@
             ReferencedContainer = "container:swift-sdk.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <AdditionalOptions>
-      </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

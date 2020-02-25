@@ -1,14 +1,13 @@
 //
-//
 //  Created by Tapash Majumder on 7/24/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
 import Foundation
 
-typealias SendRequestValue = [AnyHashable : Any]
+typealias SendRequestValue = [AnyHashable: Any]
 
-struct SendRequestError : Error {
+struct SendRequestError: Error {
     let reason: String?
     let data: Data?
     
@@ -17,12 +16,12 @@ struct SendRequestError : Error {
         self.data = data
     }
     
-    static func createErroredFuture(reason: String? = nil) -> Future<SendRequestValue> {
-        return Promise<SendRequestValue>(error: SendRequestError(reason: reason))
+    static func createErroredFuture<T>(reason: String? = nil) -> Future<T, SendRequestError> {
+        return Promise<T, SendRequestError>(error: SendRequestError(reason: reason))
     }
 }
 
-extension SendRequestError : LocalizedError {
+extension SendRequestError: LocalizedError {
     var localizedDescription: String {
         return reason ?? ""
     }
@@ -31,51 +30,102 @@ extension SendRequestError : LocalizedError {
 protocol NetworkSessionProtocol {
     typealias CompletionHandler = (Data?, URLResponse?, Error?) -> Void
     func makeRequest(_ request: URLRequest, completionHandler: @escaping CompletionHandler)
+    func makeDataRequest(with url: URL, completionHandler: @escaping CompletionHandler)
 }
 
-extension URLSession : NetworkSessionProtocol {
+extension URLSession: NetworkSessionProtocol {
     func makeRequest(_ request: URLRequest, completionHandler: @escaping CompletionHandler) {
-        let task = dataTask(with: request) { (data, response, error) in
+        let task = dataTask(with: request) { data, response, error in
             completionHandler(data, response, error)
         }
+        
+        task.resume()
+    }
+    
+    func makeDataRequest(with url: URL, completionHandler: @escaping CompletionHandler) {
+        let task = dataTask(with: url) { data, response, error in
+            completionHandler(data, response, error)
+        }
+        
         task.resume()
     }
 }
 
 struct NetworkHelper {
-    static func sendRequest(_ request: URLRequest, usingSession networkSession: NetworkSessionProtocol) -> Future<SendRequestValue>  {
-        let promise = Promise<SendRequestValue>()
+    static func getData(fromUrl url: URL, usingSession networkSession: NetworkSessionProtocol) -> Future<Data, Error> {
+        let promise = Promise<Data, Error>()
         
-        networkSession.makeRequest(request) { (data, response, error) in
-            let result = createResultFromNetworkResponse(data: data, response: response, error: error)
-            switch (result) {
-            case .value(let value):
-                promise.resolve(with: value)
-            case .error(let error):
-                promise.reject(with: error)
+        networkSession.makeDataRequest(with: url) { data, response, error in
+            let result = createDataResultFromNetworkResponse(data: data, response: response, error: error)
+            
+            switch result {
+            case let .success(value):
+                DispatchQueue.main.async {
+                    promise.resolve(with: value)
+                }
+            case let .failure(error):
+                DispatchQueue.main.async {
+                    promise.reject(with: error)
+                }
             }
         }
-            
+        
         return promise
     }
     
-    static func createResultFromNetworkResponse(data: Data?, response: URLResponse?, error: Error?) -> Result<SendRequestValue> {
-        if let error = error {
-            return .error(SendRequestError(reason: "\(error.localizedDescription)", data: data))
+    static func sendRequest(_ request: URLRequest, usingSession networkSession: NetworkSessionProtocol) -> Future<SendRequestValue, SendRequestError> {
+        #if NETWORK_DEBUG
+            print()
+            print("====================================================>")
+            print("sending request: \(request)")
+            if let headers = request.allHTTPHeaderFields {
+                print("headers:")
+                print(headers)
+            }
+            if let body = request.httpBody {
+                if let dict = try? JSONSerialization.jsonObject(with: body, options: []) {
+                    print("request body:")
+                    print(dict)
+                }
+            }
+            print("====================================================>")
+            print()
+        #endif
+        
+        let promise = Promise<SendRequestValue, SendRequestError>()
+        
+        networkSession.makeRequest(request) { data, response, error in
+            let result = createResultFromNetworkResponse(data: data, response: response, error: error)
+            
+            switch result {
+            case let .success(value):
+                promise.resolve(with: value)
+            case let .failure(error):
+                promise.reject(with: error)
+            }
         }
+        
+        return promise
+    }
+    
+    static func createResultFromNetworkResponse(data: Data?, response: URLResponse?, error: Error?) -> Result<SendRequestValue, SendRequestError> {
+        if let error = error {
+            return .failure(SendRequestError(reason: "\(error.localizedDescription)", data: data))
+        }
+        
         guard let response = response as? HTTPURLResponse else {
-            return .error(SendRequestError(reason: "No response", data: nil))
+            return .failure(SendRequestError(reason: "No response", data: nil))
         }
         
         let responseCode = response.statusCode
         
         let json: Any?
-        var jsonError: Error? = nil
+        var jsonError: Error?
         
         if let data = data, data.count > 0 {
             do {
                 json = try JSONSerialization.jsonObject(with: data, options: [])
-            } catch let error {
+            } catch {
                 jsonError = error
                 json = nil
             }
@@ -84,15 +134,16 @@ struct NetworkHelper {
         }
         
         if responseCode == 401 {
-            return .error(SendRequestError(reason: "Invalid API Key", data: data))
+            return .failure(SendRequestError(reason: "Invalid API Key", data: data))
         } else if responseCode >= 400 {
             var reason = "Invalid Request"
-            if let jsonDict = json as? [AnyHashable : Any], let msgFromDict = jsonDict["msg"] as? String {
+            if let jsonDict = json as? [AnyHashable: Any], let msgFromDict = jsonDict["msg"] as? String {
                 reason = msgFromDict
             } else if responseCode >= 500 {
                 reason = "Internal Server Error"
             }
-            return .error(SendRequestError(reason: reason, data: data))
+            
+            return .failure(SendRequestError(reason: reason, data: data))
         } else if responseCode == 200 {
             if let data = data, data.count > 0 {
                 if let jsonError = jsonError {
@@ -100,17 +151,30 @@ struct NetworkHelper {
                     if let stringValue = String(data: data, encoding: .utf8) {
                         reason = "Could not parse json: \(stringValue), error: \(jsonError.localizedDescription)"
                     }
-                    return .error(SendRequestError(reason: reason, data: data))
-                } else if let json = json as? [AnyHashable : Any] {
-                    return .value(json)
+                    
+                    return .failure(SendRequestError(reason: reason, data: data))
+                } else if let json = json as? [AnyHashable: Any] {
+                    return .success(json)
                 } else {
-                    return .error(SendRequestError(reason: "Response is not a dictionary", data: data))
+                    return .failure(SendRequestError(reason: "Response is not a dictionary", data: data))
                 }
             } else {
-                return .error(SendRequestError(reason: "No data received", data: data))
+                return .failure(SendRequestError(reason: "No data received", data: data))
             }
         } else {
-            return .error(SendRequestError(reason: "Received non-200 response: \(responseCode)", data: data))
+            return .failure(SendRequestError(reason: "Received non-200 response: \(responseCode)", data: data))
         }
+    }
+    
+    static func createDataResultFromNetworkResponse(data: Data?, response _: URLResponse?, error: Error?) -> Result<Data, SendRequestError> {
+        if let error = error {
+            return .failure(SendRequestError(reason: "\(error.localizedDescription)"))
+        }
+        
+        guard let data = data else {
+            return .failure(SendRequestError(reason: "No data"))
+        }
+        
+        return .success(data)
     }
 }

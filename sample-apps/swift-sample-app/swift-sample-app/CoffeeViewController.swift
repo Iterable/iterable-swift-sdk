@@ -20,7 +20,7 @@ class CoffeeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         guard let coffee = coffee else {
             return
         }
@@ -29,25 +29,26 @@ class CoffeeViewController: UIViewController {
         imageView.image = coffee.image
     }
     
-    @IBAction func handleBuyButtonTap(_ sender: Any) {
+    @IBAction func handleBuyButtonTap(_: Any) {
         guard let coffee = coffee else {
             return
         }
         
         let attributionInfo = IterableAPI.attributionInfo
         
-        var dataFields = Dictionary<String, Any>()
+        var dataFields = [String: Any]()
         if let attributionInfo = attributionInfo {
             dataFields["campaignId"] = attributionInfo.campaignId
             dataFields["templateId"] = attributionInfo.templateId
             dataFields["messageId"] = attributionInfo.messageId
         }
-        //ITBL: Track attribution to purchase
+        
+        // ITBL: Track attribution to purchase
         IterableAPI.track(purchase: 10.0, items: [CommerceItem(id: coffee.name.lowercased(), name: coffee.name, price: 10.0, quantity: 1)], dataFields: dataFields)
     }
 }
 
-extension CoffeeViewController : StoryboardInstantiable {
+extension CoffeeViewController: StoryboardInstantiable {
     static var storyboardName = "Main"
     static var storyboardId = "CoffeeViewController"
 }

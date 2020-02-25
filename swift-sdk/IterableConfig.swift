@@ -1,7 +1,4 @@
 //
-//  IterableConfig.swift
-//  swift-sdk
-//
 //  Created by Tapash Majumder on 6/15/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
@@ -11,10 +8,10 @@ import Foundation
 /**
  * Custom URL handling delegate
  */
-@objc public protocol IterableURLDelegate: class {
+@objc public protocol IterableURLDelegate: AnyObject {
     /**
-     * Callback called for a deeplink action. Return true to override default behavior
-     * - parameter url:     Deeplink URL
+     * Callback called for a deep link action. Return true to override default behavior
+     * - parameter url:     Deep link URL
      * - parameter context:  Metadata containing the original action and the source: push or universal link.
      * - returns: Boolean value. Return true if the URL was handled to override default behavior.
      */
@@ -24,22 +21,22 @@ import Foundation
 /**
  * Custom action handling delegate
  */
-@objc public protocol IterableCustomActionDelegate: class {
+@objc public protocol IterableCustomActionDelegate: AnyObject {
     /**
      * Callback called for custom actions from push notifications
      * - parameter action:  `IterableAction` object containing action payload
      * - parameter context:  Metadata containing the original action and the source: push or universal link.
      * - returns: Boolean value. Reserved for future use.
      */
-    @objc(handleIterableCustomAction:context:) func handle(iterableCustomAction action:IterableAction, inContext context: IterableActionContext) -> Bool
+    @objc(handleIterableCustomAction:context:) func handle(iterableCustomAction action: IterableAction, inContext context: IterableActionContext) -> Bool
 }
 
 /**
- * This protocol allows you to override default behavior when new inApps arrive.
+ * This protocol allows you to override default behavior when new in-app messages arrive.
  */
-@objc public protocol IterableInAppDelegate : class {
+@objc public protocol IterableInAppDelegate: AnyObject {
     /**
-     * This method is called when new inApp message is available.
+     * This method is called when new in-app message is available.
      * The default behavior is to `show` if you don't override this method.
      * - parameter message: `IterableInAppMessage` object containing information regarding inApp to display
      * - returns: Return `show` to show the inApp or `skip` to skip this.
@@ -50,7 +47,7 @@ import Foundation
 /**
  * Lowest level that will be logged. By default the LogLevel is set to LogLevel.info.
  */
-@objc public enum LogLevel : Int {
+@objc public enum LogLevel: Int {
     case debug = 1
     case info
     case error
@@ -59,7 +56,7 @@ import Foundation
 /**
  * Logging Delegate.
  */
-@objc public protocol IterableLogDelegate: class {
+@objc public protocol IterableLogDelegate: AnyObject {
     /**
      * Log a message.
      * - parameter level: The log level.
@@ -71,7 +68,7 @@ import Foundation
 /**
  Enum representing push platform; apple push notification service, production vs sandbox
  */
-@objc public enum PushServicePlatform : Int {
+@objc public enum PushServicePlatform: Int {
     /** The sandbox push service */
     case sandbox
     /** The production push service */
@@ -83,17 +80,18 @@ import Foundation
 /**
  Iterable Configuration Object. Use this when initializing the API.
  */
-@objcMembers
-public class IterableConfig : NSObject {
+@objcMembers public class IterableConfig: NSObject {
     /**
-     * Push integration name – used for token registration.
-     * Make sure the name of this integration matches the one set up in Iterable console.
+     * You don't have to set this variable. Set this value only if you are an existing Iterable customer who has already setup mobile integrations in Iterable Web UI.
+     * In that case, set this variable to the push integration name that you have set for 'APNS' in Iterable Web UI.
+     * To view your existing integrations, navigate to Settings > Mobile Apps
      */
     public var pushIntegrationName: String?
     
     /**
-     * Push integration name for development builds – used for token registration.
-     * Make sure the name of this integration matches the one set up in Iterable console.
+     * You don't have to set this variable. Set this value only if you are an existing Iterable customer who has already setup mobile integrations in Iterable Web UI.
+     * In that case, set this variable to the push integration name that you have set for 'APNS_SANDBOX' in Iterable Web UI.
+     * To view your existing integrations, navigate to Settings > Mobile Apps
      */
     public var sandboxPushIntegrationName: String?
     
@@ -106,15 +104,15 @@ public class IterableConfig : NSObject {
     
     /// Handles Iterable actions of type 'openUrl'
     public weak var urlDelegate: IterableURLDelegate?
-
+    
     /// How to handle IterableActions which are other than 'openUrl'
     public weak var customActionDelegate: IterableCustomActionDelegate?
     
-    /// When set to true, IterableSDK will automatically register and deregister 
+    /// When set to true, IterableSDK will automatically register and deregister
     /// notification tokens.
     public var autoPushRegistration = true
     
-    /// When set to true, it will check for deferred deeplinks on first time app launch
+    /// When set to true, it will check for deferred deep links on first time app launch
     /// after installation from the App Store.
     public var checkForDeferredDeeplink = false
     
@@ -131,7 +129,11 @@ public class IterableConfig : NSObject {
     /// By default, every single inApp will be shown as soon as it is available.
     /// If more than 1 inApp is available, we show the first.
     public var inAppDelegate: IterableInAppDelegate = DefaultInAppDelegate()
-
+    
     /// How many seconds to wait before showing the next inApp, if there are more than one present
     public var inAppDisplayInterval: Double = 30.0
+    
+    /// These are internal. Do not change
+    internal var apiEndpoint = Endpoint.api
+    internal var linksEndpoint = Endpoint.links
 }
