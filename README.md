@@ -39,7 +39,7 @@ For more information, read Iterable's [Setting up iOS Push Notifications](https:
 
 ## Installation
 
-To install this SDK, use [Carthage](https://github.com/Carthage/Carthage), [CocoaPods](https://cocoapods.org/), [Swift Package Manager](https://swift.org/package-manager/) (through Xcode or command line), or install it manually.
+To install this SDK, use [Swift Package Manager](https://swift.org/package-manager/) (through Xcode or command line),  [CocoaPods](https://cocoapods.org/), [Carthage](https://github.com/Carthage/Carthage), or install it manually.
 
 ### Swift Package Manager
 
