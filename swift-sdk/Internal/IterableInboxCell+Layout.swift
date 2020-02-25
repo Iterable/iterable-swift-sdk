@@ -106,6 +106,7 @@ extension IterableInboxCell {
     
     private static func createIconImageView() -> UIImageView {
         let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.widthAnchor.constraint(equalToConstant: 60.0).isActive = true
         imageView.heightAnchor.constraint(equalToConstant: 60.0).isActive = true
