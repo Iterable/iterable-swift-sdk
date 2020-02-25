@@ -3,14 +3,19 @@
 [![pod](https://badge.fury.io/co/Iterable-iOS-SDK.svg)](https://cocoapods.org/pods/Iterable-iOS-SDK)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 
-# Table of contents
+# Iterable iOS SDK
 
+The Iterable iOS SDK is a Swift implementation of an iOS client for Iterable, for iOS versions 9.0 and higher.
+
+## Table of contents
+
+- [Before starting](#before-starting)
 - [Installation](#installation)
-- [Installing with a dependency manager](#installing-with-a-dependency-manager)
     - [Swift Package Manager](#swift-package-manager)
     - [CocoaPods](#cocoapods)
     - [Carthage](#carthage)
     - [Manual Installation](#manual-installation)
+    - [Beta versions](#beta-versions)
 - [Migrating from a version prior to 6.1.0](#migrating-from-a-version-prior-to-610)
 - [Sample projects](#sample-projects)
 - [Configuring the SDK](#configuring-the-sdk)
@@ -25,10 +30,6 @@
 - [Additional information](#additional-information)
 - [License](#license)
 - [Want to Contribute?](#want-to-contribute)
-
-# Iterable iOS SDK
-
-The Iterable iOS SDK is a Swift implementation of an iOS client for Iterable, for iOS versions 9.0 and higher.
 
 ## Before starting
 
