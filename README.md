@@ -194,7 +194,7 @@ Attached to the release, you will find two framework bundles:
 
 > &#x26A0; **IMPORTANT**
 > Beta versions of this SDK are subject to Iterable's 
-[Beta Mobile SDK Terms of Service](https://support.iterable.com/hc/articles/360034753412).
+> [Beta Mobile SDK Terms of Service](https://support.iterable.com/hc/articles/360034753412).
 
 To install a beta version of Iterable's iOS SDK, use CocoaPods or Carthage:
 
@@ -798,11 +798,7 @@ allows users to read them at their convenience. The SDK provides a default user
 interface for the inbox, which can be customized to match your brand's styles.
 
 To learn more about Mobile Inbox, how to customize it, and events related to 
-its usage, read the following documentation on Iterable's support portal:
-
-- [Mobile Inbox](https://support.iterable.com/hc/articles/360034903151)
-- [Setting up Mobile Inbox on iOS](https://support.iterable.com/hc/articles/360039137271)
-- [Customizing Mobile Inbox on iOS](https://support.iterable.com/hc/articles/360039091471)
+its usage, read Iterable's [Mobile Developer Guides](https://support.iterable.com/hc/categories/360002288712).
 
 ### Custom events
 
@@ -832,11 +828,7 @@ To do this, Iterable sends a silent push notification some time (currently, 12 h
 
 ## Additional information
 
-For more information, take a look at:
-
-- Iterable's [iOS SDK Release Notes](https://support.iterable.com/hc/articles/360027798391)
-- Iterable's [Setting Up iOS Push Notifications](https://support.iterable.com/hc/articles/115000315806) guide
-- Iterable's [Push Notification Setup FAQs](http://support.iterable.com/hc/articles/206791196)
+For more information, read Iterable's [Mobile Developer Guides](https://support.iterable.com/hc/categories/360002288712).
 
 ## License
 
