@@ -74,6 +74,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
         return .shown(createResult.futureClickedURL)
     }
     
+    // deprecated - will be removed in version 6.3.x or above
     static func showSystemNotification(withTitle title: String,
                                        body: String,
                                        buttonLeft: String?,

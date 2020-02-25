@@ -32,7 +32,7 @@ class MockInAppFetcher: InAppFetcherProtocol {
         
         let result = Promise<Void, Error>()
         
-        let inAppManager = (IterableAPI.inAppManager as! IterableInAppManagerProtocolInternal)
+        let inAppManager = (IterableAPI.inAppManager as! IterableInternalInAppManagerProtocol)
         inAppManager.scheduleSync().onSuccess { _ in
             result.resolve(with: ())
         }

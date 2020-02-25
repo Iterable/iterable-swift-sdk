@@ -24,5 +24,21 @@ extension MainViewController {
 public class FilterByMessageTypeInboxViewDelegate: IterableInboxViewControllerViewDelegate {
     public required init() {}
     
-    public let filter = IterableInboxViewController.DefaultFilter.usingCustomPayloadMessageType(in: "promotional", "transactional")
+    public let filter: (IterableInAppMessage) -> Bool = FilterByMessageTypeInboxViewDelegate.createFilterUsingCustomPayloadMessageType(in: "promotional", "transactional")
+    
+    /// This filter looks at `customPayload` of inbox message and assumes that the JSON key `messageType` holds the type of message
+    /// and it returns true for message of particular message type(s).
+    /// e.g., if you set `filter = FilterByMessageTypeInboxViewDelegate.createFilterUsingCustomPayloadMessageType(in: "transactional", "promotional")`
+    /// you will be able to see messages with custom payload {"messageType": "transactional"} or {"messageType": "promotional"}
+    /// but you will not be able to see messages with custom payload {"messageType": "newsFeed"}
+    /// - parameter in: The message type(s) that should be shown.
+    public static func createFilterUsingCustomPayloadMessageType(in messageTypes: String...) -> ((IterableInAppMessage) -> Bool) {
+        return {
+            guard let payload = $0.customPayload as? [String: AnyHashable], let messageType = payload["messageType"] as? String else {
+                return false
+            }
+            
+            return messageTypes.first(where: { $0 == messageType }).map { _ in true } ?? false
+        }
+    }
 }

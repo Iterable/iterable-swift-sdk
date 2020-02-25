@@ -44,12 +44,6 @@ import UIKit
     /// - parameter source: The source of deletion `inboxSwipe` or `deleteButton`.`
     @objc(removeMessage:location:source:) func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource)
     
-    /// - parameter message: The message to remove.
-    /// - parameter location: The location from where this message was shown. `inbox` or `inApp`.
-    /// - parameter source: The source of deletion `inboxSwipe` or `deleteButton`.`
-    /// - parameter inboxSessionId: The ID of the inbox session that the message originates from.
-    @objc(removeMessage:location:source:inboxSessionId:) func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource, inboxSessionId: String?)
-    
     /// - parameter read: Whether this inbox message was read
     /// - parameter message: The inbox message
     @objc(setRead:forMessage:) func set(read: Bool, forMessage message: IterableInAppMessage)
@@ -209,75 +203,5 @@ public extension Notification.Name {
         self.inboxMetadata = inboxMetadata
         self.customPayload = customPayload
         self.read = read
-    }
-}
-
-/// Encapsulates Inbox Session
-@objcMembers public final class IterableInboxSession: NSObject, Codable {
-    /// UUID of the session
-    public let id: String?
-    
-    /// Start time of session
-    public let sessionStartTime: Date?
-    
-    /// End time of session
-    public let sessionEndTime: Date?
-    
-    /// Total messages at start of session
-    public let startTotalMessageCount: Int
-    
-    /// Unread messages at start of session
-    public let startUnreadMessageCount: Int
-    
-    /// Total messages at end of session
-    public let endTotalMessageCount: Int
-    
-    /// Unread messages at end of session
-    public let endUnreadMessageCount: Int
-    
-    /// Array of impressions for inbox messages
-    public let impressions: [IterableInboxImpression]
-    
-    public init(id: String? = nil,
-                sessionStartTime: Date? = nil,
-                sessionEndTime: Date? = nil,
-                startTotalMessageCount: Int = 0,
-                startUnreadMessageCount: Int = 0,
-                endTotalMessageCount: Int = 0,
-                endUnreadMessageCount: Int = 0,
-                impressions: [IterableInboxImpression] = []) {
-        self.id = id
-        self.sessionStartTime = sessionStartTime
-        self.sessionEndTime = sessionEndTime
-        self.startTotalMessageCount = startTotalMessageCount
-        self.startUnreadMessageCount = startUnreadMessageCount
-        self.endTotalMessageCount = endTotalMessageCount
-        self.endUnreadMessageCount = endUnreadMessageCount
-        self.impressions = impressions
-    }
-}
-
-/// Encapsulates an Inbox impression of a message
-@objcMembers public final class IterableInboxImpression: NSObject, Codable {
-    /// The message ID of message
-    public let messageId: String
-    
-    /// Whether the message was silently delivered to inbox
-    public let silentInbox: Bool
-    
-    /// How many times this message was displayed in inbox
-    public let displayCount: Int
-    
-    /// Total duration this message was displayed
-    public let displayDuration: TimeInterval
-    
-    public init(messageId: String,
-                silentInbox: Bool,
-                displayCount: Int,
-                displayDuration: TimeInterval) {
-        self.messageId = messageId
-        self.silentInbox = silentInbox
-        self.displayCount = displayCount
-        self.displayDuration = displayDuration
     }
 }

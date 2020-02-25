@@ -9,7 +9,7 @@ import UIKit
 
 @objcMembers public final class IterableAPI: NSObject {
     // Current SDK Version.
-    public static let sdkVersion = "6.2.0-beta1"
+    public static let sdkVersion = "6.2.0"
     
     // MARK: Initialization
     
@@ -40,7 +40,7 @@ import UIKit
     /// - parameter launchOptions: The launchOptions coming from application:didLaunching:withOptions
     /// - parameter config: Iterable config object.
     public static func initialize(apiKey: String,
-                                  launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
+                                  launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
                                   config: IterableConfig = IterableConfig()) {
         internalImplementation = IterableAPIInternal(apiKey: apiKey, launchOptions: launchOptions, config: config)
         _ = internalImplementation?.start()
@@ -209,7 +209,7 @@ import UIKit
      */
     @objc(trackPurchase:items:)
     public static func track(purchase withTotal: NSNumber, items: [CommerceItem]) {
-        track(purchase: withTotal, items: items, dataFields: nil)
+        internalImplementation?.trackPurchase(withTotal, items: items)
     }
     
     /**
@@ -263,7 +263,7 @@ import UIKit
      */
     @objc(trackPushOpen:)
     public static func track(pushOpen userInfo: [AnyHashable: Any]) {
-        track(pushOpen: userInfo, dataFields: nil)
+        internalImplementation?.trackPushOpen(userInfo)
     }
     
     /**
@@ -413,7 +413,7 @@ import UIKit
      
      - remark: passing in an empty array will clear subscription list, passing in nil will not modify the list
      */
-    @objc(updateSubscriptions:templateId:emailListIds:unsubscribedChannelIds:unsubscribedMessageTypeIds:subscribedMessageTypeIds:)
+    @objc(updateSubscriptions:unsubscribedChannelIds:unsubscribedMessageTypeIds:subscribedMessageTypeIds:campaignIds:templateId:)
     public static func updateSubscriptions(_ emailListIds: [NSNumber]?,
                                            unsubscribedChannelIds: [NSNumber]?,
                                            unsubscribedMessageTypeIds: [NSNumber]?,
@@ -431,10 +431,11 @@ import UIKit
     // MARK: In-App Notifications
     
     /**
-     Deprecated.
      Tracks an InAppOpen event.
      - parameter messageId:       The messageId of the notification
      */
+    
+    // deprecated - will be removed in version 6.3.x or above
     @available(*, deprecated, message: "Use IterableAPI.track(inAppOpen:location:) method instead.")
     @objc(trackInAppOpen:)
     public static func track(inAppOpen messageId: String) {
@@ -455,13 +456,14 @@ import UIKit
     }
     
     /**
-     Deprecated.
      Tracks an InAppClick event
      
      - parameter messageId:       The messageId of the notification
      - parameter buttonURL:     The url of the button that was clicked
      */
-    @available(*, deprecated, message: "Use IterableAPI.track(inAppClick:location:clickedUrl) method instead.")
+    
+    // deprecated - will be removed in version 6.3.x or above
+    @available(*, deprecated, message: "Use IterableAPI.track(inAppClick:location:clickedUrl) instead.")
     @objc(trackInAppClick:buttonURL:)
     public static func track(inAppClick messageId: String, buttonURL: String) {
         internalImplementation?.trackInAppClick(messageId, clickedUrl: buttonURL)
@@ -515,12 +517,13 @@ import UIKit
     }
     
     /**
-     Deprecated.
      Consumes the notification and removes it from the list of inAppMessages
      
      - parameter messageId:       The messageId of the notification
      */
-    @available(*, deprecated, message: "Use IterableAPI.inAppConsume(message:location:source:) method instead.")
+    
+    // deprecated - will be removed in version 6.3.x or above
+    @available(*, deprecated, message: "Use IterableAPI.inAppConsume(message:location:source:) instead.")
     @objc(inAppConsume:)
     public static func inAppConsume(messageId: String) {
         internalImplementation?.inAppConsume(messageId)
@@ -560,7 +563,9 @@ import UIKit
      
      - remark:            passes the string of the button clicked to the callbackBlock
      */
-    @available(*, deprecated, message: "Please use UIAlertController to show system notifiation.")
+    
+    // deprecated - will be removed in version 6.3.x or above
+    @available(*, deprecated, message: "Please use UIAlertController to show system notifications.")
     public static func showSystemNotification(withTitle title: String, body: String, button: String?, callbackBlock: ITEActionBlock?) {
         internalImplementation?.showSystemNotification(withTitle: title, body: body, buttonLeft: button, callbackBlock: callbackBlock)
     }
@@ -577,7 +582,9 @@ import UIKit
      
      - remark:            passes the string of the button clicked to the callbackBlock
      */
-    @available(*, deprecated, message: "Please use UIAlertController to show system notifiation.")
+    
+    // deprecated - will be removed in version 6.3.x or above
+    @available(*, deprecated, message: "Please use UIAlertController to show system notifications.")
     public static func showSystemNotification(withTitle title: String, body: String, buttonLeft: String?, buttonRight: String?, callbackBlock: ITEActionBlock?) {
         internalImplementation?.showSystemNotification(withTitle: title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
     }
@@ -588,7 +595,9 @@ import UIKit
      - parameter webpageURL:      the URL that was clicked
      - parameter callbackBlock:   the callback to send after the webpageURL is called
      */
-    @available(*, deprecated, message: "Please use IterableAPI.handle(universalLink:) method instead.")
+    
+    // deprecated - will be removed in version 6.3.x or above
+    @available(*, deprecated, message: "Please use IterableAPI.handle(universalLink:) instead.")
     @objc(getAndTrackDeeplink:callbackBlock:)
     public static func getAndTrack(deeplink webpageURL: URL, callbackBlock: @escaping ITEActionBlock) {
         internalImplementation?.getAndTrack(deepLink: webpageURL, callbackBlock: callbackBlock)
