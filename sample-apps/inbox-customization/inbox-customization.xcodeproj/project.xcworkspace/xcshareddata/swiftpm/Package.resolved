@@ -3,10 +3,10 @@
     "pins": [
       {
         "package": "IterableSDK",
-        "repositoryURL": "https://github.com/Iterable/swift-sdk",
+        "repositoryURL": "https://github.com/Iterable/swift-sdk.git",
         "state": {
-          "branch": "inbox",
-          "revision": "dc50263200642b9dbedbccd5b285e383a4595d0e",
+          "branch": "master",
+          "revision": "03a93afec4a1ffda914a9ec58040f30a99b000e6",
           "version": null
         }
       }

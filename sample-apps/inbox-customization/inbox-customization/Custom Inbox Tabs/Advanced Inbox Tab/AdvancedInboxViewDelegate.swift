@@ -31,7 +31,7 @@ public class AdvancedInboxViewDelegate: IterableInboxViewControllerViewDelegate 
         }
         return customNibName
     }
-
+    
     public func renderAdditionalFields(forCell cell: IterableInboxCell, withMessage message: IterableInAppMessage) {
         guard
             let customCell = cell as? AdvancedInboxCell,
