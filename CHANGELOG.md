@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.2.1
+#### Fixed
+- Made class extensions internal rather than public to avoid collisions (thanks, RolandasRazma!)
+
 ## 6.2.0
 #### Added
 - Moved Mobile Inbox support to GA (no longer in beta), and:
