@@ -20,7 +20,7 @@ struct InAppMessageParser {
         }
     }
     
-    /// Returns an array of Dictionaries holding inApp messages.
+    /// Returns an array of Dictionaries holding in-app messages.
     private static func getInAppDicts(fromPayload payload: [AnyHashable: Any]) -> [[AnyHashable: Any]] {
         return payload[JsonKey.InApp.inAppMessages] as? [[AnyHashable: Any]] ?? []
     }
@@ -100,7 +100,7 @@ struct InAppMessageParser {
         if let theCampaignId = json[JsonKey.campaignId.jsonKey] as? String {
             campaignId = theCampaignId
         } else {
-            ITBDebug("Could not find campaignId") // This is debug level because this happens a lot with proof inApps
+            ITBDebug("Could not find campaignId") // This is debug level because this happens a lot with proof in-apps
             campaignId = ""
         }
         

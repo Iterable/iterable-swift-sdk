@@ -360,7 +360,7 @@ import UIKit
     /**
      Tracks a custom event.
      
-     - remark: Pass in the the custom event data.
+     - remark: Pass in the custom event data.
      
      - parameter eventName:   Name of the event
      */
@@ -372,7 +372,7 @@ import UIKit
     /**
      Tracks a custom event.
      
-     - remark: Pass in the the custom event data.
+     - remark: Pass in the custom event data.
      
      - parameter eventName:   Name of the event
      - parameter dataFields:  A `Dictionary` containing any additional information to save along with the event
@@ -385,7 +385,7 @@ import UIKit
     /**
      Tracks a custom event.
      
-     - remark: Pass in the the custom event data.
+     - remark: Pass in the custom event data.
      - parameters:
      - eventName:   Name of the event
      - dataFields:  A `Dictionary` containing any additional information to save along with the event
@@ -431,7 +431,7 @@ import UIKit
     // MARK: In-App Notifications
     
     /**
-     Tracks an InAppOpen event.
+     Tracks an `InAppOpen` event.
      - parameter messageId:       The messageId of the notification
      */
     
@@ -443,7 +443,7 @@ import UIKit
     }
     
     /**
-     Tracks an InAppOpen event.
+     Tracks an `InAppOpen` event.
      Usually you don't need to call this method explicitly. IterableSDK will call this automatically.
      Call this method only if you are using a custom view controller to render IterableInAppMessages.
      
@@ -456,7 +456,7 @@ import UIKit
     }
     
     /**
-     Tracks an InAppClick event
+     Tracks an `InAppClick` event
      
      - parameter messageId:       The messageId of the notification
      - parameter buttonURL:     The url of the button that was clicked
@@ -470,7 +470,7 @@ import UIKit
     }
     
     /**
-     Tracks an InAppClick event.
+     Tracks an `InAppClick` event.
      Usually you don't need to call this method explicitly. IterableSDK will call this automatically.
      Call this method only if you are using a custom view controller to render IterableInAppMessages.
      
@@ -484,7 +484,7 @@ import UIKit
     }
     
     /**
-     Tracks an InAppClose event
+     Tracks an `InAppClose` event
      - parameter message:       The in-app message
      - parameter clickedUrl:    The url that was clicked to close the in-app. It will be `nil` when message is closed on clicking `back`.
      */
@@ -494,7 +494,7 @@ import UIKit
     }
     
     /**
-     Tracks an InAppClose event
+     Tracks an `InAppClose` event
      - parameter message:       The in-app message
      - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
      - parameter clickedUrl:    The url that was clicked to close the in-app. It will be `nil` when message is closed on clicking `back`.
@@ -505,7 +505,7 @@ import UIKit
     }
     
     /**
-     Tracks an InAppClose event
+     Tracks an `InAppClose` event
      - parameter message:       The in-app message
      - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
      - parameter source:        Source is `back` if back button was clicked to dismiss in-app message. Otherwise source is `link`.
@@ -517,7 +517,7 @@ import UIKit
     }
     
     /**
-     Consumes the notification and removes it from the list of inAppMessages
+     Consumes the notification and removes it from the list of in-app messages
      
      - parameter messageId:       The messageId of the notification
      */
@@ -530,7 +530,7 @@ import UIKit
     }
     
     /**
-     Consumes the notification and removes it from the list of inAppMessages
+     Consumes the notification and removes it from the list of in-app messages
      
      - parameter message:       The Iterable message that is being consumed
      - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
@@ -541,7 +541,7 @@ import UIKit
     }
     
     /**
-     Consumes the notification and removes it from the list of inAppMessages
+     Consumes the notification and removes it from the list of in-app messages
      
      - parameter message:       The Iterable message that is being consumed
      - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
@@ -618,17 +618,17 @@ import UIKit
         return internalImplementation?.handleUniversalLink(url) ?? false
     }
     
-    /// Use this property for getting and showing inApp Messages.
+    /// Use this property for getting and showing in-app messages.
     /// This property has no meaning if IterableAPI has not been initialized using
     /// IterableAPI.initialize
     /// ```
     /// - IterableAPI.inAppManager.getMessages()
-    /// - IterableAPI.inappManager.show(message: message, consume: true)
+    /// - IterableAPI.inAppManager.show(message: message, consume: true)
     /// ```
     public static var inAppManager: IterableInAppManagerProtocol {
         guard let internalImplementation = internalImplementation else {
-            ITBError("IterableAPI is not initialized yet. InApp will not work now.")
-            assertionFailure("IterableAPI is not initialized yet. In-app will not work now.")
+            ITBError("IterableAPI is not initialized yet. In-apps will not work now.")
+            assertionFailure("IterableAPI is not initialized yet. In-apps will not work now.")
             return EmptyInAppManager()
         }
         
