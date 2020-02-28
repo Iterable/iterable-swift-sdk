@@ -277,7 +277,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         showMessage(fromMessagesProcessorResult: messagesProcessorResult)
     }
     
-    // This must be called from MainThread
+    // This must be called from Main Thread
     private func showInternal(message: IterableInAppMessage,
                               consume: Bool,
                               callback: ITBURLCallback? = nil) {
@@ -307,7 +307,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
                 // set the dismiss time
                 self.lastDismissedTime = self.dateProvider.currentDate
                 
-                // check if we need to process more inApps
+                // check if we need to process more in-apps
                 self.scheduleNextInAppMessage()
                 
                 if consume {
