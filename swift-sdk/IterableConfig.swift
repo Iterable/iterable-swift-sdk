@@ -47,7 +47,7 @@ import Foundation
 /**
  * Lowest level that will be logged. By default the LogLevel is set to LogLevel.info.
  */
-@objc public enum LogLevel: Int {
+@objc(IterableLogLevel) public enum LogLevel: Int {
     case debug = 1
     case info
     case error
