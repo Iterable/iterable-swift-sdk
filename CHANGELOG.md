@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.2.2
+#### Fixed
+- Moved podspec `resources` to `resource_bundles` to avoid name collisions for static libraries
+- Give `LogLevel` an Objective-C specific name (`IterableLogLevel`)
+
 ## 6.2.1
 #### Fixed
 - Made class extensions internal rather than public to avoid collisions (thanks, RolandasRazma!)
