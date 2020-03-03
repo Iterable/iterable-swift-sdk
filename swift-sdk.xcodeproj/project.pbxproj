@@ -464,6 +464,15 @@
 			name = "Test Files";
 			sourceTree = "<group>";
 		};
+		55568389240F071F00ED7FA0 /* misc */ = {
+			isa = PBXGroup;
+			children = (
+				AC2263E020CF49B8009800EB /* Products */,
+				B45C88EB52A42BAD4D6B1EAF /* Frameworks */,
+			);
+			path = misc;
+			sourceTree = "<group>";
+		};
 		AC0248062279132400495FB9 /* Dwifft */ = {
 			isa = PBXGroup;
 			children = (
@@ -510,8 +519,7 @@
 				ACF560D420E443BF000AAC23 /* host-app */,
 				ACDA975A23159C37004C412E /* inbox-ui-tests-app */,
 				ACFCA72920EB02DB00BFB277 /* tests */,
-				AC2263E020CF49B8009800EB /* Products */,
-				B45C88EB52A42BAD4D6B1EAF /* Frameworks */,
+				55568389240F071F00ED7FA0 /* misc */,
 			);
 			sourceTree = "<group>";
 		};
@@ -528,6 +536,7 @@
 				ACDA976C23159C39004C412E /* inbox-ui-tests-app-ui-tests.xctest */,
 			);
 			name = Products;
+			path = ..;
 			sourceTree = "<group>";
 		};
 		AC2263E120CF49B8009800EB /* swift-sdk */ = {
@@ -867,6 +876,7 @@
 				AC98294A20D9D65E00796DAA /* Foundation.framework */,
 			);
 			name = Frameworks;
+			path = ..;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
