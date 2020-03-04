@@ -106,9 +106,95 @@
                BlueprintName = "swift-sdk-swift-tests"
                ReferencedContainer = "container:swift-sdk.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "APNSTypeCheckerTests">
+               </Test>
+               <Test
+                  Identifier = "ClassExtensionsTests">
+               </Test>
+               <Test
+                  Identifier = "CommerceItemTests">
+               </Test>
+               <Test
+                  Identifier = "DeepLinkTests">
+               </Test>
+               <Test
+                  Identifier = "DeferredDeepLinkTests">
+               </Test>
+               <Test
+                  Identifier = "DeprecatedFunctionsTests">
+               </Test>
+               <Test
+                  Identifier = "InAppHelperTests">
+               </Test>
+               <Test
+                  Identifier = "InAppParsingTests">
+               </Test>
+               <Test
+                  Identifier = "InAppPersistenceTests">
+               </Test>
+               <Test
+                  Identifier = "InboxImpressionTrackerTests">
+               </Test>
+               <Test
+                  Identifier = "InboxMessageViewModelTests">
+               </Test>
+               <Test
+                  Identifier = "InboxSessionManagerTests">
+               </Test>
+               <Test
+                  Identifier = "InboxTests">
+               </Test>
+               <Test
+                  Identifier = "InboxViewControllerViewModelTests">
+               </Test>
+               <Test
+                  Identifier = "IterableAPIResponseTests">
+               </Test>
+               <Test
+                  Identifier = "IterableAPITests">
+               </Test>
+               <Test
+                  Identifier = "IterableActionRunnerTests">
+               </Test>
+               <Test
+                  Identifier = "IterableAutoRegistrationTests">
+               </Test>
+               <Test
+                  Identifier = "IterableInboxViewControllerTests">
+               </Test>
+               <Test
+                  Identifier = "IterableNotificationResponseTests">
+               </Test>
+               <Test
+                  Identifier = "IterableRequestUtilTests">
+               </Test>
+               <Test
+                  Identifier = "LocalStorageTests">
+               </Test>
+               <Test
+                  Identifier = "LoggingTests">
+               </Test>
+               <Test
+                  Identifier = "NotificationMetadataTests">
+               </Test>
+               <Test
+                  Identifier = "OrderedDictionaryTests">
+               </Test>
+               <Test
+                  Identifier = "PromiseTests">
+               </Test>
+               <Test
+                  Identifier = "RegistrationTests">
+               </Test>
+               <Test
+                  Identifier = "RequestCreatorTests">
+               </Test>
+            </SkippedTests>
          </TestableReference>
          <TestableReference
-            skipped = "NO">
+            skipped = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "ACC87762215C20B50097E29B"
@@ -118,7 +204,7 @@
             </BuildableReference>
          </TestableReference>
          <TestableReference
-            skipped = "NO">
+            skipped = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "AC90C4CB20D8632E00EECA5D"
@@ -128,7 +214,7 @@
             </BuildableReference>
          </TestableReference>
          <TestableReference
-            skipped = "NO">
+            skipped = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "ACDA976B23159C39004C412E"
