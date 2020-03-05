@@ -768,6 +768,16 @@ class InAppTests: XCTestCase {
         wait(for: [expectation3, expectation4], timeout: testExpectationTimeout)
     }
     
+    func testFlaky1() {
+        for _ in 1 ... 10 {
+            print("")
+            print("")
+            testMultipleMesssagesInShortTime()
+            print("")
+            print("")
+        }
+    }
+    
     func testMultipleMesssagesInShortTime() {
         let expectation0 = expectation(description: "testMultipleMesssagesInShortTime")
         expectation0.expectedFulfillmentCount = 3 // three times
@@ -805,6 +815,7 @@ class InAppTests: XCTestCase {
         }
         
         let config = IterableConfig()
+        config.logDelegate = AllLogDelegate()
         let interval = 0.5
         config.urlDelegate = urlDelegate
         config.inAppDisplayInterval = interval
@@ -829,6 +840,8 @@ class InAppTests: XCTestCase {
         let g1 = abs(t1 - t2)
         let g2 = abs(t2 - t3)
         let g3 = abs(t1 - t3)
+        
+        print("g1: \(g1), g2: \(g2), g3: \(g3)")
         
         XCTAssertGreaterThan(g1, interval)
         XCTAssertGreaterThan(g2, interval)
