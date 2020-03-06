@@ -669,6 +669,12 @@ class InAppTests: XCTestCase {
         wait(for: [expectation4], timeout: testExpectationTimeout)
     }
     
+    func testFlaky2() {
+        for _ in 1 ... 20 {
+            testDontShowNewlyArrivedMessageWithinRetryInterval()
+        }
+    }
+    
     func testDontShowNewlyArrivedMessageWithinRetryInterval() {
         let expectation1 = expectation(description: "show first message")
         let expectation2 = expectation(description: "don't show second message within interval")
@@ -769,7 +775,7 @@ class InAppTests: XCTestCase {
     }
     
     func testFlaky1() {
-        for _ in 1 ... 10 {
+        for _ in 1 ... 20 {
             print("")
             print("")
             testMultipleMesssagesInShortTime()

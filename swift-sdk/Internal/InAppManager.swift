@@ -144,9 +144,6 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     func show(message: IterableInAppMessage, consume: Bool = true, callback: ITBURLCallback? = nil) {
         ITBInfo()
         
-        lastDisplayTime = dateProvider.currentDate
-        ITBDebug("Setting last display time: \(String(describing: lastDisplayTime))")
-        
         // This is public (via public protocol implementation), so make sure we call from Main Thread
         DispatchQueue.main.async {
             _ = self.showInternal(message: message, consume: consume, callback: callback)
@@ -268,6 +265,9 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     // Not a pure function.
     private func showMessage(fromMessagesProcessorResult messagesProcessorResult: MessagesProcessorResult) {
         if case let MessagesProcessorResult.show(message: message, messagesMap: _) = messagesProcessorResult {
+            lastDisplayTime = dateProvider.currentDate
+            ITBDebug("Setting last display time: \(String(describing: lastDisplayTime))")
+            
             self.show(message: message, consume: !message.saveToInbox)
         }
     }
