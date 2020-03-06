@@ -805,7 +805,6 @@ class InAppTests: XCTestCase {
         }
         
         let config = IterableConfig()
-        config.logDelegate = AllLogDelegate()
         let interval = 0.5
         config.urlDelegate = urlDelegate
         config.inAppDisplayInterval = interval
@@ -830,8 +829,6 @@ class InAppTests: XCTestCase {
         let g1 = abs(t1 - t2)
         let g2 = abs(t2 - t3)
         let g3 = abs(t1 - t3)
-        
-        print("g1: \(g1), g2: \(g2), g3: \(g3)")
         
         XCTAssertGreaterThan(g1, interval)
         XCTAssertGreaterThan(g2, interval)
