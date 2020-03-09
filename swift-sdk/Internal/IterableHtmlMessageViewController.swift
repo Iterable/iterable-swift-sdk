@@ -71,15 +71,11 @@ class IterableHtmlMessageViewController: UIViewController {
             }
         }
         
-        let webView = WKWebView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
+        webView.set(position: ViewPosition(width: view.frame.width, height: view.frame.height, center: view.center))
         webView.loadHTMLString(parameters.html, baseURL: URL(string: ""))
-        webView.scrollView.bounces = false
-        webView.isOpaque = false
-        webView.backgroundColor = UIColor.clear
-        webView.navigationDelegate = self
+        webView.set(navigationDelegate: self)
         
-        view.addSubview(webView)
-        self.webView = webView
+        view.addSubview(webView.view)
     }
     
     /**
@@ -135,21 +131,32 @@ class IterableHtmlMessageViewController: UIViewController {
         super.init(coder: aDecoder)
     }
     
+    deinit {
+        ITBInfo()
+    }
+    
     private var parameters: Parameters
     private let futureClickedURL: Promise<URL, IterableError>
-    private var webView: WKWebView?
     private var location: IterableMessageLocation = .full
     private var linkClicked = false
     private var clickedLink: String?
+    @Inject private var dependencyModule: InjectedDependencyModuleProtocol!
+    private lazy var viewCalculations: ViewCalculationsProtocol! = {
+        dependencyModule.viewCalculations
+    }()
+    
+    lazy var webView: WebViewProtocol! = {
+        dependencyModule.webView
+    }()
     
     /**
      Resizes the webview based upon the insetPadding if the html is finished loading
      
      - parameter: aWebView the webview
      */
-    private func resizeWebView(_ aWebView: WKWebView) {
+    private func resizeWebView(_ aWebView: WebViewProtocol) {
         guard location != .full else {
-            webView?.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height)
+            webView.set(position: ViewPosition(width: viewCalculations.width(for: view), height: viewCalculations.height(for: view), center: viewCalculations.center(for: view)))
             return
         }
         
@@ -162,41 +169,42 @@ class IterableHtmlMessageViewController: UIViewController {
         })
     }
     
-    private func resize(webView: WKWebView, withHeight height: CGFloat) {
+    private func resize(webView: WebViewProtocol, withHeight height: CGFloat) {
         ITBInfo("height: \(height)")
+        var position = ViewPosition()
         // set the height
-        webView.frame.size.height = height
+        position.height = height
         
         // now set the width
         let notificationWidth = 100 - (parameters.padding.left + parameters.padding.right)
-        let screenWidth = view.bounds.width
-        webView.frame.size.width = screenWidth * notificationWidth / 100
+        let screenWidth = viewCalculations.width(for: view)
+        position.width = screenWidth * notificationWidth / 100
         
         // Position webview
-        var center = view.center
+        position.center = viewCalculations.center(for: view)
         
         // set center x
-        center.x = screenWidth * (parameters.padding.left + notificationWidth / 2) / 100
+        position.center.x = screenWidth * (parameters.padding.left + notificationWidth / 2) / 100
         
         // set center y
-        let halfWebViewHeight = webView.frame.height / 2
+        let halfWebViewHeight = height / 2
         switch location {
         case .top:
             if #available(iOS 11, *) {
-                center.y = halfWebViewHeight + view.safeAreaInsets.top
+                position.center.y = halfWebViewHeight + view.safeAreaInsets.top
             } else {
-                center.y = halfWebViewHeight
+                position.center.y = halfWebViewHeight
             }
         case .bottom:
             if #available(iOS 11, *) {
-                center.y = view.frame.height - halfWebViewHeight - view.safeAreaInsets.bottom
+                position.center.y = view.frame.height - halfWebViewHeight - view.safeAreaInsets.bottom
             } else {
-                center.y = view.frame.height - halfWebViewHeight
+                position.center.y = view.frame.height - halfWebViewHeight
             }
         default: break
         }
         
-        webView.center = center
+        webView.set(position: position)
     }
     
     private static func padding(fromPadding padding: UIEdgeInsets) -> UIEdgeInsets {
