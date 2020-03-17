@@ -8,9 +8,9 @@ import XCTest
 @testable import IterableSDK
 
 class DeprecatedFunctionsTests: XCTestCase {
-    private var apiKey = "123123123"
-    private var email = "user@example.com"
-    private var userId = "full-metal-alchemist"
+    private let apiKey = "123123123"
+    private let email = "user@example.com"
+    private let userId = "full-metal-alchemist"
     
     func testDeprecatedTrackInAppOpen() {
         let message = IterableInAppMessage(messageId: "message1", campaignId: "", content: getEmptyInAppContent())
