@@ -5,6 +5,7 @@
 
 import Foundation
 import UIKit
+import WebKit
 
 protocol DependencyContainerProtocol {
     var dateProvider: DateProviderProtocol { get }
@@ -54,4 +55,14 @@ struct DependencyContainer: DependencyContainerProtocol {
     let applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared
     let notificationCenter: NotificationCenterProtocol = NotificationCenter.default
     let apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker()
+    
+    init() {
+        addInjectedDependencies()
+    }
+    
+    private func addInjectedDependencies() {
+        InjectedDependencies.shared.set { () -> InjectedDependencyModuleProtocol in
+            InjectedDependencyModule() as InjectedDependencyModuleProtocol
+        }
+    }
 }
