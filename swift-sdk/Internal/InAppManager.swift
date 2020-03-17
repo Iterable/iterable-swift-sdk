@@ -183,17 +183,17 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     }
     
     func isOkToShowNow(message: IterableInAppMessage) -> Bool {
-        guard displayer.isShowingInApp() == false else {
-            ITBInfo("showing another")
-            return false
-        }
-        
         guard message.didProcessTrigger == false else {
             ITBInfo("message with id: \(message.messageId) is already processed")
             return false
         }
         
-        guard getInAppShowingWaitTimeInterval() <= 0 else {
+        guard InAppManager.getWaitTimeInterval(fromLastTime: lastDismissedTime, currentTime: dateProvider.currentDate, gap: retryInterval) <= 0 else {
+            ITBInfo("can't display within retryInterval window")
+            return false
+        }
+        
+        guard InAppManager.getWaitTimeInterval(fromLastTime: lastDisplayTime, currentTime: dateProvider.currentDate, gap: retryInterval) <= 0 else {
             ITBInfo("can't display within retryInterval window")
             return false
         }
@@ -213,12 +213,12 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         }
     }
     
-    private func synchronize(appIsActive: Bool) -> Future<Bool, Error> {
+    private func synchronize(appIsReady: Bool) -> Future<Bool, Error> {
         ITBInfo()
         
         return fetcher.fetch()
             .map { self.mergeMessages($0) }
-            .map { self.processMergedMessages(appIsActive: appIsActive, mergeMessagesResult: $0) }
+            .map { self.processMergedMessages(appIsReady: appIsReady, mergeMessagesResult: $0) }
     }
     
     // messages are new messages coming from the server
@@ -228,8 +228,8 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         return messagesObtainedHandler.handle()
     }
     
-    private func processMergedMessages(appIsActive: Bool, mergeMessagesResult: MergeMessagesResult) -> Bool {
-        if appIsActive {
+    private func processMergedMessages(appIsReady: Bool, mergeMessagesResult: MergeMessagesResult) -> Bool {
+        if appIsReady {
             processAndShowMessage(messagesMap: mergeMessagesResult.messagesMap)
         } else {
             messagesMap = mergeMessagesResult.messagesMap
@@ -265,6 +265,9 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     // Not a pure function.
     private func showMessage(fromMessagesProcessorResult messagesProcessorResult: MessagesProcessorResult) {
         if case let MessagesProcessorResult.show(message: message, messagesMap: _) = messagesProcessorResult {
+            lastDisplayTime = dateProvider.currentDate
+            ITBDebug("Setting last display time: \(String(describing: lastDisplayTime))")
+            
             self.show(message: message, consume: !message.saveToInbox)
         }
     }
@@ -293,11 +296,13 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             ITBError("Could not show message: \(reason)")
         case let .shown(futureClickedURL):
             // set read
+            ITBDebug("in-app shown")
             set(read: true, forMessage: message)
             
             updateMessage(message, didProcessTrigger: true, consumed: consume)
             
             futureClickedURL.onSuccess { url in
+                ITBDebug("in-app clicked")
                 // call the client callback, if present
                 _ = callback?(url)
                 
@@ -306,6 +311,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
                 
                 // set the dismiss time
                 self.lastDismissedTime = self.dateProvider.currentDate
+                ITBDebug("Setting last dismissed time: \(String(describing: self.lastDismissedTime))")
                 
                 // check if we need to process more in-apps
                 self.scheduleNextInAppMessage()
@@ -329,7 +335,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
                 self.scheduleNextInAppMessage()
             }
         } else {
-            _ = InAppManager.getAppIsActive(applicationStateProvider: applicationStateProvider).map { appIsActive in
+            _ = InAppManager.getAppIsReady(applicationStateProvider: applicationStateProvider, displayer: displayer).map { appIsActive in
                 if appIsActive {
                     self.processAndShowMessage(messagesMap: self.messagesMap)
                     self.persister.persist(self.messagesMap.values)
@@ -490,14 +496,17 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         return message.consumed == false && isExpired(message: message, currentDate: currentDate) == false
     }
     
-    fileprivate static func getAppIsActive(applicationStateProvider: ApplicationStateProviderProtocol) -> Promise<Bool, Error> {
+    fileprivate static func getAppIsReady(applicationStateProvider: ApplicationStateProviderProtocol,
+                                          displayer: InAppDisplayerProtocol) -> Promise<Bool, Error> {
         if Thread.isMainThread {
-            return Promise(value: applicationStateProvider.applicationState == .active)
+            let ready = (applicationStateProvider.applicationState == .active) && (displayer.isShowingInApp() == false)
+            return Promise(value: ready)
         } else {
             let result = Promise<Bool, Error>()
             
             DispatchQueue.main.async {
-                result.resolve(with: applicationStateProvider.applicationState == .active)
+                let ready = (applicationStateProvider.applicationState == .active) && (displayer.isShowingInApp() == false)
+                result.resolve(with: ready)
             }
             
             return result
@@ -520,6 +529,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     private let dateProvider: DateProviderProtocol
     private let retryInterval: TimeInterval // in seconds, if a message is already showing how long to wait?
     private var lastDismissedTime: Date?
+    private var lastDisplayTime: Date?
     
     private let updateQueue = DispatchQueue(label: "UpdateQueue")
     private let scheduleQueue = DispatchQueue(label: "ScheduleQueue")
@@ -535,10 +545,10 @@ extension InAppManager: InAppNotifiable {
     func scheduleSync() -> Future<Bool, Error> {
         ITBInfo()
         
-        return InAppManager.getAppIsActive(applicationStateProvider: applicationStateProvider).flatMap { self.scheduleSync(appIsActive: $0) }
+        return InAppManager.getAppIsReady(applicationStateProvider: applicationStateProvider, displayer: displayer).flatMap { self.scheduleSync(appIsReady: $0) }
     }
     
-    private func scheduleSync(appIsActive: Bool) -> Future<Bool, Error> {
+    private func scheduleSync(appIsReady: Bool) -> Future<Bool, Error> {
         ITBInfo()
         
         let result = Promise<Bool, Error>()
@@ -546,12 +556,12 @@ extension InAppManager: InAppNotifiable {
         syncQueue.async {
             if let syncResult = self.syncResult {
                 if syncResult.isResolved() {
-                    self.syncResult = self.synchronize(appIsActive: appIsActive)
+                    self.syncResult = self.synchronize(appIsReady: appIsReady)
                 } else {
-                    self.syncResult = syncResult.flatMap { _ in self.synchronize(appIsActive: appIsActive) }
+                    self.syncResult = syncResult.flatMap { _ in self.synchronize(appIsReady: appIsReady) }
                 }
             } else {
-                self.syncResult = self.synchronize(appIsActive: appIsActive)
+                self.syncResult = self.synchronize(appIsReady: appIsReady)
             }
             self.syncResult?.onSuccess { success in
                 result.resolve(with: success)
