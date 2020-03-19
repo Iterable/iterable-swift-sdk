@@ -468,6 +468,16 @@
 			name = "Test Files";
 			sourceTree = "<group>";
 		};
+		5550F22324217CFC0014456A /* misc */ = {
+			isa = PBXGroup;
+			children = (
+				AC2263E020CF49B8009800EB /* Products */,
+				B45C88EB52A42BAD4D6B1EAF /* Frameworks */,
+			);
+			name = misc;
+			path = "swift-sdk/misc";
+			sourceTree = "<group>";
+		};
 		AC0248062279132400495FB9 /* Dwifft */ = {
 			isa = PBXGroup;
 			children = (
@@ -513,9 +523,8 @@
 				AC90C4C520D8632E00EECA5D /* notification-extension */,
 				ACF560D420E443BF000AAC23 /* host-app */,
 				ACDA975A23159C37004C412E /* inbox-ui-tests-app */,
-				ACFCA72920EB02DB00BFB277 /* Tests */,
-				AC2263E020CF49B8009800EB /* Products */,
-				B45C88EB52A42BAD4D6B1EAF /* Frameworks */,
+				ACFCA72920EB02DB00BFB277 /* tests */,
+				5550F22324217CFC0014456A /* misc */,
 			);
 			sourceTree = "<group>";
 		};
@@ -532,6 +541,7 @@
 				ACDA976C23159C39004C412E /* inbox-ui-tests-app-ui-tests.xctest */,
 			);
 			name = Products;
+			path = ../..;
 			sourceTree = "<group>";
 		};
 		AC2263E120CF49B8009800EB /* swift-sdk */ = {
@@ -855,7 +865,7 @@
 			path = "host-app";
 			sourceTree = "<group>";
 		};
-		ACFCA72920EB02DB00BFB277 /* Tests */ = {
+		ACFCA72920EB02DB00BFB277 /* tests */ = {
 			isa = PBXGroup;
 			children = (
 				AC995F932166EC310099A184 /* common */,
@@ -864,7 +874,7 @@
 				ACC87764215C20B50097E29B /* ui-tests */,
 				ACDA976F23159C39004C412E /* inbox-ui-tests-app-ui-tests */,
 			);
-			path = Tests;
+			path = tests;
 			sourceTree = "<group>";
 		};
 		B45C88EB52A42BAD4D6B1EAF /* Frameworks */ = {
@@ -873,6 +883,7 @@
 				AC98294A20D9D65E00796DAA /* Foundation.framework */,
 			);
 			name = Frameworks;
+			path = ../..;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1110,7 +1121,7 @@
 				};
 			};
 			buildConfigurationList = AC2263D920CF49B8009800EB /* Build configuration list for PBXProject "swift-sdk" */;
-			compatibilityVersion = "Xcode 9.3";
+			compatibilityVersion = "Xcode 11.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
