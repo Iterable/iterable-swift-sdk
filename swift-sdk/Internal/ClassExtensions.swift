@@ -6,7 +6,7 @@
 import Foundation
 import UIKit
 
-public extension Array {
+extension Array {
     func take(_ size: Int) -> [[Element]] {
         return stride(from: 0, to: count, by: size).map {
             Array(self[$0 ..< Swift.min($0 + size, count)])
@@ -14,7 +14,7 @@ public extension Array {
     }
 }
 
-public extension Dictionary where Key == AnyHashable, Value == Any {
+extension Dictionary where Key == AnyHashable, Value == Any {
     func getValue(for key: JsonKey) -> Any? {
         return self[key.jsonKey]
     }
@@ -40,7 +40,7 @@ public extension Dictionary where Key == AnyHashable, Value == Any {
     }
 }
 
-public extension Bundle {
+extension Bundle {
     var appPackageName: String? {
         return bundleIdentifier
     }
@@ -72,7 +72,7 @@ extension Encodable {
     }
 }
 
-public extension UIColor {
+extension UIColor {
     convenience init?(hex: String) {
         guard let int = Int(hex, radix: 16) else {
             return nil
@@ -86,13 +86,13 @@ public extension UIColor {
     }
 }
 
-public extension Data {
+extension Data {
     func hexString() -> String {
         return map { String(format: "%02.2hhx", $0) }.joined()
     }
 }
 
-public extension Int {
+extension Int {
     func times(_ f: () -> Void) {
         if self > 0 {
             for _ in 0 ..< self {

@@ -2,12 +2,13 @@
 //  Created by Tapash Majumder on 11/5/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
-// This file contains InApp and Inbox messaging classes.
+
+// This file contains In-app and Inbox messaging classes.
 
 import Foundation
 import UIKit
 
-/// `show` to show the inApp otherwise `skip` to skip.
+/// `show` to show the in-app otherwise `skip` to skip.
 @objc public enum InAppShowResponse: Int {
     case show
     case skip
@@ -58,8 +59,8 @@ public extension Notification.Name {
 @objcMembers open class DefaultInAppDelegate: IterableInAppDelegate {
     public init() {}
     
-    /// By default, every single inApp will be shown as soon as it is available.
-    /// If more than 1 inApp is available, we show the first showable one.
+    /// By default, every single in-app will be shown as soon as it is available.
+    /// If more than 1 in-app is available, we show the first showable one.
     open func onNew(message _: IterableInAppMessage) -> InAppShowResponse {
         ITBInfo()
         return .show
@@ -83,7 +84,7 @@ public extension Notification.Name {
     public let edgeInsets: UIEdgeInsets
     /// Background alpha setting
     public let backgroundAlpha: Double
-    /// The html to display
+    /// The HTML to display
     public let html: String
     
     // Internal
@@ -111,9 +112,9 @@ public extension Notification.Name {
     }
 }
 
-/// `immediate` will try to display the inApp automatically immediately
-/// `event` is used for Push to InApp
-/// `never` will not display the inApp automatically via the SDK
+/// `immediate` will try to display the in-app automatically immediately
+/// `event` is used for Push to in-app
+/// `never` will not display the in-app automatically via the SDK
 @objc public enum IterableInAppTriggerType: Int, Codable {
     case immediate
     case event

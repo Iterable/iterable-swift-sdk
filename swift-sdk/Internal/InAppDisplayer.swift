@@ -30,10 +30,10 @@ class InAppDisplayer: InAppDisplayerProtocol {
     }
     
     /**
-     Creates and shows a HTML InApp Notification with trackParameters, backgroundColor with callback handler
+     Creates and shows a HTML In-app Notification with trackParameters, backgroundColor with callback handler
      
      - parameters:
-     - htmlString:      The NSString containing the dialog HTML
+     - htmlString:      The string containing the dialog HTML
      - messageMetadata: Message metadata object.
      - backgroundAlpha: The background alpha behind the notification
      - padding:         The padding around the notification

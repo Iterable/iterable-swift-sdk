@@ -39,7 +39,7 @@ For more information, read Iterable's [Setting up iOS Push Notifications](https:
 
 ## Installation
 
-To install this SDK, use [Carthage](https://github.com/Carthage/Carthage), [CocoaPods](https://cocoapods.org/), [Swift Package Manager](https://swift.org/package-manager/) (through Xcode or command line), or install it manually.
+To install this SDK, use [Swift Package Manager](https://swift.org/package-manager/) (through Xcode or command line),  [CocoaPods](https://cocoapods.org/), [Carthage](https://github.com/Carthage/Carthage), or install it manually.
 
 ### Swift Package Manager
 
@@ -127,7 +127,7 @@ directory as your Xcode project.
 2. Edit **Cartfile**, adding the following line:
 
     ```
-    github "Iterable/swift-sdk" ~> 6.2.0
+    github "Iterable/swift-sdk"
     ```
 
 3. In the terminal, in the same directory as your **Cartfile**, run the 
@@ -266,10 +266,11 @@ To install a beta version of Iterable's iOS SDK, use CocoaPods or Carthage:
 
 ## Sample projects
 
-For sample projects, look at the following repositories:
+This repository contains the following sample projects:
 
-- [Swift sample project](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app?raw=true)
-- [Objective-C sample project](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/objc-sample-app?raw=true)
+- [Swift sample project](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app)
+- [Objective-C sample project](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/objc-sample-app)
+- [Inbox Customization](https://github.com/Iterable/swift-sdk/tree/master/sample-apps/inbox-customization)
 
 ## Configuring the SDK
 
@@ -797,8 +798,14 @@ messages to an inbox. This inbox displays a list of saved in-app messages and
 allows users to read them at their convenience. The SDK provides a default user
 interface for the inbox, which can be customized to match your brand's styles.
 
-To learn more about Mobile Inbox, how to customize it, and events related to 
-its usage, read Iterable's [Mobile Developer Guides](https://support.iterable.com/hc/categories/360002288712).
+To learn more about Mobile Inbox, how to customize it, and events related to
+its usage, read:
+
+- [In-App Messages and Mobile Inbox](https://support.iterable.com/hc/articles/217517406)
+- [Sending In-App Messages](https://support.iterable.com/hc/articles/360034903151)
+- [Events for In-App Messages and Mobile Inbox](https://support.iterable.com/hc/articles/360038939972)
+- [Setting up Mobile Inbox on iOS](https://support.iterable.com/hc/articles/360039137271)
+- [Customizing Mobile Inbox on iOS](https://support.iterable.com/hc/articles/360039091471)
 
 ### Custom events
 

@@ -5,6 +5,7 @@
 
 import Foundation
 import UserNotifications
+import WebKit
 
 @testable import IterableSDK
 
@@ -401,4 +402,61 @@ struct MockAPNSTypeChecker: APNSTypeCheckerProtocol {
     init(apnsType: APNSType) {
         self.apnsType = apnsType
     }
+}
+
+struct MockViewCalculations: ViewCalculationsProtocol {
+    let viewPosition: ViewPosition
+    let safeAreaInsets: UIEdgeInsets
+    
+    func width(for _: UIView) -> CGFloat {
+        return viewPosition.width
+    }
+    
+    func height(for _: UIView) -> CGFloat {
+        return viewPosition.height
+    }
+    
+    func center(for _: UIView) -> CGPoint {
+        return viewPosition.center
+    }
+    
+    func safeAreaInsets(for _: UIView) -> UIEdgeInsets {
+        return safeAreaInsets
+    }
+}
+
+class MockWebView: WebViewProtocol {
+    let view: UIView = UIView()
+    
+    func loadHTMLString(_: String, baseURL _: URL?) -> WKNavigation? {
+        return nil
+    }
+    
+    func set(position: ViewPosition) {
+        self.position = position
+        view.frame.size.width = position.width
+        view.frame.size.height = position.height
+        view.center = position.center
+    }
+    
+    func set(navigationDelegate _: WKNavigationDelegate?) {}
+    
+    func evaluateJavaScript(_: String, completionHandler: ((Any?, Error?) -> Void)?) {
+        completionHandler?(height, nil)
+    }
+    
+    func layoutSubviews() {}
+    
+    var position: ViewPosition?
+    
+    private var height: CGFloat
+    
+    init(height: CGFloat) {
+        self.height = height
+    }
+}
+
+struct MockInjectedDependencyModule: InjectedDependencyModuleProtocol {
+    let viewCalculations: ViewCalculationsProtocol
+    let webView: WebViewProtocol
 }

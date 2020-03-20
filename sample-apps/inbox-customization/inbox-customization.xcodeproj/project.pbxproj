@@ -42,11 +42,11 @@
 		ACBEB60123D233D40046B5A1 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACBEB60023D233D40046B5A1 /* MainViewController.swift */; };
 		ACBEB60523D2F2460046B5A1 /* CustomInboxCell1.xib in Resources */ = {isa = PBXBuildFile; fileRef = ACBEB60323D2F1470046B5A1 /* CustomInboxCell1.xib */; };
 		ACBEB60623D2F24A0046B5A1 /* CustomInboxCell2.xib in Resources */ = {isa = PBXBuildFile; fileRef = ACBEB60423D2F17F0046B5A1 /* CustomInboxCell2.xib */; };
+		ACC39DC924059D2A00900BBB /* IterableSDK in Frameworks */ = {isa = PBXBuildFile; productRef = ACC39DC824059D2A00900BBB /* IterableSDK */; };
 		ACC55E0223CD7DB600CE77C6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC55E0123CD7DB600CE77C6 /* AppDelegate.swift */; };
 		ACC55E0923CD7DB600CE77C6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACC55E0723CD7DB600CE77C6 /* Main.storyboard */; };
 		ACC55E0B23CD7DBA00CE77C6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ACC55E0A23CD7DBA00CE77C6 /* Assets.xcassets */; };
 		ACC55E0E23CD7DBA00CE77C6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACC55E0C23CD7DBA00CE77C6 /* LaunchScreen.storyboard */; };
-		ACC55E1D23CD871E00CE77C6 /* IterableSDK in Frameworks */ = {isa = PBXBuildFile; productRef = ACC55E1C23CD871E00CE77C6 /* IterableSDK */; };
 		ACC55E2023CE1B5900CE77C6 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC55E1F23CE1B5900CE77C6 /* DataManager.swift */; };
 		ACC55E2323CE1C4600CE77C6 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC55E2223CE1C4600CE77C6 /* MockNetworkSession.swift */; };
 		ACE78E3423CF990200492D03 /* mocha.png in Resources */ = {isa = PBXBuildFile; fileRef = ACE78E3323CF990200492D03 /* mocha.png */; };
@@ -126,7 +126,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ACC55E1D23CD871E00CE77C6 /* IterableSDK in Frameworks */,
+				ACC39DC924059D2A00900BBB /* IterableSDK in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -372,7 +372,7 @@
 			);
 			name = "inbox-customization";
 			packageProductDependencies = (
-				ACC55E1C23CD871E00CE77C6 /* IterableSDK */,
+				ACC39DC824059D2A00900BBB /* IterableSDK */,
 			);
 			productName = "inbox-customization";
 			productReference = ACC55DFE23CD7DB600CE77C6 /* inbox-customization.app */;
@@ -403,7 +403,7 @@
 			);
 			mainGroup = ACC55DF523CD7DB600CE77C6;
 			packageReferences = (
-				ACC55E1623CD86B400CE77C6 /* XCRemoteSwiftPackageReference "swift-sdk" */,
+				ACC39DC724059D2A00900BBB /* XCRemoteSwiftPackageReference "swift-sdk" */,
 			);
 			productRefGroup = ACC55DFF23CD7DB600CE77C6 /* Products */;
 			projectDirPath = "";
@@ -680,20 +680,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		ACC55E1623CD86B400CE77C6 /* XCRemoteSwiftPackageReference "swift-sdk" */ = {
+		ACC39DC724059D2A00900BBB /* XCRemoteSwiftPackageReference "swift-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Iterable/swift-sdk";
+			repositoryURL = "https://github.com/Iterable/swift-sdk.git";
 			requirement = {
-				branch = inbox;
+				branch = master;
 				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		ACC55E1C23CD871E00CE77C6 /* IterableSDK */ = {
+		ACC39DC824059D2A00900BBB /* IterableSDK */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = ACC55E1623CD86B400CE77C6 /* XCRemoteSwiftPackageReference "swift-sdk" */;
+			package = ACC39DC724059D2A00900BBB /* XCRemoteSwiftPackageReference "swift-sdk" */;
 			productName = IterableSDK;
 		};
 /* End XCSwiftPackageProductDependency section */

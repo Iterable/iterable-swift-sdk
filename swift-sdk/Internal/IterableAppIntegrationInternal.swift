@@ -10,6 +10,7 @@ import UserNotifications
 // Returns whether notifications are enabled
 protocol NotificationStateProviderProtocol {
     var notificationsEnabled: Promise<Bool, Error> { get }
+    
     func registerForRemoteNotifications()
 }
 
@@ -37,7 +38,9 @@ struct SystemNotificationStateProvider: NotificationStateProviderProtocol {
 
 public protocol NotificationResponseProtocol {
     var userInfo: [AnyHashable: Any] { get }
+    
     var actionIdentifier: String { get }
+    
     var textInputResponse: UNTextInputNotificationResponse? { get }
 }
 
@@ -61,11 +64,22 @@ struct UserNotificationResponse: NotificationResponseProtocol {
     }
 }
 
-/// Abstraction of PushTacking
+/// Abstraction of push tracking
 public protocol PushTrackerProtocol: AnyObject {
     var lastPushPayload: [AnyHashable: Any]? { get }
-    func trackPushOpen(_ userInfo: [AnyHashable: Any], dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?)
-    func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?)
+    
+    func trackPushOpen(_ userInfo: [AnyHashable: Any],
+                       dataFields: [AnyHashable: Any]?,
+                       onSuccess: OnSuccessHandler?,
+                       onFailure: OnFailureHandler?)
+    
+    func trackPushOpen(_ campaignId: NSNumber,
+                       templateId: NSNumber?,
+                       messageId: String?,
+                       appAlreadyRunning: Bool,
+                       dataFields: [AnyHashable: Any]?,
+                       onSuccess: OnSuccessHandler?,
+                       onFailure: OnFailureHandler?)
 }
 
 extension PushTrackerProtocol {
@@ -129,6 +143,7 @@ struct IterableAppIntegrationInternal {
      */
     func application(_ application: ApplicationStateProviderProtocol, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: ((UIBackgroundFetchResult) -> Void)?) {
         ITBInfo()
+        
         if case let NotificationInfo.silentPush(silentPush) = NotificationHelper.inspect(notification: userInfo) {
             switch silentPush.notificationType {
             case .update:
@@ -166,12 +181,15 @@ struct IterableAppIntegrationInternal {
      */
     func userNotificationCenter(_: UNUserNotificationCenter?, didReceive response: NotificationResponseProtocol, withCompletionHandler completionHandler: (() -> Void)?) {
         ITBInfo()
+        
         let userInfo = response.userInfo
+        
         // Ignore the notification if we've already processed it from launchOptions while initializing SDK
         guard !alreadyTracked(userInfo: userInfo) else {
             completionHandler?()
             return
         }
+        
         guard let itbl = IterableAppIntegrationInternal.itblValue(fromUserInfo: userInfo) else {
             completionHandler?()
             return
@@ -198,7 +216,10 @@ struct IterableAppIntegrationInternal {
         completionHandler?()
     }
     
-    private static func createIterableAction(actionIdentifier: String, userText: String?, userInfo: [AnyHashable: Any], iterableElement itbl: [AnyHashable: Any]) -> IterableAction? {
+    private static func createIterableAction(actionIdentifier: String,
+                                             userText: String?,
+                                             userInfo: [AnyHashable: Any],
+                                             iterableElement itbl: [AnyHashable: Any]) -> IterableAction? {
         var action: IterableAction?
         
         if actionIdentifier == UNNotificationDefaultActionIdentifier {
