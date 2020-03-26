@@ -7,7 +7,7 @@ import Foundation
 import os
 
 /// Will log if logLevel is >= minLogLevel
-public class DefaultLogDelegate: IterableLogDelegate {
+@objc public class DefaultLogDelegate: NSObject, IterableLogDelegate {
     private let minLogLevel: LogLevel // the lowest level that will be logged
     
     init(minLogLevel: LogLevel = .info) {
@@ -29,9 +29,7 @@ public class DefaultLogDelegate: IterableLogDelegate {
 }
 
 /// Will log everything
-public class AllLogDelegate: IterableLogDelegate {
-    public init() {}
-    
+@objc public class AllLogDelegate: NSObject, IterableLogDelegate {
     public func log(level: LogLevel = .info, message: String) {
         let markedMessage = IterableLogUtil.markedMessage(level: level, message: message)
         print(markedMessage)
@@ -39,9 +37,7 @@ public class AllLogDelegate: IterableLogDelegate {
 }
 
 /// Will log nothing
-public class NoneLogDelegate: IterableLogDelegate {
-    public init() {}
-    
+@objc public class NoneLogDelegate: NSObject, IterableLogDelegate {
     public func log(level _: LogLevel = .info, message _: String) {
         // Do nothing
     }
