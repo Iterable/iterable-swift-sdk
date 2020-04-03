@@ -48,6 +48,10 @@ import UIKit
     /// - parameter read: Whether this inbox message was read
     /// - parameter message: The inbox message
     @objc(setRead:forMessage:) func set(read: Bool, forMessage message: IterableInAppMessage)
+    
+    /// - parameter id: The id of the message
+    /// - returns: IterableInAppMessage with the id, if it exists.
+    @objc(getMessageWithId:) func getMessage(withId id: String) -> IterableInAppMessage?
 }
 
 /// Iterable Notification names
