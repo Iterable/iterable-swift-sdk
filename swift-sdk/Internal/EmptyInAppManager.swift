@@ -38,6 +38,10 @@ class EmptyInAppManager: IterableInternalInAppManagerProtocol {
     
     func set(read _: Bool, forMessage _: IterableInAppMessage) {}
     
+    func getMessage(withId _: String) -> IterableInAppMessage? {
+        return nil
+    }
+    
     func getUnreadInboxMessagesCount() -> Int {
         return 0
     }

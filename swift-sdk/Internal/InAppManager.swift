@@ -182,6 +182,10 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         }
     }
     
+    func getMessage(withId id: String) -> IterableInAppMessage? {
+        return messagesMap[id]
+    }
+    
     func isOkToShowNow(message: IterableInAppMessage) -> Bool {
         guard message.didProcessTrigger == false else {
             ITBInfo("message with id: \(message.messageId) is already processed")

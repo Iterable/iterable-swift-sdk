@@ -39,4 +39,10 @@ class OrderedDictionaryTests: XCTestCase {
         
         XCTAssertEqual(dict["key"], "value")
     }
+    
+    func testNonExistentKey() {
+        let dict = OrderedDictionary<String, String>()
+        
+        XCTAssertNil(dict["key"])
+    }
 }
