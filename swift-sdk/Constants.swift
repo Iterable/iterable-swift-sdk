@@ -5,7 +5,6 @@
 
 import Foundation
 
-// Iterable API Endpoints
 enum Endpoint {
     private static let apiHostName = "https://api.iterable.com"
     private static let linksHostName = "https://links.iterable.com"
@@ -56,6 +55,24 @@ public enum C {
         static let payloadExpiration = 24
         static let attributionInfoExpiration = 24
     }
+}
+
+@objc(IterableLogLevel) public enum LogLevel: Int {
+    case debug = 1
+    case info
+    case error
+}
+
+@objc public enum PushServicePlatform: Int {
+    case sandbox // sandbox push service
+    case production // production push service
+    case auto // detect platform automatically
+}
+
+@objc public enum IterableActionSource: Int {
+    case push
+    case universalLink
+    case inApp
 }
 
 public protocol JsonKeyValueRepresentable {
@@ -302,6 +319,11 @@ extension Array: JsonValueRepresentable where Element: JsonValueRepresentable {
     }
 }
 
+enum MobileDeviceType: String, Codable {
+    case iOS
+    case Android
+}
+
 // These are custom action for "iterable://delete" etc.
 public enum IterableCustomActionName: String, CaseIterable {
     case dismiss
@@ -312,3 +334,5 @@ public typealias ITEActionBlock = (String?) -> Void
 public typealias ITBURLCallback = (URL?) -> Void
 public typealias OnSuccessHandler = (_ data: [AnyHashable: Any]?) -> Void
 public typealias OnFailureHandler = (_ reason: String?, _ data: Data?) -> Void
+public typealias UrlHandler = (URL) -> Bool
+public typealias CustomActionHandler = (String) -> Bool
