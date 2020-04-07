@@ -154,3 +154,40 @@ extension IterableAPI {
         internalImplementation?.start().wait()
     }
 }
+
+extension IterableAPIInternal {
+    @discardableResult static func initializeForTesting(apiKey: String = "zeeApiKey",
+                                                        launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
+                                                        config: IterableConfig = IterableConfig(),
+                                                        dateProvider: DateProviderProtocol = SystemDateProvider(),
+                                                        networkSession: NetworkSessionProtocol = MockNetworkSession(),
+                                                        notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
+                                                        inAppFetcher: InAppFetcherProtocol = MockInAppFetcher(),
+                                                        inAppDisplayer: InAppDisplayerProtocol = MockInAppDisplayer(),
+                                                        inAppPersister: InAppPersistenceProtocol = MockInAppPesister(),
+                                                        urlOpener: UrlOpenerProtocol = MockUrlOpener(),
+                                                        applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
+                                                        notificationCenter: NotificationCenterProtocol = NotificationCenter.default,
+                                                        apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker()) -> IterableAPIInternal {
+        let mockDependencyContainer = MockDependencyContainer(dateProvider: dateProvider,
+                                                              networkSession: networkSession,
+                                                              notificationStateProvider: notificationStateProvider,
+                                                              localStorage: UserDefaultsLocalStorage(userDefaults: TestHelper.getTestUserDefaults()),
+                                                              inAppFetcher: inAppFetcher,
+                                                              inAppDisplayer: inAppDisplayer,
+                                                              inAppPersister: inAppPersister,
+                                                              urlOpener: urlOpener,
+                                                              applicationStateProvider: applicationStateProvider,
+                                                              notificationCenter: notificationCenter,
+                                                              apnsTypeChecker: apnsTypeChecker)
+        
+        let internalImplementation = IterableAPIInternal(apiKey: apiKey,
+                                                         launchOptions: launchOptions,
+                                                         config: config,
+                                                         dependencyContainer: mockDependencyContainer)
+        
+        internalImplementation.start().wait()
+        
+        return internalImplementation
+    }
+}

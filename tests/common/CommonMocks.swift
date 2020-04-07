@@ -256,7 +256,7 @@ class MockInAppFetcher: InAppFetcherProtocol {
         return Promise(value: messagesMap.values)
     }
     
-    @discardableResult func mockMessagesAvailableFromServer(messages: [IterableInAppMessage]) -> Future<Int, Error> {
+    @discardableResult func mockMessagesAvailableFromServer(internalApi: IterableAPIInternal = IterableAPI.internalImplementation!, messages: [IterableInAppMessage]) -> Future<Int, Error> {
         ITBInfo()
         
         messagesMap = OrderedDictionary<String, IterableInAppMessage>()
@@ -267,7 +267,7 @@ class MockInAppFetcher: InAppFetcherProtocol {
         
         let result = Promise<Int, Error>()
         
-        let inAppManager = (IterableAPI.inAppManager as! IterableInternalInAppManagerProtocol)
+        let inAppManager = internalApi.inAppManager
         inAppManager.scheduleSync().onSuccess { _ in
             result.resolve(with: inAppManager.getMessages().count)
         }
@@ -275,9 +275,9 @@ class MockInAppFetcher: InAppFetcherProtocol {
         return result
     }
     
-    @discardableResult func mockInAppPayloadFromServer(_ payload: [AnyHashable: Any]) -> Future<Int, Error> {
+    @discardableResult func mockInAppPayloadFromServer(internalApi: IterableAPIInternal = IterableAPI.internalImplementation!, _ payload: [AnyHashable: Any]) -> Future<Int, Error> {
         ITBInfo()
-        return mockMessagesAvailableFromServer(messages: InAppTestHelper.inAppMessages(fromPayload: payload))
+        return mockMessagesAvailableFromServer(internalApi: internalApi, messages: InAppTestHelper.inAppMessages(fromPayload: payload))
     }
     
     func add(message: IterableInAppMessage) {
