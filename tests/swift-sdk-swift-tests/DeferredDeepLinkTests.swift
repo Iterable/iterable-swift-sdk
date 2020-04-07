@@ -31,7 +31,7 @@ class DeferredDeepLinkTests: XCTestCase {
         config.checkForDeferredDeeplink = true
         let urlDelegate = MockUrlDelegate(returnValue: true)
         urlDelegate.callback = { url, _ in
-            TestUtils.validate(request: networkSession.request!, apiEndPoint: Endpoint.links, path: Const.Path.ddlMatch)
+            TestUtils.validate(request: networkSession.request!, apiEndPoint: Endpoint.links, path: C.Path.ddlMatch)
             expectation.fulfill()
             XCTAssertEqual(url.absoluteString, "zeeDestinationUrl")
         }

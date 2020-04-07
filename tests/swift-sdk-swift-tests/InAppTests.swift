@@ -1083,10 +1083,10 @@ class InAppTests: XCTestCase {
         let mockInAppFetcher = MockInAppFetcher()
         let mockNetworkSession = MockNetworkSession()
         mockNetworkSession.requestCallback = { urlRequest in
-            guard urlRequest.url!.absoluteString.contains(Const.Path.inAppConsume) else {
+            guard urlRequest.url!.absoluteString.contains(C.Path.inAppConsume) else {
                 return
             }
-            TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.inAppConsume)
+            TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: Endpoint.api, path: C.Path.inAppConsume)
             let body = mockNetworkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMessageContext(messageId: "message1", saveToInbox: true, silentInbox: true, location: location, inBody: body)
             if let deleteAction = source {

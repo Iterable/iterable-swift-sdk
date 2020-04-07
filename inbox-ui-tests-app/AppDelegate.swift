@@ -33,7 +33,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let config = IterableConfig()
         config.customActionDelegate = self
         config.urlDelegate = self
-        TestHelper.getTestUserDefaults().set("user1@example.com", forKey: Const.UserDefaults.emailKey)
+        TestHelper.getTestUserDefaults().set("user1@example.com", forKey: C.UserDefaults.emailKey)
         
         IterableAPI.initializeForTesting(config: config,
                                          networkSession: mockNetworkSession,

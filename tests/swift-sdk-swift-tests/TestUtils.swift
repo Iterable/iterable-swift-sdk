@@ -20,7 +20,7 @@ struct TestUtils {
     
     static func validate(request: URLRequest, requestType: RequestType? = nil, apiEndPoint: String, path: String, headers: [String: String]? = nil, queryParams: [(name: String, value: String)]? = nil) {
         if let requestType = requestType {
-            XCTAssertEqual(requestType == .get ? Const.Http.GET : Const.Http.POST, request.httpMethod)
+            XCTAssertEqual(requestType == .get ? C.Http.GET : C.Http.POST, request.httpMethod)
         }
         
         XCTAssertTrue(request.url!.absoluteString.hasPrefix(IterableRequestUtil.pathCombine(paths: [apiEndPoint, path])), "request: \(request.url!.absoluteString), apiEndPoint: \(apiEndPoint), path: \(path)")

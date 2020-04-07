@@ -26,7 +26,7 @@ class RequestCreatorTests: XCTestCase {
                                                 impressions: impressions)
         let urlRequest = convertToUrlRequest(createRequestCreator().createTrackInboxSessionRequest(inboxSession: inboxSession))
         TestUtils.validateHeader(urlRequest, apiKey)
-        TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackInboxSession)
+        TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: Endpoint.api, path: C.Path.trackInboxSession)
         
         let body = urlRequest.bodyDict
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.email), value: auth.email, inDictionary: body)
@@ -55,7 +55,7 @@ class RequestCreatorTests: XCTestCase {
         let messageContext1 = InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId)
         let request1 = convertToUrlRequest(createRequestCreator().createTrackInAppOpenRequest(inAppMessageContext: messageContext1))
         TestUtils.validateHeader(request1, apiKey)
-        TestUtils.validate(request: request1, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackInAppOpen)
+        TestUtils.validate(request: request1, requestType: .post, apiEndPoint: Endpoint.api, path: C.Path.trackInAppOpen)
         
         let body1 = request1.bodyDict
         TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body1)
@@ -66,7 +66,7 @@ class RequestCreatorTests: XCTestCase {
         let messageContext2 = InAppMessageContext.from(message: message, location: location)
         let request2 = convertToUrlRequest(createRequestCreator().createTrackInAppOpenRequest(inAppMessageContext: messageContext2))
         TestUtils.validateHeader(request2, apiKey)
-        TestUtils.validate(request: request2, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackInAppOpen)
+        TestUtils.validate(request: request2, requestType: .post, apiEndPoint: Endpoint.api, path: C.Path.trackInAppOpen)
         
         let body2 = request2.bodyDict
         TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body2)
@@ -88,7 +88,7 @@ class RequestCreatorTests: XCTestCase {
         let messageContext1 = InAppMessageContext.from(message: message, location: inboxLoc, inboxSessionId: inboxSessionId)
         let request1 = convertToUrlRequest(createRequestCreator().createTrackInAppClickRequest(inAppMessageContext: messageContext1, clickedUrl: clickedUrl))
         TestUtils.validateHeader(request1, apiKey)
-        TestUtils.validate(request: request1, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackInAppClick)
+        TestUtils.validate(request: request1, requestType: .post, apiEndPoint: Endpoint.api, path: C.Path.trackInAppClick)
         
         let body1 = request1.bodyDict
         TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body1)
@@ -100,7 +100,7 @@ class RequestCreatorTests: XCTestCase {
         let messageContext2 = InAppMessageContext.from(message: message, location: inboxLoc)
         let request2 = convertToUrlRequest(createRequestCreator().createTrackInAppClickRequest(inAppMessageContext: messageContext2, clickedUrl: clickedUrl))
         TestUtils.validateHeader(request2, apiKey)
-        TestUtils.validate(request: request2, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackInAppClick)
+        TestUtils.validate(request: request2, requestType: .post, apiEndPoint: Endpoint.api, path: C.Path.trackInAppClick)
         
         let body2 = request2.bodyDict
         TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body2)
@@ -126,7 +126,7 @@ class RequestCreatorTests: XCTestCase {
         let messageContext1 = InAppMessageContext.from(message: message, location: inboxLoc, inboxSessionId: inboxSessionId)
         let request1 = convertToUrlRequest(createRequestCreator().createTrackInAppCloseRequest(inAppMessageContext: messageContext1, source: .back, clickedUrl: clickedUrl))
         TestUtils.validateHeader(request1, apiKey)
-        TestUtils.validate(request: request1, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackInAppClose)
+        TestUtils.validate(request: request1, requestType: .post, apiEndPoint: Endpoint.api, path: C.Path.trackInAppClose)
         
         let body1 = request1.bodyDict
         TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body1)
@@ -138,7 +138,7 @@ class RequestCreatorTests: XCTestCase {
         let messageContext2 = InAppMessageContext.from(message: message, location: inAppLoc)
         let request2 = convertToUrlRequest(createRequestCreator().createTrackInAppCloseRequest(inAppMessageContext: messageContext2, source: .link, clickedUrl: nil))
         TestUtils.validateHeader(request2, apiKey)
-        TestUtils.validate(request: request2, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackInAppClose)
+        TestUtils.validate(request: request2, requestType: .post, apiEndPoint: Endpoint.api, path: C.Path.trackInAppClose)
         
         let body2 = request2.bodyDict
         TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body2)
@@ -166,7 +166,7 @@ class RequestCreatorTests: XCTestCase {
         let urlRequest = convertToUrlRequest(request)
         
         TestUtils.validateHeader(urlRequest, apiKey)
-        TestUtils.validate(request: urlRequest, requestType: .get, apiEndPoint: Endpoint.api, path: Const.Path.getInAppMessages)
+        TestUtils.validate(request: urlRequest, requestType: .get, apiEndPoint: Endpoint.api, path: C.Path.getInAppMessages)
         
         guard case let .success(.get(getRequest)) = request, let args = getRequest.args else {
             XCTFail("could not unwrap to a get request and its arguments")
@@ -184,7 +184,7 @@ class RequestCreatorTests: XCTestCase {
         let request = convertToUrlRequest(createRequestCreator().createTrackEventRequest(eventName, dataFields: nil))
         
         TestUtils.validateHeader(request, apiKey)
-        TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackEvent)
+        TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: C.Path.trackEvent)
         
         let body = request.bodyDict
         TestUtils.validateMatch(keyPath: KeyPath(.eventName), value: eventName, inDictionary: body)
@@ -200,7 +200,7 @@ class RequestCreatorTests: XCTestCase {
         let request = convertToUrlRequest(createRequestCreator().createTrackInAppDeliveryRequest(inAppMessageContext: messageContext))
         
         TestUtils.validateHeader(request, apiKey)
-        TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackInAppDelivery)
+        TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: C.Path.trackInAppDelivery)
         
         let body = request.bodyDict
         TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body)
@@ -214,7 +214,7 @@ class RequestCreatorTests: XCTestCase {
         let request = convertToUrlRequest(createRequestCreator().createInAppConsumeRequest(messageId))
         
         TestUtils.validateHeader(request, apiKey)
-        TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.inAppConsume)
+        TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: C.Path.inAppConsume)
         
         TestUtils.validateMatch(keyPath: KeyPath(.messageId), value: messageId, inDictionary: request.bodyDict)
     }
@@ -235,7 +235,7 @@ class RequestCreatorTests: XCTestCase {
                                                                                                   templateId: templateId))
         
         TestUtils.validateHeader(request, apiKey)
-        TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.updateSubscriptions)
+        TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: C.Path.updateSubscriptions)
         
         let body = request.bodyDict
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.emailListIds.jsonKey), value: emailListIds, inDictionary: body)

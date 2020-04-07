@@ -25,7 +25,7 @@ class DeprecatedFunctionsTests: XCTestCase {
             TestUtils.validate(request: networkSession.request!,
                                requestType: .post,
                                apiEndPoint: Endpoint.api,
-                               path: Const.Path.trackInAppOpen,
+                               path: C.Path.trackInAppOpen,
                                queryParams: [])
             
             TestUtils.validateHeader(networkSession.request!, self.apiKey)
@@ -69,7 +69,7 @@ class DeprecatedFunctionsTests: XCTestCase {
             TestUtils.validate(request: networkSession.request!,
                                requestType: .post,
                                apiEndPoint: Endpoint.api,
-                               path: Const.Path.trackInAppClick,
+                               path: C.Path.trackInAppClick,
                                queryParams: [])
             
             TestUtils.validateHeader(networkSession.request!, self.apiKey)

@@ -157,7 +157,7 @@ class InAppParsingTests: XCTestCase {
             TestUtils.validate(request: networkSession.request!,
                                requestType: .post,
                                apiEndPoint: Endpoint.api,
-                               path: Const.Path.trackInAppClick,
+                               path: C.Path.trackInAppClick,
                                queryParams: [])
             let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMessageContext(messageId: message.messageId, userId: InAppParsingTests.userId, saveToInbox: false, silentInbox: false, location: .inApp, inBody: body)
@@ -188,7 +188,7 @@ class InAppParsingTests: XCTestCase {
             TestUtils.validate(request: networkSession.request!,
                                requestType: .post,
                                apiEndPoint: Endpoint.api,
-                               path: Const.Path.trackInAppOpen,
+                               path: C.Path.trackInAppOpen,
                                queryParams: [])
             let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMessageContext(messageId: message.messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: .inbox, inBody: body)
@@ -211,7 +211,7 @@ class InAppParsingTests: XCTestCase {
             TestUtils.validate(request: networkSession.request!,
                                requestType: .post,
                                apiEndPoint: Endpoint.api,
-                               path: Const.Path.trackInAppClose,
+                               path: C.Path.trackInAppClose,
                                queryParams: [])
             
             let body = networkSession.getRequestBody() as! [String: Any]
@@ -250,7 +250,7 @@ class InAppParsingTests: XCTestCase {
             TestUtils.validate(request: networkSession.request!,
                                requestType: .post,
                                apiEndPoint: Endpoint.api,
-                               path: Const.Path.trackInAppClose,
+                               path: C.Path.trackInAppClose,
                                queryParams: [])
             
             let body = networkSession.getRequestBody() as! [String: Any]
@@ -289,7 +289,7 @@ class InAppParsingTests: XCTestCase {
             TestUtils.validate(request: networkSession.request!,
                                requestType: .post,
                                apiEndPoint: Endpoint.api,
-                               path: Const.Path.trackInAppDelivery,
+                               path: C.Path.trackInAppDelivery,
                                queryParams: [])
             
             let body = networkSession.getRequestBody() as! [String: Any]

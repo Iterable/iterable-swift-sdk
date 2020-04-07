@@ -40,14 +40,14 @@ class IterableAutoRegistrationTests: XCTestCase {
         networkSession.callback = { _, _, _ in
             // First call, API call to register endpoint
             expectation1.fulfill()
-            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.registerDeviceToken, queryParams: [])
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: Endpoint.api, path: C.Path.registerDeviceToken, queryParams: [])
             let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMatch(keyPath: KeyPath("device.dataFields.notificationsEnabled"), value: false, inDictionary: body)
             
             networkSession.callback = { _, _, _ in
                 // Second call, API call to disable endpoint
                 expectation3.fulfill()
-                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.disableDevice, queryParams: [])
+                TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: Endpoint.api, path: C.Path.disableDevice, queryParams: [])
                 let body = networkSession.getRequestBody() as! [String: Any]
                 TestUtils.validateElementPresent(withName: JsonKey.token.jsonKey, andValue: token.hexString(), inDictionary: body)
                 TestUtils.validateElementPresent(withName: JsonKey.email.jsonKey, andValue: "user1@example.com", inDictionary: body)
@@ -77,7 +77,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         let token = "zeeToken".data(using: .utf8)!
         networkSession.callback = { _, _, _ in
             // first call back will be called on register
-            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.registerDeviceToken, queryParams: [])
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: Endpoint.api, path: C.Path.registerDeviceToken, queryParams: [])
             networkSession.callback = { _, _, _ in
                 // Second callback should not happen
                 XCTFail("Should not call disable")
@@ -106,7 +106,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         let token = "zeeToken".data(using: .utf8)!
         networkSession.callback = { _, _, _ in
             // first call back will be called on register
-            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.registerDeviceToken, queryParams: [])
+            TestUtils.validate(request: networkSession.request!, requestType: .post, apiEndPoint: Endpoint.api, path: C.Path.registerDeviceToken, queryParams: [])
             networkSession.callback = { _, _, _ in
                 // Second callback should not happen
                 XCTFail("should not call disable")
@@ -128,7 +128,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         config.autoPushRegistration = true
         let notificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: expectation1)
         
-        TestUtils.getTestUserDefaults().set("user1@example.com", forKey: Const.UserDefaults.emailKey)
+        TestUtils.getTestUserDefaults().set("user1@example.com", forKey: C.UserDefaults.emailKey)
         IterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey, config: config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
         
         // only wait for small time, supposed to error out
