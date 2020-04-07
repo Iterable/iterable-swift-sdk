@@ -77,7 +77,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             return localStorage.getAttributionInfo(currentDate: dateProvider.currentDate)
         } set {
             let expiration = Calendar.current.date(byAdding: .hour,
-                                                   value: Const.UserDefaults.attributionInfoExpiration,
+                                                   value: C.UserDefaults.attributionInfoExpiration,
                                                    to: dateProvider.currentDate)
             localStorage.save(attributionInfo: newValue, withExpiration: expiration)
         }
@@ -219,7 +219,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     private func save(pushPayload payload: [AnyHashable: Any]) {
         let expiration = Calendar.current.date(byAdding: .hour,
-                                               value: Const.UserDefaults.payloadExpiration,
+                                               value: C.UserDefaults.payloadExpiration,
                                                to: dateProvider.currentDate)
         localStorage.save(payload: payload, withExpiration: expiration)
         
@@ -571,7 +571,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
         
         guard let request = IterableRequestUtil.createPostRequest(forApiEndPoint: config.linksEndpoint,
-                                                                  path: Const.Path.ddlMatch,
+                                                                  path: C.Path.ddlMatch,
                                                                   headers: [JsonKey.Header.apiKey: apiKey],
                                                                   args: nil,
                                                                   body: DeviceInfo.createDeviceInfo()) else {

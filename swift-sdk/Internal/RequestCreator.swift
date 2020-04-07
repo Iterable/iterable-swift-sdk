@@ -44,7 +44,7 @@ struct RequestCreator {
             return .failure(IterableError.general(description: "Both email and userId are nil"))
         }
         
-        return .success(.post(createPostRequest(path: Const.Path.updateEmail, body: body)))
+        return .success(.post(createPostRequest(path: C.Path.updateEmail, body: body)))
     }
     
     func createRegisterTokenRequest(hexToken: String,
@@ -109,7 +109,7 @@ struct RequestCreator {
             body[JsonKey.preferUserId.jsonKey] = true
         }
         
-        return .success(.post(createPostRequest(path: Const.Path.registerDeviceToken, body: body)))
+        return .success(.post(createPostRequest(path: C.Path.registerDeviceToken, body: body)))
     }
     
     func createUpdateUserRequest(dataFields: [AnyHashable: Any], mergeNestedObjects: Bool) -> Result<IterableRequest, IterableError> {
@@ -128,7 +128,7 @@ struct RequestCreator {
             body[JsonKey.preferUserId.jsonKey] = true
         }
         
-        return .success(.post(createPostRequest(path: Const.Path.updateUser, body: body)))
+        return .success(.post(createPostRequest(path: C.Path.updateUser, body: body)))
     }
     
     func createTrackPurchaseRequest(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) -> Result<IterableRequest, IterableError> {
@@ -155,7 +155,7 @@ struct RequestCreator {
             body[JsonKey.dataFields.jsonKey] = dataFields
         }
         
-        return .success(.post(createPostRequest(path: Const.Path.trackPurchase, body: body)))
+        return .success(.post(createPostRequest(path: C.Path.trackPurchase, body: body)))
     }
     
     func createTrackPushOpenRequest(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?) -> Result<IterableRequest, IterableError> {
@@ -183,7 +183,7 @@ struct RequestCreator {
             body.setValue(for: .messageId, value: messageId)
         }
         
-        return .success(.post(createPostRequest(path: Const.Path.trackPushOpen, body: body)))
+        return .success(.post(createPostRequest(path: C.Path.trackPushOpen, body: body)))
     }
     
     func createTrackEventRequest(_ eventName: String, dataFields: [AnyHashable: Any]?) -> Result<IterableRequest, IterableError> {
@@ -201,7 +201,7 @@ struct RequestCreator {
             body[JsonKey.dataFields.jsonKey] = dataFields
         }
         
-        return .success(.post(createPostRequest(path: Const.Path.trackEvent, body: body)))
+        return .success(.post(createPostRequest(path: C.Path.trackEvent, body: body)))
     }
     
     func createUpdateSubscriptionsRequest(_ emailListIds: [NSNumber]? = nil,
@@ -243,7 +243,7 @@ struct RequestCreator {
             body[JsonKey.templateId.jsonKey] = templateId
         }
         
-        return .success(.post(createPostRequest(path: Const.Path.updateSubscriptions, body: body)))
+        return .success(.post(createPostRequest(path: C.Path.updateSubscriptions, body: body)))
     }
     
     func createGetInAppMessagesRequest(_ count: NSNumber) -> Result<IterableRequest, IterableError> {
@@ -262,7 +262,7 @@ struct RequestCreator {
         
         args.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
-        return .success(.get(createGetRequest(forPath: Const.Path.getInAppMessages, withArgs: args as! [String: String])))
+        return .success(.get(createGetRequest(forPath: C.Path.getInAppMessages, withArgs: args as! [String: String])))
     }
     
     // deprecated
@@ -282,7 +282,7 @@ struct RequestCreator {
         body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
         body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
-        return .success(.post(createPostRequest(path: Const.Path.trackInAppOpen, body: body)))
+        return .success(.post(createPostRequest(path: C.Path.trackInAppOpen, body: body)))
     }
     
     func createTrackInAppOpenRequest(inAppMessageContext: InAppMessageContext) -> Result<IterableRequest, IterableError> {
@@ -304,7 +304,7 @@ struct RequestCreator {
             body.setValue(for: .inboxSessionId, value: inboxSessionId)
         }
         
-        return .success(.post(createPostRequest(path: Const.Path.trackInAppOpen, body: body)))
+        return .success(.post(createPostRequest(path: C.Path.trackInAppOpen, body: body)))
     }
     
     // deprecated
@@ -325,7 +325,7 @@ struct RequestCreator {
         body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
         body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
-        return .success(.post(createPostRequest(path: Const.Path.trackInAppClick, body: body)))
+        return .success(.post(createPostRequest(path: C.Path.trackInAppClick, body: body)))
     }
     
     func createTrackInAppClickRequest(inAppMessageContext: InAppMessageContext, clickedUrl: String) -> Result<IterableRequest, IterableError> {
@@ -349,7 +349,7 @@ struct RequestCreator {
             body.setValue(for: .inboxSessionId, value: inboxSessionId)
         }
         
-        return .success(.post(createPostRequest(path: Const.Path.trackInAppClick, body: body)))
+        return .success(.post(createPostRequest(path: C.Path.trackInAppClick, body: body)))
     }
     
     func createTrackInAppCloseRequest(inAppMessageContext: InAppMessageContext, source: InAppCloseSource?, clickedUrl: String?) -> Result<IterableRequest, IterableError> {
@@ -379,7 +379,7 @@ struct RequestCreator {
         
         body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
-        return .success(.post(createPostRequest(path: Const.Path.trackInAppClose, body: body)))
+        return .success(.post(createPostRequest(path: C.Path.trackInAppClose, body: body)))
     }
     
     func createTrackInAppDeliveryRequest(inAppMessageContext: InAppMessageContext) -> Result<IterableRequest, IterableError> {
@@ -397,7 +397,7 @@ struct RequestCreator {
         body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
         body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
-        return .success(.post(createPostRequest(path: Const.Path.trackInAppDelivery, body: body)))
+        return .success(.post(createPostRequest(path: C.Path.trackInAppDelivery, body: body)))
     }
     
     func createInAppConsumeRequest(_ messageId: String) -> Result<IterableRequest, IterableError> {
@@ -412,7 +412,7 @@ struct RequestCreator {
         
         body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
-        return .success(.post(createPostRequest(path: Const.Path.inAppConsume, body: body)))
+        return .success(.post(createPostRequest(path: C.Path.inAppConsume, body: body)))
     }
     
     func createTrackInAppConsumeRequest(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource?) -> Result<IterableRequest, IterableError> {
@@ -438,7 +438,7 @@ struct RequestCreator {
         
         body.setValue(for: keyValueForCurrentUser.key, value: keyValueForCurrentUser.value)
         
-        return .success(.post(createPostRequest(path: Const.Path.inAppConsume, body: body)))
+        return .success(.post(createPostRequest(path: C.Path.inAppConsume, body: body)))
     }
     
     func createTrackInboxSessionRequest(inboxSession: IterableInboxSession) -> Result<IterableRequest, IterableError> {
@@ -474,7 +474,7 @@ struct RequestCreator {
         
         body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
         
-        return .success(.post(createPostRequest(path: Const.Path.trackInboxSession, body: body)))
+        return .success(.post(createPostRequest(path: C.Path.trackInboxSession, body: body)))
     }
     
     func createDisableDeviceRequest(forAllUsers allUsers: Bool, hexToken: String) -> Result<IterableRequest, IterableError> {
@@ -488,7 +488,7 @@ struct RequestCreator {
             }
         }
         
-        return .success(.post(createPostRequest(path: Const.Path.disableDevice, body: body)))
+        return .success(.post(createPostRequest(path: C.Path.disableDevice, body: body)))
     }
     
     private func createPostRequest(path: String, body: [AnyHashable: Any]? = nil) -> PostRequest {

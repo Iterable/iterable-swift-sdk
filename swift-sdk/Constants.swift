@@ -10,11 +10,11 @@ enum Endpoint {
     private static let apiHostName = "https://api.iterable.com"
     private static let linksHostName = "https://links.iterable.com"
     
-    static let api = Endpoint.apiHostName + Const.apiPath
+    static let api = Endpoint.apiHostName + C.apiPath
     static let links = linksHostName + "/"
 }
 
-public enum Const {
+public enum C {
     public static let apiPath = "/api/"
     
     static let deepLinkRegex = "/a/[a-zA-Z0-9]+"

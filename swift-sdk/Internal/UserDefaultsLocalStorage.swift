@@ -168,13 +168,13 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
             self.value = value
         }
         
-        static let payload = LocalStorageKey(value: Const.UserDefaults.payloadKey)
-        static let attributionInfo = LocalStorageKey(value: Const.UserDefaults.attributionInfoKey)
-        static let email = LocalStorageKey(value: Const.UserDefaults.emailKey)
-        static let userId = LocalStorageKey(value: Const.UserDefaults.userIdKey)
-        static let ddlChecked = LocalStorageKey(value: Const.UserDefaults.ddlChecked)
-        static let deviceId = LocalStorageKey(value: Const.UserDefaults.deviceId)
-        static let sdkVersion = LocalStorageKey(value: Const.UserDefaults.sdkVersion)
+        static let payload = LocalStorageKey(value: C.UserDefaults.payloadKey)
+        static let attributionInfo = LocalStorageKey(value: C.UserDefaults.attributionInfoKey)
+        static let email = LocalStorageKey(value: C.UserDefaults.emailKey)
+        static let userId = LocalStorageKey(value: C.UserDefaults.userIdKey)
+        static let ddlChecked = LocalStorageKey(value: C.UserDefaults.ddlChecked)
+        static let deviceId = LocalStorageKey(value: C.UserDefaults.deviceId)
+        static let sdkVersion = LocalStorageKey(value: C.UserDefaults.sdkVersion)
     }
     
     private struct Envelope: Codable {

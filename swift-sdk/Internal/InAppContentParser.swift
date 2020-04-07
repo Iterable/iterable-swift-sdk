@@ -144,7 +144,7 @@ extension HtmlContentParser: ContentFromJsonParser {
             return .failure(reason: "no html")
         }
         
-        guard html.range(of: Const.href, options: [.caseInsensitive]) != nil else {
+        guard html.range(of: C.href, options: [.caseInsensitive]) != nil else {
             return .failure(reason: "No href tag found in in-app html payload \(html)")
         }
         

@@ -103,7 +103,7 @@ class IterableDeepLinkManager: NSObject {
     }
     
     private func isIterableDeepLink(_ urlString: String) -> Bool {
-        guard let regex = try? NSRegularExpression(pattern: Const.deepLinkRegex, options: []) else {
+        guard let regex = try? NSRegularExpression(pattern: C.deepLinkRegex, options: []) else {
             return false
         }
         

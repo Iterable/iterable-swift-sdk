@@ -23,7 +23,7 @@ struct IterableRequestUtil {
         
         var request = URLRequest(url: url)
         addHeaders(headers: headers, toRequest: &request)
-        request.httpMethod = Const.Http.POST
+        request.httpMethod = C.Http.POST
         request.httpBody = body
         
         return request
@@ -36,7 +36,7 @@ struct IterableRequestUtil {
         
         var request = URLRequest(url: url)
         addHeaders(headers: headers, toRequest: &request)
-        request.httpMethod = Const.Http.GET
+        request.httpMethod = C.Http.GET
         
         return request
     }
