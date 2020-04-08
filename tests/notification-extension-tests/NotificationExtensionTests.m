@@ -75,7 +75,7 @@ static CGFloat const IterableNotificationCenterExpectationTimeout = 15.0;
     [self waitForExpectations:@[expectation] timeout:IterableNotificationCenterExpectationTimeout];
 }
 
-- (void)testPushVideoAttachment {
+- (void)ignore_testPushVideoAttachment {
     UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
     content.userInfo = @{
                          @"itbl" : @{
