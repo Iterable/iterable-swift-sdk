@@ -6,7 +6,7 @@
 import Foundation
 
 @objc public class IterableAttributionInfo: NSObject, Codable {
-    private enum Keys: String {
+    enum CodingKeys: String, CodingKey {
         case campaignId
         case templateId
         case messageId
@@ -20,12 +20,6 @@ import Foundation
         self.campaignId = campaignId
         self.templateId = templateId
         self.messageId = messageId
-    }
-    
-    enum CodingKeys: String, CodingKey {
-        case campaignId
-        case templateId
-        case messageId
     }
     
     public required init(from decoder: Decoder) throws {
