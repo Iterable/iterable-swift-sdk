@@ -12,6 +12,15 @@ class DeprecatedFunctionsTests: XCTestCase {
     private let email = "user@example.com"
     private let userId = "full-metal-alchemist"
     
+    override class func setUp() {
+        super.setUp()
+        TestUtils.clearTestUserDefaults()
+    }
+    
+    override class func tearDown() {
+        IterableAPI.internalImplementation = nil
+    }
+    
     func testDeprecatedTrackInAppOpen() {
         let message = IterableInAppMessage(messageId: "message1", campaignId: "", content: getEmptyInAppContent())
         
