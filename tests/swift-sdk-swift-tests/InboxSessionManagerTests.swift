@@ -8,6 +8,15 @@ import XCTest
 @testable import IterableSDK
 
 class InboxSessionManagerTests: XCTestCase {
+    override class func setUp() {
+        super.setUp()
+        TestUtils.clearTestUserDefaults()
+    }
+    
+    override class func tearDown() {
+        IterableAPI.internalImplementation = nil
+    }
+    
     func testSessionIsTracking() {
         let inboxSessionManager = InboxSessionManager()
         
