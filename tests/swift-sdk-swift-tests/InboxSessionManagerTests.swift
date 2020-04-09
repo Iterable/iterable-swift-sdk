@@ -8,8 +8,18 @@ import XCTest
 @testable import IterableSDK
 
 class InboxSessionManagerTests: XCTestCase {
+    override class func setUp() {
+        super.setUp()
+        TestUtils.clearTestUserDefaults()
+    }
+    
+    override class func tearDown() {
+        IterableAPI.internalImplementation = nil
+    }
+    
     func testSessionIsTracking() {
-        let inboxSessionManager = InboxSessionManager()
+        let internalApi = IterableAPIInternal.initializeForTesting()
+        let inboxSessionManager = InboxSessionManager(provideInAppManager: internalApi.inAppManager)
         
         XCTAssertNil(inboxSessionManager.sessionStartInfo)
         XCTAssertFalse(inboxSessionManager.isTracking)
@@ -26,7 +36,8 @@ class InboxSessionManagerTests: XCTestCase {
     }
     
     func testSessionInfoStartAndEnd() {
-        let inboxSessionManager = InboxSessionManager()
+        let internalApi = IterableAPIInternal.initializeForTesting()
+        let inboxSessionManager = InboxSessionManager(provideInAppManager: internalApi.inAppManager)
         
         inboxSessionManager.startSession(visibleRows: [])
         
@@ -60,7 +71,8 @@ class InboxSessionManagerTests: XCTestCase {
         let rowInfo1 = InboxImpressionTracker.RowInfo(messageId: IterableUtil.generateUUID(), silentInbox: false)
         let rowInfo2 = InboxImpressionTracker.RowInfo(messageId: IterableUtil.generateUUID(), silentInbox: true)
         
-        let inboxSessionManager = InboxSessionManager()
+        let internalApi = IterableAPIInternal.initializeForTesting()
+        let inboxSessionManager = InboxSessionManager(provideInAppManager: internalApi.inAppManager)
         
         let initialVisibleImpressions = [rowInfo1]
         

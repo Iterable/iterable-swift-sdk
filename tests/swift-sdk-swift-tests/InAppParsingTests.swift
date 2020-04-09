@@ -9,9 +9,13 @@ import XCTest
 @testable import IterableSDK
 
 class InAppParsingTests: XCTestCase {
-    override func setUp() {
+    override class func setUp() {
         super.setUp()
         TestUtils.clearTestUserDefaults()
+    }
+    
+    override class func tearDown() {
+        IterableAPI.internalImplementation = nil
     }
     
     func testGetPaddingInvalid() {
