@@ -5,7 +5,6 @@
 
 import Foundation
 
-// Iterable API Endpoints
 enum Endpoint {
     private static let apiHostName = "https://api.iterable.com"
     private static let linksHostName = "https://links.iterable.com"
@@ -302,6 +301,36 @@ extension Array: JsonValueRepresentable where Element: JsonValueRepresentable {
     }
 }
 
+enum MobileDeviceType: String, Codable {
+    case iOS
+    case Android
+}
+
+@objc public enum IterableActionSource: Int {
+    case push
+    case universalLink
+    case inApp
+}
+
+// Lowest level that will be logged. By default the LogLevel is set to LogLevel.info.
+@objc(IterableLogLevel) public enum LogLevel: Int {
+    case debug = 1
+    case info
+    case error
+}
+
+/**
+ Enum representing push platform; apple push notification service, production vs sandbox
+ */
+@objc public enum PushServicePlatform: Int {
+    /** The sandbox push service */
+    case sandbox
+    /** The production push service */
+    case production
+    /** Detect automatically */
+    case auto
+}
+
 // These are custom action for "iterable://delete" etc.
 public enum IterableCustomActionName: String, CaseIterable {
     case dismiss
@@ -312,3 +341,5 @@ public typealias ITEActionBlock = (String?) -> Void
 public typealias ITBURLCallback = (URL?) -> Void
 public typealias OnSuccessHandler = (_ data: [AnyHashable: Any]?) -> Void
 public typealias OnFailureHandler = (_ reason: String?, _ data: Data?) -> Void
+public typealias UrlHandler = (URL) -> Bool
+public typealias CustomActionHandler = (String) -> Bool

@@ -15,7 +15,8 @@ import Foundation
      * - parameter context:  Metadata containing the original action and the source: push or universal link.
      * - returns: Boolean value. Return true if the URL was handled to override default behavior.
      */
-    @objc(handleIterableURL:context:) func handle(iterableURL url: URL, inContext context: IterableActionContext) -> Bool
+    @objc(handleIterableURL:context:)
+    func handle(iterableURL url: URL, inContext context: IterableActionContext) -> Bool
 }
 
 /**
@@ -28,7 +29,8 @@ import Foundation
      * - parameter context:  Metadata containing the original action and the source: push or universal link.
      * - returns: Boolean value. Reserved for future use.
      */
-    @objc(handleIterableCustomAction:context:) func handle(iterableCustomAction action: IterableAction, inContext context: IterableActionContext) -> Bool
+    @objc(handleIterableCustomAction:context:)
+    func handle(iterableCustomAction action: IterableAction, inContext context: IterableActionContext) -> Bool
 }
 
 /**
@@ -41,16 +43,8 @@ import Foundation
      * - parameter message: `IterableInAppMessage` object containing information regarding in-app to display
      * - returns: Return `show` to show the in-app or `skip` to skip this.
      */
-    @objc(onNewMessage:) func onNew(message: IterableInAppMessage) -> InAppShowResponse
-}
-
-/**
- * Lowest level that will be logged. By default the LogLevel is set to LogLevel.info.
- */
-@objc(IterableLogLevel) public enum LogLevel: Int {
-    case debug = 1
-    case info
-    case error
+    @objc(onNewMessage:)
+    func onNew(message: IterableInAppMessage) -> InAppShowResponse
 }
 
 /**
@@ -62,25 +56,15 @@ import Foundation
      * - parameter level: The log level.
      * - parameter message: The message to log. The message will include file, method and line of the call.
      */
-    @objc(log:Message:) func log(level: LogLevel, message: String)
-}
-
-/**
- Enum representing push platform; apple push notification service, production vs sandbox
- */
-@objc public enum PushServicePlatform: Int {
-    /** The sandbox push service */
-    case sandbox
-    /** The production push service */
-    case production
-    /** Detect automatically */
-    case auto
+    @objc(log:message:)
+    func log(level: LogLevel, message: String)
 }
 
 /**
  Iterable Configuration Object. Use this when initializing the API.
  */
-@objcMembers public class IterableConfig: NSObject {
+@objcMembers
+public class IterableConfig: NSObject {
     /**
      * You don't have to set this variable. Set this value only if you are an existing Iterable customer who has already setup mobile integrations in Iterable Web UI.
      * In that case, set this variable to the push integration name that you have set for 'APNS' in Iterable Web UI.

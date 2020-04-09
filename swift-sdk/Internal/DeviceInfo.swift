@@ -10,11 +10,6 @@ struct DeviceInfo: Codable {
     let mobileDeviceType = MobileDeviceType.iOS
     let deviceFp: DeviceFp
     
-    enum MobileDeviceType: String, Codable {
-        case iOS
-        case Android
-    }
-    
     struct DeviceFp: Codable {
         let userInterfaceIdiom: String
         let screenWidth: String

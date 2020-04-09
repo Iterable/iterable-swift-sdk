@@ -5,13 +5,8 @@
 
 import Foundation
 
-@objc public enum IterableActionSource: Int {
-    case push
-    case universalLink
-    case inApp
-}
-
-@objcMembers public class IterableActionContext: NSObject {
+@objcMembers
+public class IterableActionContext: NSObject {
     public let action: IterableAction
     public let source: IterableActionSource
     
