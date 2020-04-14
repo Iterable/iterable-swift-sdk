@@ -389,9 +389,6 @@ messages to an inbox. This inbox displays a list of saved in-app messages and
 allows users to read them at their convenience. The SDK provides a default user
 interface for the inbox, which can be customized to match your brand's styles.
 
-To learn more about Mobile Inbox, how to customize it, and events related to
-its usage, read:
-
 - [In-App Messages and Mobile Inbox](https://support.iterable.com/hc/articles/217517406)
 - [Sending In-App Messages](https://support.iterable.com/hc/articles/360034903151)
 - [Events for In-App Messages and Mobile Inbox](https://support.iterable.com/hc/articles/360038939972)
