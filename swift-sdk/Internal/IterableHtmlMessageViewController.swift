@@ -120,7 +120,7 @@ class IterableHtmlMessageViewController: UIViewController {
             IterableAPI.internalImplementation?.trackInAppClose(messageMetadata.message,
                                                                 location: messageMetadata.location,
                                                                 inboxSessionId: parameters.inboxSessionId,
-                                                                source: InAppCloseSource.back,
+                                                                source: InAppCloseSource.link,
                                                                 clickedUrl: clickedLink)
         }
     }
