@@ -90,7 +90,7 @@ IterableConfig *config = [[IterableConfig alloc] init];
 
 > &#x26A0; In prior versions of the SDK, it was necessary to explicitly set the 
 > `IterableAPI.pushIntegrationName` property. This property now defaults to 
-> the bundle ID of the app, so it's no longer necessary modify it unless you're
+> the bundle ID of the app, so it's no longer necessary to modify it unless you're
 > using a custom integration name (different from the bundle ID). To view your 
 > existing integrations, navigate to **Settings > Mobile Apps**.
 
@@ -99,7 +99,9 @@ IterableConfig *config = [[IterableConfig alloc] init];
 Once you have an email address or user ID for your app's current user, set
 `IterableAPI.email` or `IterableAPI.userId`. For example:
 
-> &#x26A0; Don't specify both `email` and `userId` in the same session, as they will be treated as different users by the SDK. Only use one type of identifier, `email` or `userId`, to identify the user.
+> &#x26A0; Don't specify both `email` and `userId` in the same session, as they
+> will be treated as different users by the SDK. Only use one type of
+> identifier, `email` or `userId`, to identify the user.
 
 *Swift*
     
@@ -266,7 +268,7 @@ With Objective-C, use delegation:
 
 ```
 
-### 6. Disable push notifications when necessary
+### 8. Disable push notifications when necessary
 
 When a new user logs in to your app on the same device that a previous user
 had been using, you'll typically want to disable push notifications to the
