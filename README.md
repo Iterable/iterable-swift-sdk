@@ -7,23 +7,6 @@
 
 The Iterable iOS SDK is a Swift implementation of an iOS client for Iterable, for iOS versions 9.0 and higher.
 
-## Table of contents
-
-- [Before starting](#before-starting)
-- [Installation and Configuration](#installation-and-configuration)
-- [Sample projects](#sample-projects)
-- [Using the SDK](#using-the-sdk)
-    - [Push notifications](#push-notifications)
-    - [Deep links](#deep-links)
-    - [In-app messages](#in-app-messages)
-    - [Mobile inbox](#mobile-inbox)
-    - [Custom events](#custom-events)
-    - [User fields](#user-fields)
-    - [Uninstall tracking](#uninstall-tracking)
-- [Additional information](#additional-information)
-- [License](#license)
-- [Want to contribute?](#want-to-contribute)
-
 ## Before starting
 
 Before starting with the SDK, you will need to set up Iterable push notifications for your app.
