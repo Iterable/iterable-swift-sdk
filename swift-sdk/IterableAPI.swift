@@ -9,7 +9,7 @@ import UIKit
 
 @objcMembers public final class IterableAPI: NSObject {
     // Current SDK Version.
-    public static let sdkVersion = "6.2.2"
+    public static let sdkVersion = "6.2.4"
     
     // MARK: Initialization
     

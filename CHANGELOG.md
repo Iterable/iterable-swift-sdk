@@ -2,10 +2,22 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.2.4
+#### Fixed
+- Properly attribute the source of in app closes
+
+## 6.2.3
+#### Added
+- `IterableInAppManagerProtocol` has been given `getMessage(withId id: String)` (Objective-C: `@objc(getMessageWithId:)`)
+
+#### Fixed
+- For Objective-C apps, `IterableLogDelegate.log` has had a typo fixed; the new signature is `@objc(log:message:)`
+- For Objective-C apps, `IterableAPI.updateSubscriptions` has had a typo fixed; the new signature is `@objc(updateSubscriptions:unsubscribedChannelIds:unsubscribedMessageTypeIds:subscribedMessageTypeIds:campaignId:templateId:)`
+
 ## 6.2.2
 #### Fixed
-- Moved podspec `resources` to `resource_bundles` to avoid name collisions for static libraries
-- Give `LogLevel` an Objective-C specific name (`IterableLogLevel`)
+- Moved podspec `resources` to `resource_bundles` to avoid name collisions for static libraries (thanks, iletch!)
+- Give `LogLevel` an Objective-C specific name (`IterableLogLevel`) (thanks, osawhoop!)
 
 ## 6.2.1
 #### Fixed
