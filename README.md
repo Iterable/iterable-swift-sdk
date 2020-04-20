@@ -11,7 +11,6 @@ The Iterable iOS SDK is a Swift implementation of an iOS client for Iterable, fo
 
 - [Before starting](#before-starting)
 - [Installation](#installation)
-- [Migrating from a version prior to 6.1.0](#migrating-from-a-version-prior-to-610)
 - [Sample projects](#sample-projects)
 - [Configuring the SDK](#configuring-the-sdk)
 - [Using the SDK](#using-the-sdk)
@@ -35,51 +34,6 @@ For more information, read Iterable's [Setting up iOS Push Notifications](https:
 ## Installation
 
 - [Installation and setup of the iOS SDK](https://support.iterable.com/hc/articles/360035018152)
-
-## Migrating from a version prior to 6.1.0
-
-- Versions 6.1.0+ of the SDK require Xcode 10.2 or higher.
-
-- In-app messages: `spawnInAppNotification`
-
-    - `spawnInAppNotification` is no longer needed and will fail to compile.
-    The SDK now displays in-app messages automatically. For more information,
-    see [In-app messages](#in-app-messages).
-
-    - There is no need to poll the server for new messages.
-
-- In-app messages: handling manually
-
-    - To control when in-app messages display (rather than displaying them
-    automatically), set `IterableConfig.inAppDelegate` (an 
-    `IterableInAppDelegate` object). From its `onNew` method, return `.skip`.
-
-    - To get the queue of available in-app messages, call
-    `IterableApi.inAppManager.getMessages()`. Then, call
-    `IterableApi.inAppManager.show(message)` to show a specific message.
-
-    - For more details, see [In-app messages](#in-app-messages).
-
-- In-app messages: custom actions
-
-   - This version of the SDK reserves the `iterable://` URL scheme for
-    Iterable-defined actions handled by the SDK and the `action://` URL
-    scheme for custom actions handled by the mobile application's custom
-    action handler. For more details, see 
-    [Handling in-app message buttons and links](#handling-in-app-message-buttons-and-links).
-
-    - If you are currently using the `itbl://` URL scheme for custom actions,
-    the SDK will still pass these actions to the custom action handler.
-    However, support for this URL scheme will eventually be removed (timeline
-    TBD), so it is best to move to the `action://` URL scheme as it's 
-    possible to do so.
-
-- Consolidated deep link URL handling
-
-    - By default, the SDK handles deep links with the the URL delegate
-    assigned to `IterableConfig`. Follow the instructions in 
-    [Deep Links](#deep-links) to migrate any existing URL handling code 
-    to this new API.
 
 ## Sample projects
 
