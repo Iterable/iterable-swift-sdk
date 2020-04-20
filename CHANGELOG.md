@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.2.4
+#### Fixed
+- Properly attribute the source of in app closes
+
 ## 6.2.3
 #### Added
 - `IterableInAppManagerProtocol` has been given `getMessage(withId id: String)` (Objective-C: `@objc(getMessageWithId:)`)
