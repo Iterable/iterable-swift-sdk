@@ -75,12 +75,12 @@ static CGFloat const IterableNotificationCenterExpectationTimeout = 15.0;
     [self waitForExpectations:@[expectation] timeout:IterableNotificationCenterExpectationTimeout];
 }
 
-- (void)ignore_testPushVideoAttachment {
+- (void)testPushVideoAttachment {
     UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
     content.userInfo = @{
                          @"itbl" : @{
                                  @"messageId": @"12345",
-                                 @"attachment-url": @"https://framework.realtime.co/blog/img/ios10-video.mp4"
+                                 @"attachment-url": @"https://github.com/Iterable/swift-sdk/raw/master/tests/notification-extension-tests/swirl.mp4"
                                  }
                          };
     UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:@"request" content:content trigger:nil];
