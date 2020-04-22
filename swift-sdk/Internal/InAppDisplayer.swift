@@ -45,7 +45,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
                                                            backgroundAlpha: Double = 0,
                                                            padding: UIEdgeInsets = .zero) -> ShowResult {
         guard let topViewController = getTopViewController() else {
-            return .notShown("No top ViewController.")
+            return .notShown("No top view controller.")
         }
         
         if topViewController is IterableHtmlMessageViewController {
@@ -137,6 +137,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
                                        padding: content.edgeInsets)
     }
     
+    // deprecated - will be removed in version 6.3.x or above
     /**
      Creates and adds an alert action button to an alertController
      

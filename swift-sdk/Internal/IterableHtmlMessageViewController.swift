@@ -79,7 +79,7 @@ class IterableHtmlMessageViewController: UIViewController {
     }
     
     /**
-     Tracks an inApp open and layouts the webview
+     Tracks an in-app open and layouts the webview
      */
     override func viewDidLoad() {
         ITBInfo()
