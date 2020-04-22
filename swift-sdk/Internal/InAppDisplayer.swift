@@ -57,19 +57,20 @@ class InAppDisplayer: InAppDisplayerProtocol {
                                                                       messageMetadata: messageMetadata,
                                                                       isModal: true)
         let createResult = IterableHtmlMessageViewController.create(parameters: parameters)
-        let baseNotification = createResult.viewController
+        let htmlMessageVC = createResult.viewController
         
         topViewController.definesPresentationContext = true
         
         if #available(iOS 13, *) {
-            baseNotification.view.backgroundColor = UIColor.systemBackground.withAlphaComponent(CGFloat(backgroundAlpha))
+            htmlMessageVC.view.backgroundColor = UIColor.systemBackground.withAlphaComponent(CGFloat(backgroundAlpha))
         } else {
-            baseNotification.view.backgroundColor = UIColor.white.withAlphaComponent(CGFloat(backgroundAlpha))
+            htmlMessageVC.view.backgroundColor = UIColor.white.withAlphaComponent(CGFloat(backgroundAlpha))
         }
         
-        baseNotification.modalPresentationStyle = .overCurrentContext
+        htmlMessageVC.modalPresentationStyle = .overCurrentContext
         
-        topViewController.present(baseNotification, animated: false)
+        let presenter = InAppPresenter(topViewController: topViewController, htmlMessageViewController: htmlMessageVC)
+        presenter.show()
         
         return .shown(createResult.futureClickedURL)
     }

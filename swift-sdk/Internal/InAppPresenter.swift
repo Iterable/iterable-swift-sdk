@@ -8,23 +8,41 @@ import UIKit
 class InAppPresenter {
     var topVC: UIViewController
     var htmlMessageVC: IterableHtmlMessageViewController
-    var delayTimer: Timer
+    var delayTimer: Timer?
     
-    init(topViewController: UIViewController, htmlMessageViewController: IterableHtmlMessageViewController, timer: Timer) {
+    init(topViewController: UIViewController, htmlMessageViewController: IterableHtmlMessageViewController) {
         topVC = topViewController
         htmlMessageVC = htmlMessageViewController
-        delayTimer = timer
+        
+        htmlMessageVC.presenter = self
     }
     
     func show() {
-        delayTimer.fire()
-        
-        htmlMessageVC.loadView()
+        if #available(iOS 10.0, *) {
+            delayTimer = Timer(timeInterval: 0.15, repeats: false) { _ in
+                self.delayTimer = nil
+                
+                self.present()
+            }
+            
+            delayTimer?.fire()
+            
+            htmlMessageVC.loadView()
+        } else {
+            present()
+        }
     }
     
     func cancelTimer() {
-        delayTimer.invalidate()
-        
+        if delayTimer != nil {
+            delayTimer?.invalidate()
+            delayTimer = nil
+            
+            present()
+        }
+    }
+    
+    private func present() {
         topVC.present(htmlMessageVC, animated: false)
     }
 }

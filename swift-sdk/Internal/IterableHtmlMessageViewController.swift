@@ -35,6 +35,8 @@ class IterableHtmlMessageViewController: UIViewController {
         }
     }
     
+    var presenter: InAppPresenter?
+    
     init(parameters: Parameters) {
         self.parameters = parameters
         futureClickedURL = Promise<URL, IterableError>()
@@ -215,6 +217,8 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
     func webView(_: WKWebView, didFinish _: WKNavigation!) {
         if let myWebview = self.webView {
             resizeWebView(myWebview)
+            
+            presenter?.cancelTimer()
         }
     }
     
