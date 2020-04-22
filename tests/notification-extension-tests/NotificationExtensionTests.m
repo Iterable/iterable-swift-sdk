@@ -80,7 +80,7 @@ static CGFloat const IterableNotificationCenterExpectationTimeout = 15.0;
     content.userInfo = @{
                          @"itbl" : @{
                                  @"messageId": @"12345",
-                                 @"attachment-url": @"https://github.com/Iterable/swift-sdk/raw/master/swirl.mp4"
+                                 @"attachment-url": @"https://github.com/Iterable/swift-sdk/raw/master/tests/swirl.mp4"
                                  }
                          };
     UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:@"request" content:content trigger:nil];
