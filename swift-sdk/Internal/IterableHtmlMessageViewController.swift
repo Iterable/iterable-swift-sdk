@@ -35,7 +35,7 @@ class IterableHtmlMessageViewController: UIViewController {
         }
     }
     
-    var presenter: InAppPresenter?
+    weak var presenter: InAppPresenter?
     
     init(parameters: Parameters) {
         self.parameters = parameters

@@ -6,15 +6,15 @@
 import UIKit
 
 class InAppPresenter {
-    var topVC: UIViewController
-    var htmlMessageVC: IterableHtmlMessageViewController
-    var delayTimer: Timer?
+    weak var topVC: UIViewController?
+    weak var htmlMessageVC: IterableHtmlMessageViewController?
+    private var delayTimer: Timer?
     
     init(topViewController: UIViewController, htmlMessageViewController: IterableHtmlMessageViewController) {
         topVC = topViewController
         htmlMessageVC = htmlMessageViewController
         
-        htmlMessageVC.presenter = self
+        htmlMessageVC?.presenter = self
     }
     
     func show() {
@@ -27,7 +27,7 @@ class InAppPresenter {
             
             delayTimer?.fire()
             
-            htmlMessageVC.loadView()
+            htmlMessageVC?.loadView()
         } else {
             present()
         }
@@ -43,6 +43,12 @@ class InAppPresenter {
     }
     
     private func present() {
+        guard let topVC = topVC, let htmlMessageVC = htmlMessageVC else {
+            return
+        }
+        
         topVC.present(htmlMessageVC, animated: false)
+        
+        htmlMessageVC.presenter = nil
     }
 }
