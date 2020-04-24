@@ -55,11 +55,9 @@ class IterableHtmlMessageViewController: UIViewController {
     
     override var prefersStatusBarHidden: Bool { return parameters.isModal }
     
-    /**
-     Loads the view and sets up the webView
-     */
     override func loadView() {
         ITBInfo()
+        
         super.loadView()
         
         location = HtmlContentParser.location(fromPadding: parameters.padding)
@@ -80,13 +78,12 @@ class IterableHtmlMessageViewController: UIViewController {
         view.addSubview(webView.view)
     }
     
-    /**
-     Tracks an in-app open and layouts the webview
-     */
     override func viewDidLoad() {
         ITBInfo()
+        
         super.viewDidLoad()
         
+        // Tracks an in-app open and layouts the webview
         if let messageMetadata = parameters.messageMetadata {
             IterableAPI.internalImplementation?.trackInAppOpen(messageMetadata.message,
                                                                location: messageMetadata.location,
@@ -102,6 +99,7 @@ class IterableHtmlMessageViewController: UIViewController {
         guard let webView = self.webView else {
             return
         }
+        
         resizeWebView(webView)
     }
     
@@ -130,6 +128,7 @@ class IterableHtmlMessageViewController: UIViewController {
     required init?(coder aDecoder: NSCoder) {
         parameters = aDecoder.decodeObject(forKey: "input") as? Parameters ?? Parameters(html: "", isModal: false)
         futureClickedURL = Promise<URL, IterableError>()
+        
         super.init(coder: aDecoder)
     }
     
