@@ -44,6 +44,10 @@ class InAppDisplayer: InAppDisplayerProtocol {
                                                            messageMetadata: IterableInAppMessageMetadata? = nil,
                                                            backgroundAlpha: Double = 0,
                                                            padding: UIEdgeInsets = .zero) -> ShowResult {
+        guard !InAppPresenter.isPresenting else {
+            return .notShown("In-app notification is being presented.")
+        }
+        
         guard let topViewController = getTopViewController() else {
             return .notShown("No top view controller.")
         }

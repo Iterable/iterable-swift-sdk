@@ -6,6 +6,8 @@
 import UIKit
 
 class InAppPresenter {
+    static var isPresenting = false
+    
     private let delayInterval: TimeInterval = 0.15
     
     var topVC: UIViewController
@@ -16,10 +18,16 @@ class InAppPresenter {
         topVC = topViewController
         htmlMessageVC = htmlMessageViewController
         
+        // shouldn't be necessary, but in case there's some kind of race condition
+        // that leaves it hanging as true, it should be false at this point
+        InAppPresenter.isPresenting = false
+        
         htmlMessageVC.presenter = self
     }
     
     func show() {
+        InAppPresenter.isPresenting = true
+        
         if #available(iOS 10.0, *) {
             DispatchQueue.main.async {
                 self.delayTimer = Timer.scheduledTimer(withTimeInterval: self.delayInterval, repeats: false) { _ in
@@ -30,6 +38,7 @@ class InAppPresenter {
             
             htmlMessageVC.loadView()
         } else {
+            // for lack of a better stop-gap, we might as well just present
             present()
         }
     }
@@ -44,6 +53,7 @@ class InAppPresenter {
     }
     
     private func present() {
+        InAppPresenter.isPresenting = false
         
         topVC.present(htmlMessageVC, animated: false)
         
