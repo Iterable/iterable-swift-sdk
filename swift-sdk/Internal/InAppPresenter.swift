@@ -32,7 +32,6 @@ class InAppPresenter {
             DispatchQueue.main.async {
                 self.delayTimer = Timer.scheduledTimer(withTimeInterval: self.delayInterval, repeats: false) { [weak self] _ in
                     self?.delayTimer = nil
-                    print("jay TIMER CALLBACK")
                     self?.present()
                 }
             }
