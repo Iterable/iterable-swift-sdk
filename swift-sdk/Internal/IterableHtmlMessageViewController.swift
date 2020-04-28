@@ -217,7 +217,7 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
         if let myWebview = self.webView {
             resizeWebView(myWebview)
             
-            presenter?.cancelTimer()
+            presenter?.webViewDidFinish()
         }
     }
     

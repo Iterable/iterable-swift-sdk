@@ -33,27 +33,27 @@ class InAppPresenter {
                 self.delayTimer = Timer.scheduledTimer(withTimeInterval: self.delayInterval, repeats: false) { [weak self] _ in
                     self?.delayTimer = nil
                     print("jay TIMER CALLBACK")
-                    self?.displayMessage()
+                    self?.present()
                 }
             }
             
             htmlMessageVC.loadView()
         } else {
             // for lack of a better stop-gap, we might as well just present
-            displayMessage()
+            present()
         }
     }
     
-    func cancelTimer() {
+    func webViewDidFinish() {
         if delayTimer != nil {
             delayTimer?.invalidate()
             delayTimer = nil
             
-            displayMessage()
+            present()
         }
     }
     
-    private func displayMessage() {
+    private func present() {
         InAppPresenter.isPresenting = false
         
         topVC.present(htmlMessageVC, animated: false)
