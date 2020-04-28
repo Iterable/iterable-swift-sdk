@@ -30,16 +30,17 @@ class InAppPresenter {
         
         if #available(iOS 10.0, *) {
             DispatchQueue.main.async {
-                self.delayTimer = Timer.scheduledTimer(withTimeInterval: self.delayInterval, repeats: false) { _ in
-                    self.delayTimer = nil
-                    self.present()
+                self.delayTimer = Timer.scheduledTimer(withTimeInterval: self.delayInterval, repeats: false) { [weak self] _ in
+                    self?.delayTimer = nil
+                    print("jay TIMER CALLBACK")
+                    self?.displayMessage()
                 }
             }
             
             htmlMessageVC.loadView()
         } else {
             // for lack of a better stop-gap, we might as well just present
-            present()
+            displayMessage()
         }
     }
     
@@ -48,11 +49,11 @@ class InAppPresenter {
             delayTimer?.invalidate()
             delayTimer = nil
             
-            present()
+            displayMessage()
         }
     }
     
-    private func present() {
+    private func displayMessage() {
         InAppPresenter.isPresenting = false
         
         topVC.present(htmlMessageVC, animated: false)
