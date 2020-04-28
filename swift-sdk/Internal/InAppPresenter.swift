@@ -8,13 +8,14 @@ import UIKit
 class InAppPresenter {
     static var isPresenting = false
     
-    private let delayInterval: TimeInterval = 0.15
+    private let delayInterval: TimeInterval = 1.0
     
     var topVC: UIViewController
     var htmlMessageVC: IterableHtmlMessageViewController
     private var delayTimer: Timer?
     
     init(topViewController: UIViewController, htmlMessageViewController: IterableHtmlMessageViewController) {
+        ITBInfo()
         topVC = topViewController
         htmlMessageVC = htmlMessageViewController
         
@@ -25,18 +26,22 @@ class InAppPresenter {
         htmlMessageVC.presenter = self
     }
     
+    deinit {
+        ITBInfo()
+    }
+    
     func show() {
+        ITBInfo()
         InAppPresenter.isPresenting = true
         
         if #available(iOS 10.0, *) {
             DispatchQueue.main.async {
-                self.delayTimer = Timer.scheduledTimer(withTimeInterval: self.delayInterval, repeats: false) { [weak self] _ in
-                    self?.delayTimer = nil
-                    self?.present()
+                self.delayTimer = Timer.scheduledTimer(withTimeInterval: self.delayInterval, repeats: false) { _ in
+                    ITBInfo("delayTimer called")
+                    self.delayTimer = nil
+                    self.present()
                 }
             }
-            
-            htmlMessageVC.loadView()
         } else {
             // for lack of a better stop-gap, we might as well just present
             present()
@@ -44,7 +49,9 @@ class InAppPresenter {
     }
     
     func webViewDidFinish() {
+        ITBInfo()
         if delayTimer != nil {
+            ITBInfo("canceling timer")
             delayTimer?.invalidate()
             delayTimer = nil
             
@@ -53,6 +60,7 @@ class InAppPresenter {
     }
     
     private func present() {
+        ITBInfo()
         InAppPresenter.isPresenting = false
         
         topVC.present(htmlMessageVC, animated: false)

@@ -214,6 +214,7 @@ class IterableHtmlMessageViewController: UIViewController {
 
 extension IterableHtmlMessageViewController: WKNavigationDelegate {
     func webView(_: WKWebView, didFinish _: WKNavigation!) {
+        ITBInfo()
         if let myWebview = self.webView {
             resizeWebView(myWebview)
             
