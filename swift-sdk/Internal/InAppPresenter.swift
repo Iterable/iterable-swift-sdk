@@ -10,8 +10,8 @@ class InAppPresenter {
     
     private let delayInterval: TimeInterval = 1.0
     
-    var topVC: UIViewController
-    var htmlMessageVC: IterableHtmlMessageViewController
+    private var topVC: UIViewController
+    private var htmlMessageVC: IterableHtmlMessageViewController
     private var delayTimer: Timer?
     
     init(topViewController: UIViewController, htmlMessageViewController: IterableHtmlMessageViewController) {
