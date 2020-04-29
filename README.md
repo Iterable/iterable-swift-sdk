@@ -25,7 +25,7 @@ Iterable lets you send the right message, to the right device, at the right time
 - [In-App Messages](https://support.iterable.com/hc/articles/360035536791)
 - [Mobile Inbox](https://support.iterable.com/hc/articles/360039137271)
 
-## Sample projects
+## Sample Projects
 
 - [Swift sample project](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app)
 - [Objective-C sample project](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/objc-sample-app)
