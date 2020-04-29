@@ -35,7 +35,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let date2 = date1.addingTimeInterval(5.0)
         let messages = [
             IterableInAppMessage(messageId: "message1",
-                                 campaignId: "",
+                                 campaignId: 1,
                                  trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                  createdAt: date1,
                                  content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
@@ -43,7 +43,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
                                  inboxMetadata: nil,
                                  customPayload: nil),
             IterableInAppMessage(messageId: "message2",
-                                 campaignId: "",
+                                 campaignId: 1,
                                  trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                  createdAt: date2,
                                  content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
@@ -79,7 +79,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let date2 = date1.addingTimeInterval(5.0)
         let messages = [
             IterableInAppMessage(messageId: "message1",
-                                 campaignId: "",
+                                 campaignId: 1,
                                  trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                  createdAt: date1,
                                  content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
@@ -87,7 +87,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
                                  inboxMetadata: nil,
                                  customPayload: nil),
             IterableInAppMessage(messageId: "message2",
-                                 campaignId: "",
+                                 campaignId: 1,
                                  trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                  createdAt: date2,
                                  content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
@@ -122,7 +122,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let date2 = date1.addingTimeInterval(5.0)
         let messages = [
             IterableInAppMessage(messageId: "message1",
-                                 campaignId: "",
+                                 campaignId: 1,
                                  trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                  createdAt: date1,
                                  content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
@@ -130,7 +130,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
                                  inboxMetadata: nil,
                                  customPayload: nil),
             IterableInAppMessage(messageId: "message2",
-                                 campaignId: "",
+                                 campaignId: 1,
                                  trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                  createdAt: date2,
                                  content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
@@ -165,7 +165,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let date2 = date1.addingTimeInterval(5.0)
         let messages = [
             IterableInAppMessage(messageId: "message1",
-                                 campaignId: "",
+                                 campaignId: 1,
                                  trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                  createdAt: date1,
                                  content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
@@ -173,7 +173,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
                                  inboxMetadata: nil,
                                  customPayload: nil),
             IterableInAppMessage(messageId: "message2",
-                                 campaignId: "",
+                                 campaignId: 1,
                                  trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                  createdAt: date2,
                                  content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
@@ -210,7 +210,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let date2 = date1.addingTimeInterval(5.0)
         let messages = [
             IterableInAppMessage(messageId: "message1",
-                                 campaignId: "",
+                                 campaignId: 1,
                                  trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                  createdAt: date1,
                                  content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
@@ -218,7 +218,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
                                  inboxMetadata: nil,
                                  customPayload: nil),
             IterableInAppMessage(messageId: "message2",
-                                 campaignId: "",
+                                 campaignId: 1,
                                  trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                  createdAt: date2,
                                  content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
@@ -254,7 +254,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let date2 = date1.addingTimeInterval(5.0)
         let messages = [
             IterableInAppMessage(messageId: "message1",
-                                 campaignId: "",
+                                 campaignId: 1,
                                  trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                  createdAt: date1,
                                  content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
@@ -262,7 +262,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
                                  inboxMetadata: nil,
                                  customPayload: ["messageType": "transactional"]),
             IterableInAppMessage(messageId: "message2",
-                                 campaignId: "",
+                                 campaignId: 1,
                                  trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                  createdAt: date2,
                                  content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
@@ -305,7 +305,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         
         let messages = [
             IterableInAppMessage(messageId: "message1",
-                                 campaignId: "",
+                                 campaignId: 1,
                                  trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                  content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
                                  saveToInbox: true,
@@ -347,7 +347,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         
         let messages = [
             IterableInAppMessage(messageId: "message1",
-                                 campaignId: "",
+                                 campaignId: 1,
                                  trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                  content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
                                  saveToInbox: true,
@@ -381,7 +381,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let date2 = date1.addingTimeInterval(5.0)
         let messages = [
             IterableInAppMessage(messageId: "message1",
-                                 campaignId: "",
+                                 campaignId: 1,
                                  trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                  createdAt: date1,
                                  content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
@@ -389,7 +389,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
                                  inboxMetadata: nil,
                                  customPayload: ["messageSection": 1]),
             IterableInAppMessage(messageId: "message2",
-                                 campaignId: "",
+                                 campaignId: 1,
                                  trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                  createdAt: date2,
                                  content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),

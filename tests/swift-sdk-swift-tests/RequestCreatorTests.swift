@@ -45,7 +45,7 @@ class RequestCreatorTests: XCTestCase {
     
     func testTrackInAppOpenRequest() {
         let messageId = "rsj5ktry6hm"
-        let campaignId = "3562"
+        let campaignId = 3562
         let inboxSessionId = "9fn38m945ug9r8th"
         let location = InAppLocation.inbox
         let locValue = location.jsonValue as! String
@@ -77,7 +77,7 @@ class RequestCreatorTests: XCTestCase {
     
     func testTrackInAppClickRequest() {
         let messageId = "rsj5ktry6hm"
-        let campaignId = "3562"
+        let campaignId = 3562
         let inboxSessionId = "9fn38m945ug9r8th"
         let clickedUrl = "https://github.com/"
         let inboxLoc = InAppLocation.inbox
@@ -112,7 +112,7 @@ class RequestCreatorTests: XCTestCase {
     
     func testTrackInAppCloseRequest() {
         let messageId = "rsj5ktry6hm"
-        let campaignId = "3562"
+        let campaignId = 3562
         let inboxSessionId = "9fn38m945ug9r8th"
         let clickedUrl = "https://github.com/"
         
@@ -193,7 +193,7 @@ class RequestCreatorTests: XCTestCase {
     
     func testTrackInAppDeliveryRequest() {
         let messageId = IterableUtil.generateUUID()
-        let campaignId = IterableUtil.generateUUID()
+        let campaignId = TestHelper.generateIntGuid()
         
         let message = IterableInAppMessage(messageId: messageId, campaignId: campaignId, content: getEmptyInAppContent())
         let messageContext = InAppMessageContext.from(message: message, location: nil)

@@ -220,7 +220,7 @@ extension IterableInAppMessage: Codable {
             ITBError("Can not decode, returning default")
             
             self.init(messageId: "",
-                      campaignId: "",
+                      campaignId: 0,
                       content: IterableInAppMessage.createDefaultContent())
             
             return
@@ -229,7 +229,7 @@ extension IterableInAppMessage: Codable {
         let saveToInbox = (try? container.decode(Bool.self, forKey: .saveToInbox)) ?? false
         let inboxMetadata = (try? container.decode(IterableInboxMetadata.self, forKey: .inboxMetadata))
         let messageId = (try? container.decode(String.self, forKey: .messageId)) ?? ""
-        let campaignId = (try? container.decode(String.self, forKey: .campaignId)) ?? ""
+        let campaignId = (try? container.decode(Int.self, forKey: .campaignId)) ?? 0
         let createdAt = (try? container.decode(Date.self, forKey: .createdAt))
         let expiresAt = (try? container.decode(Date.self, forKey: .expiresAt))
         let customPayloadData = try? container.decode(Data.self, forKey: .customPayload)

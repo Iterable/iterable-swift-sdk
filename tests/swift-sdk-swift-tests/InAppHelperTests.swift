@@ -46,14 +46,14 @@ class InAppHelperTests: XCTestCase {
                         "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site1.com\'>Click Here</a>", "payload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}},
                         "trigger": {"type": "event", "details": "some event details"},
                         "messageId": "message1",
-                        "campaignId": "campaign1",
+                        "campaignId": 1,
                         "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
                     },
                     {
                         "saveToInbox": true,
                         "trigger": {"type": "never"},
                         "messageId": "message2",
-                        "campaignId": "campaign2",
+                        "campaignId": 2,
                         "customPayload": {"title": "Product 2 Available", "date": "2018-11-14T14:00:00:00.32Z"}
                     },
                 ]
