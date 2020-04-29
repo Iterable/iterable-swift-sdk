@@ -7,75 +7,41 @@
 
 # Iterable iOS SDK
 
-The Iterable iOS SDK is a Swift implementation of an iOS client for Iterable, for iOS versions 9.0 and higher.
+Iterable is a complete cross-channel customer engagement platform. Use it to message your customers across various channels (email, SMS, push, in-app messages, and web push notification) and grow your customer base, their engagement, and their lifetime value.
 
-## Before starting
+Iterable lets you send the right message, to the right device, at the right time.
 
-Before starting with the SDK, you will need to set up Iterable push notifications for your app.
+- [Iterable User Handbook](https://support.iterable.com/hc/articles/217389766)
+- [Mobile Engineer Guide](https://support.iterable.com/hc/articles/115000300426)
 
-For more information, read Iterable's [Setting up iOS Push Notifications](https://support.iterable.com/hc/articles/115000315806) guide.
+## Features
 
-## Installation and Configuration
-
-- [Installation and configuration of the iOS SDK](https://support.iterable.com/hc/articles/360035018152)
+- [SDK Initialization](https://support.iterable.com/hc/articles/360035018152)
+- [User Identity](https://support.iterable.com/hc/articles/360035402531)
+- [Tracking Events](https://support.iterable.com/hc/articles/360035395671)
+- [Push Notifications](https://support.iterable.com/hc/articles/115000315806)
+- [Deep Linking](https://support.iterable.com/hc/articles/360035453971)
+- [Universal Links](https://support.iterable.com/hc/articles/360035496511)
+- [In-App Messages](https://support.iterable.com/hc/articles/360035536791)
+- [Mobile Inbox](https://support.iterable.com/hc/articles/360039137271)
 
 ## Sample projects
-
-This repository contains the following sample projects:
 
 - [Swift sample project](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/swift-sample-app)
 - [Objective-C sample project](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/objc-sample-app)
 - [Inbox Customization](https://github.com/Iterable/swift-sdk/tree/master/sample-apps/inbox-customization)
 
-## Using the SDK
+## Version Support
 
-### Push notifications
+- The Iterable iOS SDK supports iOS 9.0 and higher.
+- [iOS SDK Release Notes](https://support.iterable.com/hc/en-us/articles/360027798391)
+- [Mobile SDK Support Policy](https://support.iterable.com/hc/articles/360027798391#mobile-sdk-support-policy)
 
-- [Setting up iOS Push Notifications](https://support.iterable.com/hc/articles/115000315806)
-- [Advanced iOS Push Notifications](https://support.iterable.com/hc/articles/360035451931)
+## Questions?
 
-### Deep links
-
-A deep link is a URI that links to a specific location within your mobile 
-app. The following sections describe how to work with deep links using
-Iterable's iOS SDK.
-
-- [Deep Links in Push Notifications](https://support.iterable.com/hc/articles/360035453971)
-- [iOS Universal Links](https://support.iterable.com/hc/articles/360035496511)
-- [Deferred deep linking](https://support.iterable.com/hc/articles/360035165872)
-
-### In-app messages
-
-- [In-App Messages on iOS](https://support.iterable.com/hc/articles/360035536791)
-
-### Mobile Inbox
-
-Apps using version 6.2.0 and later of this SDK can allow users to save in-app
-messages to an inbox. This inbox displays a list of saved in-app messages and
-allows users to read them at their convenience. The SDK provides a default user
-interface for the inbox, which can be customized to match your brand's styles.
-
-- [In-App Messages and Mobile Inbox](https://support.iterable.com/hc/articles/217517406)
-- [Sending In-App Messages](https://support.iterable.com/hc/articles/360034903151)
-- [Events for In-App Messages and Mobile Inbox](https://support.iterable.com/hc/articles/360038939972)
-- [Setting up Mobile Inbox on iOS](https://support.iterable.com/hc/articles/360039137271)
-- [Customizing Mobile Inbox on iOS](https://support.iterable.com/hc/articles/360039091471)
-
-### Tracking custom events
-
-- [Custom events](https://support.iterable.com/hc/articles/360035395671)
-    
-### User fields
-
-- [Updating User Profiles](https://support.iterable.com/hc/articles/360035402611)
-    
-### Uninstall tracking
-
-- [Uninstall tracking](https://support.iterable.com/hc/articles/205730229#uninstall)
-
-## Additional information
-
-For more information, read Iterable's [Mobile Developer Guides](https://support.iterable.com/hc/categories/360002288712).
+- [Mobile Developer Guides](https://support.iterable.com/hc/categories/360002288712)
+- [Mobile Support FAQ](https://support.iterable.com/hc/articles/360035624191)
+- [Mobile SDK Troubleshooting](https://support.iterable.com/hc/articles/360035392251)
 
 ## License
 
@@ -85,6 +51,6 @@ See [LICENSE](https://github.com/Iterable/swift-sdk/blob/master/LICENSE?raw=true
 
 ## Want to contribute?
 
-This library is open source, and we will look at pull requests!
+This library is open source, and we will look at issue reports and pull requests!
 
 See [CONTRIBUTING](CONTRIBUTING.md) for more information.
