@@ -48,8 +48,8 @@ struct TestInAppPayloadGenerator {
         return "action\(index)"
     }
     
-    static func index(fromCampaignId campaignId: Int) -> Int {
-        return campaignId
+    static func index(fromCampaignId campaignId: NSNumber?) -> Int {
+        return (campaignId as? Int) ?? -1
     }
     
     static func createOneInAppDictWithUrl(index: Int, trigger: IterableInAppTrigger?, expiresAt: Date? = nil, saveToInbox: Bool = false) -> [AnyHashable: Any] {

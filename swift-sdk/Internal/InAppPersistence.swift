@@ -229,7 +229,7 @@ extension IterableInAppMessage: Codable {
         let saveToInbox = (try? container.decode(Bool.self, forKey: .saveToInbox)) ?? false
         let inboxMetadata = (try? container.decode(IterableInboxMetadata.self, forKey: .inboxMetadata))
         let messageId = (try? container.decode(String.self, forKey: .messageId)) ?? ""
-        let campaignId = (try? container.decode(Int.self, forKey: .campaignId)) ?? 0
+        let campaignId = (try? container.decode(Int.self, forKey: .campaignId)).map { NSNumber(value: $0) }
         let createdAt = (try? container.decode(Date.self, forKey: .createdAt))
         let expiresAt = (try? container.decode(Date.self, forKey: .expiresAt))
         let customPayloadData = try? container.decode(Data.self, forKey: .customPayload)
@@ -262,7 +262,7 @@ extension IterableInAppMessage: Codable {
         try? container.encode(trigger, forKey: .trigger)
         try? container.encode(saveToInbox, forKey: .saveToInbox)
         try? container.encode(messageId, forKey: .messageId)
-        try? container.encode(campaignId, forKey: .campaignId)
+        try? container.encode(campaignId as? Int, forKey: .campaignId)
         try? container.encode(createdAt, forKey: .createdAt)
         try? container.encode(expiresAt, forKey: .expiresAt)
         try? container.encode(IterableInAppMessage.serialize(customPayload: customPayload), forKey: .customPayload)

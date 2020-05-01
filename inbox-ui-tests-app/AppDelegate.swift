@@ -88,7 +88,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         """
         let id = IterableUtil.generateUUID()
         return IterableInAppMessage(messageId: "message-\(id)",
-                                    campaignId: TestHelper.generateIntGuid(),
+                                    campaignId: TestHelper.generateIntGuid() as NSNumber,
                                     trigger: IterableInAppTrigger.neverTrigger,
                                     content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 1.0, html: html),
                                     saveToInbox: true,

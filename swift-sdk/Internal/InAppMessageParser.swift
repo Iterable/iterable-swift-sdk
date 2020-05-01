@@ -95,14 +95,7 @@ struct InAppMessageParser {
             return .failure(.parseFailed(reason: reason, messageId: messageId))
         }
         
-        let campaignId: Int
-        
-        if let theCampaignId = json[JsonKey.campaignId.jsonKey] as? Int {
-            campaignId = theCampaignId
-        } else {
-            ITBDebug("Could not find campaignId") // This is debug level because this happens a lot with proof in-apps
-            campaignId = 0
-        }
+        let campaignId = json[JsonKey.campaignId.jsonKey] as? NSNumber
         
         let saveToInbox = json[JsonKey.saveToInbox.jsonKey] as? Bool ?? false
         let inboxMetadata = parseInboxMetadata(fromPayload: json)

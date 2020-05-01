@@ -50,7 +50,7 @@ class RequestCreatorTests: XCTestCase {
         let location = InAppLocation.inbox
         let locValue = location.jsonValue as! String
         
-        let message = IterableInAppMessage(messageId: messageId, campaignId: campaignId, content: getEmptyInAppContent())
+        let message = IterableInAppMessage(messageId: messageId, campaignId: campaignId as NSNumber, content: getEmptyInAppContent())
         
         let messageContext1 = InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId)
         let request1 = convertToUrlRequest(createRequestCreator().createTrackInAppOpenRequest(inAppMessageContext: messageContext1))
@@ -83,7 +83,7 @@ class RequestCreatorTests: XCTestCase {
         let inboxLoc = InAppLocation.inbox
         let inboxLocValue = inboxLoc.jsonValue as! String
         
-        let message = IterableInAppMessage(messageId: messageId, campaignId: campaignId, content: getEmptyInAppContent())
+        let message = IterableInAppMessage(messageId: messageId, campaignId: campaignId as NSNumber, content: getEmptyInAppContent())
         
         let messageContext1 = InAppMessageContext.from(message: message, location: inboxLoc, inboxSessionId: inboxSessionId)
         let request1 = convertToUrlRequest(createRequestCreator().createTrackInAppClickRequest(inAppMessageContext: messageContext1, clickedUrl: clickedUrl))
@@ -121,7 +121,7 @@ class RequestCreatorTests: XCTestCase {
         let inAppLocValue = inAppLoc.jsonValue as! String
         let inboxLocValue = inboxLoc.jsonValue as! String
         
-        let message = IterableInAppMessage(messageId: messageId, campaignId: campaignId, content: getEmptyInAppContent())
+        let message = IterableInAppMessage(messageId: messageId, campaignId: campaignId as NSNumber, content: getEmptyInAppContent())
         
         let messageContext1 = InAppMessageContext.from(message: message, location: inboxLoc, inboxSessionId: inboxSessionId)
         let request1 = convertToUrlRequest(createRequestCreator().createTrackInAppCloseRequest(inAppMessageContext: messageContext1, source: .back, clickedUrl: clickedUrl))
@@ -195,7 +195,7 @@ class RequestCreatorTests: XCTestCase {
         let messageId = IterableUtil.generateUUID()
         let campaignId = TestHelper.generateIntGuid()
         
-        let message = IterableInAppMessage(messageId: messageId, campaignId: campaignId, content: getEmptyInAppContent())
+        let message = IterableInAppMessage(messageId: messageId, campaignId: campaignId as NSNumber, content: getEmptyInAppContent())
         let messageContext = InAppMessageContext.from(message: message, location: nil)
         let request = convertToUrlRequest(createRequestCreator().createTrackInAppDeliveryRequest(inAppMessageContext: messageContext))
         

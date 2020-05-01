@@ -98,7 +98,7 @@ class InboxMessageViewModelTests: XCTestCase {
     private func generateMessage(with metadata: IterableInboxMetadata) -> IterableInAppMessage {
         let id = TestHelper.generateIntGuid()
         return IterableInAppMessage(messageId: "message-\(id)",
-                                    campaignId: id,
+                                    campaignId: id as NSNumber,
                                     content: createDefaultContent(),
                                     inboxMetadata: metadata)
     }
