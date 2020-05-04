@@ -10,20 +10,20 @@ class InAppPresenter {
     
     private let delayInterval: TimeInterval = 1.0
     
-    private var topVC: UIViewController
-    private var htmlMessageVC: IterableHtmlMessageViewController
+    private let topViewController: UIViewController
+    private let htmlMessageViewController: IterableHtmlMessageViewController
     private var delayTimer: Timer?
     
     init(topViewController: UIViewController, htmlMessageViewController: IterableHtmlMessageViewController) {
         ITBInfo()
-        topVC = topViewController
-        htmlMessageVC = htmlMessageViewController
+        self.topViewController = topViewController
+        self.htmlMessageViewController = htmlMessageViewController
         
         // shouldn't be necessary, but in case there's some kind of race condition
         // that leaves it hanging as true, it should be false at this point
         InAppPresenter.isPresenting = false
         
-        htmlMessageVC.presenter = self
+        htmlMessageViewController.presenter = self
     }
     
     deinit {
@@ -63,8 +63,8 @@ class InAppPresenter {
         ITBInfo()
         InAppPresenter.isPresenting = false
         
-        topVC.present(htmlMessageVC, animated: false)
+        topViewController.present(htmlMessageViewController, animated: false)
         
-        htmlMessageVC.presenter = nil
+        htmlMessageViewController.presenter = nil
     }
 }
