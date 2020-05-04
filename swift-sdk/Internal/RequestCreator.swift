@@ -51,6 +51,7 @@ struct RequestCreator {
                                     appName: String,
                                     deviceId: String,
                                     sdkVersion: String?,
+                                    deviceAttributes: [DeviceAttribute: String],
                                     pushServicePlatform: String,
                                     notificationsEnabled: Bool) -> Result<IterableRequest, IterableError> {
         guard let keyValueForCurrentUser = keyValueForCurrentUser else {
@@ -91,6 +92,10 @@ struct RequestCreator {
         }
         
         dataFields[JsonKey.notificationsEnabled.jsonKey] = notificationsEnabled
+        
+        deviceAttributes.forEach { deviceAttribute in
+            dataFields[deviceAttribute.key.jsonKey] = deviceAttribute.value
+        }
         
         let deviceDictionary: [String: Any] = [
             JsonKey.token.jsonKey: hexToken,

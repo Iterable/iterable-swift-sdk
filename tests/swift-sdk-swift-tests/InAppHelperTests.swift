@@ -95,7 +95,13 @@ class InAppHelperTests: XCTestCase {
     }
     
     private class MockApiClient: ApiClientProtocol {
-        func register(hexToken _: String, appName _: String, deviceId _: String, sdkVersion _: String?, pushServicePlatform _: String, notificationsEnabled _: Bool) -> Future<SendRequestValue, SendRequestError> {
+        func register(hexToken _: String,
+                      appName _: String,
+                      deviceId _: String,
+                      sdkVersion _: String?,
+                      deviceAttributes: [DeviceAttribute: String],
+                      pushServicePlatform _: String,
+                      notificationsEnabled _: Bool) -> Future<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
