@@ -21,6 +21,23 @@ struct TestHelper {
     static func clearTestUserDefaults() {
         getTestUserDefaults().removePersistentDomain(forName: TestConsts.userDefaultsSuiteName)
     }
+    
+    static func generateIntGuid() -> Int {
+        var numbers = [Int]()
+        16.times {
+            numbers.append(generateRandomInt(max: 10))
+        }
+        
+        let stringGuid = numbers.map(String.init).reduce(into: "") { result, value in
+            result.append(value)
+        }
+        
+        return Int(stringGuid)!
+    }
+    
+    private static func generateRandomInt(max: Int) -> Int {
+        return Int(arc4random_uniform(UInt32(max)))
+    }
 }
 
 struct InAppTestHelper {

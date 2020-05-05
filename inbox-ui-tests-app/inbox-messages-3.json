@@ -7,7 +7,7 @@
         },
         "trigger": {"type": "never"},
         "messageId": "message3-1",
-        "campaignId": "campaign3-1",
+        "campaignId": 31,
         "inboxMetadata": {
             "title": "title1",
             "subtitle": "subTitle1",

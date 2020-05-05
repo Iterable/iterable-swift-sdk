@@ -63,6 +63,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		69BC6A9E2416AA36007A3931 /* inbox-customization.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "inbox-customization.entitlements"; sourceTree = "<group>"; };
 		AC61FA9623D5A69A00F458F8 /* Inbox With Multiple Cell Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Inbox With Multiple Cell Types.swift"; sourceTree = "<group>"; };
 		AC61FA9923D5A90600F458F8 /* Filter By Message Title.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Filter By Message Title.swift"; sourceTree = "<group>"; };
 		AC61FA9C23D5CD2000F458F8 /* FilterByMessageType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterByMessageType.swift; sourceTree = "<group>"; };
@@ -270,6 +271,7 @@
 		ACC55E0023CD7DB600CE77C6 /* inbox-customization */ = {
 			isa = PBXGroup;
 			children = (
+				69BC6A9E2416AA36007A3931 /* inbox-customization.entitlements */,
 				ACE78E4523D0397E00492D03 /* Custom Inbox Tabs */,
 				AC61FAAA23D5D0C300F458F8 /* Simple Inbox */,
 				AC61FAA723D5D01900F458F8 /* Simple Inbox Without Nav */,
@@ -624,6 +626,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "inbox-customization/inbox-customization.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "inbox-customization/Info.plist";
@@ -642,6 +645,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "inbox-customization/inbox-customization.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "inbox-customization/Info.plist";

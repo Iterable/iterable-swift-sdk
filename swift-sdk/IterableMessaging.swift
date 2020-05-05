@@ -148,7 +148,7 @@ public extension Notification.Name {
     public let messageId: String
     
     /// the campaign ID for this message
-    public let campaignId: String
+    public let campaignId: NSNumber?
     
     /// when to trigger this in-app
     public let trigger: IterableInAppTrigger
@@ -189,7 +189,7 @@ public extension Notification.Name {
     
     // Internal, don't let others create
     init(messageId: String,
-         campaignId: String,
+         campaignId: NSNumber?,
          trigger: IterableInAppTrigger = .defaultTrigger,
          createdAt: Date? = nil,
          expiresAt: Date? = nil,
