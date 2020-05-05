@@ -78,8 +78,8 @@ class ViewController: UIViewController {
         config.inAppDelegate = mockInAppDelegate
         let payload = ["inAppMessages": [[
             "content": ["html": "<a href='https://www.google.com/q=something'>Click Here</a>"],
-            "messageId": "messageId",
-            "campaignId": "campaignId",
+            "messageId": "messageId-1",
+            "campaignId": 1,
         ]]]
         IterableAPI.initializeForTesting(apiKey: "apiKey",
                                          config: config,
@@ -108,8 +108,8 @@ class ViewController: UIViewController {
                 "html": "<body style='height:100px'><a href='https://www.google.com/q=something'>Click Here</a></body><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>",
                 "inAppDisplaySettings": ["backgroundAlpha": 0.5, "left": ["percentage": 60], "right": ["percentage": 60], "bottom": ["displayOption": "AutoExpand"], "top": ["displayOption": "AutoExpand"]],
             ],
-            "messageId": "messageId",
-            "campaignId": "campaignId",
+            "messageId": "messageId-1",
+            "campaignId": 1,
         ]]]
         IterableAPI.initializeForTesting(apiKey: "apiKey",
                                          config: config,
@@ -135,7 +135,7 @@ class ViewController: UIViewController {
             <a href="http://website/resource#something">Click Me</a>
         """
         let content = IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: html)
-        let message = IterableInAppMessage(messageId: messageId, campaignId: "zeeCampaignId", content: content)
+        let message = IterableInAppMessage(messageId: messageId, campaignId: 1234, content: content)
         
         let config = IterableConfig()
         let mockUrlDelegate = MockUrlDelegate(returnValue: true)
@@ -168,7 +168,7 @@ class ViewController: UIViewController {
             </body>
         """
         let content = IterableHtmlInAppContent(edgeInsets: UIEdgeInsets(top: -1, left: 10, bottom: -1, right: 10), backgroundAlpha: 0.5, html: html)
-        let message = IterableInAppMessage(messageId: messageId, campaignId: "zeeCampaignId", content: content)
+        let message = IterableInAppMessage(messageId: messageId, campaignId: 1234, content: content)
         
         let config = IterableConfig()
         let mockUrlDelegate = MockUrlDelegate(returnValue: false) // we don't handle, so the url will be opened
@@ -198,7 +198,7 @@ class ViewController: UIViewController {
         """
         let content = IterableHtmlInAppContent(edgeInsets: UIEdgeInsets(top: -1, left: 10, bottom: -1, right: 10), backgroundAlpha: 0.5, html: html)
         let inboxMetadata = IterableInboxMetadata(title: "Title #1", subtitle: "Subtitle #1", icon: nil)
-        let message = IterableInAppMessage(messageId: messageId, campaignId: "zeeCampaignId", trigger: IterableInAppTrigger(dict: ["type": "never"]), content: content, saveToInbox: true, inboxMetadata: inboxMetadata)
+        let message = IterableInAppMessage(messageId: messageId, campaignId: 1234, trigger: IterableInAppTrigger(dict: ["type": "never"]), content: content, saveToInbox: true, inboxMetadata: inboxMetadata)
         
         let config = IterableConfig()
         let mockUrlDelegate = MockUrlDelegate(returnValue: false) // we don't handle, so the url will be opened

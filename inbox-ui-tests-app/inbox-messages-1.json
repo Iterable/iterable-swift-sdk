@@ -7,7 +7,7 @@
         },
         "trigger": {"type": "never"},
         "messageId": "message1",
-        "campaignId": "campaign1",
+        "campaignId": 1,
         "inboxMetadata": {
             "title": "title1",
             "subtitle": "subTitle1"
@@ -21,7 +21,7 @@
         },
         "trigger": {"type": "never"},
         "messageId": "message2",
-        "campaignId": "campaign2",
+        "campaignId": 2,
         "inboxMetadata": {
             "title": "title2",
             "subtitle": "subTitle2"
@@ -34,7 +34,7 @@
             "html": "<a href='https://www.site3.com'>Click Here3</a><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>"},
         "trigger": {"type": "never"},
         "messageId": "message3",
-        "campaignId": "campaign3",
+        "campaignId": 3,
         "inboxMetadata": {
             "title": "title3",
             "subtitle": "subTitle3"
