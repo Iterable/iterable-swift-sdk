@@ -13,18 +13,10 @@ class MockDateProvider: DateProviderProtocol {
 }
 
 class IterableNotificationResponseTests: XCTestCase {
-    private let dateProvider = MockDateProvider()
-    
     override func setUp() {
         super.setUp()
-        IterableAPI.initializeForTesting(dateProvider: dateProvider)
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-    
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
-        dateProvider.currentDate = Date()
+        
+        TestUtils.clearTestUserDefaults()
     }
     
     func testTrackOpenPushWithCustomAction() {
@@ -183,22 +175,24 @@ class IterableNotificationResponseTests: XCTestCase {
         ]
         
         // call track push open
-        IterableAPI.track(pushOpen: userInfo)
+        let mockDateProvider = MockDateProvider()
+        let internalAPI = IterableAPIInternal.initializeForTesting(dateProvider: mockDateProvider)
+        internalAPI.trackPushOpen(userInfo)
         
         // check the push payload for messageId
-        var pushPayload = IterableAPI.lastPushPayload
+        var pushPayload = internalAPI.lastPushPayload
         var itbl = pushPayload?["itbl"] as? [String: Any]
         XCTAssertEqual(itbl?["messageId"] as? String, messageId)
         
         // 23 hours, not expired, still present
-        dateProvider.currentDate = Calendar.current.date(byAdding: Calendar.Component.hour, value: 23, to: Date())!
-        pushPayload = IterableAPI.lastPushPayload
+        mockDateProvider.currentDate = Calendar.current.date(byAdding: Calendar.Component.hour, value: 23, to: Date())!
+        pushPayload = internalAPI.lastPushPayload
         itbl = pushPayload?["itbl"] as? [String: Any]
         XCTAssertEqual(itbl?["messageId"] as? String, messageId)
         
         // 24 hours, expired, nil payload
-        dateProvider.currentDate = Calendar.current.date(byAdding: Calendar.Component.hour, value: 24, to: Date())!
-        pushPayload = IterableAPI.lastPushPayload
+        mockDateProvider.currentDate = Calendar.current.date(byAdding: Calendar.Component.hour, value: 24, to: Date())!
+        pushPayload = internalAPI.lastPushPayload
         XCTAssertNil(pushPayload)
     }
     
@@ -217,24 +211,26 @@ class IterableNotificationResponseTests: XCTestCase {
         ]
         
         // call track push open
-        IterableAPI.track(pushOpen: userInfo)
+        let mockDateProvider = MockDateProvider()
+        let internalAPI = IterableAPIInternal.initializeForTesting(dateProvider: mockDateProvider)
+        internalAPI.trackPushOpen(userInfo)
         
         // check attribution info
-        var attributionInfo = IterableAPI.attributionInfo
+        var attributionInfo = internalAPI.attributionInfo
         XCTAssertEqual(attributionInfo?.campaignId, 1234)
         XCTAssertEqual(attributionInfo?.templateId, 4321)
         XCTAssertEqual(attributionInfo?.messageId, messageId)
         
         // 23 hours, not expired, still present
-        dateProvider.currentDate = Calendar.current.date(byAdding: Calendar.Component.hour, value: 23, to: Date())!
-        attributionInfo = IterableAPI.attributionInfo
+        mockDateProvider.currentDate = Calendar.current.date(byAdding: Calendar.Component.hour, value: 23, to: Date())!
+        attributionInfo = internalAPI.attributionInfo
         XCTAssertEqual(attributionInfo?.campaignId, 1234)
         XCTAssertEqual(attributionInfo?.templateId, 4321)
         XCTAssertEqual(attributionInfo?.messageId, messageId)
         
         // 24 hours, expired, nil payload
-        dateProvider.currentDate = Calendar.current.date(byAdding: Calendar.Component.hour, value: 24, to: Date())!
-        XCTAssertNil(IterableAPI.attributionInfo)
+        mockDateProvider.currentDate = Calendar.current.date(byAdding: Calendar.Component.hour, value: 24, to: Date())!
+        XCTAssertNil(internalAPI.attributionInfo)
     }
     
     func testLegacyDeepLinkPayload() {
