@@ -22,7 +22,7 @@ class DeprecatedFunctionsTests: XCTestCase {
     }
     
     func testDeprecatedTrackInAppOpen() {
-        let message = IterableInAppMessage(messageId: "message1", campaignId: "", content: getEmptyInAppContent())
+        let message = IterableInAppMessage(messageId: "message1", campaignId: 1, content: getEmptyInAppContent())
         
         let expectation1 = expectation(description: "track in app open (DEPRECATED VERSION)")
         
@@ -59,7 +59,7 @@ class DeprecatedFunctionsTests: XCTestCase {
     
     func testDeprecatedTrackInAppClick() {
         let message = IterableInAppMessage(messageId: "message1",
-                                           campaignId: "",
+                                           campaignId: 1,
                                            trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "immediate"]),
                                            createdAt: nil,
                                            expiresAt: nil,

@@ -672,13 +672,13 @@ class IterableAPITests: XCTestCase {
         IterableAPI.email = "user@example.com"
         
         let inAppMsg1 = IterableInAppMessage(messageId: "aswefwdf",
-                                             campaignId: "123344",
+                                             campaignId: 123_344,
                                              content: IterableHtmlInAppContent(edgeInsets: .zero,
                                                                                backgroundAlpha: 0,
                                                                                html: ""))
         
         let inAppMsg2 = IterableInAppMessage(messageId: "oeirgjoeigj",
-                                             campaignId: "948",
+                                             campaignId: 948,
                                              content: IterableHtmlInAppContent(edgeInsets: .zero,
                                                                                backgroundAlpha: 0,
                                                                                html: ""))
@@ -716,7 +716,7 @@ class IterableAPITests: XCTestCase {
         }
         
         let message = IterableInAppMessage(messageId: messageId,
-                                           campaignId: "",
+                                           campaignId: 1,
                                            trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                            createdAt: nil,
                                            expiresAt: nil,
@@ -753,7 +753,7 @@ class IterableAPITests: XCTestCase {
         }
         
         let message = IterableInAppMessage(messageId: messageId,
-                                           campaignId: "",
+                                           campaignId: 1,
                                            trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                            createdAt: nil,
                                            expiresAt: nil,

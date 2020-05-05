@@ -143,7 +143,7 @@ class InAppParsingTests: XCTestCase {
     
     func testTrackInAppClickWithClickedUrl() {
         let message = IterableInAppMessage(messageId: "message1",
-                                           campaignId: "",
+                                           campaignId: 1,
                                            trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "immediate"]),
                                            createdAt: nil,
                                            expiresAt: nil,
@@ -175,7 +175,7 @@ class InAppParsingTests: XCTestCase {
     
     func testTrackInAppOpen() {
         let message = IterableInAppMessage(messageId: "message1",
-                                           campaignId: "",
+                                           campaignId: 1,
                                            trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                            createdAt: nil,
                                            expiresAt: nil,
@@ -228,7 +228,7 @@ class InAppParsingTests: XCTestCase {
         }
         
         let message = IterableInAppMessage(messageId: messageId,
-                                           campaignId: "",
+                                           campaignId: 1,
                                            trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                            createdAt: nil,
                                            expiresAt: nil,
@@ -267,7 +267,7 @@ class InAppParsingTests: XCTestCase {
         }
         
         let message = IterableInAppMessage(messageId: messageId,
-                                           campaignId: "",
+                                           campaignId: 1,
                                            trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                            createdAt: nil,
                                            expiresAt: nil,
@@ -303,7 +303,7 @@ class InAppParsingTests: XCTestCase {
         }
         
         let message = IterableInAppMessage(messageId: messageId,
-                                           campaignId: "",
+                                           campaignId: 1,
                                            trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                            createdAt: nil,
                                            expiresAt: nil,
@@ -333,6 +333,7 @@ class InAppParsingTests: XCTestCase {
     }
     
     func testInAppPayloadWithNoTrigger() {
+        let id = TestHelper.generateIntGuid()
         let payload = """
         {
             "inAppMessages" : [
@@ -340,8 +341,8 @@ class InAppParsingTests: XCTestCase {
                     "content" : {
                         "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
                     },
-                    "messageId" : "messageIdxxx",
-                    "campaignId" : "campaignIdxxx"
+                    "messageId" : "messageId-\(id)",
+                    "campaignId" : \(id)
                 }
             ]
         }
@@ -351,6 +352,7 @@ class InAppParsingTests: XCTestCase {
     }
     
     func testInAppPayloadWithKnownTrigger() {
+        let id = TestHelper.generateIntGuid()
         let payload = """
         {
             "inAppMessages" : [
@@ -358,8 +360,8 @@ class InAppParsingTests: XCTestCase {
                     "content" : {
                         "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
                     },
-                    "messageId" : "messageIdxxx",
-                    "campaignId" : "campaignIdxxx",
+                    "messageId" : "messageId-\(id)",
+                    "campaignId" : \(id),
                     "trigger" : {
                         "type" : "event",
                         "something" : "else"
@@ -374,6 +376,7 @@ class InAppParsingTests: XCTestCase {
     }
     
     func testInAppPayloadWithUnKnownTrigger() {
+        let id = TestHelper.generateIntGuid()
         let payload = """
         {
             "inAppMessages" : [
@@ -381,8 +384,8 @@ class InAppParsingTests: XCTestCase {
                     "content" : {
                         "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
                     },
-                    "messageId" : "messageIdxxx",
-                    "campaignId" : "campaignIdxxx",
+                    "messageId" : "messageId-\(id)",
+                    "campaignId" : \(id),
                     "trigger" : {
                         "type" : "myNewKind",
                         "myPayload" : {"var1" : "val1"}
@@ -457,7 +460,7 @@ class InAppParsingTests: XCTestCase {
                         "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
                     },
                     "messageId" : "messageId1",
-                    "campaignId" : "campaignIdxxx",
+                    "campaignId" : 1,
                     "customPayload" : \(customPayload1.toJsonString())
                 },
                 {
@@ -465,7 +468,7 @@ class InAppParsingTests: XCTestCase {
                         "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
                     },
                     "messageId" : "messageId2",
-                    "campaignId" : "campaignIdxxx",
+                    "campaignId" : 2,
                     "customPayload" : \(customPayload2.toJsonString())
                 },
                 {
@@ -473,7 +476,7 @@ class InAppParsingTests: XCTestCase {
                         "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
                     },
                     "messageId" : "messageId3",
-                    "campaignId" : "campaignIdxxx",
+                    "campaignId" : 3,
                     "customPayload" : {}
                 },
                 {
@@ -481,7 +484,7 @@ class InAppParsingTests: XCTestCase {
                         "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
                     },
                     "messageId" : "messageId4",
-                    "campaignId" : "campaignIdxxx",
+                    "campaignId" : 4,
                 }
             ]
         }
@@ -539,8 +542,8 @@ class InAppParsingTests: XCTestCase {
                         "type" : "html",
                         "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
                     },
-                    "messageId" : "messageIdxxx",
-                    "campaignId" : "campaignIdxxx",
+                    "messageId" : "messageId1",
+                    "campaignId" : 1,
                     "saveToInbox" : false,
                     "trigger" : {
                         "type" : "immediate",
@@ -554,8 +557,8 @@ class InAppParsingTests: XCTestCase {
                         "type" : "html",
                         "html" : "<a href=\\"http://somewhere.com\\">Click here</a>",
                     },
-                    "messageId" : "messageIdxxx",
-                    "campaignId" : "campaignIdxxx",
+                    "messageId" : "messageId2",
+                    "campaignId" : 2,
                     "trigger" : {
                         "type" : "never",
                         "myPayload" : {"var1" : "val1"}
@@ -571,8 +574,8 @@ class InAppParsingTests: XCTestCase {
                     "content" : {
                         "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
                     },
-                    "messageId" : "messageIdxxx",
-                    "campaignId" : "campaignIdxxx",
+                    "messageId" : "messageId3",
+                    "campaignId" : 3,
                     "trigger" : {
                         "type" : "myNewKind",
                         "myPayload" : {"var1" : "val1"}
@@ -583,8 +586,8 @@ class InAppParsingTests: XCTestCase {
                     "content" : {
                         "html" : "<a href=\\"http://somewhere.com\\">Click here</a>"
                     },
-                    "messageId" : "messageIdxxx",
-                    "campaignId" : "campaignIdxxx",
+                    "messageId" : "messageId4",
+                    "campaignId" : 4,
                     "trigger" : {
                         "type" : "myNewKind",
                         "myPayload" : {"var1" : "val1"}
@@ -618,14 +621,15 @@ class InAppParsingTests: XCTestCase {
     }
     
     private func createInAppPayload(withCustomPayload customPayload: [AnyHashable: Any]) -> [AnyHashable: Any] {
+        let id = TestHelper.generateIntGuid()
         return [
             "inAppMessages": [[
                 "content": [
                     "html": "<a href='href1'>Click Here</a>",
                     "inAppDisplaySettings": ["backgroundAlpha": 0.5, "left": ["percentage": 60], "right": ["percentage": 60], "bottom": ["displayOption": "AutoExpand"], "top": ["displayOption": "AutoExpand"]],
                 ],
-                "messageId": "messageIdxxx",
-                "campaignId": "campaignIdxxx",
+                "messageId": "messageId-\(id)",
+                "campaignId": id,
                 "customPayload": customPayload,
             ]],
         ]

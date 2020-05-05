@@ -20,7 +20,7 @@ class InboxMessageViewModelTests: XCTestCase {
                                              icon: icon)
         
         let message = IterableInAppMessage(messageId: "939fi9kj92kd",
-                                           campaignId: "45820",
+                                           campaignId: 45820,
                                            createdAt: testCreationDate,
                                            content: createDefaultContent(),
                                            inboxMetadata: metadata)
@@ -51,11 +51,11 @@ class InboxMessageViewModelTests: XCTestCase {
     
     func testHasher() {
         let message1 = IterableInAppMessage(messageId: "939fi9kj92kd",
-                                            campaignId: "45820",
+                                            campaignId: 45820,
                                             content: createDefaultContent())
         
         let message2 = IterableInAppMessage(messageId: "89rjg839g24h",
-                                            campaignId: "29486",
+                                            campaignId: 29486,
                                             content: createDefaultContent())
         
         let inboxMessageViewModel1 = InboxMessageViewModel(message: message1)
@@ -75,11 +75,11 @@ class InboxMessageViewModelTests: XCTestCase {
     
     func testEquatable() {
         let message1 = IterableInAppMessage(messageId: "939fi9kj92kd",
-                                            campaignId: "45820",
+                                            campaignId: 45820,
                                             content: createDefaultContent())
         
         let message2 = IterableInAppMessage(messageId: "89rjg839g24h",
-                                            campaignId: "29486",
+                                            campaignId: 29486,
                                             content: createDefaultContent())
         
         let inboxMessageViewModel1 = InboxMessageViewModel(message: message1)
@@ -96,8 +96,9 @@ class InboxMessageViewModelTests: XCTestCase {
     }
     
     private func generateMessage(with metadata: IterableInboxMetadata) -> IterableInAppMessage {
-        return IterableInAppMessage(messageId: IterableUtil.generateUUID(),
-                                    campaignId: IterableUtil.generateUUID(),
+        let id = TestHelper.generateIntGuid()
+        return IterableInAppMessage(messageId: "message-\(id)",
+                                    campaignId: id as NSNumber,
                                     content: createDefaultContent(),
                                     inboxMetadata: metadata)
     }
