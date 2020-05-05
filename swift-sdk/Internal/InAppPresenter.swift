@@ -8,7 +8,7 @@ import UIKit
 class InAppPresenter {
     static var isPresenting = false
     
-    private let delayInterval: TimeInterval = 1.0
+    private let delayInterval: TimeInterval = 0.5
     
     private let topViewController: UIViewController
     private let htmlMessageViewController: IterableHtmlMessageViewController
