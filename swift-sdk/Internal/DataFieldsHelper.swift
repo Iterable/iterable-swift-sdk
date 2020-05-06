@@ -6,6 +6,7 @@
 //  the dataFields dictionary.
 
 import Foundation
+import UIKit
 
 struct DataFieldsHelper {
     static func createDataFields(sdkVersion: String?, deviceId: String, device: UIDevice, bundle: Bundle, notificationsEnabled: Bool, deviceAttributes: [String: String]) -> [String: Any] {

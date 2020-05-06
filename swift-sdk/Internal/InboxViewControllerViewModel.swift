@@ -45,10 +45,12 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         sectionedMessages = sortAndFilter(messages: allMessagesInSections())
     }
     
-    init() {
+    init(internalAPIProvider: @escaping @autoclosure () -> IterableAPIInternal? = IterableAPI.internalImplementation) {
         ITBInfo()
         
-        if let _ = IterableAPI.internalImplementation {
+        self.internalAPIProvider = internalAPIProvider
+        
+        if let _ = internalAPI {
             sectionedMessages = sortAndFilter(messages: getMessages())
         }
         
@@ -89,15 +91,11 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     func set(read: Bool, forMessage message: InboxMessageViewModel) {
-        IterableAPI.inAppManager.set(read: read, forMessage: message.iterableMessage)
+        internalInAppManager?.set(read: read, forMessage: message.iterableMessage)
     }
     
     func refresh() -> Future<Bool, Error> {
-        guard let inAppManager = IterableAPI.inAppManager as? InAppManager else {
-            return Promise(error: IterableError.general(description: "Did not find inAppManager"))
-        }
-        
-        return inAppManager.scheduleSync()
+        return internalInAppManager?.scheduleSync() ?? Promise(error: IterableError.general(description: "Did not find inAppManager"))
     }
     
     func createInboxMessageViewController(for message: InboxMessageViewModel, withInboxMode inboxMode: IterableInboxViewController.InboxMode) -> UIViewController? {
@@ -147,7 +145,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     private func loadImage(forMessageId messageId: String, fromUrl url: URL) {
-        if let networkSession = IterableAPI.internalImplementation?.networkSession {
+        if let networkSession = internalAPI?.networkSession {
             NetworkHelper.getData(fromUrl: url, usingSession: networkSession).onSuccess { [weak self] in
                 self?.setImageData($0, forMessageId: messageId)
             }.onError {
@@ -214,11 +212,11 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
                                                 sessionEndTime: Date(),
                                                 startTotalMessageCount: sessionInfo.startInfo.totalMessageCount,
                                                 startUnreadMessageCount: sessionInfo.startInfo.unreadMessageCount,
-                                                endTotalMessageCount: IterableAPI.inAppManager.getInboxMessages().count,
-                                                endUnreadMessageCount: IterableAPI.inAppManager.getUnreadInboxMessagesCount(),
+                                                endTotalMessageCount: internalInAppManager?.getInboxMessages().count ?? 0,
+                                                endUnreadMessageCount: internalInAppManager?.getUnreadInboxMessagesCount() ?? 0,
                                                 impressions: sessionInfo.impressions.map { $0.toIterableInboxImpression() })
         
-        IterableAPI.internalImplementation?.track(inboxSession: inboxSession)
+        internalAPI?.track(inboxSession: inboxSession)
     }
     
     @objc private func onInboxChanged(notification _: NSNotification) {
@@ -242,7 +240,6 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     @objc private func onAppWillEnterForeground(notification _: NSNotification) {
         ITBInfo()
-        
         if sessionManager.startSessionWhenAppMovesToForeground {
             startSession()
             sessionManager.startSessionWhenAppMovesToForeground = false
@@ -260,7 +257,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     private func getMessages() -> [InboxMessageViewModel] {
-        IterableAPI.inAppManager.getInboxMessages().map { InboxMessageViewModel(message: $0) }
+        return internalAPI?.inAppManager.getMessages().map { InboxMessageViewModel(message: $0) } ?? []
     }
     
     private func sortAndFilter(messages: [InboxMessageViewModel]) -> SectionedValues<Int, InboxMessageViewModel> {
@@ -298,6 +295,10 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         sectionedMessages.values
     }
     
+    private var internalAPI: IterableAPIInternal? {
+        return internalAPIProvider()
+    }
+    
     var comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)?
     var filter: ((IterableInAppMessage) -> Bool)?
     var sectionMapper: ((IterableInAppMessage) -> Int)?
@@ -305,13 +306,10 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     private var sectionedMessages = SectionedValues<Int, InboxMessageViewModel>()
     private var newSectionedMessages = SectionedValues<Int, InboxMessageViewModel>()
     private var sessionManager = InboxSessionManager()
+    private var internalAPIProvider: () -> IterableAPIInternal?
     
     private var internalInAppManager: IterableInternalInAppManagerProtocol? {
-        guard let internalInAppManager = IterableAPI.inAppManager as? IterableInternalInAppManagerProtocol else {
-            ITBError("Unexpected inAppManager type")
-            return nil
-        }
-        return internalInAppManager
+        return internalAPI?.inAppManager
     }
 }
 
