@@ -351,6 +351,9 @@ class IterableAPITests: XCTestCase {
         IterableAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         IterableAPI.setDeviceAttribute(name: "reactNativeSDKVersion", value: "x.xx.xxx")
+        let attributeToAddAndRemove = IterableUtil.generateUUID()
+        IterableAPI.setDeviceAttribute(name: attributeToAddAndRemove, value: "valueToAdd")
+        IterableAPI.removeDeviceAttribute(name: attributeToAddAndRemove)
         IterableAPI.register(token: token, onSuccess: { _ in
             let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateElementPresent(withName: "email", andValue: "user@example.com", inDictionary: body)
@@ -368,6 +371,7 @@ class IterableAPITests: XCTestCase {
             TestUtils.validateMatch(keyPath: KeyPath("device.dataFields.appBuild"), value: appBuild, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath("device.dataFields.iterableSdkVersion"), value: IterableAPI.sdkVersion, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath("device.dataFields.reactNativeSDKVersion"), value: "x.xx.xxx", inDictionary: body)
+            TestUtils.validateNil(keyPath: KeyPath("device.dataFields.\(attributeToAddAndRemove)"), inDictionary: body)
             
             expectation.fulfill()
         }) { reason, _ in
