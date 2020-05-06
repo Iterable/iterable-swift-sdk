@@ -22,7 +22,6 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
     }
     
     func testWebViewTopPositioning() {
-        IterableAPI.initializeForTesting()
         checkPositioning(viewPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
                          safeAreaInsets: .zero,
                          inAppHeight: 200,
@@ -31,7 +30,6 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
     }
     
     func testWebViewBottomPositioning() {
-        IterableAPI.initializeForTesting()
         checkPositioning(viewPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
                          safeAreaInsets: .zero,
                          inAppHeight: 200,
@@ -40,7 +38,6 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
     }
     
     func testWebViewCenterPositioning() {
-        IterableAPI.initializeForTesting()
         checkPositioning(viewPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
                          safeAreaInsets: .zero,
                          inAppHeight: 200,
@@ -49,7 +46,6 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
     }
     
     func testWebViewFullPositioning() {
-        IterableAPI.initializeForTesting()
         checkPositioning(viewPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
                          safeAreaInsets: .zero,
                          inAppHeight: 200,
@@ -58,7 +54,6 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
     }
     
     func testWebViewTopPositioningWithSafeAreaInsets() {
-        IterableAPI.initializeForTesting()
         checkPositioning(viewPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
                          safeAreaInsets: UIEdgeInsets(top: 25, left: 0, bottom: 30, right: 0),
                          inAppHeight: 200,
@@ -67,7 +62,6 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
     }
     
     func testWebViewBottomPositioningWithSafeAreaInsets() {
-        IterableAPI.initializeForTesting()
         checkPositioning(viewPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
                          safeAreaInsets: UIEdgeInsets(top: 25, left: 0, bottom: 30, right: 0),
                          inAppHeight: 200,
