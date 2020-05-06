@@ -350,7 +350,7 @@ class IterableAPITests: XCTestCase {
         IterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         IterableAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
-        IterableAPI.setDeviceAttribute(name: .reactNativeSDKVersion, value: "x.xx.xxx")
+        IterableAPI.setDeviceAttribute(name: "reactNativeSDKVersion", value: "x.xx.xxx")
         IterableAPI.register(token: token, onSuccess: { _ in
             let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateElementPresent(withName: "email", andValue: "user@example.com", inDictionary: body)

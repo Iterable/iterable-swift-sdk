@@ -11,7 +11,7 @@ protocol ApiClientProtocol: AnyObject {
                   appName: String,
                   deviceId: String,
                   sdkVersion: String?,
-                  deviceAttributes: [DeviceAttribute: String],
+                  deviceAttributes: [String: String],
                   pushServicePlatform: String,
                   notificationsEnabled: Bool) -> Future<SendRequestValue, SendRequestError>
     
@@ -95,7 +95,7 @@ class ApiClient: ApiClientProtocol {
                   appName: String,
                   deviceId: String,
                   sdkVersion: String?,
-                  deviceAttributes: [DeviceAttribute: String],
+                  deviceAttributes: [String: String],
                   pushServicePlatform: String,
                   notificationsEnabled: Bool) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createRegisterTokenRequest(hexToken: hexToken,

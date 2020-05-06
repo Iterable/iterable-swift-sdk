@@ -624,7 +624,7 @@ import UIKit
     /// - name: The device attribute name
     /// - value:    The device attribute value
     @objc(setDeviceAttribute:value:)
-    public static func setDeviceAttribute(name: DeviceAttribute, value: String) {
+    public static func setDeviceAttribute(name: String, value: String) {
         internalImplementation?.setDeviceAttribute(name: name, value: value)
     }
     
@@ -633,7 +633,7 @@ import UIKit
     /// - Parameters:
     /// - name: The device attribute name
     @objc(removeDeviceAttribute:)
-    public static func removeDeviceAttribute(name: DeviceAttribute) {
+    public static func removeDeviceAttribute(name: String) {
         internalImplementation?.removeDeviceAttribute(name: name)
     }
     

@@ -51,7 +51,7 @@ struct RequestCreator {
                                     appName: String,
                                     deviceId: String,
                                     sdkVersion: String?,
-                                    deviceAttributes: [DeviceAttribute: String],
+                                    deviceAttributes: [String: String],
                                     pushServicePlatform: String,
                                     notificationsEnabled: Bool) -> Result<IterableRequest, IterableError> {
         guard let keyValueForCurrentUser = keyValueForCurrentUser else {
@@ -59,15 +59,12 @@ struct RequestCreator {
             return .failure(IterableError.general(description: "Both email and userId are nil"))
         }
         
-        var dataFields = [String: Any]()
-        deviceAttributes.forEach { deviceAttribute in
-            dataFields[deviceAttribute.key.jsonKey] = deviceAttribute.value
-        }
-        dataFields.addAll(other: DataFieldsHelper.createDataFields(sdkVersion: sdkVersion,
-                                                                   deviceId: deviceId,
-                                                                   device: UIDevice.current,
-                                                                   bundle: Bundle.main,
-                                                                   notificationsEnabled: notificationsEnabled))
+        let dataFields = DataFieldsHelper.createDataFields(sdkVersion: sdkVersion,
+                                                           deviceId: deviceId,
+                                                           device: UIDevice.current,
+                                                           bundle: Bundle.main,
+                                                           notificationsEnabled: notificationsEnabled,
+                                                           deviceAttributes: deviceAttributes)
         
         let deviceDictionary: [String: Any] = [
             JsonKey.token.jsonKey: hexToken,

@@ -99,7 +99,7 @@ class InAppHelperTests: XCTestCase {
                       appName _: String,
                       deviceId _: String,
                       sdkVersion _: String?,
-                      deviceAttributes: [DeviceAttribute: String],
+                      deviceAttributes: [String: String],
                       pushServicePlatform _: String,
                       notificationsEnabled _: Bool) -> Future<SendRequestValue, SendRequestError> {
             fatalError()

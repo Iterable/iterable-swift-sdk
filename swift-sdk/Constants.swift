@@ -271,17 +271,6 @@ public enum JsonValue: String, JsonValueRepresentable {
     }
 }
 
-@objc public enum DeviceAttribute: Int, JsonKeyRepresentable {
-    case reactNativeSDKVersion
-    
-    public var jsonKey: String {
-        switch self {
-        case .reactNativeSDKVersion:
-            return "reactNativeSDKVersion"
-        }
-    }
-}
-
 extension Int: JsonValueRepresentable {
     public var jsonValue: Any {
         return self

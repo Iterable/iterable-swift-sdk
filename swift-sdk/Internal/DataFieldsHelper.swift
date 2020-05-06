@@ -8,8 +8,12 @@
 import Foundation
 
 struct DataFieldsHelper {
-    static func createDataFields(sdkVersion: String?, deviceId: String, device: UIDevice, bundle: Bundle, notificationsEnabled: Bool) -> [String: Any] {
+    static func createDataFields(sdkVersion: String?, deviceId: String, device: UIDevice, bundle: Bundle, notificationsEnabled: Bool, deviceAttributes: [String: String]) -> [String: Any] {
         var dataFields = [String: Any]()
+        
+        deviceAttributes.forEach { deviceAttribute in
+            dataFields[deviceAttribute.key] = deviceAttribute.value
+        }
         
         dataFields[JsonKey.deviceId.jsonKey] = deviceId
         if let sdkVersion = sdkVersion {
