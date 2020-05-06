@@ -107,6 +107,7 @@
 		AC87172621A4E47E00FEA369 /* TestInAppPayloadGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */; };
 		AC8874AA22178BD80075B54B /* InAppContentParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8874A922178BD80075B54B /* InAppContentParser.swift */; };
 		AC89661E2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC89661D2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift */; };
+		AC8E9268246284F800BEB68E /* DataFieldsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8E9267246284F800BEB68E /* DataFieldsHelper.swift */; };
 		AC8F35A2239806B500302994 /* InboxViewControllerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8F35A1239806B500302994 /* InboxViewControllerViewModelTests.swift */; };
 		AC90C4CD20D8632E00EECA5D /* IterableAppExtensions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC90C4C420D8632D00EECA5D /* IterableAppExtensions.framework */; };
 		AC90C4E220D8639E00EECA5D /* ITBNotificationServiceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC90C4E120D8639E00EECA5D /* ITBNotificationServiceExtension.swift */; };
@@ -341,6 +342,7 @@
 		AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestInAppPayloadGenerator.swift; sourceTree = "<group>"; };
 		AC8874A922178BD80075B54B /* InAppContentParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppContentParser.swift; sourceTree = "<group>"; };
 		AC89661D2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAutoRegistrationTests.swift; sourceTree = "<group>"; };
+		AC8E9267246284F800BEB68E /* DataFieldsHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataFieldsHelper.swift; sourceTree = "<group>"; };
 		AC8F35A1239806B500302994 /* InboxViewControllerViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewControllerViewModelTests.swift; sourceTree = "<group>"; };
 		AC90C4C420D8632D00EECA5D /* IterableAppExtensions.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = IterableAppExtensions.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC90C4C720D8632E00EECA5D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -750,6 +752,7 @@
 			children = (
 				AC845106228DF54E0052BB8F /* ApiClient.swift */,
 				AC84510822910A0C0052BB8F /* RequestCreator.swift */,
+				AC8E9267246284F800BEB68E /* DataFieldsHelper.swift */,
 			);
 			name = "API Client";
 			sourceTree = "<group>";
@@ -1387,6 +1390,7 @@
 				AC72A0C720CF4CE2004D7997 /* CommerceItem.swift in Sources */,
 				AC31B040232AB42100BE25EB /* InboxSessionManager.swift in Sources */,
 				ACE34AB321376B1000691224 /* UserDefaultsLocalStorage.swift in Sources */,
+				AC8E9268246284F800BEB68E /* DataFieldsHelper.swift in Sources */,
 				AC2C667E20D3111900D46CC9 /* DateProvider.swift in Sources */,
 				ACA8D1AB21966555001B1332 /* InAppManager.swift in Sources */,
 				AC81918822713A110014955E /* Dwifft+UIKit.swift in Sources */,

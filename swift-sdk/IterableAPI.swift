@@ -618,6 +618,25 @@ import UIKit
         return internalImplementation?.handleUniversalLink(url) ?? false
     }
     
+    /// This will send the device attribute to the back end when registering the device.
+    ///
+    /// - Parameters:
+    /// - name: The device attribute name
+    /// - value:    The device attribute value
+    @objc(setDeviceAttribute:value:)
+    public static func setDeviceAttribute(name: String, value: String) {
+        internalImplementation?.setDeviceAttribute(name: name, value: value)
+    }
+    
+    /// Remove a device attribute set earlier.
+    ///
+    /// - Parameters:
+    /// - name: The device attribute name
+    @objc(removeDeviceAttribute:)
+    public static func removeDeviceAttribute(name: String) {
+        internalImplementation?.removeDeviceAttribute(name: name)
+    }
+    
     /// Use this property for getting and showing in-app messages.
     /// This property has no meaning if IterableAPI has not been initialized using
     /// IterableAPI.initialize

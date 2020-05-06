@@ -34,8 +34,8 @@ class IterableAutoRegistrationTests: XCTestCase {
         
         let notificationStateProvider = MockNotificationStateProvider(enabled: false, expectation: expectation2)
         
-        IterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey, config: config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
-        IterableAPI.email = "user1@example.com"
+        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey, config: config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+        internalAPI.email = "user1@example.com"
         let token = "zeeToken".data(using: .utf8)!
         networkSession.callback = { _, _, _ in
             // First call, API call to register endpoint
@@ -53,9 +53,9 @@ class IterableAutoRegistrationTests: XCTestCase {
                 TestUtils.validateElementPresent(withName: JsonKey.email.jsonKey, andValue: "user1@example.com", inDictionary: body)
             }
             
-            IterableAPI.email = "user2@example.com"
+            internalAPI.email = "user2@example.com"
         }
-        IterableAPI.register(token: token)
+        internalAPI.register(token: token)
         
         // only wait for small time, supposed to error out
         wait(for: [expectation1, expectation2, expectation3], timeout: testExpectationTimeout)
@@ -71,9 +71,9 @@ class IterableAutoRegistrationTests: XCTestCase {
         // notifications are enabled
         let notificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: expectation1)
         
-        IterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey, config: config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey, config: config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
         let email = "user1@example.com"
-        IterableAPI.email = email
+        internalAPI.email = email
         let token = "zeeToken".data(using: .utf8)!
         networkSession.callback = { _, _, _ in
             // first call back will be called on register
@@ -83,9 +83,9 @@ class IterableAutoRegistrationTests: XCTestCase {
                 XCTFail("Should not call disable")
             }
             // set same value
-            IterableAPI.email = email
+            internalAPI.email = email
         }
-        IterableAPI.register(token: token)
+        internalAPI.register(token: token)
         
         // only wait for small time, supposed to error out
         wait(for: [expectation1], timeout: testExpectationTimeout)
@@ -101,8 +101,8 @@ class IterableAutoRegistrationTests: XCTestCase {
         config.autoPushRegistration = false
         let notificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: expectation1)
         
-        IterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey, config: config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
-        IterableAPI.email = "user1@example.com"
+        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey, config: config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+        internalAPI.email = "user1@example.com"
         let token = "zeeToken".data(using: .utf8)!
         networkSession.callback = { _, _, _ in
             // first call back will be called on register
@@ -111,9 +111,9 @@ class IterableAutoRegistrationTests: XCTestCase {
                 // Second callback should not happen
                 XCTFail("should not call disable")
             }
-            IterableAPI.email = "user2@example.com"
+            internalAPI.email = "user2@example.com"
         }
-        IterableAPI.register(token: token)
+        internalAPI.register(token: token)
         
         // only wait for small time, supposed to error out
         wait(for: [expectation1], timeout: 1.0)
@@ -129,7 +129,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         let notificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: expectation1)
         
         TestUtils.getTestUserDefaults().set("user1@example.com", forKey: Const.UserDefaults.emailKey)
-        IterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey, config: config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+        IterableAPIInternal.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey, config: config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
         
         // only wait for small time, supposed to error out
         wait(for: [expectation1], timeout: testExpectationTimeout)

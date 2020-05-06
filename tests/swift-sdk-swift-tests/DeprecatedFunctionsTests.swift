@@ -17,18 +17,14 @@ class DeprecatedFunctionsTests: XCTestCase {
         TestUtils.clearTestUserDefaults()
     }
     
-    override class func tearDown() {
-        IterableAPI.internalImplementation = nil
-    }
-    
     func testDeprecatedTrackInAppOpen() {
         let message = IterableInAppMessage(messageId: "message1", campaignId: 1, content: getEmptyInAppContent())
         
         let expectation1 = expectation(description: "track in app open (DEPRECATED VERSION)")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        IterableAPI.initializeForTesting(apiKey: apiKey, networkSession: networkSession)
-        IterableAPI.email = email
+        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, networkSession: networkSession)
+        internalAPI.email = email
         
         networkSession.callback = { _, _, _ in
             TestUtils.validate(request: networkSession.request!,
@@ -52,7 +48,7 @@ class DeprecatedFunctionsTests: XCTestCase {
             expectation1.fulfill()
         }
         
-        IterableAPI.track(inAppOpen: message.messageId)
+        internalAPI.trackInAppOpen(message.messageId)
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
@@ -71,8 +67,8 @@ class DeprecatedFunctionsTests: XCTestCase {
         let expectation1 = expectation(description: "track in app click (DEPRECATED VERSION)")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        IterableAPI.initializeForTesting(apiKey: apiKey, networkSession: networkSession)
-        IterableAPI.userId = userId
+        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, networkSession: networkSession)
+        internalAPI.userId = userId
         
         networkSession.callback = { _, _, _ in
             TestUtils.validate(request: networkSession.request!,
@@ -98,7 +94,7 @@ class DeprecatedFunctionsTests: XCTestCase {
             expectation1.fulfill()
         }
         
-        IterableAPI.track(inAppClick: message.messageId, buttonURL: buttonUrl)
+        internalAPI.trackInAppClick(message.messageId, clickedUrl: buttonUrl)
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }

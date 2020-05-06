@@ -135,6 +135,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                                                       appName: appName,
                                                                       deviceId: deviceId,
                                                                       sdkVersion: localStorage.sdkVersion,
+                                                                      deviceAttributes: deviceAttributes,
                                                                       pushServicePlatform: pushServicePlatformString,
                                                                       notificationsEnabled: notificationsEnabled))
     }
@@ -362,6 +363,14 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         return deepLinkManager.handleUniversalLink(url, urlDelegate: config.urlDelegate, urlOpener: AppUrlOpener())
     }
     
+    func setDeviceAttribute(name: String, value: String) {
+        deviceAttributes[name] = value
+    }
+    
+    func removeDeviceAttribute(name: String) {
+        deviceAttributes.removeValue(forKey: name)
+    }
+    
     @discardableResult private static func call(successHandler onSuccess: OnSuccessHandler? = nil,
                                                 andFailureHandler onFailure: OnFailureHandler? = nil,
                                                 forResult result: Future<SendRequestValue, SendRequestError>) -> Future<SendRequestValue, SendRequestError> {
@@ -402,6 +411,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     var networkSession: NetworkSessionProtocol
     
     private var urlOpener: UrlOpenerProtocol
+    
+    private var deviceAttributes = [String: String]()
     
     private var dependencyContainer: DependencyContainerProtocol
     
