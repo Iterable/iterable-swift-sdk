@@ -59,43 +59,15 @@ struct RequestCreator {
             return .failure(IterableError.general(description: "Both email and userId are nil"))
         }
         
-        let device = UIDevice.current
-        
-        var dataFields: [String: Any] = [
-            JsonKey.Device.localizedModel: device.localizedModel,
-            JsonKey.Device.userInterfaceIdiom: RequestCreator.userInterfaceIdiomEnumToString(device.userInterfaceIdiom),
-            JsonKey.Device.systemName: device.systemName,
-            JsonKey.Device.systemVersion: device.systemVersion,
-            JsonKey.Device.model: device.model,
-        ]
-        
-        if let identifierForVendor = device.identifierForVendor?.uuidString {
-            dataFields[JsonKey.Device.vendorId] = identifierForVendor
-        }
-        
-        dataFields[JsonKey.deviceId.jsonKey] = deviceId
-        
-        if let sdkVersion = sdkVersion {
-            dataFields[JsonKey.iterableSdkVersion.jsonKey] = sdkVersion
-        }
-        
-        if let appPackageName = Bundle.main.appPackageName {
-            dataFields[JsonKey.appPackageName.jsonKey] = appPackageName
-        }
-        
-        if let appVersion = Bundle.main.appVersion {
-            dataFields[JsonKey.appVersion.jsonKey] = appVersion
-        }
-        
-        if let appBuild = Bundle.main.appBuild {
-            dataFields[JsonKey.appBuild.jsonKey] = appBuild
-        }
-        
-        dataFields[JsonKey.notificationsEnabled.jsonKey] = notificationsEnabled
-        
+        var dataFields = [String: Any]()
         deviceAttributes.forEach { deviceAttribute in
             dataFields[deviceAttribute.key.jsonKey] = deviceAttribute.value
         }
+        dataFields.addAll(other: DataFieldsHelper.createDataFields(sdkVersion: sdkVersion,
+                                                                   deviceId: deviceId,
+                                                                   device: UIDevice.current,
+                                                                   bundle: Bundle.main,
+                                                                   notificationsEnabled: notificationsEnabled))
         
         let deviceDictionary: [String: Any] = [
             JsonKey.token.jsonKey: hexToken,
