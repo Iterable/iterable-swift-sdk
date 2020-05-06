@@ -29,13 +29,13 @@ class RegistrationTests: XCTestCase {
         config.pushIntegrationName = "my-push-integration"
         config.sandboxPushIntegrationName = "my-sandbox-push-integration"
         config.pushPlatform = .production
-        IterableAPI.initializeForTesting(apiKey: apiKey,
-                                         config: config,
-                                         networkSession: networkSession,
-                                         notificationStateProvider: MockNotificationStateProvider(enabled: true))
-        IterableAPI.email = "user@example.com"
+        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey,
+                                                                   config: config,
+                                                                   networkSession: networkSession,
+                                                                   notificationStateProvider: MockNotificationStateProvider(enabled: true))
+        internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
-        IterableAPI.register(token: token, onSuccess: { _ in
+        internalAPI.register(token: token, onSuccess: { _ in
             let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMatch(keyPath: KeyPath(.email), value: "user@example.com", inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(.device, .applicationName), value: "my-push-integration", inDictionary: body)
@@ -81,10 +81,10 @@ class RegistrationTests: XCTestCase {
         config.pushIntegrationName = "my-push-integration"
         config.sandboxPushIntegrationName = "my-sandbox-push-integration"
         config.pushPlatform = .sandbox
-        IterableAPI.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession)
-        IterableAPI.email = "user@example.com"
+        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession)
+        internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
-        IterableAPI.register(token: token, onSuccess: { _ in
+        internalAPI.register(token: token, onSuccess: { _ in
             let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMatch(keyPath: KeyPath(.device, .applicationName), value: config.sandboxPushIntegrationName, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(.device, .platform), value: JsonValue.apnsSandbox.jsonValue as! String, inDictionary: body)
@@ -110,10 +110,10 @@ class RegistrationTests: XCTestCase {
         config.pushIntegrationName = "my-push-integration"
         config.sandboxPushIntegrationName = "my-sandbox-push-integration"
         config.pushPlatform = .auto
-        IterableAPI.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession, apnsTypeChecker: MockAPNSTypeChecker(apnsType: .sandbox))
-        IterableAPI.email = "user@example.com"
+        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession, apnsTypeChecker: MockAPNSTypeChecker(apnsType: .sandbox))
+        internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
-        IterableAPI.register(token: token, onSuccess: { _ in
+        internalAPI.register(token: token, onSuccess: { _ in
             let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMatch(keyPath: KeyPath(.device, .applicationName), value: config.sandboxPushIntegrationName, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(.device, .platform), value: JsonValue.apnsSandbox.jsonValue as! String, inDictionary: body)
@@ -139,10 +139,10 @@ class RegistrationTests: XCTestCase {
         config.pushIntegrationName = "my-push-integration"
         config.sandboxPushIntegrationName = "my-sandbox-push-integration"
         config.pushPlatform = .auto
-        IterableAPI.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession, apnsTypeChecker: MockAPNSTypeChecker(apnsType: .production))
-        IterableAPI.email = "user@example.com"
+        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession, apnsTypeChecker: MockAPNSTypeChecker(apnsType: .production))
+        internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
-        IterableAPI.register(token: token, onSuccess: { _ in
+        internalAPI.register(token: token, onSuccess: { _ in
             let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMatch(keyPath: KeyPath(.device, .applicationName), value: config.pushIntegrationName, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(.device, .platform), value: JsonValue.apnsProduction.jsonValue as! String, inDictionary: body)
@@ -166,10 +166,10 @@ class RegistrationTests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
         config.pushPlatform = .auto
-        IterableAPI.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession)
-        IterableAPI.email = "user@example.com"
+        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession)
+        internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
-        IterableAPI.register(token: token, onSuccess: { _ in
+        internalAPI.register(token: token, onSuccess: { _ in
             let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMatch(keyPath: KeyPath(.device, .applicationName), value: TestUtils.appPackageName, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(.device, .platform), value: JsonValue.apnsSandbox.jsonValue as! String, inDictionary: body)
@@ -193,10 +193,10 @@ class RegistrationTests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
         config.pushPlatform = .auto
-        IterableAPI.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession, apnsTypeChecker: MockAPNSTypeChecker(apnsType: .production))
-        IterableAPI.email = "user@example.com"
+        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession, apnsTypeChecker: MockAPNSTypeChecker(apnsType: .production))
+        internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
-        IterableAPI.register(token: token, onSuccess: { _ in
+        internalAPI.register(token: token, onSuccess: { _ in
             let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMatch(keyPath: KeyPath(.device, .applicationName), value: TestUtils.appPackageName, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(.device, .platform), value: JsonValue.apnsProduction.jsonValue as! String, inDictionary: body)
