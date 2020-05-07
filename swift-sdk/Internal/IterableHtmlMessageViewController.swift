@@ -35,7 +35,8 @@ class IterableHtmlMessageViewController: UIViewController {
         }
     }
     
-    init(parameters: Parameters) {
+    init(parameters: Parameters, internalAPIProvider: @escaping @autoclosure () -> IterableAPIInternal? = IterableAPI.internalImplementation) {
+        self.internalAPIProvider = internalAPIProvider
         self.parameters = parameters
         futureClickedURL = Promise<URL, IterableError>()
         super.init(nibName: nil, bundle: nil)
@@ -86,7 +87,7 @@ class IterableHtmlMessageViewController: UIViewController {
         super.viewDidLoad()
         
         if let messageMetadata = parameters.messageMetadata {
-            IterableAPI.internalImplementation?.trackInAppOpen(messageMetadata.message,
+            internalAPI?.trackInAppOpen(messageMetadata.message,
                                                                location: messageMetadata.location,
                                                                inboxSessionId: parameters.inboxSessionId)
         }
@@ -111,13 +112,13 @@ class IterableHtmlMessageViewController: UIViewController {
         }
         
         if let _ = navigationController, linkClicked == false {
-            IterableAPI.internalImplementation?.trackInAppClose(messageMetadata.message,
+            internalAPI?.trackInAppClose(messageMetadata.message,
                                                                 location: messageMetadata.location,
                                                                 inboxSessionId: parameters.inboxSessionId,
                                                                 source: InAppCloseSource.back,
                                                                 clickedUrl: nil)
         } else {
-            IterableAPI.internalImplementation?.trackInAppClose(messageMetadata.message,
+            internalAPI?.trackInAppClose(messageMetadata.message,
                                                                 location: messageMetadata.location,
                                                                 inboxSessionId: parameters.inboxSessionId,
                                                                 source: InAppCloseSource.link,
@@ -126,15 +127,14 @@ class IterableHtmlMessageViewController: UIViewController {
     }
     
     required init?(coder aDecoder: NSCoder) {
-        parameters = aDecoder.decodeObject(forKey: "input") as? Parameters ?? Parameters(html: "", isModal: false)
-        futureClickedURL = Promise<URL, IterableError>()
-        super.init(coder: aDecoder)
+        fatalError("IterableHtmlMessageViewController cannot be instantiated from Storyboard")
     }
     
     deinit {
         ITBInfo()
     }
     
+    private var internalAPIProvider: () -> IterableAPIInternal?
     private var parameters: Parameters
     private let futureClickedURL: Promise<URL, IterableError>
     private var location: IterableMessageLocation = .full
@@ -148,6 +148,9 @@ class IterableHtmlMessageViewController: UIViewController {
     lazy var webView: WebViewProtocol! = {
         dependencyModule.webView
     }()
+    var internalAPI: IterableAPIInternal? {
+        return internalAPIProvider()
+    }
     
     /**
      Resizes the webview based upon the insetPadding if the html is finished loading
@@ -220,7 +223,7 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
     
     fileprivate func trackInAppClick(destinationUrl: String) {
         if let messageMetadata = parameters.messageMetadata {
-            IterableAPI.internalImplementation?.trackInAppClick(messageMetadata.message,
+            internalAPI?.trackInAppClick(messageMetadata.message,
                                                                 location: messageMetadata.location,
                                                                 inboxSessionId: parameters.inboxSessionId,
                                                                 clickedUrl: destinationUrl)
