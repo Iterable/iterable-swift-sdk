@@ -13,6 +13,49 @@ class InAppTests: XCTestCase {
         TestUtils.clearTestUserDefaults()
     }
     
+    func testInAppDelivery() {
+        let expectation1 = expectation(description: "testInAppDelivery")
+        expectation1.expectedFulfillmentCount = 2
+        
+        let mockInAppFetcher = MockInAppFetcher()
+        let mockNetworkSession = MockNetworkSession()
+        mockNetworkSession.requestCallback = { urlRequest in
+            guard urlRequest.url!.absoluteString.contains(Const.Path.trackInAppDelivery) else {
+                return
+            }
+            expectation1.fulfill()
+        }
+        let internalApi = IterableAPIInternal.initializeForTesting(networkSession: mockNetworkSession, inAppFetcher: mockInAppFetcher)
+        internalApi.email = "user@example.com"
+        
+        let payloadFromServer = """
+        {"inAppMessages":
+        [
+            {
+                "saveToInbox": true,
+                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "trigger": {"type": "never"},
+                "messageId": "message1",
+                "campaignId": 1,
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+            {
+                "saveToInbox": true,
+                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "trigger": {"type": "never"},
+                "messageId": "message2",
+                "campaignId": 2,
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+        ]
+        }
+        """.toJsonDict()
+        
+        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, payloadFromServer)
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+    
     func testAutoShowInAppSingle() {
         let expectation1 = expectation(description: "testAutoShowInAppSingle")
         let expectation2 = expectation(description: "count decrements after showing")
@@ -793,6 +836,7 @@ class InAppTests: XCTestCase {
         var callTimes = [Date]()
         let urlDelegate = MockUrlDelegate(returnValue: true)
         urlDelegate.callback = { url, _ in
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", "url:", url)
             if url == TestInAppPayloadGenerator.getClickedUrl(index: 1) {
                 callTimes.append(Date())
                 callOrder.append(1)
