@@ -97,7 +97,32 @@ class DeepLinkTests: XCTestCase {
         setupRedirectStubResponse(location: redirectLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
         
         let internalAPI = IterableAPIInternal.initializeForTesting()
-        internalAPI.getAndTrack(deepLink: URL(string: iterableRewriteURL)!) { _ in
+        internalAPI.getAndTrack(deepLink: URL(string: iterableRewriteURL)!) { resolvedURL in
+            XCTAssertEqual(resolvedURL, redirectLocation)
+        }?.onSuccess(block: { _ in
+            XCTAssertEqual(internalAPI.attributionInfo?.campaignId, NSNumber(value: campaignId))
+            XCTAssertEqual(internalAPI.attributionInfo?.templateId, NSNumber(value: templateId))
+            XCTAssertEqual(internalAPI.attributionInfo?.messageId, messageId)
+            expectation1.fulfill()
+        })
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+    
+    func testHandleUniversalLinkAttributionInfo() {
+        let expectation1 = expectation(description: "testDeeplinkAttributionInfo")
+        
+        let redirectLocation = "https://links.iterable.com/api/docs#!/email"
+        let campaignId = 83306
+        let templateId = 124_348
+        let messageId = "93125f33ba814b13a882358f8e0852e0"
+        
+        setupRedirectStubResponse(location: redirectLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting()
+        internalAPI.handleUniversalLink(URL(string: iterableRewriteURL)!)
+        internalAPI.attributionInfo = nil
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             XCTAssertEqual(internalAPI.attributionInfo?.campaignId, NSNumber(value: campaignId))
             XCTAssertEqual(internalAPI.attributionInfo?.templateId, NSNumber(value: templateId))
             XCTAssertEqual(internalAPI.attributionInfo?.messageId, messageId)

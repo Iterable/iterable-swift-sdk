@@ -227,9 +227,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     
     // messages are new messages coming from the server
     private func mergeMessages(_ messages: [IterableInAppMessage]) -> MergeMessagesResult {
-        var messagesObtainedHandler = MessagesObtainedHandler(messagesMap: messagesMap, messages: messages)
-        
-        return messagesObtainedHandler.handle()
+        return MessagesObtainedHandler(messagesMap: messagesMap, messages: messages).handle()
     }
     
     private func processMergedMessages(appIsReady: Bool, mergeMessagesResult: MergeMessagesResult) -> Bool {
@@ -237,6 +235,11 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             processAndShowMessage(messagesMap: mergeMessagesResult.messagesMap)
         } else {
             messagesMap = mergeMessagesResult.messagesMap
+        }
+        
+        // track in app delivery
+        mergeMessagesResult.deliveredMessages.forEach {
+            _ = apiClient?.track(inAppDelivery: InAppMessageContext.from(message: $0, location: nil))
         }
         
         finishSync(inboxChanged: mergeMessagesResult.inboxChanged)
@@ -268,7 +271,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     
     // Not a pure function.
     private func showMessage(fromMessagesProcessorResult messagesProcessorResult: MessagesProcessorResult) {
-        if case let MessagesProcessorResult.show(message: message, messagesMap: _) = messagesProcessorResult {
+        if case MessagesProcessorResult.show(let message, _) = messagesProcessorResult {
             lastDisplayTime = dateProvider.currentDate
             ITBDebug("Setting last display time: \(String(describing: lastDisplayTime))")
             

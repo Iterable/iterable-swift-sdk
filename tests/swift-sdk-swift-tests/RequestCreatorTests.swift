@@ -150,7 +150,7 @@ class RequestCreatorTests: XCTestCase {
     
     func testGetInAppMessagesRequestFailure() {
         let auth = Auth(userId: nil, email: nil)
-        let requestCreator = RequestCreator(apiKey: apiKey, auth: auth, deviceMetadata: IterableAPI.internalImplementation!.deviceMetadata)
+        let requestCreator = RequestCreator(apiKey: apiKey, auth: auth, deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata)
         
         let failingRequest = requestCreator.createGetInAppMessagesRequest(1)
         
@@ -288,7 +288,7 @@ class RequestCreatorTests: XCTestCase {
     }
     
     private func createRequestCreator() -> RequestCreator {
-        return RequestCreator(apiKey: apiKey, auth: auth, deviceMetadata: IterableAPI.internalImplementation!.deviceMetadata)
+        return RequestCreator(apiKey: apiKey, auth: auth, deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata)
     }
     
     private func createApiClient(networkSession: NetworkSessionProtocol) -> ApiClient {
@@ -296,7 +296,7 @@ class RequestCreatorTests: XCTestCase {
                          authProvider: self,
                          endPoint: Endpoint.api,
                          networkSession: networkSession,
-                         deviceMetadata: IterableAPI.internalImplementation!.deviceMetadata)
+                         deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata)
     }
     
     private func getEmptyInAppContent() -> IterableHtmlInAppContent {

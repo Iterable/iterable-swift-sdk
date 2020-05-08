@@ -1,142 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="sei-4F-1em">
-    <device id="retina6_1" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="16096" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="gkp-wJ-Ts3">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="Stack View standard spacing" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Tab1-->
-        <scene sceneID="tne-QT-ifu">
+        <!--View Controller-->
+        <scene sceneID="g0D-fV-OU6">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="host_app" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
+                <viewController id="gkp-wJ-Ts3" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="MIl-g8-UZW">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="4iW-QJ-TOw">
-                                <rect key="frame" x="110" y="242.5" width="194" height="372"/>
-                                <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nrZ-Da-kmk">
-                                        <rect key="frame" x="31.5" y="0.0" width="131" height="30"/>
-                                        <state key="normal" title="Setup Notifications"/>
-                                        <connections>
-                                            <action selector="setupNotifications:" destination="BYZ-38-t0r" eventType="touchUpInside" id="bnF-di-K3O"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6Os-fr-lOW">
-                                        <rect key="frame" x="37.5" y="38" width="119" height="30"/>
-                                        <state key="normal" title="Send Notification"/>
-                                        <connections>
-                                            <action selector="sendNotification:" destination="BYZ-38-t0r" eventType="touchUpInside" id="hpJ-gl-lXe"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="94b-FC-ZDR">
-                                        <rect key="frame" x="1" y="76" width="192" height="30"/>
-                                        <state key="normal" title="Show System Notification#1"/>
-                                        <connections>
-                                            <action selector="showSystemNotificationTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="RJq-UE-rZ1"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ClN-Rv-e5u">
-                                        <rect key="frame" x="0.0" y="114" width="194" height="30"/>
-                                        <state key="normal" title="Show System Notification#2"/>
-                                        <connections>
-                                            <action selector="showSystemNotification2Tap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="fP8-Yd-pIm"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ZWv-tr-ec9">
-                                        <rect key="frame" x="48" y="152" width="98" height="30"/>
-                                        <state key="normal" title="Show InApp#1"/>
-                                        <connections>
-                                            <action selector="showInAppTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="pTu-po-2uq"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="n7L-ga-JSt">
-                                        <rect key="frame" x="47" y="190" width="100" height="30"/>
-                                        <state key="normal" title="Show InApp#2"/>
-                                        <connections>
-                                            <action selector="showInApp2Tap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="DYt-se-gcN"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Xdv-Oh-2In">
-                                        <rect key="frame" x="46.5" y="228" width="101" height="30"/>
-                                        <state key="normal" title="Show InApp#3"/>
-                                        <connections>
-                                            <action selector="showInApp3Tap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="6Pw-iU-fHU"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Blv-TL-f6k">
-                                        <rect key="frame" x="46.5" y="266" width="101" height="30"/>
-                                        <state key="normal" title="Show InApp#4"/>
-                                        <connections>
-                                            <action selector="showInApp4Tap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="UhN-OK-8VY"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jGg-qX-F7e">
-                                        <rect key="frame" x="47" y="304" width="100" height="30"/>
-                                        <state key="normal" title="Show InApp#5"/>
-                                        <connections>
-                                            <action selector="showInApp5Tap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="WvB-Zh-OYU"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GXY-1l-3Vc">
-                                        <rect key="frame" x="57.5" y="342" width="79" height="30"/>
-                                        <state key="normal" title="Show Inbox"/>
-                                        <connections>
-                                            <action selector="showInboxTap:" destination="BYZ-38-t0r" eventType="touchUpInside" id="3PG-cc-piS"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
-                            </stackView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="v7l-Fc-VhY">
-                                <rect key="frame" x="0.0" y="813" width="414" height="0.0"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Hello, World!" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SOt-Uu-DLk">
+                                <rect key="frame" x="158" y="438" width="98" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <constraints>
-                            <constraint firstItem="4iW-QJ-TOw" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="QVv-Ok-cNO"/>
-                            <constraint firstItem="4iW-QJ-TOw" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="cpg-Zc-3wp"/>
-                            <constraint firstItem="v7l-Fc-VhY" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="mtp-ya-bOJ"/>
-                            <constraint firstItem="v7l-Fc-VhY" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="uRg-EL-8X5"/>
-                            <constraint firstItem="v7l-Fc-VhY" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="zgt-bz-AP2"/>
-                        </constraints>
-                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <viewLayoutGuide key="safeArea" id="pox-GT-j2B"/>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Tab1" id="Zt0-lc-8Jb"/>
-                    <connections>
-                        <outlet property="statusLbl" destination="v7l-Fc-VhY" id="FzZ-EB-Gjp"/>
-                    </connections>
                 </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="S7i-u9-3Cw" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1050.7246376811595" y="133.25892857142856"/>
-        </scene>
-        <!--Tab Bar Controller-->
-        <scene sceneID="UOH-qc-mC3">
-            <objects>
-                <tabBarController automaticallyAdjustsScrollViewInsets="NO" id="sei-4F-1em" sceneMemberID="viewController">
-                    <toolbarItems/>
-                    <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="ufa-Ry-LSU">
-                        <rect key="frame" x="0.0" y="0.0" width="1000" height="1000"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                    </tabBar>
-                    <connections>
-                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="viewControllers" id="gSW-vK-zme"/>
-                    </connections>
-                </tabBarController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="646-Ta-Sk2" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="140.57971014492756" y="133.25892857142856"/>
+            <point key="canvasLocation" x="399" y="139"/>
         </scene>
     </scenes>
 </document>
