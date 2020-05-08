@@ -44,8 +44,12 @@ class InAppDisplayer: InAppDisplayerProtocol {
                                                            messageMetadata: IterableInAppMessageMetadata? = nil,
                                                            backgroundAlpha: Double = 0,
                                                            padding: UIEdgeInsets = .zero) -> ShowResult {
+        guard !InAppPresenter.isPresenting else {
+            return .notShown("In-app notification is being presented.")
+        }
+        
         guard let topViewController = getTopViewController() else {
-            return .notShown("No top ViewController.")
+            return .notShown("No top view controller.")
         }
         
         if topViewController is IterableHtmlMessageViewController {
@@ -57,19 +61,22 @@ class InAppDisplayer: InAppDisplayerProtocol {
                                                                       messageMetadata: messageMetadata,
                                                                       isModal: true)
         let createResult = IterableHtmlMessageViewController.create(parameters: parameters)
-        let baseNotification = createResult.viewController
+        let htmlMessageVC = createResult.viewController
         
         topViewController.definesPresentationContext = true
         
+        // htmlMessageVC.view triggers WKWebView's loadView() to start loading the HTML.
+        // just make sure that's triggered for the InAppPresenter work correctly
         if #available(iOS 13, *) {
-            baseNotification.view.backgroundColor = UIColor.systemBackground.withAlphaComponent(CGFloat(backgroundAlpha))
+            htmlMessageVC.view.backgroundColor = UIColor.systemBackground.withAlphaComponent(CGFloat(backgroundAlpha))
         } else {
-            baseNotification.view.backgroundColor = UIColor.white.withAlphaComponent(CGFloat(backgroundAlpha))
+            htmlMessageVC.view.backgroundColor = UIColor.white.withAlphaComponent(CGFloat(backgroundAlpha))
         }
         
-        baseNotification.modalPresentationStyle = .overCurrentContext
+        htmlMessageVC.modalPresentationStyle = .overCurrentContext
         
-        topViewController.present(baseNotification, animated: false)
+        let presenter = InAppPresenter(topViewController: topViewController, htmlMessageViewController: htmlMessageVC)
+        presenter.show()
         
         return .shown(createResult.futureClickedURL)
     }
@@ -137,6 +144,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
                                        padding: content.edgeInsets)
     }
     
+    // deprecated - will be removed in version 6.3.x or above
     /**
      Creates and adds an alert action button to an alertController
      

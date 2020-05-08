@@ -34,6 +34,8 @@ class IterableHtmlMessageViewController: UIViewController {
             self.inboxSessionId = inboxSessionId
         }
     }
+
+    weak var presenter: InAppPresenter?
     
     init(parameters: Parameters, internalAPIProvider: @escaping @autoclosure () -> IterableAPIInternal? = IterableAPI.internalImplementation) {
         self.internalAPIProvider = internalAPIProvider
@@ -54,11 +56,9 @@ class IterableHtmlMessageViewController: UIViewController {
     
     override var prefersStatusBarHidden: Bool { return parameters.isModal }
     
-    /**
-     Loads the view and sets up the webView
-     */
     override func loadView() {
         ITBInfo()
+        
         super.loadView()
         
         location = HtmlContentParser.location(fromPadding: parameters.padding)
@@ -79,13 +79,12 @@ class IterableHtmlMessageViewController: UIViewController {
         view.addSubview(webView.view)
     }
     
-    /**
-     Tracks an inApp open and layouts the webview
-     */
     override func viewDidLoad() {
         ITBInfo()
+        
         super.viewDidLoad()
         
+        // Tracks an in-app open and layouts the webview
         if let messageMetadata = parameters.messageMetadata {
             internalAPI?.trackInAppOpen(messageMetadata.message,
                                         location: messageMetadata.location,
@@ -101,6 +100,7 @@ class IterableHtmlMessageViewController: UIViewController {
         guard let webView = self.webView else {
             return
         }
+        
         resizeWebView(webView)
     }
     
@@ -217,8 +217,11 @@ class IterableHtmlMessageViewController: UIViewController {
 
 extension IterableHtmlMessageViewController: WKNavigationDelegate {
     func webView(_: WKWebView, didFinish _: WKNavigation!) {
+        ITBInfo()
         if let myWebview = self.webView {
             resizeWebView(myWebview)
+            
+            presenter?.webViewDidFinish()
         }
     }
     

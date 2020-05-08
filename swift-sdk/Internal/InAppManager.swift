@@ -287,7 +287,6 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         showMessage(fromMessagesProcessorResult: messagesProcessorResult)
     }
     
-    // This must be called from Main Thread
     private func showInternal(message: IterableInAppMessage,
                               consume: Bool,
                               callback: ITBURLCallback? = nil) {
