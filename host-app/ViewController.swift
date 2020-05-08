@@ -68,7 +68,7 @@ class ViewController: UIViewController {
         }
     }
     
-    // Full screen inApp
+    // Full screen in-app
     @IBAction func showInApp2Tap(_: UIButton) {
         ITBInfo()
         

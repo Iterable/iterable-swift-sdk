@@ -1409,7 +1409,7 @@ extension IterableInboxMetadata {
 extension IterableInAppMessage {
     public override var description: String {
         return IterableUtil.describe("messageId", messageId,
-                                     "campaignId", campaignId,
+                                     "campaignId", campaignId ?? "nil",
                                      "saveToInbox", saveToInbox,
                                      "inboxMetadata", inboxMetadata ?? "nil",
                                      "trigger", trigger,
