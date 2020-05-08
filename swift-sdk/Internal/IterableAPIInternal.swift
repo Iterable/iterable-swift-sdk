@@ -355,12 +355,22 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     // deprecated - will be removed in version 6.3.x or above
-    func getAndTrack(deepLink: URL, callbackBlock: @escaping ITEActionBlock) {
-        deepLinkManager.getAndTrack(deepLink: deepLink, callbackBlock: callbackBlock)
+    @discardableResult func getAndTrack(deepLink: URL, callbackBlock: @escaping ITEActionBlock) -> Future<IterableAttributionInfo?, Error>? {
+        return deepLinkManager.getAndTrack(deepLink: deepLink, callbackBlock: callbackBlock).onSuccess { attributionInfo in
+            if let attributionInfo = attributionInfo {
+                self.attributionInfo = attributionInfo
+            }
+        }
     }
     
     @discardableResult func handleUniversalLink(_ url: URL) -> Bool {
-        return deepLinkManager.handleUniversalLink(url, urlDelegate: config.urlDelegate, urlOpener: AppUrlOpener())
+        let (result, future) = deepLinkManager.handleUniversalLink(url, urlDelegate: config.urlDelegate, urlOpener: AppUrlOpener())
+        future.onSuccess { attributionInfo in
+            if let attributionInfo = attributionInfo {
+                self.attributionInfo = attributionInfo
+            }
+        }
+        return result
     }
     
     func setDeviceAttribute(name: String, value: String) {

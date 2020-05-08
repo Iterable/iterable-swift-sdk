@@ -88,8 +88,8 @@ class IterableHtmlMessageViewController: UIViewController {
         
         if let messageMetadata = parameters.messageMetadata {
             internalAPI?.trackInAppOpen(messageMetadata.message,
-                                                               location: messageMetadata.location,
-                                                               inboxSessionId: parameters.inboxSessionId)
+                                        location: messageMetadata.location,
+                                        inboxSessionId: parameters.inboxSessionId)
         }
         
         webView?.layoutSubviews()
@@ -113,20 +113,20 @@ class IterableHtmlMessageViewController: UIViewController {
         
         if let _ = navigationController, linkClicked == false {
             internalAPI?.trackInAppClose(messageMetadata.message,
-                                                                location: messageMetadata.location,
-                                                                inboxSessionId: parameters.inboxSessionId,
-                                                                source: InAppCloseSource.back,
-                                                                clickedUrl: nil)
+                                         location: messageMetadata.location,
+                                         inboxSessionId: parameters.inboxSessionId,
+                                         source: InAppCloseSource.back,
+                                         clickedUrl: nil)
         } else {
             internalAPI?.trackInAppClose(messageMetadata.message,
-                                                                location: messageMetadata.location,
-                                                                inboxSessionId: parameters.inboxSessionId,
-                                                                source: InAppCloseSource.link,
-                                                                clickedUrl: clickedLink)
+                                         location: messageMetadata.location,
+                                         inboxSessionId: parameters.inboxSessionId,
+                                         source: InAppCloseSource.link,
+                                         clickedUrl: clickedLink)
         }
     }
     
-    required init?(coder aDecoder: NSCoder) {
+    required init?(coder _: NSCoder) {
         fatalError("IterableHtmlMessageViewController cannot be instantiated from Storyboard")
     }
     
@@ -148,6 +148,7 @@ class IterableHtmlMessageViewController: UIViewController {
     lazy var webView: WebViewProtocol! = {
         dependencyModule.webView
     }()
+    
     var internalAPI: IterableAPIInternal? {
         return internalAPIProvider()
     }
@@ -224,9 +225,9 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
     fileprivate func trackInAppClick(destinationUrl: String) {
         if let messageMetadata = parameters.messageMetadata {
             internalAPI?.trackInAppClick(messageMetadata.message,
-                                                                location: messageMetadata.location,
-                                                                inboxSessionId: parameters.inboxSessionId,
-                                                                clickedUrl: destinationUrl)
+                                         location: messageMetadata.location,
+                                         inboxSessionId: parameters.inboxSessionId,
+                                         clickedUrl: destinationUrl)
         }
     }
     
