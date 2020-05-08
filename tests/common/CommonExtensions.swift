@@ -120,7 +120,7 @@ class MockDependencyContainer: DependencyContainerProtocol {
 }
 
 extension IterableAPI {
-    // Internal Only used in unit tests.
+    // Internal Only used in UI tests.
     static func initializeForTesting(apiKey: String = "zeeApiKey",
                                      launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
                                      config: IterableConfig = IterableConfig(),
@@ -156,6 +156,7 @@ extension IterableAPI {
 }
 
 extension IterableAPIInternal {
+    // Internal Only used in unit tests.
     @discardableResult static func initializeForTesting(apiKey: String = "zeeApiKey",
                                                         launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
                                                         config: IterableConfig = IterableConfig(),

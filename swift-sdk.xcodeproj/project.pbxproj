@@ -151,7 +151,6 @@
 		ACEDF41D2183C2EC000B9BFE /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEDF41C2183C2EC000B9BFE /* Promise.swift */; };
 		ACEDF41F2183C436000B9BFE /* PromiseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEDF41E2183C436000B9BFE /* PromiseTests.swift */; };
 		ACF560D620E443BF000AAC23 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF560D520E443BF000AAC23 /* AppDelegate.swift */; };
-		ACF560D820E443BF000AAC23 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF560D720E443BF000AAC23 /* ViewController.swift */; };
 		ACF560DB20E443BF000AAC23 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACF560D920E443BF000AAC23 /* Main.storyboard */; };
 		ACF560DD20E443C0000AAC23 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ACF560DC20E443C0000AAC23 /* Assets.xcassets */; };
 		ACF560E020E443C0000AAC23 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACF560DE20E443C0000AAC23 /* LaunchScreen.storyboard */; };
@@ -416,7 +415,6 @@
 		ACEDF41E2183C436000B9BFE /* PromiseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromiseTests.swift; sourceTree = "<group>"; };
 		ACF560D320E443BF000AAC23 /* host-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "host-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ACF560D520E443BF000AAC23 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		ACF560D720E443BF000AAC23 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		ACF560DA20E443BF000AAC23 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		ACF560DC20E443C0000AAC23 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		ACF560DF20E443C0000AAC23 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -913,7 +911,6 @@
 				ACF560E120E443C0000AAC23 /* Info.plist */,
 				ACF560DE20E443C0000AAC23 /* LaunchScreen.storyboard */,
 				ACF560D920E443BF000AAC23 /* Main.storyboard */,
-				ACF560D720E443BF000AAC23 /* ViewController.swift */,
 			);
 			path = "host-app";
 			sourceTree = "<group>";
@@ -1618,7 +1615,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ACF560D820E443BF000AAC23 /* ViewController.swift in Sources */,
 				ACF560D620E443BF000AAC23 /* AppDelegate.swift in Sources */,
 				AC995F9D2167E9FD0099A184 /* CommonExtensions.swift in Sources */,
 				ACA8D1A52196309C001B1332 /* Common.swift in Sources */,
