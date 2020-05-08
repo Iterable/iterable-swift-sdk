@@ -17,13 +17,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        
-        let config = IterableConfig()
-        config.customActionDelegate = self
-        config.urlDelegate = self
-        TestHelper.getTestUserDefaults().set("user1@example.com", forKey: Const.UserDefaults.emailKey)
-        IterableAPI.initializeForTesting(config: config, networkSession: MockNetworkSession(), urlOpener: AppUrlOpener())
-        
         return true
     }
     
@@ -48,31 +41,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
     }
-}
-
-extension AppDelegate: IterableCustomActionDelegate {
-    func handle(iterableCustomAction action: IterableAction, inContext _: IterableActionContext) -> Bool {
-        ITBInfo("handleCustomAction: \(action)")
-        NotificationCenter.default.post(name: .handleIterableCustomAction, object: nil, userInfo: ["name": action.type])
-        return true
-    }
-}
-
-extension AppDelegate: IterableURLDelegate {
-    func handle(iterableURL url: URL, inContext _: IterableActionContext) -> Bool {
-        ITBInfo("handleUrl: \(url)")
-        if url.absoluteString == "https://www.google.com" {
-            // I am not going to handle this, do default
-            return false
-        } else {
-            // I am handling this
-            NotificationCenter.default.post(name: .handleIterableUrl, object: nil, userInfo: ["url": url.absoluteString])
-            return true
-        }
-    }
-}
-
-extension Notification.Name {
-    static let handleIterableUrl = Notification.Name("handleIterableUrl")
-    static let handleIterableCustomAction = Notification.Name("handleIterableCustomAction")
 }

@@ -107,7 +107,7 @@ struct TestUtils {
     }
     
     static func validateDeviceInfo(inBody body: [String: Any]) {
-        validateMatch(keyPath: KeyPath(.deviceInfo, .deviceId), value: IterableAPI.internalImplementation!.deviceId, inDictionary: body)
+        validateMatch(keyPath: KeyPath(.deviceInfo, .deviceId), value: IterableAPIInternal.initializeForTesting().deviceId, inDictionary: body)
         validateMatch(keyPath: KeyPath(.deviceInfo, .platform), value: JsonValue.iOS.jsonStringValue, inDictionary: body)
         validateMatch(keyPath: KeyPath(.deviceInfo, .appPackageName), value: Bundle.main.appPackageName, inDictionary: body)
     }

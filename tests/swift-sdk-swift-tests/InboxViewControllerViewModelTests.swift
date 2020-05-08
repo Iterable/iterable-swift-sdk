@@ -87,6 +87,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
                                  inboxMetadata: nil,
                                  customPayload: nil),
         ]
+        
         fetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {

@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.2.5
+#### Fixed
+- Fixed the `campaignId` data type within our SDK (thanks, nkotula!)
+
 ## 6.2.4
 #### Fixed
 - Properly attribute the source of in app closes

@@ -18,11 +18,6 @@ class ViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(handleNotification(_:)), name: .handleIterableCustomAction, object: nil)
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
     @IBAction func setupNotifications(_: UIButton) {
         ITBInfo()
         if #available(iOS 10, *) {
@@ -37,6 +32,7 @@ class ViewController: UIViewController {
         }
     }
     
+    // deprecated - will be removed in version 6.3.x or above
     @IBAction func showSystemNotificationTap(_: UIButton) {
         ITBInfo()
         
@@ -45,6 +41,7 @@ class ViewController: UIViewController {
         }
     }
     
+    // deprecated - will be removed in version 6.3.x or above
     @IBAction func showSystemNotification2Tap(_: UIButton) {
         ITBInfo()
         
@@ -68,7 +65,7 @@ class ViewController: UIViewController {
         }
     }
     
-    // Full screen inApp
+    // Full screen in-app
     @IBAction func showInApp2Tap(_: UIButton) {
         ITBInfo()
         
@@ -86,7 +83,7 @@ class ViewController: UIViewController {
                                          inAppFetcher: mockInAppFetcher,
                                          inAppDisplayer: InAppDisplayer())
         
-        mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { _ in
+        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: IterableAPI.internalImplementation, payload).onSuccess { _ in
             let message = IterableAPI.inAppManager.getMessages()[0]
             
             IterableAPI.inAppManager.show(message: message, consume: true) { url in
@@ -116,7 +113,7 @@ class ViewController: UIViewController {
                                          inAppFetcher: mockInAppFetcher,
                                          inAppDisplayer: InAppDisplayer())
         
-        mockInAppFetcher.mockInAppPayloadFromServer(payload).onSuccess { _ in
+        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: IterableAPI.internalImplementation, payload).onSuccess { _ in
             let message = IterableAPI.inAppManager.getMessages()[0]
             
             IterableAPI.inAppManager.show(message: message, consume: true) { url in
@@ -152,7 +149,7 @@ class ViewController: UIViewController {
                                          inAppFetcher: mockInAppFetcher,
                                          inAppDisplayer: InAppDisplayer())
         
-        mockInAppFetcher.mockMessagesAvailableFromServer(messages: [message])
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: IterableAPI.internalImplementation, messages: [message])
     }
     
     // Center and Open url, corresponds to UITests.testShowInApp5
@@ -186,7 +183,7 @@ class ViewController: UIViewController {
                                          inAppDisplayer: InAppDisplayer(),
                                          urlOpener: mockUrlOpener)
         
-        mockInAppFetcher.mockMessagesAvailableFromServer(messages: [message])
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: IterableAPI.internalImplementation, messages: [message])
     }
     
     @IBAction func showInboxTap(_: UIButton) {
@@ -215,7 +212,7 @@ class ViewController: UIViewController {
                                          inAppDisplayer: InAppDisplayer(),
                                          urlOpener: mockUrlOpener)
         
-        mockInAppFetcher.mockMessagesAvailableFromServer(messages: [message]).onSuccess { _ in
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: IterableAPI.internalImplementation, messages: [message]).onSuccess { _ in
             DispatchQueue.main.async {
                 let viewController = IterableInboxViewController(style: .plain)
                 self.present(viewController, animated: true) {
