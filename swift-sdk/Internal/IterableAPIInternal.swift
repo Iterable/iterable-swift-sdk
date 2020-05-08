@@ -426,7 +426,6 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     private var dependencyContainer: DependencyContainerProtocol
     
-    // returns the push integration name for this app depending on the config options
     private var pushIntegrationName: String? {
         if let pushIntegrationName = config.pushIntegrationName, let sandboxPushIntegrationName = config.sandboxPushIntegrationName {
             switch config.pushPlatform {
