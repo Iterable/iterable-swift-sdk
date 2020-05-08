@@ -836,7 +836,6 @@ class InAppTests: XCTestCase {
         var callTimes = [Date]()
         let urlDelegate = MockUrlDelegate(returnValue: true)
         urlDelegate.callback = { url, _ in
-            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", "url:", url)
             if url == TestInAppPayloadGenerator.getClickedUrl(index: 1) {
                 callTimes.append(Date())
                 callOrder.append(1)
@@ -1453,7 +1452,7 @@ extension IterableInboxMetadata {
 extension IterableInAppMessage {
     public override var description: String {
         return IterableUtil.describe("messageId", messageId,
-                                     "campaignId", campaignId,
+                                     "campaignId", campaignId ?? "nil",
                                      "saveToInbox", saveToInbox,
                                      "inboxMetadata", inboxMetadata ?? "nil",
                                      "trigger", trigger,
