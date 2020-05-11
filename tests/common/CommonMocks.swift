@@ -409,27 +409,6 @@ struct MockAPNSTypeChecker: APNSTypeCheckerProtocol {
     }
 }
 
-struct MockViewCalculations: ViewCalculationsProtocol {
-    let viewPosition: ViewPosition
-    let safeAreaInsets: UIEdgeInsets
-    
-    func width(for _: UIView) -> CGFloat {
-        return viewPosition.width
-    }
-    
-    func height(for _: UIView) -> CGFloat {
-        return viewPosition.height
-    }
-    
-    func center(for _: UIView) -> CGPoint {
-        return viewPosition.center
-    }
-    
-    func safeAreaInsets(for _: UIView) -> UIEdgeInsets {
-        return safeAreaInsets
-    }
-}
-
 class MockWebView: WebViewProtocol {
     let view: UIView = UIView()
     
@@ -465,7 +444,6 @@ class MockWebView: WebViewProtocol {
     }
 }
 
-struct MockInjectedDependencyModule: InjectedDependencyModuleProtocol {
-    let viewCalculations: ViewCalculationsProtocol
+struct MockInjectedDependencyModule {
     let webView: WebViewProtocol
 }

@@ -141,9 +141,6 @@ class IterableHtmlMessageViewController: UIViewController {
     private var linkClicked = false
     private var clickedLink: String?
     @Inject private var dependencyModule: InjectedDependencyModuleProtocol!
-    private lazy var viewCalculations: ViewCalculationsProtocol! = {
-        dependencyModule.viewCalculations
-    }()
     
     lazy var webView: WebViewProtocol! = {
         dependencyModule.webView

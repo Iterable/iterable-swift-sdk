@@ -61,35 +61,6 @@ struct Inject<Value> {
     private var name: InjectedDependencies.Key?
 }
 
-protocol ViewCalculationsProtocol {
-    func width(for view: UIView) -> CGFloat
-    func height(for view: UIView) -> CGFloat
-    func center(for view: UIView) -> CGPoint
-    func safeAreaInsets(for view: UIView) -> UIEdgeInsets
-}
-
-extension ViewCalculationsProtocol {
-    func width(for view: UIView) -> CGFloat {
-        view.bounds.width
-    }
-    
-    func height(for view: UIView) -> CGFloat {
-        view.bounds.height
-    }
-    
-    func center(for view: UIView) -> CGPoint {
-        view.center
-    }
-    
-    func safeAreaInsets(for view: UIView) -> UIEdgeInsets {
-        if #available(iOS 11, *) {
-            return view.safeAreaInsets
-        } else {
-            return .zero
-        }
-    }
-}
-
 struct ViewPosition: Equatable {
     var width: CGFloat = 0
     var height: CGFloat = 0
@@ -139,13 +110,10 @@ extension WKWebView: WebViewProtocol {
 }
 
 protocol InjectedDependencyModuleProtocol {
-    var viewCalculations: ViewCalculationsProtocol { get }
     var webView: WebViewProtocol { get }
 }
 
 struct InjectedDependencyModule: InjectedDependencyModuleProtocol {
-    let viewCalculations: ViewCalculationsProtocol = ViewCalculations()
-    
     var webView: WebViewProtocol {
         let webView = WKWebView(frame: .zero)
         webView.scrollView.bounces = false
@@ -154,5 +122,3 @@ struct InjectedDependencyModule: InjectedDependencyModuleProtocol {
         return webView as WebViewProtocol
     }
 }
-
-struct ViewCalculations: ViewCalculationsProtocol {}
