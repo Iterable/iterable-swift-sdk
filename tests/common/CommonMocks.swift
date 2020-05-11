@@ -452,6 +452,10 @@ class MockWebView: WebViewProtocol {
     
     func layoutSubviews() {}
     
+    func calculateHeight() -> Future<CGFloat, IterableError> {
+        return Promise<CGFloat, IterableError>(value: height)
+    }
+    
     var position: ViewPosition?
     
     private var height: CGFloat

@@ -90,7 +90,7 @@ extension ViewCalculationsProtocol {
     }
 }
 
-struct ViewPosition {
+struct ViewPosition: Equatable {
     var width: CGFloat = 0
     var height: CGFloat = 0
     var center: CGPoint = CGPoint.zero
@@ -103,6 +103,7 @@ protocol WebViewProtocol {
     func set(navigationDelegate: WKNavigationDelegate?)
     func evaluateJavaScript(_ javaScriptString: String, completionHandler: ((Any?, Error?) -> Void)?)
     func layoutSubviews()
+    func calculateHeight() -> Future<CGFloat, IterableError>
 }
 
 extension WKWebView: WebViewProtocol {
@@ -118,6 +119,22 @@ extension WKWebView: WebViewProtocol {
     
     func set(navigationDelegate: WKNavigationDelegate?) {
         self.navigationDelegate = navigationDelegate
+    }
+    
+    func calculateHeight() -> Future<CGFloat, IterableError> {
+        let promise = Promise<CGFloat, IterableError>()
+        
+        evaluateJavaScript("document.body.offsetHeight", completionHandler: { height, _ in
+            guard let floatHeight = height as? CGFloat, floatHeight >= 20 else {
+                ITBError("unable to get height")
+                promise.reject(with: IterableError.general(description: "unable to get height"))
+                return
+            }
+            
+            promise.resolve(with: floatHeight)
+        })
+        
+        return promise
     }
 }
 

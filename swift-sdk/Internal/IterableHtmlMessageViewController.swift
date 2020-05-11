@@ -34,7 +34,7 @@ class IterableHtmlMessageViewController: UIViewController {
             self.inboxSessionId = inboxSessionId
         }
     }
-
+    
     weak var presenter: InAppPresenter?
     
     init(parameters: Parameters, internalAPIProvider: @escaping @autoclosure () -> IterableAPIInternal? = IterableAPI.internalImplementation) {
@@ -153,54 +153,82 @@ class IterableHtmlMessageViewController: UIViewController {
         return internalAPIProvider()
     }
     
-    /**
-     Resizes the webview based upon the insetPadding if the html is finished loading
-     
-     - parameter: aWebView the webview
-     */
-    private func resizeWebView(_ aWebView: WebViewProtocol) {
-        guard location != .full else {
-            webView.set(position: ViewPosition(width: viewCalculations.width(for: view), height: viewCalculations.height(for: view), center: viewCalculations.center(for: view)))
-            return
-        }
-        
-        aWebView.evaluateJavaScript("document.body.offsetHeight", completionHandler: { height, _ in
-            guard let floatHeight = height as? CGFloat, floatHeight >= 20 else {
-                ITBError("unable to get height")
-                return
+    /// Resizes the webview based upon the insetPadding, height etc
+    private func resizeWebView(_: WebViewProtocol) {
+        let parentPosition = ViewPosition(width: view.bounds.width,
+                                          height: view.bounds.height,
+                                          center: view.center)
+        IterableHtmlMessageViewController.calculateWebViewPosition(webView: webView,
+                                                                   safeAreaInsets: IterableHtmlMessageViewController.safeAreaInsets(for: view),
+                                                                   parentPosition: parentPosition,
+                                                                   paddingLeft: parameters.padding.left,
+                                                                   paddingRight: parameters.padding.right,
+                                                                   location: location)
+            .onSuccess { [weak self] position in
+                self?.webView.set(position: position)
             }
-            self.resize(webView: aWebView, withHeight: floatHeight)
-        })
     }
     
-    private func resize(webView: WebViewProtocol, withHeight height: CGFloat) {
-        ITBInfo("height: \(height)")
+    private static func safeAreaInsets(for view: UIView) -> UIEdgeInsets {
+        if #available(iOS 11, *) {
+            return view.safeAreaInsets
+        } else {
+            return .zero
+        }
+    }
+    
+    static func calculateWebViewPosition(webView: WebViewProtocol,
+                                         safeAreaInsets: UIEdgeInsets,
+                                         parentPosition: ViewPosition,
+                                         paddingLeft: CGFloat,
+                                         paddingRight: CGFloat,
+                                         location: IterableMessageLocation) -> Future<ViewPosition, IterableError> {
+        guard location != .full else {
+            return Promise(value: parentPosition)
+        }
+        
+        return webView.calculateHeight().map { height in
+            ITBInfo("height: \(height)")
+            return IterableHtmlMessageViewController.calculateWebViewPosition(safeAreaInsets: safeAreaInsets,
+                                                                              parentPosition: parentPosition,
+                                                                              paddingLeft: paddingLeft,
+                                                                              paddingRight: paddingRight,
+                                                                              location: location,
+                                                                              inAppHeight: height)
+        }
+    }
+    
+    private static func calculateWebViewPosition(safeAreaInsets: UIEdgeInsets,
+                                                 parentPosition: ViewPosition,
+                                                 paddingLeft: CGFloat,
+                                                 paddingRight: CGFloat,
+                                                 location: IterableMessageLocation,
+                                                 inAppHeight: CGFloat) -> ViewPosition {
         var position = ViewPosition()
         // set the height
-        position.height = height
+        position.height = inAppHeight
         
         // now set the width
-        let notificationWidth = 100 - (parameters.padding.left + parameters.padding.right)
-        let screenWidth = viewCalculations.width(for: view)
-        position.width = screenWidth * notificationWidth / 100
+        let notificationWidth = 100 - (paddingLeft + paddingRight)
+        position.width = parentPosition.width * notificationWidth / 100
         
         // Position webview
-        position.center = viewCalculations.center(for: view)
+        position.center = parentPosition.center
         
         // set center x
-        position.center.x = screenWidth * (parameters.padding.left + notificationWidth / 2) / 100
+        position.center.x = parentPosition.width * (paddingLeft + notificationWidth / 2) / 100
         
         // set center y
-        let halfWebViewHeight = height / 2
+        let halfWebViewHeight = inAppHeight / 2
         switch location {
         case .top:
-            position.center.y = halfWebViewHeight + viewCalculations.safeAreaInsets(for: view).top
+            position.center.y = halfWebViewHeight + safeAreaInsets.top
         case .bottom:
-            position.center.y = viewCalculations.height(for: view) - halfWebViewHeight - viewCalculations.safeAreaInsets(for: view).bottom
+            position.center.y = parentPosition.height - halfWebViewHeight - safeAreaInsets.bottom
         default: break
         }
         
-        webView.set(position: position)
+        return position
     }
     
     private static func padding(fromPadding padding: UIEdgeInsets) -> UIEdgeInsets {
