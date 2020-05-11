@@ -11,5 +11,9 @@ jobs:
     - name: Build and test
       run: |
         xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11' -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO GCC_INSTRUMENT_PROGRAM_FLOW_ARCS=YES GCC_GENERATE_TEST_COVERAGE_FILES=YES || exit 1
-        pod lib lint --allow-warnings
-        bash <(curl -s https://codecov.io/bash) -J 'swift-sdk'
+        
+    - name: CocoaPods lint
+      run: pod lib lint --allow-warnings
+      
+    - name: Upload coverage report to codecov.io
+      run: bash <(curl -s https://codecov.io/bash) -J 'swift-sdk'
