@@ -27,9 +27,11 @@ import UserNotifications
         var contentHandlerCalled = false
         contentHandlerCalled = loadAttachment(itblDictionary: itblDictionary)
         
-        if !contentHandlerCalled {
-            if let bestAttemptContent = bestAttemptContent {
-                contentHandler(bestAttemptContent)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            if !contentHandlerCalled {
+                if let bestAttemptContent = self.bestAttemptContent {
+                    contentHandler(bestAttemptContent)
+                }
             }
         }
     }
