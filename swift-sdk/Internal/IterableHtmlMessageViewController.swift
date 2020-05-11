@@ -37,8 +37,11 @@ class IterableHtmlMessageViewController: UIViewController {
     
     weak var presenter: InAppPresenter?
     
-    init(parameters: Parameters, internalAPIProvider: @escaping @autoclosure () -> IterableAPIInternal? = IterableAPI.internalImplementation) {
+    init(parameters: Parameters,
+         internalAPIProvider: @escaping @autoclosure () -> IterableAPIInternal? = IterableAPI.internalImplementation,
+         webViewProvider: @escaping @autoclosure () -> WebViewProtocol = IterableHtmlMessageViewController.createWebView()) {
         self.internalAPIProvider = internalAPIProvider
+        self.webViewProvider = webViewProvider
         self.parameters = parameters
         futureClickedURL = Promise<URL, IterableError>()
         super.init(nibName: nil, bundle: nil)
@@ -91,17 +94,13 @@ class IterableHtmlMessageViewController: UIViewController {
                                         inboxSessionId: parameters.inboxSessionId)
         }
         
-        webView?.layoutSubviews()
+        webView.layoutSubviews()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        guard let webView = self.webView else {
-            return
-        }
-        
-        resizeWebView(webView)
+        resizeWebView()
     }
     
     open override func viewWillDisappear(_ animated: Bool) {
@@ -135,23 +134,28 @@ class IterableHtmlMessageViewController: UIViewController {
     }
     
     private var internalAPIProvider: () -> IterableAPIInternal?
+    private var webViewProvider: () -> WebViewProtocol
     private var parameters: Parameters
     private let futureClickedURL: Promise<URL, IterableError>
     private var location: IterableMessageLocation = .full
     private var linkClicked = false
     private var clickedLink: String?
-    @Inject private var dependencyModule: InjectedDependencyModuleProtocol!
     
-    lazy var webView: WebViewProtocol! = {
-        dependencyModule.webView
-    }()
-    
-    var internalAPI: IterableAPIInternal? {
+    private lazy var webView = webViewProvider()
+    private var internalAPI: IterableAPIInternal? {
         return internalAPIProvider()
     }
     
+    private static func createWebView() -> WebViewProtocol {
+        let webView = WKWebView(frame: .zero)
+        webView.scrollView.bounces = false
+        webView.isOpaque = false
+        webView.backgroundColor = UIColor.clear
+        return webView as WebViewProtocol
+    }
+    
     /// Resizes the webview based upon the insetPadding, height etc
-    private func resizeWebView(_: WebViewProtocol) {
+    private func resizeWebView() {
         let parentPosition = ViewPosition(width: view.bounds.width,
                                           height: view.bounds.height,
                                           center: view.center)
@@ -243,11 +247,8 @@ class IterableHtmlMessageViewController: UIViewController {
 extension IterableHtmlMessageViewController: WKNavigationDelegate {
     func webView(_: WKWebView, didFinish _: WKNavigation!) {
         ITBInfo()
-        if let myWebview = self.webView {
-            resizeWebView(myWebview)
-            
-            presenter?.webViewDidFinish()
-        }
+        resizeWebView()
+        presenter?.webViewDidFinish()
     }
     
     fileprivate func trackInAppClick(destinationUrl: String) {

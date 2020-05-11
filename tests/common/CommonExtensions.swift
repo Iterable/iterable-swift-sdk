@@ -104,18 +104,10 @@ class MockDependencyContainer: DependencyContainerProtocol {
         self.applicationStateProvider = applicationStateProvider
         self.notificationCenter = notificationCenter
         self.apnsTypeChecker = apnsTypeChecker
-        
-        addInjectedDependencies()
     }
     
     func createInAppFetcher(apiClient _: ApiClientProtocol) -> InAppFetcherProtocol {
         return inAppFetcher
-    }
-    
-    private func addInjectedDependencies() {
-        InjectedDependencies.shared.set {
-            InjectedDependencyModule() as InjectedDependencyModuleProtocol
-        }
     }
 }
 

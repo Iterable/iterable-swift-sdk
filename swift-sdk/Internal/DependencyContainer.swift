@@ -55,14 +55,4 @@ struct DependencyContainer: DependencyContainerProtocol {
     let applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared
     let notificationCenter: NotificationCenterProtocol = NotificationCenter.default
     let apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker()
-    
-    init() {
-        addInjectedDependencies()
-    }
-    
-    private func addInjectedDependencies() {
-        InjectedDependencies.shared.set { () -> InjectedDependencyModuleProtocol in
-            InjectedDependencyModule() as InjectedDependencyModuleProtocol
-        }
-    }
 }
