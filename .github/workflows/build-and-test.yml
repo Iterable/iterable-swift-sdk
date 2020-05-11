@@ -16,4 +16,4 @@ jobs:
       run: pod lib lint --allow-warnings
 
     - name: Upload coverage report to codecov.io
-      run: bash <(curl -s https://codecov.io/bash)
+      run: bash <(curl -s https://codecov.io/bash) -J 'host-app' -J 'ui-tests-app' -J 'inbox-ui-tests-app'
