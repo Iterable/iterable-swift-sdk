@@ -233,8 +233,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     func track(_ eventName: String,
                dataFields: [AnyHashable: Any]? = nil,
-               onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "track"),
-               onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "track")) {
+               onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "trackEvent"),
+               onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "trackEvent")) {
         IterableAPIInternal.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
                                  forResult: apiClient.track(event: eventName, dataFields: dataFields))
