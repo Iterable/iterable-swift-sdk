@@ -135,8 +135,10 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
     
     private func save(dict: [AnyHashable: Any]?, withKey key: LocalStorageKey, andExpiration expiration: Date? = nil) throws {
         if let value = dict {
-            let data = try JSONSerialization.data(withJSONObject: value, options: [])
-            try save(data: data, withKey: key, andExpiration: expiration)
+            if JSONSerialization.isValidJSONObject(value) {
+                let data = try JSONSerialization.data(withJSONObject: value, options: [])
+                try save(data: data, withKey: key, andExpiration: expiration)
+            }
         } else {
             try save(data: nil, withKey: key, andExpiration: expiration)
         }
