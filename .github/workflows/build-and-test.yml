@@ -16,4 +16,4 @@ jobs:
       run: pod lib lint --allow-warnings
 
     - name: Upload coverage report to codecov.io
-      run: bash <(curl -s https://codecov.io/bash) -X gcov
+      run: bash <(curl -s https://codecov.io/bash) -X gcov -J 'IterableSDK' -J 'IterableAppExtensions'
