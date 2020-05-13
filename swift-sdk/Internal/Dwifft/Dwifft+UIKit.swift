@@ -11,7 +11,7 @@
 import UIKit
     /// This class manages a `UITableView`'s rows and sections. It will make the necessary calls to
 /// the table view to ensure that its UI is kept in sync with the contents of the `sectionedValues` property.
-public final class TableViewDiffCalculator<Section: Equatable, Value: Equatable>: AbstractDiffCalculator<Section, Value> {
+final class TableViewDiffCalculator<Section: Equatable, Value: Equatable>: AbstractDiffCalculator<Section, Value> {
 
     /// The table view to be managed
     public weak var tableView: UITableView?
@@ -49,7 +49,7 @@ public final class TableViewDiffCalculator<Section: Equatable, Value: Equatable>
 /// This class manages a `UICollectionView`'s items and sections. It will make the necessary
 /// calls to the collection view to ensure that its UI is kept in sync with the contents 
 /// of the `sectionedValues` property.
-public final class CollectionViewDiffCalculator<Section: Equatable, Value: Equatable> : AbstractDiffCalculator<Section, Value> {
+final class CollectionViewDiffCalculator<Section: Equatable, Value: Equatable> : AbstractDiffCalculator<Section, Value> {
 
     /// The collection view to be managed.
     public weak var collectionView: UICollectionView?
@@ -96,7 +96,7 @@ typealias SimpleCollectionViewDiffCalculator = CollectionViewDiffCalculator<AnyH
 /// use a `SingleSectionTableViewDiffCalculator`. Note that this approach is not highly recommended, and you should
 /// do so only if it *really* doesn't make sense to just power your whole table with a `TableViewDiffCalculator`.
 /// You'll be less likely to mess up the index math :P
-public final class SingleSectionTableViewDiffCalculator<Value: Equatable> {
+final class SingleSectionTableViewDiffCalculator<Value: Equatable> {
 
     /// The table view to be managed
     public weak var tableView: UITableView?
@@ -149,7 +149,7 @@ public final class SingleSectionTableViewDiffCalculator<Value: Equatable> {
 /// use a `SingleSectionCollectionViewDiffCalculator`. Note that this approach is not highly recommended, and you should
 /// do so only if it *really* doesn't make sense to just power your whole view with a `CollectionViewDiffCalculator`.
 /// You'll be less likely to mess up the index math :P
-public final class SingleSectionCollectionViewDiffCalculator<Value: Equatable> {
+final class SingleSectionCollectionViewDiffCalculator<Value: Equatable> {
 
     /// The collection view to be managed
     public weak var collectionView: UICollectionView?

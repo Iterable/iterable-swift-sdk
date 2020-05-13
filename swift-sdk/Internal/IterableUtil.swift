@@ -13,7 +13,7 @@ enum IterableResult<T, E> {
     case failure(E)
 }
 
-@objc public final class IterableUtil: NSObject {
+@objc final class IterableUtil: NSObject {
     static var rootViewController: UIViewController? {
         if let rootViewController = UIApplication.shared.delegate?.window??.rootViewController {
             return rootViewController
