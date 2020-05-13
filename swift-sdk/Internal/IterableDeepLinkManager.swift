@@ -76,7 +76,7 @@ class IterableDeepLinkManager: NSObject {
             let trackAndRedirectTask = redirectUrlSession.dataTask(with: appLinkURL) { [unowned self] _, _, error in
                 if let error = error {
                     ITBError("error: \(error.localizedDescription)")
-                    promise.resolve(with: (self.deepLinkLocation, nil))
+                    promise.resolve(with: (nil, nil))
                 } else {
                     if let deepLinkCampaignId = self.deepLinkCampaignId,
                         let deepLinkTemplateId = self.deepLinkTemplateId,
