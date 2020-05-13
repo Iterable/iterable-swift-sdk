@@ -7,12 +7,12 @@ import Foundation
 import UIKit
 
 /// handles opening of Urls
-@objc public protocol UrlOpenerProtocol: AnyObject {
+@objc protocol UrlOpenerProtocol: AnyObject {
     @objc func open(url: URL)
 }
 
 /// Default app opener. Defers to UIApplication open
-public class AppUrlOpener: UrlOpenerProtocol {
+class AppUrlOpener: UrlOpenerProtocol {
     public init() {}
     
     public func open(url: URL) {

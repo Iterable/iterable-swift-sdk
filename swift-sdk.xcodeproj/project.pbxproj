@@ -531,9 +531,9 @@
 			isa = PBXGroup;
 			children = (
 				AC81918922713A400014955E /* AbstractDiffCalculator.swift */,
-				AC819185227139230014955E /* SectionedValues.swift */,
 				AC819183227138E60014955E /* Dwifft.swift */,
 				AC81918722713A110014955E /* Dwifft+UIKit.swift */,
+				AC819185227139230014955E /* SectionedValues.swift */,
 			);
 			path = Dwifft;
 			sourceTree = "<group>";
@@ -640,9 +640,9 @@
 				AC03094A21E532470003A288 /* InAppPersistence.swift */,
 				556FB1E9244FAF6A00EDF6BD /* InAppPresenter.swift */,
 				ACB8273E22372A5C00DB17D3 /* IterableHtmlMessageViewController.swift */,
-				AC1712882416AEF400F2BB0E /* WebViewProtocol.swift */,
 				AC426225238C27DD00164121 /* IterableInboxCell+Layout.swift */,
 				AC1BED9423F1D4C700FDD75F /* MiscInboxClasses.swift */,
+				AC1712882416AEF400F2BB0E /* WebViewProtocol.swift */,
 			);
 			name = "In-app";
 			sourceTree = "<group>";
@@ -695,8 +695,8 @@
 		AC72A0AC20CF4C08004D7997 /* Util */ = {
 			isa = PBXGroup;
 			children = (
-				AC3DD9C72142F3650046F886 /* ClassExtensions.swift */,
 				AC347B5B20E5A7E1003449CF /* APNSTypeChecker.swift */,
+				AC3DD9C72142F3650046F886 /* ClassExtensions.swift */,
 				AC776DA5211A1B8A00C27C27 /* IterableRequestUtil.swift */,
 				AC72A0AD20CF4C16004D7997 /* IterableUtil.swift */,
 				AC32E16721DD55B900BD4F83 /* OrderedDictionary.swift */,
@@ -799,8 +799,8 @@
 			isa = PBXGroup;
 			children = (
 				AC845106228DF54E0052BB8F /* ApiClient.swift */,
-				AC84510822910A0C0052BB8F /* RequestCreator.swift */,
 				AC8E9267246284F800BEB68E /* DataFieldsHelper.swift */,
+				AC84510822910A0C0052BB8F /* RequestCreator.swift */,
 			);
 			name = "API Client";
 			sourceTree = "<group>";
@@ -899,8 +899,8 @@
 		ACE34AB121376ACB00691224 /* Local Storage */ = {
 			isa = PBXGroup;
 			children = (
-				ACE34AB221376B1000691224 /* UserDefaultsLocalStorage.swift */,
 				ACE34AB62139D70B00691224 /* LocalStorageProtocol.swift */,
+				ACE34AB221376B1000691224 /* UserDefaultsLocalStorage.swift */,
 			);
 			name = "Local Storage";
 			sourceTree = "<group>";

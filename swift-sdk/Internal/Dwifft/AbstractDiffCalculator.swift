@@ -9,7 +9,7 @@
 import Foundation
 
 /// A parent class for all diff calculators. Don't use it directly.
-public class AbstractDiffCalculator<Section: Equatable, Value: Equatable> {
+class AbstractDiffCalculator<Section: Equatable, Value: Equatable> {
     
     internal init(initialSectionedValues: SectionedValues<Section, Value>) {
         self._sectionedValues = initialSectionedValues

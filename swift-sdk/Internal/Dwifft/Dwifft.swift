@@ -11,7 +11,7 @@
 
 /// These get returned from calls to Dwifft.diff(). They represent insertions or deletions
 /// that need to happen to transform one array into another.
-public enum DiffStep<Value> : CustomDebugStringConvertible {
+enum DiffStep<Value> : CustomDebugStringConvertible {
     /// An insertion.
     case insert(Int, Value)
     /// A deletion.
@@ -49,7 +49,7 @@ public enum DiffStep<Value> : CustomDebugStringConvertible {
 
 /// These get returned from calls to Dwifft.diff(). They represent insertions or deletions
 /// that need to happen to transform one `SectionedValues` into another.
-public enum SectionedDiffStep<Section, Value>: CustomDebugStringConvertible {
+enum SectionedDiffStep<Section, Value>: CustomDebugStringConvertible {
     /// An insertion, at a given section and row.
     case insert(Int, Int, Value)
     /// An deletion, at a given section and row.
@@ -79,7 +79,7 @@ public enum SectionedDiffStep<Section, Value>: CustomDebugStringConvertible {
 }
 
 /// Namespace for the `diff` and `apply` functions.
-public enum Dwifft {
+enum Dwifft {
 
     /// Returns the sequence of `DiffStep`s required to transform one array into another.
     ///
@@ -308,18 +308,17 @@ fileprivate struct MemoizedSequenceComparison<T: Equatable> {
 
 
 // MARK: - Deprecated
-public extension Array where Element: Equatable {
-
-    /// Deprecated in favor of `Dwifft.diff`.
-    @available(*, deprecated)
-    func diff(_ other: [Element]) -> [DiffStep<Element>] {
-        return Dwifft.diff(self, other)
-    }
-
-    /// Deprecated in favor of `Dwifft.apply`.
-    @available(*, deprecated)
-    func apply(_ diff: [DiffStep<Element>]) -> [Element] {
-        return Dwifft.apply(diff: diff, toArray: self)
-    }
-
-}
+//public extension Array where Element: Equatable {
+//
+//    /// Deprecated in favor of `Dwifft.diff`.
+//    @available(*, deprecated)
+//    func diff(_ other: [Element]) -> [DiffStep<Element>] {
+//        return Dwifft.diff(self, other)
+//    }
+//
+//    /// Deprecated in favor of `Dwifft.apply`.
+//    @available(*, deprecated)
+//    func apply(_ diff: [DiffStep<Element>]) -> [Element] {
+//        return Dwifft.apply(diff: diff, toArray: self)
+//    }
+//}

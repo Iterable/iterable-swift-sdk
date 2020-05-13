@@ -12,7 +12,7 @@
 /// You can think of it sort of like an "ordered dictionary", or an order of key-pairs.
 /// If you are diffing a multidimensional structure of values (what might normally be,
 /// for example, a 2D array), you will want to use this.
-public struct SectionedValues<Section: Equatable, Value: Equatable>: Equatable {
+struct SectionedValues<Section: Equatable, Value: Equatable>: Equatable {
 
     /// Initializes the struct with an array of key-pairs.
     ///
@@ -57,7 +57,7 @@ public struct SectionedValues<Section: Equatable, Value: Equatable>: Equatable {
 }
 
 // MARK: - Custom grouping
-public extension SectionedValues where Section: Hashable {
+extension SectionedValues where Section: Hashable {
 
     /// This is a convenience initializer of sorts for `SectionedValues`. It acknowledges
     /// that sometimes you have an array of things that are naturally "groupable" - maybe
