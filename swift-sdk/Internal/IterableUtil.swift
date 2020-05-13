@@ -15,7 +15,11 @@ enum IterableResult<T, E> {
 
 @objc public final class IterableUtil: NSObject {
     static var rootViewController: UIViewController? {
-        return UIApplication.shared.delegate?.window??.rootViewController
+        if let rootViewController = UIApplication.shared.delegate?.window??.rootViewController {
+            return rootViewController
+        } else {
+            return UIApplication.shared.windows.first?.rootViewController
+        }
     }
     
     static func trim(string: String) -> String {
