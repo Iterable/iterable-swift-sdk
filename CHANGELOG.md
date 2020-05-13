@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.2.6
+#### Notes
+- This SDK release is based off of 6.2.4, as 6.2.5 had some framework specific code that we don't believe has any user impact, but out of caution, is omitted from this release, and has the noted fixes below.
+
+#### Fixed
+- Action buttons now show properly when a mediaURL isn't specified
+- The `trackEvent` event is now named accordingly
+- Fixed the `campaignId` data type within our SDK (thanks, nkotula!)
+
 ## 6.2.5
 #### Fixed
 - Fixed the `campaignId` data type within our SDK (thanks, nkotula!)
