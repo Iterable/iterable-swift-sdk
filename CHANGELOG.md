@@ -10,7 +10,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Action buttons now show properly when a mediaURL isn't specified
 - The `trackEvent` event is now named accordingly
 - Fixed the `campaignId` data type within our SDK (thanks, nkotula!)
-- 
+
+## 6.2.5
+#### Fixed
+- Fixed the `campaignId` data type within our SDK (thanks, nkotula!)
 
 ## 6.2.4
 #### Fixed
