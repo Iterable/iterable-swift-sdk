@@ -305,20 +305,3 @@ fileprivate struct MemoizedSequenceComparison<T: Equatable> {
         return table
     }
 }
-
-
-// MARK: - Deprecated
-//public extension Array where Element: Equatable {
-//
-//    /// Deprecated in favor of `Dwifft.diff`.
-//    @available(*, deprecated)
-//    func diff(_ other: [Element]) -> [DiffStep<Element>] {
-//        return Dwifft.diff(self, other)
-//    }
-//
-//    /// Deprecated in favor of `Dwifft.apply`.
-//    @available(*, deprecated)
-//    func apply(_ diff: [DiffStep<Element>]) -> [Element] {
-//        return Dwifft.apply(diff: diff, toArray: self)
-//    }
-//}

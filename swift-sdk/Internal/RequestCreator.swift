@@ -239,7 +239,7 @@ struct RequestCreator {
         return .success(.get(createGetRequest(forPath: Const.Path.getInAppMessages, withArgs: args as! [String: String])))
     }
     
-    // deprecated
+    // deprecated - will be removed in version 6.3.x or above
     func createTrackInAppOpenRequest(_ messageId: String) -> Result<IterableRequest, IterableError> {
         guard let keyValueForCurrentUser = keyValueForCurrentUser else {
             ITBError("Both email and userId are nil")
@@ -281,7 +281,7 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: Const.Path.trackInAppOpen, body: body)))
     }
     
-    // deprecated
+    // deprecated - will be removed in version 6.3.x or above
     func createTrackInAppClickRequest(_ messageId: String, clickedUrl: String) -> Result<IterableRequest, IterableError> {
         guard let keyValueForCurrentUser = keyValueForCurrentUser else {
             ITBError("Both email and userId are nil")
