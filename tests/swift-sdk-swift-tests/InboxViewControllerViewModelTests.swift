@@ -22,14 +22,10 @@ class InboxViewControllerViewModelTests: XCTestCase {
     func testDescendingSorting() {
         let expectation1 = expectation(description: "testDescendingSorting")
         
-        let model = InboxViewControllerViewModel()
-        model.comparator = IterableInboxViewController.DefaultComparator.descending
-        
         let fetcher = MockInAppFetcher()
-        
-        IterableAPI.initializeForTesting(
-            inAppFetcher: fetcher
-        )
+        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: fetcher)
+        let model = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
+        model.comparator = IterableInboxViewController.DefaultComparator.descending
         
         let date1 = Date()
         let date2 = date1.addingTimeInterval(5.0)
@@ -51,7 +47,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
                                  inboxMetadata: nil,
                                  customPayload: nil),
         ]
-        fetcher.mockMessagesAvailableFromServer(messages: messages)
+        fetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             model.beganUpdates()
@@ -66,14 +62,10 @@ class InboxViewControllerViewModelTests: XCTestCase {
     func testAscendingSorting() {
         let expectation1 = expectation(description: "testAscendingSorting")
         
-        let model = InboxViewControllerViewModel()
-        model.comparator = IterableInboxViewController.DefaultComparator.ascending
-        
         let fetcher = MockInAppFetcher()
-        
-        IterableAPI.initializeForTesting(
-            inAppFetcher: fetcher
-        )
+        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: fetcher)
+        let model = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
+        model.comparator = IterableInboxViewController.DefaultComparator.ascending
         
         let date1 = Date()
         let date2 = date1.addingTimeInterval(5.0)
@@ -95,7 +87,8 @@ class InboxViewControllerViewModelTests: XCTestCase {
                                  inboxMetadata: nil,
                                  customPayload: nil),
         ]
-        fetcher.mockMessagesAvailableFromServer(messages: messages)
+        
+        fetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             model.beganUpdates()
@@ -110,13 +103,9 @@ class InboxViewControllerViewModelTests: XCTestCase {
     func testNoSortingIsDescending() {
         let expectation1 = expectation(description: "testNoSorting")
         
-        let model = InboxViewControllerViewModel()
-        
         let fetcher = MockInAppFetcher()
-        
-        IterableAPI.initializeForTesting(
-            inAppFetcher: fetcher
-        )
+        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: fetcher)
+        let model = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
         
         let date1 = Date()
         let date2 = date1.addingTimeInterval(5.0)
@@ -138,7 +127,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
                                  inboxMetadata: nil,
                                  customPayload: nil),
         ]
-        fetcher.mockMessagesAvailableFromServer(messages: messages)
+        fetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             model.beganUpdates()
@@ -153,13 +142,9 @@ class InboxViewControllerViewModelTests: XCTestCase {
     func testWithNoFiltering() {
         let expectation1 = expectation(description: "testWithNoFiltering")
         
-        let model = InboxViewControllerViewModel()
-        
         let fetcher = MockInAppFetcher()
-        
-        IterableAPI.initializeForTesting(
-            inAppFetcher: fetcher
-        )
+        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: fetcher)
+        let model = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
         
         let date1 = Date()
         let date2 = date1.addingTimeInterval(5.0)
@@ -181,7 +166,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
                                  inboxMetadata: nil,
                                  customPayload: nil),
         ]
-        fetcher.mockMessagesAvailableFromServer(messages: messages)
+        fetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             model.beganUpdates()
@@ -197,14 +182,10 @@ class InboxViewControllerViewModelTests: XCTestCase {
     func testCustomFiltering() {
         let expectation1 = expectation(description: "testCustomFiltering")
         
-        let model = InboxViewControllerViewModel()
-        model.filter = { $0.messageId == "message1" }
-        
         let fetcher = MockInAppFetcher()
-        
-        IterableAPI.initializeForTesting(
-            inAppFetcher: fetcher
-        )
+        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: fetcher)
+        let model = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
+        model.filter = { $0.messageId == "message1" }
         
         let date1 = Date()
         let date2 = date1.addingTimeInterval(5.0)
@@ -226,7 +207,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
                                  inboxMetadata: nil,
                                  customPayload: nil),
         ]
-        fetcher.mockMessagesAvailableFromServer(messages: messages)
+        fetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             model.beganUpdates()
@@ -241,14 +222,10 @@ class InboxViewControllerViewModelTests: XCTestCase {
     func testSampleFilter() {
         let expectation1 = expectation(description: "testSampleFilter")
         
-        let model = InboxViewControllerViewModel()
-        model.filter = SampleInboxViewDelegateImplementations.Filter.usingCustomPayloadMessageType(in: "promotional")
-        
         let fetcher = MockInAppFetcher()
-        
-        IterableAPI.initializeForTesting(
-            inAppFetcher: fetcher
-        )
+        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: fetcher)
+        let model = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
+        model.filter = SampleInboxViewDelegateImplementations.Filter.usingCustomPayloadMessageType(in: "promotional")
         
         let date1 = Date()
         let date2 = date1.addingTimeInterval(5.0)
@@ -270,7 +247,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
                                  inboxMetadata: nil,
                                  customPayload: ["messageType": "promotional"]),
         ]
-        fetcher.mockMessagesAvailableFromServer(messages: messages)
+        fetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             model.beganUpdates()
@@ -285,7 +262,10 @@ class InboxViewControllerViewModelTests: XCTestCase {
     func testImageLoadingForExistingImage() {
         let expectation1 = expectation(description: "testImageLoadingForExistingImage")
         
-        let model = InboxViewControllerViewModel()
+        let mockNetworkSession = MockNetworkSession(statusCode: 200, data: Data(repeating: 0, count: 100))
+        let fetcher = MockInAppFetcher()
+        let internalAPI = IterableAPIInternal.initializeForTesting(networkSession: mockNetworkSession, inAppFetcher: fetcher)
+        let model = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
         
         let mockView = MockViewModelView()
         mockView.onImageLoadedCallback = { indexPath in
@@ -293,13 +273,6 @@ class InboxViewControllerViewModelTests: XCTestCase {
             expectation1.fulfill()
         }
         model.view = mockView
-        
-        let mockNetworkSession = MockNetworkSession(statusCode: 200, data: Data(repeating: 0, count: 100))
-        let fetcher = MockInAppFetcher()
-        IterableAPI.initializeForTesting(
-            networkSession: mockNetworkSession,
-            inAppFetcher: fetcher
-        )
         
         let imageLocation = Bundle(for: type(of: self)).url(forResource: "image", withExtension: "jpg")!.absoluteString
         
@@ -312,7 +285,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
                                  inboxMetadata: IterableInboxMetadata(title: "inbox title", subtitle: "inbox subtitle", icon: imageLocation),
                                  customPayload: ["messageType": "transactional"]),
         ]
-        fetcher.mockMessagesAvailableFromServer(messages: messages)
+        fetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             model.beganUpdates()
@@ -327,7 +300,10 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let expectation1 = expectation(description: "testImageLoadingForNonExistingImage")
         expectation1.isInverted = true
         
-        let model = InboxViewControllerViewModel()
+        let mockNetworkSession = MockNetworkSession(statusCode: 404, data: nil)
+        let fetcher = MockInAppFetcher()
+        let internalAPI = IterableAPIInternal.initializeForTesting(networkSession: mockNetworkSession, inAppFetcher: fetcher)
+        let model = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
         
         let mockView = MockViewModelView()
         mockView.onImageLoadedCallback = { indexPath in
@@ -335,13 +311,6 @@ class InboxViewControllerViewModelTests: XCTestCase {
             expectation1.fulfill()
         }
         model.view = mockView
-        
-        let mockNetworkSession = MockNetworkSession(statusCode: 404, data: nil)
-        let fetcher = MockInAppFetcher()
-        IterableAPI.initializeForTesting(
-            networkSession: mockNetworkSession,
-            inAppFetcher: fetcher
-        )
         
         let imageLocation = "file:///something.png"
         
@@ -354,7 +323,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
                                  inboxMetadata: IterableInboxMetadata(title: "inbox title", subtitle: "inbox subtitle", icon: imageLocation),
                                  customPayload: ["messageType": "transactional"]),
         ]
-        fetcher.mockMessagesAvailableFromServer(messages: messages)
+        fetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             model.beganUpdates()
@@ -368,14 +337,10 @@ class InboxViewControllerViewModelTests: XCTestCase {
     func testSampleSectionMapper() {
         let expectation1 = expectation(description: "testSampleSectionMapper")
         
-        let model = InboxViewControllerViewModel()
-        model.sectionMapper = SampleInboxViewDelegateImplementations.SectionMapper.usingCustomPayloadMessageSection
-        
         let fetcher = MockInAppFetcher()
-        
-        IterableAPI.initializeForTesting(
-            inAppFetcher: fetcher
-        )
+        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: fetcher)
+        let model = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
+        model.sectionMapper = SampleInboxViewDelegateImplementations.SectionMapper.usingCustomPayloadMessageSection
         
         let date1 = Date()
         let date2 = date1.addingTimeInterval(5.0)
@@ -397,7 +362,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
                                  inboxMetadata: nil,
                                  customPayload: nil),
         ]
-        fetcher.mockMessagesAvailableFromServer(messages: messages)
+        fetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             model.beganUpdates()

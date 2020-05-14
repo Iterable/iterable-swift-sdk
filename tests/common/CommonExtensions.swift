@@ -104,23 +104,15 @@ class MockDependencyContainer: DependencyContainerProtocol {
         self.applicationStateProvider = applicationStateProvider
         self.notificationCenter = notificationCenter
         self.apnsTypeChecker = apnsTypeChecker
-        
-        addInjectedDependencies()
     }
     
     func createInAppFetcher(apiClient _: ApiClientProtocol) -> InAppFetcherProtocol {
         return inAppFetcher
     }
-    
-    private func addInjectedDependencies() {
-        InjectedDependencies.shared.set {
-            InjectedDependencyModule() as InjectedDependencyModuleProtocol
-        }
-    }
 }
 
 extension IterableAPI {
-    // Internal Only used in unit tests.
+    // Internal Only used in UI tests.
     static func initializeForTesting(apiKey: String = "zeeApiKey",
                                      launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
                                      config: IterableConfig = IterableConfig(),
@@ -156,6 +148,7 @@ extension IterableAPI {
 }
 
 extension IterableAPIInternal {
+    // Internal Only used in unit tests.
     @discardableResult static func initializeForTesting(apiKey: String = "zeeApiKey",
                                                         launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
                                                         config: IterableConfig = IterableConfig(),

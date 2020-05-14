@@ -256,7 +256,7 @@ class MockInAppFetcher: InAppFetcherProtocol {
         return Promise(value: messagesMap.values)
     }
     
-    @discardableResult func mockMessagesAvailableFromServer(internalApi: IterableAPIInternal = IterableAPI.internalImplementation!, messages: [IterableInAppMessage]) -> Future<Int, Error> {
+    @discardableResult func mockMessagesAvailableFromServer(internalApi: IterableAPIInternal?, messages: [IterableInAppMessage]) -> Future<Int, Error> {
         ITBInfo()
         
         messagesMap = OrderedDictionary<String, IterableInAppMessage>()
@@ -267,15 +267,15 @@ class MockInAppFetcher: InAppFetcherProtocol {
         
         let result = Promise<Int, Error>()
         
-        let inAppManager = internalApi.inAppManager
-        inAppManager.scheduleSync().onSuccess { _ in
-            result.resolve(with: inAppManager.getMessages().count)
+        let inAppManager = internalApi?.inAppManager
+        inAppManager?.scheduleSync().onSuccess { _ in
+            result.resolve(with: inAppManager?.getMessages().count ?? 0)
         }
         
         return result
     }
     
-    @discardableResult func mockInAppPayloadFromServer(internalApi: IterableAPIInternal = IterableAPI.internalImplementation!, _ payload: [AnyHashable: Any]) -> Future<Int, Error> {
+    @discardableResult func mockInAppPayloadFromServer(internalApi: IterableAPIInternal?, _ payload: [AnyHashable: Any]) -> Future<Int, Error> {
         ITBInfo()
         return mockMessagesAvailableFromServer(internalApi: internalApi, messages: InAppTestHelper.inAppMessages(fromPayload: payload))
     }
@@ -409,27 +409,6 @@ struct MockAPNSTypeChecker: APNSTypeCheckerProtocol {
     }
 }
 
-struct MockViewCalculations: ViewCalculationsProtocol {
-    let viewPosition: ViewPosition
-    let safeAreaInsets: UIEdgeInsets
-    
-    func width(for _: UIView) -> CGFloat {
-        return viewPosition.width
-    }
-    
-    func height(for _: UIView) -> CGFloat {
-        return viewPosition.height
-    }
-    
-    func center(for _: UIView) -> CGPoint {
-        return viewPosition.center
-    }
-    
-    func safeAreaInsets(for _: UIView) -> UIEdgeInsets {
-        return safeAreaInsets
-    }
-}
-
 class MockWebView: WebViewProtocol {
     let view: UIView = UIView()
     
@@ -452,6 +431,10 @@ class MockWebView: WebViewProtocol {
     
     func layoutSubviews() {}
     
+    func calculateHeight() -> Future<CGFloat, IterableError> {
+        return Promise<CGFloat, IterableError>(value: height)
+    }
+    
     var position: ViewPosition?
     
     private var height: CGFloat
@@ -461,7 +444,6 @@ class MockWebView: WebViewProtocol {
     }
 }
 
-struct MockInjectedDependencyModule: InjectedDependencyModuleProtocol {
-    let viewCalculations: ViewCalculationsProtocol
+struct MockInjectedDependencyModule {
     let webView: WebViewProtocol
 }

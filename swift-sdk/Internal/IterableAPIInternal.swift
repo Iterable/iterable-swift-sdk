@@ -135,6 +135,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                                                       appName: appName,
                                                                       deviceId: deviceId,
                                                                       sdkVersion: localStorage.sdkVersion,
+                                                                      deviceAttributes: deviceAttributes,
                                                                       pushServicePlatform: pushServicePlatformString,
                                                                       notificationsEnabled: notificationsEnabled))
     }
@@ -232,8 +233,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     func track(_ eventName: String,
                dataFields: [AnyHashable: Any]? = nil,
-               onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "track"),
-               onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "track")) {
+               onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "trackEvent"),
+               onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "trackEvent")) {
         IterableAPIInternal.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
                                  forResult: apiClient.track(event: eventName, dataFields: dataFields))
@@ -354,12 +355,30 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     // deprecated - will be removed in version 6.3.x or above
-    func getAndTrack(deepLink: URL, callbackBlock: @escaping ITEActionBlock) {
-        deepLinkManager.getAndTrack(deepLink: deepLink, callbackBlock: callbackBlock)
+    @discardableResult func getAndTrack(deepLink: URL, callbackBlock: @escaping ITEActionBlock) -> Future<IterableAttributionInfo?, Error>? {
+        return deepLinkManager.getAndTrack(deepLink: deepLink, callbackBlock: callbackBlock).onSuccess { attributionInfo in
+            if let attributionInfo = attributionInfo {
+                self.attributionInfo = attributionInfo
+            }
+        }
     }
     
     @discardableResult func handleUniversalLink(_ url: URL) -> Bool {
-        return deepLinkManager.handleUniversalLink(url, urlDelegate: config.urlDelegate, urlOpener: AppUrlOpener())
+        let (result, future) = deepLinkManager.handleUniversalLink(url, urlDelegate: config.urlDelegate, urlOpener: AppUrlOpener())
+        future.onSuccess { attributionInfo in
+            if let attributionInfo = attributionInfo {
+                self.attributionInfo = attributionInfo
+            }
+        }
+        return result
+    }
+    
+    func setDeviceAttribute(name: String, value: String) {
+        deviceAttributes[name] = value
+    }
+    
+    func removeDeviceAttribute(name: String) {
+        deviceAttributes.removeValue(forKey: name)
     }
     
     @discardableResult private static func call(successHandler onSuccess: OnSuccessHandler? = nil,
@@ -403,9 +422,10 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     private var urlOpener: UrlOpenerProtocol
     
+    private var deviceAttributes = [String: String]()
+    
     private var dependencyContainer: DependencyContainerProtocol
     
-    // returns the push integration name for this app depending on the config options
     private var pushIntegrationName: String? {
         if let pushIntegrationName = config.pushIntegrationName, let sandboxPushIntegrationName = config.sandboxPushIntegrationName {
             switch config.pushPlatform {

@@ -5,7 +5,7 @@
 import Foundation
 
 /// Encapsulates an Inbox impression of a message
-final class IterableInboxImpression: NSObject, Codable {
+class IterableInboxImpression: NSObject, Codable {
     /// The message ID of message
     public let messageId: String
     

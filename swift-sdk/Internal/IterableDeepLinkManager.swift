@@ -16,25 +16,20 @@ class IterableDeepLinkManager: NSObject {
      */
     
     // deprecated - will be removed in version 6.3.x or above
-    func getAndTrack(deepLink: URL, callbackBlock: @escaping ITEActionBlock) {
-        resolve(appLinkURL: deepLink) { resolvedUrl in
-            callbackBlock(resolvedUrl?.absoluteString)
+    func getAndTrack(deepLink: URL, callbackBlock: @escaping ITEActionBlock) -> Future<IterableAttributionInfo?, Error> {
+        return resolve(appLinkURL: deepLink).map { resolvedURL, attributionInfo in
+            callbackBlock(resolvedURL?.absoluteString)
+            return attributionInfo
         }
     }
     
-    /**
-     * Handles a Universal Link
-     * For Iterable links, it will track the click and retrieve the original URL,
-     * pass it to `IterableURLDelegate` for handling
-     * If it's not an Iterable link, it just passes the same URL to `IterableURLDelegate`
-     *
-     - parameter url: the URL obtained from `UserActivity.webpageURL`
-     - parameter urlDelegate: url delegate from `IterableConfig`
-     - returns: true if it is an Iterable link, or the value returned from `IterableURLDelegate` otherwise
-     */
-    func handleUniversalLink(_ url: URL, urlDelegate: IterableURLDelegate?, urlOpener: UrlOpenerProtocol) -> Bool {
+    /// Handles a Universal Link
+    /// For Iterable links, it will track the click and retrieve the original URL,
+    /// pass it to `IterableURLDelegate` for handling
+    /// If it's not an Iterable link, it just passes the same URL to `IterableURLDelegate`
+    func handleUniversalLink(_ url: URL, urlDelegate: IterableURLDelegate?, urlOpener: UrlOpenerProtocol) -> (Bool, Future<IterableAttributionInfo?, Error>) {
         if isIterableDeepLink(url.absoluteString) {
-            resolve(appLinkURL: url) { resolvedUrl in
+            let future = resolve(appLinkURL: url).map { (resolvedUrl, attributionInfo) -> IterableAttributionInfo? in
                 var resolvedUrlString: String
                 if let resolvedUrl = resolvedUrl {
                     resolvedUrlString = resolvedUrl.absoluteString
@@ -49,31 +44,30 @@ class IterableDeepLinkManager: NSObject {
                                                  urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate, inContext: context),
                                                  urlOpener: urlOpener)
                 }
+                return attributionInfo
             }
+            
             // Always return true for deep link
-            return true
+            return (true, future)
         } else {
             if let action = IterableAction.actionOpenUrl(fromUrlString: url.absoluteString) {
                 let context = IterableActionContext(action: action, source: .universalLink)
-                return IterableActionRunner.execute(action: action,
-                                                    context: context,
-                                                    urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate, inContext: context),
-                                                    urlOpener: urlOpener)
+                let result = IterableActionRunner.execute(action: action,
+                                                          context: context,
+                                                          urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate, inContext: context),
+                                                          urlOpener: urlOpener)
+                return (result, Promise<IterableAttributionInfo?, Error>(value: nil))
             } else {
-                return false
+                return (false, Promise<IterableAttributionInfo?, Error>(value: nil))
             }
         }
     }
     
-    /**
-     Tracks a link click and passes the redirected URL to the callback
-     
-     - parameter applinkURL:      the URL that was clicked
-     - parameter callbackBlock:   the callback to send when the link is resolved
-     - returns: true if the link was an Iterable tracking link
-     - remark:            passes the string of the redirected URL to the callback
-     */
-    private func resolve(appLinkURL: URL, callbackBlock: @escaping ITBURLCallback) {
+    /// And we will resolve with redirected URL from our server and we will also try to get attribution info.
+    /// Otherwise, we will just resolve with the original URL.
+    private func resolve(appLinkURL: URL) -> Future<(URL?, IterableAttributionInfo?), Error> {
+        let promise = Promise<(URL?, IterableAttributionInfo?), Error>()
+        
         deepLinkCampaignId = nil
         deepLinkTemplateId = nil
         deepLinkMessageId = nil
@@ -82,24 +76,24 @@ class IterableDeepLinkManager: NSObject {
             let trackAndRedirectTask = redirectUrlSession.dataTask(with: appLinkURL) { [unowned self] _, _, error in
                 if let error = error {
                     ITBError("error: \(error.localizedDescription)")
-                    callbackBlock(self.deepLinkLocation)
-                    
-                    return
+                    promise.resolve(with: (nil, nil))
+                } else {
+                    if let deepLinkCampaignId = self.deepLinkCampaignId,
+                        let deepLinkTemplateId = self.deepLinkTemplateId,
+                        let deepLinkMessageId = self.deepLinkMessageId {
+                        promise.resolve(with: (self.deepLinkLocation, IterableAttributionInfo(campaignId: deepLinkCampaignId, templateId: deepLinkTemplateId, messageId: deepLinkMessageId)))
+                    } else {
+                        promise.resolve(with: (self.deepLinkLocation, nil))
+                    }
                 }
-                
-                if let deepLinkCampaignId = self.deepLinkCampaignId,
-                    let deepLinkTemplateId = self.deepLinkTemplateId,
-                    let deepLinkMessageId = self.deepLinkMessageId {
-                    IterableAPI.attributionInfo = IterableAttributionInfo(campaignId: deepLinkCampaignId, templateId: deepLinkTemplateId, messageId: deepLinkMessageId)
-                }
-                
-                callbackBlock(self.deepLinkLocation)
             }
             
             trackAndRedirectTask.resume()
         } else {
-            callbackBlock(appLinkURL)
+            promise.resolve(with: (appLinkURL, nil))
         }
+        
+        return promise
     }
     
     private func isIterableDeepLink(_ urlString: String) -> Bool {

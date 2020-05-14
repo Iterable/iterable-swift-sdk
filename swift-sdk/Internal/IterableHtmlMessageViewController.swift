@@ -37,7 +37,11 @@ class IterableHtmlMessageViewController: UIViewController {
     
     weak var presenter: InAppPresenter?
     
-    init(parameters: Parameters) {
+    init(parameters: Parameters,
+         internalAPIProvider: @escaping @autoclosure () -> IterableAPIInternal? = IterableAPI.internalImplementation,
+         webViewProvider: @escaping @autoclosure () -> WebViewProtocol = IterableHtmlMessageViewController.createWebView()) {
+        self.internalAPIProvider = internalAPIProvider
+        self.webViewProvider = webViewProvider
         self.parameters = parameters
         futureClickedURL = Promise<URL, IterableError>()
         super.init(nibName: nil, bundle: nil)
@@ -85,22 +89,18 @@ class IterableHtmlMessageViewController: UIViewController {
         
         // Tracks an in-app open and layouts the webview
         if let messageMetadata = parameters.messageMetadata {
-            IterableAPI.internalImplementation?.trackInAppOpen(messageMetadata.message,
-                                                               location: messageMetadata.location,
-                                                               inboxSessionId: parameters.inboxSessionId)
+            internalAPI?.trackInAppOpen(messageMetadata.message,
+                                        location: messageMetadata.location,
+                                        inboxSessionId: parameters.inboxSessionId)
         }
         
-        webView?.layoutSubviews()
+        webView.layoutSubviews()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        guard let webView = self.webView else {
-            return
-        }
-        
-        resizeWebView(webView)
+        resizeWebView()
     }
     
     open override func viewWillDisappear(_ animated: Bool) {
@@ -111,93 +111,125 @@ class IterableHtmlMessageViewController: UIViewController {
         }
         
         if let _ = navigationController, linkClicked == false {
-            IterableAPI.internalImplementation?.trackInAppClose(messageMetadata.message,
-                                                                location: messageMetadata.location,
-                                                                inboxSessionId: parameters.inboxSessionId,
-                                                                source: InAppCloseSource.back,
-                                                                clickedUrl: nil)
+            internalAPI?.trackInAppClose(messageMetadata.message,
+                                         location: messageMetadata.location,
+                                         inboxSessionId: parameters.inboxSessionId,
+                                         source: InAppCloseSource.back,
+                                         clickedUrl: nil)
         } else {
-            IterableAPI.internalImplementation?.trackInAppClose(messageMetadata.message,
-                                                                location: messageMetadata.location,
-                                                                inboxSessionId: parameters.inboxSessionId,
-                                                                source: InAppCloseSource.link,
-                                                                clickedUrl: clickedLink)
+            internalAPI?.trackInAppClose(messageMetadata.message,
+                                         location: messageMetadata.location,
+                                         inboxSessionId: parameters.inboxSessionId,
+                                         source: InAppCloseSource.link,
+                                         clickedUrl: clickedLink)
         }
     }
     
-    required init?(coder aDecoder: NSCoder) {
-        parameters = aDecoder.decodeObject(forKey: "input") as? Parameters ?? Parameters(html: "", isModal: false)
-        futureClickedURL = Promise<URL, IterableError>()
-        
-        super.init(coder: aDecoder)
+    required init?(coder _: NSCoder) {
+        fatalError("IterableHtmlMessageViewController cannot be instantiated from Storyboard")
     }
     
     deinit {
         ITBInfo()
     }
     
+    private var internalAPIProvider: () -> IterableAPIInternal?
+    private var webViewProvider: () -> WebViewProtocol
     private var parameters: Parameters
     private let futureClickedURL: Promise<URL, IterableError>
     private var location: IterableMessageLocation = .full
     private var linkClicked = false
     private var clickedLink: String?
-    @Inject private var dependencyModule: InjectedDependencyModuleProtocol!
-    private lazy var viewCalculations: ViewCalculationsProtocol! = {
-        dependencyModule.viewCalculations
-    }()
     
-    lazy var webView: WebViewProtocol! = {
-        dependencyModule.webView
-    }()
-    
-    /**
-     Resizes the webview based upon the insetPadding if the html is finished loading
-     
-     - parameter: aWebView the webview
-     */
-    private func resizeWebView(_ aWebView: WebViewProtocol) {
-        guard location != .full else {
-            webView.set(position: ViewPosition(width: viewCalculations.width(for: view), height: viewCalculations.height(for: view), center: viewCalculations.center(for: view)))
-            return
-        }
-        
-        aWebView.evaluateJavaScript("document.body.offsetHeight", completionHandler: { height, _ in
-            guard let floatHeight = height as? CGFloat, floatHeight >= 20 else {
-                ITBError("unable to get height")
-                return
-            }
-            self.resize(webView: aWebView, withHeight: floatHeight)
-        })
+    private lazy var webView = webViewProvider()
+    private var internalAPI: IterableAPIInternal? {
+        return internalAPIProvider()
     }
     
-    private func resize(webView: WebViewProtocol, withHeight height: CGFloat) {
-        ITBInfo("height: \(height)")
+    private static func createWebView() -> WebViewProtocol {
+        let webView = WKWebView(frame: .zero)
+        webView.scrollView.bounces = false
+        webView.isOpaque = false
+        webView.backgroundColor = UIColor.clear
+        return webView as WebViewProtocol
+    }
+    
+    /// Resizes the webview based upon the insetPadding, height etc
+    private func resizeWebView() {
+        let parentPosition = ViewPosition(width: view.bounds.width,
+                                          height: view.bounds.height,
+                                          center: view.center)
+        IterableHtmlMessageViewController.calculateWebViewPosition(webView: webView,
+                                                                   safeAreaInsets: IterableHtmlMessageViewController.safeAreaInsets(for: view),
+                                                                   parentPosition: parentPosition,
+                                                                   paddingLeft: parameters.padding.left,
+                                                                   paddingRight: parameters.padding.right,
+                                                                   location: location)
+            .onSuccess { [weak self] position in
+                self?.webView.set(position: position)
+            }
+    }
+    
+    private static func safeAreaInsets(for view: UIView) -> UIEdgeInsets {
+        if #available(iOS 11, *) {
+            return view.safeAreaInsets
+        } else {
+            return .zero
+        }
+    }
+    
+    static func calculateWebViewPosition(webView: WebViewProtocol,
+                                         safeAreaInsets: UIEdgeInsets,
+                                         parentPosition: ViewPosition,
+                                         paddingLeft: CGFloat,
+                                         paddingRight: CGFloat,
+                                         location: IterableMessageLocation) -> Future<ViewPosition, IterableError> {
+        guard location != .full else {
+            return Promise(value: parentPosition)
+        }
+        
+        return webView.calculateHeight().map { height in
+            ITBInfo("height: \(height)")
+            return IterableHtmlMessageViewController.calculateWebViewPosition(safeAreaInsets: safeAreaInsets,
+                                                                              parentPosition: parentPosition,
+                                                                              paddingLeft: paddingLeft,
+                                                                              paddingRight: paddingRight,
+                                                                              location: location,
+                                                                              inAppHeight: height)
+        }
+    }
+    
+    private static func calculateWebViewPosition(safeAreaInsets: UIEdgeInsets,
+                                                 parentPosition: ViewPosition,
+                                                 paddingLeft: CGFloat,
+                                                 paddingRight: CGFloat,
+                                                 location: IterableMessageLocation,
+                                                 inAppHeight: CGFloat) -> ViewPosition {
         var position = ViewPosition()
         // set the height
-        position.height = height
+        position.height = inAppHeight
         
         // now set the width
-        let notificationWidth = 100 - (parameters.padding.left + parameters.padding.right)
-        let screenWidth = viewCalculations.width(for: view)
-        position.width = screenWidth * notificationWidth / 100
+        let notificationWidth = 100 - (paddingLeft + paddingRight)
+        position.width = parentPosition.width * notificationWidth / 100
         
         // Position webview
-        position.center = viewCalculations.center(for: view)
+        position.center = parentPosition.center
         
         // set center x
-        position.center.x = screenWidth * (parameters.padding.left + notificationWidth / 2) / 100
+        position.center.x = parentPosition.width * (paddingLeft + notificationWidth / 2) / 100
         
         // set center y
-        let halfWebViewHeight = height / 2
+        let halfWebViewHeight = inAppHeight / 2
         switch location {
         case .top:
-            position.center.y = halfWebViewHeight + viewCalculations.safeAreaInsets(for: view).top
+            position.center.y = halfWebViewHeight + safeAreaInsets.top
         case .bottom:
-            position.center.y = viewCalculations.height(for: view) - halfWebViewHeight - viewCalculations.safeAreaInsets(for: view).bottom
+            position.center.y = parentPosition.height - halfWebViewHeight - safeAreaInsets.bottom
         default: break
         }
         
-        webView.set(position: position)
+        return position
     }
     
     private static func padding(fromPadding padding: UIEdgeInsets) -> UIEdgeInsets {
@@ -215,19 +247,16 @@ class IterableHtmlMessageViewController: UIViewController {
 extension IterableHtmlMessageViewController: WKNavigationDelegate {
     func webView(_: WKWebView, didFinish _: WKNavigation!) {
         ITBInfo()
-        if let myWebview = self.webView {
-            resizeWebView(myWebview)
-            
-            presenter?.webViewDidFinish()
-        }
+        resizeWebView()
+        presenter?.webViewDidFinish()
     }
     
     fileprivate func trackInAppClick(destinationUrl: String) {
         if let messageMetadata = parameters.messageMetadata {
-            IterableAPI.internalImplementation?.trackInAppClick(messageMetadata.message,
-                                                                location: messageMetadata.location,
-                                                                inboxSessionId: parameters.inboxSessionId,
-                                                                clickedUrl: destinationUrl)
+            internalAPI?.trackInAppClick(messageMetadata.message,
+                                         location: messageMetadata.location,
+                                         inboxSessionId: parameters.inboxSessionId,
+                                         clickedUrl: destinationUrl)
         }
     }
     

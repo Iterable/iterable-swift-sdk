@@ -101,6 +101,7 @@ struct MessagesProcessor {
 struct MergeMessagesResult {
     let inboxChanged: Bool
     let messagesMap: OrderedDictionary<String, IterableInAppMessage>
+    let deliveredMessages: [IterableInAppMessage]
 }
 
 /// Merges the results and determines whether inbox changed needs to be fired.
@@ -111,60 +112,28 @@ struct MessagesObtainedHandler {
         self.messages = messages
     }
     
-    mutating func handle() -> MergeMessagesResult {
-        // Remove messages that are no present in server
-        let deletedInboxCount = removeDeletedMessages(messagesFromServer: messages)
+    func handle() -> MergeMessagesResult {
+        let removedMessages = messagesMap.values.filter { existingMessage in !messages.contains(where: { $0.messageId == existingMessage.messageId }) }
         
-        // add new ones
-        let addedInboxCount = addNewMessages(messagesFromServer: messages)
+        let addedMessages = messages.filter { !messagesMap.keys.contains($0.messageId) }
         
-        return MergeMessagesResult(inboxChanged: deletedInboxCount + addedInboxCount > 0,
-                                   messagesMap: messagesMap)
-    }
-    
-    // return count of deleted inbox messages
-    private mutating func removeDeletedMessages(messagesFromServer messages: [IterableInAppMessage]) -> Int {
-        var inboxCount = 0
-        let removedMessages = getRemovedMessages(messagesFromServer: messages)
+        let removedInboxCount = removedMessages.reduce(0) { $1.saveToInbox == true ? $0 + 1 : $0 }
+        let addedInboxCount = addedMessages.reduce(0) { $1.saveToInbox == true ? $0 + 1 : $0 }
         
-        removedMessages.forEach {
-            if $0.saveToInbox == true {
-                inboxCount += 1
-            }
-            
-            messagesMap.removeValue(forKey: $0.messageId)
-        }
-        
-        return inboxCount
-    }
-    
-    // given `messages` coming for server, find messages that need to be removed
-    private func getRemovedMessages(messagesFromServer messages: [IterableInAppMessage]) -> [IterableInAppMessage] {
-        return messagesMap.values.reduce(into: [IterableInAppMessage]()) { result, message in
-            if !messages.contains(where: { $0.messageId == message.messageId }) {
-                result.append(message)
-            }
-        }
-    }
-    
-    // returns count of inbox messages (save to inbox)
-    private mutating func addNewMessages(messagesFromServer messages: [IterableInAppMessage]) -> Int {
-        var inboxCount = 0
-        messages.forEach { message in
-            if !messagesMap.contains(where: { $0.key == message.messageId }) {
-                if message.saveToInbox == true {
-                    inboxCount += 1
-                }
-                
-                messagesMap[message.messageId] = message
-                
-                IterableAPI.internalImplementation?.track(inAppDelivery: message)
+        var newMessagesMap = OrderedDictionary<String, IterableInAppMessage>()
+        messages.forEach {
+            if let existingMessage = messagesMap[$0.messageId] {
+                newMessagesMap[$0.messageId] = existingMessage
+            } else {
+                newMessagesMap[$0.messageId] = $0
             }
         }
         
-        return inboxCount
+        return MergeMessagesResult(inboxChanged: removedInboxCount + addedInboxCount > 0,
+                                   messagesMap: newMessagesMap,
+                                   deliveredMessages: addedMessages)
     }
     
-    private var messagesMap: OrderedDictionary<String, IterableInAppMessage>
+    private let messagesMap: OrderedDictionary<String, IterableInAppMessage>
     private let messages: [IterableInAppMessage]
 }

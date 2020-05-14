@@ -188,6 +188,6 @@ class IterableAPIResponseTests: XCTestCase {
                          authProvider: AuthProviderImpl(),
                          endPoint: Endpoint.api,
                          networkSession: networkSession,
-                         deviceMetadata: IterableAPI.internalImplementation!.deviceMetadata)
+                         deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata)
     }
 }

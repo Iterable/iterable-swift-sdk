@@ -14,10 +14,6 @@ class InAppParsingTests: XCTestCase {
         TestUtils.clearTestUserDefaults()
     }
     
-    override class func tearDown() {
-        IterableAPI.internalImplementation = nil
-    }
-    
     func testGetPaddingInvalid() {
         let insets = HtmlContentParser.getPadding(fromInAppSettings: [:])
         XCTAssertEqual(insets, UIEdgeInsets.zero)
@@ -155,8 +151,8 @@ class InAppParsingTests: XCTestCase {
         let expectation1 = expectation(description: "track in app click")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        IterableAPI.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
-        IterableAPI.userId = InAppParsingTests.userId
+        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
+        internalAPI.userId = InAppParsingTests.userId
         networkSession.callback = { _, _, _ in
             TestUtils.validate(request: networkSession.request!,
                                requestType: .post,
@@ -169,7 +165,7 @@ class InAppParsingTests: XCTestCase {
             TestUtils.validateMatch(keyPath: KeyPath("clickedUrl"), value: buttonUrl, inDictionary: body)
             expectation1.fulfill()
         }
-        IterableAPI.track(inAppClick: message, clickedUrl: buttonUrl)
+        internalAPI.trackInAppClick(message, clickedUrl: buttonUrl)
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
@@ -186,8 +182,8 @@ class InAppParsingTests: XCTestCase {
         let expectation1 = expectation(description: "track in app open")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        IterableAPI.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
-        IterableAPI.email = InAppParsingTests.email
+        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
+        internalAPI.email = InAppParsingTests.email
         networkSession.callback = { _, _, _ in
             TestUtils.validate(request: networkSession.request!,
                                requestType: .post,
@@ -199,7 +195,7 @@ class InAppParsingTests: XCTestCase {
             TestUtils.validateDeviceInfo(inBody: body)
             expectation1.fulfill()
         }
-        IterableAPI.track(inAppOpen: message, location: .inbox)
+        internalAPI.trackInAppOpen(message, location: .inbox)
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
@@ -208,8 +204,8 @@ class InAppParsingTests: XCTestCase {
         let expectation1 = expectation(description: "track inAppClose event")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        IterableAPI.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
-        IterableAPI.email = InAppParsingTests.email
+        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
+        internalAPI.email = InAppParsingTests.email
         
         networkSession.callback = { _, _, _ in
             TestUtils.validate(request: networkSession.request!,
@@ -237,7 +233,7 @@ class InAppParsingTests: XCTestCase {
                                            inboxMetadata: nil,
                                            customPayload: nil)
         
-        IterableAPI.track(inAppClose: message, location: .inbox, source: .back, clickedUrl: "https://somewhere.com")
+        internalAPI.trackInAppClose(message, location: .inbox, source: .back, clickedUrl: "https://somewhere.com")
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
@@ -247,8 +243,8 @@ class InAppParsingTests: XCTestCase {
         let expectation1 = expectation(description: "track inAppClose event")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        IterableAPI.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
-        IterableAPI.email = InAppParsingTests.email
+        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
+        internalAPI.email = InAppParsingTests.email
         
         networkSession.callback = { _, _, _ in
             TestUtils.validate(request: networkSession.request!,
@@ -276,7 +272,7 @@ class InAppParsingTests: XCTestCase {
                                            inboxMetadata: nil,
                                            customPayload: nil)
         
-        IterableAPI.track(inAppClose: message, location: .inbox, clickedUrl: "https://somewhere.com")
+        internalAPI.trackInAppClose(message, location: .inbox, clickedUrl: "https://somewhere.com")
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
@@ -286,8 +282,8 @@ class InAppParsingTests: XCTestCase {
         let expectation1 = expectation(description: "track inAppDelivery event")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        IterableAPI.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
-        IterableAPI.email = InAppParsingTests.email
+        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
+        internalAPI.email = InAppParsingTests.email
         
         networkSession.callback = { _, _, _ in
             TestUtils.validate(request: networkSession.request!,
@@ -312,14 +308,12 @@ class InAppParsingTests: XCTestCase {
                                            inboxMetadata: nil,
                                            customPayload: nil)
         
-        IterableAPI.internalImplementation?.track(inAppDelivery: message)
+        internalAPI.track(inAppDelivery: message)
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
     func testCustomPayloadParsing() {
-        IterableAPI.initializeForTesting()
-        
         let customPayload: [AnyHashable: Any] = ["string1": "value1", "bool1": true, "date1": Date()]
         
         let payload = createInAppPayload(withCustomPayload: customPayload)

@@ -5,7 +5,7 @@
 
 import Foundation
 
-public enum IterableError: Error {
+enum IterableError: Error {
     case general(description: String)
 }
 
@@ -22,7 +22,7 @@ extension IterableError: LocalizedError {
 // either there is a success with result
 // or there is a failure with error
 // There is no way to set value a result in this class.
-public class Future<Value, Failure> where Failure: Error {
+class Future<Value, Failure> where Failure: Error {
     fileprivate var successCallbacks = [(Value) -> Void]()
     fileprivate var errorCallbacks = [(Failure) -> Void]()
     
@@ -80,7 +80,7 @@ public class Future<Value, Failure> where Failure: Error {
     }
 }
 
-public extension Future {
+extension Future {
     func flatMap<NewValue>(_ closure: @escaping (Value) -> Future<NewValue, Failure>) -> Future<NewValue, Failure> {
         let promise = Promise<NewValue, Failure>()
         
@@ -135,7 +135,7 @@ public extension Future {
 }
 
 // This class takes the responsibility of setting value for Future
-public class Promise<Value, Failure>: Future<Value, Failure> where Failure: Error {
+class Promise<Value, Failure>: Future<Value, Failure> where Failure: Error {
     public init(value: Value? = nil) {
         super.init()
         if let value = value {

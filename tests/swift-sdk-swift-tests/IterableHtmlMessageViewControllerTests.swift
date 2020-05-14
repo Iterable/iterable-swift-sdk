@@ -22,7 +22,6 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
     }
     
     func testWebViewTopPositioning() {
-        IterableAPI.initializeForTesting()
         checkPositioning(viewPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
                          safeAreaInsets: .zero,
                          inAppHeight: 200,
@@ -31,7 +30,6 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
     }
     
     func testWebViewBottomPositioning() {
-        IterableAPI.initializeForTesting()
         checkPositioning(viewPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
                          safeAreaInsets: .zero,
                          inAppHeight: 200,
@@ -40,7 +38,6 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
     }
     
     func testWebViewCenterPositioning() {
-        IterableAPI.initializeForTesting()
         checkPositioning(viewPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
                          safeAreaInsets: .zero,
                          inAppHeight: 200,
@@ -49,7 +46,6 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
     }
     
     func testWebViewFullPositioning() {
-        IterableAPI.initializeForTesting()
         checkPositioning(viewPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
                          safeAreaInsets: .zero,
                          inAppHeight: 200,
@@ -58,7 +54,6 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
     }
     
     func testWebViewTopPositioningWithSafeAreaInsets() {
-        IterableAPI.initializeForTesting()
         checkPositioning(viewPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
                          safeAreaInsets: UIEdgeInsets(top: 25, left: 0, bottom: 30, right: 0),
                          inAppHeight: 200,
@@ -67,7 +62,6 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
     }
     
     func testWebViewBottomPositioningWithSafeAreaInsets() {
-        IterableAPI.initializeForTesting()
         checkPositioning(viewPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
                          safeAreaInsets: UIEdgeInsets(top: 25, left: 0, bottom: 30, right: 0),
                          inAppHeight: 200,
@@ -80,42 +74,20 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
                                   inAppHeight: CGFloat,
                                   messageLocation: IterableMessageLocation,
                                   expectedWebViewPosition: ViewPosition) {
-        let viewCalculations = MockViewCalculations(viewPosition: viewPosition, safeAreaInsets: safeAreaInsets)
+        let expectation1 = expectation(description: "checkPositioning")
         let webView = MockWebView(height: inAppHeight)
-        let dependencyModule = MockInjectedDependencyModule(viewCalculations: viewCalculations, webView: webView)
         
-        InjectedDependencies.shared.set {
-            dependencyModule as InjectedDependencyModuleProtocol
+        let future = IterableHtmlMessageViewController.calculateWebViewPosition(webView: webView,
+                                                                                safeAreaInsets: safeAreaInsets,
+                                                                                parentPosition: viewPosition,
+                                                                                paddingLeft: 0,
+                                                                                paddingRight: 0,
+                                                                                location: messageLocation)
+        future.onSuccess { position in
+            XCTAssertEqual(position, expectedWebViewPosition)
+            expectation1.fulfill()
         }
         
-        let viewController = IterableHtmlMessageViewController.create(parameters: IterableHtmlMessageViewController.Parameters(html: "",
-                                                                                                                               padding: padding(from: messageLocation),
-                                                                                                                               messageMetadata: nil,
-                                                                                                                               isModal: true,
-                                                                                                                               inboxSessionId: nil)).viewController
-        viewController.loadView()
-        viewController.viewDidLayoutSubviews()
-        
-        checkPosition(for: webView.view, expectedPosition: expectedWebViewPosition)
-    }
-    
-    private func checkPosition(for view: UIView, expectedPosition: ViewPosition) {
-        XCTAssertEqual(view.frame.width, expectedPosition.width)
-        XCTAssertEqual(view.frame.height, expectedPosition.height)
-        XCTAssertEqual(view.center.x, expectedPosition.center.x)
-        XCTAssertEqual(view.center.y, expectedPosition.center.y)
-    }
-    
-    private func padding(from messageLocation: IterableMessageLocation) -> UIEdgeInsets {
-        switch messageLocation {
-        case .top:
-            return UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0)
-        case .bottom:
-            return UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0)
-        case .center:
-            return UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0)
-        case .full:
-            return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
-        }
+        wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 }
