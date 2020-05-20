@@ -42,19 +42,19 @@ For sample code, take a look at the following projects:
 - [Objective-C](https://github.com/Iterable/swift-sdk/blob/master/sample-apps/objc-sample-app)
 - [Inbox Customization](https://github.com/Iterable/swift-sdk/tree/master/sample-apps/inbox-customization)
 
-## Release notes, support, and troubleshooting
+## Release notes, support and troubleshooting
 
-For release notes, read:
+Release notes:
 
 - [iOS SDK Release Notes](https://support.iterable.com/hc/articles/360027798391) (major releases)
 - [Releases page](https://github.com/Iterable/swift-sdk/releases) on GitHub (minor releases)
 
-For information about Iterable's iOS SDK support policies, take a look at:
+Support policies:
 
 - Iterable's [Mobile SDK Support Policy](https://support.iterable.com/hc/articles/360027798391#mobile-sdk-support-policy)
 - Iterable's [iOS SDK Deprecation and End-of-Life Schedule](https://support.iterable.com/hc/articles/360027798391#ios-sdk-deprecation-and-end-of-life-schedule)
 
-For troubleshooting help, read:
+Troubleshooting:
 
 - [Testing and Troubleshooting Iterable's Mobile SDKs](https://support.iterable.com/hc/articles/360035392251)
 - [Frequently Asked Questions](https://support.iterable.com/hc/articles/360035624191) 
