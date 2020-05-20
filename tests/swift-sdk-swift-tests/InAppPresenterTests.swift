@@ -4,33 +4,29 @@
 //
 
 import UIKit
+import WebKit
 import XCTest
 
 @testable import IterableSDK
 
 class InAppPresenterTests: XCTestCase {
-    static let delayTimerInterval = 0.5
+    static let delayTimerInterval = 0.75
     
     func testInAppPresenterDelegateExistence() {
-        let topViewController = UIViewController()
-        
         let htmlMessageViewController = IterableHtmlMessageViewController(parameters: getEmptyParameters())
         
-        let inAppPresenter = InAppPresenter(topViewController: topViewController, htmlMessageViewController: htmlMessageViewController)
+        let inAppPresenter = InAppPresenter(topViewController: UIViewController(),
+                                            htmlMessageViewController: htmlMessageViewController)
         
-        print(inAppPresenter)
+        // a "no-op" to suppress warning
+        _ = inAppPresenter.self
         
         XCTAssertNotNil(htmlMessageViewController.presenter)
     }
     
     func testInAppPresenterIsPresentingOnInit() {
-        _ = InAppPresenter(topViewController: UIViewController(), htmlMessageViewController: getEmptyHtmlMessageViewController())
-        
-        XCTAssertFalse(InAppPresenter.isPresenting)
-    }
-    
-    func testInAppPresenterWebViewDidFinish() {
-        // also check for the timer being canceled
+        _ = InAppPresenter(topViewController: UIViewController(),
+                           htmlMessageViewController: getEmptyHtmlMessageViewController())
         
         XCTAssertFalse(InAppPresenter.isPresenting)
     }
@@ -39,22 +35,20 @@ class InAppPresenterTests: XCTestCase {
         let expectation1 = expectation(description: "delay timer executed")
         
         let topViewController = UIViewController()
-        
-        let inAppPresenter = InAppPresenter(topViewController: topViewController, htmlMessageViewController: getEmptyHtmlMessageViewController())
+        let inAppPresenter = InAppPresenter(topViewController: topViewController,
+                                            htmlMessageViewController: getEmptyHtmlMessageViewController())
         
         inAppPresenter.show()
         
         XCTAssertTrue(InAppPresenter.isPresenting)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + InAppPresenterTests.delayTimerInterval + 0.1) {
+            XCTAssertFalse(InAppPresenter.isPresenting)
+            
             expectation1.fulfill()
         }
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
-        
-        // add a check for having presented in topViewController
-        
-        XCTAssertFalse(InAppPresenter.isPresenting)
     }
     
     private func getEmptyParameters() -> IterableHtmlMessageViewController.Parameters {
@@ -70,6 +64,6 @@ class InAppPresenterTests: XCTestCase {
     }
     
     private func getEmptyInAppMessage() -> IterableInAppMessage {
-        return IterableInAppMessage(messageId: "asdf", campaignId: 1, content: getEmptyHtmlInAppContent())
+        return IterableInAppMessage(messageId: "wasd", campaignId: 1, content: getEmptyHtmlInAppContent())
     }
 }
