@@ -10,8 +10,6 @@ import XCTest
 @testable import IterableSDK
 
 class InAppPresenterTests: XCTestCase {
-    static let delayTimerInterval = 0.75
-    
     func testInAppPresenterDelegateExistence() {
         let htmlMessageViewController = IterableHtmlMessageViewController(parameters: getEmptyParameters())
         
@@ -35,14 +33,16 @@ class InAppPresenterTests: XCTestCase {
         let expectation1 = expectation(description: "delay timer executed")
         
         let topViewController = UIViewController()
+        let maxDelay = 0.75
         let inAppPresenter = InAppPresenter(topViewController: topViewController,
-                                            htmlMessageViewController: getEmptyHtmlMessageViewController())
+                                            htmlMessageViewController: getEmptyHtmlMessageViewController(),
+                                            maxDelay: maxDelay)
         
         inAppPresenter.show()
         
         XCTAssertTrue(InAppPresenter.isPresenting)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + InAppPresenterTests.delayTimerInterval + 0.1) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + maxDelay + 0.1) {
             XCTAssertFalse(InAppPresenter.isPresenting)
             
             expectation1.fulfill()

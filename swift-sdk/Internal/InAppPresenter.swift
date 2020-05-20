@@ -8,17 +8,18 @@ import UIKit
 class InAppPresenter {
     static var isPresenting = false
     
-    private let delayInterval: TimeInterval = 0.75
+    private let maxDelay: TimeInterval
     
     private let topViewController: UIViewController
     private let htmlMessageViewController: IterableHtmlMessageViewController
     private var delayTimer: Timer?
     
-    init(topViewController: UIViewController, htmlMessageViewController: IterableHtmlMessageViewController) {
+    init(topViewController: UIViewController, htmlMessageViewController: IterableHtmlMessageViewController, maxDelay: TimeInterval = 0.75) {
         ITBInfo()
         
         self.topViewController = topViewController
         self.htmlMessageViewController = htmlMessageViewController
+        self.maxDelay = maxDelay
         
         // shouldn't be necessary, but in case there's some kind of race condition
         // that leaves it hanging as true, it should be false at this point
@@ -38,7 +39,7 @@ class InAppPresenter {
         
         if #available(iOS 10.0, *) {
             DispatchQueue.main.async {
-                self.delayTimer = Timer.scheduledTimer(withTimeInterval: self.delayInterval, repeats: false) { _ in
+                self.delayTimer = Timer.scheduledTimer(withTimeInterval: self.maxDelay, repeats: false) { _ in
                     ITBInfo("delayTimer called")
                     
                     self.delayTimer = nil
