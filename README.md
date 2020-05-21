@@ -11,7 +11,7 @@
 [Iterable](https://www.iterable.com) is a growth marketing platform that helps
 you to create better experiences for—and deeper relationships with—your
 customers. Use it to send customized email, SMS, push notification, in-app
-message, and web push notifications to your customers.
+message, web push notification campaigns to your customers.
 
 This SDK helps you integrate your iOS apps with Iterable. It supports iOS 9.0+.
 
