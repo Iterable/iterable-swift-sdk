@@ -1,9 +1,9 @@
 ![Iterable logo](./images/Iterable-Logo.png "Iterable Logo")
 
-[![License](https://img.shields.io/cocoapods/l/Iterable-iOS-SDK.svg?style=flat)](https://opensource.org/licenses/MIT)
+[![License](https://img.shields.io/github/license/Iterable/swift-sdk)](https://opensource.org/licenses/MIT)
 [![Build Status](https://travis-ci.com/Iterable/swift-sdk.svg?branch=master)](https://travis-ci.com/Iterable/swift-sdk)
 [![codecov](https://codecov.io/gh/Iterable/swift-sdk/branch/master/graph/badge.svg)](https://codecov.io/gh/Iterable/swift-sdk)
-[![pod](https://badge.fury.io/co/Iterable-iOS-SDK.svg)](https://cocoapods.org/pods/Iterable-iOS-SDK)
+[![pod](https://img.shields.io/cocoapods/v/Iterable-iOS-SDK)](https://cocoapods.org/pods/Iterable-iOS-SDK)
 [![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 
 # Iterable's iOS SDK
