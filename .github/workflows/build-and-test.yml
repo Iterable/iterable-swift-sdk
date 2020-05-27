@@ -13,7 +13,7 @@ jobs:
         xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11' -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO | xcpretty || exit 1
         
     - name: CocoaPods lint
-      run: pod lib lint --allow-warnings
+      run: pod lib lint
 
     - name: Upload coverage report to codecov.io
       run: bash <(curl -s https://codecov.io/bash) -X gcov -J 'IterableSDK' -J 'IterableAppExtensions'
