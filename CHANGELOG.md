@@ -2,6 +2,16 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.2.8
+#### Added
+- In-app messages now get "pre-loaded" with a timer (or until the in-app loads) to mitigate seeing the loading of the message
+
+#### Fixed
+- The JSON payload is now checked to be a valid JSON object before serialization
+- Some classes that were intended for internal framework usage only have been assigned proper permission levels (thanks, made2k!)
+- The root view controller is now correctly found on projects that are newly created in iOS 13
+- `nil` is properly returned when deep linking encounters an error
+
 ## 6.2.7
 #### Added
 - Added internal `deviceAttributes` field for compatibility
