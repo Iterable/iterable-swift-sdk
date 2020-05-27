@@ -93,7 +93,7 @@ struct InAppHelper {
     }
     
     // process each parseResult and consumes failed message, if messageId is present
-    private static func process(parseResult: IterableResult<IterableInAppMessage, InAppMessageParser.ParseError>, apiClient: ApiClientProtocol) -> IterableInAppMessage? {
+    private static func process(parseResult: Result<IterableInAppMessage, InAppMessageParser.ParseError>, apiClient: ApiClientProtocol) -> IterableInAppMessage? {
         switch parseResult {
         case let .failure(parseError):
             switch parseError {

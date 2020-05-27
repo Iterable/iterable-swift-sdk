@@ -12,7 +12,7 @@ struct InAppMessageParser {
     
     /// Given json payload, It will construct array of IterableInAppMessage or ParseError
     /// The caller needs to make sure to consume errored out messages
-    static func parse(payload: [AnyHashable: Any]) -> [IterableResult<IterableInAppMessage, ParseError>] {
+    static func parse(payload: [AnyHashable: Any]) -> [Result<IterableInAppMessage, ParseError>] {
         return getInAppDicts(fromPayload: payload).map {
             let oneJson = preProcessOneJson(fromJson: $0)
             
@@ -77,7 +77,7 @@ struct InAppMessageParser {
         }
     }
     
-    private static func parseOneMessage(fromJson json: [AnyHashable: Any]) -> IterableResult<IterableInAppMessage, ParseError> {
+    private static func parseOneMessage(fromJson json: [AnyHashable: Any]) -> Result<IterableInAppMessage, ParseError> {
         guard let messageId = json[JsonKey.messageId.jsonKey] as? String else {
             return .failure(.parseFailed(reason: "no messageId", messageId: nil))
         }

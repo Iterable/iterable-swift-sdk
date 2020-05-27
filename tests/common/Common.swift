@@ -45,7 +45,7 @@ struct InAppTestHelper {
         return InAppMessageParser.parse(payload: payload).compactMap(parseResultToOptionalMessage)
     }
     
-    private static func parseResultToOptionalMessage(result: IterableResult<IterableInAppMessage, InAppMessageParser.ParseError>) -> IterableInAppMessage? {
+    private static func parseResultToOptionalMessage(result: Result<IterableInAppMessage, InAppMessageParser.ParseError>) -> IterableInAppMessage? {
         switch result {
         case .failure:
             return nil
