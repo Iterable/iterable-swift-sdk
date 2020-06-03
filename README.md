@@ -65,7 +65,7 @@ Please contact your customer success manager with any questions.
 
 ## License
 
-This SDK is released under the MIT License. See [LICENSE](https://github.com/Iterable/swift-sdk/blob/master/LICENSE?raw=true)
+This SDK is released under the MIT License. See [LICENSE](https://github.com/Iterable/swift-sdk/blob/master/LICENSE.md)
 for more information.
 
 ## Want to contribute?
