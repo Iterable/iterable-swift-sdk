@@ -16,7 +16,6 @@ exclude_patterns:
   - "**/*.md"
   - "**/*.plist"
   - "**/*.podspec"
+  - "**/*.xcodeproj"
   - "**/*.yml"
-  - "LICENSE"
   - "Package.swift"
-  - "swift-sdk.xcodeproj"
