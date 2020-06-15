@@ -23,7 +23,7 @@ plugins:
   tailor:
     enabled: true
     except:
-      - trailing-whitespace
+      - terminating-whitespace
 checks:
   argument-count:
     enabled: true
