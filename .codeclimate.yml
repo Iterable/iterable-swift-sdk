@@ -22,6 +22,8 @@ exclude_patterns:
 plugins:
   tailor:
     enabled: true
+    except:
+      - trailing-whitespace
 checks:
   argument-count:
     enabled: true
