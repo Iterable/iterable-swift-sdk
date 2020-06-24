@@ -68,10 +68,9 @@ struct RequestCreator {
             return JsonValue.DeviceIdiom.unspecified
         }
     }
-}
-
-// API REQUEST CALLS
-extension RequestCreator {
+    
+    // MARK: - API REQUEST CALLS
+    
     func createUpdateEmailRequest(newEmail: String) -> Result<IterableRequest, IterableError> {
         var body: [String: Any] = [JsonKey.newEmail.jsonKey: newEmail]
         
@@ -465,7 +464,7 @@ extension RequestCreator {
     }
 }
 
-// DEPRECATED
+// MARK: - DEPRECATED
 extension RequestCreator {
     // deprecated - will be removed in version 6.3.x or above
     func createTrackInAppOpenRequest(_ messageId: String) -> Result<IterableRequest, IterableError> {

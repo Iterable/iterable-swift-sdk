@@ -82,7 +82,7 @@ protocol AuthProvider: AnyObject {
     var auth: Auth { get }
 }
 
-class ApiClient: ApiClientProtocol {
+class ApiClient {
     init(apiKey: String, authProvider: AuthProvider, endPoint: String, networkSession: NetworkSessionProtocol, deviceMetadata: DeviceMetadata) {
         self.apiKey = apiKey
         self.authProvider = authProvider
@@ -140,7 +140,7 @@ class ApiClient: ApiClientProtocol {
 }
 
 // API REQUEST CALLS
-extension ApiClient {
+extension ApiClient: ApiClientProtocol {
     func register(hexToken: String,
                   appName: String,
                   deviceId: String,

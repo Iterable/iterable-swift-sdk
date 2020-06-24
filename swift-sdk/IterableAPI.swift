@@ -11,7 +11,7 @@ import UIKit
     // Current SDK Version.
     public static let sdkVersion = "6.2.8"
     
-    // MARK: Initialization
+    // MARK: - Initialization
     
     /// You should call this method and not call the init method directly.
     /// - parameter apiKey: Iterable API Key.
@@ -46,108 +46,8 @@ import UIKit
         _ = internalImplementation?.start()
     }
     
-    // MARK: SDK
+    // MARK: - API Request Calls
     
-    /**
-     The email of the logged in user that this IterableAPI is using
-     */
-    public static var email: String? {
-        get {
-            return internalImplementation?.email
-        } set {
-            internalImplementation?.email = newValue
-        }
-    }
-    
-    /**
-     The userId of the logged in user that this IterableAPI is using
-     */
-    public static var userId: String? {
-        get {
-            return internalImplementation?.userId
-        } set {
-            internalImplementation?.userId = newValue
-        }
-    }
-    
-    /**
-     The userInfo dictionary which came with last push.
-     */
-    public static var lastPushPayload: [AnyHashable: Any]? {
-        return internalImplementation?.lastPushPayload
-    }
-    
-    /**
-     Attribution info (campaignId, messageId etc.) for last push open or app link click from an email.
-     */
-    public static var attributionInfo: IterableAttributionInfo? {
-        get {
-            return internalImplementation?.attributionInfo
-        } set {
-            internalImplementation?.attributionInfo = newValue
-        }
-    }
-    
-    /**
-     * Handles a Universal Link
-     * For Iterable links, it will track the click and retrieve the original URL,
-     * pass it to `IterableURLDelegate` for handling
-     * If it's not an Iterable link, it just passes the same URL to `IterableURLDelegate`
-     *
-     - parameter url: the URL obtained from `UserActivity.webpageURL`
-     - returns: true if it is an Iterable link, or the value returned from `IterableURLDelegate` otherwise
-     */
-    @objc(handleUniversalLink:)
-    @discardableResult
-    public static func handle(universalLink url: URL) -> Bool {
-        return internalImplementation?.handleUniversalLink(url) ?? false
-    }
-    
-    /// This will send the device attribute to the back end when registering the device.
-    ///
-    /// - Parameters:
-    /// - name: The device attribute name
-    /// - value:    The device attribute value
-    @objc(setDeviceAttribute:value:)
-    public static func setDeviceAttribute(name: String, value: String) {
-        internalImplementation?.setDeviceAttribute(name: name, value: value)
-    }
-    
-    /// Remove a device attribute set earlier.
-    ///
-    /// - Parameters:
-    /// - name: The device attribute name
-    @objc(removeDeviceAttribute:)
-    public static func removeDeviceAttribute(name: String) {
-        internalImplementation?.removeDeviceAttribute(name: name)
-    }
-    
-    /// Use this property for getting and showing in-app messages.
-    /// This property has no meaning if IterableAPI has not been initialized using
-    /// IterableAPI.initialize
-    /// ```
-    /// - IterableAPI.inAppManager.getMessages()
-    /// - IterableAPI.inAppManager.show(message: message, consume: true)
-    /// ```
-    public static var inAppManager: IterableInAppManagerProtocol {
-        guard let internalImplementation = internalImplementation else {
-            ITBError("IterableAPI is not initialized yet. In-apps will not work now.")
-            assertionFailure("IterableAPI is not initialized yet. In-apps will not work now.")
-            return EmptyInAppManager()
-        }
-        
-        return internalImplementation.inAppManager
-    }
-    
-    // MARK: Private and Internal
-    
-    static var internalImplementation: IterableAPIInternal?
-    
-    private override init() { super.init() }
-}
-
-// API REQUEST CALLS
-extension IterableAPI {
     /**
      * Register this device's token with Iterable
      * Push integration name and platform are read from `IterableConfig`. If platform is set to `auto`, it will
@@ -574,9 +474,108 @@ extension IterableAPI {
     public static func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource) {
         internalImplementation?.inAppConsume(message: message, location: location, source: source)
     }
+    
+    // MARK: - SDK
+    
+    /**
+     The email of the logged in user that this IterableAPI is using
+     */
+    public static var email: String? {
+        get {
+            return internalImplementation?.email
+        } set {
+            internalImplementation?.email = newValue
+        }
+    }
+    
+    /**
+     The userId of the logged in user that this IterableAPI is using
+     */
+    public static var userId: String? {
+        get {
+            return internalImplementation?.userId
+        } set {
+            internalImplementation?.userId = newValue
+        }
+    }
+    
+    /**
+     The userInfo dictionary which came with last push.
+     */
+    public static var lastPushPayload: [AnyHashable: Any]? {
+        return internalImplementation?.lastPushPayload
+    }
+    
+    /**
+     Attribution info (campaignId, messageId etc.) for last push open or app link click from an email.
+     */
+    public static var attributionInfo: IterableAttributionInfo? {
+        get {
+            return internalImplementation?.attributionInfo
+        } set {
+            internalImplementation?.attributionInfo = newValue
+        }
+    }
+    
+    /**
+     * Handles a Universal Link
+     * For Iterable links, it will track the click and retrieve the original URL,
+     * pass it to `IterableURLDelegate` for handling
+     * If it's not an Iterable link, it just passes the same URL to `IterableURLDelegate`
+     *
+     - parameter url: the URL obtained from `UserActivity.webpageURL`
+     - returns: true if it is an Iterable link, or the value returned from `IterableURLDelegate` otherwise
+     */
+    @objc(handleUniversalLink:)
+    @discardableResult
+    public static func handle(universalLink url: URL) -> Bool {
+        return internalImplementation?.handleUniversalLink(url) ?? false
+    }
+    
+    /// This will send the device attribute to the back end when registering the device.
+    ///
+    /// - Parameters:
+    /// - name: The device attribute name
+    /// - value:    The device attribute value
+    @objc(setDeviceAttribute:value:)
+    public static func setDeviceAttribute(name: String, value: String) {
+        internalImplementation?.setDeviceAttribute(name: name, value: value)
+    }
+    
+    /// Remove a device attribute set earlier.
+    ///
+    /// - Parameters:
+    /// - name: The device attribute name
+    @objc(removeDeviceAttribute:)
+    public static func removeDeviceAttribute(name: String) {
+        internalImplementation?.removeDeviceAttribute(name: name)
+    }
+    
+    /// Use this property for getting and showing in-app messages.
+    /// This property has no meaning if IterableAPI has not been initialized using
+    /// IterableAPI.initialize
+    /// ```
+    /// - IterableAPI.inAppManager.getMessages()
+    /// - IterableAPI.inAppManager.show(message: message, consume: true)
+    /// ```
+    public static var inAppManager: IterableInAppManagerProtocol {
+        guard let internalImplementation = internalImplementation else {
+            ITBError("IterableAPI is not initialized yet. In-apps will not work now.")
+            assertionFailure("IterableAPI is not initialized yet. In-apps will not work now.")
+            return EmptyInAppManager()
+        }
+        
+        return internalImplementation.inAppManager
+    }
+    
+    // MARK: - Private and Internal
+    
+    static var internalImplementation: IterableAPIInternal?
+    
+    private override init() { super.init() }
 }
 
-// DEPRECATED
+// MARK: - DEPRECATED
 extension IterableAPI {
     /**
      Displays a iOS system style notification with one button

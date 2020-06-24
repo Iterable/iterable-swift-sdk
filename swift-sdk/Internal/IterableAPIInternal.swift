@@ -155,7 +155,216 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         return result
     }
     
-    // MARK: For Private and Internal Use ========================================>
+    func register(token: Data,
+                  onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "registerToken"),
+                  onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "registerToken")) {
+        guard let appName = pushIntegrationName else {
+            ITBError("registerToken: appName is nil")
+            onFailure?("Not registering device token - appName must not be nil", nil)
+            return
+        }
+        
+        // check notificationsEnabled then call register with enabled/not-not enabled
+        notificationStateProvider.notificationsEnabled.onSuccess { enabled in
+            self.register(token: token,
+                          appName: appName,
+                          pushServicePlatform: self.config.pushPlatform,
+                          notificationsEnabled: enabled,
+                          onSuccess: onSuccess,
+                          onFailure: onFailure)
+        }.onError { _ in
+            self.register(token: token,
+                          appName: appName,
+                          pushServicePlatform: self.config.pushPlatform,
+                          notificationsEnabled: false,
+                          onSuccess: onSuccess,
+                          onFailure: onFailure)
+        }
+    }
+    
+    func disableDeviceForCurrentUser(withOnSuccess onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "disableDevice"),
+                                     onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "disableDevice")) {
+        disableDevice(forAllUsers: false, onSuccess: onSuccess, onFailure: onFailure)
+    }
+    
+    func disableDeviceForAllUsers(withOnSuccess onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "disableDevice"),
+                                  onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "disableDevice")) {
+        disableDevice(forAllUsers: true, onSuccess: onSuccess, onFailure: onFailure)
+    }
+    
+    func updateUser(_ dataFields: [AnyHashable: Any],
+                    mergeNestedObjects: Bool,
+                    onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "updateUser"),
+                    onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "updateUser")) {
+        IterableAPIInternal.call(successHandler: onSuccess,
+                                 andFailureHandler: onFailure,
+                                 forResult: apiClient.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects))
+    }
+    
+    func updateEmail(_ newEmail: String,
+                     onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "updateEmail"),
+                     onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "updateEmail")) {
+        apiClient.updateEmail(newEmail: newEmail).onSuccess { json in
+            if let _ = self.email {
+                // we change the email only if we were using email before
+                self.email = newEmail
+            }
+            onSuccess?(json)
+        }.onError { error in
+            onFailure?(error.reason, error.data)
+        }
+    }
+    
+    func trackPurchase(_ total: NSNumber,
+                       items: [CommerceItem],
+                       dataFields: [AnyHashable: Any]? = nil,
+                       onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "trackPurchase"),
+                       onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "trackPurchase")) {
+        IterableAPIInternal.call(successHandler: onSuccess,
+                                 andFailureHandler: onFailure,
+                                 forResult: apiClient.track(purchase: total, items: items, dataFields: dataFields))
+    }
+    
+    func trackPushOpen(_ userInfo: [AnyHashable: Any],
+                       dataFields: [AnyHashable: Any]? = nil,
+                       onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "trackPushOpen"),
+                       onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "trackPushOpen")) {
+        save(pushPayload: userInfo)
+        
+        if let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: userInfo), metadata.isRealCampaignNotification() {
+            trackPushOpen(metadata.campaignId,
+                          templateId: metadata.templateId,
+                          messageId: metadata.messageId,
+                          appAlreadyRunning: false,
+                          dataFields: dataFields,
+                          onSuccess: onSuccess,
+                          onFailure: onFailure)
+        } else {
+            onFailure?("Not tracking push open - payload is not an Iterable notification, or is a test/proof/ghost push", nil)
+        }
+    }
+    
+    func trackPushOpen(_ campaignId: NSNumber,
+                       templateId: NSNumber?,
+                       messageId: String?,
+                       appAlreadyRunning: Bool,
+                       dataFields: [AnyHashable: Any]? = nil,
+                       onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "trackPushOpen"),
+                       onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "trackPushOpen")) {
+        IterableAPIInternal.call(successHandler: onSuccess,
+                                 andFailureHandler: onFailure,
+                                 forResult: apiClient.track(pushOpen: campaignId,
+                                                            templateId: templateId,
+                                                            messageId: messageId,
+                                                            appAlreadyRunning: appAlreadyRunning,
+                                                            dataFields: dataFields))
+    }
+    
+    func track(_ eventName: String,
+               dataFields: [AnyHashable: Any]? = nil,
+               onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "trackEvent"),
+               onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "trackEvent")) {
+        IterableAPIInternal.call(successHandler: onSuccess,
+                                 andFailureHandler: onFailure,
+                                 forResult: apiClient.track(event: eventName, dataFields: dataFields))
+    }
+    
+    func updateSubscriptions(_ emailListIds: [NSNumber]?,
+                             unsubscribedChannelIds: [NSNumber]?,
+                             unsubscribedMessageTypeIds: [NSNumber]?,
+                             subscribedMessageTypeIds: [NSNumber]?,
+                             campaignId: NSNumber?,
+                             templateId: NSNumber?) {
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess(identifier: "updateSubscriptions"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "updateSubscriptions"),
+                                 forResult: apiClient.updateSubscriptions(emailListIds,
+                                                                          unsubscribedChannelIds: unsubscribedChannelIds,
+                                                                          unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
+                                                                          subscribedMessageTypeIds: subscribedMessageTypeIds,
+                                                                          campaignId: campaignId,
+                                                                          templateId: templateId))
+    }
+    
+    func trackInAppOpen(_ message: IterableInAppMessage, location: InAppLocation, inboxSessionId: String? = nil) {
+        let result = apiClient.track(inAppOpen: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId))
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess(identifier: "trackInAppOpen"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"),
+                                 forResult: result)
+    }
+    
+    func trackInAppClick(_ message: IterableInAppMessage,
+                         location: InAppLocation = .inApp,
+                         inboxSessionId: String? = nil,
+                         clickedUrl: String) {
+        let result = apiClient.track(inAppClick: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId),
+                                     clickedUrl: clickedUrl)
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess(identifier: "trackInAppClick"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"),
+                                 forResult: result)
+    }
+    
+    func trackInAppClose(_ message: IterableInAppMessage,
+                         location: InAppLocation = .inApp,
+                         inboxSessionId: String? = nil,
+                         source: InAppCloseSource? = nil,
+                         clickedUrl: String? = nil) {
+        let result = apiClient.track(inAppClose: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId),
+                                     source: source,
+                                     clickedUrl: clickedUrl)
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess(identifier: "trackInAppClose"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClose"),
+                                 forResult: result)
+    }
+    
+    func track(inboxSession: IterableInboxSession) {
+        let result = apiClient.track(inboxSession: inboxSession)
+        
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess(identifier: "trackInboxSession"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInboxSession"),
+                                 forResult: result)
+    }
+    
+    func track(inAppDelivery message: IterableInAppMessage) {
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess(identifier: "trackInAppDelivery"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppDelivery"),
+                                 forResult: apiClient.track(inAppDelivery: InAppMessageContext.from(message: message, location: nil)))
+    }
+    
+    func inAppConsume(_ messageId: String) {
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess(identifier: "inAppConsume"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "inAppConsume"),
+                                 forResult: apiClient.inAppConsume(messageId: messageId))
+    }
+    
+    func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource? = nil) {
+        let result = apiClient.inAppConsume(inAppMessageContext: InAppMessageContext.from(message: message, location: location),
+                                            source: source)
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess(identifier: "inAppConsumeWithSource"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "inAppConsumeWithSource"),
+                                 forResult: result)
+    }
+    
+    private func disableDevice(forAllUsers allUsers: Bool,
+                               onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "disableDevice"),
+                               onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "disableDevice")) {
+        guard let hexToken = hexToken else {
+            ITBError("Device not registered.")
+            onFailure?("Device not registered.", nil)
+            return
+        }
+        
+        guard !(allUsers == false && email == nil && userId == nil) else {
+            ITBError("Emal or userId must be set.")
+            onFailure?("Email or userId must be set.", nil)
+            return
+        }
+        
+        IterableAPIInternal.call(successHandler: onSuccess,
+                                 andFailureHandler: onFailure,
+                                 forResult: apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken))
+    }
+    
+    // MARK: - For Private and Internal Use
     
     private var config: IterableConfig
     
@@ -414,219 +623,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }
 }
 
-// API REQUEST CALLS
-extension IterableAPIInternal {
-    func register(token: Data,
-                  onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "registerToken"),
-                  onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "registerToken")) {
-        guard let appName = pushIntegrationName else {
-            ITBError("registerToken: appName is nil")
-            onFailure?("Not registering device token - appName must not be nil", nil)
-            return
-        }
-        
-        // check notificationsEnabled then call register with enabled/not-not enabled
-        notificationStateProvider.notificationsEnabled.onSuccess { enabled in
-            self.register(token: token,
-                          appName: appName,
-                          pushServicePlatform: self.config.pushPlatform,
-                          notificationsEnabled: enabled,
-                          onSuccess: onSuccess,
-                          onFailure: onFailure)
-        }.onError { _ in
-            self.register(token: token,
-                          appName: appName,
-                          pushServicePlatform: self.config.pushPlatform,
-                          notificationsEnabled: false,
-                          onSuccess: onSuccess,
-                          onFailure: onFailure)
-        }
-    }
-    
-    func disableDeviceForCurrentUser(withOnSuccess onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "disableDevice"),
-                                     onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "disableDevice")) {
-        disableDevice(forAllUsers: false, onSuccess: onSuccess, onFailure: onFailure)
-    }
-    
-    func disableDeviceForAllUsers(withOnSuccess onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "disableDevice"),
-                                  onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "disableDevice")) {
-        disableDevice(forAllUsers: true, onSuccess: onSuccess, onFailure: onFailure)
-    }
-    
-    func updateUser(_ dataFields: [AnyHashable: Any],
-                    mergeNestedObjects: Bool,
-                    onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "updateUser"),
-                    onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "updateUser")) {
-        IterableAPIInternal.call(successHandler: onSuccess,
-                                 andFailureHandler: onFailure,
-                                 forResult: apiClient.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects))
-    }
-    
-    func updateEmail(_ newEmail: String,
-                     onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "updateEmail"),
-                     onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "updateEmail")) {
-        apiClient.updateEmail(newEmail: newEmail).onSuccess { json in
-            if let _ = self.email {
-                // we change the email only if we were using email before
-                self.email = newEmail
-            }
-            onSuccess?(json)
-        }.onError { error in
-            onFailure?(error.reason, error.data)
-        }
-    }
-    
-    func trackPurchase(_ total: NSNumber,
-                       items: [CommerceItem],
-                       dataFields: [AnyHashable: Any]? = nil,
-                       onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "trackPurchase"),
-                       onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "trackPurchase")) {
-        IterableAPIInternal.call(successHandler: onSuccess,
-                                 andFailureHandler: onFailure,
-                                 forResult: apiClient.track(purchase: total, items: items, dataFields: dataFields))
-    }
-    
-    func trackPushOpen(_ userInfo: [AnyHashable: Any],
-                       dataFields: [AnyHashable: Any]? = nil,
-                       onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "trackPushOpen"),
-                       onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "trackPushOpen")) {
-        save(pushPayload: userInfo)
-        
-        if let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: userInfo), metadata.isRealCampaignNotification() {
-            trackPushOpen(metadata.campaignId,
-                          templateId: metadata.templateId,
-                          messageId: metadata.messageId,
-                          appAlreadyRunning: false,
-                          dataFields: dataFields,
-                          onSuccess: onSuccess,
-                          onFailure: onFailure)
-        } else {
-            onFailure?("Not tracking push open - payload is not an Iterable notification, or is a test/proof/ghost push", nil)
-        }
-    }
-    
-    func trackPushOpen(_ campaignId: NSNumber,
-                       templateId: NSNumber?,
-                       messageId: String?,
-                       appAlreadyRunning: Bool,
-                       dataFields: [AnyHashable: Any]? = nil,
-                       onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "trackPushOpen"),
-                       onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "trackPushOpen")) {
-        IterableAPIInternal.call(successHandler: onSuccess,
-                                 andFailureHandler: onFailure,
-                                 forResult: apiClient.track(pushOpen: campaignId,
-                                                            templateId: templateId,
-                                                            messageId: messageId,
-                                                            appAlreadyRunning: appAlreadyRunning,
-                                                            dataFields: dataFields))
-    }
-    
-    func track(_ eventName: String,
-               dataFields: [AnyHashable: Any]? = nil,
-               onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "trackEvent"),
-               onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "trackEvent")) {
-        IterableAPIInternal.call(successHandler: onSuccess,
-                                 andFailureHandler: onFailure,
-                                 forResult: apiClient.track(event: eventName, dataFields: dataFields))
-    }
-    
-    func updateSubscriptions(_ emailListIds: [NSNumber]?,
-                             unsubscribedChannelIds: [NSNumber]?,
-                             unsubscribedMessageTypeIds: [NSNumber]?,
-                             subscribedMessageTypeIds: [NSNumber]?,
-                             campaignId: NSNumber?,
-                             templateId: NSNumber?) {
-        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess(identifier: "updateSubscriptions"),
-                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "updateSubscriptions"),
-                                 forResult: apiClient.updateSubscriptions(emailListIds,
-                                                                          unsubscribedChannelIds: unsubscribedChannelIds,
-                                                                          unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
-                                                                          subscribedMessageTypeIds: subscribedMessageTypeIds,
-                                                                          campaignId: campaignId,
-                                                                          templateId: templateId))
-    }
-    
-    func trackInAppOpen(_ message: IterableInAppMessage, location: InAppLocation, inboxSessionId: String? = nil) {
-        let result = apiClient.track(inAppOpen: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId))
-        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess(identifier: "trackInAppOpen"),
-                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"),
-                                 forResult: result)
-    }
-    
-    func trackInAppClick(_ message: IterableInAppMessage,
-                         location: InAppLocation = .inApp,
-                         inboxSessionId: String? = nil,
-                         clickedUrl: String) {
-        let result = apiClient.track(inAppClick: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId),
-                                     clickedUrl: clickedUrl)
-        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess(identifier: "trackInAppClick"),
-                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"),
-                                 forResult: result)
-    }
-    
-    func trackInAppClose(_ message: IterableInAppMessage,
-                         location: InAppLocation = .inApp,
-                         inboxSessionId: String? = nil,
-                         source: InAppCloseSource? = nil,
-                         clickedUrl: String? = nil) {
-        let result = apiClient.track(inAppClose: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId),
-                                     source: source,
-                                     clickedUrl: clickedUrl)
-        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess(identifier: "trackInAppClose"),
-                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClose"),
-                                 forResult: result)
-    }
-    
-    func track(inboxSession: IterableInboxSession) {
-        let result = apiClient.track(inboxSession: inboxSession)
-        
-        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess(identifier: "trackInboxSession"),
-                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInboxSession"),
-                                 forResult: result)
-    }
-    
-    func track(inAppDelivery message: IterableInAppMessage) {
-        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess(identifier: "trackInAppDelivery"),
-                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppDelivery"),
-                                 forResult: apiClient.track(inAppDelivery: InAppMessageContext.from(message: message, location: nil)))
-    }
-    
-    func inAppConsume(_ messageId: String) {
-        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess(identifier: "inAppConsume"),
-                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "inAppConsume"),
-                                 forResult: apiClient.inAppConsume(messageId: messageId))
-    }
-    
-    func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource? = nil) {
-        let result = apiClient.inAppConsume(inAppMessageContext: InAppMessageContext.from(message: message, location: location),
-                                            source: source)
-        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess(identifier: "inAppConsumeWithSource"),
-                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "inAppConsumeWithSource"),
-                                 forResult: result)
-    }
-    
-    private func disableDevice(forAllUsers allUsers: Bool,
-                               onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "disableDevice"),
-                               onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "disableDevice")) {
-        guard let hexToken = hexToken else {
-            ITBError("Device not registered.")
-            onFailure?("Device not registered.", nil)
-            return
-        }
-        
-        guard !(allUsers == false && email == nil && userId == nil) else {
-            ITBError("Emal or userId must be set.")
-            onFailure?("Email or userId must be set.", nil)
-            return
-        }
-        
-        IterableAPIInternal.call(successHandler: onSuccess,
-                                 andFailureHandler: onFailure,
-                                 forResult: apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken))
-    }
-}
-
-// DEPRECATED
+// MARK: - DEPRECATED
 extension IterableAPIInternal {
     // deprecated - will be removed in version 6.3.x or above
     func trackInAppOpen(_ messageId: String) {
