@@ -46,6 +46,8 @@ import UIKit
         _ = internalImplementation?.start()
     }
     
+    // MARK: SDK
+    
     /**
      The email of the logged in user that this IterableAPI is using
      */
@@ -86,6 +88,66 @@ import UIKit
         }
     }
     
+    /**
+     * Handles a Universal Link
+     * For Iterable links, it will track the click and retrieve the original URL,
+     * pass it to `IterableURLDelegate` for handling
+     * If it's not an Iterable link, it just passes the same URL to `IterableURLDelegate`
+     *
+     - parameter url: the URL obtained from `UserActivity.webpageURL`
+     - returns: true if it is an Iterable link, or the value returned from `IterableURLDelegate` otherwise
+     */
+    @objc(handleUniversalLink:)
+    @discardableResult
+    public static func handle(universalLink url: URL) -> Bool {
+        return internalImplementation?.handleUniversalLink(url) ?? false
+    }
+    
+    /// This will send the device attribute to the back end when registering the device.
+    ///
+    /// - Parameters:
+    /// - name: The device attribute name
+    /// - value:    The device attribute value
+    @objc(setDeviceAttribute:value:)
+    public static func setDeviceAttribute(name: String, value: String) {
+        internalImplementation?.setDeviceAttribute(name: name, value: value)
+    }
+    
+    /// Remove a device attribute set earlier.
+    ///
+    /// - Parameters:
+    /// - name: The device attribute name
+    @objc(removeDeviceAttribute:)
+    public static func removeDeviceAttribute(name: String) {
+        internalImplementation?.removeDeviceAttribute(name: name)
+    }
+    
+    /// Use this property for getting and showing in-app messages.
+    /// This property has no meaning if IterableAPI has not been initialized using
+    /// IterableAPI.initialize
+    /// ```
+    /// - IterableAPI.inAppManager.getMessages()
+    /// - IterableAPI.inAppManager.show(message: message, consume: true)
+    /// ```
+    public static var inAppManager: IterableInAppManagerProtocol {
+        guard let internalImplementation = internalImplementation else {
+            ITBError("IterableAPI is not initialized yet. In-apps will not work now.")
+            assertionFailure("IterableAPI is not initialized yet. In-apps will not work now.")
+            return EmptyInAppManager()
+        }
+        
+        return internalImplementation.inAppManager
+    }
+    
+    // MARK: Private and Internal
+    
+    static var internalImplementation: IterableAPIInternal?
+    
+    private override init() { super.init() }
+}
+
+// API REQUEST CALLS
+extension IterableAPI {
     /**
      * Register this device's token with Iterable
      * Push integration name and platform are read from `IterableConfig`. If platform is set to `auto`, it will
@@ -432,18 +494,6 @@ import UIKit
     
     /**
      Tracks an `InAppOpen` event.
-     - parameter messageId:       The messageId of the notification
-     */
-    
-    // deprecated - will be removed in version 6.3.x or above
-    @available(*, deprecated, message: "Use IterableAPI.track(inAppOpen:location:) method instead.")
-    @objc(trackInAppOpen:)
-    public static func track(inAppOpen messageId: String) {
-        internalImplementation?.trackInAppOpen(messageId)
-    }
-    
-    /**
-     Tracks an `InAppOpen` event.
      Usually you don't need to call this method explicitly. IterableSDK will call this automatically.
      Call this method only if you are using a custom view controller to render IterableInAppMessages.
      
@@ -453,20 +503,6 @@ import UIKit
     @objc(trackInAppOpen:location:)
     public static func track(inAppOpen message: IterableInAppMessage, location: InAppLocation = .inApp) {
         internalImplementation?.trackInAppOpen(message, location: location)
-    }
-    
-    /**
-     Tracks an `InAppClick` event
-     
-     - parameter messageId:       The messageId of the notification
-     - parameter buttonURL:     The url of the button that was clicked
-     */
-    
-    // deprecated - will be removed in version 6.3.x or above
-    @available(*, deprecated, message: "Use IterableAPI.track(inAppClick:location:clickedUrl) instead.")
-    @objc(trackInAppClick:buttonURL:)
-    public static func track(inAppClick messageId: String, buttonURL: String) {
-        internalImplementation?.trackInAppClick(messageId, clickedUrl: buttonURL)
     }
     
     /**
@@ -519,19 +555,6 @@ import UIKit
     /**
      Consumes the notification and removes it from the list of in-app messages
      
-     - parameter messageId:       The messageId of the notification
-     */
-    
-    // deprecated - will be removed in version 6.3.x or above
-    @available(*, deprecated, message: "Use IterableAPI.inAppConsume(message:location:source:) instead.")
-    @objc(inAppConsume:)
-    public static func inAppConsume(messageId: String) {
-        internalImplementation?.inAppConsume(messageId)
-    }
-    
-    /**
-     Consumes the notification and removes it from the list of in-app messages
-     
      - parameter message:       The Iterable message that is being consumed
      - parameter location:      The location from where this message was shown. `inbox` or `inApp`.
      */
@@ -551,7 +574,10 @@ import UIKit
     public static func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource) {
         internalImplementation?.inAppConsume(message: message, location: location, source: source)
     }
-    
+}
+
+// DEPRECATED
+extension IterableAPI {
     /**
      Displays a iOS system style notification with one button
      
@@ -603,59 +629,44 @@ import UIKit
         internalImplementation?.getAndTrack(deepLink: webpageURL, callbackBlock: callbackBlock)
     }
     
+    // MARK: In-App Notifications
+    
     /**
-     * Handles a Universal Link
-     * For Iterable links, it will track the click and retrieve the original URL,
-     * pass it to `IterableURLDelegate` for handling
-     * If it's not an Iterable link, it just passes the same URL to `IterableURLDelegate`
-     *
-     - parameter url: the URL obtained from `UserActivity.webpageURL`
-     - returns: true if it is an Iterable link, or the value returned from `IterableURLDelegate` otherwise
+     Tracks an `InAppOpen` event.
+     - parameter messageId:       The messageId of the notification
      */
-    @objc(handleUniversalLink:)
-    @discardableResult
-    public static func handle(universalLink url: URL) -> Bool {
-        return internalImplementation?.handleUniversalLink(url) ?? false
+    
+    // deprecated - will be removed in version 6.3.x or above
+    @available(*, deprecated, message: "Use IterableAPI.track(inAppOpen:location:) method instead.")
+    @objc(trackInAppOpen:)
+    public static func track(inAppOpen messageId: String) {
+        internalImplementation?.trackInAppOpen(messageId)
     }
     
-    /// This will send the device attribute to the back end when registering the device.
-    ///
-    /// - Parameters:
-    /// - name: The device attribute name
-    /// - value:    The device attribute value
-    @objc(setDeviceAttribute:value:)
-    public static func setDeviceAttribute(name: String, value: String) {
-        internalImplementation?.setDeviceAttribute(name: name, value: value)
+    /**
+     Tracks an `InAppClick` event
+     
+     - parameter messageId:       The messageId of the notification
+     - parameter buttonURL:     The url of the button that was clicked
+     */
+    
+    // deprecated - will be removed in version 6.3.x or above
+    @available(*, deprecated, message: "Use IterableAPI.track(inAppClick:location:clickedUrl) instead.")
+    @objc(trackInAppClick:buttonURL:)
+    public static func track(inAppClick messageId: String, buttonURL: String) {
+        internalImplementation?.trackInAppClick(messageId, clickedUrl: buttonURL)
     }
     
-    /// Remove a device attribute set earlier.
-    ///
-    /// - Parameters:
-    /// - name: The device attribute name
-    @objc(removeDeviceAttribute:)
-    public static func removeDeviceAttribute(name: String) {
-        internalImplementation?.removeDeviceAttribute(name: name)
+    /**
+     Consumes the notification and removes it from the list of in-app messages
+     
+     - parameter messageId:       The messageId of the notification
+     */
+    
+    // deprecated - will be removed in version 6.3.x or above
+    @available(*, deprecated, message: "Use IterableAPI.inAppConsume(message:location:source:) instead.")
+    @objc(inAppConsume:)
+    public static func inAppConsume(messageId: String) {
+        internalImplementation?.inAppConsume(messageId)
     }
-    
-    /// Use this property for getting and showing in-app messages.
-    /// This property has no meaning if IterableAPI has not been initialized using
-    /// IterableAPI.initialize
-    /// ```
-    /// - IterableAPI.inAppManager.getMessages()
-    /// - IterableAPI.inAppManager.show(message: message, consume: true)
-    /// ```
-    public static var inAppManager: IterableInAppManagerProtocol {
-        guard let internalImplementation = internalImplementation else {
-            ITBError("IterableAPI is not initialized yet. In-apps will not work now.")
-            assertionFailure("IterableAPI is not initialized yet. In-apps will not work now.")
-            return EmptyInAppManager()
-        }
-        
-        return internalImplementation.inAppManager
-    }
-    
-    // MARK: Private and Internal
-    
-    static var internalImplementation: IterableAPIInternal?
-    private override init() { super.init() }
 }

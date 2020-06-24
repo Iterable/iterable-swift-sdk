@@ -91,6 +91,64 @@ class ApiClient: ApiClientProtocol {
         self.deviceMetadata = deviceMetadata
     }
     
+    func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createGetInAppMessagesRequest(count))
+    }
+    
+    func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createDisableDeviceRequest(forAllUsers: allUsers, hexToken: hexToken))
+    }
+    
+    func convertToURLRequest(iterableRequest: IterableRequest) -> URLRequest? {
+        switch iterableRequest {
+        case let .get(getRequest):
+            return IterableRequestUtil.createGetRequest(forApiEndPoint: endPoint, path: getRequest.path, headers: createIterableHeaders(), args: getRequest.args)
+        case let .post(postRequest):
+            return IterableRequestUtil.createPostRequest(forApiEndPoint: endPoint, path: postRequest.path, headers: createIterableHeaders(), args: postRequest.args, body: postRequest.body)
+        }
+    }
+    
+    func send(iterableRequestResult result: Result<IterableRequest, IterableError>) -> Future<SendRequestValue, SendRequestError> {
+        switch result {
+        case let .success(iterableRequest):
+            return send(iterableRequest: iterableRequest)
+        case let .failure(iterableError):
+            return SendRequestError.createErroredFuture(reason: iterableError.localizedDescription)
+        }
+    }
+    
+    func send(iterableRequest: IterableRequest) -> Future<SendRequestValue, SendRequestError> {
+        guard let urlRequest = convertToURLRequest(iterableRequest: iterableRequest) else {
+            return SendRequestError.createErroredFuture()
+        }
+        
+        return NetworkHelper.sendRequest(urlRequest, usingSession: networkSession)
+    }
+    
+    private func createRequestCreator() -> RequestCreator {
+        guard let authProvider = authProvider else {
+            fatalError("authProvider is missing")
+        }
+        
+        return RequestCreator(apiKey: apiKey, auth: authProvider.auth, deviceMetadata: deviceMetadata)
+    }
+    
+    private func createIterableHeaders() -> [String: String] {
+        return [JsonKey.contentType.jsonKey: JsonValue.applicationJson.jsonStringValue,
+                JsonKey.Header.sdkPlatform: JsonValue.iOS.jsonStringValue,
+                JsonKey.Header.sdkVersion: IterableAPI.sdkVersion,
+                JsonKey.Header.apiKey: apiKey]
+    }
+    
+    private let apiKey: String
+    private weak var authProvider: AuthProvider?
+    private let endPoint: String
+    private let networkSession: NetworkSessionProtocol
+    private let deviceMetadata: DeviceMetadata
+}
+
+// API REQUEST CALLS
+extension ApiClient {
     func register(hexToken: String,
                   appName: String,
                   deviceId: String,
@@ -145,22 +203,8 @@ class ApiClient: ApiClientProtocol {
                                                                                                    templateId: templateId))
     }
     
-    func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createGetInAppMessagesRequest(count))
-    }
-    
-    // deprecated - will be removed in version 6.3.x or above
-    func track(inAppOpen messageId: String) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createTrackInAppOpenRequest(messageId))
-    }
-    
     func track(inAppOpen inAppMessageContext: InAppMessageContext) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppOpenRequest(inAppMessageContext: inAppMessageContext))
-    }
-    
-    // deprecated - will be removed in version 6.3.x or above
-    func track(inAppClick messageId: String, clickedUrl: String) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(messageId, clickedUrl: clickedUrl))
     }
     
     func track(inAppClick inAppMessageContext: InAppMessageContext, clickedUrl: String) -> Future<SendRequestValue, SendRequestError> {
@@ -186,55 +230,17 @@ class ApiClient: ApiClientProtocol {
     func inAppConsume(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource?) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createTrackInAppConsumeRequest(inAppMessageContext: inAppMessageContext, source: source))
     }
-    
-    func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createDisableDeviceRequest(forAllUsers: allUsers, hexToken: hexToken))
+}
+
+// DEPRECATED
+extension ApiClient {
+    // deprecated - will be removed in version 6.3.x or above
+    func track(inAppOpen messageId: String) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createTrackInAppOpenRequest(messageId))
     }
     
-    func convertToURLRequest(iterableRequest: IterableRequest) -> URLRequest? {
-        switch iterableRequest {
-        case let .get(getRequest):
-            return IterableRequestUtil.createGetRequest(forApiEndPoint: endPoint, path: getRequest.path, headers: createIterableHeaders(), args: getRequest.args)
-        case let .post(postRequest):
-            return IterableRequestUtil.createPostRequest(forApiEndPoint: endPoint, path: postRequest.path, headers: createIterableHeaders(), args: postRequest.args, body: postRequest.body)
-        }
+    // deprecated - will be removed in version 6.3.x or above
+    func track(inAppClick messageId: String, clickedUrl: String) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(messageId, clickedUrl: clickedUrl))
     }
-    
-    func send(iterableRequestResult result: Result<IterableRequest, IterableError>) -> Future<SendRequestValue, SendRequestError> {
-        switch result {
-        case let .success(iterableRequest):
-            return send(iterableRequest: iterableRequest)
-        case let .failure(iterableError):
-            return SendRequestError.createErroredFuture(reason: iterableError.localizedDescription)
-        }
-    }
-    
-    func send(iterableRequest: IterableRequest) -> Future<SendRequestValue, SendRequestError> {
-        guard let urlRequest = convertToURLRequest(iterableRequest: iterableRequest) else {
-            return SendRequestError.createErroredFuture()
-        }
-        
-        return NetworkHelper.sendRequest(urlRequest, usingSession: networkSession)
-    }
-    
-    private func createRequestCreator() -> RequestCreator {
-        guard let authProvider = authProvider else {
-            fatalError("authProvider is missing")
-        }
-        
-        return RequestCreator(apiKey: apiKey, auth: authProvider.auth, deviceMetadata: deviceMetadata)
-    }
-    
-    private func createIterableHeaders() -> [String: String] {
-        return [JsonKey.contentType.jsonKey: JsonValue.applicationJson.jsonStringValue,
-                JsonKey.Header.sdkPlatform: JsonValue.iOS.jsonStringValue,
-                JsonKey.Header.sdkVersion: IterableAPI.sdkVersion,
-                JsonKey.Header.apiKey: apiKey]
-    }
-    
-    private let apiKey: String
-    private weak var authProvider: AuthProvider?
-    private let endPoint: String
-    private let networkSession: NetworkSessionProtocol
-    private let deviceMetadata: DeviceMetadata
 }
