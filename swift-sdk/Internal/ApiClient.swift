@@ -91,14 +91,6 @@ class ApiClient: ApiClientProtocol {
         self.deviceMetadata = deviceMetadata
     }
     
-    func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createGetInAppMessagesRequest(count))
-    }
-    
-    func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Future<SendRequestValue, SendRequestError> {
-        return send(iterableRequestResult: createRequestCreator().createDisableDeviceRequest(forAllUsers: allUsers, hexToken: hexToken))
-    }
-    
     func convertToURLRequest(iterableRequest: IterableRequest) -> URLRequest? {
         switch iterableRequest {
         case let .get(getRequest):
@@ -171,6 +163,14 @@ extension ApiClient {
     
     func updateEmail(newEmail: String) -> Future<SendRequestValue, SendRequestError> {
         return send(iterableRequestResult: createRequestCreator().createUpdateEmailRequest(newEmail: newEmail))
+    }
+    
+    func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createGetInAppMessagesRequest(count))
+    }
+    
+    func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Future<SendRequestValue, SendRequestError> {
+        return send(iterableRequestResult: createRequestCreator().createDisableDeviceRequest(forAllUsers: allUsers, hexToken: hexToken))
     }
     
     func track(purchase total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError> {
