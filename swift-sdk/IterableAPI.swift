@@ -576,6 +576,7 @@ import UIKit
 }
 
 // MARK: - DEPRECATED
+
 extension IterableAPI {
     /**
      Displays a iOS system style notification with one button

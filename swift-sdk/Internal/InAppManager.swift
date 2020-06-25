@@ -84,7 +84,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     func start() -> Future<Bool, Error> {
         ITBInfo()
         
-        if messagesMap.values.filter({ $0.saveToInbox == true }).count > 0 {
+        if messagesMap.values.filter({ $0.saveToInbox }).count > 0 {
             callbackQueue.async {
                 self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
             }
@@ -102,7 +102,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     func getInboxMessages() -> [IterableInAppMessage] {
         ITBInfo()
         
-        return Array(messagesMap.values.filter { InAppManager.isValid(message: $0, currentDate: self.dateProvider.currentDate) && $0.saveToInbox == true })
+        return Array(messagesMap.values.filter { InAppManager.isValid(message: $0, currentDate: self.dateProvider.currentDate) && $0.saveToInbox })
     }
     
     func getUnreadInboxMessagesCount() -> Int {

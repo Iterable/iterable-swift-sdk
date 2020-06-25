@@ -83,7 +83,6 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    // AuthProvider Protocol
     var auth: Auth {
         return Auth(userId: userId, email: email)
     }
@@ -91,40 +90,6 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     lazy var inAppManager: IterableInternalInAppManagerProtocol = {
         self.dependencyContainer.createInAppManager(config: self.config, apiClient: self.apiClient, deviceMetadata: deviceMetadata)
     }()
-    
-    @discardableResult private func register(token: Data,
-                                             appName: String,
-                                             pushServicePlatform: PushServicePlatform,
-                                             notificationsEnabled: Bool,
-                                             onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "registerToken"),
-                                             onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "registerToken")) -> Future<SendRequestValue, SendRequestError> {
-        hexToken = token.hexString()
-        
-        let pushServicePlatformString = IterableAPIInternal.pushServicePlatformToString(pushServicePlatform, apnsType: dependencyContainer.apnsTypeChecker.apnsType)
-        
-        return IterableAPIInternal.call(successHandler: onSuccess,
-                                        andFailureHandler: onFailure,
-                                        forResult: apiClient.register(hexToken: hexToken!,
-                                                                      appName: appName,
-                                                                      deviceId: deviceId,
-                                                                      sdkVersion: localStorage.sdkVersion,
-                                                                      deviceAttributes: deviceAttributes,
-                                                                      pushServicePlatform: pushServicePlatformString,
-                                                                      notificationsEnabled: notificationsEnabled))
-    }
-    
-    private func save(pushPayload payload: [AnyHashable: Any]) {
-        let expiration = Calendar.current.date(byAdding: .hour,
-                                               value: Const.UserDefaults.payloadExpiration,
-                                               to: dateProvider.currentDate)
-        localStorage.save(payload: payload, withExpiration: expiration)
-        
-        if let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: payload) {
-            if let templateId = metadata.templateId, let messageId = metadata.messageId {
-                attributionInfo = IterableAttributionInfo(campaignId: metadata.campaignId, templateId: templateId, messageId: messageId)
-            }
-        }
-    }
     
     @discardableResult func handleUniversalLink(_ url: URL) -> Bool {
         let (result, future) = deepLinkManager.handleUniversalLink(url, urlDelegate: config.urlDelegate, urlOpener: AppUrlOpener())
@@ -144,16 +109,30 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         deviceAttributes.removeValue(forKey: name)
     }
     
-    @discardableResult private static func call(successHandler onSuccess: OnSuccessHandler? = nil,
-                                                andFailureHandler onFailure: OnFailureHandler? = nil,
-                                                forResult result: Future<SendRequestValue, SendRequestError>) -> Future<SendRequestValue, SendRequestError> {
-        result.onSuccess { json in
-            onSuccess?(json)
-        }.onError { error in
-            onFailure?(error.reason, error.data)
+    static func defaultOnSuccess(identifier: String) -> OnSuccessHandler {
+        return { data in
+            if let data = data {
+                ITBInfo("\(identifier) succeeded, got response: \(data)")
+            } else {
+                ITBInfo("\(identifier) succeeded.")
+            }
         }
-        return result
     }
+    
+    static func defaultOnFailure(identifier: String) -> OnFailureHandler {
+        return { reason, data in
+            var toLog = "\(identifier) failed:"
+            if let reason = reason {
+                toLog += ", \(reason)"
+            }
+            if let data = data {
+                toLog += ", got response \(String(data: data, encoding: .utf8) ?? "nil")"
+            }
+            ITBError(toLog)
+        }
+    }
+    
+    // MARK: - API Request Calls
     
     func register(token: Data,
                   onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "registerToken"),
@@ -344,33 +323,17 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: result)
     }
     
-    private func disableDevice(forAllUsers allUsers: Bool,
-                               onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "disableDevice"),
-                               onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "disableDevice")) {
-        guard let hexToken = hexToken else {
-            ITBError("Device not registered.")
-            onFailure?("Device not registered.", nil)
-            return
-        }
-        
-        guard !(allUsers == false && email == nil && userId == nil) else {
-            ITBError("Emal or userId must be set.")
-            onFailure?("Email or userId must be set.", nil)
-            return
-        }
-        
-        IterableAPIInternal.call(successHandler: onSuccess,
-                                 andFailureHandler: onFailure,
-                                 forResult: apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken))
-    }
-    
     // MARK: - For Private and Internal Use
     
     private var config: IterableConfig
     
     private let dateProvider: DateProviderProtocol
-    
     private let inAppDisplayer: InAppDisplayerProtocol
+    private var notificationStateProvider: NotificationStateProviderProtocol
+    private var localStorage: LocalStorageProtocol
+    var networkSession: NetworkSessionProtocol
+    private var urlOpener: UrlOpenerProtocol
+    private var dependencyContainer: DependencyContainerProtocol
     
     private var deepLinkManager: IterableDeepLinkManager
     
@@ -380,23 +343,13 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     // the hex representation of this device token
     private var hexToken: String?
     
-    private var notificationStateProvider: NotificationStateProviderProtocol
-    
-    private var localStorage: LocalStorageProtocol
-    
     private var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     
     lazy var apiClient: ApiClient = {
         ApiClient(apiKey: apiKey, authProvider: self, endPoint: config.apiEndpoint, networkSession: networkSession, deviceMetadata: deviceMetadata)
     }()
     
-    var networkSession: NetworkSessionProtocol
-    
-    private var urlOpener: UrlOpenerProtocol
-    
     private var deviceAttributes = [String: String]()
-    
-    private var dependencyContainer: DependencyContainerProtocol
     
     private var pushIntegrationName: String? {
         if let pushIntegrationName = config.pushIntegrationName, let sandboxPushIntegrationName = config.sandboxPushIntegrationName {
@@ -425,7 +378,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             return
         }
         
-        if config.autoPushRegistration == true {
+        if config.autoPushRegistration {
             disableDeviceForCurrentUser()
         }
         
@@ -438,34 +391,11 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             return
         }
         
-        if config.autoPushRegistration == true {
+        if config.autoPushRegistration {
             notificationStateProvider.registerForRemoteNotifications()
         }
         
         _ = inAppManager.scheduleSync()
-    }
-    
-    static func defaultOnSuccess(identifier: String) -> OnSuccessHandler {
-        return { data in
-            if let data = data {
-                ITBInfo("\(identifier) succeeded, got response: \(data)")
-            } else {
-                ITBInfo("\(identifier) succeeded.")
-            }
-        }
-    }
-    
-    static func defaultOnFailure(identifier: String) -> OnFailureHandler {
-        return { reason, data in
-            var toLog = "\(identifier) failed:"
-            if let reason = reason {
-                toLog += ", \(reason)"
-            }
-            if let data = data {
-                toLog += ", got response \(String(data: data, encoding: .utf8) ?? "nil")"
-            }
-            ITBError(toLog)
-        }
     }
     
     private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform, apnsType: APNSType) -> String {
@@ -489,7 +419,72 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         _userId = localStorage.userId
     }
     
-    // MARK: Initialization
+    @discardableResult private func register(token: Data,
+                                             appName: String,
+                                             pushServicePlatform: PushServicePlatform,
+                                             notificationsEnabled: Bool,
+                                             onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "registerToken"),
+                                             onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "registerToken")) -> Future<SendRequestValue, SendRequestError> {
+        hexToken = token.hexString()
+        
+        let pushServicePlatformString = IterableAPIInternal.pushServicePlatformToString(pushServicePlatform, apnsType: dependencyContainer.apnsTypeChecker.apnsType)
+        
+        return IterableAPIInternal.call(successHandler: onSuccess,
+                                        andFailureHandler: onFailure,
+                                        forResult: apiClient.register(hexToken: hexToken!,
+                                                                      appName: appName,
+                                                                      deviceId: deviceId,
+                                                                      sdkVersion: localStorage.sdkVersion,
+                                                                      deviceAttributes: deviceAttributes,
+                                                                      pushServicePlatform: pushServicePlatformString,
+                                                                      notificationsEnabled: notificationsEnabled))
+    }
+    
+    private func save(pushPayload payload: [AnyHashable: Any]) {
+        let expiration = Calendar.current.date(byAdding: .hour,
+                                               value: Const.UserDefaults.payloadExpiration,
+                                               to: dateProvider.currentDate)
+        localStorage.save(payload: payload, withExpiration: expiration)
+        
+        if let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: payload) {
+            if let templateId = metadata.templateId, let messageId = metadata.messageId {
+                attributionInfo = IterableAttributionInfo(campaignId: metadata.campaignId, templateId: templateId, messageId: messageId)
+            }
+        }
+    }
+    
+    private func disableDevice(forAllUsers allUsers: Bool,
+                               onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "disableDevice"),
+                               onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "disableDevice")) {
+        guard let hexToken = hexToken else {
+            ITBError("Device not registered.")
+            onFailure?("Device not registered.", nil)
+            return
+        }
+        
+        guard !(allUsers == false && email == nil && userId == nil) else {
+            ITBError("Emal or userId must be set.")
+            onFailure?("Email or userId must be set.", nil)
+            return
+        }
+        
+        IterableAPIInternal.call(successHandler: onSuccess,
+                                 andFailureHandler: onFailure,
+                                 forResult: apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken))
+    }
+    
+    @discardableResult private static func call(successHandler onSuccess: OnSuccessHandler? = nil,
+                                                andFailureHandler onFailure: OnFailureHandler? = nil,
+                                                forResult result: Future<SendRequestValue, SendRequestError>) -> Future<SendRequestValue, SendRequestError> {
+        result.onSuccess { json in
+            onSuccess?(json)
+        }.onError { error in
+            onFailure?(error.reason, error.data)
+        }
+        return result
+    }
+    
+    // MARK: - Initialization
     
     // package private method. Do not call this directly.
     init(apiKey: String,
@@ -522,7 +517,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         // get email and userId from UserDefaults if present
         retrieveEmailAndUserId()
         
-        if config.autoPushRegistration == true, isEitherUserIdOrEmailSet() {
+        if config.autoPushRegistration, isEitherUserIdOrEmailSet() {
             notificationStateProvider.registerForRemoteNotifications()
         }
         
@@ -624,6 +619,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
 }
 
 // MARK: - DEPRECATED
+
 extension IterableAPIInternal {
     // deprecated - will be removed in version 6.3.x or above
     func trackInAppOpen(_ messageId: String) {

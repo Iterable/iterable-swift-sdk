@@ -32,43 +32,6 @@ struct RequestCreator {
     let auth: Auth
     let deviceMetadata: DeviceMetadata
     
-    private func createPostRequest(path: String, body: [AnyHashable: Any]? = nil) -> PostRequest {
-        return PostRequest(path: path,
-                           args: [JsonKey.Header.apiKey: apiKey],
-                           body: body)
-    }
-    
-    private func createGetRequest(forPath path: String, withArgs args: [String: String]) -> GetRequest {
-        return GetRequest(path: path,
-                          args: args)
-    }
-    
-    private var keyValueForCurrentUser: JsonKeyValueRepresentable? {
-        switch auth.emailOrUserId {
-        case let .email(email):
-            return JsonKeyValue(key: JsonKey.email, value: email)
-        case let .userId(userId):
-            return JsonKeyValue(key: JsonKey.userId, value: userId)
-        case .none:
-            return nil
-        }
-    }
-    
-    private static func userInterfaceIdiomEnumToString(_ idiom: UIUserInterfaceIdiom) -> String {
-        switch idiom {
-        case .phone:
-            return JsonValue.DeviceIdiom.phone
-        case .pad:
-            return JsonValue.DeviceIdiom.pad
-        case .tv:
-            return JsonValue.DeviceIdiom.tv
-        case .carPlay:
-            return JsonValue.DeviceIdiom.carPlay
-        default:
-            return JsonValue.DeviceIdiom.unspecified
-        }
-    }
-    
     // MARK: - API REQUEST CALLS
     
     func createUpdateEmailRequest(newEmail: String) -> Result<IterableRequest, IterableError> {
@@ -462,9 +425,49 @@ struct RequestCreator {
         
         return .success(.post(createPostRequest(path: Const.Path.disableDevice, body: body)))
     }
+    
+    // MARK: - PRIVATE
+    
+    private var keyValueForCurrentUser: JsonKeyValueRepresentable? {
+        switch auth.emailOrUserId {
+            case let .email(email):
+                return JsonKeyValue(key: JsonKey.email, value: email)
+            case let .userId(userId):
+                return JsonKeyValue(key: JsonKey.userId, value: userId)
+            case .none:
+                return nil
+        }
+    }
+    
+    private func createPostRequest(path: String, body: [AnyHashable: Any]? = nil) -> PostRequest {
+        return PostRequest(path: path,
+                           args: [JsonKey.Header.apiKey: apiKey],
+                           body: body)
+    }
+    
+    private func createGetRequest(forPath path: String, withArgs args: [String: String]) -> GetRequest {
+        return GetRequest(path: path,
+                          args: args)
+    }
+    
+    private static func userInterfaceIdiomEnumToString(_ idiom: UIUserInterfaceIdiom) -> String {
+        switch idiom {
+        case .phone:
+            return JsonValue.DeviceIdiom.phone
+        case .pad:
+            return JsonValue.DeviceIdiom.pad
+        case .tv:
+            return JsonValue.DeviceIdiom.tv
+        case .carPlay:
+            return JsonValue.DeviceIdiom.carPlay
+        default:
+            return JsonValue.DeviceIdiom.unspecified
+        }
+    }
 }
 
 // MARK: - DEPRECATED
+
 extension RequestCreator {
     // deprecated - will be removed in version 6.3.x or above
     func createTrackInAppOpenRequest(_ messageId: String) -> Result<IterableRequest, IterableError> {
