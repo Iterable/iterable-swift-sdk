@@ -116,7 +116,7 @@ struct NotificationHelper {
             return .other
         }
         
-        if isGhostPush == true {
+        if isGhostPush {
             if let silentPush = ITBLSilentPushNotificationInfo.parse(notification: notification) {
                 return .silentPush(silentPush)
             } else {

@@ -117,8 +117,8 @@ struct MessagesObtainedHandler {
         
         let addedMessages = messages.filter { !messagesMap.keys.contains($0.messageId) }
         
-        let removedInboxCount = removedMessages.reduce(0) { $1.saveToInbox == true ? $0 + 1 : $0 }
-        let addedInboxCount = addedMessages.reduce(0) { $1.saveToInbox == true ? $0 + 1 : $0 }
+        let removedInboxCount = removedMessages.reduce(0) { $1.saveToInbox ? $0 + 1 : $0 }
+        let addedInboxCount = addedMessages.reduce(0) { $1.saveToInbox ? $0 + 1 : $0 }
         
         var newMessagesMap = OrderedDictionary<String, IterableInAppMessage>()
         messages.forEach {
