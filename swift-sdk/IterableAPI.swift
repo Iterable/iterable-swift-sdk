@@ -8,8 +8,40 @@ import Foundation
 import UIKit
 
 @objcMembers public final class IterableAPI: NSObject {
-    // Current SDK Version.
+    /// The current SDK version
     public static let sdkVersion = "6.2.8"
+    
+    /// The email of the logged in user that this IterableAPI is using
+    public static var email: String? {
+        get {
+            return internalImplementation?.email
+        } set {
+            internalImplementation?.email = newValue
+        }
+    }
+    
+    /// The userId of the logged in user that this IterableAPI is using
+    public static var userId: String? {
+        get {
+            return internalImplementation?.userId
+        } set {
+            internalImplementation?.userId = newValue
+        }
+    }
+    
+    /// The userInfo dictionary which came with last push
+    public static var lastPushPayload: [AnyHashable: Any]? {
+        return internalImplementation?.lastPushPayload
+    }
+    
+    /// Attribution info (campaignId, messageId etc.) for last push open or app link click from an email
+    public static var attributionInfo: IterableAttributionInfo? {
+        get {
+            return internalImplementation?.attributionInfo
+        } set {
+            internalImplementation?.attributionInfo = newValue
+        }
+    }
     
     // MARK: - Initialization
     
@@ -47,46 +79,6 @@ import UIKit
     }
     
     // MARK: - SDK
-    
-    /**
-     The email of the logged in user that this IterableAPI is using
-     */
-    public static var email: String? {
-        get {
-            return internalImplementation?.email
-        } set {
-            internalImplementation?.email = newValue
-        }
-    }
-    
-    /**
-     The userId of the logged in user that this IterableAPI is using
-     */
-    public static var userId: String? {
-        get {
-            return internalImplementation?.userId
-        } set {
-            internalImplementation?.userId = newValue
-        }
-    }
-    
-    /**
-     The userInfo dictionary which came with last push.
-     */
-    public static var lastPushPayload: [AnyHashable: Any]? {
-        return internalImplementation?.lastPushPayload
-    }
-    
-    /**
-     Attribution info (campaignId, messageId etc.) for last push open or app link click from an email.
-     */
-    public static var attributionInfo: IterableAttributionInfo? {
-        get {
-            return internalImplementation?.attributionInfo
-        } set {
-            internalImplementation?.attributionInfo = newValue
-        }
-    }
     
     /**
      * Handles a Universal Link
