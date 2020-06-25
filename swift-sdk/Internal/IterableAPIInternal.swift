@@ -91,6 +91,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         self.dependencyContainer.createInAppManager(config: self.config, apiClient: self.apiClient, deviceMetadata: deviceMetadata)
     }()
     
+    // MARK: - SDK
+    
     @discardableResult func handleUniversalLink(_ url: URL) -> Bool {
         let (result, future) = deepLinkManager.handleUniversalLink(url, urlDelegate: config.urlDelegate, urlOpener: AppUrlOpener())
         future.onSuccess { attributionInfo in
