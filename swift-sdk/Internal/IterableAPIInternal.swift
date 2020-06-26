@@ -28,7 +28,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             
             _email = newValue
             _userId = nil
-            storeEmailAndUserId()
+            
+            storeAuthData()
             
             loginNewUser()
         }
@@ -46,7 +47,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             
             _userId = newValue
             _email = nil
-            storeEmailAndUserId()
+            
+            storeAuthData()
             
             loginNewUser()
         }
@@ -84,14 +86,14 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     var auth: Auth {
-        return Auth(userId: userId, email: email)
+        return Auth(userId: userId, email: email, authToken: authToken)
     }
     
     lazy var inAppManager: IterableInternalInAppManagerProtocol = {
         self.dependencyContainer.createInAppManager(config: self.config, apiClient: self.apiClient, deviceMetadata: deviceMetadata)
     }()
     
-    // MARK: - SDK
+    // MARK: - SDK Functions
     
     @discardableResult func handleUniversalLink(_ url: URL) -> Bool {
         let (result, future) = deepLinkManager.handleUniversalLink(url, urlDelegate: config.urlDelegate, urlOpener: AppUrlOpener())
@@ -132,6 +134,26 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             }
             ITBError(toLog)
         }
+    }
+    
+    func getEmail() -> String? {
+        return _email
+    }
+    
+    func setEmail(_ email: String, _ token: String? = nil) {
+        authToken = token
+        
+        self.email = email
+    }
+    
+    func getUserId() -> String? {
+        return _userId
+    }
+    
+    func setUserId(_ userId: String, _ token: String? = nil) {
+        authToken = token
+        
+        self.userId = userId
     }
     
     // MARK: - API Request Calls
@@ -325,7 +347,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: result)
     }
     
-    // MARK: - For Private and Internal Use
+    // MARK: - Private/Internal/Initializers
     
     private var config: IterableConfig
     
@@ -341,6 +363,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     private var _email: String?
     private var _userId: String?
+    private var authToken: String?
     
     // the hex representation of this device token
     private var hexToken: String?
@@ -348,7 +371,11 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     private var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     
     lazy var apiClient: ApiClient = {
-        ApiClient(apiKey: apiKey, authProvider: self, endPoint: config.apiEndpoint, networkSession: networkSession, deviceMetadata: deviceMetadata)
+        ApiClient(apiKey: apiKey,
+                  authProvider: self,
+                  endPoint: config.apiEndpoint,
+                  networkSession: networkSession,
+                  deviceMetadata: deviceMetadata)
     }()
     
     private var deviceAttributes = [String: String]()
@@ -376,6 +403,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     private func logoutPreviousUser() {
         ITBInfo()
+        
         guard isEitherUserIdOrEmailSet() else {
             return
         }
@@ -384,11 +412,14 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             disableDeviceForCurrentUser()
         }
         
+        authToken = nil
+        
         _ = inAppManager.reset()
     }
     
     private func loginNewUser() {
         ITBInfo()
+        
         guard isEitherUserIdOrEmailSet() else {
             return
         }
@@ -411,14 +442,16 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    private func storeEmailAndUserId() {
+    private func storeAuthData() {
         localStorage.email = _email
         localStorage.userId = _userId
+        localStorage.authToken = authToken
     }
     
-    private func retrieveEmailAndUserId() {
+    private func retrieveAuthData() {
         _email = localStorage.email
         _userId = localStorage.userId
+        authToken = localStorage.authToken
     }
     
     @discardableResult private func register(token: Data,
@@ -486,8 +519,6 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         return result
     }
     
-    // MARK: - Initialization
-    
     // package private method. Do not call this directly.
     init(apiKey: String,
          launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
@@ -510,14 +541,13 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     func start() -> Future<Bool, Error> {
         ITBInfo()
-        // sdk version
-        updateSDKVersion()
         
-        // check for deferred deep linking
+        updateSdkVersion()
+        
         checkForDeferredDeepLink()
         
-        // get email and userId from UserDefaults if present
-        retrieveEmailAndUserId()
+        // get email, userId, and authToken from UserDefaults if present
+        retrieveAuthData()
         
         if config.autoPushRegistration, isEitherUserIdOrEmailSet() {
             notificationStateProvider.registerForRemoteNotifications()
@@ -600,7 +630,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    private func updateSDKVersion() {
+    private func updateSdkVersion() {
         if let lastVersion = localStorage.sdkVersion, lastVersion != IterableAPI.sdkVersion {
             performUpgrade(lastVersion: lastVersion, newVersion: IterableAPI.sdkVersion)
         } else {

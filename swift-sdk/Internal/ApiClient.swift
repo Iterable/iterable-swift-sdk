@@ -57,33 +57,12 @@ protocol ApiClientProtocol: AnyObject {
     func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Future<SendRequestValue, SendRequestError>
 }
 
-struct Auth {
-    let userId: String?
-    let email: String?
-    
-    var emailOrUserId: EmailOrUserId {
-        if let email = email {
-            return .email(email)
-        } else if let userId = userId {
-            return .userId(userId)
-        } else {
-            return .none
-        }
-    }
-    
-    enum EmailOrUserId {
-        case email(String)
-        case userId(String)
-        case none
-    }
-}
-
-protocol AuthProvider: AnyObject {
-    var auth: Auth { get }
-}
-
 class ApiClient {
-    init(apiKey: String, authProvider: AuthProvider, endPoint: String, networkSession: NetworkSessionProtocol, deviceMetadata: DeviceMetadata) {
+    init(apiKey: String,
+         authProvider: AuthProvider,
+         endPoint: String,
+         networkSession: NetworkSessionProtocol,
+         deviceMetadata: DeviceMetadata) {
         self.apiKey = apiKey
         self.authProvider = authProvider
         self.endPoint = endPoint
@@ -126,10 +105,16 @@ class ApiClient {
     }
     
     private func createIterableHeaders() -> [String: String] {
-        return [JsonKey.contentType.jsonKey: JsonValue.applicationJson.jsonStringValue,
-                JsonKey.Header.sdkPlatform: JsonValue.iOS.jsonStringValue,
-                JsonKey.Header.sdkVersion: IterableAPI.sdkVersion,
-                JsonKey.Header.apiKey: apiKey]
+        var headers = [JsonKey.contentType.jsonKey: JsonValue.applicationJson.jsonStringValue,
+                       JsonKey.Header.sdkPlatform: JsonValue.iOS.jsonStringValue,
+                       JsonKey.Header.sdkVersion: IterableAPI.sdkVersion,
+                       JsonKey.Header.apiKey: apiKey]
+        
+        if let authToken = authProvider?.auth.authToken {
+            headers[JsonKey.Header.authorization] = "Bearer \(authToken)"
+        }
+        
+        return headers
     }
     
     private let apiKey: String
@@ -139,7 +124,8 @@ class ApiClient {
     private let deviceMetadata: DeviceMetadata
 }
 
-// API REQUEST CALLS
+// MARK: - API REQUEST CALLS
+
 extension ApiClient: ApiClientProtocol {
     func register(hexToken: String,
                   appName: String,
@@ -232,7 +218,8 @@ extension ApiClient: ApiClientProtocol {
     }
 }
 
-// DEPRECATED
+// MARK: - DEPRECATED
+
 extension ApiClient {
     // deprecated - will be removed in version 6.3.x or above
     func track(inAppOpen messageId: String) -> Future<SendRequestValue, SendRequestError> {

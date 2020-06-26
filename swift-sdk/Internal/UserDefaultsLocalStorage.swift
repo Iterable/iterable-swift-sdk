@@ -26,6 +26,14 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
         }
     }
     
+    var authToken: String? {
+        get {
+            return string(withKey: .authToken)
+        } set {
+            save(string: newValue, withKey: .authToken)
+        }
+    }
+    
     var ddlChecked: Bool {
         get {
             return bool(withKey: .ddlChecked)
@@ -174,6 +182,7 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
         static let attributionInfo = LocalStorageKey(value: Const.UserDefaults.attributionInfoKey)
         static let email = LocalStorageKey(value: Const.UserDefaults.emailKey)
         static let userId = LocalStorageKey(value: Const.UserDefaults.userIdKey)
+        static let authToken = LocalStorageKey(value: Const.UserDefaults.authTokenKey)
         static let ddlChecked = LocalStorageKey(value: Const.UserDefaults.ddlChecked)
         static let deviceId = LocalStorageKey(value: Const.UserDefaults.deviceId)
         static let sdkVersion = LocalStorageKey(value: Const.UserDefaults.sdkVersion)
