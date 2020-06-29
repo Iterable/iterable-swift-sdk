@@ -43,6 +43,8 @@
 		AC219C51225FEDBD00B98631 /* SampleInboxCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AC219C4F225FEDBD00B98631 /* SampleInboxCell.xib */; };
 		AC219C532260006600B98631 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC219C522260006600B98631 /* Assets.xcassets */; };
 		AC2263F020CF49B8009800EB /* IterableSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = AC2263E220CF49B8009800EB /* IterableSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AC28480A24AA44C600C1FC7F /* EndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC28480924AA44C600C1FC7F /* EndpointTests.swift */; };
+		AC28480C24AA44C600C1FC7F /* IterableSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2263DF20CF49B8009800EB /* IterableSDK.framework */; };
 		AC2A2986231A7CFF0070A9C3 /* TestInAppPayloadGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */; };
 		AC2A2988231CFAC40070A9C3 /* NetworkTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2A2987231CFAC40070A9C3 /* NetworkTableViewController.swift */; };
 		AC2A298A231D44C00070A9C3 /* NetworkDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2A2989231D44C00070A9C3 /* NetworkDetailViewController.swift */; };
@@ -172,6 +174,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		AC28480D24AA44C600C1FC7F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AC2263D620CF49B8009800EB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AC2263DE20CF49B8009800EB;
+			remoteInfo = "swift-sdk";
+		};
 		AC347B6820E6B5F4003449CF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AC2263D620CF49B8009800EB /* Project object */;
@@ -311,6 +320,9 @@
 		AC2263DF20CF49B8009800EB /* IterableSDK.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = IterableSDK.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC2263E220CF49B8009800EB /* IterableSDK.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IterableSDK.h; sourceTree = "<group>"; };
 		AC2263E320CF49B8009800EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AC28480724AA44C600C1FC7F /* endpoint-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "endpoint-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AC28480924AA44C600C1FC7F /* EndpointTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndpointTests.swift; sourceTree = "<group>"; };
+		AC28480B24AA44C600C1FC7F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AC2A2987231CFAC40070A9C3 /* NetworkTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkTableViewController.swift; sourceTree = "<group>"; };
 		AC2A2989231D44C00070A9C3 /* NetworkDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDetailViewController.swift; sourceTree = "<group>"; };
 		AC2B79F621E6A38900A59080 /* NotificationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationHelper.swift; sourceTree = "<group>"; };
@@ -440,6 +452,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AC28480424AA44C600C1FC7F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AC28480C24AA44C600C1FC7F /* IterableSDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -593,6 +613,7 @@
 				ACDA975923159C36004C412E /* inbox-ui-tests-app.app */,
 				ACDA976C23159C39004C412E /* inbox-ui-tests-app-ui-tests.xctest */,
 				ACFF429E24656BDF00FDF10D /* ui-tests-app.app */,
+				AC28480724AA44C600C1FC7F /* endpoint-tests.xctest */,
 			);
 			name = Products;
 			path = ../..;
@@ -647,6 +668,15 @@
 				AC1712882416AEF400F2BB0E /* WebViewProtocol.swift */,
 			);
 			name = "In-app";
+			sourceTree = "<group>";
+		};
+		AC28480824AA44C600C1FC7F /* endpoint-tests */ = {
+			isa = PBXGroup;
+			children = (
+				AC28480924AA44C600C1FC7F /* EndpointTests.swift */,
+				AC28480B24AA44C600C1FC7F /* Info.plist */,
+			);
+			path = "endpoint-tests";
 			sourceTree = "<group>";
 		};
 		AC31B03D232AB37C00BE25EB /* Inbox */ = {
@@ -929,6 +959,7 @@
 				AC7B142C20D02CE200877BFE /* swift-sdk-swift-tests */,
 				ACC87764215C20B50097E29B /* ui-tests */,
 				ACDA976F23159C39004C412E /* inbox-ui-tests-app-ui-tests */,
+				AC28480824AA44C600C1FC7F /* endpoint-tests */,
 			);
 			path = tests;
 			sourceTree = "<group>";
@@ -998,6 +1029,24 @@
 			productName = "swift-sdk";
 			productReference = AC2263DF20CF49B8009800EB /* IterableSDK.framework */;
 			productType = "com.apple.product-type.framework";
+		};
+		AC28480624AA44C600C1FC7F /* endpoint-tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AC28481124AA44C600C1FC7F /* Build configuration list for PBXNativeTarget "endpoint-tests" */;
+			buildPhases = (
+				AC28480324AA44C600C1FC7F /* Sources */,
+				AC28480424AA44C600C1FC7F /* Frameworks */,
+				AC28480524AA44C600C1FC7F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AC28480E24AA44C600C1FC7F /* PBXTargetDependency */,
+			);
+			name = "endpoint-tests";
+			productName = "endpoint-tests";
+			productReference = AC28480724AA44C600C1FC7F /* endpoint-tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		AC7B142A20D02CE200877BFE /* swift-sdk-swift-tests */ = {
 			isa = PBXNativeTarget;
@@ -1163,12 +1212,15 @@
 		AC2263D620CF49B8009800EB /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1030;
+				LastSwiftUpdateCheck = 1150;
 				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = Iterable;
 				TargetAttributes = {
 					AC2263DE20CF49B8009800EB = {
 						CreatedOnToolsVersion = 9.4;
+					};
+					AC28480624AA44C600C1FC7F = {
+						CreatedOnToolsVersion = 11.5;
 					};
 					AC7B142A20D02CE200877BFE = {
 						CreatedOnToolsVersion = 9.4;
@@ -1235,6 +1287,7 @@
 				ACC87762215C20B50097E29B /* ui-tests */,
 				ACDA975823159C36004C412E /* inbox-ui-tests-app */,
 				ACDA976B23159C39004C412E /* inbox-ui-tests-app-ui-tests */,
+				AC28480624AA44C600C1FC7F /* endpoint-tests */,
 			);
 		};
 /* End PBXProject section */
@@ -1246,6 +1299,13 @@
 			files = (
 				AC219C532260006600B98631 /* Assets.xcassets in Resources */,
 				AC219C51225FEDBD00B98631 /* SampleInboxCell.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AC28480524AA44C600C1FC7F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1340,7 +1400,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if which swiftformat >/dev/null; then\n  swiftformat .\nelse\n  echo \"warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat\"\nfi\n";
+			shellScript = "# if which swiftformat >/dev/null; then\n#  swiftformat .\n# else\n#   echo \"warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat\"\n# fi\n";
 		};
 		ACEC0AA622FC4EC90011885A /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1511,6 +1571,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AC28480324AA44C600C1FC7F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AC28480A24AA44C600C1FC7F /* EndpointTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		AC7B142720D02CE200877BFE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1645,6 +1713,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		AC28480E24AA44C600C1FC7F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AC2263DE20CF49B8009800EB /* swift-sdk */;
+			targetProxy = AC28480D24AA44C600C1FC7F /* PBXContainerItemProxy */;
+		};
 		AC347B6920E6B5F4003449CF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = ACF560D220E443BF000AAC23 /* host-app */;
@@ -1923,6 +1996,47 @@
 				PRODUCT_NAME = IterableSDK;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		AC28480F24AA44C600C1FC7F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = JZ52G3H3Z6;
+				INFOPLIST_FILE = "tests/endpoint-tests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ace.endpoint-tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		AC28481024AA44C600C1FC7F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = JZ52G3H3Z6;
+				INFOPLIST_FILE = "tests/endpoint-tests/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.ace.endpoint-tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -2301,6 +2415,15 @@
 			buildConfigurations = (
 				AC2263F420CF49B8009800EB /* Debug */,
 				AC2263F520CF49B8009800EB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AC28481124AA44C600C1FC7F /* Build configuration list for PBXNativeTarget "endpoint-tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC28480F24AA44C600C1FC7F /* Debug */,
+				AC28481024AA44C600C1FC7F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
