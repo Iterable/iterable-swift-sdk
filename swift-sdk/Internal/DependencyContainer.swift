@@ -24,25 +24,25 @@ protocol DependencyContainerProtocol {
 
 extension DependencyContainerProtocol {
     func createInAppManager(config: IterableConfig, apiClient: ApiClientProtocol, deviceMetadata: DeviceMetadata) -> IterableInternalInAppManagerProtocol {
-        return InAppManager(apiClient: apiClient,
-                            deviceMetadata: deviceMetadata,
-                            fetcher: createInAppFetcher(apiClient: apiClient),
-                            displayer: inAppDisplayer,
-                            persister: inAppPersister,
-                            inAppDelegate: config.inAppDelegate,
-                            urlDelegate: config.urlDelegate,
-                            customActionDelegate: config.customActionDelegate,
-                            urlOpener: urlOpener,
-                            applicationStateProvider: applicationStateProvider,
-                            notificationCenter: notificationCenter,
-                            dateProvider: dateProvider,
-                            retryInterval: config.inAppDisplayInterval)
+        InAppManager(apiClient: apiClient,
+                     deviceMetadata: deviceMetadata,
+                     fetcher: createInAppFetcher(apiClient: apiClient),
+                     displayer: inAppDisplayer,
+                     persister: inAppPersister,
+                     inAppDelegate: config.inAppDelegate,
+                     urlDelegate: config.urlDelegate,
+                     customActionDelegate: config.customActionDelegate,
+                     urlOpener: urlOpener,
+                     applicationStateProvider: applicationStateProvider,
+                     notificationCenter: notificationCenter,
+                     dateProvider: dateProvider,
+                     retryInterval: config.inAppDisplayInterval)
     }
 }
 
 struct DependencyContainer: DependencyContainerProtocol {
     func createInAppFetcher(apiClient: ApiClientProtocol) -> InAppFetcherProtocol {
-        return InAppFetcher(apiClient: apiClient)
+        InAppFetcher(apiClient: apiClient)
     }
     
     let dateProvider: DateProviderProtocol = SystemDateProvider()

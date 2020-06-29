@@ -21,7 +21,7 @@ struct DeviceInfo: Codable {
     }
     
     static func createDeviceInfo() -> DeviceInfo {
-        return DeviceInfo(deviceFp: createDeviceFp())
+        DeviceInfo(deviceFp: createDeviceFp())
     }
     
     private static func createDeviceFp() -> DeviceFp {

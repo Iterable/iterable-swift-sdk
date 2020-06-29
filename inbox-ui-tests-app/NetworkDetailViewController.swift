@@ -26,10 +26,10 @@ class NetworkDetailViewController: UITableViewController {
     // MARK: - Table view data source
     
     override func numberOfSections(in _: UITableView) -> Int {
-        return 1
+        1
     }
     
     override func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        return 1
+        1
     }
 }

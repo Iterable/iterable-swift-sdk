@@ -9,16 +9,16 @@ public struct OrderedDictionary<K: Hashable, V> {
     public var keys = [K]()
     
     public var count: Int {
-        return keys.count
+        keys.count
     }
     
     public var values: [V] {
-        return map { $0.1 }
+        map { $0.1 }
     }
     
     public subscript(key: K) -> V? {
         get {
-            return dict[key]
+            dict[key]
         }
         
         set(newValue) {
@@ -75,7 +75,7 @@ extension OrderedDictionary: Sequence {
 
 extension OrderedDictionary: CustomStringConvertible {
     public var description: String {
-        return keys.map {
+        keys.map {
             var valueToDisplay = ""
             
             if let value = dict[$0] as? CustomStringConvertible {

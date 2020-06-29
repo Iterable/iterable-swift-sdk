@@ -73,7 +73,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     var unreadCount: Int {
-        return allMessagesInSections().filter { $0.read == false }.count
+        allMessagesInSections().filter { $0.read == false }.count
     }
     
     func message(atIndexPath indexPath: IndexPath) -> InboxMessageViewModel {
@@ -95,11 +95,11 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     func refresh() -> Future<Bool, Error> {
-        return internalInAppManager?.scheduleSync() ?? Promise(error: IterableError.general(description: "Did not find inAppManager"))
+        internalInAppManager?.scheduleSync() ?? Promise(error: IterableError.general(description: "Did not find inAppManager"))
     }
     
     func createInboxMessageViewController(for message: InboxMessageViewModel, withInboxMode inboxMode: IterableInboxViewController.InboxMode) -> UIViewController? {
-        return internalInAppManager?.createInboxMessageViewController(for: message.iterableMessage, withInboxMode: inboxMode, inboxSessionId: sessionManager.sessionStartInfo?.id)
+        internalInAppManager?.createInboxMessageViewController(for: message.iterableMessage, withInboxMode: inboxMode, inboxSessionId: sessionManager.sessionStartInfo?.id)
     }
     
     func beganUpdates() {
@@ -257,14 +257,14 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     private func getMessages() -> [InboxMessageViewModel] {
-        return internalAPI?.inAppManager.getMessages().map { InboxMessageViewModel(message: $0) } ?? []
+        internalAPI?.inAppManager.getMessages().map { InboxMessageViewModel(message: $0) } ?? []
     }
     
     private func sortAndFilter(messages: [InboxMessageViewModel]) -> SectionedValues<Int, InboxMessageViewModel> {
-        return SectionedValues(values: filteredMessages(messages: messages),
-                               valueToSection: createSectionMapper(),
-                               sortSections: { $0 < $1 },
-                               sortValues: createComparator())
+        SectionedValues(values: filteredMessages(messages: messages),
+                        valueToSection: createSectionMapper(),
+                        sortSections: { $0 < $1 },
+                        sortValues: createComparator())
     }
     
     private func filteredMessages(messages: [InboxMessageViewModel]) -> [InboxMessageViewModel] {
@@ -296,7 +296,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     private var internalAPI: IterableAPIInternal? {
-        return internalAPIProvider()
+        internalAPIProvider()
     }
     
     var comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)?
@@ -309,12 +309,12 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     private var internalAPIProvider: () -> IterableAPIInternal?
     
     private var internalInAppManager: IterableInternalInAppManagerProtocol? {
-        return internalAPI?.inAppManager
+        internalAPI?.inAppManager
     }
 }
 
 extension SectionedValues {
     var values: [Value] {
-        return sectionsAndValues.flatMap { $0.1 }
+        sectionsAndValues.flatMap { $0.1 }
     }
 }

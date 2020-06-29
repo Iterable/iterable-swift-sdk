@@ -17,7 +17,7 @@ class IterableDeepLinkManager: NSObject {
     
     // deprecated - will be removed in version 6.3.x or above
     func getAndTrack(deepLink: URL, callbackBlock: @escaping ITEActionBlock) -> Future<IterableAttributionInfo?, Error> {
-        return resolve(appLinkURL: deepLink).map { resolvedURL, attributionInfo in
+        resolve(appLinkURL: deepLink).map { resolvedURL, attributionInfo in
             callbackBlock(resolvedURL?.absoluteString)
             return attributionInfo
         }

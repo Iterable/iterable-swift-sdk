@@ -288,24 +288,24 @@ class RequestCreatorTests: XCTestCase {
     }
     
     private func createRequestCreator() -> RequestCreator {
-        return RequestCreator(apiKey: apiKey, auth: auth, deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata)
+        RequestCreator(apiKey: apiKey, auth: auth, deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata)
     }
     
     private func createApiClient(networkSession: NetworkSessionProtocol) -> ApiClient {
-        return ApiClient(apiKey: apiKey,
-                         authProvider: self,
-                         endPoint: Endpoint.api,
-                         networkSession: networkSession,
-                         deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata)
+        ApiClient(apiKey: apiKey,
+                  authProvider: self,
+                  endPoint: Endpoint.api,
+                  networkSession: networkSession,
+                  deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata)
     }
     
     private func getEmptyInAppContent() -> IterableHtmlInAppContent {
-        return IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
+        IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
     }
 }
 
 extension RequestCreatorTests: AuthProvider {
     var auth: Auth {
-        return Auth(userId: nil, email: email)
+        Auth(userId: nil, email: email)
     }
 }

@@ -100,7 +100,7 @@ class DeprecatedFunctionsTests: XCTestCase {
     }
     
     private func getEmptyInAppContent() -> IterableHtmlInAppContent {
-        return IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
+        IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
     }
 }
 

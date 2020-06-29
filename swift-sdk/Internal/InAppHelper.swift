@@ -11,7 +11,7 @@ import UIKit
 // This is Internal Struct, no public methods
 struct InAppHelper {
     static func getInAppMessagesFromServer(apiClient: ApiClientProtocol, number: Int) -> Future<[IterableInAppMessage], SendRequestError> {
-        return apiClient.getInAppMessages(NSNumber(value: number)).map {
+        apiClient.getInAppMessages(NSNumber(value: number)).map {
             InAppMessageParser.parse(payload: $0).compactMap { parseResult in
                 process(parseResult: parseResult, apiClient: apiClient)
             }
@@ -84,7 +84,7 @@ struct InAppHelper {
     }
     
     private static func dropLeadingSlashes(str: String) -> String {
-        return String(str.drop { $0 == "/" })
+        String(str.drop { $0 == "/" })
     }
     
     private static func dropScheme(urlString: String, scheme: String) -> String {

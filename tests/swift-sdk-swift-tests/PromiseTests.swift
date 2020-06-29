@@ -12,7 +12,7 @@ class PromiseTests: XCTestCase {
         let message: String
         
         var description: String {
-            return message
+            message
         }
     }
     
