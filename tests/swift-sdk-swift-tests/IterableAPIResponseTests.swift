@@ -25,13 +25,6 @@ class IterableAPIResponseTests: XCTestCase {
         verifyIterableHeaders(urlRequest)
     }
     
-    fileprivate func verifyIterableHeaders(_ urlRequest: URLRequest) {
-        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.sdkPlatform), JsonValue.iOS.jsonStringValue)
-        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.sdkVersion), IterableAPI.sdkVersion)
-        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.apiKey), apiKey)
-        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: "Content-Type"), "application/json")
-    }
-    
     func testResponseCode200() {
         let xpectation = expectation(description: "response code 200")
         let networkSession = MockNetworkSession(statusCode: 200)
@@ -84,7 +77,7 @@ class IterableAPIResponseTests: XCTestCase {
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
-    func testResponseCode400WitMessage() {
+    func testResponseCode400WithMessage() {
         let xpectation = expectation(description: "400 with message")
         let networkSession = MockNetworkSession(statusCode: 400, json: ["msg": "Test error"])
         let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
@@ -163,6 +156,7 @@ class IterableAPIResponseTests: XCTestCase {
             response.responseTime = responseTime
             return response
         }
+        
         let networkSession = URLSession(configuration: URLSessionConfiguration.default)
         
         let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
@@ -177,6 +171,13 @@ class IterableAPIResponseTests: XCTestCase {
         }
         
         wait(for: [xpectation], timeout: testExpectationTimeout)
+    }
+    
+    private func verifyIterableHeaders(_ urlRequest: URLRequest) {
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.sdkPlatform), JsonValue.iOS.jsonStringValue)
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.sdkVersion), IterableAPI.sdkVersion)
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.apiKey), apiKey)
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.contentType.jsonKey), JsonValue.applicationJson.jsonStringValue)
     }
     
     private func createApiClient(networkSession: NetworkSessionProtocol) -> ApiClient {
