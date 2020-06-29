@@ -26,19 +26,19 @@ struct IterablePushNotificationMetadata {
     }
     
     static func metadata(fromLaunchOptions userInfo: [AnyHashable: Any]) -> IterablePushNotificationMetadata? {
-        return IterablePushNotificationMetadata(fromLaunchOptions: userInfo)
+        IterablePushNotificationMetadata(fromLaunchOptions: userInfo)
     }
     
     func isRealCampaignNotification() -> Bool {
-        return !(isGhostPush || isProof() || isTestPush())
+        !(isGhostPush || isProof() || isTestPush())
     }
     
     func isProof() -> Bool {
-        return campaignId.intValue == 0 && templateId?.intValue != 0
+        campaignId.intValue == 0 && templateId?.intValue != 0
     }
     
     func isTestPush() -> Bool {
-        return campaignId.intValue == 0 && templateId?.intValue == 0
+        campaignId.intValue == 0 && templateId?.intValue == 0
     }
     
     private init?(fromLaunchOptions userInfo: [AnyHashable: Any]) {

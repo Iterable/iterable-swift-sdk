@@ -8,7 +8,7 @@ import UIKit
 
 extension Array {
     func take(_ size: Int) -> [[Element]] {
-        return stride(from: 0, to: count, by: size).map {
+        stride(from: 0, to: count, by: size).map {
             Array(self[$0 ..< Swift.min($0 + size, count)])
         }
     }
@@ -16,19 +16,19 @@ extension Array {
 
 extension Dictionary where Key == AnyHashable, Value == Any {
     func getValue(for key: JsonKey) -> Any? {
-        return self[key.jsonKey]
+        self[key.jsonKey]
     }
     
     func getStringValue(for key: JsonKey, withDefault default: String? = nil) -> String? {
-        return getValue(for: key) as? String ?? `default`
+        getValue(for: key) as? String ?? `default`
     }
     
     func getIntValue(for key: JsonKey) -> Int? {
-        return getValue(for: key) as? Int
+        getValue(for: key) as? Int
     }
     
     func getBoolValue(for key: JsonKey) -> Bool? {
-        return getValue(for: key) as? Bool
+        getValue(for: key) as? Bool
     }
     
     mutating func setValue(for key: JsonKey, value: JsonValueRepresentable?) {
@@ -42,7 +42,7 @@ extension Dictionary where Key == AnyHashable, Value == Any {
 
 extension Bundle {
     var appPackageName: String? {
-        return bundleIdentifier
+        bundleIdentifier
     }
     
     var appVersion: String? {
@@ -88,7 +88,7 @@ extension UIColor {
 
 extension Data {
     func hexString() -> String {
-        return map { String(format: "%02.2hhx", $0) }.joined()
+        map { String(format: "%02.2hhx", $0) }.joined()
     }
 }
 

@@ -16,7 +16,7 @@ protocol APNSTypeCheckerProtocol {
 
 struct APNSTypeChecker: APNSTypeCheckerProtocol {
     var apnsType: APNSType {
-        return APNSTypeChecker.isSandboxAPNS() ? .sandbox : .production
+        APNSTypeChecker.isSandboxAPNS() ? .sandbox : .production
     }
     
     private static func isSandboxAPNS() -> Bool {

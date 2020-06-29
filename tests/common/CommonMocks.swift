@@ -20,14 +20,14 @@ struct MockNotificationResponse: NotificationResponseProtocol {
     }
     
     var textInputResponse: UNTextInputNotificationResponse? {
-        return nil
+        nil
     }
 }
 
 @objcMembers
 public class MockUrlDelegate: NSObject, IterableURLDelegate {
     // returnValue = true if we handle the url, else false
-    private convenience override init() {
+    override private convenience init() {
         self.init(returnValue: false)
     }
     
@@ -51,7 +51,7 @@ public class MockUrlDelegate: NSObject, IterableURLDelegate {
 @objcMembers
 public class MockCustomActionDelegate: NSObject, IterableCustomActionDelegate {
     // returnValue is reserved for future, don't rely on this
-    private convenience override init() {
+    override private convenience init() {
         self.init(returnValue: false)
     }
     
@@ -128,7 +128,7 @@ public class MockPushTracker: NSObject, PushTrackerProtocol {
 }
 
 @objc public class MockApplicationStateProvider: NSObject, ApplicationStateProviderProtocol {
-    private convenience override init() {
+    override private convenience init() {
         self.init(applicationState: .active)
     }
     
@@ -195,11 +195,11 @@ class MockNetworkSession: NetworkSessionProtocol {
     }
     
     func getRequestBody() -> [AnyHashable: Any] {
-        return MockNetworkSession.json(fromData: request!.httpBody!)
+        MockNetworkSession.json(fromData: request!.httpBody!)
     }
     
     static func json(fromData data: Data) -> [AnyHashable: Any] {
-        return try! JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
+        try! JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
     }
     
     private func data(for urlAbsoluteString: String?) -> Data? {
@@ -296,7 +296,7 @@ class MockInAppDisplayer: InAppDisplayerProtocol {
     var onShow: Promise<IterableInAppMessage, IterableError> = Promise<IterableInAppMessage, IterableError>()
     
     func isShowingInApp() -> Bool {
-        return showing
+        showing
     }
     
     // This is not resolved until a url is clicked.
@@ -389,7 +389,7 @@ class MockInAppPesister: InAppPersistenceProtocol {
     private var messages = [IterableInAppMessage]()
     
     func getMessages() -> [IterableInAppMessage] {
-        return messages
+        messages
     }
     
     func persist(_ messages: [IterableInAppMessage]) {
@@ -413,7 +413,7 @@ class MockWebView: WebViewProtocol {
     let view: UIView = UIView()
     
     func loadHTMLString(_: String, baseURL _: URL?) -> WKNavigation? {
-        return nil
+        nil
     }
     
     func set(position: ViewPosition) {
@@ -432,7 +432,7 @@ class MockWebView: WebViewProtocol {
     func layoutSubviews() {}
     
     func calculateHeight() -> Future<CGFloat, IterableError> {
-        return Promise<CGFloat, IterableError>(value: height)
+        Promise<CGFloat, IterableError>(value: height)
     }
     
     var position: ViewPosition?

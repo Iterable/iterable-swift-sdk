@@ -201,14 +201,14 @@ struct SpringBoardNotification {
     let springboard: XCUIApplication
     
     var buttonOpenSafari: XCUIElement {
-        return springboard.buttons["Open Safari"].firstMatch
+        springboard.buttons["Open Safari"].firstMatch
     }
     
     var buttonOpenDeepLink: XCUIElement {
-        return springboard.buttons["Open Deeplink"].firstMatch
+        springboard.buttons["Open Deeplink"].firstMatch
     }
     
     var buttonCustomAction: XCUIElement {
-        return springboard.buttons["Custom Action"].firstMatch
+        springboard.buttons["Custom Action"].firstMatch
     }
 }

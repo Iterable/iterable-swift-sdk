@@ -143,7 +143,7 @@ open class IterableInboxViewController: UITableViewController {
     
     // MARK: Initializers
     
-    public override init(style: UITableView.Style) {
+    override public init(style: UITableView.Style) {
         ITBInfo()
         viewModel = InboxViewControllerViewModel()
         super.init(style: style)
@@ -157,14 +157,14 @@ open class IterableInboxViewController: UITableViewController {
         viewModel.view = self
     }
     
-    public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+    override public init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         ITBInfo()
         viewModel = InboxViewControllerViewModel()
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         viewModel.view = self
     }
     
-    open override func viewDidLoad() {
+    override open func viewDidLoad() {
         ITBInfo()
         
         super.viewDidLoad()
@@ -183,7 +183,7 @@ open class IterableInboxViewController: UITableViewController {
         cellLoader.registerCells(forTableView: tableView)
     }
     
-    open override func viewWillAppear(_ animated: Bool) {
+    override open func viewWillAppear(_ animated: Bool) {
         ITBInfo()
         
         super.viewWillAppear(animated)
@@ -201,7 +201,7 @@ open class IterableInboxViewController: UITableViewController {
         }
     }
     
-    open override func viewWillDisappear(_ animated: Bool) {
+    override open func viewWillDisappear(_ animated: Bool) {
         ITBInfo()
         
         super.viewWillDisappear(animated)
@@ -215,11 +215,11 @@ open class IterableInboxViewController: UITableViewController {
     
     // MARK: - UITableViewDataSource (Required Functions)
     
-    open override func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.numRows(in: section)
+    override open func tableView(_: UITableView, numberOfRowsInSection section: Int) -> Int {
+        viewModel.numRows(in: section)
     }
     
-    open override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    override open func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let message = viewModel.message(atIndexPath: indexPath)
         let cell = cellLoader.loadCell(for: message.iterableMessage, forTableView: tableView, atIndexPath: indexPath)
         
@@ -230,15 +230,15 @@ open class IterableInboxViewController: UITableViewController {
     
     // MARK: - UITableViewDataSource (Optional Functions)
     
-    open override func numberOfSections(in _: UITableView) -> Int {
-        return viewModel.numSections
+    override open func numberOfSections(in _: UITableView) -> Int {
+        viewModel.numSections
     }
     
-    open override func tableView(_: UITableView, canEditRowAt _: IndexPath) -> Bool {
-        return true
+    override open func tableView(_: UITableView, canEditRowAt _: IndexPath) -> Bool {
+        true
     }
     
-    open override func tableView(_: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+    override open func tableView(_: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             viewModel.remove(atIndexPath: indexPath)
         }
@@ -246,7 +246,7 @@ open class IterableInboxViewController: UITableViewController {
     
     // MARK: - UITableViewDelegate (Optional Functions)
     
-    open override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    override open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if inboxMode == .popup {
             tableView.deselectRow(at: indexPath, animated: true)
         }
@@ -267,7 +267,7 @@ open class IterableInboxViewController: UITableViewController {
     
     // MARK: - UIScrollViewDelegate (Optional Functions)
     
-    open override func scrollViewDidScroll(_: UIScrollView) {
+    override open func scrollViewDidScroll(_: UIScrollView) {
         ITBDebug()
         
         viewModel.visibleRowsChanged()
@@ -403,7 +403,7 @@ extension IterableInboxViewController: InboxViewControllerViewModelView {
     }
     
     var currentlyVisibleRowIndexPaths: [IndexPath] {
-        return tableView.indexPathsForVisibleRows?.compactMap(isRowVisible(atIndexPath:)) ?? []
+        tableView.indexPathsForVisibleRows?.compactMap(isRowVisible(atIndexPath:)) ?? []
     }
     
     private func updateUnreadBadgeCount() {

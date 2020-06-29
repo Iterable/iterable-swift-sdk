@@ -9,11 +9,11 @@ import Foundation
 
 struct IterableRequestUtil {
     static func createPostRequest(forApiEndPoint apiEndPoint: String, path: String, headers: [String: String]? = nil, args: [String: String]? = nil, body: [AnyHashable: Any]? = nil) -> URLRequest? {
-        return createPostRequest(forApiEndPoint: apiEndPoint, path: path, headers: headers, args: args, body: dictToJsonData(body))
+        createPostRequest(forApiEndPoint: apiEndPoint, path: path, headers: headers, args: args, body: dictToJsonData(body))
     }
     
     static func createPostRequest<T: Encodable>(forApiEndPoint apiEndPoint: String, path: String, headers: [String: String]? = nil, args: [String: String]? = nil, body: T) -> URLRequest? {
-        return createPostRequest(forApiEndPoint: apiEndPoint, path: path, headers: headers, args: args, body: try? JSONEncoder().encode(body))
+        createPostRequest(forApiEndPoint: apiEndPoint, path: path, headers: headers, args: args, body: try? JSONEncoder().encode(body))
     }
     
     static func createPostRequest(forApiEndPoint apiEndPoint: String, path: String, headers: [String: String]? = nil, args: [String: String]? = nil, body: Data? = nil) -> URLRequest? {
@@ -74,7 +74,7 @@ struct IterableRequestUtil {
     }
     
     static func pathCombine(paths: [String]) -> String {
-        return paths.reduce("", pathCombine)
+        paths.reduce("", pathCombine)
     }
     
     private static func pathCombine(path1: String, path2: String) -> String {

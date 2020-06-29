@@ -47,7 +47,7 @@ struct MessagesProcessor {
         ITBDebug()
         
         guard let message = getFirstProcessableTriggeredMessage() else {
-            ITBDebug("No message to process, totalMessages: \(messagesMap.values.count)") //ttt
+            ITBDebug("No message to process, totalMessages: \(messagesMap.values.count)") // ttt
             return .none
         }
         
@@ -70,11 +70,11 @@ struct MessagesProcessor {
     }
     
     private func getFirstProcessableTriggeredMessage() -> IterableInAppMessage? {
-        return messagesMap.values.filter(MessagesProcessor.isProcessableTriggeredMessage).first
+        messagesMap.values.filter(MessagesProcessor.isProcessableTriggeredMessage).first
     }
     
     private static func isProcessableTriggeredMessage(_ message: IterableInAppMessage) -> Bool {
-        return message.didProcessTrigger == false && message.trigger.type == .immediate
+        message.didProcessTrigger == false && message.trigger.type == .immediate
     }
     
     private mutating func updateMessage(_ message: IterableInAppMessage, didProcessTrigger: Bool? = nil, consumed: Bool? = nil) {

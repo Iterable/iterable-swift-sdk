@@ -11,17 +11,17 @@ import WebKit
 
 extension String {
     func toJsonDict() -> [AnyHashable: Any] {
-        return try! JSONSerialization.jsonObject(with: data(using: .utf8)!, options: []) as! [AnyHashable: Any]
+        try! JSONSerialization.jsonObject(with: data(using: .utf8)!, options: []) as! [AnyHashable: Any]
     }
 }
 
 extension Dictionary where Key == AnyHashable {
     func toJsonData() -> Data {
-        return try! JSONSerialization.data(withJSONObject: self, options: [])
+        try! JSONSerialization.data(withJSONObject: self, options: [])
     }
     
     func toJsonString() -> String {
-        return String(data: toJsonData(), encoding: .utf8)!
+        String(data: toJsonData(), encoding: .utf8)!
     }
 }
 
@@ -107,7 +107,7 @@ class MockDependencyContainer: DependencyContainerProtocol {
     }
     
     func createInAppFetcher(apiClient _: ApiClientProtocol) -> InAppFetcherProtocol {
-        return inAppFetcher
+        inAppFetcher
     }
 }
 

@@ -45,9 +45,9 @@ import UIKit
      - returns: An NSDictionary representing this item
      */
     public func toDictionary() -> [AnyHashable: Any] {
-        return ["id": id,
-                "name": name,
-                "price": price,
-                "quantity": quantity]
+        ["id": id,
+         "name": name,
+         "price": price,
+         "quantity": quantity]
     }
 }

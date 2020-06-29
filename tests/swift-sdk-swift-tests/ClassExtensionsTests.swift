@@ -30,7 +30,7 @@ class ClassExtensionsTests: XCTestCase {
     }
     
     private func generateRandomInt(max: Int) -> Int {
-        return Int(arc4random_uniform(UInt32(max)))
+        Int(arc4random_uniform(UInt32(max)))
     }
     
     private func generateToken() -> Data {
@@ -61,6 +61,6 @@ class ClassExtensionsTests: XCTestCase {
     // convert string of hexadecimal characters into a combination of bytes
     // assembles combination of bytes by converting every 2 characters
     private func data(fromHexString hexString: String) -> Data {
-        return Data(Array(hexString).take(2).map { hexCharsToByte(c1: $0[0], c2: $0[1]) }.compactMap { $0 })
+        Data(Array(hexString).take(2).map { hexCharsToByte(c1: $0[0], c2: $0[1]) }.compactMap { $0 })
     }
 }

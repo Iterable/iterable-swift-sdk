@@ -184,7 +184,7 @@ public extension Notification.Name {
     
     /// Whether this message will be delivered silently to inbox
     public var silentInbox: Bool {
-        return saveToInbox && trigger.type == .never
+        saveToInbox && trigger.type == .never
     }
     
     // Internal, don't let others create

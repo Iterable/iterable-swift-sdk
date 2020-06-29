@@ -15,7 +15,7 @@ struct TestConsts {
 /// We can't use TestUtils in all tests because TestUtils targets Swift tests only.
 struct TestHelper {
     static func getTestUserDefaults() -> UserDefaults {
-        return UserDefaults(suiteName: TestConsts.userDefaultsSuiteName)!
+        UserDefaults(suiteName: TestConsts.userDefaultsSuiteName)!
     }
     
     static func clearTestUserDefaults() {
@@ -36,13 +36,13 @@ struct TestHelper {
     }
     
     private static func generateRandomInt(max: Int) -> Int {
-        return Int(arc4random_uniform(UInt32(max)))
+        Int(arc4random_uniform(UInt32(max)))
     }
 }
 
 struct InAppTestHelper {
     static func inAppMessages(fromPayload payload: [AnyHashable: Any]) -> [IterableInAppMessage] {
-        return InAppMessageParser.parse(payload: payload).compactMap(parseResultToOptionalMessage)
+        InAppMessageParser.parse(payload: payload).compactMap(parseResultToOptionalMessage)
     }
     
     private static func parseResultToOptionalMessage(result: Result<IterableInAppMessage, InAppMessageParser.ParseError>) -> IterableInAppMessage? {
@@ -77,13 +77,13 @@ struct SerializableRequest: Codable {
     }
     
     static func create(from string: String) -> SerializableRequest {
-        return try! JSONDecoder().decode(SerializableRequest.self, from: string.data(using: .utf8)!)
+        try! JSONDecoder().decode(SerializableRequest.self, from: string.data(using: .utf8)!)
     }
 }
 
 extension SerializableRequest: CustomStringConvertible {
     var description: String {
-        return """
+        """
         method: \(method),
         host: \(host),
         path: \(path),

@@ -57,15 +57,15 @@ public protocol NotificationResponseProtocol {
 @available(iOS 10.0, *)
 struct UserNotificationResponse: NotificationResponseProtocol {
     var userInfo: [AnyHashable: Any] {
-        return response.notification.request.content.userInfo
+        response.notification.request.content.userInfo
     }
     
     var actionIdentifier: String {
-        return response.actionIdentifier
+        response.actionIdentifier
     }
     
     var textInputResponse: UNTextInputNotificationResponse? {
-        return response as? UNTextInputNotificationResponse
+        response as? UNTextInputNotificationResponse
     }
     
     private let response: UNNotificationResponse

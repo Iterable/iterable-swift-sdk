@@ -26,6 +26,6 @@ public extension StoryboardInstantiable where Self: UIViewController {
     
     /// Will create a UINavigationController with this VC as the rootViewController.
     static func createNavFromStoryboard() -> UINavigationController {
-        return UINavigationController(rootViewController: createFromStoryboard())
+        UINavigationController(rootViewController: createFromStoryboard())
     }
 }

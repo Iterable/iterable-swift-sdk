@@ -17,7 +17,7 @@ import UIKit
     }
     
     static func trim(string: String) -> String {
-        return string.trimmingCharacters(in: .whitespaces)
+        string.trimmingCharacters(in: .whitespaces)
     }
     
     static func isNullOrEmpty(string: String?) -> Bool {
@@ -29,11 +29,11 @@ import UIKit
     }
     
     static func isNotNullOrEmpty(string: String?) -> Bool {
-        return !isNullOrEmpty(string: string)
+        !isNullOrEmpty(string: string)
     }
     
     static func generateUUID() -> String {
-        return UUID().uuidString
+        UUID().uuidString
     }
     
     /// int is milliseconds since epoch.
@@ -45,14 +45,14 @@ import UIKit
     
     /// milliseconds since epoch.
     static func int(fromDate date: Date) -> Int {
-        return Int(date.timeIntervalSince1970 * 1000)
+        Int(date.timeIntervalSince1970 * 1000)
     }
     
     // given "var1", "val1", "var2", "val2" as input
     // this will return "var1: val1, var2: val2"
     // this is useful for description of an object or struct
     static func describe(_ values: Any..., pairSeparator: String = ": ", separator: String = ", ") -> String {
-        return values.take(2).map { pair in
+        values.take(2).map { pair in
             if pair.count == 0 {
                 return ""
             } else if pair.count == 1 {
@@ -67,14 +67,14 @@ import UIKit
     
     // converts from IterableURLDelegate to UrlHandler
     static func urlHandler(fromUrlDelegate urlDelegate: IterableURLDelegate?, inContext context: IterableActionContext) -> UrlHandler {
-        return { url in
+        { url in
             urlDelegate?.handle(iterableURL: url, inContext: context) == true
         }
     }
     
     // converts from IterableCustomActionDelegate to CustomActionHandler
     static func customActionHandler(fromCustomActionDelegate customActionDelegate: IterableCustomActionDelegate?, inContext context: IterableActionContext) -> CustomActionHandler {
-        return { _ in
+        { _ in
             guard let customActionDelegate = customActionDelegate else {
                 return false
             }

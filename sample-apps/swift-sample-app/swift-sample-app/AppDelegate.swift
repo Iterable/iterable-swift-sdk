@@ -155,11 +155,12 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 extension AppDelegate: IterableURLDelegate {
     // return true if we handled the url
     func handle(iterableURL url: URL, inContext _: IterableActionContext) -> Bool {
-        return DeeplinkHandler.handle(url: url)
+        DeeplinkHandler.handle(url: url)
     }
 }
 
-// Mark: IterableCustomActionDelegate
+// MARK: IterableCustomActionDelegate
+
 extension AppDelegate: IterableCustomActionDelegate {
     // handle the cutom action from push
     // return value true/false doesn't matter here, stored for future use

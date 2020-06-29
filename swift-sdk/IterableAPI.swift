@@ -14,7 +14,7 @@ import UIKit
     /// The email of the logged in user that this IterableAPI is using
     public static var email: String? {
         get {
-            return internalImplementation?.email
+            internalImplementation?.email
         } set {
             internalImplementation?.email = newValue
         }
@@ -23,7 +23,7 @@ import UIKit
     /// The userId of the logged in user that this IterableAPI is using
     public static var userId: String? {
         get {
-            return internalImplementation?.userId
+            internalImplementation?.userId
         } set {
             internalImplementation?.userId = newValue
         }
@@ -31,13 +31,13 @@ import UIKit
     
     /// The userInfo dictionary which came with last push
     public static var lastPushPayload: [AnyHashable: Any]? {
-        return internalImplementation?.lastPushPayload
+        internalImplementation?.lastPushPayload
     }
     
     /// Attribution info (campaignId, messageId etc.) for last push open or app link click from an email
     public static var attributionInfo: IterableAttributionInfo? {
         get {
-            return internalImplementation?.attributionInfo
+            internalImplementation?.attributionInfo
         } set {
             internalImplementation?.attributionInfo = newValue
         }
@@ -92,7 +92,7 @@ import UIKit
     @objc(handleUniversalLink:)
     @discardableResult
     public static func handle(universalLink url: URL) -> Bool {
-        return internalImplementation?.handleUniversalLink(url) ?? false
+        internalImplementation?.handleUniversalLink(url) ?? false
     }
     
     /// This will send the device attribute to the back end when registering the device.
@@ -564,7 +564,7 @@ import UIKit
     
     static var internalImplementation: IterableAPIInternal?
     
-    private override init() { super.init() }
+    override private init() { super.init() }
 }
 
 // MARK: - DEPRECATED

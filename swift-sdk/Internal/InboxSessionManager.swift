@@ -23,7 +23,7 @@ class InboxSessionManager {
     var startSessionWhenAppMovesToForeground = false
     
     var isTracking: Bool {
-        return sessionStartInfo != nil
+        sessionStartInfo != nil
     }
     
     init(provideInAppManager: @escaping @autoclosure () -> IterableInAppManagerProtocol = IterableAPI.inAppManager) {
