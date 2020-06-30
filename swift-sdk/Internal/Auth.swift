@@ -12,7 +12,7 @@ protocol AuthProvider: AnyObject {
 struct Auth {
     let userId: String?
     let email: String?
-    var authToken: String?
+    let authToken: String?
     
     var emailOrUserId: EmailOrUserId {
         if let email = email {
