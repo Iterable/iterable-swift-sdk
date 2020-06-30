@@ -110,6 +110,7 @@
 		AC87172621A4E47E00FEA369 /* TestInAppPayloadGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */; };
 		AC8874AA22178BD80075B54B /* InAppContentParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8874A922178BD80075B54B /* InAppContentParser.swift */; };
 		AC89661E2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC89661D2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift */; };
+		AC8A058924AB1FE1002C1103 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8A058824AB1FE1002C1103 /* Environment.swift */; };
 		AC8E9268246284F800BEB68E /* DataFieldsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8E9267246284F800BEB68E /* DataFieldsHelper.swift */; };
 		AC8F35A2239806B500302994 /* InboxViewControllerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8F35A1239806B500302994 /* InboxViewControllerViewModelTests.swift */; };
 		AC90C4CD20D8632E00EECA5D /* IterableAppExtensions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC90C4C420D8632D00EECA5D /* IterableAppExtensions.framework */; };
@@ -120,6 +121,11 @@
 		AC995F9E2167E9FD0099A184 /* CommonExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F9C2167E9FD0099A184 /* CommonExtensions.swift */; };
 		AC9A49AB20F3C8B80007A5A2 /* TestFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9A49AA20F3C8B80007A5A2 /* TestFile.swift */; };
 		AC9A49AE20F41B520007A5A2 /* TestFileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9A49AC20F419AA0007A5A2 /* TestFileTests.swift */; };
+		ACA2A91724AB25D3001DFD17 /* CommonExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F9C2167E9FD0099A184 /* CommonExtensions.swift */; };
+		ACA2A91824AB25E3001DFD17 /* CommonMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F942166EC880099A184 /* CommonMocks.swift */; };
+		ACA2A91924AB25E8001DFD17 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA8D1A42196309C001B1332 /* Common.swift */; };
+		ACA2A91A24AB266F001DFD17 /* Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668320D3370600D46CC9 /* Mocks.swift */; };
+		ACA2A91E24ABB426001DFD17 /* IterableAPISupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA2A91D24ABB426001DFD17 /* IterableAPISupport.swift */; };
 		ACA8D1A321910C66001B1332 /* IterableMessaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA8D1A221910C66001B1332 /* IterableMessaging.swift */; };
 		ACA8D1A52196309C001B1332 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA8D1A42196309C001B1332 /* Common.swift */; };
 		ACA8D1A62196309C001B1332 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA8D1A42196309C001B1332 /* Common.swift */; };
@@ -385,6 +391,7 @@
 		AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestInAppPayloadGenerator.swift; sourceTree = "<group>"; };
 		AC8874A922178BD80075B54B /* InAppContentParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppContentParser.swift; sourceTree = "<group>"; };
 		AC89661D2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAutoRegistrationTests.swift; sourceTree = "<group>"; };
+		AC8A058824AB1FE1002C1103 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		AC8E9267246284F800BEB68E /* DataFieldsHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataFieldsHelper.swift; sourceTree = "<group>"; };
 		AC8F35A1239806B500302994 /* InboxViewControllerViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewControllerViewModelTests.swift; sourceTree = "<group>"; };
 		AC90C4C420D8632D00EECA5D /* IterableAppExtensions.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = IterableAppExtensions.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -397,6 +404,7 @@
 		AC995F9C2167E9FD0099A184 /* CommonExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonExtensions.swift; sourceTree = "<group>"; };
 		AC9A49AA20F3C8B80007A5A2 /* TestFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFile.swift; sourceTree = "<group>"; };
 		AC9A49AC20F419AA0007A5A2 /* TestFileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestFileTests.swift; sourceTree = "<group>"; };
+		ACA2A91D24ABB426001DFD17 /* IterableAPISupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPISupport.swift; sourceTree = "<group>"; };
 		ACA8D1A221910C66001B1332 /* IterableMessaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableMessaging.swift; sourceTree = "<group>"; };
 		ACA8D1A42196309C001B1332 /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		ACA8D1A821965B7D001B1332 /* InAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppTests.swift; sourceTree = "<group>"; };
@@ -675,6 +683,8 @@
 			children = (
 				AC28480924AA44C600C1FC7F /* EndpointTests.swift */,
 				AC28480B24AA44C600C1FC7F /* Info.plist */,
+				AC8A058824AB1FE1002C1103 /* Environment.swift */,
+				ACA2A91D24ABB426001DFD17 /* IterableAPISupport.swift */,
 			);
 			path = "endpoint-tests";
 			sourceTree = "<group>";
@@ -1576,6 +1586,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC28480A24AA44C600C1FC7F /* EndpointTests.swift in Sources */,
+				ACA2A91724AB25D3001DFD17 /* CommonExtensions.swift in Sources */,
+				ACA2A91E24ABB426001DFD17 /* IterableAPISupport.swift in Sources */,
+				ACA2A91824AB25E3001DFD17 /* CommonMocks.swift in Sources */,
+				ACA2A91924AB25E8001DFD17 /* Common.swift in Sources */,
+				AC8A058924AB1FE1002C1103 /* Environment.swift in Sources */,
+				ACA2A91A24AB266F001DFD17 /* Mocks.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
