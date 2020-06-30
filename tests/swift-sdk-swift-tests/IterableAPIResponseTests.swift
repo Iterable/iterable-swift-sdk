@@ -34,8 +34,7 @@ class IterableAPIResponseTests: XCTestCase {
         let urlRequest = apiClient.convertToURLRequest(iterableRequest: iterableRequest)!
         
         verifyIterableHeaders(urlRequest)
-        
-        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.authorization), "Bearer \(authToken)")
+        verifyAuthTokenInHeader(urlRequest, authToken)
     }
     
     func testResponseCode200() {
@@ -191,6 +190,10 @@ class IterableAPIResponseTests: XCTestCase {
         XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.sdkVersion), IterableAPI.sdkVersion)
         XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.apiKey), apiKey)
         XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.contentType.jsonKey), JsonValue.applicationJson.jsonStringValue)
+    }
+    
+    private func verifyAuthTokenInHeader(_ urlRequest: URLRequest, _ authToken: String) {
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.authorization), "Bearer \(authToken)")
     }
     
     private func createApiClient(networkSession: NetworkSessionProtocol) -> ApiClient {
