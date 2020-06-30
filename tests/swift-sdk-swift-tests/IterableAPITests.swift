@@ -179,7 +179,7 @@ class IterableAPITests: XCTestCase {
         XCTAssertNil(internalAPI.userId)
     }
     
-    func testEmailUserIdPersistence() {
+    func testUserIdPersistence() {
         let internalAPI = IterableAPIInternal.initializeForTesting()
         
         internalAPI.userId = IterableAPITests.userId

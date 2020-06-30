@@ -136,18 +136,10 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    func getEmail() -> String? {
-        return _email
-    }
-    
     func setEmail(_ email: String, _ token: String? = nil) {
         authToken = token
         
         self.email = email
-    }
-    
-    func getUserId() -> String? {
-        return _userId
     }
     
     func setUserId(_ userId: String, _ token: String? = nil) {

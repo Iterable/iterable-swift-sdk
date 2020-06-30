@@ -114,11 +114,6 @@ import UIKit
         internalImplementation?.removeDeviceAttribute(name: name)
     }
     
-    /// Get the email address of the user of the SDK instance
-    public static func getEmail() -> String? {
-        return internalImplementation?.getEmail()
-    }
-    
     /// Set the user of the SDK instance to the email address specified
     ///
     /// - parameter email: the email of the user for the SDK instance
@@ -126,11 +121,6 @@ import UIKit
     @objc(setEmail:token:)
     public static func setEmail(_ email: String, _ token: String? = nil) {
         internalImplementation?.setEmail(email, token)
-    }
-    
-    /// Get the user ID of the user of the SDK instance
-    public static func getUserId() -> String? {
-        return internalImplementation?.getUserId()
     }
     
     /// Set the user of the SDK instance to the user ID specified
