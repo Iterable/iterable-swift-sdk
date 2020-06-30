@@ -54,6 +54,8 @@ struct DeviceInfo: Codable {
             return "AppleTV"
         case .carPlay:
             return "CarPlay"
+        case .mac:
+            return "Mac"
         case .unspecified:
             return "Other"
         @unknown default:
