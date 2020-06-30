@@ -118,7 +118,7 @@ class ApiClient {
     }
     
     private let apiKey: String
-    private weak var authProvider: AuthProvider?
+    private let authProvider: AuthProvider?
     private let endPoint: String
     private let networkSession: NetworkSessionProtocol
     private let deviceMetadata: DeviceMetadata

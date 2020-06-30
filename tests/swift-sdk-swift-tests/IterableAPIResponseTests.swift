@@ -10,6 +10,8 @@ import XCTest
 
 class IterableAPIResponseTests: XCTestCase {
     private let apiKey = "zee_api_key"
+    private let email = "user@example.com"
+    private let authToken = "asdf"
     
     func testHeadersInGetRequest() {
         let iterableRequest = IterableRequest.get(GetRequest(path: "", args: ["var1": "value1"]))
@@ -23,6 +25,17 @@ class IterableAPIResponseTests: XCTestCase {
         let urlRequest = createApiClient(networkSession: MockNetworkSession(statusCode: 200)).convertToURLRequest(iterableRequest: iterableRequest)!
         
         verifyIterableHeaders(urlRequest)
+    }
+    
+    func testAuthInHeader() {
+        let apiClient = createApiClientWithAuthToken()
+        
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: ["var1": "value1"], body: [:]))
+        let urlRequest = apiClient.convertToURLRequest(iterableRequest: iterableRequest)!
+        
+        verifyIterableHeaders(urlRequest)
+        
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.authorization), "Bearer \(authToken)")
     }
     
     func testResponseCode200() {
@@ -182,13 +195,25 @@ class IterableAPIResponseTests: XCTestCase {
     
     private func createApiClient(networkSession: NetworkSessionProtocol) -> ApiClient {
         class AuthProviderImpl: AuthProvider {
-            let auth: Auth = Auth(userId: nil, email: "user@example.com")
+            let auth: Auth = Auth(userId: nil, email: "user@example.com", authToken: nil)
         }
         
         return ApiClient(apiKey: apiKey,
                          authProvider: AuthProviderImpl(),
                          endPoint: Endpoint.api,
                          networkSession: networkSession,
+                         deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata)
+    }
+    
+    private func createApiClientWithAuthToken() -> ApiClient {
+        class AuthProviderImpl: AuthProvider {
+            let auth: Auth = Auth(userId: nil, email: "user@example.com", authToken: "asdf")
+        }
+        
+        return ApiClient(apiKey: apiKey,
+                         authProvider: AuthProviderImpl(),
+                         endPoint: Endpoint.api,
+                         networkSession: MockNetworkSession(),
                          deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata)
     }
 }
