@@ -11,7 +11,7 @@ import UserNotifications
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     static var sharedInstance: AppDelegate {
-        return UIApplication.shared.delegate as! AppDelegate
+        UIApplication.shared.delegate as! AppDelegate
     }
     
     var window: UIWindow?

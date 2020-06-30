@@ -49,7 +49,7 @@ final class DataManager {
 
 struct DemoDependencyContainer: DependencyContainerProtocol {
     func createInAppFetcher(apiClient _: ApiClientProtocol) -> InAppFetcherProtocol {
-        return inAppFetcher
+        inAppFetcher
     }
     
     let dateProvider: DateProviderProtocol = SystemDateProvider()

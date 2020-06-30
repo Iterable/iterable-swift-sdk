@@ -52,18 +52,18 @@ class InAppPresenterTests: XCTestCase {
     }
     
     private func getEmptyParameters() -> IterableHtmlMessageViewController.Parameters {
-        return IterableHtmlMessageViewController.Parameters(html: "", isModal: false)
+        IterableHtmlMessageViewController.Parameters(html: "", isModal: false)
     }
     
     private func getEmptyHtmlMessageViewController() -> IterableHtmlMessageViewController {
-        return IterableHtmlMessageViewController(parameters: getEmptyParameters())
+        IterableHtmlMessageViewController(parameters: getEmptyParameters())
     }
     
     private func getEmptyHtmlInAppContent() -> IterableHtmlInAppContent {
-        return IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
+        IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
     }
     
     private func getEmptyInAppMessage() -> IterableInAppMessage {
-        return IterableInAppMessage(messageId: "wasd", campaignId: 1, content: getEmptyHtmlInAppContent())
+        IterableInAppMessage(messageId: "wasd", campaignId: 1, content: getEmptyHtmlInAppContent())
     }
 }

@@ -430,24 +430,24 @@ struct RequestCreator {
     
     private var keyValueForCurrentUser: JsonKeyValueRepresentable? {
         switch auth.emailOrUserId {
-            case let .email(email):
-                return JsonKeyValue(key: JsonKey.email, value: email)
-            case let .userId(userId):
-                return JsonKeyValue(key: JsonKey.userId, value: userId)
-            case .none:
-                return nil
+        case let .email(email):
+            return JsonKeyValue(key: JsonKey.email, value: email)
+        case let .userId(userId):
+            return JsonKeyValue(key: JsonKey.userId, value: userId)
+        case .none:
+            return nil
         }
     }
     
     private func createPostRequest(path: String, body: [AnyHashable: Any]? = nil) -> PostRequest {
-        return PostRequest(path: path,
-                           args: [JsonKey.Header.apiKey: apiKey],
-                           body: body)
+        PostRequest(path: path,
+                    args: [JsonKey.Header.apiKey: apiKey],
+                    body: body)
     }
     
     private func createGetRequest(forPath path: String, withArgs args: [String: String]) -> GetRequest {
-        return GetRequest(path: path,
-                          args: args)
+        GetRequest(path: path,
+                   args: args)
     }
     
     private static func userInterfaceIdiomEnumToString(_ idiom: UIUserInterfaceIdiom) -> String {

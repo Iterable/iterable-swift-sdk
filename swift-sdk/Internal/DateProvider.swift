@@ -13,6 +13,6 @@ class SystemDateProvider: DateProviderProtocol {
     public init() {}
     
     public var currentDate: Date {
-        return Date()
+        Date()
     }
 }

@@ -106,7 +106,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     }
     
     func getUnreadInboxMessagesCount() -> Int {
-        return getInboxMessages().filter { $0.read == false }.count
+        getInboxMessages().filter { $0.read == false }.count
     }
     
     func createInboxMessageViewController(for message: IterableInAppMessage, withInboxMode inboxMode: IterableInboxViewController.InboxMode, inboxSessionId: String? = nil) -> UIViewController? {
@@ -183,7 +183,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     }
     
     func getMessage(withId id: String) -> IterableInAppMessage? {
-        return messagesMap[id]
+        messagesMap[id]
     }
     
     func isOkToShowNow(message: IterableInAppMessage) -> Bool {
@@ -227,7 +227,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     
     // messages are new messages coming from the server
     private func mergeMessages(_ messages: [IterableInAppMessage]) -> MergeMessagesResult {
-        return MessagesObtainedHandler(messagesMap: messagesMap, messages: messages).handle()
+        MessagesObtainedHandler(messagesMap: messagesMap, messages: messages).handle()
     }
     
     private func processMergedMessages(appIsReady: Bool, mergeMessagesResult: MergeMessagesResult) -> Bool {
@@ -271,7 +271,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     
     // Not a pure function.
     private func showMessage(fromMessagesProcessorResult messagesProcessorResult: MessagesProcessorResult) {
-        if case MessagesProcessorResult.show(let message, _) = messagesProcessorResult {
+        if case let MessagesProcessorResult.show(message, _) = messagesProcessorResult {
             lastDisplayTime = dateProvider.currentDate
             ITBDebug("Setting last display time: \(String(describing: lastDisplayTime))")
             
@@ -393,7 +393,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     // How long do we have to wait before showing the message
     // > 0 means wait, otherwise we are good to show
     private func getInAppShowingWaitTimeInterval() -> TimeInterval {
-        return InAppManager.getWaitTimeInterval(fromLastTime: lastDismissedTime, currentTime: dateProvider.currentDate, gap: retryInterval)
+        InAppManager.getWaitTimeInterval(fromLastTime: lastDismissedTime, currentTime: dateProvider.currentDate, gap: retryInterval)
     }
     
     // How long do we have to wait?
@@ -499,7 +499,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     }
     
     fileprivate static func isValid(message: IterableInAppMessage, currentDate: Date) -> Bool {
-        return message.consumed == false && isExpired(message: message, currentDate: currentDate) == false
+        message.consumed == false && isExpired(message: message, currentDate: currentDate) == false
     }
     
     fileprivate static func getAppIsReady(applicationStateProvider: ApplicationStateProviderProtocol,

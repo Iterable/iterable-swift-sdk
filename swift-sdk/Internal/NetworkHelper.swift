@@ -17,13 +17,13 @@ struct SendRequestError: Error {
     }
     
     static func createErroredFuture<T>(reason: String? = nil) -> Future<T, SendRequestError> {
-        return Promise<T, SendRequestError>(error: SendRequestError(reason: reason))
+        Promise<T, SendRequestError>(error: SendRequestError(reason: reason))
     }
 }
 
 extension SendRequestError: LocalizedError {
     var localizedDescription: String {
-        return reason ?? ""
+        reason ?? ""
     }
 }
 

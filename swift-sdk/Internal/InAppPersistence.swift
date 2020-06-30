@@ -73,15 +73,15 @@ extension IterableInAppTrigger {
     static let neverTrigger = create(withTriggerType: .never)
     
     static func create(withTriggerType triggerType: IterableInAppTriggerType) -> IterableInAppTrigger {
-        return IterableInAppTrigger(dict: createTriggerDict(forTriggerType: triggerType))
+        IterableInAppTrigger(dict: createTriggerDict(forTriggerType: triggerType))
     }
     
     static func createDefaultTriggerDict() -> [AnyHashable: Any] {
-        return createTriggerDict(forTriggerType: .defaultTriggerType)
+        createTriggerDict(forTriggerType: .defaultTriggerType)
     }
     
     static func createTriggerDict(forTriggerType triggerType: IterableInAppTriggerType) -> [AnyHashable: Any] {
-        return [JsonKey.InApp.type: String(describing: triggerType)]
+        [JsonKey.InApp.type: String(describing: triggerType)]
     }
 }
 
@@ -278,7 +278,7 @@ extension IterableInAppMessage: Codable {
     }
     
     private static func createDefaultContent() -> IterableInAppContent {
-        return IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
+        IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
     }
     
     private static func serialize(customPayload: [AnyHashable: Any]?) -> Data? {

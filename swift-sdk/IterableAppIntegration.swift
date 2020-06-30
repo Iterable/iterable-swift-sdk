@@ -53,7 +53,7 @@ import UserNotifications
     // MARK: Private
     
     // This class is a utility facade. Don't initialize this class
-    private override init() {
+    override private init() {
         super.init()
     }
     

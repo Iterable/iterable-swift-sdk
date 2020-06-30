@@ -196,7 +196,7 @@ public enum JsonKey: String, JsonKeyRepresentable {
     }
     
     public var jsonKey: String {
-        return rawValue
+        rawValue
     }
 }
 
@@ -224,11 +224,11 @@ public enum JsonValue: String, JsonValueRepresentable {
     }
     
     public var jsonStringValue: String {
-        return rawValue
+        rawValue
     }
     
     public var jsonValue: Any {
-        return rawValue
+        rawValue
     }
 }
 
@@ -276,31 +276,31 @@ public enum JsonValue: String, JsonValueRepresentable {
 
 extension Int: JsonValueRepresentable {
     public var jsonValue: Any {
-        return self
+        self
     }
 }
 
 extension String: JsonValueRepresentable {
     public var jsonValue: Any {
-        return self
+        self
     }
 }
 
 extension Bool: JsonValueRepresentable {
     public var jsonValue: Any {
-        return self
+        self
     }
 }
 
 extension Dictionary: JsonValueRepresentable {
     public var jsonValue: Any {
-        return self
+        self
     }
 }
 
 extension Array: JsonValueRepresentable where Element: JsonValueRepresentable {
     public var jsonValue: Any {
-        return self
+        self
     }
 }
 

@@ -22,11 +22,11 @@ protocol InAppDisplayerProtocol {
 
 class InAppDisplayer: InAppDisplayerProtocol {
     func isShowingInApp() -> Bool {
-        return InAppDisplayer.isShowingIterableMessage()
+        InAppDisplayer.isShowingIterableMessage()
     }
     
     func showInApp(message: IterableInAppMessage) -> ShowResult {
-        return InAppDisplayer.show(iterableMessage: message)
+        InAppDisplayer.show(iterableMessage: message)
     }
     
     /**

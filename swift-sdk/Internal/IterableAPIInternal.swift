@@ -18,7 +18,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     var email: String? {
         get {
-            return _email
+            _email
         } set {
             guard newValue != _email else {
                 return
@@ -37,7 +37,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     var userId: String? {
         get {
-            return _userId
+            _userId
         } set {
             guard newValue != _userId else {
                 return
@@ -65,18 +65,18 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     var deviceMetadata: DeviceMetadata {
-        return DeviceMetadata(deviceId: deviceId,
-                              platform: JsonValue.iOS.jsonStringValue,
-                              appPackageName: Bundle.main.appPackageName ?? "")
+        DeviceMetadata(deviceId: deviceId,
+                       platform: JsonValue.iOS.jsonStringValue,
+                       appPackageName: Bundle.main.appPackageName ?? "")
     }
     
     var lastPushPayload: [AnyHashable: Any]? {
-        return localStorage.getPayload(currentDate: dateProvider.currentDate)
+        localStorage.getPayload(currentDate: dateProvider.currentDate)
     }
     
     var attributionInfo: IterableAttributionInfo? {
         get {
-            return localStorage.getAttributionInfo(currentDate: dateProvider.currentDate)
+            localStorage.getAttributionInfo(currentDate: dateProvider.currentDate)
         } set {
             let expiration = Calendar.current.date(byAdding: .hour,
                                                    value: Const.UserDefaults.attributionInfoExpiration,
@@ -86,7 +86,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     var auth: Auth {
-        return Auth(userId: userId, email: email, authToken: authToken)
+        Auth(userId: userId, email: email, authToken: authToken)
     }
     
     lazy var inAppManager: IterableInternalInAppManagerProtocol = {
@@ -114,7 +114,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     static func defaultOnSuccess(identifier: String) -> OnSuccessHandler {
-        return { data in
+        { data in
             if let data = data {
                 ITBInfo("\(identifier) succeeded, got response: \(data)")
             } else {
@@ -124,7 +124,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     static func defaultOnFailure(identifier: String) -> OnFailureHandler {
-        return { reason, data in
+        { reason, data in
             var toLog = "\(identifier) failed:"
             if let reason = reason {
                 toLog += ", \(reason)"
@@ -390,7 +390,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     private func isEitherUserIdOrEmailSet() -> Bool {
-        return IterableUtil.isNotNullOrEmpty(string: _email) || IterableUtil.isNotNullOrEmpty(string: _userId)
+        IterableUtil.isNotNullOrEmpty(string: _email) || IterableUtil.isNotNullOrEmpty(string: _userId)
     }
     
     private func logoutPreviousUser() {
@@ -666,7 +666,7 @@ extension IterableAPIInternal {
     
     // deprecated - will be removed in version 6.3.x or above
     @discardableResult func getAndTrack(deepLink: URL, callbackBlock: @escaping ITEActionBlock) -> Future<IterableAttributionInfo?, Error>? {
-        return deepLinkManager.getAndTrack(deepLink: deepLink, callbackBlock: callbackBlock).onSuccess { attributionInfo in
+        deepLinkManager.getAndTrack(deepLink: deepLink, callbackBlock: callbackBlock).onSuccess { attributionInfo in
             if let attributionInfo = attributionInfo {
                 self.attributionInfo = attributionInfo
             }

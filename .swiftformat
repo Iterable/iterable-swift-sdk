@@ -1,3 +1,4 @@
 --disable strongOutlets
 --trimwhitespace nonblank-lines
 --exclude **/Dwifft
+--indentcase true

@@ -63,11 +63,11 @@ class MockNetworkSession: NetworkSessionProtocol {
     }
     
     func getRequestBody() -> [AnyHashable: Any] {
-        return MockNetworkSession.json(fromData: request!.httpBody!)
+        MockNetworkSession.json(fromData: request!.httpBody!)
     }
     
     static func json(fromData data: Data) -> [AnyHashable: Any] {
-        return try! JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
+        try! JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
     }
     
     private func data(for urlAbsoluteString: String?) -> Data? {
@@ -90,6 +90,6 @@ class MockNetworkSession: NetworkSessionProtocol {
 
 extension Dictionary where Key == AnyHashable {
     func toJsonData() -> Data {
-        return try! JSONSerialization.data(withJSONObject: self, options: [])
+        try! JSONSerialization.data(withJSONObject: self, options: [])
     }
 }

@@ -13,7 +13,7 @@ class InboxImpressionTracker {
         let duration: TimeInterval
         
         func toIterableInboxImpression() -> IterableInboxImpression {
-            return IterableInboxImpression(messageId: messageId, silentInbox: silentInbox, displayCount: displayCount, displayDuration: duration)
+            IterableInboxImpression(messageId: messageId, silentInbox: silentInbox, displayCount: displayCount, displayDuration: duration)
         }
     }
     
@@ -89,6 +89,6 @@ extension InboxImpressionTracker.RowInfo: Hashable {
 
 extension InboxImpressionTracker.RowInfo: Equatable {
     static func == (lhs: InboxImpressionTracker.RowInfo, rhs: InboxImpressionTracker.RowInfo) -> Bool {
-        return lhs.messageId == rhs.messageId
+        lhs.messageId == rhs.messageId
     }
 }

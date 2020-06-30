@@ -36,15 +36,15 @@ class InboxMessageViewModel {
     }
     
     private static func getTitle(message: IterableInAppMessage) -> String {
-        return message.inboxMetadata?.title ?? ""
+        message.inboxMetadata?.title ?? ""
     }
     
     private static func getSubtitle(message: IterableInAppMessage) -> String? {
-        return message.inboxMetadata?.subtitle
+        message.inboxMetadata?.subtitle
     }
     
     private static func getImageUrl(message: IterableInAppMessage) -> String? {
-        return message.inboxMetadata?.icon
+        message.inboxMetadata?.icon
     }
 }
 

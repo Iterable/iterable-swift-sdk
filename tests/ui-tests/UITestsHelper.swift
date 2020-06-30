@@ -27,7 +27,7 @@ struct UITestsHelper {
     }
     
     static func tableCell(withText text: String, inApp app: XCUIApplication) -> XCUIElement {
-        return app.tables.cells.staticTexts[text]
+        app.tables.cells.staticTexts[text]
     }
     
     static func lastElement(query: XCUIElementQuery) -> XCUIElement {
@@ -36,19 +36,19 @@ struct UITestsHelper {
     }
     
     static func lastCell(inApp app: XCUIApplication) -> XCUIElement {
-        return lastElement(query: app.tables.cells)
+        lastElement(query: app.tables.cells)
     }
     
     static func link(withText text: String, inApp app: XCUIApplication) -> XCUIElement {
-        return app.links[text]
+        app.links[text]
     }
     
     static func button(withText text: String, inApp app: XCUIApplication) -> XCUIElement {
-        return app.buttons[text]
+        app.buttons[text]
     }
     
     static func navButton(withText text: String, inApp app: XCUIApplication) -> XCUIElement {
-        return app.navigationBars.buttons[text]
+        app.navigationBars.buttons[text]
     }
 }
 
@@ -58,23 +58,23 @@ extension XCUIApplication {
     }
     
     func tableCell(withText text: String) -> XCUIElement {
-        return UITestsHelper.tableCell(withText: text, inApp: self)
+        UITestsHelper.tableCell(withText: text, inApp: self)
     }
     
     func lastCell() -> XCUIElement {
-        return UITestsHelper.lastCell(inApp: self)
+        UITestsHelper.lastCell(inApp: self)
     }
     
     func link(withText text: String) -> XCUIElement {
-        return UITestsHelper.link(withText: text, inApp: self)
+        UITestsHelper.link(withText: text, inApp: self)
     }
     
     func button(withText text: String) -> XCUIElement {
-        return UITestsHelper.button(withText: text, inApp: self)
+        UITestsHelper.button(withText: text, inApp: self)
     }
     
     func navButton(withText text: String) -> XCUIElement {
-        return UITestsHelper.navButton(withText: text, inApp: self)
+        UITestsHelper.navButton(withText: text, inApp: self)
     }
 }
 

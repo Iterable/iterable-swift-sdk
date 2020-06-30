@@ -33,7 +33,7 @@ public class IterableAction: NSObject {
     public var userInput: String?
     
     public func isOpenUrl() -> Bool {
-        return type == IterableAction.actionTypeOpenUrl
+        type == IterableAction.actionTypeOpenUrl
     }
     
     /**
@@ -43,12 +43,12 @@ public class IterableAction: NSObject {
      */
     @objc(actionFromDictionary:)
     public static func action(fromDictionary dictionary: [AnyHashable: Any]) -> IterableAction? {
-        return IterableAction(withDictionary: dictionary)
+        IterableAction(withDictionary: dictionary)
     }
     
     @objc(actionOpenUrl:)
     public static func actionOpenUrl(fromUrlString: String) -> IterableAction? {
-        return IterableAction(withDictionary: ["type": IterableAction.actionTypeOpenUrl, "data": fromUrlString])
+        IterableAction(withDictionary: ["type": IterableAction.actionTypeOpenUrl, "data": fromUrlString])
     }
     
     // Private
