@@ -534,7 +534,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     func start() -> Future<Bool, Error> {
         ITBInfo()
         
-        updateSdkVersion()
+        updateSDKVersion()
         
         checkForDeferredDeepLink()
         
@@ -622,7 +622,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    private func updateSdkVersion() {
+    private func updateSDKVersion() {
         if let lastVersion = localStorage.sdkVersion, lastVersion != IterableAPI.sdkVersion {
             performUpgrade(lastVersion: lastVersion, newVersion: IterableAPI.sdkVersion)
         } else {
