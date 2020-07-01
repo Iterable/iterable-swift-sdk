@@ -255,9 +255,11 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                              unsubscribedMessageTypeIds: [NSNumber]?,
                              subscribedMessageTypeIds: [NSNumber]?,
                              campaignId: NSNumber?,
-                             templateId: NSNumber?) {
-        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess(identifier: "updateSubscriptions"),
-                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "updateSubscriptions"),
+                             templateId: NSNumber?,
+                             onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "updateSubscriptions"),
+                             onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "updateSubscriptions")) {
+        IterableAPIInternal.call(successHandler: onSuccess,
+                                 andFailureHandler: onFailure,
                                  forResult: apiClient.updateSubscriptions(emailListIds,
                                                                           unsubscribedChannelIds: unsubscribedChannelIds,
                                                                           unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,

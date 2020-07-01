@@ -135,6 +135,62 @@ class EndpointTests: XCTestCase {
         wait(for: [expectation1], timeout: 15)
     }
     
+    func test7UpdateSubscriptions() throws {
+        let expectation1 = expectation(description: #function)
+        let api = IterableAPIInternal.initializeForTesting(apiKey: EndpointTests.apiKey,
+                                                           networkSession: URLSession(configuration: .default),
+                                                           notificationStateProvider: MockNotificationStateProvider(enabled: true))
+        api.email = "user@example.com"
+        
+        api.updateSubscriptions([382],
+                  unsubscribedChannelIds: [7845, 1048],
+                  unsubscribedMessageTypeIds: [5671, 9087],
+                  subscribedMessageTypeIds: [1234],
+                  campaignId: EndpointTests.campaignId,
+                  templateId: EndpointTests.templateId,
+                  onSuccess: { _ in
+                      expectation1.fulfill()
+        }) { reason, _ in
+            XCTFail(reason ?? "failed")
+        }
+        
+        wait(for: [expectation1], timeout: 15)
+    }
+    
+    func test8DisableDeviceForCurrentUserFail() throws {
+        let expectation1 = expectation(description: #function)
+        let api = IterableAPIInternal.initializeForTesting(apiKey: EndpointTests.apiKey,
+                                                           networkSession: URLSession(configuration: .default),
+                                                           notificationStateProvider: MockNotificationStateProvider(enabled: true))
+        api.email = "user@example.com"
+        
+        api.disableDeviceForCurrentUser(
+            withOnSuccess: { _ in
+                XCTFail("device should have been disabled")
+        }) { reason, _ in
+            expectation1.fulfill()
+        }
+        
+        wait(for: [expectation1], timeout: 15)
+    }
+
+    func test9DisableDeviceForAllUsersFail() throws {
+        let expectation1 = expectation(description: #function)
+        let api = IterableAPIInternal.initializeForTesting(apiKey: EndpointTests.apiKey,
+                                                           networkSession: URLSession(configuration: .default),
+                                                           notificationStateProvider: MockNotificationStateProvider(enabled: true))
+        api.email = "user@example.com"
+        
+        api.disableDeviceForAllUsers(
+            withOnSuccess: { _ in
+                XCTFail("device should have been disabled")
+        }) { reason, _ in
+            expectation1.fulfill()
+        }
+        
+        wait(for: [expectation1], timeout: 15)
+    }
+
     private static let campaignId = NSNumber(1_328_538)
     private static let templateId = NSNumber(1_849_323)
     
