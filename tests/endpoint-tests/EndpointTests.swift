@@ -48,6 +48,96 @@ class EndpointTests: XCTestCase {
         wait(for: [expectation1, expectation2], timeout: 15)
     }
     
+    func test3TrackPurchase() throws {
+        let expectation1 = expectation(description: #function)
+        let api = IterableAPIInternal.initializeForTesting(apiKey: EndpointTests.apiKey,
+                                                           networkSession: URLSession(configuration: .default),
+                                                           notificationStateProvider: MockNotificationStateProvider(enabled: true))
+        api.email = "user@example.com"
+        
+        let items = [
+            CommerceItem(id: "1", name: "Item1", price: 20.23, quantity: 1),
+            CommerceItem(id: "2", name: "Item2", price: 100.54, quantity: 1),
+        ]
+        api.trackPurchase(120.77,
+                          items: items,
+                          onSuccess: { _ in
+                              expectation1.fulfill()
+        }) { _, _ in
+            XCTFail()
+        }
+        
+        wait(for: [expectation1], timeout: 15)
+    }
+    
+    func test4TrackPushOpen() throws {
+        let expectation1 = expectation(description: #function)
+        let api = IterableAPIInternal.initializeForTesting(apiKey: EndpointTests.apiKey,
+                                                           networkSession: URLSession(configuration: .default),
+                                                           notificationStateProvider: MockNotificationStateProvider(enabled: true))
+        api.email = "user@example.com"
+        
+        api.trackPushOpen(EndpointTests.campaignId,
+                          templateId: EndpointTests.templateId,
+                          messageId: "msg_1",
+                          appAlreadyRunning: true,
+                          dataFields: ["data_field1": "value1"],
+                          onSuccess: { _ in
+                              expectation1.fulfill()
+        }) { reason, _ in
+            XCTFail(reason ?? "failed")
+        }
+        
+        wait(for: [expectation1], timeout: 15)
+    }
+    
+    func test5TrackPushOpenWithPushPayload() throws {
+        let expectation1 = expectation(description: #function)
+        let api = IterableAPIInternal.initializeForTesting(apiKey: EndpointTests.apiKey,
+                                                           networkSession: URLSession(configuration: .default),
+                                                           notificationStateProvider: MockNotificationStateProvider(enabled: true))
+        api.email = "user@example.com"
+        
+        let pushPayload = [
+            "itbl": [
+                "isGhostPush": false,
+                "campaignId": EndpointTests.campaignId,
+                "templateId": EndpointTests.templateId,
+                "messageId": "msg_1",
+            ],
+        ]
+        api.trackPushOpen(pushPayload,
+                          dataFields: ["data_field1": "value1"],
+                          onSuccess: { _ in
+                              expectation1.fulfill()
+        }) { reason, _ in
+            XCTFail(reason ?? "failed")
+        }
+        
+        wait(for: [expectation1], timeout: 15)
+    }
+    
+    func test6TrackEvent() throws {
+        let expectation1 = expectation(description: #function)
+        let api = IterableAPIInternal.initializeForTesting(apiKey: EndpointTests.apiKey,
+                                                           networkSession: URLSession(configuration: .default),
+                                                           notificationStateProvider: MockNotificationStateProvider(enabled: true))
+        api.email = "user@example.com"
+        
+        api.track("event1",
+                  dataFields: ["data_field1": "value1"],
+                  onSuccess: { _ in
+                      expectation1.fulfill()
+        }) { reason, _ in
+            XCTFail(reason ?? "failed")
+        }
+        
+        wait(for: [expectation1], timeout: 15)
+    }
+    
+    private static let campaignId = NSNumber(1_328_538)
+    private static let templateId = NSNumber(1_849_323)
+    
     private static var apiKey: String {
         Environment.get(key: .apiKey)!
     }
