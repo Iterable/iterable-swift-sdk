@@ -192,7 +192,7 @@ class IterableAPITests: XCTestCase {
         
         let emailToken = "asdf"
         
-        internalAPI.setEmail(IterableAPITests.email, emailToken)
+        internalAPI.setEmail(IterableAPITests.email, withToken: emailToken)
         XCTAssertEqual(internalAPI.email, IterableAPITests.email)
         XCTAssertNil(internalAPI.userId)
         XCTAssertEqual(internalAPI.auth.authToken, emailToken)
@@ -203,7 +203,7 @@ class IterableAPITests: XCTestCase {
         
         let userIdToken = "qwer"
         
-        internalAPI.setUserId(IterableAPITests.userId, userIdToken)
+        internalAPI.setUserId(IterableAPITests.userId, withToken: userIdToken)
         XCTAssertEqual(internalAPI.userId, IterableAPITests.userId)
         XCTAssertNil(internalAPI.email)
         XCTAssertEqual(internalAPI.auth.authToken, userIdToken)

@@ -120,7 +120,7 @@ import UIKit
     /// - parameter token: the associated authentication token for the user
     @objc(setEmail:withToken:)
     public static func setEmail(_ email: String, withToken token: String? = nil) {
-        internalImplementation?.setEmail(email, token)
+        internalImplementation?.setEmail(email, withToken: token)
     }
     
     /// Set the user of the SDK instance to the user ID specified
@@ -129,7 +129,7 @@ import UIKit
     /// - parameter token: the associated authentication token for the user
     @objc(setUserId:withToken:)
     public static func setUserId(_ userId: String, withToken token: String? = nil) {
-        internalImplementation?.setUserId(userId, token)
+        internalImplementation?.setUserId(userId, withToken: token)
     }
     
     /// Use this property for getting and showing in-app messages.
