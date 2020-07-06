@@ -1030,7 +1030,6 @@
 				AC2263DB20CF49B8009800EB /* Frameworks */,
 				AC2263DC20CF49B8009800EB /* Headers */,
 				AC2263DD20CF49B8009800EB /* Resources */,
-				ACEC0AA522FC4E750011885A /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1068,7 +1067,6 @@
 				AC7B142720D02CE200877BFE /* Sources */,
 				AC7B142820D02CE200877BFE /* Frameworks */,
 				AC7B142920D02CE200877BFE /* Resources */,
-				ACEC0AA822FC4F0E0011885A /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1092,7 +1090,6 @@
 				AC90C4C020D8632D00EECA5D /* Frameworks */,
 				AC90C4C120D8632D00EECA5D /* Headers */,
 				AC90C4C220D8632D00EECA5D /* Resources */,
-				ACEC0AA622FC4EC90011885A /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1110,7 +1107,6 @@
 				AC90C4C820D8632E00EECA5D /* Sources */,
 				AC90C4C920D8632E00EECA5D /* Frameworks */,
 				AC90C4CA20D8632E00EECA5D /* Resources */,
-				ACEC0AA922FC4F250011885A /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1130,7 +1126,6 @@
 				ACC8775F215C20B50097E29B /* Sources */,
 				ACC87760215C20B50097E29B /* Frameworks */,
 				ACC87761215C20B50097E29B /* Resources */,
-				ACEC0AAA22FC4F3B0011885A /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1187,7 +1182,6 @@
 				ACF560D020E443BF000AAC23 /* Frameworks */,
 				ACF560D120E443BF000AAC23 /* Resources */,
 				ACC87771215C23CC0097E29B /* Embed Frameworks */,
-				ACEC0AA722FC4EFB0011885A /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1207,7 +1201,6 @@
 				ACFF429224656BDF00FDF10D /* Frameworks */,
 				ACFF429424656BDF00FDF10D /* Resources */,
 				ACFF429824656BDF00FDF10D /* Embed Frameworks */,
-				ACFF429A24656BDF00FDF10D /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1396,128 +1389,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		ACEC0AA522FC4E750011885A /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# if which swiftformat >/dev/null; then\n#  swiftformat .\n# else\n#   echo \"warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat\"\n# fi\n";
-		};
-		ACEC0AA622FC4EC90011885A /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if which swiftformat >/dev/null; then\n  swiftformat .\nelse\n  echo \"warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat\"\nfi\n";
-		};
-		ACEC0AA722FC4EFB0011885A /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if which swiftformat >/dev/null; then\n  swiftformat .\nelse\n  echo \"warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat\"\nfi\n";
-		};
-		ACEC0AA822FC4F0E0011885A /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if which swiftformat >/dev/null; then\n  swiftformat .\nelse\n  echo \"warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat\"\nfi\n";
-		};
-		ACEC0AA922FC4F250011885A /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if which swiftformat >/dev/null; then\n  swiftformat .\nelse\n  echo \"warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat\"\nfi\n";
-		};
-		ACEC0AAA22FC4F3B0011885A /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if which swiftformat >/dev/null; then\n  swiftformat .\nelse\n  echo \"warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat\"\nfi\n";
-		};
-		ACFF429A24656BDF00FDF10D /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if which swiftformat >/dev/null; then\n  swiftformat .\nelse\n  echo \"warning: SwiftFormat not installed, download from https://github.com/nicklockwood/SwiftFormat\"\nfi\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		AC2263DA20CF49B8009800EB /* Sources */ = {
