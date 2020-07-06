@@ -20,18 +20,15 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         get {
             _email
         } set {
-            guard newValue != _email else {
-                return
+            if newValue == nil {
+                logoutPreviousUser()
+            } else {
+                guard let newEmail = newValue else {
+                    return
+                }
+                
+                setEmail(newEmail)
             }
-            
-            logoutPreviousUser()
-            
-            _email = newValue
-            _userId = nil
-            
-            storeAuthData()
-            
-            loginNewUser()
         }
     }
     
@@ -39,18 +36,15 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         get {
             _userId
         } set {
-            guard newValue != _userId else {
-                return
+            if newValue == nil {
+                logoutPreviousUser()
+            } else {
+                guard let newUserId = newValue else {
+                    return
+                }
+                
+                setUserId(newUserId)
             }
-            
-            logoutPreviousUser()
-            
-            _userId = newValue
-            _email = nil
-            
-            storeAuthData()
-            
-            loginNewUser()
         }
     }
     
@@ -137,15 +131,35 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     func setEmail(_ email: String, withToken token: String? = nil) {
+        guard email != _email else {
+            return
+        }
+        
+        logoutPreviousUser()
+        
+        _email = email
+        _userId = nil
         authToken = token
         
-        self.email = email
+        storeAuthData()
+        
+        loginNewUser()
     }
     
     func setUserId(_ userId: String, withToken token: String? = nil) {
+        guard userId != _userId else {
+            return
+        }
+        
+        logoutPreviousUser()
+        
+        _userId = userId
+        _email = nil
         authToken = token
         
-        self.userId = userId
+        storeAuthData()
+        
+        loginNewUser()
     }
     
     // MARK: - API Request Calls
@@ -406,7 +420,11 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             disableDeviceForCurrentUser()
         }
         
+        _email = nil
+        _userId = nil
         authToken = nil
+        
+        storeAuthData()
         
         _ = inAppManager.reset()
     }

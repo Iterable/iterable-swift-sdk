@@ -24,6 +24,7 @@
 		55B37FEE229F59290042F13A /* InAppPersistenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B37FED229F59290042F13A /* InAppPersistenceTests.swift */; };
 		55B5498423973B5C00243E87 /* InboxSessionManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B5498323973B5C00243E87 /* InboxSessionManagerTests.swift */; };
 		55B549862397462300243E87 /* InboxImpressionTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B549852397462300243E87 /* InboxImpressionTrackerTests.swift */; };
+		55B9F15124B3D33700E8198A /* AuthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B9F15024B3D33700E8198A /* AuthTests.swift */; };
 		55CC257B2462064F00A77FD5 /* InAppPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */; };
 		55D54656239AE5750093ED1E /* LoggingInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D54655239AE5750093ED1E /* LoggingInternal.swift */; };
 		55E6F460238E066400808BCE /* DeferredDeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6F45D238E066400808BCE /* DeferredDeepLinkTests.swift */; };
@@ -307,6 +308,7 @@
 		55B37FED229F59290042F13A /* InAppPersistenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPersistenceTests.swift; sourceTree = "<group>"; };
 		55B5498323973B5C00243E87 /* InboxSessionManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxSessionManagerTests.swift; sourceTree = "<group>"; };
 		55B549852397462300243E87 /* InboxImpressionTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxImpressionTrackerTests.swift; sourceTree = "<group>"; };
+		55B9F15024B3D33700E8198A /* AuthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTests.swift; sourceTree = "<group>"; };
 		55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPresenterTests.swift; sourceTree = "<group>"; };
 		55D54655239AE5750093ED1E /* LoggingInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingInternal.swift; sourceTree = "<group>"; };
 		55E6F45D238E066400808BCE /* DeferredDeepLinkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeferredDeepLinkTests.swift; sourceTree = "<group>"; };
@@ -787,6 +789,7 @@
 				AC87172421A4E3FF00FEA369 /* Helper Classes */,
 				00B6FACF210E8B10007535CF /* Test Files */,
 				00B6FACB210E8484007535CF /* APNSTypeCheckerTests.swift */,
+				55B9F15024B3D33700E8198A /* AuthTests.swift */,
 				5531CDAD22A9C992000D05E2 /* ClassExtensionsTests.swift */,
 				55B37FC0229620D20042F13A /* CommerceItemTests.swift */,
 				55E6F45E238E066400808BCE /* DeepLinkTests.swift */,
@@ -968,11 +971,11 @@
 			isa = PBXGroup;
 			children = (
 				AC995F932166EC310099A184 /* common */,
+				AC28480824AA44C600C1FC7F /* endpoint-tests */,
+				ACDA976F23159C39004C412E /* inbox-ui-tests-app-ui-tests */,
 				AC90C4D220D8632E00EECA5D /* notification-extension-tests */,
 				AC7B142C20D02CE200877BFE /* swift-sdk-swift-tests */,
 				ACC87764215C20B50097E29B /* ui-tests */,
-				ACDA976F23159C39004C412E /* inbox-ui-tests-app-ui-tests */,
-				AC28480824AA44C600C1FC7F /* endpoint-tests */,
 			);
 			path = tests;
 			sourceTree = "<group>";
@@ -1484,6 +1487,7 @@
 				AC8F35A2239806B500302994 /* InboxViewControllerViewModelTests.swift in Sources */,
 				AC995F9A2166EEB50099A184 /* CommonMocks.swift in Sources */,
 				5585DF8F22A73390000A32B9 /* IterableInboxViewControllerTests.swift in Sources */,
+				55B9F15124B3D33700E8198A /* AuthTests.swift in Sources */,
 				551E5C10234D485A005FEE9E /* DeprecatedFunctionsTests.swift in Sources */,
 				ACED4C01213F50B30055A497 /* LoggingTests.swift in Sources */,
 				55B37FC42297135F0042F13A /* NotificationMetadataTests.swift in Sources */,
