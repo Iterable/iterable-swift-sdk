@@ -600,7 +600,7 @@ class InboxTests: XCTestCase {
         wait(for: [expectation3, expectation1, expectation2], timeout: testExpectationTimeout)
     }
     
-    func testLogout() {
+    func testInboxLogoutClearMessageQueue() {
         TestUtils.clearTestUserDefaults()
         
         let expectation1 = expectation(description: "initial messages sent")
@@ -615,6 +615,7 @@ class InboxTests: XCTestCase {
             inAppFetcher: mockInAppFetcher,
             notificationCenter: mockNotificationCenter
         )
+        
         internalAPI.email = "user@example.com"
         
         let payload = """
@@ -639,6 +640,7 @@ class InboxTests: XCTestCase {
             mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) {
                 expectation2.fulfill()
             }
+            
             internalAPI.email = nil
         }
         

@@ -10,6 +10,8 @@ import XCTest
 
 class IterableAPIResponseTests: XCTestCase {
     private let apiKey = "zee_api_key"
+    private let email = "user@example.com"
+    private let authToken = "asdf"
     
     func testHeadersInGetRequest() {
         let iterableRequest = IterableRequest.get(GetRequest(path: "", args: ["var1": "value1"]))
@@ -25,11 +27,14 @@ class IterableAPIResponseTests: XCTestCase {
         verifyIterableHeaders(urlRequest)
     }
     
-    fileprivate func verifyIterableHeaders(_ urlRequest: URLRequest) {
-        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.sdkPlatform), JsonValue.iOS.jsonStringValue)
-        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.sdkVersion), IterableAPI.sdkVersion)
-        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.apiKey), apiKey)
-        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: "Content-Type"), "application/json")
+    func testAuthInHeader() {
+        let apiClient = createApiClientWithAuthToken()
+        
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: ["var1": "value1"], body: [:]))
+        let urlRequest = apiClient.convertToURLRequest(iterableRequest: iterableRequest)!
+        
+        verifyIterableHeaders(urlRequest)
+        verifyAuthTokenInHeader(urlRequest, authToken)
     }
     
     func testResponseCode200() {
@@ -84,7 +89,7 @@ class IterableAPIResponseTests: XCTestCase {
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
-    func testResponseCode400WitMessage() {
+    func testResponseCode400WithMessage() {
         let xpectation = expectation(description: "400 with message")
         let networkSession = MockNetworkSession(statusCode: 400, json: ["msg": "Test error"])
         let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
@@ -163,6 +168,7 @@ class IterableAPIResponseTests: XCTestCase {
             response.responseTime = responseTime
             return response
         }
+        
         let networkSession = URLSession(configuration: URLSessionConfiguration.default)
         
         let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
@@ -179,9 +185,20 @@ class IterableAPIResponseTests: XCTestCase {
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
+    private func verifyIterableHeaders(_ urlRequest: URLRequest) {
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.sdkPlatform), JsonValue.iOS.jsonStringValue)
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.sdkVersion), IterableAPI.sdkVersion)
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.apiKey), apiKey)
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.contentType.jsonKey), JsonValue.applicationJson.jsonStringValue)
+    }
+    
+    private func verifyAuthTokenInHeader(_ urlRequest: URLRequest, _ authToken: String) {
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.authorization), "Bearer \(authToken)")
+    }
+    
     private func createApiClient(networkSession: NetworkSessionProtocol) -> ApiClient {
         class AuthProviderImpl: AuthProvider {
-            let auth: Auth = Auth(userId: nil, email: "user@example.com")
+            let auth: Auth = Auth(userId: nil, email: "user@example.com", authToken: nil)
         }
         
         return ApiClient(apiKey: apiKey,
@@ -189,5 +206,19 @@ class IterableAPIResponseTests: XCTestCase {
                          endPoint: Endpoint.api,
                          networkSession: networkSession,
                          deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata)
+    }
+    
+    private func createApiClientWithAuthToken() -> ApiClient {
+        return ApiClient(apiKey: apiKey,
+                         authProvider: self,
+                         endPoint: Endpoint.api,
+                         networkSession: MockNetworkSession(),
+                         deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata)
+    }
+}
+
+extension IterableAPIResponseTests: AuthProvider {
+    var auth: Auth {
+        Auth(userId: nil, email: email, authToken: authToken)
     }
 }

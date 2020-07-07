@@ -149,7 +149,7 @@ class RequestCreatorTests: XCTestCase {
     }
     
     func testGetInAppMessagesRequestFailure() {
-        let auth = Auth(userId: nil, email: nil)
+        let auth = Auth(userId: nil, email: nil, authToken: nil)
         let requestCreator = RequestCreator(apiKey: apiKey, auth: auth, deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata)
         
         let failingRequest = requestCreator.createGetInAppMessagesRequest(1)
@@ -306,6 +306,6 @@ class RequestCreatorTests: XCTestCase {
 
 extension RequestCreatorTests: AuthProvider {
     var auth: Auth {
-        Auth(userId: nil, email: email)
+        Auth(userId: nil, email: email, authToken: nil)
     }
 }

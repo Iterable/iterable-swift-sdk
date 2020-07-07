@@ -48,6 +48,7 @@ public enum Const {
         static let attributionInfoKey = "itbl_attribution_info_key"
         public static let emailKey = "itbl_email"
         static let userIdKey = "itbl_userid"
+        static let authTokenKey = "itbl_auth_token"
         static let ddlChecked = "itbl_ddl_checked"
         static let deviceId = "itbl_device_id"
         static let sdkVersion = "itbl_sdk_version"
@@ -171,6 +172,7 @@ public enum JsonKey: String, JsonKeyRepresentable {
         static let apiKey = "Api-Key"
         static let sdkVersion = "SDK-Version"
         static let sdkPlatform = "SDK-Platform"
+        static let authorization = "Authorization"
     }
     
     public enum InApp {
@@ -207,6 +209,7 @@ public enum JsonValue: String, JsonValueRepresentable {
     case apnsSandbox = "APNS_SANDBOX"
     case apnsProduction = "APNS"
     case iOS
+    case bearer = "Bearer"
     
     public enum ActionIdentifier {
         static let pushOpenDefault = "default"

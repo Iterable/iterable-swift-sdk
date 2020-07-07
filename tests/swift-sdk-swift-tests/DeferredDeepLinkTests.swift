@@ -12,6 +12,7 @@ class DeferredDeepLinkTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
+        
         TestUtils.clearTestUserDefaults()
     }
     
@@ -25,6 +26,7 @@ class DeferredDeepLinkTests: XCTestCase {
             "templateId": "1",
             "messageId": "1",
         ]
+        
         let networkSession = MockNetworkSession(statusCode: 200, json: json)
         
         let config = IterableConfig()
@@ -35,6 +37,7 @@ class DeferredDeepLinkTests: XCTestCase {
             expectation.fulfill()
             XCTAssertEqual(url.absoluteString, "zeeDestinationUrl")
         }
+        
         config.urlDelegate = urlDelegate
         IterableAPIInternal.initializeForTesting(apiKey: DeferredDeepLinkTests.apiKey, config: config, networkSession: networkSession)
         

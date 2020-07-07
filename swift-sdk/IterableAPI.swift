@@ -114,6 +114,24 @@ import UIKit
         internalImplementation?.removeDeviceAttribute(name: name)
     }
     
+    /// Set the user of the SDK instance to the email address specified
+    ///
+    /// - parameter email: the email of the user for the SDK instance
+    /// - parameter token: the associated authentication token for the user
+    @objc(setEmail:withToken:)
+    public static func setEmail(_ email: String, withToken token: String? = nil) {
+        internalImplementation?.setEmail(email, withToken: token)
+    }
+    
+    /// Set the user of the SDK instance to the user ID specified
+    ///
+    /// - parameter userId: the userId of the user for the SDK instance
+    /// - parameter token: the associated authentication token for the user
+    @objc(setUserId:withToken:)
+    public static func setUserId(_ userId: String, withToken token: String? = nil) {
+        internalImplementation?.setUserId(userId, withToken: token)
+    }
+    
     /// Use this property for getting and showing in-app messages.
     /// This property has no meaning if IterableAPI has not been initialized using
     /// IterableAPI.initialize

@@ -15,6 +15,7 @@
 		5531CDAC22A997A4000D05E2 /* IterableInboxViewControllerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5585DF9022A877E6000A32B9 /* IterableInboxViewControllerUITests.swift */; };
 		5531CDAE22A9C992000D05E2 /* ClassExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5531CDAD22A9C992000D05E2 /* ClassExtensionsTests.swift */; };
 		556FB1EA244FAF6A00EDF6BD /* InAppPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556FB1E9244FAF6A00EDF6BD /* InAppPresenter.swift */; };
+		557AE6BF24A56E5E00B57750 /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557AE6BE24A56E5E00B57750 /* Auth.swift */; };
 		5585DF8F22A73390000A32B9 /* IterableInboxViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5585DF8E22A73390000A32B9 /* IterableInboxViewControllerTests.swift */; };
 		55B37FC1229620D20042F13A /* CommerceItemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B37FC0229620D20042F13A /* CommerceItemTests.swift */; };
 		55B37FC42297135F0042F13A /* NotificationMetadataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B37FC32297135F0042F13A /* NotificationMetadataTests.swift */; };
@@ -23,6 +24,7 @@
 		55B37FEE229F59290042F13A /* InAppPersistenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B37FED229F59290042F13A /* InAppPersistenceTests.swift */; };
 		55B5498423973B5C00243E87 /* InboxSessionManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B5498323973B5C00243E87 /* InboxSessionManagerTests.swift */; };
 		55B549862397462300243E87 /* InboxImpressionTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B549852397462300243E87 /* InboxImpressionTrackerTests.swift */; };
+		55B9F15124B3D33700E8198A /* AuthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B9F15024B3D33700E8198A /* AuthTests.swift */; };
 		55CC257B2462064F00A77FD5 /* InAppPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */; };
 		55D54656239AE5750093ED1E /* LoggingInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D54655239AE5750093ED1E /* LoggingInternal.swift */; };
 		55E6F460238E066400808BCE /* DeferredDeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6F45D238E066400808BCE /* DeferredDeepLinkTests.swift */; };
@@ -296,6 +298,7 @@
 		551E5C0F234D485A005FEE9E /* DeprecatedFunctionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeprecatedFunctionsTests.swift; sourceTree = "<group>"; };
 		5531CDAD22A9C992000D05E2 /* ClassExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassExtensionsTests.swift; sourceTree = "<group>"; };
 		556FB1E9244FAF6A00EDF6BD /* InAppPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPresenter.swift; sourceTree = "<group>"; };
+		557AE6BE24A56E5E00B57750 /* Auth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Auth.swift; sourceTree = "<group>"; };
 		5585DF8E22A73390000A32B9 /* IterableInboxViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxViewControllerTests.swift; sourceTree = "<group>"; };
 		5585DF9022A877E6000A32B9 /* IterableInboxViewControllerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxViewControllerUITests.swift; sourceTree = "<group>"; };
 		55B37FC0229620D20042F13A /* CommerceItemTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommerceItemTests.swift; sourceTree = "<group>"; };
@@ -305,6 +308,7 @@
 		55B37FED229F59290042F13A /* InAppPersistenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPersistenceTests.swift; sourceTree = "<group>"; };
 		55B5498323973B5C00243E87 /* InboxSessionManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxSessionManagerTests.swift; sourceTree = "<group>"; };
 		55B549852397462300243E87 /* InboxImpressionTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxImpressionTrackerTests.swift; sourceTree = "<group>"; };
+		55B9F15024B3D33700E8198A /* AuthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTests.swift; sourceTree = "<group>"; };
 		55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPresenterTests.swift; sourceTree = "<group>"; };
 		55D54655239AE5750093ED1E /* LoggingInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingInternal.swift; sourceTree = "<group>"; };
 		55E6F45D238E066400808BCE /* DeferredDeepLinkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeferredDeepLinkTests.swift; sourceTree = "<group>"; };
@@ -758,6 +762,7 @@
 				AC3C10F7213F43AC00A9B839 /* Logging */,
 				AC219C4B225FE2B300B98631 /* UI */,
 				AC72A0AC20CF4C08004D7997 /* Util */,
+				557AE6BE24A56E5E00B57750 /* Auth.swift */,
 				AC2C667D20D3111900D46CC9 /* DateProvider.swift */,
 				AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */,
 				AC72A0C520CF4CB9004D7997 /* IterableAPIInternal.swift */,
@@ -784,24 +789,27 @@
 				AC87172421A4E3FF00FEA369 /* Helper Classes */,
 				00B6FACF210E8B10007535CF /* Test Files */,
 				00B6FACB210E8484007535CF /* APNSTypeCheckerTests.swift */,
+				55B9F15024B3D33700E8198A /* AuthTests.swift */,
 				5531CDAD22A9C992000D05E2 /* ClassExtensionsTests.swift */,
 				55B37FC0229620D20042F13A /* CommerceItemTests.swift */,
 				55E6F45E238E066400808BCE /* DeepLinkTests.swift */,
-				55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */,
 				55E6F45D238E066400808BCE /* DeferredDeepLinkTests.swift */,
 				551E5C0F234D485A005FEE9E /* DeprecatedFunctionsTests.swift */,
 				AC750A49234CD67900561902 /* InAppHelperTests.swift */,
 				AC6FDD8B20F56309005D811E /* InAppParsingTests.swift */,
 				55B37FED229F59290042F13A /* InAppPersistenceTests.swift */,
+				55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */,
 				ACA8D1A821965B7D001B1332 /* InAppTests.swift */,
+				55B549852397462300243E87 /* InboxImpressionTrackerTests.swift */,
 				55B37FC722975A840042F13A /* InboxMessageViewModelTests.swift */,
 				55B5498323973B5C00243E87 /* InboxSessionManagerTests.swift */,
-				55B549852397462300243E87 /* InboxImpressionTrackerTests.swift */,
 				AC1670CC2230A91C00989F8E /* InboxTests.swift */,
+				AC8F35A1239806B500302994 /* InboxViewControllerViewModelTests.swift */,
 				AC2C668620D3435700D46CC9 /* IterableActionRunnerTests.swift */,
 				AC64626A2140AACF0046E1BD /* IterableAPIResponseTests.swift */,
 				ACD6116D21080564003E7F6B /* IterableAPITests.swift */,
 				AC89661D2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift */,
+				AC4BA00124163D8F007359F1 /* IterableHtmlMessageViewControllerTests.swift */,
 				5585DF8E22A73390000A32B9 /* IterableInboxViewControllerTests.swift */,
 				AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */,
 				AC776DA3211A17C700C27C27 /* IterableRequestUtilTests.swift */,
@@ -812,9 +820,7 @@
 				ACEDF41E2183C436000B9BFE /* PromiseTests.swift */,
 				AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */,
 				ACAA816D231163660035C743 /* RequestCreatorTests.swift */,
-				AC8F35A1239806B500302994 /* InboxViewControllerViewModelTests.swift */,
 				ACB37AAF240268A60093A8EA /* SampleInboxViewDelegateImplementations.swift */,
-				AC4BA00124163D8F007359F1 /* IterableHtmlMessageViewControllerTests.swift */,
 			);
 			path = "swift-sdk-swift-tests";
 			sourceTree = "<group>";
@@ -965,11 +971,11 @@
 			isa = PBXGroup;
 			children = (
 				AC995F932166EC310099A184 /* common */,
+				AC28480824AA44C600C1FC7F /* endpoint-tests */,
+				ACDA976F23159C39004C412E /* inbox-ui-tests-app-ui-tests */,
 				AC90C4D220D8632E00EECA5D /* notification-extension-tests */,
 				AC7B142C20D02CE200877BFE /* swift-sdk-swift-tests */,
 				ACC87764215C20B50097E29B /* ui-tests */,
-				ACDA976F23159C39004C412E /* inbox-ui-tests-app-ui-tests */,
-				AC28480824AA44C600C1FC7F /* endpoint-tests */,
 			);
 			path = tests;
 			sourceTree = "<group>";
@@ -1433,6 +1439,7 @@
 				ACEDF41D2183C2EC000B9BFE /* Promise.swift in Sources */,
 				AC7125EF20D4579E0043BBC1 /* IterableConfig.swift in Sources */,
 				AC03094B21E532470003A288 /* InAppPersistence.swift in Sources */,
+				557AE6BF24A56E5E00B57750 /* Auth.swift in Sources */,
 				AC819184227138EF0014955E /* Dwifft.swift in Sources */,
 				AC02480822791E2100495FB9 /* IterableInboxNavigationViewController.swift in Sources */,
 				AC845107228DF54E0052BB8F /* ApiClient.swift in Sources */,
@@ -1480,6 +1487,7 @@
 				AC8F35A2239806B500302994 /* InboxViewControllerViewModelTests.swift in Sources */,
 				AC995F9A2166EEB50099A184 /* CommonMocks.swift in Sources */,
 				5585DF8F22A73390000A32B9 /* IterableInboxViewControllerTests.swift in Sources */,
+				55B9F15124B3D33700E8198A /* AuthTests.swift in Sources */,
 				551E5C10234D485A005FEE9E /* DeprecatedFunctionsTests.swift in Sources */,
 				ACED4C01213F50B30055A497 /* LoggingTests.swift in Sources */,
 				55B37FC42297135F0042F13A /* NotificationMetadataTests.swift in Sources */,
