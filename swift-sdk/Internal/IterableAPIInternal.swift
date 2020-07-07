@@ -294,6 +294,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: result)
     }
     
+    @discardableResult
     func trackInAppClose(_ message: IterableInAppMessage,
                          location: InAppLocation = .inApp,
                          inboxSessionId: String? = nil,
@@ -309,11 +310,14 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                  forResult: result)
     }
     
-    func track(inboxSession: IterableInboxSession) {
+    @discardableResult
+    func track(inboxSession: IterableInboxSession,
+               onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "trackInboxSession"),
+               onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "trackInboxSession")) -> Future<SendRequestValue, SendRequestError> {
         let result = apiClient.track(inboxSession: inboxSession)
         
-        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess(identifier: "trackInboxSession"),
-                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInboxSession"),
+        return IterableAPIInternal.call(successHandler: onSuccess,
+                                 andFailureHandler: onFailure,
                                  forResult: result)
     }
     
