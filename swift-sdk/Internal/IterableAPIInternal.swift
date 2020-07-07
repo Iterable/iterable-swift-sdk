@@ -20,15 +20,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         get {
             _email
         } set {
-            if newValue == nil {
-                logoutPreviousUser()
-            } else {
-                guard let newEmail = newValue else {
-                    return
-                }
-                
-                setEmail(newEmail)
-            }
+            setEmail(newValue)
         }
     }
     
@@ -36,15 +28,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         get {
             _userId
         } set {
-            if newValue == nil {
-                logoutPreviousUser()
-            } else {
-                guard let newUserId = newValue else {
-                    return
-                }
-                
-                setUserId(newUserId)
-            }
+            setUserId(newValue)
         }
     }
     
@@ -130,7 +114,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    func setEmail(_ email: String, withToken token: String? = nil) {
+    func setEmail(_ email: String?, withToken token: String? = nil) {
         guard email != _email else {
             return
         }
@@ -146,7 +130,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         loginNewUser()
     }
     
-    func setUserId(_ userId: String, withToken token: String? = nil) {
+    func setUserId(_ userId: String?, withToken token: String? = nil) {
         guard userId != _userId else {
             return
         }
