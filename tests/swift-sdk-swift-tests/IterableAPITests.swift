@@ -187,30 +187,6 @@ class IterableAPITests: XCTestCase {
         XCTAssertNil(internalAPI.email)
     }
     
-    func testEmailWithTokenPersistence() {
-        let internalAPI = IterableAPIInternal.initializeForTesting()
-        internalAPI.email = "previous.user@example.com"
-        
-        let emailToken = "asdf"
-        
-        internalAPI.setEmail(IterableAPITests.email, withToken: emailToken)
-        XCTAssertEqual(internalAPI.email, IterableAPITests.email)
-        XCTAssertNil(internalAPI.userId)
-        XCTAssertEqual(internalAPI.auth.authToken, emailToken)
-    }
-    
-    func testUserIdWithTokenPersistence() {
-        let internalAPI = IterableAPIInternal.initializeForTesting()
-        internalAPI.userId = "previousUserId"
-        
-        let userIdToken = "qwer"
-        
-        internalAPI.setUserId(IterableAPITests.userId, withToken: userIdToken)
-        XCTAssertEqual(internalAPI.userId, IterableAPITests.userId)
-        XCTAssertNil(internalAPI.email)
-        XCTAssertEqual(internalAPI.auth.authToken, userIdToken)
-    }
-    
     func testUpdateUserWithEmail() {
         let expectation = XCTestExpectation(description: "testUpdateUserWithEmail")
         

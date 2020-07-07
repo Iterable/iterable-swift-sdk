@@ -44,6 +44,8 @@ class AuthTests: XCTestCase {
     func testEmailWithTokenPersistence() {
         let internalAPI = IterableAPIInternal.initializeForTesting()
         
+        internalAPI.email = "previous.user@example.com"
+        
         let emailToken = "asdf"
         
         internalAPI.setEmail(AuthTests.email, withToken: emailToken)
@@ -55,6 +57,8 @@ class AuthTests: XCTestCase {
     
     func testUserIdWithTokenPersistence() {
         let internalAPI = IterableAPIInternal.initializeForTesting()
+        
+        internalAPI.userId = "previousUserId"
         
         let userIdToken = "qwer"
         
