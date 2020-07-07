@@ -189,6 +189,7 @@ class IterableAPITests: XCTestCase {
     
     func testEmailWithTokenPersistence() {
         let internalAPI = IterableAPIInternal.initializeForTesting()
+        internalAPI.email = "previous.user@example.com"
         
         let emailToken = "asdf"
         
@@ -200,6 +201,7 @@ class IterableAPITests: XCTestCase {
     
     func testUserIdWithTokenPersistence() {
         let internalAPI = IterableAPIInternal.initializeForTesting()
+        internalAPI.userId = "previousUserId"
         
         let userIdToken = "qwer"
         
