@@ -13,3 +13,7 @@ Pods/
 dev.config
 
 Build/
+
+# needed integration testing
+env_vars.sh
+CI.swift

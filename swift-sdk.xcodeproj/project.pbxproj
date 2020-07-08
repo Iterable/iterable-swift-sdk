@@ -47,6 +47,7 @@
 		AC2263F020CF49B8009800EB /* IterableSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = AC2263E220CF49B8009800EB /* IterableSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AC28480A24AA44C600C1FC7F /* EndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC28480924AA44C600C1FC7F /* EndpointTests.swift */; };
 		AC28480C24AA44C600C1FC7F /* IterableSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2263DF20CF49B8009800EB /* IterableSDK.framework */; };
+		AC29D05C24B5A7E000A9E019 /* CI.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC29D05B24B5A7E000A9E019 /* CI.swift */; };
 		AC2A2986231A7CFF0070A9C3 /* TestInAppPayloadGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */; };
 		AC2A2988231CFAC40070A9C3 /* NetworkTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2A2987231CFAC40070A9C3 /* NetworkTableViewController.swift */; };
 		AC2A298A231D44C00070A9C3 /* NetworkDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2A2989231D44C00070A9C3 /* NetworkDetailViewController.swift */; };
@@ -333,6 +334,7 @@
 		AC28480724AA44C600C1FC7F /* endpoint-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "endpoint-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC28480924AA44C600C1FC7F /* EndpointTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EndpointTests.swift; sourceTree = "<group>"; };
 		AC28480B24AA44C600C1FC7F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AC29D05B24B5A7E000A9E019 /* CI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CI.swift; sourceTree = "<group>"; };
 		AC2A2987231CFAC40070A9C3 /* NetworkTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkTableViewController.swift; sourceTree = "<group>"; };
 		AC2A2989231D44C00070A9C3 /* NetworkDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkDetailViewController.swift; sourceTree = "<group>"; };
 		AC2B79F621E6A38900A59080 /* NotificationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationHelper.swift; sourceTree = "<group>"; };
@@ -689,6 +691,7 @@
 				AC28480B24AA44C600C1FC7F /* Info.plist */,
 				AC8A058824AB1FE1002C1103 /* Environment.swift */,
 				ACA2A91D24ABB426001DFD17 /* IterableAPISupport.swift */,
+				AC29D05B24B5A7E000A9E019 /* CI.swift */,
 			);
 			path = "endpoint-tests";
 			sourceTree = "<group>";
@@ -1049,6 +1052,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = AC28481124AA44C600C1FC7F /* Build configuration list for PBXNativeTarget "endpoint-tests" */;
 			buildPhases = (
+				AC29D05D24B5BED000A9E019 /* Read Secret Credentials */,
 				AC28480324AA44C600C1FC7F /* Sources */,
 				AC28480424AA44C600C1FC7F /* Frameworks */,
 				AC28480524AA44C600C1FC7F /* Resources */,
@@ -1393,6 +1397,27 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		AC29D05D24B5BED000A9E019 /* Read Secret Credentials */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Read Secret Credentials";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "scripts_folder=${SRCROOT}/tests/endpoint-tests/scripts\nenv_vars_file=$scripts_folder/env_vars.sh\nif [ -f $env_vars_file ]\nthen\n  echo env vars exist \n  source $env_vars_file\n  echo $api_key\nfi\necho Generating CI.swift\n$scripts_folder/generate_ci_credentials.sh\n\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		AC2263DA20CF49B8009800EB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -1470,6 +1495,7 @@
 				ACA2A91924AB25E8001DFD17 /* Common.swift in Sources */,
 				AC8A058924AB1FE1002C1103 /* Environment.swift in Sources */,
 				ACA2A91A24AB266F001DFD17 /* Mocks.swift in Sources */,
+				AC29D05C24B5A7E000A9E019 /* CI.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
