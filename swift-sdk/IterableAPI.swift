@@ -263,6 +263,27 @@ import UIKit
     }
     
     /**
+     Updates the current user's email, and set the new authentication token
+     
+     - remark:  Also updates the current email in this IterableAPIImplementation instance if the API call was successful.
+     
+     - parameter newEmail:      the new email of this user
+     - parameter token:         the new authentication token for this user
+     - parameter onSuccess:     OnSuccessHandler to invoke if update is successful
+     - parameter onFailure:     OnFailureHandler to invoke if update fails
+     
+     - seeAlso: OnSuccessHandler
+     - seeAlso: OnFailureHandler
+     */
+    @objc(updateEmail:withToken:onSuccess:onFailure:)
+    public static func updateEmail(_ newEmail: String,
+                                   withToken token: String,
+                                   onSuccess: OnSuccessHandler?,
+                                   onFailure: OnFailureHandler?) {
+        internalImplementation?.updateEmail(newEmail, withToken: token, onSuccess: onSuccess, onFailure: onFailure)
+    }
+    
+    /**
      Tracks a purchase
      
      - remark: Pass in the total purchase amount and an `NSArray` of `CommerceItem`s
