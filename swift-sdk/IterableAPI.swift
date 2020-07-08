@@ -132,6 +132,11 @@ import UIKit
         internalImplementation?.setUserId(userId, withToken: token)
     }
     
+    /// Log out the current user of the SDK instance
+    public static func logoutUser() {
+        internalImplementation?.logoutUser()
+    }
+    
     /// Use this property for getting and showing in-app messages.
     /// This property has no meaning if IterableAPI has not been initialized using
     /// IterableAPI.initialize
