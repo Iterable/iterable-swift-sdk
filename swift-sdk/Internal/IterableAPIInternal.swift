@@ -471,8 +471,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                           appName: String,
                           pushServicePlatform: PushServicePlatform,
                           notificationsEnabled: Bool,
-                          onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "registerToken"),
-                          onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "registerToken")) -> Future<SendRequestValue, SendRequestError> {
+                          onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess("registerToken"),
+                          onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("registerToken")) -> Future<SendRequestValue, SendRequestError> {
         hexToken = token.hexString()
         
         let pushServicePlatformString = IterableAPIInternal.pushServicePlatformToString(pushServicePlatform, apnsType: dependencyContainer.apnsTypeChecker.apnsType)
@@ -502,8 +502,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     private func disableDevice(forAllUsers allUsers: Bool,
-                               onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "disableDevice"),
-                               onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "disableDevice")) {
+                               onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess("disableDevice"),
+                               onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("disableDevice")) {
         guard let hexToken = hexToken else {
             ITBError("Device not registered.")
             onFailure?("Device not registered.", nil)
@@ -669,15 +669,15 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
 extension IterableAPIInternal {
     // deprecated - will be removed in version 6.3.x or above
     func trackInAppOpen(_ messageId: String) {
-        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess(identifier: "trackInAppOpen"),
-                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppOpen"),
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess("trackInAppOpen"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure("trackInAppOpen"),
                                  forResult: apiClient.track(inAppOpen: messageId))
     }
     
     // deprecated - will be removed in version 6.3.x or above
     func trackInAppClick(_ messageId: String, clickedUrl: String) {
-        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess(identifier: "trackInAppClick"),
-                                 andFailureHandler: IterableAPIInternal.defaultOnFailure(identifier: "trackInAppClick"),
+        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess("trackInAppClick"),
+                                 andFailureHandler: IterableAPIInternal.defaultOnFailure("trackInAppClick"),
                                  forResult: apiClient.track(inAppClick: messageId, clickedUrl: clickedUrl))
     }
     
