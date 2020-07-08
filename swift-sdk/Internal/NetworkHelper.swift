@@ -73,7 +73,8 @@ struct NetworkHelper {
         return promise
     }
     
-    static func sendRequest(_ request: URLRequest, usingSession networkSession: NetworkSessionProtocol) -> Future<SendRequestValue, SendRequestError> {
+    static func sendRequest(_ request: URLRequest,
+                            usingSession networkSession: NetworkSessionProtocol) -> Future<SendRequestValue, SendRequestError> {
         #if NETWORK_DEBUG
             print()
             print("====================================================>")
@@ -108,7 +109,9 @@ struct NetworkHelper {
         return promise
     }
     
-    static func createResultFromNetworkResponse(data: Data?, response: URLResponse?, error: Error?) -> Result<SendRequestValue, SendRequestError> {
+    static func createResultFromNetworkResponse(data: Data?,
+                                                response: URLResponse?,
+                                                error: Error?) -> Result<SendRequestValue, SendRequestError> {
         if let error = error {
             return .failure(SendRequestError(reason: "\(error.localizedDescription)", data: data))
         }
@@ -166,7 +169,9 @@ struct NetworkHelper {
         }
     }
     
-    static func createDataResultFromNetworkResponse(data: Data?, response _: URLResponse?, error: Error?) -> Result<Data, SendRequestError> {
+    static func createDataResultFromNetworkResponse(data: Data?,
+                                                    response _: URLResponse?,
+                                                    error: Error?) -> Result<Data, SendRequestError> {
         if let error = error {
             return .failure(SendRequestError(reason: "\(error.localizedDescription)"))
         }

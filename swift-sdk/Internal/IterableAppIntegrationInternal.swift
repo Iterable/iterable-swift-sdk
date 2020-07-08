@@ -319,6 +319,7 @@ struct IterableAppIntegrationInternal {
         // Execute the action
         if let action = IterableAppIntegrationInternal.createDefaultAction(userInfo: userInfo, iterableElement: itbl) {
             let context = IterableActionContext(action: action, source: .push)
+            
             IterableActionRunner.execute(action: action,
                                          context: context,
                                          urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate, inContext: context),
@@ -358,8 +359,8 @@ struct IterableAppIntegrationInternal {
     private static func legacyDefaultActionFromPayload(userInfo: [AnyHashable: Any]) -> IterableAction? {
         if let deepLinkUrl = userInfo[JsonKey.url.jsonKey] as? String {
             return IterableAction.actionOpenUrl(fromUrlString: deepLinkUrl)
-        } else {
-            return nil
         }
+        
+        return nil
     }
 }

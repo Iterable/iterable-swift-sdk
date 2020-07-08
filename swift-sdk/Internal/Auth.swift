@@ -30,3 +30,9 @@ struct Auth {
         case none
     }
 }
+
+struct DeviceMetadata: Codable {
+    let deviceId: String
+    let platform: String
+    let appPackageName: String
+}

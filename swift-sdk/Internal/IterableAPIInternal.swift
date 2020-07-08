@@ -7,12 +7,6 @@ import Foundation
 import UIKit
 import UserNotifications
 
-struct DeviceMetadata: Codable {
-    let deviceId: String
-    let platform: String
-    let appPackageName: String
-}
-
 final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     var apiKey: String
     
@@ -68,7 +62,9 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     lazy var inAppManager: IterableInternalInAppManagerProtocol = {
-        self.dependencyContainer.createInAppManager(config: self.config, apiClient: self.apiClient, deviceMetadata: deviceMetadata)
+        self.dependencyContainer.createInAppManager(config: self.config,
+                                                    apiClient: self.apiClient,
+                                                    deviceMetadata: deviceMetadata)
     }()
     
     // MARK: - SDK Functions

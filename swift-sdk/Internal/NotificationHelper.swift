@@ -49,13 +49,16 @@ struct IterablePushNotificationMetadata {
         }
     }
     
-    fileprivate static func parse(itblElement: [AnyHashable: Any], isGhostPush: Bool) -> IterablePushNotificationMetadata? {
+    fileprivate static func parse(itblElement: [AnyHashable: Any],
+                                  isGhostPush: Bool) -> IterablePushNotificationMetadata? {
         guard isValidCampaignId(itblElement[Keys.campaignId.rawValue]) else {
             return nil
         }
+        
         guard let templateId = itblElement[Keys.templateId.rawValue] as? NSNumber else {
             return nil
         }
+        
         let campaignId = itblElement[Keys.campaignId.rawValue] as? NSNumber ?? NSNumber(value: 0)
         let messageId = itblElement[Keys.messageId.rawValue] as? String
         
