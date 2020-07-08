@@ -227,7 +227,93 @@ class EndpointTests: XCTestCase {
         clearAllInAppMessages(api: api)
     }
 
+    func test12TrackInAppOpen() throws {
+        verifyTrackInAppRequest(expectation: expectation(description: #function)) { api, message in
+            api.trackInAppOpen(message, location: .inApp)
+        }
+    }
+
+    func test13TrackInAppClick() throws {
+        verifyTrackInAppRequest(expectation: expectation(description: #function)) { api, message in
+            api.trackInAppClick(message, location: .inApp, inboxSessionId: nil, clickedUrl: "https://www.google.com")
+        }
+    }
+
+    func test14TrackInAppClose() throws {
+        verifyTrackInAppRequest(expectation: expectation(description: #function)) { api, message in
+            api.trackInAppClose(message, location: .inApp, inboxSessionId: nil, source: .none, clickedUrl: "https://www.google.com")
+        }
+    }
     
+    func test15TrackInboxSession() throws {
+        let expectation1 = expectation(description: #function)
+        let config = IterableConfig()
+        config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
+        let api = IterableAPIInternal.initializeForE2E(apiKey: EndpointTests.apiKey, config: config)
+        let email = "user@example.com"
+        api.email = email
+        
+        ensureInAppMessages(api: api, email: email)
+        
+        api.inAppManager.scheduleSync().wait()
+        let count = api.inAppManager.getMessages().count
+        XCTAssert(count > 0)
+
+        let message = api.inAppManager.getMessages()[0]
+        let startTime = Date()
+        let endTime = startTime.addingTimeInterval(10.0)
+        
+        let impression = IterableInboxImpression(messageId: message.messageId,
+                                                 silentInbox: false,
+                                                 displayCount: 1,
+                                                 displayDuration: 10.0)
+        let inboxSession = IterableInboxSession(id: IterableUtil.generateUUID(),
+                             sessionStartTime: startTime,
+                             sessionEndTime: endTime,
+                             startTotalMessageCount: 0,
+                             startUnreadMessageCount: 0,
+                             endTotalMessageCount: 1,
+                             endUnreadMessageCount: 1,
+                             impressions: [impression])
+
+        api.track(inboxSession: inboxSession)
+            .onSuccess { _ in
+                expectation1.fulfill()
+            }.onError { error in
+                XCTFail(error.localizedDescription)
+            }
+        
+        wait(for: [expectation1], timeout: 15)
+
+        clearAllInAppMessages(api: api)
+    }
+
+    private func verifyTrackInAppRequest(expectation: XCTestExpectation, method: (IterableAPIInternal, IterableInAppMessage) -> Future<SendRequestValue, SendRequestError>) {
+        let config = IterableConfig()
+        config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
+        let api = IterableAPIInternal.initializeForE2E(apiKey: EndpointTests.apiKey, config: config)
+        let email = "user@example.com"
+        api.email = email
+        
+        ensureInAppMessages(api: api, email: email)
+        
+        api.inAppManager.scheduleSync().wait()
+        let count = api.inAppManager.getMessages().count
+        XCTAssert(count > 0)
+        
+        method(api, api.inAppManager.getMessages()[0])
+            .onSuccess { _ in
+                expectation.fulfill()
+            }
+            .onError {
+                XCTFail($0.localizedDescription)
+            }
+        
+        wait(for: [expectation], timeout: 15)
+        
+        clearAllInAppMessages(api: api)
+    }
+
     private static let pushCampaignId = NSNumber(1_328_538)
     private static let pushTemplateId = NSNumber(1_849_323)
     private static let inAppCampaignId = NSNumber(1_328_642)

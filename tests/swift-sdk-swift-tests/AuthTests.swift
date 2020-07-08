@@ -108,6 +108,37 @@ class AuthTests: XCTestCase {
         XCTAssertEqual(internalAPI.auth.authToken, newToken)
     }
     
+    func testUpdateEmailWithToken() {
+        let condition1 = expectation(description: "update email with auth token")
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting()
+        
+        let originalEmail = "first@example.com"
+        let originalToken = "fdsa"
+        
+        let updatedEmail = "second@example.com"
+        let updatedToken = "jay"
+        
+        internalAPI.setEmail(originalEmail, withToken: originalToken)
+        
+        XCTAssertEqual(internalAPI.email, originalEmail)
+        XCTAssertNil(internalAPI.userId)
+        XCTAssertEqual(internalAPI.auth.authToken, originalToken)
+        
+        internalAPI.updateEmail(updatedEmail,
+                                withToken: updatedToken,
+                                onSuccess: { (data) in
+                                    XCTAssertEqual(internalAPI.email, updatedEmail)
+                                    XCTAssertNil(internalAPI.userId)
+                                    XCTAssertEqual(internalAPI.auth.authToken, updatedToken)
+                                    
+                                    condition1.fulfill()
+        },
+                                onFailure: nil)
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+
     func testLogoutUser() {
         let internalAPI = IterableAPIInternal.initializeForTesting()
         
