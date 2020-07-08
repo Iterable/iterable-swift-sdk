@@ -199,7 +199,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                      onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "updateEmail"),
                      onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure(identifier: "updateEmail")) {
         apiClient.updateEmail(newEmail: newEmail).onSuccess { json in
-            // only change email if that's what is being used
+            // only change email if one is being used
             if self.email != nil {
                 self.setEmail(newEmail, withToken: token)
             }
