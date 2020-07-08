@@ -290,8 +290,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                         onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("trackInAppOpen")) -> Future<SendRequestValue, SendRequestError> {
         let result = apiClient.track(inAppOpen: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId))
         return IterableAPIInternal.call(successHandler: onSuccess,
-                                 andFailureHandler: onFailure,
-                                 forResult: result)
+                                        andFailureHandler: onFailure,
+                                        forResult: result)
     }
     
     @discardableResult
@@ -304,8 +304,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         let result = apiClient.track(inAppClick: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId),
                                      clickedUrl: clickedUrl)
         return IterableAPIInternal.call(successHandler: onSuccess,
-                                 andFailureHandler: onFailure,
-                                 forResult: result)
+                                        andFailureHandler: onFailure,
+                                        forResult: result)
     }
     
     @discardableResult
@@ -320,8 +320,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                      source: source,
                                      clickedUrl: clickedUrl)
         return IterableAPIInternal.call(successHandler: onSuccess,
-                                 andFailureHandler: onFailure,
-                                 forResult: result)
+                                        andFailureHandler: onFailure,
+                                        forResult: result)
     }
     
     @discardableResult
@@ -331,8 +331,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         let result = apiClient.track(inboxSession: inboxSession)
         
         return IterableAPIInternal.call(successHandler: onSuccess,
-                                 andFailureHandler: onFailure,
-                                 forResult: result)
+                                        andFailureHandler: onFailure,
+                                        forResult: result)
     }
     
     func track(inAppDelivery message: IterableInAppMessage) {

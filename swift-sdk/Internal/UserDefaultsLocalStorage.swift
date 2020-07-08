@@ -28,7 +28,7 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
     
     var authToken: String? {
         get {
-            return string(withKey: .authToken)
+            string(withKey: .authToken)
         } set {
             save(string: newValue, withKey: .authToken)
         }

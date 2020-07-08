@@ -13,7 +13,7 @@ struct TestInAppPayloadGenerator {
     }
     
     static func createPayloadWithUrl<T: Sequence>(indices: T, triggerType: IterableInAppTriggerType = .immediate, expiresAt: Date? = nil, saveToInbox: Bool = false) -> [AnyHashable: Any] where T.Element == Int {
-        return [
+        [
             "inAppMessages": indices.reduce(into: [[AnyHashable: Any]]()) { result, index in
                 result.append(createOneInAppDictWithUrl(index: index, triggerType: triggerType, expiresAt: expiresAt, saveToInbox: saveToInbox))
             },
