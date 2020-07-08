@@ -1052,7 +1052,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = AC28481124AA44C600C1FC7F /* Build configuration list for PBXNativeTarget "endpoint-tests" */;
 			buildPhases = (
-				AC29D05D24B5BED000A9E019 /* Read Secret Credentials */,
 				AC28480324AA44C600C1FC7F /* Sources */,
 				AC28480424AA44C600C1FC7F /* Frameworks */,
 				AC28480524AA44C600C1FC7F /* Resources */,
@@ -1396,27 +1395,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		AC29D05D24B5BED000A9E019 /* Read Secret Credentials */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Read Secret Credentials";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "scripts_folder=${SRCROOT}/tests/endpoint-tests/scripts\nenv_vars_file=$scripts_folder/env_vars.sh\nif [ -f $env_vars_file ]\nthen\n  echo env vars exist \n  source $env_vars_file\n  echo $api_key\nfi\necho Generating CI.swift\n$scripts_folder/generate_ci_credentials.sh\n\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		AC2263DA20CF49B8009800EB /* Sources */ = {
