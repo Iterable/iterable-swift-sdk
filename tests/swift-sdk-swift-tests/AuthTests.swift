@@ -11,6 +11,7 @@ class AuthTests: XCTestCase {
     private static let apiKey = "zeeApiKey"
     private static let email = "user@example.com"
     private static let userId = "testUserId"
+    private static let authToken = "testAuthToken"
     
     override func setUp() {
         super.setUp()
@@ -133,5 +134,21 @@ class AuthTests: XCTestCase {
                                 onFailure: nil)
         
         wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+
+    func testLogoutUser() {
+        let internalAPI = IterableAPIInternal.initializeForTesting()
+        
+        internalAPI.setEmail(AuthTests.email, withToken: AuthTests.authToken)
+        
+        XCTAssertEqual(internalAPI.email, AuthTests.email)
+        XCTAssertNil(internalAPI.userId)
+        XCTAssertEqual(internalAPI.auth.authToken, AuthTests.authToken)
+        
+        internalAPI.logoutUser()
+        
+        XCTAssertNil(internalAPI.email)
+        XCTAssertNil(internalAPI.userId)
+        XCTAssertNil(internalAPI.auth.authToken)
     }
 }

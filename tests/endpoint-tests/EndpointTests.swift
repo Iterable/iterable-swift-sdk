@@ -8,7 +8,7 @@ import XCTest
 @testable import IterableSDK
 
 class EndpointTests: XCTestCase {
-    func test1UpdateUser() throws {
+    func test01UpdateUser() throws {
         let expectation1 = expectation(description: #function)
         let api = IterableAPIInternal.initializeForTesting(apiKey: EndpointTests.apiKey,
                                                            networkSession: URLSession(configuration: .default),
@@ -25,8 +25,8 @@ class EndpointTests: XCTestCase {
         
         wait(for: [expectation1], timeout: 15)
     }
-    
-    func test2UpdateEmail() throws {
+
+    func test02UpdateEmail() throws {
         let expectation1 = expectation(description: #function)
         let expectation2 = expectation(description: "New email is deleted")
         
@@ -48,7 +48,7 @@ class EndpointTests: XCTestCase {
         wait(for: [expectation1, expectation2], timeout: 15)
     }
     
-    func test3TrackPurchase() throws {
+    func test03TrackPurchase() throws {
         let expectation1 = expectation(description: #function)
         let api = IterableAPIInternal.initializeForTesting(apiKey: EndpointTests.apiKey,
                                                            networkSession: URLSession(configuration: .default),
@@ -70,7 +70,7 @@ class EndpointTests: XCTestCase {
         wait(for: [expectation1], timeout: 15)
     }
     
-    func test4TrackPushOpen() throws {
+    func test04TrackPushOpen() throws {
         let expectation1 = expectation(description: #function)
         let api = IterableAPIInternal.initializeForTesting(apiKey: EndpointTests.apiKey,
                                                            networkSession: URLSession(configuration: .default),
@@ -91,7 +91,7 @@ class EndpointTests: XCTestCase {
         wait(for: [expectation1], timeout: 15)
     }
     
-    func test5TrackPushOpenWithPushPayload() throws {
+    func test05TrackPushOpenWithPushPayload() throws {
         let expectation1 = expectation(description: #function)
         let api = IterableAPIInternal.initializeForTesting(apiKey: EndpointTests.apiKey,
                                                            networkSession: URLSession(configuration: .default),
@@ -117,7 +117,7 @@ class EndpointTests: XCTestCase {
         wait(for: [expectation1], timeout: 15)
     }
     
-    func test6TrackEvent() throws {
+    func test06TrackEvent() throws {
         let expectation1 = expectation(description: #function)
         let api = IterableAPIInternal.initializeForTesting(apiKey: EndpointTests.apiKey,
                                                            networkSession: URLSession(configuration: .default),
@@ -135,7 +135,7 @@ class EndpointTests: XCTestCase {
         wait(for: [expectation1], timeout: 15)
     }
     
-    func test7UpdateSubscriptions() throws {
+    func test07UpdateSubscriptions() throws {
         let expectation1 = expectation(description: #function)
         let api = IterableAPIInternal.initializeForTesting(apiKey: EndpointTests.apiKey,
                                                            networkSession: URLSession(configuration: .default),
@@ -157,7 +157,7 @@ class EndpointTests: XCTestCase {
         wait(for: [expectation1], timeout: 15)
     }
     
-    func test8DisableDeviceForCurrentUserFail() throws {
+    func test08DisableDeviceForCurrentUserFail() throws {
         let expectation1 = expectation(description: #function)
         let api = IterableAPIInternal.initializeForTesting(apiKey: EndpointTests.apiKey,
                                                            networkSession: URLSession(configuration: .default),
@@ -174,7 +174,7 @@ class EndpointTests: XCTestCase {
         wait(for: [expectation1], timeout: 15)
     }
     
-    func test9DisableDeviceForAllUsersFail() throws {
+    func test09DisableDeviceForAllUsersFail() throws {
         let expectation1 = expectation(description: #function)
         let api = IterableAPIInternal.initializeForTesting(apiKey: EndpointTests.apiKey,
                                                            networkSession: URLSession(configuration: .default),
@@ -313,15 +313,12 @@ class EndpointTests: XCTestCase {
         
         clearAllInAppMessages(api: api)
     }
-    
-    private static let pushCampaignId = NSNumber(1_328_538)
-    private static let pushTemplateId = NSNumber(1_849_323)
-    private static let inAppCampaignId = NSNumber(1_328_642)
-    private static let inAppTemplateId = NSNumber(1_849_471)
-    
-    private static var apiKey: String {
-        Environment.get(key: .apiKey)!
-    }
+
+    private static let apiKey = Environment.apiKey!
+    private static let pushCampaignId = Environment.pushCampaignId!
+    private static let pushTemplateId = Environment.pushTemplateId!
+    private static let inAppCampaignId = Environment.inAppCampaignId!
+    private static let inAppTemplateId = Environment.inAppTemplateId!
     
     fileprivate func ensureInAppMessages(api: IterableAPIInternal, email: String) {
         IterableAPISupport.sendInApp(to: email, withCampaignId: EndpointTests.inAppCampaignId.intValue).wait()

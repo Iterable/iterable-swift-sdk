@@ -142,6 +142,10 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         loginNewUser()
     }
     
+    func logoutUser() {
+        logoutPreviousUser()
+    }
+    
     // MARK: - API Request Calls
     
     func register(token: Data,

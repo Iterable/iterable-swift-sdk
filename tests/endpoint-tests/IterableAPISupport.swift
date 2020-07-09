@@ -44,7 +44,7 @@ struct IterableAPISupport {
         static let inAppCampaignId = "campaignId"
     }
     
-    private static let apiKey = Environment.get(key: .apiKey)!
+    private static let apiKey = Environment.apiKey!
     
     private static func createPostRequest(iterablePostRequest: PostRequest) -> URLRequest? {
         IterableRequestUtil.createPostRequest(forApiEndPoint: Path.apiEndpoint,
