@@ -5,6 +5,12 @@
 
 import Foundation
 
+struct DeviceMetadata: Codable {
+    let deviceId: String
+    let platform: String
+    let appPackageName: String
+}
+
 // MARK: - API CLIENT FUNCTIONS
 
 class ApiClient {
