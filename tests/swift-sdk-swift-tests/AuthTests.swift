@@ -1,7 +1,4 @@
 //
-//  AuthTests.swift
-//  swift-sdk-swift-tests
-//
 //  Created by Jay Kim on 7/6/20.
 //  Copyright © 2020 Iterable. All rights reserved.
 //
@@ -127,13 +124,13 @@ class AuthTests: XCTestCase {
         
         internalAPI.updateEmail(updatedEmail,
                                 withToken: updatedToken,
-                                onSuccess: { (data) in
+                                onSuccess: { _ in
                                     XCTAssertEqual(internalAPI.email, updatedEmail)
                                     XCTAssertNil(internalAPI.userId)
                                     XCTAssertEqual(internalAPI.auth.authToken, updatedToken)
                                     
                                     condition1.fulfill()
-        },
+                                },
                                 onFailure: nil)
         
         wait(for: [condition1], timeout: testExpectationTimeout)

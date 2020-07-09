@@ -21,7 +21,7 @@ struct IterableAPISupport {
     static func sendInApp(to email: String, withCampaignId campaignId: Int) -> Future<SendRequestValue, SendRequestError> {
         let body: [String: Any] = [
             Key.inAppRecipientEmail: email,
-            Key.inAppCampaignId: campaignId
+            Key.inAppCampaignId: campaignId,
         ]
         let iterablePostRequest = PostRequest(path: Path.inAppTarget,
                                               args: nil,
@@ -32,7 +32,7 @@ struct IterableAPISupport {
         
         return NetworkHelper.sendRequest(urlRequest, usingSession: urlSession)
     }
-
+    
     private enum Path {
         static let apiEndpoint = "https://api.iterable.com/api"
         static let deleteUser = "/users/"
@@ -79,7 +79,7 @@ class E2EDependencyContainer: DependencyContainerProtocol {
     let apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker()
     
     func createInAppFetcher(apiClient: ApiClientProtocol) -> InAppFetcherProtocol {
-        return InAppFetcher(apiClient: apiClient)
+        InAppFetcher(apiClient: apiClient)
     }
 }
 
@@ -98,4 +98,3 @@ extension IterableAPIInternal {
         return internalImplementation
     }
 }
-

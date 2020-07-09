@@ -209,11 +209,11 @@ class IterableAPIResponseTests: XCTestCase {
     }
     
     private func createApiClientWithAuthToken() -> ApiClient {
-        return ApiClient(apiKey: apiKey,
-                         authProvider: self,
-                         endPoint: Endpoint.api,
-                         networkSession: MockNetworkSession(),
-                         deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata)
+        ApiClient(apiKey: apiKey,
+                  authProvider: self,
+                  endPoint: Endpoint.api,
+                  networkSession: MockNetworkSession(),
+                  deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata)
     }
 }
 

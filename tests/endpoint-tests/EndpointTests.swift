@@ -197,12 +197,12 @@ class EndpointTests: XCTestCase {
         let api = IterableAPIInternal.initializeForE2E(apiKey: EndpointTests.apiKey, config: config)
         let email = "user@example.com"
         api.email = email
-
+        
         ensureInAppMessages(api: api, email: email)
-
+        
         clearAllInAppMessages(api: api)
     }
-
+    
     func test11InAppConsume() throws {
         let config = IterableConfig()
         config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
@@ -215,7 +215,7 @@ class EndpointTests: XCTestCase {
         api.inAppManager.scheduleSync().wait()
         let initialCount = api.inAppManager.getMessages().count
         XCTAssert(initialCount > 0)
-
+        
         api.inAppConsume(message: api.inAppManager.getMessages()[0])
         let predicate = NSPredicate { (_, _) -> Bool in
             api.inAppManager.scheduleSync().wait()
@@ -226,19 +226,19 @@ class EndpointTests: XCTestCase {
         
         clearAllInAppMessages(api: api)
     }
-
+    
     func test12TrackInAppOpen() throws {
         verifyTrackInAppRequest(expectation: expectation(description: #function)) { api, message in
             api.trackInAppOpen(message, location: .inApp)
         }
     }
-
+    
     func test13TrackInAppClick() throws {
         verifyTrackInAppRequest(expectation: expectation(description: #function)) { api, message in
             api.trackInAppClick(message, location: .inApp, inboxSessionId: nil, clickedUrl: "https://www.google.com")
         }
     }
-
+    
     func test14TrackInAppClose() throws {
         verifyTrackInAppRequest(expectation: expectation(description: #function)) { api, message in
             api.trackInAppClose(message, location: .inApp, inboxSessionId: nil, source: .none, clickedUrl: "https://www.google.com")
@@ -258,7 +258,7 @@ class EndpointTests: XCTestCase {
         api.inAppManager.scheduleSync().wait()
         let count = api.inAppManager.getMessages().count
         XCTAssert(count > 0)
-
+        
         let message = api.inAppManager.getMessages()[0]
         let startTime = Date()
         let endTime = startTime.addingTimeInterval(10.0)
@@ -268,14 +268,14 @@ class EndpointTests: XCTestCase {
                                                  displayCount: 1,
                                                  displayDuration: 10.0)
         let inboxSession = IterableInboxSession(id: IterableUtil.generateUUID(),
-                             sessionStartTime: startTime,
-                             sessionEndTime: endTime,
-                             startTotalMessageCount: 0,
-                             startUnreadMessageCount: 0,
-                             endTotalMessageCount: 1,
-                             endUnreadMessageCount: 1,
-                             impressions: [impression])
-
+                                                sessionStartTime: startTime,
+                                                sessionEndTime: endTime,
+                                                startTotalMessageCount: 0,
+                                                startUnreadMessageCount: 0,
+                                                endTotalMessageCount: 1,
+                                                endUnreadMessageCount: 1,
+                                                impressions: [impression])
+        
         api.track(inboxSession: inboxSession)
             .onSuccess { _ in
                 expectation1.fulfill()
@@ -284,10 +284,10 @@ class EndpointTests: XCTestCase {
             }
         
         wait(for: [expectation1], timeout: 15)
-
+        
         clearAllInAppMessages(api: api)
     }
-
+    
     private func verifyTrackInAppRequest(expectation: XCTestExpectation, method: (IterableAPIInternal, IterableInAppMessage) -> Future<SendRequestValue, SendRequestError>) {
         let config = IterableConfig()
         config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
@@ -327,27 +327,26 @@ class EndpointTests: XCTestCase {
             api.inAppManager.scheduleSync().wait()
             return api.inAppManager.getMessages().count > 0
         }
-
+        
         let expectation1 = expectation(for: predicate, evaluatedWith: nil, handler: nil)
         wait(for: [expectation1], timeout: 60)
     }
-
     
     private func clearAllInAppMessages(api: IterableAPIInternal) {
         api.apiClient.getInAppMessages(100).flatMap {
             self.chainCallConsume(json: $0, apiClient: api.apiClient)
-        } .wait()
+        }.wait()
         
         let predicate = NSPredicate { (_, _) -> Bool in
             var inAppMessages = [IterableInAppMessage]()
             api.apiClient.getInAppMessages(100).map { json -> [IterableInAppMessage] in
                 InAppTestHelper.inAppMessages(fromPayload: json)
-            }.onSuccess { (messages) in
+            }.onSuccess { messages in
                 inAppMessages = messages
             }.onError { error in
                 XCTFail(error.localizedDescription)
             }.wait()
-
+            
             return inAppMessages.count == 0
         }
         let expectation1 = expectation(for: predicate, evaluatedWith: nil, handler: nil)
@@ -356,7 +355,7 @@ class EndpointTests: XCTestCase {
     
     private func chainCallConsume(json: SendRequestValue, apiClient: ApiClientProtocol) -> Future<SendRequestValue, SendRequestError> {
         let messages = InAppTestHelper.inAppMessages(fromPayload: json)
-
+        
         guard messages.count > 0 else {
             return Promise<SendRequestValue, SendRequestError>(value: [:])
         }
