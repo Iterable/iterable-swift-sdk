@@ -1,0 +1,20 @@
+name: Integration Testing
+
+on: pull_request
+
+jobs:
+  build:
+    runs-on: macos-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and test
+        env: 
+          api_key: ${{secrets.E2E_API_KEY}}
+          push_campaign_id: ${{secrets.E2E_PUSH_CAMPAIGN_ID}}
+          push_template_id: ${{secrets.E2E_PUSH_TEMPLATE_ID}}
+          in_app_campaign_id: ${{secrets.E2E_IN_APP_CAMPAIGN_ID}}
+          in_app_template_id: ${{secrets.E2E_IN_APP_TEMPLATE_ID}}
+        run: |
+          ./tests/endpoint-tests/scripts/run_test.sh
+        

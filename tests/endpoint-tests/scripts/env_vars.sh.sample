@@ -1,0 +1,7 @@
+#!/bin/bash
+
+export api_key=the_api_key
+export push_campaign_id=0
+export push_template_id=0
+export in_app_campaign_id=0
+export in_app_template_id=0

@@ -1,0 +1,15 @@
+//
+//  Created by Tapash Majumder on 7/8/20.
+//  Copyright © 2020 Iterable. All rights reserved.
+//
+
+import Foundation
+
+/// Actual values will be injected by build step
+struct CI {
+    static let apiKey = "{api_key}"
+    static let pushCampaignId = NSNumber(0)
+    static let pushTemplateId = NSNumber(0)
+    static let inAppCampaignId = NSNumber(0)
+    static let inAppTemplateId = NSNumber(0)
+}
