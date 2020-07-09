@@ -82,9 +82,9 @@ struct IterableActionRunner {
     private static func shouldOpenUrl(url: URL, from source: IterableActionSource) -> Bool {
         if source == .push || source == .inApp, let scheme = url.scheme, scheme == "http" || scheme == "https" {
             return true
+        } else {
+            return false
         }
-        
-        return false
     }
     
     private enum ActionType {
