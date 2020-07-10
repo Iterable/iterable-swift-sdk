@@ -3,6 +3,8 @@
 //  Copyright © 2020 Iterable. All rights reserved.
 //
 
+import Foundation
+
 protocol ApiClientProtocol: AnyObject {
     func register(hexToken: String,
                   appName: String,
