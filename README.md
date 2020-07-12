@@ -52,8 +52,9 @@ Release notes:
 
 Support policies:
 
-- Iterable's [Mobile SDK Support Policy](https://support.iterable.com/hc/articles/360027798391#mobile-sdk-support-policy)
-- Iterable's [iOS SDK Deprecation and End-of-Life Schedule](https://support.iterable.com/hc/articles/360027798391#ios-sdk-deprecation-and-end-of-life-schedule)
+- Iterable's [Mobile SDK Support Policy](https://support.iterable.com/hc/articles/360046136171)
+- Iterable's [iOS SDK Deprecation and End-of-Life Schedule](https://support.iterable.com/hc/articles/360027798391#deprecation-and-end-of-life-schedule)
+- Iterable's [Beta Mobile SDK Terms of Service](https://support.iterable.com/hc/articles/360034753412)
 
 Troubleshooting:
 
