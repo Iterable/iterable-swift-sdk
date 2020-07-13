@@ -310,17 +310,20 @@ class IterableAPITests: XCTestCase {
     func testRegisterTokenNilAppName() {
         let expectation = XCTestExpectation(description: "testRegisterToken")
         
-        let networkSession = MockNetworkSession(statusCode: 200)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
+        let config = IterableConfig()
+        config.pushIntegrationName = nil
+        config.sandboxPushIntegrationName = nil
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey,
+                                                                   config: config,
+                                                                   networkSession: MockNetworkSession(statusCode: 200))
         
         internalAPI.register(token: "zeeToken".data(using: .utf8)!, onSuccess: { _ in
             XCTFail("did not expect success here")
         }) { _, _ in
-            // failure
             expectation.fulfill()
         }
         
-        // only wait for small time, supposed to error out
         wait(for: [expectation], timeout: testExpectationTimeoutForInverted)
     }
     
@@ -337,11 +340,9 @@ class IterableAPITests: XCTestCase {
         internalAPI.register(token: "zeeToken".data(using: .utf8)!, onSuccess: { _ in
             XCTFail("did not expect success here")
         }) { _, _ in
-            // failure
             expectation.fulfill()
         }
         
-        // only wait for small time, supposed to error out
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
     
