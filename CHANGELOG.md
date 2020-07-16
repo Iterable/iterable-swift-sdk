@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.2.9-beta
+#### Added
+- Added a way to store an authentication token for verification by means of `setEmail`, `setUserId`, and `updateEmail`
+
+#### Changed
+- Changed the `dismiss` animated parameter to `false` for in-apps
+
 ## 6.2.8
 #### Added
 - In-app messages now get "pre-loaded" with a timer (or until the in-app loads) to mitigate seeing the loading of the message
