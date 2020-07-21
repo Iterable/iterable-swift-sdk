@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.2.9-beta2
+#### Fixed
+- Allow authentication tokens to be updated with the same email or user IDs
+
 ## 6.2.9-beta
 #### Added
 - Added a way to store an authentication token for verification by means of `setEmail`, `setUserId`, and `updateEmail`
