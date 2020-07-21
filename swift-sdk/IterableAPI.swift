@@ -45,33 +45,59 @@ import UIKit
     
     // MARK: - Initialization
     
-    /// You should call this method and not call the init method directly.
-    /// - parameter apiKey: an Iterable API key
+    /**
+     An SDK initializer taking in the Iterable Mobile API key to be utilized, and using default SDK settings
+     
+     - Parameters:
+        - apiKey: The Iterable Mobile API key to be used with the SDK
+     
+     - SeeAlso: IterableConfig
+     */
     public static func initialize(apiKey: String) {
         initialize(apiKey: apiKey, launchOptions: nil)
     }
     
-    /// You should call this method and not call the init method directly.
-    /// - parameter apiKey: an Iterable API key
-    /// - parameter config: an IterableConfig() object
-    /// SeeAlso: IterableConfig
+    /**
+     An SDK initializer taking in the Iterable Mobile API key to be utilized, and a config object for the
+     SDK's settings
+     
+     - Parameters:
+        - apiKey: The Iterable Mobile API key to be used with the SDK
+        - config: The IterableConfig object with the settings to be used
+     
+     - SeeAlso: IterableConfig
+     */
     public static func initialize(apiKey: String,
                                   config: IterableConfig) {
         initialize(apiKey: apiKey, launchOptions: nil, config: config)
     }
     
-    /// You should call this method and not call the init method directly.
-    /// - parameter apiKey: Iterable API key
-    /// - parameter launchOptions: The launchOptions coming from application:didLaunching:withOptions
+    /**
+     An SDK initializer taking in the Iterable Mobile API key to be utilized and the
+     `launchOptions` passed on from the app delegate, using default SDK settings
+     
+     - Parameters:
+        - apiKey: The Iterable Mobile API key to be used with the SDK
+        - launchOptions: The launchOptions coming from application(_:didFinishLaunchingWithOptions:)
+     
+     - SeeAlso: IterableConfig
+     */
     public static func initialize(apiKey: String,
                                   launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
         initialize(apiKey: apiKey, launchOptions: launchOptions, config: IterableConfig())
     }
     
-    /// The big daddy of initialization. You should call this method and not call the init method directly.
-    /// - parameter apiKey: an Iterable API key
-    /// - parameter launchOptions: The launchOptions coming from application:didLaunching:withOptions
-    /// - parameter config: an IterableConfig() object
+    /**
+     An SDK initializer taking in the Iterable Mobile API key to be utilized as well as the
+     `launchOptions` passed on from the Apple app delegate, and a config object for the SDK
+     
+     - Parameters:
+        - apiKey: The Iterable Mobile API key to be used with the SDK
+        - launchOptions: The launchOptions coming from application(_:didFinishLaunchingWithOptions:)
+        - config: The IterableConfig object with the settings to be used
+     
+     - SeeAlso: IterableConfig
+     */
     public static func initialize(apiKey: String,
                                   launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
                                   config: IterableConfig = IterableConfig()) {
@@ -82,16 +108,16 @@ import UIKit
     // MARK: - SDK
     
     /**
-     Handles a Universal Link
+     Handle a Universal Link
      
      For Iterable links, it will track the click and retrieve the original URL,
      pass it to `IterableURLDelegate` for handling. If it's not an Iterable link,
      it just passes the same URL to `IterableURLDelegate`
      
      - Parameters:
-        - url: the URL obtained from `UserActivity.webpageURL`
+        - url: The URL obtained from `UserActivity.webpageURL`
      
-     - Returns: true if it is an Iterable link, or the value returned from `IterableURLDelegate` otherwise
+     - Returns: `true` if it is an Iterable link, or the value returned from `IterableURLDelegate` otherwise
      */
     @objc(handleUniversalLink:)
     @discardableResult
@@ -100,11 +126,13 @@ import UIKit
     }
     
     /**
-     This will send the device attribute to the back end when registering the device.
+     Add an entry in the device attributes
      
      - Parameters:
          - name: The device attribute name
          - value: The device attribute value
+     
+     - Remark: This is used by our React Native SDK to properly attribute SDK usage
      */
     @objc(setDeviceAttribute:value:)
     public static func setDeviceAttribute(name: String, value: String) {
@@ -112,10 +140,12 @@ import UIKit
     }
     
     /**
-     Remove a device attribute set earlier.
+     Remove an entry in the device attributes
      
      - Parameters:
         - name: The device attribute name
+     
+     - Remark: This is used by our React Native SDK to properly attribute SDK usage
      */
     @objc(removeDeviceAttribute:)
     public static func removeDeviceAttribute(name: String) {
@@ -126,8 +156,8 @@ import UIKit
      Set the user of the SDK instance to the email address specified
      
      - Parameters:
-        - email: the email of the user for the SDK instance
-        - token: the associated authentication token for the user
+        - email: The email of the user for the SDK instance
+        - token: The associated authentication token for the user
      */
     @objc(setEmail:withToken:)
     public static func setEmail(_ email: String, withToken token: String? = nil) {
@@ -138,26 +168,37 @@ import UIKit
      Set the user of the SDK instance to the user ID specified
      
      - Parameters:
-        - userId: the userId of the user for the SDK instance
-        - token: the associated authentication token for the user
+        - userId: The userId of the user for the SDK instance
+        - token: The associated authentication token for the user
      */
     @objc(setUserId:withToken:)
     public static func setUserId(_ userId: String, withToken token: String? = nil) {
         internalImplementation?.setUserId(userId, withToken: token)
     }
     
-    /// Log out the current user of the SDK instance
+    /**
+     Logs out the current user from the SDK instance
+     
+     - Remark: This will empty out user specific authentication data and reset the in-app manager.
+               If `autoPushRegistration` is `true` (which is the default value), this will also
+               disable the current push token.
+     */
     public static func logoutUser() {
         internalImplementation?.logoutUser()
     }
     
-    /// Use this property for getting and showing in-app messages.
-    /// This property has no meaning if IterableAPI has not been initialized using
-    /// IterableAPI.initialize
-    /// ```
-    /// - IterableAPI.inAppManager.getMessages()
-    /// - IterableAPI.inAppManager.show(message: message, consume: true)
-    /// ```
+    /**
+     The instance that manages getting and showing in-app messages
+     
+     ```
+     IterableAPI.inAppManager.getMessages()
+     IterableAPI.inAppManager.show(message: message, consume: true)
+     ```
+     
+     - Remark: This variable will do nothing if the SDK has not been initialized yet
+     
+     - SeeAlso: IterableInAppManagerProtocol
+     */
     public static var inAppManager: IterableInAppManagerProtocol {
         guard let internalImplementation = internalImplementation else {
             ITBError("IterableAPI is not initialized yet. In-apps will not work now.")
@@ -178,7 +219,10 @@ import UIKit
      
      - Parameters:
         - token: The token representing this device/application pair, obtained from
-                 `application:didRegisterForRemoteNotificationsWithDeviceToken` after registering for remote notifications
+                 `application:didRegisterForRemoteNotificationsWithDeviceToken`
+                 after registering for remote notifications
+     
+     - SeeAlso: IterableConfig
      */
     @objc(registerToken:)
     public static func register(token: Data) {
@@ -193,12 +237,12 @@ import UIKit
      
      - Parameters:
         - token: The token representing this device/application pair, obtained from
-                        `application:didRegisterForRemoteNotificationsWithDeviceToken`
-                        after registering for remote notifications
+                 `application:didRegisterForRemoteNotificationsWithDeviceToken`
+                 after registering for remote notifications
         - onSuccess: OnSuccessHandler to invoke if token registration is successful
         - onFailure: OnFailureHandler to invoke if token registration fails
      
-     - SeeAlso: OnSuccessHandler, OnFailureHandler
+     - SeeAlso: IterableConfig, OnSuccessHandler, OnFailureHandler
      */
     @objc(registerToken:onSuccess:OnFailure:)
     public static func register(token: Data, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) {
@@ -207,13 +251,19 @@ import UIKit
     
     /**
      Disable this device's token in Iterable, for the current user.
+     
+     - Remark: By default, the SDK calls this upon user logout automatically. If a different or manually controlled
+               behavior is desired, set `autoPushRegistration` to `false` in the `IterableConfig` object when
+               initializing the SDK.
+     
+     - SeeAlso: IterableConfig
      */
     public static func disableDeviceForCurrentUser() {
         internalImplementation?.disableDeviceForCurrentUser()
     }
     
     /**
-     Disable this device's token in Iterable, for all users with this device.
+     Disable this device's token in Iterable, for all users on this device.
      */
     public static func disableDeviceForAllUsers() {
         internalImplementation?.disableDeviceForAllUsers()
@@ -271,7 +321,7 @@ import UIKit
      Updates the current user's email
      
      - Parameters:
-        - newEmail: the new email address
+        - newEmail: The new email address
         - onSuccess: OnSuccessHandler to invoke if update is successful
         - onFailure: OnFailureHandler to invoke if update fails
      
@@ -288,8 +338,8 @@ import UIKit
      Updates the current user's email, and set the new authentication token
      
      - Parameters:
-        - newEmail: the new email of this user
-        - token: the new authentication token for this user
+        - newEmail: The new email of this user
+        - token: The new authentication token for this user
         - onSuccess: OnSuccessHandler to invoke if update is successful
         - onFailure: OnFailureHandler to invoke if update fails
      
@@ -309,10 +359,8 @@ import UIKit
      Tracks a purchase
      
      - Parameters:
-        - withTotal: total purchase amount
-        - items: list of purchased items
-     
-     - Remark: Pass in the total purchase amount and an `NSArray` of `CommerceItem`s
+        - withTotal: The total purchase amount
+        - items: The list of purchased items
      
      - SeeAlso: CommerceItem
      */
@@ -322,14 +370,12 @@ import UIKit
     }
     
     /**
-     Tracks a purchase with additional data.
+     Tracks a purchase with additional data
      
      - Parameters:
-        - withTotal: total purchase amount
-        - items: list of purchased items
-        - dataFields: an `Dictionary` containing any additional information to save along with the event
-     
-     - Remark: Pass in the total purchase amount and an `NSArray` of `CommerceItem`s
+        - withTotal: The total purchase amount
+        - items: The list of purchased items
+        - dataFields: A `Dictionary` containing any additional information to save along with the event
      
      - SeeAlso: CommerceItem
      */
@@ -342,13 +388,11 @@ import UIKit
      Tracks a purchase with additional data and custom completion blocks.
      
      - Parameters:
-         - withTotal: total purchase amount
-         - items: list of purchased items
-         - dataFields: an `Dictionary` containing any additional information to save along with the event
+         - withTotal: The total purchase amount
+         - items: The list of purchased items
+         - dataFields: A `Dictionary` containing any additional information to save along with the event
          - onSuccess: OnSuccessHandler to invoke if the purchase is tracked successfully
          - onFailure: OnFailureHandler to invoke if tracking the purchase fails
-     
-     - Remark: Pass in the total purchase amount and an `NSArray` of `CommerceItem`s
      
      - SeeAlso: CommerceItem, OnSuccessHandler, OnFailureHandler
      */
@@ -366,11 +410,10 @@ import UIKit
     }
     
     /**
-     Tracks a pushOpen event with a push notification payload
+     Tracks a `pushOpen` event with a push notification payload
      
-     - Parameter userInfo: the push notification payload
-     
-     - Remark: Pass in the `userInfo` from the push notification payload
+     - Parameters:
+        - userInfo: the `userInfo` parameter from the push notification payload
      */
     @objc(trackPushOpen:)
     public static func track(pushOpen userInfo: [AnyHashable: Any]) {
@@ -378,13 +421,11 @@ import UIKit
     }
     
     /**
-     Tracks a pushOpen event with a push notification and optional additional data
+     Tracks a `pushOpen` event with a push notification and optional additional data
      
      - Parameters:
-         - userInfo: the push notification payload
-         - dataFields: a `Dictionary` containing any additional information to save along with the event
-     
-     - Remark: Pass in the `userInfo` from the push notification payload
+         - userInfo: The `userInfo` parameter from the push notification payload
+         - dataFields: A `Dictionary` containing any additional information to save along with the event
      */
     @objc(trackPushOpen:dataFields:)
     public static func track(pushOpen userInfo: [AnyHashable: Any], dataFields: [AnyHashable: Any]?) {
@@ -392,15 +433,13 @@ import UIKit
     }
     
     /**
-     Tracks a pushOpen event with a push notification, optional additional data, and custom completion blocks
+     Tracks a `pushOpen` event with a push notification, optional additional data, and custom completion blocks
      
      - Parameters:
-         - userInfo: the push notification payload
-         - dataFields: a `Dictionary` containing any additional information to save along with the event
-         - onSuccess: OnSuccessHandler to invoke if the open is tracked successfully
-         - onFailure: OnFailureHandler to invoke if tracking the open fails
-     
-     - Remark: Pass in the `userInfo` from the push notification payload
+         - userInfo: The `userInfo` parameter from the push notification payload
+         - dataFields: A `Dictionary` containing any additional information to save along with the event
+         - onSuccess: `OnSuccessHandler` to invoke if the open is tracked successfully
+         - onFailure: `OnFailureHandler` to invoke if tracking the open fails
      
      - SeeAlso: OnSuccessHandler, OnFailureHandler
      */
@@ -416,14 +455,15 @@ import UIKit
     }
     
     /**
-     Tracks a pushOpen event for the specified campaign and template ids, whether the app was already
+     Tracks a `pushOpen` event for the specified campaign and template IDs, whether the app was already
      running when the push was received, and optional additional data
      
      - Parameters:
-         - campaignId: The campaignId of the the push notification that caused this open event
-         - templateId: The templateId  of the the push notification that caused this open event
-         - messageId: The messageId  of the the push notification that caused this open event
-         - appAlreadyRunning: This will get merged into the dataFields. Whether the app is already running when the notification was received
+         - campaignId: The `campaignId` of the push notification that caused this open event
+         - templateId: The `templateId` of the push notification that caused this open event
+         - messageId: The `messageId` of the the push notification that caused this open event
+         - appAlreadyRunning: This will get merged into `dataFields`, and it specifies whether
+                              the app is already running when the notification was received
          - dataFields: A `Dictionary` containing any additional information to save along with the event
      
      - Remark: Pass in the the relevant campaign data
@@ -442,14 +482,15 @@ import UIKit
     }
     
     /**
-     Tracks a pushOpen event for the specified campaign and template ids, whether the app was already
+     Tracks a `pushOpen` event for the specified campaign and template IDs, whether the app was already
      running when the push was received, and optional additional data
      
      - Parameters:
-         - campaignId: The campaignId of the the push notification that caused this open event
-         - templateId: The templateId  of the the push notification that caused this open event
-         - messageId: The messageId  of the the push notification that caused this open event
-         - appAlreadyRunning: This will get merged into the dataFields. Whether the app is already running when the notification was received
+         - campaignId: The `campaignId` of the push notification that caused this open event
+         - templateId: The `templateId` of the the push notification that caused this open event
+         - messageId: The `messageId` of the the push notification that caused this open event
+         - appAlreadyRunning: This will get merged into `dataFields`, and it specifies whether
+                              the app is already running when the notification was received
          - dataFields: A `Dictionary` containing any additional information to save along with the event
      
      - Remark: Pass in the the relevant campaign data
@@ -474,9 +515,10 @@ import UIKit
     }
     
     /**
-     Tracks a custom event.
+     Tracks a custom event
      
-     - parameter eventName: Name of the event
+     - Parameters:
+        - eventName: Name of the event
      
      - Remark: Pass in the custom event data.
      */
@@ -486,7 +528,7 @@ import UIKit
     }
     
     /**
-     Tracks a custom event.
+     Tracks a custom event
      
      - Parameters:
         - eventName: Name of the event
@@ -500,13 +542,13 @@ import UIKit
     }
     
     /**
-     Tracks a custom event.
+     Tracks a custom event
      
      - Parameters:
          - eventName: Name of the event
          - dataFields: A `Dictionary` containing any additional information to save along with the event
-         - onSuccess: OnSuccessHandler to invoke if the open is tracked successfully
-         - onFailure: OnFailureHandler to invoke if tracking the open fails
+         - onSuccess: `OnSuccessHandler` to invoke if the open is tracked successfully
+         - onFailure: `OnFailureHandler` to invoke if tracking the open fails
      
      - Remark: Pass in the custom event data.
      */
@@ -549,10 +591,10 @@ import UIKit
     // MARK: In-App Notifications
     
     /**
-     Tracks an `InAppOpen` event.
+     Tracks an `InAppOpen` event
      
-     Usually you don't need to call this method explicitly. IterableSDK will call this automatically.
-     Call this method only if you are using a custom view controller to render `IterableInAppMessage`s.
+     By default, the SDK will call this automatically. This is available in case a custom view controller
+     is used for rendering `IterableInAppMessage`s.
      
      - Parameters:
         - message: The Iterable in-app message
@@ -566,10 +608,10 @@ import UIKit
     }
     
     /**
-     Tracks an `InAppClick` event.
+     Tracks an `InAppClick` event
      
-     Usually you don't need to call this method explicitly. IterableSDK will call this automatically.
-     Call this method only if you are using a custom view controller to render IterableInAppMessages.
+     By default, the SDK will call this automatically. This is available in case a custom view controller
+     is used for rendering `IterableInAppMessage`s.
      
      - Parameters:
          - message: The message of the notification
@@ -586,7 +628,7 @@ import UIKit
      
      - Parameters:
          - message: The in-app message
-         - clickedUrl: The url that was clicked to close the in-app. It will be `nil` when message is closed on clicking `back`.
+         - clickedUrl: The url that was clicked to close the in-app. It will be `nil` when message is closed by clicking `back`.
      */
     @objc(trackInAppClose:clickedUrl:)
     public static func track(inAppClose message: IterableInAppMessage, clickedUrl: String?) {
@@ -599,7 +641,7 @@ import UIKit
      - Parameters:
          - message: The in-app message
          - location: The location from where this message was shown. `inbox` or `inApp`.
-         - clickedUrl: The url that was clicked to close the in-app. It will be `nil` when message is closed on clicking `back`.
+         - clickedUrl: The url that was clicked to close the in-app. It will be `nil` when message is closed by clicking `back`.
      */
     @objc(trackInAppClose:location:clickedUrl:)
     public static func track(inAppClose message: IterableInAppMessage, location: InAppLocation, clickedUrl: String?) {
@@ -623,8 +665,9 @@ import UIKit
     /**
      Consumes the notification and removes it from the list of in-app messages
      
-     - parameter message: The Iterable message that is being consumed
-     - parameter location: The location from where this message was shown. `inbox` or `inApp`.
+     - Parameters:
+        - message: The Iterable message that is being consumed
+        - location: The location from where this message was shown. `inbox` or `inApp`.
      */
     @objc(inAppConsume:location:)
     public static func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp) {
