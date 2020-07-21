@@ -83,7 +83,7 @@ class AuthTests: XCTestCase {
         XCTAssertNil(internalAPI.auth.authToken)
     }
     
-    func testEmailWithTokenChange() {
+    func testNewEmailWithTokenChange() {
         let internalAPI = IterableAPIInternal.initializeForTesting()
         
         let originalEmail = "first@example.com"
@@ -102,6 +102,28 @@ class AuthTests: XCTestCase {
         
         XCTAssertEqual(internalAPI.email, newEmail)
         XCTAssertNil(internalAPI.userId)
+        XCTAssertEqual(internalAPI.auth.authToken, newToken)
+    }
+    
+    func testNewUserIdWithTokenChange() {
+        let internalAPI = IterableAPIInternal.initializeForTesting()
+        
+        let originalUserId = "firstUserId"
+        let originalToken = "nen"
+        
+        let newUserId = "secondUserId"
+        let newToken = "greedIsland"
+        
+        internalAPI.setUserId(originalUserId, withToken: originalToken)
+        
+        XCTAssertNil(internalAPI.email)
+        XCTAssertEqual(internalAPI.userId, originalUserId)
+        XCTAssertEqual(internalAPI.auth.authToken, originalToken)
+        
+        internalAPI.setUserId(newUserId, withToken: newToken)
+        
+        XCTAssertNil(internalAPI.email)
+        XCTAssertEqual(internalAPI.userId, newUserId)
         XCTAssertEqual(internalAPI.auth.authToken, newToken)
     }
     
@@ -150,5 +172,37 @@ class AuthTests: XCTestCase {
         XCTAssertNil(internalAPI.email)
         XCTAssertNil(internalAPI.userId)
         XCTAssertNil(internalAPI.auth.authToken)
+    }
+    
+    func testAuthTokenChangeWithSameEmail() {
+        let internalAPI = IterableAPIInternal.initializeForTesting()
+        
+        internalAPI.setEmail(AuthTests.email, withToken: AuthTests.authToken)
+        
+        XCTAssertEqual(internalAPI.email, AuthTests.email)
+        XCTAssertEqual(internalAPI.auth.authToken, AuthTests.authToken)
+        
+        let newAuthToken = AuthTests.authToken + "3984ru398gj893"
+        
+        internalAPI.setEmail(AuthTests.email, withToken: newAuthToken)
+        
+        XCTAssertEqual(internalAPI.email, AuthTests.email)
+        XCTAssertEqual(internalAPI.auth.authToken, newAuthToken)
+    }
+    
+    func testAuthTokenChangeWithSameUserId() {
+        let internalAPI = IterableAPIInternal.initializeForTesting()
+        
+        internalAPI.setUserId(AuthTests.userId, withToken: AuthTests.authToken)
+        
+        XCTAssertEqual(internalAPI.userId, AuthTests.userId)
+        XCTAssertEqual(internalAPI.auth.authToken, AuthTests.authToken)
+        
+        let newAuthToken = AuthTests.authToken + "3984ru398gj893"
+        
+        internalAPI.setUserId(AuthTests.userId, withToken: newAuthToken)
+        
+        XCTAssertEqual(internalAPI.userId, AuthTests.userId)
+        XCTAssertEqual(internalAPI.auth.authToken, newAuthToken)
     }
 }
