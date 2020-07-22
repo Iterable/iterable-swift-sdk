@@ -157,7 +157,7 @@ class AuthTests: XCTestCase {
         
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
-
+    
     func testLogoutUser() {
         let internalAPI = IterableAPIInternal.initializeForTesting()
         
