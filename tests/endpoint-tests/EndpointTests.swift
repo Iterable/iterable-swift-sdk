@@ -25,7 +25,7 @@ class EndpointTests: XCTestCase {
         
         wait(for: [expectation1], timeout: 15)
     }
-
+    
     func test02UpdateEmail() throws {
         let expectation1 = expectation(description: #function)
         let expectation2 = expectation(description: "New email is deleted")
@@ -313,7 +313,7 @@ class EndpointTests: XCTestCase {
         
         clearAllInAppMessages(api: api)
     }
-
+    
     private static let apiKey = Environment.apiKey!
     private static let pushCampaignId = Environment.pushCampaignId!
     private static let pushTemplateId = Environment.pushTemplateId!
