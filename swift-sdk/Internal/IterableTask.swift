@@ -15,4 +15,20 @@ struct IterableTask {
     var processing: Bool = false
     var scheduleTime: Date?
     var data: Data?
+    
+    func updated(attempts: Int? = nil,
+                 lastAttempt: Date? = nil,
+                 processing: Bool? = nil,
+                 scheduleTime: Date? = nil,
+                 data: Data? = nil) -> IterableTask {
+        IterableTask(id: self.id,
+                     created: self.created,
+                     modified: self.modified,
+                     processor: self.processor,
+                     attempts: attempts ?? self.attempts,
+                     lastAttempt: lastAttempt ?? self.lastAttempt,
+                     processing: processing ?? self.processing,
+                     scheduleTime: scheduleTime ?? self.scheduleTime,
+                     data: data ?? self.data)
+    }
 }

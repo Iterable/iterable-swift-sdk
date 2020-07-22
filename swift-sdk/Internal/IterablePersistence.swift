@@ -21,12 +21,21 @@ extension IterableDBError: LocalizedError {
 }
 
 protocol IterablePersistenceContext {
+    @discardableResult
     func create(task: IterableTask) throws -> IterableTask
+    
+    @discardableResult
     func update(task: IterableTask) throws -> IterableTask
+    
     func delete(task: IterableTask) throws
+
+    @discardableResult
     func createTask(id: String, processor: String) throws -> IterableTask
+
     func findTask(withId id: String) throws -> IterableTask?
+
     func deleteTask(withId id: String) throws
+
     func save() throws
 }
 
