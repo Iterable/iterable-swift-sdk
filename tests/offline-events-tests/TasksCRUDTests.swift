@@ -60,6 +60,24 @@ class TasksCRUDTests: XCTestCase {
         XCTAssertEqual(found.data, data)
     }
     
+    func testDelete() throws {
+        let context = persistenceProvider.newBackgroundContext()
+        let taskId = IterableUtil.generateUUID()
+        let taskProcessor = "Processor1"
+        try context.createTask(id: taskId, processor: taskProcessor)
+        try context.save()
+        
+        let newContext = persistenceProvider.mainQueueContext()
+        let found = try newContext.findTask(withId: taskId)!
+        XCTAssertEqual(found.id, taskId)
+        XCTAssertEqual(found.processor, taskProcessor)
+        
+        try context.delete(task: found)
+        try context.save()
+        
+        XCTAssertNil(try newContext.findTask(withId: taskId))
+    }
+    
     private lazy var persistenceProvider = {
         CoreDataPersistenceContextProvider()
     }()
