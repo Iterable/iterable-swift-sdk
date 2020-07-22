@@ -88,13 +88,7 @@ struct CoreDataPersistenceContext: IterablePersistenceContext {
     }
     
     func createTask(id: String, processor: String) throws -> IterableTask {
-        guard let taskManagedObject = createTaskManagedObject() else {
-            throw IterableDBError.general("Could not create task managed object")
-        }
-        taskManagedObject.id = id
-        taskManagedObject.created = dateProvider.currentDate
-        taskManagedObject.processor = processor
-        return PersistenceHelper.task(from: taskManagedObject)
+        try create(task: IterableTask(id: id, processor: processor))
     }
     
     func findTask(withId id: String) throws -> IterableTask? {

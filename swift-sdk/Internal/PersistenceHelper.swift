@@ -8,7 +8,7 @@ import Foundation
 struct PersistenceHelper {
     static func task(from: IterableTaskManagedObject) -> IterableTask {
         IterableTask(id: from.id!,
-                     created: from.created!,
+                     created: from.created,
                      modified: from.modified,
                      processor: from.processor!,
                      attempts: Int(from.attempts),
@@ -19,6 +19,7 @@ struct PersistenceHelper {
     }
     
     static func copy(from: IterableTask, to: IterableTaskManagedObject) {
+        to.id = from.id
         to.created = from.created
         to.modified = from.modified
         to.processor = from.processor

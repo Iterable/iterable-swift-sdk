@@ -7,7 +7,7 @@ import Foundation
 
 struct IterableTask {
     let id: String
-    let created: Date
+    var created: Date?
     var modified: Date?
     let processor: String
     var attempts: Int = 0
