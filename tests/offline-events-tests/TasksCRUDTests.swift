@@ -8,14 +8,6 @@ import XCTest
 @testable import IterableSDK
 
 class TasksCRUDTests: XCTestCase {
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
     func testCreate() throws {
         let context = persistenceProvider.newBackgroundContext()
         let taskId = IterableUtil.generateUUID()
@@ -78,7 +70,29 @@ class TasksCRUDTests: XCTestCase {
         XCTAssertNil(try newContext.findTask(withId: taskId))
     }
     
-    private lazy var persistenceProvider = {
-        CoreDataPersistenceContextProvider()
+    func testFindAll() throws {
+        let context = persistenceProvider.newBackgroundContext()
+        try context.deleteAllTasks()
+        try context.save()
+        
+        let tasks = try context.findAllTasks()
+        XCTAssertEqual(tasks.count, 0)
+        
+        try context.createTask(id: IterableUtil.generateUUID(), processor: "First Processor")
+        try context.createTask(id: IterableUtil.generateUUID(), processor: "Second Processor")
+        try context.save()
+        
+        let newTasks = try context.findAllTasks()
+        XCTAssertEqual(newTasks.count, 2)
+
+        try context.deleteAllTasks()
+        try context.save()
+    }
+    
+    private lazy var persistenceProvider: IterablePersistenceContextProvider = {
+        let provider = CoreDataPersistenceContextProvider()
+        try! provider.mainQueueContext().deleteAllTasks()
+        try! provider.mainQueueContext().save()
+        return provider
     }()
 }
