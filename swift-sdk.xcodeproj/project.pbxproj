@@ -175,6 +175,7 @@
 		ACF560E020E443C0000AAC23 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACF560DE20E443C0000AAC23 /* LaunchScreen.storyboard */; };
 		ACF560E820E55A6B000AAC23 /* IterableActionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF560E720E55A6B000AAC23 /* IterableActionContext.swift */; };
 		ACFD5AB324C8179D008E497A /* PersistenceHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFD5AB224C8179D008E497A /* PersistenceHelper.swift */; };
+		ACFD5AC824C8290E008E497A /* IterableTaskManagedObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACFD5AC724C8290E008E497A /* IterableTaskManagedObject.swift */; };
 		ACFF4287246569D300FDF10D /* CommonExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F9C2167E9FD0099A184 /* CommonExtensions.swift */; };
 		ACFF428824656A2000FDF10D /* CommonMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F942166EC880099A184 /* CommonMocks.swift */; };
 		ACFF428F24656BDF00FDF10D /* CommonExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F9C2167E9FD0099A184 /* CommonExtensions.swift */; };
@@ -464,6 +465,7 @@
 		ACF560E120E443C0000AAC23 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		ACF560E720E55A6B000AAC23 /* IterableActionContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableActionContext.swift; sourceTree = "<group>"; };
 		ACFD5AB224C8179D008E497A /* PersistenceHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceHelper.swift; sourceTree = "<group>"; };
+		ACFD5AC724C8290E008E497A /* IterableTaskManagedObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableTaskManagedObject.swift; sourceTree = "<group>"; };
 		ACFF429E24656BDF00FDF10D /* ui-tests-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ui-tests-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ACFF429F24656BDF00FDF10D /* host-app copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "host-app copy-Info.plist"; path = "/Users/tapash.majumder/work/iterable/mobile/ios/swift-sdk/host-app copy-Info.plist"; sourceTree = "<absolute>"; };
 		ACFF42A324656CA100FDF10D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -751,6 +753,7 @@
 			children = (
 				AC219C522260006600B98631 /* Assets.xcassets */,
 				AC219C4F225FEDBD00B98631 /* SampleInboxCell.xib */,
+				AC50865224C60172001DC132 /* IterableDataModel.xcdatamodeld */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -758,12 +761,12 @@
 		AC50865124C60133001DC132 /* Persistence */ = {
 			isa = PBXGroup;
 			children = (
-				AC50865224C60172001DC132 /* IterableDataModel.xcdatamodeld */,
 				AC50865524C603AC001DC132 /* IterablePersistence.swift */,
 				AC50865924C60572001DC132 /* IterableCoreDataPersistence.swift */,
 				AC50865724C60426001DC132 /* IterableTask.swift */,
 				AC8E7CA424C7555E0039605F /* CoreDataUtil.swift */,
 				ACFD5AB224C8179D008E497A /* PersistenceHelper.swift */,
+				ACFD5AC724C8290E008E497A /* IterableTaskManagedObject.swift */,
 			);
 			name = Persistence;
 			sourceTree = "<group>";
@@ -1495,6 +1498,7 @@
 				AC426226238C27DD00164121 /* IterableInboxCell+Layout.swift in Sources */,
 				AC347B5C20E5A7E1003449CF /* APNSTypeChecker.swift in Sources */,
 				AC8E7CA524C7555E0039605F /* CoreDataUtil.swift in Sources */,
+				ACFD5AC824C8290E008E497A /* IterableTaskManagedObject.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
