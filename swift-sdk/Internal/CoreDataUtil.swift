@@ -9,8 +9,8 @@ import CoreData
 import Foundation
 
 struct CoreDataUtil {
-    static func create(context: NSManagedObjectContext, entity: String) -> NSManagedObject {
-        NSEntityDescription.insertNewObject(forEntityName: entity, into: context)
+    static func create<T: NSFetchRequestResult>(context: NSManagedObjectContext, entity: String) -> T? {
+        NSEntityDescription.insertNewObject(forEntityName: entity, into: context) as? T
     }
     
     static func findEntitiyByColumn<T: NSFetchRequestResult>(context: NSManagedObjectContext,
@@ -18,6 +18,11 @@ struct CoreDataUtil {
                                                              columnName: String,
                                                              columnValue: Any) throws -> T? {
         try findEntitiesByColumns(context: context, entity: entity, columns: [columnName: columnValue]).first
+    }
+    
+    static func findAll<T: NSFetchRequestResult>(context: NSManagedObjectContext, entity: String) throws -> [T] {
+        let request = NSFetchRequest<T>(entityName: entity)
+        return try context.fetch(request)
     }
     
     static func findEntitiesByColumns<T: NSFetchRequestResult>(context: NSManagedObjectContext, entity: String, columns: [String: Any]) throws -> [T] {

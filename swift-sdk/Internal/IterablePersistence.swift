@@ -35,6 +35,10 @@ protocol IterablePersistenceContext {
     func findTask(withId id: String) throws -> IterableTask?
 
     func deleteTask(withId id: String) throws
+    
+    func findAllTasks() throws -> [IterableTask]
+    
+    func deleteAllTasks() throws
 
     func save() throws
 }

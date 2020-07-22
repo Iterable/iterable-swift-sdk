@@ -105,6 +105,17 @@ struct CoreDataPersistenceContext: IterablePersistenceContext {
         managedObjectContext.delete(taskManagedObject)
     }
     
+    func findAllTasks() throws -> [IterableTask] {
+        let taskManagedObjects: [IterableTaskManagedObject] = try CoreDataUtil.findAll(context: managedObjectContext, entity: PersistenceConst.EntityName.task)
+        
+        return taskManagedObjects.map(PersistenceHelper.task(from:))
+    }
+    
+    func deleteAllTasks() throws {
+        let taskManagedObjects: [IterableTaskManagedObject] = try CoreDataUtil.findAll(context: managedObjectContext, entity: PersistenceConst.EntityName.task)
+        taskManagedObjects.forEach { managedObjectContext.delete($0) }
+    }
+    
     func save() throws {
         try managedObjectContext.save()
     }
@@ -117,6 +128,6 @@ struct CoreDataPersistenceContext: IterablePersistenceContext {
     }
     
     private func createTaskManagedObject() -> IterableTaskManagedObject? {
-        CoreDataUtil.create(context: managedObjectContext, entity: PersistenceConst.EntityName.task) as? IterableTaskManagedObject
+        return CoreDataUtil.create(context: managedObjectContext, entity: PersistenceConst.EntityName.task)
     }
 }
