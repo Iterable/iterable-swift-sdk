@@ -128,6 +128,6 @@ struct CoreDataPersistenceContext: IterablePersistenceContext {
     }
     
     private func createTaskManagedObject() -> IterableTaskManagedObject? {
-        return CoreDataUtil.create(context: managedObjectContext, entity: PersistenceConst.EntityName.task)
+        CoreDataUtil.create(context: managedObjectContext, entity: PersistenceConst.EntityName.task)
     }
 }
