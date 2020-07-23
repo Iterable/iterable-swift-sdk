@@ -28,18 +28,18 @@ protocol IterablePersistenceContext {
     func update(task: IterableTask) throws -> IterableTask
     
     func delete(task: IterableTask) throws
-
+    
     @discardableResult
     func createTask(id: String, processor: String) throws -> IterableTask
-
+    
     func findTask(withId id: String) throws -> IterableTask?
-
+    
     func deleteTask(withId id: String) throws
     
     func findAllTasks() throws -> [IterableTask]
     
     func deleteAllTasks() throws
-
+    
     func save() throws
 }
 

@@ -36,7 +36,7 @@ class TasksCRUDTests: XCTestCase {
         let scheduleTime = Date()
         let data = Data(repeating: 1, count: 20)
         let updatedTask = task.updated(attempts: attempts, lastAttempt: lastAttempt, processing: processing, scheduleTime: scheduleTime, data: data)
-
+        
         try context.update(task: updatedTask)
         try context.save()
         
@@ -84,7 +84,7 @@ class TasksCRUDTests: XCTestCase {
         
         let newTasks = try context.findAllTasks()
         XCTAssertEqual(newTasks.count, 2)
-
+        
         try context.deleteAllTasks()
         try context.save()
     }
