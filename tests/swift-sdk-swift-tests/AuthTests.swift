@@ -159,7 +159,13 @@ class AuthTests: XCTestCase {
     }
 
     func testLogoutUser() {
-        let internalAPI = IterableAPIInternal.initializeForTesting()
+        let localStorage = UserDefaultsLocalStorage(userDefaults: TestUtils.getTestUserDefaults())
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(localStorage: localStorage)
+        
+        XCTAssertNil(localStorage.email)
+        XCTAssertNil(localStorage.userId)
+        XCTAssertNil(localStorage.authToken)
         
         internalAPI.setEmail(AuthTests.email, withToken: AuthTests.authToken)
         
@@ -167,11 +173,19 @@ class AuthTests: XCTestCase {
         XCTAssertNil(internalAPI.userId)
         XCTAssertEqual(internalAPI.auth.authToken, AuthTests.authToken)
         
+        XCTAssertEqual(localStorage.email, AuthTests.email)
+        XCTAssertNil(localStorage.userId)
+        XCTAssertEqual(localStorage.authToken, AuthTests.authToken)
+        
         internalAPI.logoutUser()
         
         XCTAssertNil(internalAPI.email)
         XCTAssertNil(internalAPI.userId)
         XCTAssertNil(internalAPI.auth.authToken)
+        
+        XCTAssertNil(localStorage.email)
+        XCTAssertNil(localStorage.userId)
+        XCTAssertNil(localStorage.authToken)
     }
     
     func testAuthTokenChangeWithSameEmail() {
