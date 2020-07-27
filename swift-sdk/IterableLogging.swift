@@ -10,7 +10,7 @@ import os
 @objc public class DefaultLogDelegate: NSObject, IterableLogDelegate {
     private let minLogLevel: LogLevel // the lowest level that will be logged
     
-    init(minLogLevel: LogLevel = .info) {
+    public init(minLogLevel: LogLevel = .info) {
         self.minLogLevel = minLogLevel
     }
     
