@@ -138,6 +138,11 @@ struct RequestCreator {
         var body = [AnyHashable: Any]()
         var reqDataFields = [AnyHashable: Any]()
         
+        guard let messageId = messageId else {
+            ITBError("messageId is nil")
+            return .failure(IterableError.general(description: "messageId is nil"))
+        }
+        
         if let dataFields = dataFields {
             reqDataFields = dataFields
         }
@@ -155,9 +160,7 @@ struct RequestCreator {
             body[JsonKey.templateId.jsonKey] = templateId
         }
         
-        if let messageId = messageId {
-            body.setValue(for: .messageId, value: messageId)
-        }
+        body.setValue(for: .messageId, value: messageId)
         
         return .success(.post(createPostRequest(path: Const.Path.trackPushOpen, body: body)))
     }
