@@ -144,7 +144,7 @@ import UIKit
     ///    - email: The email of the user for the SDK instance
     ///    - token: The associated authentication token for the user
     @objc(setEmail:withToken:)
-    public static func setEmail(_ email: String, withToken token: String? = nil) {
+    public static func setEmail(_ email: String?, withToken token: String? = nil) {
         internalImplementation?.setEmail(email, withToken: token)
     }
     
@@ -154,7 +154,7 @@ import UIKit
     ///    - userId: The userId of the user for the SDK instance
     ///    - token: The associated authentication token for the user
     @objc(setUserId:withToken:)
-    public static func setUserId(_ userId: String, withToken token: String? = nil) {
+    public static func setUserId(_ userId: String?, withToken token: String? = nil) {
         internalImplementation?.setUserId(userId, withToken: token)
     }
     
