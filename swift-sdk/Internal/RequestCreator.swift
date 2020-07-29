@@ -134,14 +134,9 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: Const.Path.trackPurchase, body: body)))
     }
     
-    func createTrackPushOpenRequest(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?) -> Result<IterableRequest, IterableError> {
+    func createTrackPushOpenRequest(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?) -> Result<IterableRequest, IterableError> {
         var body = [AnyHashable: Any]()
         var reqDataFields = [AnyHashable: Any]()
-        
-        guard let messageId = messageId else {
-            ITBError("messageId is nil")
-            return .failure(IterableError.general(description: "messageId is nil"))
-        }
         
         if let dataFields = dataFields {
             reqDataFields = dataFields

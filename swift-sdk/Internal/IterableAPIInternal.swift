@@ -245,7 +245,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     func trackPushOpen(_ campaignId: NSNumber,
                        templateId: NSNumber?,
-                       messageId: String?,
+                       messageId: String,
                        appAlreadyRunning: Bool,
                        dataFields: [AnyHashable: Any]? = nil,
                        onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess("trackPushOpen"),
@@ -499,8 +499,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         localStorage.save(payload: payload, withExpiration: expiration)
         
         if let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: payload) {
-            if let templateId = metadata.templateId, let messageId = metadata.messageId {
-                attributionInfo = IterableAttributionInfo(campaignId: metadata.campaignId, templateId: templateId, messageId: messageId)
+            if let templateId = metadata.templateId {
+                attributionInfo = IterableAttributionInfo(campaignId: metadata.campaignId, templateId: templateId, messageId: metadata.messageId)
             }
         }
     }
