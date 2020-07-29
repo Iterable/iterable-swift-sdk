@@ -62,6 +62,20 @@
                ReferencedContainer = "container:swift-sdk.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "ACFD5AB724C8200C008E497A"
+               BuildableName = "offline-events-tests.xctest"
+               BlueprintName = "offline-events-tests"
+               ReferencedContainer = "container:swift-sdk.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -134,6 +148,16 @@
                BlueprintIdentifier = "ACDA976B23159C39004C412E"
                BuildableName = "inbox-ui-tests-app-ui-tests.xctest"
                BlueprintName = "inbox-ui-tests-app-ui-tests"
+               ReferencedContainer = "container:swift-sdk.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "ACFD5AB724C8200C008E497A"
+               BuildableName = "offline-events-tests.xctest"
+               BlueprintName = "offline-events-tests"
                ReferencedContainer = "container:swift-sdk.xcodeproj">
             </BuildableReference>
          </TestableReference>

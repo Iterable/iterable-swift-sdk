@@ -47,7 +47,7 @@ struct Environment {
         }
         return Bool(strValue) ?? false
     }
-
+    
     private static func getNSNumberFromEnv(key: Key) -> NSNumber? {
         if let strValue = getFromEnv(key: key), let intValue = Int(strValue) {
             return NSNumber(value: intValue)
