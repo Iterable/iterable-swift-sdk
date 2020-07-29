@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.2.9-beta3
+#### Fixed
+- Revert to dismissing in-app with animation.
+
 ## 6.2.9-beta2
 #### Fixed
 - Allow authentication tokens to be updated with the same email or user IDs
