@@ -282,7 +282,7 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
         clickedLink = destinationUrl
         
         if parameters.isModal {
-            dismiss(animated: false) { [weak self, destinationUrl] in
+            dismiss(animated: true) { [weak self, destinationUrl] in
                 self?.futureClickedURL.resolve(with: url)
                 self?.trackInAppClick(destinationUrl: destinationUrl)
             }
