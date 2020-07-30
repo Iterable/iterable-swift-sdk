@@ -116,7 +116,7 @@ public class MockPushTracker: NSObject, PushTrackerProtocol {
         }
     }
     
-    public func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    public func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         self.campaignId = campaignId
         self.templateId = templateId
         self.messageId = messageId

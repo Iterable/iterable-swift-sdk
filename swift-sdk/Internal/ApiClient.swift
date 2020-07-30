@@ -121,7 +121,7 @@ extension ApiClient: ApiClientProtocol {
         send(iterableRequestResult: createRequestCreator().createTrackPurchaseRequest(total, items: items, dataFields: dataFields))
     }
     
-    func track(pushOpen campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError> {
+    func track(pushOpen campaignId: NSNumber, templateId: NSNumber?, messageId: String, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError> {
         send(iterableRequestResult: createRequestCreator().createTrackPushOpenRequest(campaignId,
                                                                                       templateId: templateId,
                                                                                       messageId: messageId,

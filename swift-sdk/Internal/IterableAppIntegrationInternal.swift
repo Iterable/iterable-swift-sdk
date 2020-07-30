@@ -86,7 +86,7 @@ public protocol PushTrackerProtocol: AnyObject {
     
     func trackPushOpen(_ campaignId: NSNumber,
                        templateId: NSNumber?,
-                       messageId: String?,
+                       messageId: String,
                        appAlreadyRunning: Bool,
                        dataFields: [AnyHashable: Any]?,
                        onSuccess: OnSuccessHandler?,
@@ -104,7 +104,7 @@ extension PushTrackerProtocol {
     
     func trackPushOpen(_ campaignId: NSNumber,
                        templateId: NSNumber? = nil,
-                       messageId: String? = nil,
+                       messageId: String,
                        appAlreadyRunning: Bool = false,
                        dataFields: [AnyHashable: Any]? = nil) {
         trackPushOpen(campaignId,
