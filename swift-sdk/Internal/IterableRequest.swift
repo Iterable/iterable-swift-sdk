@@ -36,10 +36,10 @@ extension IterableRequest: Codable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         switch self {
-        case .get(let request):
+        case let .get(request):
             try container.encode("get", forKey: .type)
             try container.encode(request, forKey: .value)
-        case .post(let request):
+        case let .post(request):
             try container.encode("post", forKey: .type)
             try container.encode(request, forKey: .value)
         }
@@ -83,12 +83,10 @@ extension PostRequest: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(path, forKey: .path)
         try container.encode(args, forKey: .args)
-        var bodyData: Data? = nil
+        var bodyData: Data?
         if let body = self.body, JSONSerialization.isValidJSONObject(body) {
             bodyData = try JSONSerialization.data(withJSONObject: body, options: [])
         }
         try container.encode(bodyData, forKey: .body)
     }
 }
-
-
