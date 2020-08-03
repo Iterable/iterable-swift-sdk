@@ -19,15 +19,14 @@ class TaskProcessorTests: XCTestCase {
         let config = IterableConfig()
         let networkSession = MockNetworkSession()
         let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession)
-
+        
         let requestCreator = RequestCreator(apiKey: apiKey,
                                             auth: auth,
                                             deviceMetadata: internalAPI.deviceMetadata)
-        guard case Result.success(let trackEventRequest) = requestCreator.createTrackEventRequest(eventName, dataFields: dataFields) else {
+        guard case let Result.success(trackEventRequest) = requestCreator.createTrackEventRequest(eventName, dataFields: dataFields) else {
             XCTFail("Could not create trackEvent request")
             return
         }
-        
         
         let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
                                                     endPoint: config.apiEndpoint,
@@ -36,13 +35,16 @@ class TaskProcessorTests: XCTestCase {
                                                     iterableRequest: trackEventRequest)
         let data = try JSONEncoder().encode(apiCallRequest)
         
+        // persist data
         let taskId = IterableUtil.generateUUID()
         let taskProcessor = "APICallTaskProcessor"
         try persistenceProvider.mainQueueContext().create(task: IterableTask(id: taskId, processor: taskProcessor, data: data))
         try persistenceProvider.mainQueueContext().save()
         
+        // load data
         let found = try persistenceProvider.mainQueueContext().findTask(withId: taskId)!
         
+        // process data
         let processor = IterableAPICallTaskProcessor(networkSession: internalAPI.networkSession)
         try processor.process(task: found).onSuccess { _ in
             let body = networkSession.getRequestBody() as! [String: Any]
@@ -50,13 +52,13 @@ class TaskProcessorTests: XCTestCase {
             TestUtils.validateMatch(keyPath: KeyPath(.dataFields), value: dataFields, inDictionary: body)
             expectation1.fulfill()
         }
-
+        
         try persistenceProvider.mainQueueContext().delete(task: found)
         try persistenceProvider.mainQueueContext().save()
         
         wait(for: [expectation1], timeout: 15.0)
     }
-
+    
     private lazy var persistenceProvider: IterablePersistenceContextProvider = {
         let provider = CoreDataPersistenceContextProvider()
         try! provider.mainQueueContext().deleteAllTasks()
