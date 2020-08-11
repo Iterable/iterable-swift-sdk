@@ -15,7 +15,7 @@ class IterableRequestTests: XCTestCase {
         
         let data = try JSONEncoder().encode(request)
         let decoded = try JSONDecoder().decode(IterableRequest.self, from: data)
-        if case IterableRequest.get(let request) = decoded {
+        if case let IterableRequest.get(request) = decoded {
             XCTAssertEqual(request.path, path)
             XCTAssertEqual(request.args, args)
         } else {
@@ -29,14 +29,14 @@ class IterableRequestTests: XCTestCase {
         
         let data = try JSONEncoder().encode(request)
         let decoded = try JSONDecoder().decode(IterableRequest.self, from: data)
-        if case IterableRequest.get(let request) = decoded {
+        if case let IterableRequest.get(request) = decoded {
             XCTAssertEqual(request.path, path)
             XCTAssertEqual(request.args, nil)
         } else {
             XCTFail("Could not decode request properly")
         }
     }
-
+    
     func testPostRequestSerialization() throws {
         let path = "/a/b"
         let args = ["var1": "val1", "var2": "val2"]
@@ -45,7 +45,7 @@ class IterableRequestTests: XCTestCase {
         
         let data = try JSONEncoder().encode(request)
         let decoded = try JSONDecoder().decode(IterableRequest.self, from: data)
-        if case IterableRequest.post(let request) = decoded {
+        if case let IterableRequest.post(request) = decoded {
             XCTAssertEqual(request.path, path)
             XCTAssertEqual(request.args, args)
             XCTAssertTrue(TestUtils.areEqual(dict1: request.body!, dict2: body))
@@ -60,7 +60,7 @@ class IterableRequestTests: XCTestCase {
         
         let data = try JSONEncoder().encode(request)
         let decoded = try JSONDecoder().decode(IterableRequest.self, from: data)
-        if case IterableRequest.post(let request) = decoded {
+        if case let IterableRequest.post(request) = decoded {
             XCTAssertEqual(request.path, path)
             XCTAssertNil(request.args)
             XCTAssertNil(request.body)

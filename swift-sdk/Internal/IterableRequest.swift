@@ -86,12 +86,10 @@ extension PostRequest: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(path, forKey: .path)
         try container.encode(args, forKey: .args)
-        var bodyData: Data? = nil
+        var bodyData: Data?
         if let body = self.body, JSONSerialization.isValidJSONObject(body) {
             bodyData = try JSONSerialization.data(withJSONObject: body, options: [])
         }
         try container.encode(bodyData, forKey: .body)
     }
 }
-
-

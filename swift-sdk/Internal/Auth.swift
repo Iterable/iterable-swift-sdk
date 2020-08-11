@@ -30,3 +30,5 @@ struct Auth {
         case none
     }
 }
+
+extension Auth: Codable {}

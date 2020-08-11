@@ -68,7 +68,6 @@ import UIKit
         initialize(apiKey: apiKey, launchOptions: nil, config: config)
     }
     
-    
     /// An SDK initializer taking in the Iterable Mobile API key to be utilized and the
     /// `launchOptions` passed on from the app delegate, using default SDK settings
     /// - Parameters:
