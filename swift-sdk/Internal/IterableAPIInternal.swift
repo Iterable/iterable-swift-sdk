@@ -205,28 +205,24 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         return requestProcessor.disableDeviceForAllUsers(hexToken: hexToken, withOnSuccess: onSuccess, onFailure: onFailure)
     }
     
+    @discardableResult
     func updateUser(_ dataFields: [AnyHashable: Any],
                     mergeNestedObjects: Bool,
-                    onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess("updateUser"),
-                    onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("updateUser")) {
-        IterableAPIInternal.call(successHandler: onSuccess,
-                                 andFailureHandler: onFailure,
-                                 forResult: apiClient.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects))
+                    onSuccess: OnSuccessHandler? = nil,
+                    onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        requestProcessor.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects, onSuccess: onSuccess, onFailure: onFailure)
     }
     
+    @discardableResult
     func updateEmail(_ newEmail: String,
                      withToken token: String? = nil,
-                     onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess("updateEmail"),
-                     onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("updateEmail")) {
-        apiClient.updateEmail(newEmail: newEmail).onSuccess { json in
+                     onSuccess: OnSuccessHandler? = nil,
+                     onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        requestProcessor.updateEmail(newEmail, withToken: token, onSuccess: onSuccess, onFailure: onFailure).onSuccess { _ in
             // only change email if one is being used
             if self.email != nil {
                 self.setEmail(newEmail, withToken: token)
             }
-            
-            onSuccess?(json)
-        }.onError { error in
-            onFailure?(error.reason, error.data)
         }
     }
     

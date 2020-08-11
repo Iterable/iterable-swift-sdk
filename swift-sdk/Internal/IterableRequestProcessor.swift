@@ -48,7 +48,27 @@ struct IterableRequestProcessor {
                                   onFailure: OnFailureHandler? = IterableRequestProcessor.defaultOnFailure("disableDeviceForAllUsers")) -> Future<SendRequestValue, SendRequestError> {
         return disableDevice(forAllUsers: true, hexToken: hexToken, onSuccess: onSuccess, onFailure: onFailure)
     }
-    
+
+    @discardableResult
+    func updateUser(_ dataFields: [AnyHashable: Any],
+                    mergeNestedObjects: Bool,
+                    onSuccess: OnSuccessHandler? = IterableRequestProcessor.defaultOnSuccess("updateUser"),
+                    onFailure: OnFailureHandler? = IterableRequestProcessor.defaultOnFailure("updateUser")) -> Future<SendRequestValue, SendRequestError> {
+        IterableRequestProcessor.call(successHandler: onSuccess,
+                                 andFailureHandler: onFailure,
+                                 forResult: apiClient.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects))
+    }
+
+    @discardableResult
+    func updateEmail(_ newEmail: String,
+                     withToken token: String? = nil,
+                     onSuccess: OnSuccessHandler? = IterableRequestProcessor.defaultOnSuccess("updateEmail"),
+                     onFailure: OnFailureHandler? = IterableRequestProcessor.defaultOnFailure("updateEmail")) -> Future<SendRequestValue, SendRequestError> {
+        IterableRequestProcessor.call(successHandler: onSuccess,
+                                             andFailureHandler: onFailure,
+                                             forResult: apiClient.updateEmail(newEmail: newEmail))
+    }
+
     @discardableResult
     private func register(registerTokenInfo: RegisterTokenInfo,
                           notificationsEnabled: Bool,
