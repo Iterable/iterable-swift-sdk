@@ -177,14 +177,32 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                          onFailure: onFailure)
     }
     
-    func disableDeviceForCurrentUser(withOnSuccess onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess("disableDevice"),
-                                     onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("disableDevice")) {
-        disableDevice(forAllUsers: false, onSuccess: onSuccess, onFailure: onFailure)
+    @discardableResult
+    func disableDeviceForCurrentUser(withOnSuccess onSuccess: OnSuccessHandler? = nil,
+                                     onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        guard let hexToken = hexToken else {
+            let errorMessage = "no token present"
+            onFailure?(errorMessage, nil)
+            return SendRequestError.createErroredFuture(reason: errorMessage)
+        }
+        guard userId != nil || email != nil else {
+            let errorMessage = "either userId or email must be present"
+            onFailure?(errorMessage, nil)
+            return SendRequestError.createErroredFuture(reason: errorMessage)
+        }
+        
+        return requestProcessor.disableDeviceForCurrentUser(hexToken: hexToken, withOnSuccess: onSuccess, onFailure: onFailure)
     }
-    
-    func disableDeviceForAllUsers(withOnSuccess onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess("disableDevice"),
-                                  onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("disableDevice")) {
-        disableDevice(forAllUsers: true, onSuccess: onSuccess, onFailure: onFailure)
+
+    @discardableResult
+    func disableDeviceForAllUsers(withOnSuccess onSuccess: OnSuccessHandler? = nil,
+                                  onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        guard let hexToken = hexToken else {
+            let errorMessage = "no token present"
+            onFailure?(errorMessage, nil)
+            return SendRequestError.createErroredFuture(reason: errorMessage)
+        }
+        return requestProcessor.disableDeviceForAllUsers(hexToken: hexToken, withOnSuccess: onSuccess, onFailure: onFailure)
     }
     
     func updateUser(_ dataFields: [AnyHashable: Any],
@@ -472,26 +490,6 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                 attributionInfo = IterableAttributionInfo(campaignId: metadata.campaignId, templateId: templateId, messageId: messageId)
             }
         }
-    }
-    
-    private func disableDevice(forAllUsers allUsers: Bool,
-                               onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess("disableDevice"),
-                               onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("disableDevice")) {
-        guard let hexToken = hexToken else {
-            ITBError("Device not registered.")
-            onFailure?("Device not registered.", nil)
-            return
-        }
-        
-        guard !(allUsers == false && email == nil && userId == nil) else {
-            ITBError("Emal or userId must be set.")
-            onFailure?("Email or userId must be set.", nil)
-            return
-        }
-        
-        IterableAPIInternal.call(successHandler: onSuccess,
-                                 andFailureHandler: onFailure,
-                                 forResult: apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken))
     }
     
     @discardableResult
