@@ -21,11 +21,11 @@ extension IterableRequest: Codable {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let type = try container.decode(String.self, forKey: .type)
-        switch type.lowercased() {
-        case "get":
+        switch type {
+        case IterableRequest.requestTypeGet:
             let request = try container.decode(GetRequest.self, forKey: .value)
             self = .get(request)
-        case "post":
+        case IterableRequest.requestTypePost:
             let request = try container.decode(PostRequest.self, forKey: .value)
             self = .post(request)
         default:
@@ -36,14 +36,17 @@ extension IterableRequest: Codable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         switch self {
-        case let .get(request):
-            try container.encode("get", forKey: .type)
+        case .get(let request):
+            try container.encode(IterableRequest.requestTypeGet, forKey: .type)
             try container.encode(request, forKey: .value)
-        case let .post(request):
-            try container.encode("post", forKey: .type)
+        case .post(let request):
+            try container.encode(IterableRequest.requestTypePost, forKey: .type)
             try container.encode(request, forKey: .value)
         }
     }
+
+    private static let requestTypeGet = "get"
+    private static let requestTypePost = "post"
 }
 
 struct GetRequest: Codable {
