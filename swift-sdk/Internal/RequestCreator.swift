@@ -6,24 +6,6 @@
 import Foundation
 import UIKit
 
-// These are Iterable specific Request items.
-// They don't have Api endpoint and request endpoint defined yet.
-enum IterableRequest {
-    case get(GetRequest)
-    case post(PostRequest)
-}
-
-struct GetRequest {
-    let path: String
-    let args: [String: String]?
-}
-
-struct PostRequest {
-    let path: String
-    let args: [String: String]?
-    let body: [AnyHashable: Any]?
-}
-
 // This is a stateless pure functional class
 // This will create IterableRequest
 // The API Endpoint and request endpoint is not defined yet
