@@ -36,15 +36,15 @@ extension IterableRequest: Codable {
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         switch self {
-        case .get(let request):
+        case let .get(request):
             try container.encode(IterableRequest.requestTypeGet, forKey: .type)
             try container.encode(request, forKey: .value)
-        case .post(let request):
+        case let .post(request):
             try container.encode(IterableRequest.requestTypePost, forKey: .type)
             try container.encode(request, forKey: .value)
         }
     }
-
+    
     private static let requestTypeGet = "get"
     private static let requestTypePost = "post"
 }

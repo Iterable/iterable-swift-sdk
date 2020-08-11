@@ -132,6 +132,20 @@ extension Future {
         
         return promise
     }
+    
+    func replaceError(with defaultForError: Value) -> Future<Value, Failure> {
+        let promise = Promise<Value, Failure>()
+        
+        onSuccess { value in
+            promise.resolve(with: value)
+        }
+        
+        onError { _ in
+            promise.resolve(with: defaultForError)
+        }
+        
+        return promise
+    }
 }
 
 // This class takes the responsibility of setting value for Future

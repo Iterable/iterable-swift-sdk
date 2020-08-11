@@ -151,32 +151,29 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     // MARK: - API Request Calls
-    
+
+    @discardableResult
     func register(token: Data,
-                  onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess("registerToken"),
-                  onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("registerToken")) {
+                  onSuccess: OnSuccessHandler? = nil,
+                  onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         guard let appName = pushIntegrationName else {
-            ITBError("registerToken: appName is nil")
-            onFailure?("Not registering device token - appName must not be nil", nil)
-            return
+            let errorMessage = "Not registering device token - appName must not be nil"
+            ITBError(errorMessage)
+            onFailure?(errorMessage, nil)
+            return SendRequestError.createErroredFuture(reason: errorMessage)
         }
         
-        // check notificationsEnabled then call register with enabled/not-not enabled
-        notificationStateProvider.notificationsEnabled.onSuccess { enabled in
-            self.register(token: token,
-                          appName: appName,
-                          pushServicePlatform: self.config.pushPlatform,
-                          notificationsEnabled: enabled,
-                          onSuccess: onSuccess,
-                          onFailure: onFailure)
-        }.onError { _ in
-            self.register(token: token,
-                          appName: appName,
-                          pushServicePlatform: self.config.pushPlatform,
-                          notificationsEnabled: false,
-                          onSuccess: onSuccess,
-                          onFailure: onFailure)
-        }
+        let registerTokenInfo = IterableRequestProcessor.RegisterTokenInfo(hexToken: token.hexString(),
+                                                                           appName: appName,
+                                                                           pushServicePlatform: config.pushPlatform,
+                                                                           apnsType: dependencyContainer.apnsTypeChecker.apnsType,
+                                                                           deviceId: deviceId,
+                                                                           deviceAttributes: deviceAttributes,
+                                                                           sdkVersion: localStorage.sdkVersion)
+        return requestProcessor.register(registerTokenInfo: registerTokenInfo,
+                                         notificationStateProvider: notificationStateProvider,
+                                         onSuccess: onSuccess,
+                                         onFailure: onFailure)
     }
     
     func disableDeviceForCurrentUser(withOnSuccess onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess("disableDevice"),
@@ -390,6 +387,10 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                   deviceMetadata: deviceMetadata)
     }()
     
+    lazy var requestProcessor: IterableRequestProcessor = {
+        IterableRequestProcessor(apiClient: self.apiClient)
+    }()
+    
     private var deviceAttributes = [String: String]()
     
     private var pushIntegrationName: String? {
@@ -447,17 +448,6 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         _ = inAppManager.scheduleSync()
     }
     
-    private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform, apnsType: APNSType) -> String {
-        switch pushServicePlatform {
-        case .production:
-            return JsonValue.apnsProduction.jsonStringValue
-        case .sandbox:
-            return JsonValue.apnsSandbox.jsonStringValue
-        case .auto:
-            return apnsType == .sandbox ? JsonValue.apnsSandbox.jsonStringValue : JsonValue.apnsProduction.jsonStringValue
-        }
-    }
-    
     private func storeAuthData() {
         localStorage.email = _email
         localStorage.userId = _userId
@@ -468,28 +458,6 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         _email = localStorage.email
         _userId = localStorage.userId
         authToken = localStorage.authToken
-    }
-    
-    @discardableResult
-    private func register(token: Data,
-                          appName: String,
-                          pushServicePlatform: PushServicePlatform,
-                          notificationsEnabled: Bool,
-                          onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess("registerToken"),
-                          onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("registerToken")) -> Future<SendRequestValue, SendRequestError> {
-        hexToken = token.hexString()
-        
-        let pushServicePlatformString = IterableAPIInternal.pushServicePlatformToString(pushServicePlatform, apnsType: dependencyContainer.apnsTypeChecker.apnsType)
-        
-        return IterableAPIInternal.call(successHandler: onSuccess,
-                                        andFailureHandler: onFailure,
-                                        forResult: apiClient.register(hexToken: hexToken!,
-                                                                      appName: appName,
-                                                                      deviceId: deviceId,
-                                                                      sdkVersion: localStorage.sdkVersion,
-                                                                      deviceAttributes: deviceAttributes,
-                                                                      pushServicePlatform: pushServicePlatformString,
-                                                                      notificationsEnabled: notificationsEnabled))
     }
     
     private func save(pushPayload payload: [AnyHashable: Any]) {
