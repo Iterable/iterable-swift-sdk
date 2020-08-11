@@ -162,7 +162,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             onFailure?(errorMessage, nil)
             return SendRequestError.createErroredFuture(reason: errorMessage)
         }
-        
+
+        hexToken = token.hexString()
         let registerTokenInfo = IterableRequestProcessor.RegisterTokenInfo(hexToken: token.hexString(),
                                                                            appName: appName,
                                                                            pushServicePlatform: config.pushPlatform,

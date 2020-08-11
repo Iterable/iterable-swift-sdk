@@ -53,6 +53,26 @@ struct IterableRequestProcessor {
                                                                            notificationsEnabled: notificationsEnabled))
     }
     
+//    private func disableDevice(forAllUsers allUsers: Bool,
+//                               onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess("disableDevice"),
+//                               onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("disableDevice")) {
+//        guard let hexToken = hexToken else {
+//            ITBError("Device not registered.")
+//            onFailure?("Device not registered.", nil)
+//            return
+//        }
+//
+//        guard !(allUsers == false && email == nil && userId == nil) else {
+//            ITBError("Emal or userId must be set.")
+//            onFailure?("Email or userId must be set.", nil)
+//            return
+//        }
+//
+//        IterableAPIInternal.call(successHandler: onSuccess,
+//                                 andFailureHandler: onFailure,
+//                                 forResult: apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken))
+//    }
+    
     private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform, apnsType: APNSType) -> String {
         switch pushServicePlatform {
         case .production:
