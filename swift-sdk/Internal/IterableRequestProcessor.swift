@@ -44,35 +44,35 @@ struct IterableRequestProcessor {
                               onFailure: onFailure)
             }
     }
-
+    
     @discardableResult
     func disableDeviceForCurrentUser(hexToken: String,
                                      withOnSuccess onSuccess: OnSuccessHandler? = nil,
                                      onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        return disableDevice(forAllUsers: false, hexToken: hexToken, onSuccess: onSuccess, onFailure: onFailure)
+        disableDevice(forAllUsers: false, hexToken: hexToken, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     @discardableResult
     func disableDeviceForAllUsers(hexToken: String,
                                   withOnSuccess onSuccess: OnSuccessHandler? = nil,
                                   onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        return disableDevice(forAllUsers: true, hexToken: hexToken, onSuccess: onSuccess, onFailure: onFailure)
+        disableDevice(forAllUsers: true, hexToken: hexToken, onSuccess: onSuccess, onFailure: onFailure)
     }
-
+    
     @discardableResult
     func updateUser(_ dataFields: [AnyHashable: Any],
                     mergeNestedObjects: Bool,
                     onSuccess: OnSuccessHandler? = nil,
                     onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         IterableRequestProcessor.call(successHandler: onSuccess,
-                                 andFailureHandler: onFailure,
-                                 withIdentifier: "updateUser",
-                                 forResult: apiClient.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects))
+                                      andFailureHandler: onFailure,
+                                      withIdentifier: "updateUser",
+                                      forResult: apiClient.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects))
     }
-
+    
     @discardableResult
     func updateEmail(_ newEmail: String,
-                     withToken token: String? = nil,
+                     withToken _: String? = nil,
                      onSuccess: OnSuccessHandler? = nil,
                      onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         IterableRequestProcessor.call(successHandler: onSuccess,
@@ -88,11 +88,11 @@ struct IterableRequestProcessor {
                        onSuccess: OnSuccessHandler? = nil,
                        onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         IterableRequestProcessor.call(successHandler: onSuccess,
-                                 andFailureHandler: onFailure,
-                                 withIdentifier: "trackPurchase",
-                                 forResult: apiClient.track(purchase: total, items: items, dataFields: dataFields))
+                                      andFailureHandler: onFailure,
+                                      withIdentifier: "trackPurchase",
+                                      forResult: apiClient.track(purchase: total, items: items, dataFields: dataFields))
     }
-
+    
     @discardableResult
     func trackPushOpen(_ campaignId: NSNumber,
                        templateId: NSNumber?,
@@ -102,41 +102,41 @@ struct IterableRequestProcessor {
                        onSuccess: OnSuccessHandler? = nil,
                        onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         IterableRequestProcessor.call(successHandler: onSuccess,
-                                 andFailureHandler: onFailure,
-                                 withIdentifier: "trackPushOpen",
-                                 forResult: apiClient.track(pushOpen: campaignId,
-                                                            templateId: templateId,
-                                                            messageId: messageId,
-                                                            appAlreadyRunning: appAlreadyRunning,
-                                                            dataFields: dataFields))
+                                      andFailureHandler: onFailure,
+                                      withIdentifier: "trackPushOpen",
+                                      forResult: apiClient.track(pushOpen: campaignId,
+                                                                 templateId: templateId,
+                                                                 messageId: messageId,
+                                                                 appAlreadyRunning: appAlreadyRunning,
+                                                                 dataFields: dataFields))
     }
-
+    
     @discardableResult
     func track(event: String,
                dataFields: [AnyHashable: Any]? = nil,
                onSuccess: OnSuccessHandler? = nil,
                onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         IterableRequestProcessor.call(successHandler: onSuccess,
-                                 andFailureHandler: onFailure,
-                                 withIdentifier: "trackEvent",
-                                 forResult: apiClient.track(event: event, dataFields: dataFields))
+                                      andFailureHandler: onFailure,
+                                      withIdentifier: "trackEvent",
+                                      forResult: apiClient.track(event: event, dataFields: dataFields))
     }
-
+    
     @discardableResult
     func updateSubscriptions(info: UpdateSubscriptionsInfo,
                              onSuccess: OnSuccessHandler? = nil,
                              onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         IterableRequestProcessor.call(successHandler: onSuccess,
-                                 andFailureHandler: onFailure,
-                                 withIdentifier: "updateSubscriptions",
-                                 forResult: apiClient.updateSubscriptions(info.emailListIds,
-                                                                          unsubscribedChannelIds: info.unsubscribedChannelIds,
-                                                                          unsubscribedMessageTypeIds: info.unsubscribedMessageTypeIds,
-                                                                          subscribedMessageTypeIds: info.subscribedMessageTypeIds,
-                                                                          campaignId: info.campaignId,
-                                                                          templateId: info.templateId))
+                                      andFailureHandler: onFailure,
+                                      withIdentifier: "updateSubscriptions",
+                                      forResult: apiClient.updateSubscriptions(info.emailListIds,
+                                                                               unsubscribedChannelIds: info.unsubscribedChannelIds,
+                                                                               unsubscribedMessageTypeIds: info.unsubscribedMessageTypeIds,
+                                                                               subscribedMessageTypeIds: info.subscribedMessageTypeIds,
+                                                                               campaignId: info.campaignId,
+                                                                               templateId: info.templateId))
     }
-
+    
     @discardableResult
     func trackInAppOpen(_ message: IterableInAppMessage,
                         location: InAppLocation,
@@ -145,12 +145,55 @@ struct IterableRequestProcessor {
                         onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         let result = apiClient.track(inAppOpen: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId))
         return IterableRequestProcessor.call(successHandler: onSuccess,
+                                             andFailureHandler: onFailure,
+                                             withIdentifier: "trackInAppOpen",
+                                             forResult: result)
+    }
+    
+    @discardableResult
+    func trackInAppClick(_ message: IterableInAppMessage,
+                         location: InAppLocation = .inApp,
+                         inboxSessionId: String? = nil,
+                         clickedUrl: String,
+                         onSuccess: OnSuccessHandler? = nil,
+                         onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        let result = apiClient.track(inAppClick: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId),
+                                     clickedUrl: clickedUrl)
+        return IterableRequestProcessor.call(successHandler: onSuccess,
+                                             andFailureHandler: onFailure,
+                                             withIdentifier: "trackInAppClick",
+                                             forResult: result)
+    }
+    
+    @discardableResult
+    func trackInAppClose(_ message: IterableInAppMessage,
+                         location: InAppLocation = .inApp,
+                         inboxSessionId: String? = nil,
+                         source: InAppCloseSource? = nil,
+                         clickedUrl: String? = nil,
+                         onSuccess: OnSuccessHandler? = nil,
+                         onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        let result = apiClient.track(inAppClose: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId),
+                                     source: source,
+                                     clickedUrl: clickedUrl)
+        return IterableRequestProcessor.call(successHandler: onSuccess,
+                                             andFailureHandler: onFailure,
+                                             withIdentifier: "trackInAppClose",
+                                             forResult: result)
+    }
+
+    @discardableResult
+    func track(inboxSession: IterableInboxSession,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        let result = apiClient.track(inboxSession: inboxSession)
+        
+        return IterableRequestProcessor.call(successHandler: onSuccess,
                                         andFailureHandler: onFailure,
-                                        withIdentifier: "trackInAppOpen",
+                                        withIdentifier: "trackInboxSession",
                                         forResult: result)
     }
 
-    
     @discardableResult
     private func register(registerTokenInfo: RegisterTokenInfo,
                           notificationsEnabled: Bool,
@@ -169,16 +212,16 @@ struct IterableRequestProcessor {
                                                                            pushServicePlatform: pushServicePlatformString,
                                                                            notificationsEnabled: notificationsEnabled))
     }
-
+    
     @discardableResult
     private func disableDevice(forAllUsers allUsers: Bool,
                                hexToken: String,
                                onSuccess: OnSuccessHandler? = nil,
                                onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        return IterableRequestProcessor.call(successHandler: onSuccess,
-                                             andFailureHandler: onFailure,
-                                             withIdentifier: "disableDevice",
-                                             forResult: apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken))
+        IterableRequestProcessor.call(successHandler: onSuccess,
+                                      andFailureHandler: onFailure,
+                                      withIdentifier: "disableDevice",
+                                      forResult: apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken))
     }
     
     private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform, apnsType: APNSType) -> String {

@@ -151,7 +151,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     // MARK: - API Request Calls
-
+    
     @discardableResult
     func register(token: Data,
                   onSuccess: OnSuccessHandler? = nil,
@@ -162,7 +162,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             onFailure?(errorMessage, nil)
             return SendRequestError.createErroredFuture(reason: errorMessage)
         }
-
+        
         hexToken = token.hexString()
         let registerTokenInfo = IterableRequestProcessor.RegisterTokenInfo(hexToken: token.hexString(),
                                                                            appName: appName,
@@ -193,7 +193,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         
         return requestProcessor.disableDeviceForCurrentUser(hexToken: hexToken, withOnSuccess: onSuccess, onFailure: onFailure)
     }
-
+    
     @discardableResult
     func disableDeviceForAllUsers(withOnSuccess onSuccess: OnSuccessHandler? = nil,
                                   onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
@@ -316,13 +316,13 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                          location: InAppLocation = .inApp,
                          inboxSessionId: String? = nil,
                          clickedUrl: String,
-                         onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess("trackInAppClick"),
-                         onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("trackInAppClick")) -> Future<SendRequestValue, SendRequestError> {
-        let result = apiClient.track(inAppClick: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId),
-                                     clickedUrl: clickedUrl)
-        return IterableAPIInternal.call(successHandler: onSuccess,
-                                        andFailureHandler: onFailure,
-                                        forResult: result)
+                         onSuccess: OnSuccessHandler? = nil,
+                         onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        requestProcessor.trackInAppClick(message, location: location,
+                                         inboxSessionId: inboxSessionId,
+                                         clickedUrl: clickedUrl,
+                                         onSuccess: onSuccess,
+                                         onFailure: onFailure)
     }
     
     @discardableResult
@@ -331,25 +331,22 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                          inboxSessionId: String? = nil,
                          source: InAppCloseSource? = nil,
                          clickedUrl: String? = nil,
-                         onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess("trackInAppClose"),
-                         onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("trackInAppClose")) -> Future<SendRequestValue, SendRequestError> {
-        let result = apiClient.track(inAppClose: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId),
-                                     source: source,
-                                     clickedUrl: clickedUrl)
-        return IterableAPIInternal.call(successHandler: onSuccess,
-                                        andFailureHandler: onFailure,
-                                        forResult: result)
+                         onSuccess: OnSuccessHandler? = nil,
+                         onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        requestProcessor.trackInAppClose(message,
+                                         location: location,
+                                         inboxSessionId: inboxSessionId,
+                                         source: source,
+                                         clickedUrl: clickedUrl,
+                                         onSuccess: onSuccess,
+                                         onFailure: onFailure)
     }
     
     @discardableResult
     func track(inboxSession: IterableInboxSession,
-               onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess("trackInboxSession"),
-               onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("trackInboxSession")) -> Future<SendRequestValue, SendRequestError> {
-        let result = apiClient.track(inboxSession: inboxSession)
-        
-        return IterableAPIInternal.call(successHandler: onSuccess,
-                                        andFailureHandler: onFailure,
-                                        forResult: result)
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        requestProcessor.track(inboxSession: inboxSession, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     func track(inAppDelivery message: IterableInAppMessage) {
