@@ -141,13 +141,13 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
         
         hexToken = token.hexString()
-        let registerTokenInfo = IterableRequestProcessor.RegisterTokenInfo(hexToken: token.hexString(),
-                                                                           appName: appName,
-                                                                           pushServicePlatform: config.pushPlatform,
-                                                                           apnsType: dependencyContainer.apnsTypeChecker.apnsType,
-                                                                           deviceId: deviceId,
-                                                                           deviceAttributes: deviceAttributes,
-                                                                           sdkVersion: localStorage.sdkVersion)
+        let registerTokenInfo = RegisterTokenInfo(hexToken: token.hexString(),
+                                                  appName: appName,
+                                                  pushServicePlatform: config.pushPlatform,
+                                                  apnsType: dependencyContainer.apnsTypeChecker.apnsType,
+                                                  deviceId: deviceId,
+                                                  deviceAttributes: deviceAttributes,
+                                                  sdkVersion: localStorage.sdkVersion)
         return requestProcessor.register(registerTokenInfo: registerTokenInfo,
                                          notificationStateProvider: notificationStateProvider,
                                          onSuccess: onSuccess,
@@ -195,11 +195,13 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                      withToken token: String? = nil,
                      onSuccess: OnSuccessHandler? = nil,
                      onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        requestProcessor.updateEmail(newEmail, withToken: token, onSuccess: onSuccess, onFailure: onFailure).onSuccess { _ in
-            // only change email if one is being used
+        requestProcessor.updateEmail(newEmail, withToken: token, onSuccess: nil, onFailure: nil).onSuccess { json in
             if self.email != nil {
                 self.setEmail(newEmail, withToken: token)
             }
+            onSuccess?(json)
+        }.onError { error in
+            onFailure?(error.reason, error.data)
         }
     }
     
@@ -266,12 +268,12 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                              templateId: NSNumber?,
                              onSuccess: OnSuccessHandler? = nil,
                              onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        let updateSubscriptionsInfo = IterableRequestProcessor.UpdateSubscriptionsInfo(emailListIds: emailListIds,
-                                                                                       unsubscribedChannelIds: unsubscribedChannelIds,
-                                                                                       unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
-                                                                                       subscribedMessageTypeIds: subscribedMessageTypeIds,
-                                                                                       campaignId: campaignId,
-                                                                                       templateId: templateId)
+        let updateSubscriptionsInfo = UpdateSubscriptionsInfo(emailListIds: emailListIds,
+                                                              unsubscribedChannelIds: unsubscribedChannelIds,
+                                                              unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
+                                                              subscribedMessageTypeIds: subscribedMessageTypeIds,
+                                                              campaignId: campaignId,
+                                                              templateId: templateId)
         return requestProcessor.updateSubscriptions(info: updateSubscriptionsInfo, onSuccess: onSuccess, onFailure: onFailure)
     }
     
@@ -376,7 +378,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     private var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     
-    lazy var apiClient: ApiClient = {
+    lazy var apiClient: ApiClientProtocol = {
         ApiClient(apiKey: apiKey,
                   authProvider: self,
                   endPoint: config.apiEndpoint,
@@ -385,7 +387,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }()
     
     lazy var requestProcessor: IterableRequestProcessor = {
-        IterableRequestProcessor(apiClient: self.apiClient)
+        dependencyContainer.createRequestProcessor(apiClient: apiClient)
     }()
     
     private var deviceAttributes = [String: String]()
