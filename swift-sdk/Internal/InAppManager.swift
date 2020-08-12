@@ -14,20 +14,20 @@ protocol NotificationCenterProtocol {
 
 extension NotificationCenter: NotificationCenterProtocol {}
 
-// This is internal. Do not expose
-
 protocol InAppDisplayChecker {
     func isOkToShowNow(message: IterableInAppMessage) -> Bool
 }
 
 protocol IterableInternalInAppManagerProtocol: IterableInAppManagerProtocol, InAppNotifiable, InAppDisplayChecker {
     func start() -> Future<Bool, Error>
+    
     /// This will create a ViewController which displays an inbox message.
     /// This ViewController would typically be pushed into the navigation stack.
     /// - parameter message: The message to show.
     /// - parameter inboxMode:
     /// - returns: UIViewController which displays the message.
     func createInboxMessageViewController(for message: IterableInAppMessage, withInboxMode inboxMode: IterableInboxViewController.InboxMode, inboxSessionId: String?) -> UIViewController?
+    
     /// - parameter message: The message to remove.
     /// - parameter location: The location from where this message was shown. `inbox` or `inApp`.
     /// - parameter source: The source of deletion `inboxSwipe` or `deleteButton`.`

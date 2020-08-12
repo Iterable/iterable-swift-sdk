@@ -20,7 +20,7 @@ import UIKit
         }
     }
     
-    /// The userId of the logged in user that this IterableAPI is using
+    /// The user ID of the logged in user that this IterableAPI is using
     public static var userId: String? {
         get {
             internalImplementation?.userId
@@ -29,12 +29,12 @@ import UIKit
         }
     }
     
-    /// The userInfo dictionary which came with last push
+    /// The `userInfo` dictionary which came with last push
     public static var lastPushPayload: [AnyHashable: Any]? {
         internalImplementation?.lastPushPayload
     }
     
-    /// Attribution info (campaignId, messageId etc.) for last push open or app link click from an email
+    /// Attribution info (`campaignId`, `messageId`, etc.) for last push open or app link click from an email
     public static var attributionInfo: IterableAttributionInfo? {
         get {
             internalImplementation?.attributionInfo
@@ -60,7 +60,7 @@ import UIKit
     ///
     /// - Parameters:
     ///     - apiKey: The Iterable Mobile API key to be used with the SDK
-    ///     - config: The IterableConfig object with the settings to be used
+    ///     - config: The `IterableConfig` object with the settings to be used
     ///
     /// - SeeAlso: IterableConfig
     public static func initialize(apiKey: String,
@@ -71,9 +71,10 @@ import UIKit
     
     /// An SDK initializer taking in the Iterable Mobile API key to be utilized and the
     /// `launchOptions` passed on from the app delegate, using default SDK settings
+    ///
     /// - Parameters:
     ///    - apiKey: The Iterable Mobile API key to be used with the SDK
-    ///    - launchOptions: The launchOptions coming from application(_:didFinishLaunchingWithOptions:)
+    ///    - launchOptions: The `launchOptions` coming from `application(_:didFinishLaunchingWithOptions:)`
     ///
     /// - SeeAlso: IterableConfig
     public static func initialize(apiKey: String,
@@ -86,8 +87,8 @@ import UIKit
     ///
     /// - Parameters:
     ///    - apiKey: The Iterable Mobile API key to be used with the SDK
-    ///    - launchOptions: The launchOptions coming from application(_:didFinishLaunchingWithOptions:)
-    ///    - config: The IterableConfig object with the settings to be used
+    ///    - launchOptions: The `launchOptions` coming from `application(_:didFinishLaunchingWithOptions:)`
+    ///    - config: The `IterableConfig` object with the settings to be used
     ///
     /// - SeeAlso: IterableConfig
     public static func initialize(apiKey: String,
@@ -151,7 +152,7 @@ import UIKit
     /// Set the user of the SDK instance to the user ID specified
     ///
     /// - Parameters:
-    ///    - userId: The userId of the user for the SDK instance
+    ///    - userId: The user ID of the user for the SDK instance
     ///    - token: The associated authentication token for the user
     @objc(setUserId:withToken:)
     public static func setUserId(_ userId: String?, withToken token: String? = nil) {
@@ -214,8 +215,8 @@ import UIKit
     ///    - token: The token representing this device/application pair, obtained from
     ///             `application:didRegisterForRemoteNotificationsWithDeviceToken`
     ///             after registering for remote notifications
-    ///    - onSuccess: OnSuccessHandler to invoke if token registration is successful
-    ///    - onFailure: OnFailureHandler to invoke if token registration fails
+    ///    - onSuccess: `OnSuccessHandler` to invoke if token registration is successful
+    ///    - onFailure: `OnFailureHandler` to invoke if token registration fails
     ///
     /// - SeeAlso: IterableConfig, OnSuccessHandler, OnFailureHandler
     @objc(registerToken:onSuccess:OnFailure:)
@@ -242,8 +243,8 @@ import UIKit
     /// Disable this device's token in Iterable, for the current user, with custom completion blocks
     ///
     /// - Parameters:
-    ///    - onSuccess: OnSuccessHandler to invoke if disabling the token is successful
-    ///    - onFailure: OnFailureHandler to invoke if disabling the token fails
+    ///    - onSuccess: `OnSuccessHandler` to invoke if disabling the token is successful
+    ///    - onFailure: `OnFailureHandler` to invoke if disabling the token fails
     ///
     /// - SeeAlso: OnSuccessHandler, OnFailureHandler
     public static func disableDeviceForCurrentUser(withOnSuccess onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
@@ -253,8 +254,8 @@ import UIKit
     /// Disable this device's token in Iterable, for all users of this device, with custom completion blocks.
     ///
     /// - Parameters:
-    ///    - onSuccess: OnSuccessHandler to invoke if disabling the token is successful
-    ///    - onFailure: OnFailureHandler to invoke if disabling the token fails
+    ///    - onSuccess: `OnSuccessHandler` to invoke if disabling the token is successful
+    ///    - onFailure: `OnFailureHandler` to invoke if disabling the token fails
     ///
     /// - SeeAlso: OnSuccessHandler, OnFailureHandler
     public static func disableDeviceForAllUsers(withOnSuccess onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
@@ -266,8 +267,8 @@ import UIKit
     /// - Parameters:
     ///    - dataFields: Data fields to store in the user profile
     ///    - mergeNestedObjects: Merge top level objects instead of overwriting
-    ///    - onSuccess: OnSuccessHandler to invoke if update is successful
-    ///    - onFailure: OnFailureHandler to invoke if update fails
+    ///    - onSuccess: `OnSuccessHandler` to invoke if update is successful
+    ///    - onFailure: `OnFailureHandler` to invoke if update fails
     ///
     /// - SeeAlso: OnSuccessHandler, OnFailureHandler
     @objc(updateUser:mergeNestedObjects:onSuccess:onFailure:)
@@ -285,8 +286,8 @@ import UIKit
     ///
     /// - Parameters:
     ///    - newEmail: The new email address
-    ///    - onSuccess: OnSuccessHandler to invoke if update is successful
-    ///    - onFailure: OnFailureHandler to invoke if update fails
+    ///    - onSuccess: `OnSuccessHandler` to invoke if update is successful
+    ///    - onFailure: `OnFailureHandler` to invoke if update fails
     ///
     /// - Remark: Also updates the current email in this IterableAPIImplementation instance if the API call was successful.
     ///
@@ -301,10 +302,10 @@ import UIKit
     /// - Parameters:
     ///    - newEmail: The new email of this user
     ///    - token: The new authentication token for this user
-    ///    - onSuccess: OnSuccessHandler to invoke if update is successful
-    ///    - onFailure: OnFailureHandler to invoke if update fails
+    ///    - onSuccess: `OnSuccessHandler` to invoke if update is successful
+    ///    - onFailure: `OnFailureHandler` to invoke if update fails
     ///
-    /// - Remark: Also updates the current email in this IterableAPIImplementation instance if the API call was successful.
+    /// - Remark: Also updates the current email in this internal instance if the API call was successful.
     ///
     /// - SeeAlso: OnSuccessHandler, OnFailureHandler
     @objc(updateEmail:withToken:onSuccess:onFailure:)
@@ -346,8 +347,8 @@ import UIKit
     ///     - withTotal: The total purchase amount
     ///     - items: The list of purchased items
     ///     - dataFields: A `Dictionary` containing any additional information to save along with the event
-    ///     - onSuccess: OnSuccessHandler to invoke if the purchase is tracked successfully
-    ///     - onFailure: OnFailureHandler to invoke if tracking the purchase fails
+    ///     - onSuccess: `OnSuccessHandler` to invoke if the purchase is tracked successfully
+    ///     - onFailure: `OnFailureHandler` to invoke if tracking the purchase fails
     ///
     /// - SeeAlso: CommerceItem, OnSuccessHandler, OnFailureHandler
     @objc(trackPurchase:items:dataFields:onSuccess:onFailure:)
@@ -508,7 +509,7 @@ import UIKit
     ///     - unsubscribedChannelIds: List of channels to unsubscribe from
     ///     - unsubscribedMessageTypeIds: List of message types to unsubscribe from
     ///
-    /// - Remark: passing in an empty array will clear subscription list, passing in nil will not modify the list
+    /// - Remark: passing in an empty array will clear subscription list, passing in `nil` will not modify the list
     @objc(updateSubscriptions:unsubscribedChannelIds:unsubscribedMessageTypeIds:subscribedMessageTypeIds:campaignId:templateId:)
     public static func updateSubscriptions(_ emailListIds: [NSNumber]?,
                                            unsubscribedChannelIds: [NSNumber]?,
@@ -549,7 +550,7 @@ import UIKit
     /// - Parameters:
     ///     - message: The message of the notification
     ///     - location: The location from where this message was shown. `inbox` or `inApp`.
-    ///     - clickedUrl: The url of the button or link that was clicked
+    ///     - clickedUrl: The URL of the button or link that was clicked
     @objc(trackInAppClick:location:clickedUrl:)
     public static func track(inAppClick message: IterableInAppMessage, location: InAppLocation = .inApp, clickedUrl: String) {
         internalImplementation?.trackInAppClick(message, location: location, clickedUrl: clickedUrl)
@@ -559,7 +560,7 @@ import UIKit
     ///
     /// - Parameters:
     ///     - message: The in-app message
-    ///     - clickedUrl: The url that was clicked to close the in-app. It will be `nil` when message is closed by clicking `back`.
+    ///     - clickedUrl: The url that was clicked to close the in-app. It will be `nil` when the message is closed by clicking `back`.
     @objc(trackInAppClose:clickedUrl:)
     public static func track(inAppClose message: IterableInAppMessage, clickedUrl: String?) {
         internalImplementation?.trackInAppClose(message, clickedUrl: clickedUrl)
@@ -570,7 +571,7 @@ import UIKit
     /// - Parameters:
     ///     - message: The in-app message
     ///     - location: The location from where this message was shown. `inbox` or `inApp`.
-    ///     - clickedUrl: The url that was clicked to close the in-app. It will be `nil` when message is closed by clicking `back`.
+    ///     - clickedUrl: The URL that was clicked to close the in-app. It will be `nil` when the message is closed by clicking `back`.
     @objc(trackInAppClose:location:clickedUrl:)
     public static func track(inAppClose message: IterableInAppMessage, location: InAppLocation, clickedUrl: String?) {
         internalImplementation?.trackInAppClose(message, location: location, clickedUrl: clickedUrl)
@@ -579,10 +580,10 @@ import UIKit
     /// Tracks an `InAppClose` event
     ///
     /// - Parameters:
-    ///     - message: The in-app message
+    ///     - message: The in-app message that is being closed
     ///     - location: The location from where this message was shown. `inbox` or `inApp`.
     ///     - source: Source is `back` if back button was clicked to dismiss in-app message. Otherwise source is `link`.
-    ///     - clickedUrl: The url that was clicked to close the in-app. It will be `nil` when message is closed on clicking `back`.
+    ///     - clickedUrl: The url that was clicked to close the in-app. It will be `nil` when the message is closed by clicking `back`.
     @objc(trackInAppClose:location:source:clickedUrl:)
     public static func track(inAppClose message: IterableInAppMessage, location: InAppLocation, source: InAppCloseSource, clickedUrl: String?) {
         internalImplementation?.trackInAppClose(message, location: location, source: source, clickedUrl: clickedUrl)
@@ -591,7 +592,7 @@ import UIKit
     /// Consumes the notification and removes it from the list of in-app messages
     ///
     /// - Parameters:
-    ///    - message: The Iterable message that is being consumed
+    ///    - message: The in-app message that is being consumed
     ///    - location: The location from where this message was shown. `inbox` or `inApp`.
     @objc(inAppConsume:location:)
     public static func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp) {
@@ -601,7 +602,7 @@ import UIKit
     /// Consumes the notification and removes it from the list of in-app messages
     ///
     /// - Parameters:
-    ///     - message: The Iterable message that is being consumed
+    ///     - message: The in-app message that is being consumed
     ///     - location: The location from where this message was shown. `inbox` or `inApp`.
     ///     - source: The source of deletion `inboxSwipe` or `deleteButton`.
     @objc(inAppConsume:location:source:)
@@ -609,7 +610,7 @@ import UIKit
         internalImplementation?.inAppConsume(message: message, location: location, source: source)
     }
     
-    // MARK: - Private and Internal
+    // MARK: - Private/Internal
     
     static var internalImplementation: IterableAPIInternal?
     
