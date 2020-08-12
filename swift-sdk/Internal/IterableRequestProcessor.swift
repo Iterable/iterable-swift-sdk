@@ -228,6 +228,29 @@ struct IterableRequestProcessor {
                                              forResult: result)
     }
     
+    // MARK: DEPRECATED
+    @discardableResult
+    func trackInAppOpen(_ messageId: String,
+                        onSuccess: OnSuccessHandler? = nil,
+                        onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        let result = apiClient.track(inAppOpen: messageId)
+        return IterableRequestProcessor.call(successHandler: onSuccess,
+                                             andFailureHandler: onFailure,
+                                             withIdentifier: "trackInAppOpen",
+                                             forResult: result)
+    }
+    
+    @discardableResult
+    func trackInAppClick(_ messageId: String,
+                         clickedUrl: String,
+                         onSuccess: OnSuccessHandler? = nil,
+                         onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        IterableRequestProcessor.call(successHandler: onSuccess,
+                                 andFailureHandler: onFailure,
+                                 withIdentifier: "trackInAppClick",
+                                 forResult: apiClient.track(inAppClick: messageId, clickedUrl: clickedUrl))
+    }
+
     @discardableResult
     private func register(registerTokenInfo: RegisterTokenInfo,
                           notificationsEnabled: Bool,

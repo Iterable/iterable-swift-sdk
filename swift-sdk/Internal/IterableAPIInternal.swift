@@ -640,17 +640,20 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
 
 extension IterableAPIInternal {
     // deprecated - will be removed in version 6.3.x or above
-    func trackInAppOpen(_ messageId: String) {
-        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess("trackInAppOpen"),
-                                 andFailureHandler: IterableAPIInternal.defaultOnFailure("trackInAppOpen"),
-                                 forResult: apiClient.track(inAppOpen: messageId))
+    @discardableResult
+    func trackInAppOpen(_ messageId: String,
+                        onSuccess: OnSuccessHandler? = nil,
+                        onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        requestProcessor.trackInAppOpen(messageId, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     // deprecated - will be removed in version 6.3.x or above
-    func trackInAppClick(_ messageId: String, clickedUrl: String) {
-        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess("trackInAppClick"),
-                                 andFailureHandler: IterableAPIInternal.defaultOnFailure("trackInAppClick"),
-                                 forResult: apiClient.track(inAppClick: messageId, clickedUrl: clickedUrl))
+    @discardableResult
+    func trackInAppClick(_ messageId: String,
+                         clickedUrl: String,
+                         onSuccess: OnSuccessHandler? = nil,
+                         onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        requestProcessor.trackInAppClick(messageId, clickedUrl: clickedUrl, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     // deprecated - will be removed in version 6.3.x or above
