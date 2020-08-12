@@ -132,6 +132,19 @@ struct IterableRequestProcessor {
     }
 
     @discardableResult
+    func trackInAppOpen(_ message: IterableInAppMessage,
+                        location: InAppLocation,
+                        inboxSessionId: String? = nil,
+                        onSuccess: OnSuccessHandler? = IterableRequestProcessor.defaultOnSuccess("trackInAppOpen"),
+                        onFailure: OnFailureHandler? = IterableRequestProcessor.defaultOnFailure("trackInAppOpen")) -> Future<SendRequestValue, SendRequestError> {
+        let result = apiClient.track(inAppOpen: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId))
+        return IterableRequestProcessor.call(successHandler: onSuccess,
+                                        andFailureHandler: onFailure,
+                                        forResult: result)
+    }
+
+    
+    @discardableResult
     private func register(registerTokenInfo: RegisterTokenInfo,
                           notificationsEnabled: Bool,
                           onSuccess: OnSuccessHandler?,
