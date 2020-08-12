@@ -31,8 +31,8 @@ struct IterableRequestProcessor {
     @discardableResult
     func register(registerTokenInfo: RegisterTokenInfo,
                   notificationStateProvider: NotificationStateProviderProtocol,
-                  onSuccess: OnSuccessHandler? = IterableRequestProcessor.defaultOnSuccess("registerToken"),
-                  onFailure: OnFailureHandler? = IterableRequestProcessor.defaultOnFailure("registerToken")) -> Future<SendRequestValue, SendRequestError> {
+                  onSuccess: OnSuccessHandler? = nil,
+                  onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         // check notificationsEnabled then call register with enabled/not-enabled
         notificationStateProvider.notificationsEnabled
             .mapFailure(SendRequestError.from(error:))
@@ -47,46 +47,49 @@ struct IterableRequestProcessor {
 
     @discardableResult
     func disableDeviceForCurrentUser(hexToken: String,
-                                     withOnSuccess onSuccess: OnSuccessHandler? = IterableRequestProcessor.defaultOnSuccess("disableDeviceForCurrentUser"),
-                                     onFailure: OnFailureHandler? = IterableRequestProcessor.defaultOnFailure("disableDeviceForCurrentUser")) -> Future<SendRequestValue, SendRequestError> {
+                                     withOnSuccess onSuccess: OnSuccessHandler? = nil,
+                                     onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         return disableDevice(forAllUsers: false, hexToken: hexToken, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     @discardableResult
     func disableDeviceForAllUsers(hexToken: String,
-                                  withOnSuccess onSuccess: OnSuccessHandler? = IterableRequestProcessor.defaultOnSuccess("disableDeviceForAllUsers"),
-                                  onFailure: OnFailureHandler? = IterableRequestProcessor.defaultOnFailure("disableDeviceForAllUsers")) -> Future<SendRequestValue, SendRequestError> {
+                                  withOnSuccess onSuccess: OnSuccessHandler? = nil,
+                                  onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         return disableDevice(forAllUsers: true, hexToken: hexToken, onSuccess: onSuccess, onFailure: onFailure)
     }
 
     @discardableResult
     func updateUser(_ dataFields: [AnyHashable: Any],
                     mergeNestedObjects: Bool,
-                    onSuccess: OnSuccessHandler? = IterableRequestProcessor.defaultOnSuccess("updateUser"),
-                    onFailure: OnFailureHandler? = IterableRequestProcessor.defaultOnFailure("updateUser")) -> Future<SendRequestValue, SendRequestError> {
+                    onSuccess: OnSuccessHandler? = nil,
+                    onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         IterableRequestProcessor.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
+                                 withIdentifier: "updateUser",
                                  forResult: apiClient.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects))
     }
 
     @discardableResult
     func updateEmail(_ newEmail: String,
                      withToken token: String? = nil,
-                     onSuccess: OnSuccessHandler? = IterableRequestProcessor.defaultOnSuccess("updateEmail"),
-                     onFailure: OnFailureHandler? = IterableRequestProcessor.defaultOnFailure("updateEmail")) -> Future<SendRequestValue, SendRequestError> {
+                     onSuccess: OnSuccessHandler? = nil,
+                     onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         IterableRequestProcessor.call(successHandler: onSuccess,
-                                             andFailureHandler: onFailure,
-                                             forResult: apiClient.updateEmail(newEmail: newEmail))
+                                      andFailureHandler: onFailure,
+                                      withIdentifier: "updateEmail",
+                                      forResult: apiClient.updateEmail(newEmail: newEmail))
     }
     
     @discardableResult
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]? = nil,
-                       onSuccess: OnSuccessHandler? = IterableRequestProcessor.defaultOnSuccess("trackPurchase"),
-                       onFailure: OnFailureHandler? = IterableRequestProcessor.defaultOnFailure("trackPurchase")) -> Future<SendRequestValue, SendRequestError> {
+                       onSuccess: OnSuccessHandler? = nil,
+                       onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         IterableRequestProcessor.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
+                                 withIdentifier: "trackPurchase",
                                  forResult: apiClient.track(purchase: total, items: items, dataFields: dataFields))
     }
 
@@ -96,10 +99,11 @@ struct IterableRequestProcessor {
                        messageId: String?,
                        appAlreadyRunning: Bool,
                        dataFields: [AnyHashable: Any]? = nil,
-                       onSuccess: OnSuccessHandler? = IterableRequestProcessor.defaultOnSuccess("trackPushOpen"),
-                       onFailure: OnFailureHandler? = IterableRequestProcessor.defaultOnFailure("trackPushOpen")) -> Future<SendRequestValue, SendRequestError> {
+                       onSuccess: OnSuccessHandler? = nil,
+                       onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         IterableRequestProcessor.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
+                                 withIdentifier: "trackPushOpen",
                                  forResult: apiClient.track(pushOpen: campaignId,
                                                             templateId: templateId,
                                                             messageId: messageId,
@@ -110,19 +114,21 @@ struct IterableRequestProcessor {
     @discardableResult
     func track(event: String,
                dataFields: [AnyHashable: Any]? = nil,
-               onSuccess: OnSuccessHandler? = IterableRequestProcessor.defaultOnSuccess("trackEvent"),
-               onFailure: OnFailureHandler? = IterableRequestProcessor.defaultOnFailure("trackEvent")) -> Future<SendRequestValue, SendRequestError> {
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         IterableRequestProcessor.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
+                                 withIdentifier: "trackEvent",
                                  forResult: apiClient.track(event: event, dataFields: dataFields))
     }
 
     @discardableResult
     func updateSubscriptions(info: UpdateSubscriptionsInfo,
-                             onSuccess: OnSuccessHandler? = IterableRequestProcessor.defaultOnSuccess("updateSubscriptions"),
-                             onFailure: OnFailureHandler? = IterableRequestProcessor.defaultOnFailure("updateSubscriptions")) -> Future<SendRequestValue, SendRequestError> {
+                             onSuccess: OnSuccessHandler? = nil,
+                             onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         IterableRequestProcessor.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
+                                 withIdentifier: "updateSubscriptions",
                                  forResult: apiClient.updateSubscriptions(info.emailListIds,
                                                                           unsubscribedChannelIds: info.unsubscribedChannelIds,
                                                                           unsubscribedMessageTypeIds: info.unsubscribedMessageTypeIds,
@@ -135,11 +141,12 @@ struct IterableRequestProcessor {
     func trackInAppOpen(_ message: IterableInAppMessage,
                         location: InAppLocation,
                         inboxSessionId: String? = nil,
-                        onSuccess: OnSuccessHandler? = IterableRequestProcessor.defaultOnSuccess("trackInAppOpen"),
-                        onFailure: OnFailureHandler? = IterableRequestProcessor.defaultOnFailure("trackInAppOpen")) -> Future<SendRequestValue, SendRequestError> {
+                        onSuccess: OnSuccessHandler? = nil,
+                        onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         let result = apiClient.track(inAppOpen: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId))
         return IterableRequestProcessor.call(successHandler: onSuccess,
                                         andFailureHandler: onFailure,
+                                        withIdentifier: "trackInAppOpen",
                                         forResult: result)
     }
 
@@ -147,12 +154,13 @@ struct IterableRequestProcessor {
     @discardableResult
     private func register(registerTokenInfo: RegisterTokenInfo,
                           notificationsEnabled: Bool,
-                          onSuccess: OnSuccessHandler?,
-                          onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                          onSuccess: OnSuccessHandler? = nil,
+                          onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         let pushServicePlatformString = IterableRequestProcessor.pushServicePlatformToString(registerTokenInfo.pushServicePlatform, apnsType: registerTokenInfo.apnsType)
         
         return IterableRequestProcessor.call(successHandler: onSuccess,
                                              andFailureHandler: onFailure,
+                                             withIdentifier: "registerToken",
                                              forResult: apiClient.register(hexToken: registerTokenInfo.hexToken,
                                                                            appName: registerTokenInfo.appName,
                                                                            deviceId: registerTokenInfo.deviceId,
@@ -165,11 +173,12 @@ struct IterableRequestProcessor {
     @discardableResult
     private func disableDevice(forAllUsers allUsers: Bool,
                                hexToken: String,
-                               onSuccess: OnSuccessHandler?,
-                               onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                               onSuccess: OnSuccessHandler? = nil,
+                               onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         return IterableRequestProcessor.call(successHandler: onSuccess,
-                                 andFailureHandler: onFailure,
-                                 forResult: apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken))
+                                             andFailureHandler: onFailure,
+                                             withIdentifier: "disableDevice",
+                                             forResult: apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken))
     }
     
     private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform, apnsType: APNSType) -> String {
@@ -186,11 +195,20 @@ struct IterableRequestProcessor {
     @discardableResult
     private static func call(successHandler onSuccess: OnSuccessHandler? = nil,
                              andFailureHandler onFailure: OnFailureHandler? = nil,
+                             withIdentifier identifier: String,
                              forResult result: Future<SendRequestValue, SendRequestError>) -> Future<SendRequestValue, SendRequestError> {
         result.onSuccess { json in
-            onSuccess?(json)
+            if let onSuccess = onSuccess {
+                onSuccess(json)
+            } else {
+                defaultOnSuccess(identifier)(json)
+            }
         }.onError { error in
-            onFailure?(error.reason, error.data)
+            if let onFailure = onFailure {
+                onFailure(error.reason, error.data)
+            } else {
+                defaultOnFailure(identifier)(error.reason, error.data)
+            }
         }
         return result
     }
