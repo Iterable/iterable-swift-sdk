@@ -68,6 +68,34 @@ struct IterableRequestProcessor {
                                              andFailureHandler: onFailure,
                                              forResult: apiClient.updateEmail(newEmail: newEmail))
     }
+    
+    @discardableResult
+    func trackPurchase(_ total: NSNumber,
+                       items: [CommerceItem],
+                       dataFields: [AnyHashable: Any]? = nil,
+                       onSuccess: OnSuccessHandler? = IterableRequestProcessor.defaultOnSuccess("trackPurchase"),
+                       onFailure: OnFailureHandler? = IterableRequestProcessor.defaultOnFailure("trackPurchase")) -> Future<SendRequestValue, SendRequestError> {
+        IterableRequestProcessor.call(successHandler: onSuccess,
+                                 andFailureHandler: onFailure,
+                                 forResult: apiClient.track(purchase: total, items: items, dataFields: dataFields))
+    }
+
+    @discardableResult
+    func trackPushOpen(_ campaignId: NSNumber,
+                       templateId: NSNumber?,
+                       messageId: String?,
+                       appAlreadyRunning: Bool,
+                       dataFields: [AnyHashable: Any]? = nil,
+                       onSuccess: OnSuccessHandler? = IterableRequestProcessor.defaultOnSuccess("trackPushOpen"),
+                       onFailure: OnFailureHandler? = IterableRequestProcessor.defaultOnFailure("trackPushOpen")) -> Future<SendRequestValue, SendRequestError> {
+        IterableRequestProcessor.call(successHandler: onSuccess,
+                                 andFailureHandler: onFailure,
+                                 forResult: apiClient.track(pushOpen: campaignId,
+                                                            templateId: templateId,
+                                                            messageId: messageId,
+                                                            appAlreadyRunning: appAlreadyRunning,
+                                                            dataFields: dataFields))
+    }
 
     @discardableResult
     private func register(registerTokenInfo: RegisterTokenInfo,

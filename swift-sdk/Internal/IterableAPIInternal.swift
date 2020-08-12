@@ -226,49 +226,50 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
+    @discardableResult
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]? = nil,
-                       onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess("trackPurchase"),
-                       onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("trackPurchase")) {
-        IterableAPIInternal.call(successHandler: onSuccess,
-                                 andFailureHandler: onFailure,
-                                 forResult: apiClient.track(purchase: total, items: items, dataFields: dataFields))
+                       onSuccess: OnSuccessHandler? = nil,
+                       onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        requestProcessor.trackPurchase(total, items: items, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
     }
     
+    @discardableResult
     func trackPushOpen(_ userInfo: [AnyHashable: Any],
                        dataFields: [AnyHashable: Any]? = nil,
-                       onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess("trackPushOpen"),
-                       onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("trackPushOpen")) {
+                       onSuccess: OnSuccessHandler? = nil,
+                       onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         save(pushPayload: userInfo)
         
         if let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: userInfo), metadata.isRealCampaignNotification() {
-            trackPushOpen(metadata.campaignId,
-                          templateId: metadata.templateId,
-                          messageId: metadata.messageId,
-                          appAlreadyRunning: false,
-                          dataFields: dataFields,
-                          onSuccess: onSuccess,
-                          onFailure: onFailure)
+            return trackPushOpen(metadata.campaignId,
+                                 templateId: metadata.templateId,
+                                 messageId: metadata.messageId,
+                                 appAlreadyRunning: false,
+                                 dataFields: dataFields,
+                                 onSuccess: onSuccess,
+                                 onFailure: onFailure)
         } else {
-            onFailure?("Not tracking push open - payload is not an Iterable notification, or is a test/proof/ghost push", nil)
+            return SendRequestError.createErroredFuture(reason: "Not tracking push open - payload is not an Iterable notification, or is a test/proof/ghost push")
         }
     }
     
+    @discardableResult
     func trackPushOpen(_ campaignId: NSNumber,
                        templateId: NSNumber?,
                        messageId: String?,
                        appAlreadyRunning: Bool,
                        dataFields: [AnyHashable: Any]? = nil,
-                       onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess("trackPushOpen"),
-                       onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("trackPushOpen")) {
-        IterableAPIInternal.call(successHandler: onSuccess,
-                                 andFailureHandler: onFailure,
-                                 forResult: apiClient.track(pushOpen: campaignId,
-                                                            templateId: templateId,
-                                                            messageId: messageId,
-                                                            appAlreadyRunning: appAlreadyRunning,
-                                                            dataFields: dataFields))
+                       onSuccess: OnSuccessHandler? = nil,
+                       onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        requestProcessor.trackPushOpen(campaignId,
+                                       templateId: templateId,
+                                       messageId: messageId,
+                                       appAlreadyRunning: appAlreadyRunning,
+                                       dataFields: dataFields,
+                                       onSuccess: onSuccess,
+                                       onFailure: onFailure)
     }
     
     func track(_ eventName: String,
