@@ -87,29 +87,6 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         deviceAttributes.removeValue(forKey: name)
     }
     
-    static func defaultOnSuccess(_ identifier: String) -> OnSuccessHandler {
-        { data in
-            if let data = data {
-                ITBInfo("\(identifier) succeeded, got response: \(data)")
-            } else {
-                ITBInfo("\(identifier) succeeded.")
-            }
-        }
-    }
-    
-    static func defaultOnFailure(_ identifier: String) -> OnFailureHandler {
-        { reason, data in
-            var toLog = "\(identifier) failed:"
-            if let reason = reason {
-                toLog += ", \(reason)"
-            }
-            if let data = data {
-                toLog += ", got response \(String(data: data, encoding: .utf8) ?? "nil")"
-            }
-            ITBError(toLog)
-        }
-    }
-    
     func setEmail(_ email: String?, withToken token: String? = nil) {
         if email != _email {
             logoutPreviousUser()

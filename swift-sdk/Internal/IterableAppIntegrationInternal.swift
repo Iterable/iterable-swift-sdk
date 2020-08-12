@@ -100,8 +100,8 @@ extension PushTrackerProtocol {
                        dataFields: [AnyHashable: Any]? = nil) {
         trackPushOpen(userInfo,
                       dataFields: dataFields,
-                      onSuccess: IterableAPIInternal.defaultOnSuccess("trackPushOpen"),
-                      onFailure: IterableAPIInternal.defaultOnFailure("trackPushOpen"))
+                      onSuccess: nil,
+                      onFailure: nil)
     }
     
     func trackPushOpen(_ campaignId: NSNumber,
@@ -114,8 +114,8 @@ extension PushTrackerProtocol {
                       messageId: messageId,
                       appAlreadyRunning: appAlreadyRunning,
                       dataFields: dataFields,
-                      onSuccess: IterableAPIInternal.defaultOnSuccess("trackPushOpen"),
-                      onFailure: IterableAPIInternal.defaultOnFailure("trackPushOpen"))
+                      onSuccess: nil,
+                      onFailure: nil)
     }
 }
 
