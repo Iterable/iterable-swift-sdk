@@ -349,24 +349,31 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         requestProcessor.track(inboxSession: inboxSession, onSuccess: onSuccess, onFailure: onFailure)
     }
     
-    func track(inAppDelivery message: IterableInAppMessage) {
-        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess("trackInAppDelivery"),
-                                 andFailureHandler: IterableAPIInternal.defaultOnFailure("trackInAppDelivery"),
-                                 forResult: apiClient.track(inAppDelivery: InAppMessageContext.from(message: message, location: nil)))
+    @discardableResult
+    func track(inAppDelivery message: IterableInAppMessage,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        requestProcessor.track(inAppDelivery: message, onSuccess: onSuccess, onFailure: onFailure)
     }
     
-    func inAppConsume(_ messageId: String) {
-        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess("inAppConsume"),
-                                 andFailureHandler: IterableAPIInternal.defaultOnFailure("inAppConsume"),
-                                 forResult: apiClient.inAppConsume(messageId: messageId))
+    @discardableResult
+    func inAppConsume(_ messageId: String,
+                      onSuccess: OnSuccessHandler? = nil,
+                      onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        requestProcessor.inAppConsume(messageId, onSuccess: onSuccess, onFailure: onFailure)
     }
     
-    func inAppConsume(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource? = nil) {
-        let result = apiClient.inAppConsume(inAppMessageContext: InAppMessageContext.from(message: message, location: location),
-                                            source: source)
-        IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess("inAppConsumeWithSource"),
-                                 andFailureHandler: IterableAPIInternal.defaultOnFailure("inAppConsumeWithSource"),
-                                 forResult: result)
+    @discardableResult
+    func inAppConsume(message: IterableInAppMessage,
+                      location: InAppLocation = .inApp,
+                      source: InAppDeleteSource? = nil,
+                      onSuccess: OnSuccessHandler? = nil,
+                      onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        requestProcessor.inAppConsume(message: message,
+                                      location: location,
+                                      source: source,
+                                      onSuccess: onSuccess,
+                                      onFailure: onFailure)
     }
     
     // MARK: - Private/Internal/Initializers

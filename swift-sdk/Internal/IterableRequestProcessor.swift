@@ -181,7 +181,7 @@ struct IterableRequestProcessor {
                                              withIdentifier: "trackInAppClose",
                                              forResult: result)
     }
-
+    
     @discardableResult
     func track(inboxSession: IterableInboxSession,
                onSuccess: OnSuccessHandler? = nil,
@@ -189,11 +189,45 @@ struct IterableRequestProcessor {
         let result = apiClient.track(inboxSession: inboxSession)
         
         return IterableRequestProcessor.call(successHandler: onSuccess,
-                                        andFailureHandler: onFailure,
-                                        withIdentifier: "trackInboxSession",
-                                        forResult: result)
+                                             andFailureHandler: onFailure,
+                                             withIdentifier: "trackInboxSession",
+                                             forResult: result)
     }
-
+    
+    @discardableResult
+    func track(inAppDelivery message: IterableInAppMessage,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        IterableRequestProcessor.call(successHandler: onSuccess,
+                                      andFailureHandler: onFailure,
+                                      withIdentifier: "trackInAppDelivery",
+                                      forResult: apiClient.track(inAppDelivery: InAppMessageContext.from(message: message, location: nil)))
+    }
+    
+    @discardableResult
+    func inAppConsume(_ messageId: String,
+                      onSuccess: OnSuccessHandler? = nil,
+                      onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        IterableRequestProcessor.call(successHandler: onSuccess,
+                                      andFailureHandler: onFailure,
+                                      withIdentifier: "inAppConsume",
+                                      forResult: apiClient.inAppConsume(messageId: messageId))
+    }
+    
+    @discardableResult
+    func inAppConsume(message: IterableInAppMessage,
+                      location: InAppLocation = .inApp,
+                      source: InAppDeleteSource? = nil,
+                      onSuccess: OnSuccessHandler? = nil,
+                      onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        let result = apiClient.inAppConsume(inAppMessageContext: InAppMessageContext.from(message: message, location: location),
+                                            source: source)
+        return IterableRequestProcessor.call(successHandler: onSuccess,
+                                             andFailureHandler: onFailure,
+                                             withIdentifier: "inAppConsumeWithSource",
+                                             forResult: result)
+    }
+    
     @discardableResult
     private func register(registerTokenInfo: RegisterTokenInfo,
                           notificationsEnabled: Bool,
