@@ -5,6 +5,7 @@
 
 import Foundation
 
+/// `IterableAPIinternal` will delegate all network related calls to this struct.
 struct IterableRequestProcessor {
     let apiClient: ApiClientProtocol!
     
@@ -16,6 +17,15 @@ struct IterableRequestProcessor {
         let deviceId: String
         let deviceAttributes: [String: String]
         let sdkVersion: String?
+    }
+    
+    struct UpdateSubscriptionsInfo {
+        let emailListIds: [NSNumber]?
+        let unsubscribedChannelIds: [NSNumber]?
+        let unsubscribedMessageTypeIds: [NSNumber]?
+        let subscribedMessageTypeIds: [NSNumber]?
+        let campaignId: NSNumber?
+        let templateId: NSNumber?
     }
     
     @discardableResult
@@ -95,6 +105,30 @@ struct IterableRequestProcessor {
                                                             messageId: messageId,
                                                             appAlreadyRunning: appAlreadyRunning,
                                                             dataFields: dataFields))
+    }
+
+    @discardableResult
+    func track(event: String,
+               dataFields: [AnyHashable: Any]? = nil,
+               onSuccess: OnSuccessHandler? = IterableRequestProcessor.defaultOnSuccess("trackEvent"),
+               onFailure: OnFailureHandler? = IterableRequestProcessor.defaultOnFailure("trackEvent")) -> Future<SendRequestValue, SendRequestError> {
+        IterableRequestProcessor.call(successHandler: onSuccess,
+                                 andFailureHandler: onFailure,
+                                 forResult: apiClient.track(event: event, dataFields: dataFields))
+    }
+
+    @discardableResult
+    func updateSubscriptions(info: UpdateSubscriptionsInfo,
+                             onSuccess: OnSuccessHandler? = IterableRequestProcessor.defaultOnSuccess("updateSubscriptions"),
+                             onFailure: OnFailureHandler? = IterableRequestProcessor.defaultOnFailure("updateSubscriptions")) -> Future<SendRequestValue, SendRequestError> {
+        IterableRequestProcessor.call(successHandler: onSuccess,
+                                 andFailureHandler: onFailure,
+                                 forResult: apiClient.updateSubscriptions(info.emailListIds,
+                                                                          unsubscribedChannelIds: info.unsubscribedChannelIds,
+                                                                          unsubscribedMessageTypeIds: info.unsubscribedMessageTypeIds,
+                                                                          subscribedMessageTypeIds: info.subscribedMessageTypeIds,
+                                                                          campaignId: info.campaignId,
+                                                                          templateId: info.templateId))
     }
 
     @discardableResult

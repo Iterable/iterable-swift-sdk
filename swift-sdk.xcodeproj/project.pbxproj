@@ -820,12 +820,12 @@
 			name = Persistence;
 			sourceTree = "<group>";
 		};
-		AC5E888724E1B7AD00752321 /* Event Processing */ = {
+		AC5E888724E1B7AD00752321 /* Request Processing */ = {
 			isa = PBXGroup;
 			children = (
 				AC5E888824E1B7CE00752321 /* IterableRequestProcessor.swift */,
 			);
-			name = "Event Processing";
+			name = "Request Processing";
 			sourceTree = "<group>";
 		};
 		AC72A0AC20CF4C08004D7997 /* Util */ = {
@@ -843,7 +843,7 @@
 		AC72A0BB20CF4C8C004D7997 /* Internal */ = {
 			isa = PBXGroup;
 			children = (
-				AC5E888724E1B7AD00752321 /* Event Processing */,
+				AC5E888724E1B7AD00752321 /* Request Processing */,
 				ACC362BB24D21153002C67BA /* Task Processing */,
 				AC50865124C60133001DC132 /* Persistence */,
 				AC845105228DF5360052BB8F /* API Client */,

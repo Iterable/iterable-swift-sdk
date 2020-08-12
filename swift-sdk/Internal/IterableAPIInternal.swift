@@ -272,31 +272,30 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                        onFailure: onFailure)
     }
     
+    @discardableResult
     func track(_ eventName: String,
                dataFields: [AnyHashable: Any]? = nil,
-               onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess("trackEvent"),
-               onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("trackEvent")) {
-        IterableAPIInternal.call(successHandler: onSuccess,
-                                 andFailureHandler: onFailure,
-                                 forResult: apiClient.track(event: eventName, dataFields: dataFields))
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        requestProcessor.track(event: eventName, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
     }
     
+    @discardableResult
     func updateSubscriptions(_ emailListIds: [NSNumber]?,
                              unsubscribedChannelIds: [NSNumber]?,
                              unsubscribedMessageTypeIds: [NSNumber]?,
                              subscribedMessageTypeIds: [NSNumber]?,
                              campaignId: NSNumber?,
                              templateId: NSNumber?,
-                             onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess("updateSubscriptions"),
-                             onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("updateSubscriptions")) {
-        IterableAPIInternal.call(successHandler: onSuccess,
-                                 andFailureHandler: onFailure,
-                                 forResult: apiClient.updateSubscriptions(emailListIds,
-                                                                          unsubscribedChannelIds: unsubscribedChannelIds,
-                                                                          unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
-                                                                          subscribedMessageTypeIds: subscribedMessageTypeIds,
-                                                                          campaignId: campaignId,
-                                                                          templateId: templateId))
+                             onSuccess: OnSuccessHandler? = nil,
+                             onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        let updateSubscriptionsInfo = IterableRequestProcessor.UpdateSubscriptionsInfo(emailListIds: emailListIds,
+                                                                                       unsubscribedChannelIds: unsubscribedChannelIds,
+                                                                                       unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
+                                                                                       subscribedMessageTypeIds: subscribedMessageTypeIds,
+                                                                                       campaignId: campaignId,
+                                                                                       templateId: templateId)
+        return requestProcessor.updateSubscriptions(info: updateSubscriptionsInfo, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     @discardableResult
