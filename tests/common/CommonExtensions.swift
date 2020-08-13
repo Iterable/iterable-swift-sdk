@@ -109,6 +109,10 @@ class MockDependencyContainer: DependencyContainerProtocol {
     func createInAppFetcher(apiClient _: ApiClientProtocol) -> InAppFetcherProtocol {
         inAppFetcher
     }
+
+    func createRequestProcessor(apiClient: ApiClientProtocol) -> IterableRequestProcessor {
+        DirectCallRequestProcessor(apiClient: apiClient)
+    }
 }
 
 extension IterableAPI {

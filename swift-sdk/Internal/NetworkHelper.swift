@@ -19,6 +19,10 @@ struct SendRequestError: Error {
     static func createErroredFuture<T>(reason: String? = nil) -> Future<T, SendRequestError> {
         Promise<T, SendRequestError>(error: SendRequestError(reason: reason))
     }
+    
+    static func from(error: Error) -> SendRequestError {
+        SendRequestError(reason: error.localizedDescription)
+    }
 }
 
 extension SendRequestError: LocalizedError {

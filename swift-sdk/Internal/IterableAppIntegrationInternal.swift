@@ -76,21 +76,23 @@ struct UserNotificationResponse: NotificationResponseProtocol {
 }
 
 /// Abstraction of push tracking
-public protocol PushTrackerProtocol: AnyObject {
+protocol PushTrackerProtocol: AnyObject {
     var lastPushPayload: [AnyHashable: Any]? { get }
     
+    @discardableResult
     func trackPushOpen(_ userInfo: [AnyHashable: Any],
                        dataFields: [AnyHashable: Any]?,
                        onSuccess: OnSuccessHandler?,
-                       onFailure: OnFailureHandler?)
+                       onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
     
+    @discardableResult
     func trackPushOpen(_ campaignId: NSNumber,
                        templateId: NSNumber?,
                        messageId: String?,
                        appAlreadyRunning: Bool,
                        dataFields: [AnyHashable: Any]?,
                        onSuccess: OnSuccessHandler?,
-                       onFailure: OnFailureHandler?)
+                       onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
 }
 
 extension PushTrackerProtocol {
@@ -98,8 +100,8 @@ extension PushTrackerProtocol {
                        dataFields: [AnyHashable: Any]? = nil) {
         trackPushOpen(userInfo,
                       dataFields: dataFields,
-                      onSuccess: IterableAPIInternal.defaultOnSuccess("trackPushOpen"),
-                      onFailure: IterableAPIInternal.defaultOnFailure("trackPushOpen"))
+                      onSuccess: nil,
+                      onFailure: nil)
     }
     
     func trackPushOpen(_ campaignId: NSNumber,
@@ -112,8 +114,8 @@ extension PushTrackerProtocol {
                       messageId: messageId,
                       appAlreadyRunning: appAlreadyRunning,
                       dataFields: dataFields,
-                      onSuccess: IterableAPIInternal.defaultOnSuccess("trackPushOpen"),
-                      onFailure: IterableAPIInternal.defaultOnFailure("trackPushOpen"))
+                      onSuccess: nil,
+                      onFailure: nil)
     }
 }
 

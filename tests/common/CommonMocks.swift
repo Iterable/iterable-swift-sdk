@@ -105,18 +105,24 @@ public class MockPushTracker: NSObject, PushTrackerProtocol {
     public func trackPushOpen(_ userInfo: [AnyHashable: Any],
                               dataFields: [AnyHashable: Any]?,
                               onSuccess: OnSuccessHandler?,
-                              onFailure: OnFailureHandler?) {
+                              onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
         // save payload
         lastPushPayload = userInfo
         
         if let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: userInfo), metadata.isRealCampaignNotification() {
-            trackPushOpen(metadata.campaignId, templateId: metadata.templateId, messageId: metadata.messageId, appAlreadyRunning: false, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
+            return trackPushOpen(metadata.campaignId, templateId: metadata.templateId, messageId: metadata.messageId, appAlreadyRunning: false, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
         } else {
-            onFailure?("Not tracking push open - payload is not an Iterable notification, or a test/proof/ghost push", nil)
+            return SendRequestError.createErroredFuture(reason: "Not tracking push open - payload is not an Iterable notification, or a test/proof/ghost push")
         }
     }
     
-    public func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    public func trackPushOpen(_ campaignId: NSNumber,
+                              templateId: NSNumber?,
+                              messageId: String?,
+                              appAlreadyRunning: Bool,
+                              dataFields: [AnyHashable: Any]?,
+                              onSuccess: OnSuccessHandler?,
+                              onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
         self.campaignId = campaignId
         self.templateId = templateId
         self.messageId = messageId
@@ -124,6 +130,8 @@ public class MockPushTracker: NSObject, PushTrackerProtocol {
         self.dataFields = dataFields
         self.onSuccess = onSuccess
         self.onFailure = onFailure
+        
+        return Promise<SendRequestValue, SendRequestError>(value: [:])
     }
 }
 
