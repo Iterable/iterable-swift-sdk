@@ -64,7 +64,7 @@ protocol IterableRequestProcessor {
     @discardableResult
     func trackPushOpen(_ campaignId: NSNumber,
                        templateId: NSNumber?,
-                       messageId: String?,
+                       messageId: String,
                        appAlreadyRunning: Bool,
                        dataFields: [AnyHashable: Any]?,
                        onSuccess: OnSuccessHandler?,

@@ -15,10 +15,10 @@ enum NotificationInfo {
 struct IterablePushNotificationMetadata {
     let campaignId: NSNumber
     let templateId: NSNumber?
-    let messageId: String?
+    let messageId: String
     let isGhostPush: Bool
     
-    init(campaignId: NSNumber, templateId: NSNumber?, messageId: String?, isGhostPush: Bool) {
+    init(campaignId: NSNumber, templateId: NSNumber?, messageId: String, isGhostPush: Bool) {
         self.campaignId = campaignId
         self.templateId = templateId
         self.messageId = messageId
@@ -59,8 +59,11 @@ struct IterablePushNotificationMetadata {
             return nil
         }
         
+        guard let messageId = itblElement[Keys.messageId.rawValue] as? String else {
+            return nil
+        }
+        
         let campaignId = itblElement[Keys.campaignId.rawValue] as? NSNumber ?? NSNumber(value: 0)
-        let messageId = itblElement[Keys.messageId.rawValue] as? String
         
         return IterablePushNotificationMetadata(campaignId: campaignId,
                                                 templateId: templateId,

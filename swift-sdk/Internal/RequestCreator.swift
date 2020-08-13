@@ -116,7 +116,7 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: Const.Path.trackPurchase, body: body)))
     }
     
-    func createTrackPushOpenRequest(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?) -> Result<IterableRequest, IterableError> {
+    func createTrackPushOpenRequest(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?) -> Result<IterableRequest, IterableError> {
         var body = [AnyHashable: Any]()
         var reqDataFields = [AnyHashable: Any]()
         
@@ -137,9 +137,7 @@ struct RequestCreator {
             body[JsonKey.templateId.jsonKey] = templateId
         }
         
-        if let messageId = messageId {
-            body.setValue(for: .messageId, value: messageId)
-        }
+        body.setValue(for: .messageId, value: messageId)
         
         return .success(.post(createPostRequest(path: Const.Path.trackPushOpen, body: body)))
     }

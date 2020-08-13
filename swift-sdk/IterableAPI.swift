@@ -416,7 +416,7 @@ import UIKit
     @objc(trackPushOpen:templateId:messageId:appAlreadyRunning:dataFields:)
     public static func track(pushOpen campaignId: NSNumber,
                              templateId: NSNumber?,
-                             messageId: String?,
+                             messageId: String,
                              appAlreadyRunning: Bool,
                              dataFields: [AnyHashable: Any]?) {
         internalImplementation?.trackPushOpen(campaignId,
@@ -443,7 +443,7 @@ import UIKit
     @objc(trackPushOpen:templateId:messageId:appAlreadyRunning:dataFields:onSuccess:onFailure:)
     public static func track(pushOpen campaignId: NSNumber,
                              templateId: NSNumber?,
-                             messageId: String?,
+                             messageId: String,
                              appAlreadyRunning: Bool,
                              dataFields: [AnyHashable: Any]?,
                              onSuccess: OnSuccessHandler?,

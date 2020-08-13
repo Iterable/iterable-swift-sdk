@@ -118,7 +118,7 @@ public class MockPushTracker: NSObject, PushTrackerProtocol {
     
     public func trackPushOpen(_ campaignId: NSNumber,
                               templateId: NSNumber?,
-                              messageId: String?,
+                              messageId: String,
                               appAlreadyRunning: Bool,
                               dataFields: [AnyHashable: Any]?,
                               onSuccess: OnSuccessHandler?,
