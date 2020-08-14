@@ -240,14 +240,15 @@ class InAppManager: NSObject {
         case let .notShown(reason):
             ITBError("Could not show message: \(reason)")
         case let .shown(futureClickedURL):
-            // set read
             ITBDebug("in-app shown")
+            
             set(read: true, forMessage: message)
             
             updateMessage(message, didProcessTrigger: true, consumed: consume)
             
             futureClickedURL.onSuccess { url in
                 ITBDebug("in-app clicked")
+                
                 // call the client callback, if present
                 _ = callback?(url)
                 
@@ -289,10 +290,11 @@ class InAppManager: NSObject {
         }
     }
     
-    @discardableResult private func updateMessage(_ message: IterableInAppMessage,
-                                                  read: Bool? = nil,
-                                                  didProcessTrigger: Bool? = nil,
-                                                  consumed: Bool? = nil) -> Future<Bool, IterableError> {
+    @discardableResult
+    private func updateMessage(_ message: IterableInAppMessage,
+                               read: Bool? = nil,
+                               didProcessTrigger: Bool? = nil,
+                               consumed: Bool? = nil) -> Future<Bool, IterableError> {
         ITBDebug()
         
         let result = Promise<Bool, IterableError>()
@@ -417,7 +419,10 @@ class InAppManager: NSObject {
     }
     
     // From client side
-    private func removePrivate(message: IterableInAppMessage, location: InAppLocation = .inApp, source: InAppDeleteSource? = nil, inboxSessionId: String? = nil) {
+    private func removePrivate(message: IterableInAppMessage,
+                               location: InAppLocation = .inApp,
+                               source: InAppDeleteSource? = nil,
+                               inboxSessionId: String? = nil) {
         ITBInfo()
         
         updateMessage(message, didProcessTrigger: true, consumed: true)
