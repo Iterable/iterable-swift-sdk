@@ -10,10 +10,17 @@ typealias SendRequestValue = [AnyHashable: Any]
 struct SendRequestError: Error {
     let reason: String?
     let data: Data?
+    let httpStatusCode: Int?
+    let originalError: Error?
     
-    init(reason: String? = nil, data: Data? = nil) {
+    init(reason: String? = nil,
+         data: Data? = nil,
+         httpStatusCode: Int? = nil,
+         originalError: Error? = nil) {
         self.reason = reason
         self.data = data
+        self.httpStatusCode = httpStatusCode
+        self.originalError = originalError
     }
     
     static func createErroredFuture<T>(reason: String? = nil) -> Future<T, SendRequestError> {
@@ -117,7 +124,7 @@ struct NetworkHelper {
                                                 response: URLResponse?,
                                                 error: Error?) -> Result<SendRequestValue, SendRequestError> {
         if let error = error {
-            return .failure(SendRequestError(reason: "\(error.localizedDescription)", data: data))
+            return .failure(SendRequestError(reason: "\(error.localizedDescription)", data: data, originalError: error))
         }
         
         guard let response = response as? HTTPURLResponse else {
@@ -141,7 +148,7 @@ struct NetworkHelper {
         }
         
         if responseCode == 401 {
-            return .failure(SendRequestError(reason: "Invalid API Key", data: data))
+            return .failure(SendRequestError(reason: "Invalid API Key", data: data, httpStatusCode: responseCode))
         } else if responseCode >= 400 {
             var reason = "Invalid Request"
             if let jsonDict = json as? [AnyHashable: Any], let msgFromDict = jsonDict["msg"] as? String {
@@ -150,7 +157,7 @@ struct NetworkHelper {
                 reason = "Internal Server Error"
             }
             
-            return .failure(SendRequestError(reason: reason, data: data))
+            return .failure(SendRequestError(reason: reason, data: data, httpStatusCode: responseCode))
         } else if responseCode == 200 {
             if let data = data, data.count > 0 {
                 if let jsonError = jsonError {
@@ -159,17 +166,17 @@ struct NetworkHelper {
                         reason = "Could not parse json: \(stringValue), error: \(jsonError.localizedDescription)"
                     }
                     
-                    return .failure(SendRequestError(reason: reason, data: data))
+                    return .failure(SendRequestError(reason: reason, data: data, httpStatusCode: responseCode))
                 } else if let json = json as? [AnyHashable: Any] {
                     return .success(json)
                 } else {
-                    return .failure(SendRequestError(reason: "Response is not a dictionary", data: data))
+                    return .failure(SendRequestError(reason: "Response is not a dictionary", data: data, httpStatusCode: responseCode))
                 }
             } else {
-                return .failure(SendRequestError(reason: "No data received", data: data))
+                return .failure(SendRequestError(reason: "No data received", data: data, httpStatusCode: responseCode))
             }
         } else {
-            return .failure(SendRequestError(reason: "Received non-200 response: \(responseCode)", data: data))
+            return .failure(SendRequestError(reason: "Received non-200 response: \(responseCode)", data: data, httpStatusCode: responseCode))
         }
     }
     
