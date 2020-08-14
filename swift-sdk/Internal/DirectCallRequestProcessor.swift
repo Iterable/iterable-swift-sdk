@@ -6,7 +6,7 @@
 import Foundation
 
 /// `IterableAPIinternal` will delegate all network related calls to this struct.
-struct DirectCallRequestProcessor: IterableRequestProcessor {
+struct DirectCallRequestProcessor: RequestProcessorProtocol {
     let apiClient: ApiClientProtocol!
     
     @discardableResult

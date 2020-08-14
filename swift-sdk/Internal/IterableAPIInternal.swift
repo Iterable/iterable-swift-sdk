@@ -386,7 +386,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                   deviceMetadata: deviceMetadata)
     }()
     
-    lazy var requestProcessor: IterableRequestProcessor = {
+    lazy var requestProcessor: RequestProcessorProtocol = {
         dependencyContainer.createRequestProcessor(apiClient: apiClient)
     }()
     

@@ -20,7 +20,7 @@ protocol DependencyContainerProtocol {
     var apnsTypeChecker: APNSTypeCheckerProtocol { get }
     
     func createInAppFetcher(apiClient: ApiClientProtocol) -> InAppFetcherProtocol
-    func createRequestProcessor(apiClient: ApiClientProtocol) -> IterableRequestProcessor
+    func createRequestProcessor(apiClient: ApiClientProtocol) -> RequestProcessorProtocol
 }
 
 extension DependencyContainerProtocol {
@@ -44,7 +44,7 @@ extension DependencyContainerProtocol {
 }
 
 struct DependencyContainer: DependencyContainerProtocol {
-    func createRequestProcessor(apiClient: ApiClientProtocol) -> IterableRequestProcessor {
+    func createRequestProcessor(apiClient: ApiClientProtocol) -> RequestProcessorProtocol {
         DirectCallRequestProcessor(apiClient: apiClient)
     }
     
