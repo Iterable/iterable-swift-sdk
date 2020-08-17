@@ -6,20 +6,21 @@
 import Foundation
 
 enum IterableTaskResult {
-    case success(TaskSuccess)
-    case failure(TaskFailure)
+    case success(detail: TaskSuccessDetail?)
+    case failureWithRetry(retryAfter: TimeInterval?, detail: TaskFailureDetail?)
+    case failureWithNoRetry(detail: TaskFailureDetail?)
 }
 
-protocol TaskSuccess {}
+protocol TaskSuccessDetail {}
 
-struct APICallTaskSuccess: TaskSuccess {
+struct APICallTaskSuccessDetail: TaskSuccessDetail {
     let json: SendRequestValue
 }
 
-protocol TaskFailure {}
+protocol TaskFailureDetail {}
 
-struct APICallTaskFailure: TaskFailure {
-    let responseCode: Int?
+struct APICallTaskFailureDetail: TaskFailureDetail {
+    let httpStatusCode: Int?
     let reason: String?
     let data: Data?
 }

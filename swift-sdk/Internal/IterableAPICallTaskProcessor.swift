@@ -21,12 +21,30 @@ struct IterableAPICallTaskProcessor: IterableTaskProcessor {
         let result = Promise<IterableTaskResult, IterableTaskError>()
         NetworkHelper.sendRequest(urlRequest, usingSession: networkSession)
             .onSuccess { json in
-                result.resolve(with: .success(APICallTaskSuccess(json: json)))
+                result.resolve(with: .success(detail: APICallTaskSuccessDetail(json: json)))
             }
-            .onError { networkError in
-                result.resolve(with: .failure(APICallTaskFailure(responseCode: nil, reason: networkError.reason, data: networkError.data)))
+            .onError { sendRequestError in
+                if IterableAPICallTaskProcessor.isNetworkUnavailable(sendRequestError: sendRequestError) {
+                    let failureDetail = APICallTaskFailureDetail(httpStatusCode: sendRequestError.httpStatusCode,
+                                                                 reason: sendRequestError.reason,
+                                                                 data: sendRequestError.data)
+                    result.resolve(with: .failureWithRetry(retryAfter: nil, detail: failureDetail))
+                } else {
+                    let failureDetail = APICallTaskFailureDetail(httpStatusCode: sendRequestError.httpStatusCode,
+                                                                 reason: sendRequestError.reason,
+                                                                 data: sendRequestError.data)
+                    result.resolve(with: .failureWithNoRetry(detail: failureDetail))
+                }
             }
         
         return result
+    }
+    
+    private static func isNetworkUnavailable(sendRequestError: SendRequestError) -> Bool {
+        if let originalError = sendRequestError.originalError as? LocalizedError {
+            return originalError.localizedDescription.lowercased().contains("unavailable")
+        } else {
+            return false
+        }
     }
 }

@@ -10,10 +10,10 @@ enum IterableError: Error {
 }
 
 extension IterableError: LocalizedError {
-    public var localizedDescription: String {
+    var errorDescription: String? {
         switch self {
         case let .general(description):
-            return description
+            return NSLocalizedString(description, comment: "error description")
         }
     }
 }
