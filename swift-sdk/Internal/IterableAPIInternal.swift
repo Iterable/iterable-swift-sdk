@@ -355,7 +355,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                       onFailure: onFailure)
     }
     
-    // MARK: - Private/Internal/Initializers
+    // MARK: - Private/Internal
     
     private var config: IterableConfig
     
