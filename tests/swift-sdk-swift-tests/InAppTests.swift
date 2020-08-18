@@ -94,7 +94,7 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1, expectation2, expectation3], timeout: testExpectationTimeout)
     }
     
-    // skip the inApp in inAppDelegate
+    // skip the in-app in inAppDelegate
     func testAutoShowInAppSingleOverride() {
         let expectation1 = expectation(description: "testAutoShowInAppSingleOverride")
         expectation1.isInverted = true
@@ -219,7 +219,7 @@ class InAppTests: XCTestCase {
         wait(for: [expectation2], timeout: testExpectationTimeout)
     }
     
-    // inApp is shown and url is opened when link is clicked
+    // in-app is shown and url is opened when link is clicked
     func testAutoShowInAppOpenUrlByDefault() {
         let expectation1 = expectation(description: "testAutoShowInAppOpenUrlByDefault")
         
@@ -248,7 +248,7 @@ class InAppTests: XCTestCase {
     }
     
     // override in url delegate
-    // inApp is shown but does not open external url
+    // in-app is shown but does not open external url
     func testAutoShowInAppUrlDelegateOverride() {
         let expectation1 = expectation(description: "testAutoShowInAppUrlDelegateOverride")
         expectation1.isInverted = true
