@@ -121,6 +121,10 @@ class InAppHelperTests: XCTestCase {
             fatalError()
         }
         
+        func track(pushOpen campaignId: NSNumber, templateId: NSNumber?, messageId: String, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?) -> Future<SendRequestValue, SendRequestError> {
+            fatalError()
+        }
+        
         func track(event _: String, dataFields _: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError> {
             fatalError()
         }
