@@ -41,6 +41,10 @@ protocol IterablePersistenceContext {
     func deleteAllTasks() throws
     
     func save() throws
+
+    func perform(_ block: @escaping () -> Void)
+
+    func performAndWait(_ block: () -> Void)
 }
 
 protocol IterablePersistenceContextProvider {

@@ -13,14 +13,8 @@ enum IterableTaskResult {
 
 protocol TaskSuccessDetail {}
 
-struct APICallTaskSuccessDetail: TaskSuccessDetail {
-    let json: SendRequestValue
-}
+extension SendRequestValue: TaskSuccessDetail {}
 
 protocol TaskFailureDetail {}
 
-struct APICallTaskFailureDetail: TaskFailureDetail {
-    let httpStatusCode: Int?
-    let reason: String?
-    let data: Data?
-}
+extension SendRequestError: TaskFailureDetail {}

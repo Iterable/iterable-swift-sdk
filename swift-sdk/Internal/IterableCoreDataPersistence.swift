@@ -120,6 +120,14 @@ struct CoreDataPersistenceContext: IterablePersistenceContext {
         try managedObjectContext.save()
     }
     
+    func perform(_ block: @escaping () -> Void) {
+        managedObjectContext.perform(block)
+    }
+    
+    func performAndWait(_ block: () -> Void) {
+        managedObjectContext.performAndWait(block)
+    }
+    
     private let managedObjectContext: NSManagedObjectContext
     private let dateProvider: DateProviderProtocol
     
