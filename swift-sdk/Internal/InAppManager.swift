@@ -142,6 +142,18 @@ class InAppManager: NSObject {
         messagesMap[id]
     }
     
+    func isAutoDisplayPaused() -> Bool {
+        return autoDisplayPaused
+    }
+    
+    func setAutoDisplayPaused(_ paused: Bool) {
+        autoDisplayPaused = paused
+        
+        if !autoDisplayPaused {
+            _ = scheduleSync()
+        }
+    }
+    
     // MARK: - Private/Internal
     
     @objc private func onAppEnteredForeground(notification _: Notification) {
@@ -170,7 +182,7 @@ class InAppManager: NSObject {
     }
     
     private func processMergedMessages(appIsReady: Bool, mergeMessagesResult: MergeMessagesResult) -> Bool {
-        if appIsReady {
+        if appIsReady && !autoDisplayPaused {
             processAndShowMessage(messagesMap: mergeMessagesResult.messagesMap)
         } else {
             messagesMap = mergeMessagesResult.messagesMap
@@ -489,6 +501,7 @@ class InAppManager: NSObject {
     private var syncResult: Future<Bool, Error>?
     private var lastSyncTime: Date?
     private let moveToForegroundSyncInterval: Double = 1.0 * 60.0 // don't sync within sixty seconds
+    private var autoDisplayPaused = false
 }
 
 extension InAppManager: IterableInternalInAppManagerProtocol {
