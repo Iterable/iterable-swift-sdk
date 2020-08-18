@@ -35,7 +35,7 @@ protocol IterableInternalInAppManagerProtocol: IterableInAppManagerProtocol, InA
     func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource, inboxSessionId: String?)
 }
 
-class InAppManager: NSObject {
+class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     init(apiClient: ApiClientProtocol,
          deviceMetadata: DeviceMetadata,
          fetcher: InAppFetcherProtocol,
@@ -152,6 +152,73 @@ class InAppManager: NSObject {
         if !autoDisplayPaused {
             _ = scheduleSync()
         }
+    }
+    
+    // MARK: - IterableInternalInAppManagerProtocol
+    
+    func isOkToShowNow(message: IterableInAppMessage) -> Bool {
+        guard message.didProcessTrigger == false else {
+            ITBInfo("message with id: \(message.messageId) is already processed")
+            return false
+        }
+        
+        guard InAppManager.getWaitTimeInterval(fromLastTime: lastDismissedTime, currentTime: dateProvider.currentDate, gap: retryInterval) <= 0 else {
+            ITBInfo("can't display within retryInterval window")
+            return false
+        }
+        
+        guard InAppManager.getWaitTimeInterval(fromLastTime: lastDisplayTime, currentTime: dateProvider.currentDate, gap: retryInterval) <= 0 else {
+            ITBInfo("can't display within retryInterval window")
+            return false
+        }
+        
+        return true
+    }
+    
+    func start() -> Future<Bool, Error> {
+        ITBInfo()
+        
+        if messagesMap.values.filter({ $0.saveToInbox }).count > 0 {
+            callbackQueue.async {
+                self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
+            }
+        }
+        
+        return scheduleSync()
+    }
+    
+    func createInboxMessageViewController(for message: IterableInAppMessage,
+                                          withInboxMode inboxMode: IterableInboxViewController.InboxMode,
+                                          inboxSessionId: String? = nil) -> UIViewController? {
+        guard let content = message.content as? IterableHtmlInAppContent else {
+            ITBError("Invalid Content in message")
+            return nil
+        }
+        
+        let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
+                                                                      padding: content.edgeInsets,
+                                                                      messageMetadata: IterableInAppMessageMetadata(message: message, location: .inbox),
+                                                                      isModal: inboxMode == .popup,
+                                                                      inboxSessionId: inboxSessionId)
+        let createResult = IterableHtmlMessageViewController.create(parameters: parameters)
+        let viewController = createResult.viewController
+        
+        createResult.futureClickedURL.onSuccess { url in
+            ITBInfo()
+            
+            // in addition perform action or url delegate task
+            self.handle(clickedUrl: url, forMessage: message, location: .inbox)
+        }
+        
+        viewController.navigationItem.title = message.inboxMetadata?.title
+        
+        return viewController
+    }
+    
+    func remove(message: IterableInAppMessage) {
+        ITBInfo()
+        
+        removePrivate(message: message)
     }
     
     // MARK: - Private/Internal
@@ -502,71 +569,6 @@ class InAppManager: NSObject {
     private var lastSyncTime: Date?
     private let moveToForegroundSyncInterval: Double = 1.0 * 60.0 // don't sync within sixty seconds
     private var autoDisplayPaused = false
-}
-
-extension InAppManager: IterableInternalInAppManagerProtocol {
-    func isOkToShowNow(message: IterableInAppMessage) -> Bool {
-        guard message.didProcessTrigger == false else {
-            ITBInfo("message with id: \(message.messageId) is already processed")
-            return false
-        }
-        
-        guard InAppManager.getWaitTimeInterval(fromLastTime: lastDismissedTime, currentTime: dateProvider.currentDate, gap: retryInterval) <= 0 else {
-            ITBInfo("can't display within retryInterval window")
-            return false
-        }
-        
-        guard InAppManager.getWaitTimeInterval(fromLastTime: lastDisplayTime, currentTime: dateProvider.currentDate, gap: retryInterval) <= 0 else {
-            ITBInfo("can't display within retryInterval window")
-            return false
-        }
-        
-        return true
-    }
-    
-    func start() -> Future<Bool, Error> {
-        ITBInfo()
-        
-        if messagesMap.values.filter({ $0.saveToInbox }).count > 0 {
-            callbackQueue.async {
-                self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
-            }
-        }
-        
-        return scheduleSync()
-    }
-    
-    func createInboxMessageViewController(for message: IterableInAppMessage, withInboxMode inboxMode: IterableInboxViewController.InboxMode, inboxSessionId: String? = nil) -> UIViewController? {
-        guard let content = message.content as? IterableHtmlInAppContent else {
-            ITBError("Invalid Content in message")
-            return nil
-        }
-        
-        let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
-                                                                      padding: content.edgeInsets,
-                                                                      messageMetadata: IterableInAppMessageMetadata(message: message, location: .inbox),
-                                                                      isModal: inboxMode == .popup,
-                                                                      inboxSessionId: inboxSessionId)
-        let createResult = IterableHtmlMessageViewController.create(parameters: parameters)
-        let viewController = createResult.viewController
-        
-        createResult.futureClickedURL.onSuccess { url in
-            ITBInfo()
-            
-            // in addition perform action or url delegate task
-            self.handle(clickedUrl: url, forMessage: message, location: .inbox)
-        }
-        
-        viewController.navigationItem.title = message.inboxMetadata?.title
-        
-        return viewController
-    }
-    
-    func remove(message: IterableInAppMessage) {
-        ITBInfo()
-        
-        removePrivate(message: message)
-    }
 }
 
 extension InAppManager: InAppNotifiable {
