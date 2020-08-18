@@ -81,6 +81,8 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         notificationCenter.removeObserver(self)
     }
     
+    // MARK: - IterableInAppManagerProtocol
+    
     func getMessages() -> [IterableInAppMessage] {
         ITBInfo()
         
@@ -154,7 +156,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         }
     }
     
-    // MARK: - IterableInternalInAppManagerProtocol
+    // MARK: - InAppDisplayChecker
     
     func isOkToShowNow(message: IterableInAppMessage) -> Bool {
         guard message.didProcessTrigger == false else {
@@ -174,6 +176,8 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         
         return true
     }
+    
+    // MARK: - IterableInternalInAppManagerProtocol
     
     func start() -> Future<Bool, Error> {
         ITBInfo()
