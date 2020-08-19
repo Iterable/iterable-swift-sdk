@@ -278,6 +278,34 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
     }
     
+    func testAutoDisplayOff() {
+        let expectation1 = expectation(description: "testAutoDisplayOff")
+        
+        let mockInAppFetcher = MockInAppFetcher()
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(
+            config: IterableConfig(),
+            inAppFetcher: mockInAppFetcher
+        )
+        
+        // verify the default value of auto displaying
+        XCTAssertFalse(internalAPI.inAppManager.isAutoDisplayPaused())
+        
+        internalAPI.inAppManager.setAutoDisplayPaused(true)
+        
+        // verify that auto display has been set to true
+        XCTAssertTrue(internalAPI.inAppManager.isAutoDisplayPaused())
+        
+        // the fetcher normally shows the first one, but here, it shouldn't with auto displaying off
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: [getEmptyInAppMessage()]).onSuccess { messageCount in
+            XCTAssertEqual(messageCount, 1)
+            
+            expectation1.fulfill()
+        }
+        
+        wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
+    }
+    
     func testShowInAppWithConsume() {
         let expectation1 = expectation(description: "testShowInAppWithConsume")
         let expectation2 = expectation(description: "url opened")
