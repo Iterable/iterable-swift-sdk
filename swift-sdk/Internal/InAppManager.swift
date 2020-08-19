@@ -156,27 +156,6 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         }
     }
     
-    // MARK: - InAppDisplayChecker
-    
-    func isOkToShowNow(message: IterableInAppMessage) -> Bool {
-        guard message.didProcessTrigger == false else {
-            ITBInfo("message with id: \(message.messageId) is already processed")
-            return false
-        }
-        
-        guard InAppManager.getWaitTimeInterval(fromLastTime: lastDismissedTime, currentTime: dateProvider.currentDate, gap: retryInterval) <= 0 else {
-            ITBInfo("can't display within retryInterval window")
-            return false
-        }
-        
-        guard InAppManager.getWaitTimeInterval(fromLastTime: lastDisplayTime, currentTime: dateProvider.currentDate, gap: retryInterval) <= 0 else {
-            ITBInfo("can't display within retryInterval window")
-            return false
-        }
-        
-        return true
-    }
-    
     // MARK: - IterableInternalInAppManagerProtocol
     
     func start() -> Future<Bool, Error> {
@@ -253,7 +232,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     }
     
     private func processMergedMessages(appIsReady: Bool, mergeMessagesResult: MergeMessagesResult) -> Bool {
-        if appIsReady, !autoDisplayPaused {
+        if appIsReady {
             processAndShowMessage(messagesMap: mergeMessagesResult.messagesMap)
         } else {
             messagesMap = mergeMessagesResult.messagesMap
@@ -639,5 +618,31 @@ extension InAppManager: InAppNotifiable {
         }
         
         return result
+    }
+}
+
+extension InAppManager: InAppDisplayChecker {
+    func isOkToShowNow(message: IterableInAppMessage) -> Bool {
+        guard !autoDisplayPaused else {
+            ITBInfo("automatic in-app display has been paused")
+            return false
+        }
+        
+        guard !message.didProcessTrigger else {
+            ITBInfo("message with id: \(message.messageId) is already processed")
+            return false
+        }
+        
+        guard InAppManager.getWaitTimeInterval(fromLastTime: lastDismissedTime, currentTime: dateProvider.currentDate, gap: retryInterval) <= 0 else {
+            ITBInfo("can't display within retryInterval window")
+            return false
+        }
+        
+        guard InAppManager.getWaitTimeInterval(fromLastTime: lastDisplayTime, currentTime: dateProvider.currentDate, gap: retryInterval) <= 0 else {
+            ITBInfo("can't display within retryInterval window")
+            return false
+        }
+        
+        return true
     }
 }
