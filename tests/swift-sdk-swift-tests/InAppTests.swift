@@ -306,6 +306,38 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
     }
     
+    func testAutoDisplayResumed() {
+        let expectation1 = expectation(description: "make sure auto display pausing works")
+        let expectation2 = expectation(description: "resume auto display pausing, show next message")
+        
+        let mockInAppFetcher = MockInAppFetcher()
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(
+            config: IterableConfig(),
+            inAppFetcher: mockInAppFetcher
+        )
+        
+        internalAPI.inAppManager.setAutoDisplayPaused(true)
+        
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: [getEmptyInAppMessage()]).onSuccess { messageCount in
+            XCTAssertEqual(messageCount, 1)
+            
+            expectation1.fulfill()
+        }
+        
+        wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
+        
+        internalAPI.inAppManager.setAutoDisplayPaused(false)
+        
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: [getEmptyInAppMessage()]).onSuccess { messageCount in
+            XCTAssertEqual(messageCount, 0)
+
+            expectation2.fulfill()
+        }
+
+        wait(for: [expectation2], timeout: testExpectationTimeoutForInverted)
+    }
+    
     func testShowInAppWithConsume() {
         let expectation1 = expectation(description: "testShowInAppWithConsume")
         let expectation2 = expectation(description: "url opened")
