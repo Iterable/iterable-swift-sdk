@@ -56,7 +56,7 @@ class IterableAPIResponseTests: XCTestCase {
             .send(iterableRequest: iterableRequest).onError { sendError in
                 xpectation.fulfill()
                 XCTAssert(sendError.reason!.lowercased().contains("no data"))
-        }
+            }
         
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
@@ -70,7 +70,7 @@ class IterableAPIResponseTests: XCTestCase {
             .send(iterableRequest: iterableRequest).onError { sendError in
                 xpectation.fulfill()
                 XCTAssert(sendError.reason!.lowercased().contains("could not parse json"))
-        }
+            }
         
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
@@ -83,7 +83,7 @@ class IterableAPIResponseTests: XCTestCase {
             .send(iterableRequest: iterableRequest).onError { sendError in
                 xpectation.fulfill()
                 XCTAssert(sendError.reason!.lowercased().contains("invalid request"))
-        }
+            }
         
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
@@ -96,7 +96,7 @@ class IterableAPIResponseTests: XCTestCase {
             .send(iterableRequest: iterableRequest).onError { sendError in
                 xpectation.fulfill()
                 XCTAssert(sendError.reason!.lowercased().contains("test error"))
-        }
+            }
         
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
@@ -109,7 +109,7 @@ class IterableAPIResponseTests: XCTestCase {
             .send(iterableRequest: iterableRequest).onError { sendError in
                 xpectation.fulfill()
                 XCTAssert(sendError.reason!.lowercased().contains("invalid api key"))
-        }
+            }
         
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
@@ -122,7 +122,7 @@ class IterableAPIResponseTests: XCTestCase {
             .send(iterableRequest: iterableRequest).onError { sendError in
                 xpectation.fulfill()
                 XCTAssert(sendError.reason!.lowercased().contains("internal server error"))
-        }
+            }
         
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
@@ -135,7 +135,7 @@ class IterableAPIResponseTests: XCTestCase {
             .send(iterableRequest: iterableRequest).onError { sendError in
                 xpectation.fulfill()
                 XCTAssert(sendError.reason!.lowercased().contains("non-200 response"))
-        }
+            }
         
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
@@ -148,7 +148,7 @@ class IterableAPIResponseTests: XCTestCase {
             .send(iterableRequest: iterableRequest).onError { sendError in
                 xpectation.fulfill()
                 XCTAssert(sendError.reason!.lowercased().contains("nsurlerrordomain"))
-        }
+            }
         
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }

@@ -145,7 +145,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     }
     
     func isAutoDisplayPaused() -> Bool {
-        return autoDisplayPaused
+        autoDisplayPaused
     }
     
     func setAutoDisplayPaused(_ paused: Bool) {
@@ -253,7 +253,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     }
     
     private func processMergedMessages(appIsReady: Bool, mergeMessagesResult: MergeMessagesResult) -> Bool {
-        if appIsReady && !autoDisplayPaused {
+        if appIsReady, !autoDisplayPaused {
             processAndShowMessage(messagesMap: mergeMessagesResult.messagesMap)
         } else {
             messagesMap = mergeMessagesResult.messagesMap

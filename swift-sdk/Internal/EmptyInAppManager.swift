@@ -46,7 +46,7 @@ class EmptyInAppManager: IterableInternalInAppManagerProtocol {
         false
     }
     
-    func setAutoDisplayPaused(_ paused: Bool) {}
+    func setAutoDisplayPaused(_: Bool) {}
     
     func getUnreadInboxMessagesCount() -> Int {
         0
