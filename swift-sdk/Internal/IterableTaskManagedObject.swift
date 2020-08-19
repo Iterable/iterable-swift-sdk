@@ -13,7 +13,7 @@ public class IterableTaskManagedObject: NSManagedObject {}
 
 extension IterableTaskManagedObject {
     @nonobjc public class func fetchRequest() -> NSFetchRequest<IterableTaskManagedObject> {
-        NSFetchRequest<IterableTaskManagedObject>(entityName: PersistenceConst.EntityName.task)
+        NSFetchRequest<IterableTaskManagedObject>(entityName: PersistenceConst.Entity.Task.name)
     }
     
     @NSManaged public var attempts: Int64

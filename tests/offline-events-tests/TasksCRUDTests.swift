@@ -81,6 +81,45 @@ class TasksCRUDTests: XCTestCase {
         XCTAssertNil(try newContext.findTask(withId: taskId))
     }
     
+    func testFindNextTask() throws {
+        let context = persistenceProvider.newBackgroundContext()
+        try context.deleteAllTasks()
+        try context.save()
+        
+        let tasks = try context.findAllTasks()
+        XCTAssertEqual(tasks.count, 0)
+
+        let date1 = Date()
+        let date2 = date1.advanced(by: 100)
+        let date3 = date2.advanced(by: 100)
+
+        var dates = [date1, date2, date3]
+        dates.shuffle()
+        
+        for date in dates {
+            dateProvider.currentDate = date
+            let task = IterableTask(id: IterableUtil.generateUUID(),
+                                    type: .apiCall,
+                                    scheduledAt: date,
+                                    requestedAt: date)
+            try context.create(task: task)
+        }
+
+        try context.save()
+        
+        var scheduledAtValues = [Date]()
+        while let nextTask = try context.nextTask() {
+            scheduledAtValues.append(nextTask.scheduledAt)
+            try context.delete(task: nextTask)
+            try context.save()
+        }
+        
+        XCTAssertEqual(scheduledAtValues.count, 3)
+        XCTAssertTrue(scheduledAtValues.isAscending())
+        let allTasks = try context.findAllTasks()
+        XCTAssertEqual(allTasks.count, 0)
+    }
+    
     func testFindAll() throws {
         let context = persistenceProvider.newBackgroundContext()
         try context.deleteAllTasks()
@@ -100,10 +139,22 @@ class TasksCRUDTests: XCTestCase {
         try context.save()
     }
     
+    private let dateProvider = MockDateProvider()
+    
     private lazy var persistenceProvider: IterablePersistenceContextProvider = {
-        let provider = CoreDataPersistenceContextProvider()
+        let provider = CoreDataPersistenceContextProvider(dateProvider: dateProvider)
         try! provider.mainQueueContext().deleteAllTasks()
         try! provider.mainQueueContext().save()
         return provider
     }()
+}
+
+extension Array where Element: Comparable {
+    func isAscending() -> Bool {
+        return zip(self, self.dropFirst()).allSatisfy(<=)
+    }
+
+    func isDescending() -> Bool {
+        return zip(self, self.dropFirst()).allSatisfy(>=)
+    }
 }

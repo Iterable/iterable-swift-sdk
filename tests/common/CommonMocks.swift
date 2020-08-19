@@ -9,6 +9,10 @@ import WebKit
 
 @testable import IterableSDK
 
+class MockDateProvider: DateProviderProtocol {
+    var currentDate = Date()
+}
+
 @available(iOS 10.0, *)
 struct MockNotificationResponse: NotificationResponseProtocol {
     let userInfo: [AnyHashable: Any]
