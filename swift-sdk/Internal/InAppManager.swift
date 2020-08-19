@@ -623,7 +623,7 @@ extension InAppManager: InAppNotifiable {
 
 extension InAppManager: InAppDisplayChecker {
     func isOkToShowNow(message: IterableInAppMessage) -> Bool {
-        guard !autoDisplayPaused else {
+        guard !isAutoDisplayPaused() else {
             ITBInfo("automatic in-app display has been paused")
             return false
         }
