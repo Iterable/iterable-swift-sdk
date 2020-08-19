@@ -6,49 +6,73 @@
 import Foundation
 
 struct IterableTask {
+    static let currentVersion = 1
+    
     let id: String
-    let created: Date?
-    let modified: Date?
-    let processor: String
+    let version: Int
+    let createdAt: Date?
+    let modifiedAt: Date?
+    let type: IterableTaskType
     let attempts: Int
-    let lastAttempt: Date?
+    let lastAttemptedAt: Date?
     let processing: Bool
-    let scheduleTime: Date?
+    let scheduledAt: Date
     let data: Data?
+    let failed: Bool
+    let blocking: Bool
+    let requestedAt: Date
+    let taskFailureData: Data?
     
     init(id: String,
-         created: Date? = nil,
-         modified: Date? = nil,
-         processor: String,
+         version: Int = IterableTask.currentVersion,
+         createdAt: Date? = nil,
+         modifiedAt: Date? = nil,
+         type: IterableTaskType,
          attempts: Int = 0,
-         lastAttempt: Date? = nil,
+         lastAttemptedAt: Date? = nil,
          processing: Bool = false,
-         scheduleTime: Date? = nil,
-         data: Data? = nil) {
+         scheduledAt: Date,
+         data: Data? = nil,
+         failed: Bool = false,
+         blocking: Bool = true,
+         requestedAt: Date,
+         taskFailureData: Data? = nil) {
         self.id = id
-        self.created = created
-        self.modified = modified
-        self.processor = processor
+        self.version = version
+        self.createdAt = createdAt
+        self.modifiedAt = modifiedAt
+        self.type = type
         self.attempts = attempts
-        self.lastAttempt = lastAttempt
+        self.lastAttemptedAt = lastAttemptedAt
         self.processing = processing
-        self.scheduleTime = scheduleTime
+        self.scheduledAt = scheduledAt
         self.data = data
+        self.failed = failed
+        self.blocking = blocking
+        self.requestedAt = requestedAt
+        self.taskFailureData = taskFailureData
     }
     
     func updated(attempts: Int? = nil,
-                 lastAttempt: Date? = nil,
+                 lastAttemptedAt: Date? = nil,
                  processing: Bool? = nil,
-                 scheduleTime: Date? = nil,
-                 data: Data? = nil) -> IterableTask {
+                 scheduledAt: Date? = nil,
+                 data: Data? = nil,
+                 failed: Bool? = nil,
+                 taskFailureData: Data? = nil) -> IterableTask {
         IterableTask(id: id,
-                     created: created,
-                     modified: modified,
-                     processor: processor,
+                     version: version,
+                     createdAt: createdAt,
+                     modifiedAt: modifiedAt,
+                     type: type,
                      attempts: attempts ?? self.attempts,
-                     lastAttempt: lastAttempt ?? self.lastAttempt,
+                     lastAttemptedAt: lastAttemptedAt ?? self.lastAttemptedAt,
                      processing: processing ?? self.processing,
-                     scheduleTime: scheduleTime ?? self.scheduleTime,
-                     data: data ?? self.data)
+                     scheduledAt: scheduledAt ?? self.scheduledAt,
+                     data: data ?? self.data,
+                     failed: failed ?? false,
+                     blocking: blocking,
+                     requestedAt: requestedAt,
+                     taskFailureData: taskFailureData ?? self.taskFailureData)
     }
 }

@@ -30,7 +30,7 @@ protocol IterablePersistenceContext {
     func delete(task: IterableTask) throws
     
     @discardableResult
-    func createTask(id: String, processor: String) throws -> IterableTask
+    func createTask(id: String, type: IterableTaskType) throws -> IterableTask
     
     func findTask(withId id: String) throws -> IterableTask?
     

@@ -69,7 +69,7 @@ struct CoreDataPersistenceContext: IterablePersistenceContext {
         }
         
         PersistenceHelper.copy(from: task, to: taskManagedObject)
-        taskManagedObject.created = dateProvider.currentDate
+        taskManagedObject.createdAt = dateProvider.currentDate
         return PersistenceHelper.task(from: taskManagedObject)
     }
     
@@ -79,7 +79,7 @@ struct CoreDataPersistenceContext: IterablePersistenceContext {
         }
         
         PersistenceHelper.copy(from: task, to: taskManagedObject)
-        taskManagedObject.modified = dateProvider.currentDate
+        taskManagedObject.modifiedAt = dateProvider.currentDate
         return PersistenceHelper.task(from: taskManagedObject)
     }
     
@@ -87,8 +87,8 @@ struct CoreDataPersistenceContext: IterablePersistenceContext {
         try deleteTask(withId: task.id)
     }
     
-    func createTask(id: String, processor: String) throws -> IterableTask {
-        try create(task: IterableTask(id: id, processor: processor))
+    func createTask(id: String, type: IterableTaskType) throws -> IterableTask {
+        try create(task: IterableTask(id: id, type: type, scheduledAt: dateProvider.currentDate, requestedAt: dateProvider.currentDate))
     }
     
     func findTask(withId id: String) throws -> IterableTask? {
