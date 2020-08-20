@@ -54,7 +54,7 @@ Support policies:
 
 - Iterable's [Mobile SDK Support Policy](https://support.iterable.com/hc/articles/360046136171)
 - Iterable's [iOS SDK Deprecation and End-of-Life Schedule](https://support.iterable.com/hc/articles/360027798391#deprecation-and-end-of-life-schedule)
-- Iterable's [Beta Mobile SDK Terms of Service](https://support.iterable.com/hc/articles/360034753412)
+- Iterable's [Beta Mobile SDK Disclaimer](https://support.iterable.com/hc/articles/360034753412)
 
 Troubleshooting:
 
