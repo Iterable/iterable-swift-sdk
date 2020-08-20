@@ -16,6 +16,14 @@ class EmptyInAppManager: IterableInternalInAppManagerProtocol {
         return nil
     }
     
+    var isAutoDisplayPaused: Bool {
+        get {
+            false
+        }
+        
+        set {}
+    }
+    
     func getMessages() -> [IterableInAppMessage] {
         return []
     }

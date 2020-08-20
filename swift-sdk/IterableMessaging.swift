@@ -15,14 +15,19 @@ import UIKit
 }
 
 @objc public protocol IterableInAppManagerProtocol {
+    /// Turn on/off automatic displaying of in-apps
+    /// - remark: the default value is `false`
+    /// - remark: if auto displaying is turned on, the SDK will also immediately retrieve and process in-apps
+    var isAutoDisplayPaused: Bool { get set }
+    
     /// - returns: A list of all in-app messages
-    @objc(getMessages) func getMessages() -> [IterableInAppMessage]
+    @objc func getMessages() -> [IterableInAppMessage]
     
     /// - returns: A list of all inbox messages
-    @objc(getInboxMessages) func getInboxMessages() -> [IterableInAppMessage]
+    @objc func getInboxMessages() -> [IterableInAppMessage]
     
     /// - returns: A count of unread inbox messages
-    @objc(getUnreadInboxMessagesCount) func getUnreadInboxMessagesCount() -> Int
+    @objc func getUnreadInboxMessagesCount() -> Int
     
     /// - parameter message: The message to show.
     @objc(showMessage:) func show(message: IterableInAppMessage)
