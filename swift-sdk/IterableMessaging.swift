@@ -15,6 +15,11 @@ import UIKit
 }
 
 @objc public protocol IterableInAppManagerProtocol {
+    /// Turn on/off automatic displaying of in-apps
+    /// - remark: the default value is `false`
+    /// - remark: if auto displaying is turned on, the SDK will also immediately retrieve and process in-apps
+    var isAutoDisplayPaused: Bool { get set }
+    
     /// - returns: A list of all in-app messages
     @objc func getMessages() -> [IterableInAppMessage]
     
@@ -52,13 +57,6 @@ import UIKit
     /// - parameter id: The id of the message
     /// - returns: IterableInAppMessage with the id, if it exists.
     @objc(getMessageWithId:) func getMessage(withId id: String) -> IterableInAppMessage?
-    
-    /// - returns: the status of auto displaying in-apps
-    @objc func isAutoDisplayPaused() -> Bool
-    
-    /// - parameter paused: turn on/off auto displaying of in-apps
-    /// - remark: if auto displaying is turned on, the SDK will also immediately retrieve and process in-apps
-    @objc func setAutoDisplayPaused(_ paused: Bool)
 }
 
 /// Iterable Notification names

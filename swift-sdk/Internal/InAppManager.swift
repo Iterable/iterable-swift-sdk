@@ -83,6 +83,20 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     
     // MARK: - IterableInAppManagerProtocol
     
+    var isAutoDisplayPaused: Bool {
+        get {
+            autoDisplayPaused
+        }
+        
+        set {
+            autoDisplayPaused = newValue
+            
+            if !autoDisplayPaused {
+                _ = scheduleSync()
+            }
+        }
+    }
+    
     func getMessages() -> [IterableInAppMessage] {
         ITBInfo()
         
@@ -142,18 +156,6 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     
     func getMessage(withId id: String) -> IterableInAppMessage? {
         messagesMap[id]
-    }
-    
-    func isAutoDisplayPaused() -> Bool {
-        autoDisplayPaused
-    }
-    
-    func setAutoDisplayPaused(_ paused: Bool) {
-        autoDisplayPaused = paused
-        
-        if !autoDisplayPaused {
-            _ = scheduleSync()
-        }
     }
     
     // MARK: - IterableInternalInAppManagerProtocol
@@ -623,7 +625,7 @@ extension InAppManager: InAppNotifiable {
 
 extension InAppManager: InAppDisplayChecker {
     func isOkToShowNow(message: IterableInAppMessage) -> Bool {
-        guard !isAutoDisplayPaused() else {
+        guard !isAutoDisplayPaused else {
             ITBInfo("automatic in-app display has been paused")
             return false
         }

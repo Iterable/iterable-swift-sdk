@@ -289,12 +289,12 @@ class InAppTests: XCTestCase {
         )
         
         // verify the default value of auto displaying
-        XCTAssertFalse(internalAPI.inAppManager.isAutoDisplayPaused())
+        XCTAssertFalse(internalAPI.inAppManager.isAutoDisplayPaused)
         
-        internalAPI.inAppManager.setAutoDisplayPaused(true)
+        internalAPI.inAppManager.isAutoDisplayPaused = true
         
         // verify that auto display has been set to true
-        XCTAssertTrue(internalAPI.inAppManager.isAutoDisplayPaused())
+        XCTAssertTrue(internalAPI.inAppManager.isAutoDisplayPaused)
         
         // the fetcher normally shows the first one, but here, it shouldn't with auto displaying off
         mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: [getEmptyInAppMessage()]).onSuccess { messageCount in
@@ -317,7 +317,7 @@ class InAppTests: XCTestCase {
             inAppFetcher: mockInAppFetcher
         )
         
-        internalAPI.inAppManager.setAutoDisplayPaused(true)
+        internalAPI.inAppManager.isAutoDisplayPaused = true
         
         mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: [getEmptyInAppMessage()]).onSuccess { messageCount in
             XCTAssertEqual(messageCount, 1)
@@ -327,14 +327,14 @@ class InAppTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
         
-        internalAPI.inAppManager.setAutoDisplayPaused(false)
+        internalAPI.inAppManager.isAutoDisplayPaused = false
         
         mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: [getEmptyInAppMessage()]).onSuccess { messageCount in
             XCTAssertEqual(messageCount, 0)
-
+            
             expectation2.fulfill()
         }
-
+        
         wait(for: [expectation2], timeout: testExpectationTimeoutForInverted)
     }
     

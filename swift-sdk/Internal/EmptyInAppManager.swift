@@ -16,6 +16,14 @@ class EmptyInAppManager: IterableInternalInAppManagerProtocol {
         return nil
     }
     
+    var isAutoDisplayPaused: Bool {
+        get {
+            false
+        }
+        
+        set {}
+    }
+    
     func getMessages() -> [IterableInAppMessage] {
         []
     }
@@ -41,12 +49,6 @@ class EmptyInAppManager: IterableInternalInAppManagerProtocol {
     func getMessage(withId _: String) -> IterableInAppMessage? {
         nil
     }
-    
-    func isAutoDisplayPaused() -> Bool {
-        false
-    }
-    
-    func setAutoDisplayPaused(_: Bool) {}
     
     func getUnreadInboxMessagesCount() -> Int {
         0
