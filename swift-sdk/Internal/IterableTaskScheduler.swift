@@ -6,25 +6,40 @@
 import Foundation
 
 @available(iOS 10.0, *)
-struct IterableTaskScheduler {
-    // TODO: @tqm Use DateProvider
+class IterableTaskScheduler {
+    // TODO: @tqm Move to `DependencyContainer` after we remove iOS 9 support
+    init(persistenceContextProvider: IterablePersistenceContextProvider = CoreDataPersistenceContextProvider(),
+         notificationCenter: NotificationCenterProtocol = NotificationCenter.default,
+         dateProvider: DateProviderProtocol = SystemDateProvider()) {
+        self.persistenceContextProvider = persistenceContextProvider
+        self.notificationCenter = notificationCenter
+        self.dateProvider = dateProvider
+    }
+    
     func schedule(apiCallRequest: IterableAPICallRequest,
-                  context: IterableTaskContext,
-                  scheduledAt: Date = Date()) throws -> String {
-        // persist data
+                  context: IterableTaskContext = IterableTaskContext(blocking: true),
+                  scheduledAt: Date? = nil) throws -> String {
+        ITBInfo()
         let taskId = IterableUtil.generateUUID()
         let data = try JSONEncoder().encode(apiCallRequest)
 
-        let persistenceContext = persistenceProvider.newBackgroundContext()
         try persistenceContext.create(task: IterableTask(id: taskId,
                                                          type: .apiCall,
-                                                         scheduledAt: scheduledAt,
+                                                         scheduledAt: scheduledAt ?? dateProvider.currentDate,
                                                          data: data,
-                                                         requestedAt: Date()))
+                                                         requestedAt: dateProvider.currentDate))
         try persistenceContext.save()
 
+        notificationCenter.post(name: .iterableTaskScheduled, object: self, userInfo: nil)
+        
         return taskId
     }
     
-    private let persistenceProvider: IterablePersistenceContextProvider = CoreDataPersistenceContextProvider()
+    private let persistenceContextProvider: IterablePersistenceContextProvider
+    private let notificationCenter: NotificationCenterProtocol
+    private let dateProvider: DateProviderProtocol
+
+    private lazy var persistenceContext: IterablePersistenceContext = {
+        return persistenceContextProvider.newBackgroundContext()
+    }()
 }

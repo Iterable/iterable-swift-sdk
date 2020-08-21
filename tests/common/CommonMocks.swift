@@ -360,21 +360,22 @@ class MockNotificationCenter: NotificationCenterProtocol {
     
     func removeObserver(_: Any) {}
     
-    func post(name: Notification.Name, object _: Any?, userInfo _: [AnyHashable: Any]?) {
+    func post(name: Notification.Name, object: Any?, userInfo: [AnyHashable: Any]?) {
         _ = observers.filter { $0.notificationName == name }.map {
-            _ = $0.observer.perform($0.selector, with: Notification(name: name))
+            let notification = Notification(name: name, object: object, userInfo: userInfo)
+            _ = $0.observer.perform($0.selector, with: notification)
         }
     }
     
-    func addCallback(forNotification notification: Notification.Name, callback: @escaping () -> Void) {
+    func addCallback(forNotification notification: Notification.Name, callback: @escaping (Notification) -> Void) {
         class CallbackClass: NSObject {
-            let callback: () -> Void
-            init(callback: @escaping () -> Void) {
+            let callback: (Notification) -> Void
+            init(callback: @escaping (Notification) -> Void) {
                 self.callback = callback
             }
             
-            @objc func onNotification(notification _: Notification) {
-                callback()
+            @objc func onNotification(notification: Notification) {
+                callback(notification)
             }
         }
         

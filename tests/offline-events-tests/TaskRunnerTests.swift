@@ -9,32 +9,120 @@ import XCTest
 
 class TaskRunnerTests: XCTestCase {
     override func setUpWithError() throws {
-        super.setUp()
+        try super.setUpWithError()
         
-        try persistenceContext.deleteAllTasks()
-        try persistenceContext.save()
-
-        taskExecutor = IterableTaskRunner(networkSession: MockNetworkSession())
-        try taskExecutor.start()
+        IterableLogUtil.sharedInstance = IterableLogUtil(dateProvider: SystemDateProvider(),
+                                                         logDelegate: DefaultLogDelegate())
+        try! persistenceContextProvider.mainQueueContext().deleteAllTasks()
+        try! persistenceContextProvider.mainQueueContext().save()
     }
     
     override func tearDownWithError() throws {
-        try taskExecutor.stop()
-        Thread.sleep(forTimeInterval: 2.0)
+        try super.tearDownWithError()
     }
     
-    func testTrackEvent() throws {
-        IterableLogUtil.sharedInstance = IterableLogUtil(dateProvider: SystemDateProvider(),
-                                                         logDelegate: DefaultLogDelegate())
+    func testMultipleTasksInSequence() throws {
         let expectation1 = expectation(description: #function)
+        expectation1.expectedFulfillmentCount = 3
+        
+        var scheduledTaskIds = [String]()
+        var taskIds = [String]()
+        let notificationCenter = MockNotificationCenter()
+        notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithSuccess) { notification in
+            let taskSendRequestValue = IterableNotificationUtil.notificationToTaskSendRequestValue(notification)!
+            taskIds.append(taskSendRequestValue.taskId)
+            expectation1.fulfill()
+        }
+
+        let taskRunner = IterableTaskRunner(networkSession: MockNetworkSession(),
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 0.5)
+        taskRunner.start()
+
+        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter))
+        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter))
+        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter))
+
+        wait(for: [expectation1], timeout: 15.0)
+        XCTAssertEqual(taskIds, scheduledTaskIds)
+
+        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 0)
+        taskRunner.stop()
+    }
+
+    func testFailureWithRetry() throws {
+        let networkError = IterableError.general(description: "The Internet connection appears to be offline.")
+        let networkSession = MockNetworkSession(statusCode: 0, data: nil, error: networkError)
+
+        var scheduledTaskIds = [String]()
+        var retryTaskIds = [String]()
+        let notificationCenter = MockNotificationCenter()
+        notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithRetry) { notification in
+            let taskSendRequestError = IterableNotificationUtil.notificationToTaskSendRequestError(notification)!
+            if !retryTaskIds.contains(taskSendRequestError.taskId) {
+                retryTaskIds.append(taskSendRequestError.taskId)
+            }
+        }
+
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 1.0)
+        taskRunner.start()
+
+        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter))
+        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter))
+        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter))
+
+        let predicate = NSPredicate { _, _ in
+            return retryTaskIds.count == 1
+        }
+        let expectation2 = expectation(for: predicate, evaluatedWith: nil, handler: nil)
+        wait(for: [expectation2], timeout: 5.0)
+        XCTAssertEqual(scheduledTaskIds[0], retryTaskIds[0])
+        
+        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 3)
+        taskRunner.stop()
+    }
+
+    func testFailureWithNoRetry() throws {
+        let networkSession = MockNetworkSession(statusCode: 401, data: nil, error: nil)
+
+        let expectation1 = expectation(description: #function)
+        expectation1.expectedFulfillmentCount = 3
+
+        var scheduledTaskIds = [String]()
+        var failedTaskIds = [String]()
+        let notificationCenter = MockNotificationCenter()
+        notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithNoRetry) { notification in
+            let taskSendRequestError = IterableNotificationUtil.notificationToTaskSendRequestError(notification)!
+            failedTaskIds.append(taskSendRequestError.taskId)
+            expectation1.fulfill()
+        }
+
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 0.5)
+        taskRunner.start()
+
+        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter))
+        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter))
+        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter))
+
+        wait(for: [expectation1], timeout: 15.0)
+        XCTAssertEqual(failedTaskIds, scheduledTaskIds)
+
+        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 0)
+        taskRunner.stop()
+    }
+    
+    private func scheduleSampleTask(notificationCenter: NotificationCenterProtocol) throws -> String {
         let apiKey = "zee-api-key"
         let eventName = "CustomEvent1"
         let dataFields = ["var1": "val1", "var2": "val2"]
-
+        
         let requestCreator = RequestCreator(apiKey: apiKey, auth: auth, deviceMetadata: deviceMetadata)
         guard case let Result.success(trackEventRequest) = requestCreator.createTrackEventRequest(eventName, dataFields: dataFields) else {
-            XCTFail("Could not create trackEvent request")
-            return
+            throw IterableError.general(description: "Could not create trackEvent request")
         }
         
         let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
@@ -42,31 +130,22 @@ class TaskRunnerTests: XCTestCase {
                                                     auth: auth,
                                                     deviceMetadata: deviceMetadata,
                                                     iterableRequest: trackEventRequest)
-
-        do {
-            let taskId = try IterableTaskScheduler().schedule(apiCallRequest: apiCallRequest,
-                                                              context: IterableTaskContext(blocking: true))
-            XCTAssertNotNil(taskId)
-            expectation1.fulfill()
-        } catch let error {
-            ITBError(error.localizedDescription)
-            XCTFail(error.localizedDescription)
-        }
-
-        Thread.sleep(forTimeInterval: 5.0)
-        wait(for: [expectation1], timeout: 1000.0)
+        
+        return try IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                         notificationCenter: notificationCenter,
+                                         dateProvider: dateProvider).schedule(apiCallRequest: apiCallRequest)
     }
     
     private let deviceMetadata = DeviceMetadata(deviceId: IterableUtil.generateUUID(),
                                                 platform: JsonValue.iOS.jsonStringValue,
                                                 appPackageName: Bundle.main.appPackageName ?? "")
     
-    private lazy var persistenceContext: IterablePersistenceContext = {
-        let provider = CoreDataPersistenceContextProvider()
-        return provider.mainQueueContext()
-    } ()
-    
-    private var taskExecutor: IterableTaskRunner!
+    private lazy var persistenceContextProvider: IterablePersistenceContextProvider = {
+        let provider = CoreDataPersistenceContextProvider(dateProvider: dateProvider)
+        return provider
+    }()
+
+    private let dateProvider = MockDateProvider()
 }
 
 extension TaskRunnerTests: AuthProvider {

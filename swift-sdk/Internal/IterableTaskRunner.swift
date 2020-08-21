@@ -6,71 +6,160 @@
 import Foundation
 
 @available(iOS 10.0, *)
-class IterableTaskRunner {
+class IterableTaskRunner: NSObject {
     // TODO: @tqm Move to `DependencyContainer` after we remove iOS 9 support
     init(networkSession: NetworkSessionProtocol = URLSession(configuration: .default),
-         persistenceContextProvider: IterablePersistenceContextProvider = CoreDataPersistenceContextProvider()) {
+         persistenceContextProvider: IterablePersistenceContextProvider = CoreDataPersistenceContextProvider(),
+         notificationCenter: NotificationCenterProtocol = NotificationCenter.default,
+         timeInterval: TimeInterval = 1.0 * 60) {
+        ITBInfo()
         self.networkSession = networkSession
         self.persistenceContextProvider = persistenceContextProvider
+        self.notificationCenter = notificationCenter
+        self.timeInterval = timeInterval
+
+        super.init()
+
+        self.notificationCenter.addObserver(self,
+                                            selector: #selector(onTaskScheduled(notification:)),
+                                            name: .iterableTaskScheduled,
+                                            object: nil)
     }
     
-    func start() throws {
+    func start() {
         ITBInfo()
-        shouldExecute = true
+        paused = false
+        run()
+    }
+    
+    func stop() {
+        ITBInfo()
+        paused = true
+        timer?.invalidate()
+    }
+    
+    @objc
+    private func onTaskScheduled(notification: Notification) {
+        ITBInfo()
+        if !running && !paused {
+            timer?.invalidate()
+            run()
+        }
+    }
+    
+    private func run() {
+        ITBInfo()
         persistenceContext.perform {
-            while self.shouldExecute {
-                try? self.execute()
-                Thread.sleep(forTimeInterval: 1.0)
+            self.processTasks().onSuccess { _ in
+                ITBInfo("done processing tasks")
+                self.running = false
+                self.scheduleNext()
             }
         }
     }
     
-    func stop() throws {
+    private func scheduleNext() {
         ITBInfo()
-        shouldExecute = false
-    }
-    
-    func execute() throws {
-        ITBInfo()
-        let tasks = try persistenceContext.findAllTasks()
-        ITBInfo("numTasks: \(tasks.count)")
-        for task in tasks {
-            try execute(task: task).wait()
+        if !self.paused {
+            DispatchQueue.global().async {
+                ITBInfo("scheduling timer")
+                let timer = Timer.scheduledTimer(withTimeInterval: self.timeInterval, repeats: false) { _ in
+                    self.run()
+                }
+                self.timer = timer
+                RunLoop.current.add(timer, forMode: .default)
+                RunLoop.current.run()
+            }
         }
     }
     
     @discardableResult
-    func execute(task: IterableTask) throws -> Future<Void, Never> {
-        ITBInfo("executing taskId: \(task.id)")
-        let result = Promise<Void, Never>()
-        let processor = IterableAPICallTaskProcessor(networkSession: networkSession)
-        try processor.process(task: task).onSuccess { taskResult in
-            switch taskResult {
-            case let .success(detail: detail):
-                ITBInfo("task: \(task.id) succeeded")
-                self.deleteTask(task: task)
-                if let successDetail = detail as? SendRequestValue {
-                    var userInfo = [AnyHashable: Any]()
-                    userInfo["taskId"] = task.id
-                    userInfo["sendRequestValue"] = successDetail
-                    NotificationCenter.default.post(name: .iterableTaskFinishedWithSuccess, object: self, userInfo: userInfo)
+    private func processTasks() -> Future<Void, Never> {
+        ITBInfo()
+        running = true
+        
+        guard !paused else {
+            ITBInfo("paused")
+            return Promise<Void, Never>(value: ())
+        }
+
+        if let task = try? persistenceContext.nextTask() {
+            return execute(task: task).flatMap { executionResult in
+                switch executionResult {
+                case .success, .failure, .error:
+                    self.deleteTask(task: task)
+                    return self.processTasks()
+                case .processing, .retry:
+                    return Promise<Void, Never>(value: ())
                 }
-            case let .failureWithNoRetry(detail: detail):
-                ITBInfo("task: \(task.id) failed with no retry.")
-                self.deleteTask(task: task)
-                if let failureDetail = detail as? SendRequestError {
-                    var userInfo = [AnyHashable: Any]()
-                    userInfo["taskId"] = task.id
-                    userInfo["sendRequestError"] = failureDetail
-                    NotificationCenter.default.post(name: .iterableTaskFinishedWithNoRetry, object: self, userInfo: userInfo)
-                }
-            case .failureWithRetry:
-                ITBInfo("task: \(task.id) processed with retry")
-                break
             }
-            result.resolve(with: ())
+        } else {
+            ITBInfo("No tasks to execute")
+            return Promise<Void, Never>(value: ())
+        }
+    }
+    
+    @discardableResult
+    private func execute(task: IterableTask) -> Future<TaskExecutionResult, Never> {
+        ITBInfo("executing taskId: \(task.id)")
+        guard task.processing == false else {
+            return Promise<TaskExecutionResult, Never>(value: .processing)
+        }
+
+        switch task.type {
+        case .apiCall:
+            let processor = IterableAPICallTaskProcessor(networkSession: networkSession)
+            return processAPICallTask(processor: processor, task: task)
+        }
+    }
+    
+    private func processAPICallTask(processor: IterableAPICallTaskProcessor,
+                                    task: IterableTask) -> Future<TaskExecutionResult, Never> {
+        ITBInfo()
+        let result = Promise<TaskExecutionResult, Never>()
+        let processor = IterableAPICallTaskProcessor(networkSession: networkSession)
+        do {
+            try processor.process(task: task).onSuccess { taskResult in
+                switch taskResult {
+                case let .success(detail: detail):
+                    ITBInfo("task: \(task.id) succeeded")
+                    if let successDetail = detail as? SendRequestValue {
+                        let userInfo = IterableNotificationUtil.sendRequestValueToUserInfo(successDetail, taskId: task.id)
+                        self.notificationCenter.post(name: .iterableTaskFinishedWithSuccess,
+                                                     object: self,
+                                                     userInfo: userInfo)
+                    }
+                    result.resolve(with: .success)
+                case let .failureWithNoRetry(detail: detail):
+                    ITBInfo("task: \(task.id) failed with no retry.")
+                    if let failureDetail = detail as? SendRequestError {
+                        let userInfo = IterableNotificationUtil.sendRequestErrorToUserInfo(failureDetail, taskId: task.id)
+                        self.notificationCenter.post(name: .iterableTaskFinishedWithNoRetry,
+                                                     object: self,
+                                                     userInfo: userInfo)
+                    }
+                    result.resolve(with: .failure)
+                case let .failureWithRetry(_, detail: detail):
+                    ITBInfo("task: \(task.id) processed with retry")
+                    if let failureDetail = detail as? SendRequestError {
+                        let userInfo = IterableNotificationUtil.sendRequestErrorToUserInfo(failureDetail, taskId: task.id)
+                        self.notificationCenter.post(name: .iterableTaskFinishedWithRetry,
+                                                     object: self,
+                                                     userInfo: userInfo)
+                    }
+                    result.resolve(with: .retry)
+                }
+            }
+        } catch let error {
+            ITBError("Error proessing task: \(task.id), message: \(error.localizedDescription)")
+            result.resolve(with: .error)
         }
         return result
+    }
+    
+    deinit {
+        ITBInfo()
+        notificationCenter.removeObserver(self)
     }
     
     private func deleteTask(task: IterableTask) {
@@ -81,10 +170,23 @@ class IterableTaskRunner {
             ITBError(error.localizedDescription)
         }
     }
-
-    private var shouldExecute = true
+    
+    private enum TaskExecutionResult {
+        case processing
+        case success
+        case failure
+        case retry
+        case error
+    }
+    
+    private var paused = false
     private let networkSession: NetworkSessionProtocol
     private let persistenceContextProvider: IterablePersistenceContextProvider
+    private let notificationCenter: NotificationCenterProtocol
+    private let timeInterval: TimeInterval
+    private var timer: Timer?
+    private var running = false
+    
     private lazy var persistenceContext: IterablePersistenceContext = {
         return persistenceContextProvider.newBackgroundContext()
     }()

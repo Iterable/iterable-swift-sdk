@@ -14,6 +14,16 @@ extension Array {
     }
 }
 
+extension Array where Element: Comparable {
+    func isAscending() -> Bool {
+        return zip(self, self.dropFirst()).allSatisfy(<=)
+    }
+
+    func isDescending() -> Bool {
+        return zip(self, self.dropFirst()).allSatisfy(>=)
+    }
+}
+
 extension Dictionary where Key == AnyHashable, Value == Any {
     func getValue(for key: JsonKey) -> Any? {
         self[key.jsonKey]
