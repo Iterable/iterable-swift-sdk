@@ -14,16 +14,10 @@ struct DirectCallRequestProcessor: IterableRequestProcessor {
                   notificationStateProvider: NotificationStateProviderProtocol,
                   onSuccess: OnSuccessHandler? = nil,
                   onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        // check notificationsEnabled then call register with enabled/not-enabled
-        notificationStateProvider.notificationsEnabled
-            .mapFailure(SendRequestError.from(error:))
-            .replaceError(with: false)
-            .flatMap { enabled in
-                self.register(registerTokenInfo: registerTokenInfo,
-                              notificationsEnabled: enabled,
-                              onSuccess: onSuccess,
-                              onFailure: onFailure)
-            }
+        self.register(registerTokenInfo: registerTokenInfo,
+                      notificationsEnabled: notificationStateProvider.notificationsEnabled,
+                      onSuccess: onSuccess,
+                      onFailure: onFailure)
     }
     
     @discardableResult

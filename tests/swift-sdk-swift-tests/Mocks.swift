@@ -11,12 +11,8 @@ import XCTest
 
 // Note: This is used only by swift tests. So can't put this in Common
 class MockNotificationStateProvider: NotificationStateProviderProtocol {
-    var notificationsEnabled: Promise<Bool, Error> {
-        let promise = Promise<Bool, Error>()
-        DispatchQueue.main.async {
-            promise.resolve(with: self.enabled)
-        }
-        return promise
+    var notificationsEnabled: Bool {
+        return enabled
     }
     
     func registerForRemoteNotifications() {

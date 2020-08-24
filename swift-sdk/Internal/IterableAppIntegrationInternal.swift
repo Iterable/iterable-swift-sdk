@@ -9,33 +9,35 @@ import UserNotifications
 
 // Returns whether notifications are enabled
 protocol NotificationStateProviderProtocol {
-    var notificationsEnabled: Promise<Bool, Error> { get }
+    var notificationsEnabled: Bool { get }
     
     func registerForRemoteNotifications()
 }
 
 struct SystemNotificationStateProvider: NotificationStateProviderProtocol {
-    var notificationsEnabled: Promise<Bool, Error> {
-        let result = Promise<Bool, Error>()
-        
+    var notificationsEnabled: Bool {
         if #available(iOS 10.0, *) {
-            UNUserNotificationCenter.current().getNotificationSettings { settings in
-                if settings.authorizationStatus == .authorized {
-                    result.resolve(with: true)
-                } else {
-                    result.resolve(with: false)
+            var notificationSettings: UNNotificationSettings?
+            let semasphore = DispatchSemaphore(value: 0)
+            
+            DispatchQueue.global().async {
+                UNUserNotificationCenter.current().getNotificationSettings { setttings in
+                    notificationSettings = setttings
+                    semasphore.signal()
                 }
             }
+            
+            semasphore.wait()
+            guard let authorizationStatus = notificationSettings?.authorizationStatus else { return false }
+            return authorizationStatus == .authorized
         } else {
             // Fallback on earlier versions
             if let currentSettings = UIApplication.shared.currentUserNotificationSettings, currentSettings.types != [] {
-                result.resolve(with: true)
+                return true
             } else {
-                result.resolve(with: false)
+                return false
             }
         }
-        
-        return result
     }
     
     func registerForRemoteNotifications() {
