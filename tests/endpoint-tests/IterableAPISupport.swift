@@ -81,10 +81,6 @@ class E2EDependencyContainer: DependencyContainerProtocol {
     func createInAppFetcher(apiClient: ApiClientProtocol) -> InAppFetcherProtocol {
         InAppFetcher(apiClient: apiClient)
     }
-    
-    func createRequestProcessor(apiClient: ApiClientProtocol) -> RequestProcessorProtocol {
-        DirectCallRequestProcessor(apiClient: apiClient)
-    }
 }
 
 extension IterableAPIInternal {

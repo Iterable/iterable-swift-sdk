@@ -7,8 +7,18 @@ import Foundation
 
 /// `IterableAPIinternal` will delegate all network related calls to this struct.
 struct OnlineRequestProcessor: RequestProcessorProtocol {
-    let apiClient: ApiClientProtocol!
-    
+    init(apiKey: String,
+         authProvider: AuthProvider,
+         endPoint: String,
+         networkSession: NetworkSessionProtocol,
+         deviceMetadata: DeviceMetadata) {
+        apiClient = ApiClient(apiKey: apiKey,
+                              authProvider: authProvider,
+                              endPoint: endPoint,
+                              networkSession: networkSession,
+                              deviceMetadata: deviceMetadata)
+    }
+
     @discardableResult
     func register(registerTokenInfo: RegisterTokenInfo,
                   notificationStateProvider: NotificationStateProviderProtocol,
@@ -40,9 +50,9 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                     onSuccess: OnSuccessHandler? = nil,
                     onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         OnlineRequestProcessor.call(successHandler: onSuccess,
-                                      andFailureHandler: onFailure,
-                                      withIdentifier: "updateUser",
-                                      forResult: apiClient.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects))
+                                    andFailureHandler: onFailure,
+                                    withIdentifier: "updateUser",
+                                    forResult: apiClient.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects))
     }
     
     @discardableResult
@@ -226,6 +236,8 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                                       withIdentifier: "trackInAppClick",
                                       forResult: apiClient.track(inAppClick: messageId, clickedUrl: clickedUrl))
     }
+    
+    private let apiClient: ApiClientProtocol
     
     @discardableResult
     private func register(registerTokenInfo: RegisterTokenInfo,
