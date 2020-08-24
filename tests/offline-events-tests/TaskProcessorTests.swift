@@ -37,8 +37,11 @@ class TaskProcessorTests: XCTestCase {
         
         // persist data
         let taskId = IterableUtil.generateUUID()
-        let taskProcessor = "APICallTaskProcessor"
-        try persistenceProvider.mainQueueContext().create(task: IterableTask(id: taskId, processor: taskProcessor, data: data))
+        try persistenceProvider.mainQueueContext().create(task: IterableTask(id: taskId,
+                                                                             type: .apiCall,
+                                                                             scheduledAt: Date(),
+                                                                             data: data,
+                                                                             requestedAt: Date()))
         try persistenceProvider.mainQueueContext().save()
         
         // load data
@@ -90,7 +93,7 @@ class TaskProcessorTests: XCTestCase {
         let expectation1 = expectation(description: #function)
         let task = try createSampleTask()!
         
-        let networkError = IterableError.general(description: "Network Unavailable")
+        let networkError = IterableError.general(description: "The Internet connection appears to be offline.")
         let networkSession = MockNetworkSession(statusCode: 0, data: nil, error: networkError)
         // process data
         let processor = IterableAPICallTaskProcessor(networkSession: networkSession)
@@ -165,8 +168,11 @@ class TaskProcessorTests: XCTestCase {
         
         // persist data
         let taskId = IterableUtil.generateUUID()
-        let taskProcessor = "APICallTaskProcessor"
-        try persistenceProvider.mainQueueContext().create(task: IterableTask(id: taskId, processor: taskProcessor, data: data))
+        try persistenceProvider.mainQueueContext().create(task: IterableTask(id: taskId,
+                                                                             type: .apiCall,
+                                                                             scheduledAt: Date(),
+                                                                             data: data,
+                                                                             requestedAt: Date()))
         try persistenceProvider.mainQueueContext().save()
 
         return try persistenceProvider.mainQueueContext().findTask(withId: taskId)

@@ -30,7 +30,21 @@ struct CoreDataUtil {
         request.predicate = createColumnsPredicate(columns: columns)
         return try context.fetch(request)
     }
-    
+
+    static func findSortedEntities<T: NSFetchRequestResult>(context: NSManagedObjectContext,
+                                                            entity: String,
+                                                            column: String,
+                                                            ascending: Bool,
+                                                            limit: Int) throws -> [T] {
+        
+        let sortDescriptor = NSSortDescriptor(key: column, ascending: ascending)
+        let request = NSFetchRequest<T>(entityName: entity)
+        request.sortDescriptors = [sortDescriptor]
+        request.fetchLimit = limit
+        
+        return try context.fetch(request)
+    }
+
     private static func createColumnsPredicate(columns: [String: Any]) -> NSPredicate {
         var subPredicates = [NSPredicate]()
         for (columnName, columnValue) in columns {

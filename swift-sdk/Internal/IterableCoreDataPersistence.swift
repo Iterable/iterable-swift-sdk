@@ -8,8 +8,16 @@ import Foundation
 
 enum PersistenceConst {
     static let dataModelFileName = "IterableDataModel"
-    enum EntityName {
-        static let task = "IterableTaskManagedObject"
+
+    enum Entity {
+        enum Task {
+            static let name = "IterableTaskManagedObject"
+            
+            enum Column {
+                static let id = "id"
+                static let scheduledAt = "scheduledAt"
+            }
+        }
     }
 }
 
@@ -69,7 +77,7 @@ struct CoreDataPersistenceContext: IterablePersistenceContext {
         }
         
         PersistenceHelper.copy(from: task, to: taskManagedObject)
-        taskManagedObject.created = dateProvider.currentDate
+        taskManagedObject.createdAt = dateProvider.currentDate
         return PersistenceHelper.task(from: taskManagedObject)
     }
     
@@ -79,7 +87,7 @@ struct CoreDataPersistenceContext: IterablePersistenceContext {
         }
         
         PersistenceHelper.copy(from: task, to: taskManagedObject)
-        taskManagedObject.modified = dateProvider.currentDate
+        taskManagedObject.modifiedAt = dateProvider.currentDate
         return PersistenceHelper.task(from: taskManagedObject)
     }
     
@@ -87,8 +95,17 @@ struct CoreDataPersistenceContext: IterablePersistenceContext {
         try deleteTask(withId: task.id)
     }
     
-    func createTask(id: String, processor: String) throws -> IterableTask {
-        try create(task: IterableTask(id: id, processor: processor))
+    func createTask(id: String, type: IterableTaskType) throws -> IterableTask {
+        try create(task: IterableTask(id: id, type: type, scheduledAt: dateProvider.currentDate, requestedAt: dateProvider.currentDate))
+    }
+    
+    func nextTask() throws -> IterableTask? {
+        let taskManagedObjects: [IterableTaskManagedObject] = try CoreDataUtil.findSortedEntities(context: managedObjectContext,
+                                                                                                  entity: PersistenceConst.Entity.Task.name,
+                                                                                                  column: PersistenceConst.Entity.Task.Column.scheduledAt,
+                                                                                                  ascending: true,
+                                                                                                  limit: 1)
+        return taskManagedObjects.first.map(PersistenceHelper.task(from:))
     }
     
     func findTask(withId id: String) throws -> IterableTask? {
@@ -106,13 +123,13 @@ struct CoreDataPersistenceContext: IterablePersistenceContext {
     }
     
     func findAllTasks() throws -> [IterableTask] {
-        let taskManagedObjects: [IterableTaskManagedObject] = try CoreDataUtil.findAll(context: managedObjectContext, entity: PersistenceConst.EntityName.task)
+        let taskManagedObjects: [IterableTaskManagedObject] = try CoreDataUtil.findAll(context: managedObjectContext, entity: PersistenceConst.Entity.Task.name)
         
         return taskManagedObjects.map(PersistenceHelper.task(from:))
     }
     
     func deleteAllTasks() throws {
-        let taskManagedObjects: [IterableTaskManagedObject] = try CoreDataUtil.findAll(context: managedObjectContext, entity: PersistenceConst.EntityName.task)
+        let taskManagedObjects: [IterableTaskManagedObject] = try CoreDataUtil.findAll(context: managedObjectContext, entity: PersistenceConst.Entity.Task.name)
         taskManagedObjects.forEach { managedObjectContext.delete($0) }
     }
     
@@ -120,14 +137,22 @@ struct CoreDataPersistenceContext: IterablePersistenceContext {
         try managedObjectContext.save()
     }
     
+    func perform(_ block: @escaping () -> Void) {
+        managedObjectContext.perform(block)
+    }
+    
+    func performAndWait(_ block: () -> Void) {
+        managedObjectContext.performAndWait(block)
+    }
+    
     private let managedObjectContext: NSManagedObjectContext
     private let dateProvider: DateProviderProtocol
     
     private func findTaskManagedObject(id: String) throws -> IterableTaskManagedObject? {
-        try CoreDataUtil.findEntitiyByColumn(context: managedObjectContext, entity: PersistenceConst.EntityName.task, columnName: "id", columnValue: id)
+        try CoreDataUtil.findEntitiyByColumn(context: managedObjectContext, entity: PersistenceConst.Entity.Task.name, columnName: PersistenceConst.Entity.Task.Column.id, columnValue: id)
     }
     
     private func createTaskManagedObject() -> IterableTaskManagedObject? {
-        CoreDataUtil.create(context: managedObjectContext, entity: PersistenceConst.EntityName.task)
+        CoreDataUtil.create(context: managedObjectContext, entity: PersistenceConst.Entity.Task.name)
     }
 }

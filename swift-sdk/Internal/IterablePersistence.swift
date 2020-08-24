@@ -30,17 +30,23 @@ protocol IterablePersistenceContext {
     func delete(task: IterableTask) throws
     
     @discardableResult
-    func createTask(id: String, processor: String) throws -> IterableTask
+    func createTask(id: String, type: IterableTaskType) throws -> IterableTask
     
     func findTask(withId id: String) throws -> IterableTask?
     
     func deleteTask(withId id: String) throws
+    
+    func nextTask() throws -> IterableTask?
     
     func findAllTasks() throws -> [IterableTask]
     
     func deleteAllTasks() throws
     
     func save() throws
+
+    func perform(_ block: @escaping () -> Void)
+
+    func performAndWait(_ block: () -> Void)
 }
 
 protocol IterablePersistenceContextProvider {

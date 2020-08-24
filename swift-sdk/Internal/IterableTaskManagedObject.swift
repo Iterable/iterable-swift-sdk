@@ -13,16 +13,21 @@ public class IterableTaskManagedObject: NSManagedObject {}
 
 extension IterableTaskManagedObject {
     @nonobjc public class func fetchRequest() -> NSFetchRequest<IterableTaskManagedObject> {
-        NSFetchRequest<IterableTaskManagedObject>(entityName: PersistenceConst.EntityName.task)
+        NSFetchRequest<IterableTaskManagedObject>(entityName: PersistenceConst.Entity.Task.name)
     }
     
     @NSManaged public var attempts: Int64
-    @NSManaged public var created: Date?
+    @NSManaged public var createdAt: Date?
+    @NSManaged public var modifiedAt: Date?
     @NSManaged public var data: Data?
-    @NSManaged public var id: String?
-    @NSManaged public var lastAttempt: Date?
-    @NSManaged public var modified: Date?
+    @NSManaged public var id: String
+    @NSManaged public var lastAttemptedAt: Date?
     @NSManaged public var processing: Bool
-    @NSManaged public var processor: String?
-    @NSManaged public var scheduleTime: Date?
+    @NSManaged public var type: String
+    @NSManaged public var scheduledAt: Date
+    @NSManaged public var failed: Bool
+    @NSManaged public var blocking: Bool
+    @NSManaged public var requestedAt: Date
+    @NSManaged public var taskFailureData: Data?
+    @NSManaged public var version: Int64
 }

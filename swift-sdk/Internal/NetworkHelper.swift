@@ -87,9 +87,11 @@ struct NetworkHelper {
     static func sendRequest(_ request: URLRequest,
                             usingSession networkSession: NetworkSessionProtocol) -> Future<SendRequestValue, SendRequestError> {
         #if NETWORK_DEBUG
+            let requestId = IterableUtil.generateUUID()
             print()
             print("====================================================>")
             print("sending request: \(request)")
+            print("requestId: \(requestId)")
             if let headers = request.allHTTPHeaderFields {
                 print("headers:")
                 print(headers)
@@ -111,15 +113,21 @@ struct NetworkHelper {
             
             switch result {
             case let .success(value):
+                #if NETWORK_DEBUG
+                print("request with requestId: \(requestId) successfully sent")
+                #endif
                 promise.resolve(with: value)
             case let .failure(error):
+                #if NETWORK_DEBUG
+                print("request with id: \(requestId) errored")
+                #endif
                 promise.reject(with: error)
             }
         }
         
         return promise
     }
-    
+
     static func createResultFromNetworkResponse(data: Data?,
                                                 response: URLResponse?,
                                                 error: Error?) -> Result<SendRequestValue, SendRequestError> {

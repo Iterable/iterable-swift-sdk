@@ -291,7 +291,7 @@ class InboxTests: XCTestCase {
         var callbackCount = 0
         let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
         let mockNotificationCenter = MockNotificationCenter()
-        mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) {
+        mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) { _ in
             let messages = internalAPI.inAppManager.getInboxMessages()
             if callbackCount == 0 {
                 XCTAssertEqual(messages.count, 1)
@@ -389,7 +389,7 @@ class InboxTests: XCTestCase {
         let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
         
         let mockNotificationCenter = MockNotificationCenter()
-        mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) {
+        mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) { _ in
             DispatchQueue.main.async {
                 let messages = internalAPI.inAppManager.getInboxMessages()
                 XCTAssertEqual(messages.count, 1)
@@ -438,7 +438,7 @@ class InboxTests: XCTestCase {
         
         var inboxCallbackCount = 0
         let mockNotificationCenter = MockNotificationCenter()
-        mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) {
+        mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) { _ in
             DispatchQueue.main.async {
                 let messages = internalAPI.inAppManager.getInboxMessages()
                 if inboxCallbackCount == 0 {
@@ -637,7 +637,7 @@ class InboxTests: XCTestCase {
             XCTAssertEqual(internalAPI.inAppManager.getMessages().count, 1)
             expectation1.fulfill()
             
-            mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) {
+            mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) { _ in
                 expectation2.fulfill()
             }
             

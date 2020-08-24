@@ -9,6 +9,7 @@ struct IterableAPICallTaskProcessor: IterableTaskProcessor {
     let networkSession: NetworkSessionProtocol
     
     func process(task: IterableTask) throws -> Future<IterableTaskResult, IterableTaskError> {
+        ITBInfo()
         guard let data = task.data else {
             return IterableTaskError.createErroredFuture(reason: "expecting data")
         }
@@ -20,20 +21,17 @@ struct IterableAPICallTaskProcessor: IterableTaskProcessor {
         
         let result = Promise<IterableTaskResult, IterableTaskError>()
         NetworkHelper.sendRequest(urlRequest, usingSession: networkSession)
-            .onSuccess { json in
-                result.resolve(with: .success(detail: APICallTaskSuccessDetail(json: json)))
+            .onSuccess { sendRequestValue in
+                ITBInfo("Task finished successfully")
+                result.resolve(with: .success(detail: sendRequestValue))
             }
             .onError { sendRequestError in
                 if IterableAPICallTaskProcessor.isNetworkUnavailable(sendRequestError: sendRequestError) {
-                    let failureDetail = APICallTaskFailureDetail(httpStatusCode: sendRequestError.httpStatusCode,
-                                                                 reason: sendRequestError.reason,
-                                                                 data: sendRequestError.data)
-                    result.resolve(with: .failureWithRetry(retryAfter: nil, detail: failureDetail))
+                    ITBInfo("Network is unavailable")
+                    result.resolve(with: .failureWithRetry(retryAfter: nil, detail: sendRequestError))
                 } else {
-                    let failureDetail = APICallTaskFailureDetail(httpStatusCode: sendRequestError.httpStatusCode,
-                                                                 reason: sendRequestError.reason,
-                                                                 data: sendRequestError.data)
-                    result.resolve(with: .failureWithNoRetry(detail: failureDetail))
+                    ITBInfo("Unrecoverable error")
+                    result.resolve(with: .failureWithNoRetry(detail: sendRequestError))
                 }
             }
         
@@ -41,8 +39,8 @@ struct IterableAPICallTaskProcessor: IterableTaskProcessor {
     }
     
     private static func isNetworkUnavailable(sendRequestError: SendRequestError) -> Bool {
-        if let originalError = sendRequestError.originalError as? LocalizedError {
-            return originalError.localizedDescription.lowercased().contains("unavailable")
+        if let originalError = sendRequestError.originalError {
+            return originalError.localizedDescription.lowercased().contains("offline")
         } else {
             return false
         }

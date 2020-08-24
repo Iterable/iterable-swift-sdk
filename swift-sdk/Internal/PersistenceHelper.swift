@@ -7,26 +7,36 @@ import Foundation
 
 struct PersistenceHelper {
     static func task(from: IterableTaskManagedObject) -> IterableTask {
-        IterableTask(id: from.id!,
-                     created: from.created,
-                     modified: from.modified,
-                     processor: from.processor!,
+        IterableTask(id: from.id,
+                     version: Int(from.version),
+                     createdAt: from.createdAt,
+                     modifiedAt: from.modifiedAt,
+                     type: IterableTaskType(rawValue: from.type) ?? .apiCall,
                      attempts: Int(from.attempts),
-                     lastAttempt: from.lastAttempt,
+                     lastAttemptedAt: from.lastAttemptedAt,
                      processing: from.processing,
-                     scheduleTime: from.scheduleTime,
-                     data: from.data)
+                     scheduledAt: from.scheduledAt,
+                     data: from.data,
+                     failed: from.failed,
+                     blocking: from.blocking,
+                     requestedAt: from.requestedAt,
+                     taskFailureData: from.taskFailureData)
     }
     
     static func copy(from: IterableTask, to: IterableTaskManagedObject) {
         to.id = from.id
-        to.created = from.created
-        to.modified = from.modified
-        to.processor = from.processor
+        to.version = Int64(from.version)
+        to.createdAt = from.createdAt
+        to.modifiedAt = from.modifiedAt
+        to.type = from.type.rawValue
         to.attempts = Int64(from.attempts)
-        to.lastAttempt = from.lastAttempt
+        to.lastAttemptedAt = from.lastAttemptedAt
         to.processing = from.processing
-        to.scheduleTime = from.scheduleTime
+        to.scheduledAt = from.scheduledAt
         to.data = from.data
+        to.failed = from.failed
+        to.blocking = from.blocking
+        to.requestedAt = from.requestedAt
+        to.taskFailureData = from.taskFailureData
     }
 }

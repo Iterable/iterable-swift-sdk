@@ -1205,7 +1205,7 @@ class InAppTests: XCTestCase {
         """.toJsonDict()
         
         let mockNotificationCenter = MockNotificationCenter()
-        mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) {
+        mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) { _ in
             expectation1.fulfill()
         }
         
