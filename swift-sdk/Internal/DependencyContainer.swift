@@ -45,7 +45,7 @@ extension DependencyContainerProtocol {
 
 struct DependencyContainer: DependencyContainerProtocol {
     func createRequestProcessor(apiClient: ApiClientProtocol) -> RequestProcessorProtocol {
-        DirectCallRequestProcessor(apiClient: apiClient)
+        OnlineRequestProcessor(apiClient: apiClient)
     }
     
     func createInAppFetcher(apiClient: ApiClientProtocol) -> InAppFetcherProtocol {

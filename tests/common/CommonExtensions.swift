@@ -111,7 +111,7 @@ class MockDependencyContainer: DependencyContainerProtocol {
     }
 
     func createRequestProcessor(apiClient: ApiClientProtocol) -> RequestProcessorProtocol {
-        DirectCallRequestProcessor(apiClient: apiClient)
+        OnlineRequestProcessor(apiClient: apiClient)
     }
 }
 

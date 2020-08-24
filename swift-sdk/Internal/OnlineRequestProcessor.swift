@@ -6,7 +6,7 @@
 import Foundation
 
 /// `IterableAPIinternal` will delegate all network related calls to this struct.
-struct DirectCallRequestProcessor: RequestProcessorProtocol {
+struct OnlineRequestProcessor: RequestProcessorProtocol {
     let apiClient: ApiClientProtocol!
     
     @discardableResult
@@ -39,7 +39,7 @@ struct DirectCallRequestProcessor: RequestProcessorProtocol {
                     mergeNestedObjects: Bool,
                     onSuccess: OnSuccessHandler? = nil,
                     onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        DirectCallRequestProcessor.call(successHandler: onSuccess,
+        OnlineRequestProcessor.call(successHandler: onSuccess,
                                       andFailureHandler: onFailure,
                                       withIdentifier: "updateUser",
                                       forResult: apiClient.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects))
@@ -50,7 +50,7 @@ struct DirectCallRequestProcessor: RequestProcessorProtocol {
                      withToken _: String? = nil,
                      onSuccess: OnSuccessHandler? = nil,
                      onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        DirectCallRequestProcessor.call(successHandler: onSuccess,
+        OnlineRequestProcessor.call(successHandler: onSuccess,
                                       andFailureHandler: onFailure,
                                       withIdentifier: "updateEmail",
                                       forResult: apiClient.updateEmail(newEmail: newEmail))
@@ -62,7 +62,7 @@ struct DirectCallRequestProcessor: RequestProcessorProtocol {
                        dataFields: [AnyHashable: Any]? = nil,
                        onSuccess: OnSuccessHandler? = nil,
                        onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        DirectCallRequestProcessor.call(successHandler: onSuccess,
+        OnlineRequestProcessor.call(successHandler: onSuccess,
                                       andFailureHandler: onFailure,
                                       withIdentifier: "trackPurchase",
                                       forResult: apiClient.track(purchase: total, items: items, dataFields: dataFields))
@@ -76,7 +76,7 @@ struct DirectCallRequestProcessor: RequestProcessorProtocol {
                        dataFields: [AnyHashable: Any]? = nil,
                        onSuccess: OnSuccessHandler? = nil,
                        onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        DirectCallRequestProcessor.call(successHandler: onSuccess,
+        OnlineRequestProcessor.call(successHandler: onSuccess,
                                       andFailureHandler: onFailure,
                                       withIdentifier: "trackPushOpen",
                                       forResult: apiClient.track(pushOpen: campaignId,
@@ -91,7 +91,7 @@ struct DirectCallRequestProcessor: RequestProcessorProtocol {
                dataFields: [AnyHashable: Any]? = nil,
                onSuccess: OnSuccessHandler? = nil,
                onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        DirectCallRequestProcessor.call(successHandler: onSuccess,
+        OnlineRequestProcessor.call(successHandler: onSuccess,
                                       andFailureHandler: onFailure,
                                       withIdentifier: "trackEvent",
                                       forResult: apiClient.track(event: event, dataFields: dataFields))
@@ -101,7 +101,7 @@ struct DirectCallRequestProcessor: RequestProcessorProtocol {
     func updateSubscriptions(info: UpdateSubscriptionsInfo,
                              onSuccess: OnSuccessHandler? = nil,
                              onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        DirectCallRequestProcessor.call(successHandler: onSuccess,
+        OnlineRequestProcessor.call(successHandler: onSuccess,
                                       andFailureHandler: onFailure,
                                       withIdentifier: "updateSubscriptions",
                                       forResult: apiClient.updateSubscriptions(info.emailListIds,
@@ -119,7 +119,7 @@ struct DirectCallRequestProcessor: RequestProcessorProtocol {
                         onSuccess: OnSuccessHandler? = nil,
                         onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         let result = apiClient.track(inAppOpen: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId))
-        return DirectCallRequestProcessor.call(successHandler: onSuccess,
+        return OnlineRequestProcessor.call(successHandler: onSuccess,
                                              andFailureHandler: onFailure,
                                              withIdentifier: "trackInAppOpen",
                                              forResult: result)
@@ -134,7 +134,7 @@ struct DirectCallRequestProcessor: RequestProcessorProtocol {
                          onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         let result = apiClient.track(inAppClick: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId),
                                      clickedUrl: clickedUrl)
-        return DirectCallRequestProcessor.call(successHandler: onSuccess,
+        return OnlineRequestProcessor.call(successHandler: onSuccess,
                                              andFailureHandler: onFailure,
                                              withIdentifier: "trackInAppClick",
                                              forResult: result)
@@ -151,7 +151,7 @@ struct DirectCallRequestProcessor: RequestProcessorProtocol {
         let result = apiClient.track(inAppClose: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId),
                                      source: source,
                                      clickedUrl: clickedUrl)
-        return DirectCallRequestProcessor.call(successHandler: onSuccess,
+        return OnlineRequestProcessor.call(successHandler: onSuccess,
                                              andFailureHandler: onFailure,
                                              withIdentifier: "trackInAppClose",
                                              forResult: result)
@@ -163,7 +163,7 @@ struct DirectCallRequestProcessor: RequestProcessorProtocol {
                onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         let result = apiClient.track(inboxSession: inboxSession)
         
-        return DirectCallRequestProcessor.call(successHandler: onSuccess,
+        return OnlineRequestProcessor.call(successHandler: onSuccess,
                                              andFailureHandler: onFailure,
                                              withIdentifier: "trackInboxSession",
                                              forResult: result)
@@ -173,7 +173,7 @@ struct DirectCallRequestProcessor: RequestProcessorProtocol {
     func track(inAppDelivery message: IterableInAppMessage,
                onSuccess: OnSuccessHandler? = nil,
                onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        DirectCallRequestProcessor.call(successHandler: onSuccess,
+        OnlineRequestProcessor.call(successHandler: onSuccess,
                                       andFailureHandler: onFailure,
                                       withIdentifier: "trackInAppDelivery",
                                       forResult: apiClient.track(inAppDelivery: InAppMessageContext.from(message: message, location: nil)))
@@ -183,7 +183,7 @@ struct DirectCallRequestProcessor: RequestProcessorProtocol {
     func inAppConsume(_ messageId: String,
                       onSuccess: OnSuccessHandler? = nil,
                       onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        DirectCallRequestProcessor.call(successHandler: onSuccess,
+        OnlineRequestProcessor.call(successHandler: onSuccess,
                                       andFailureHandler: onFailure,
                                       withIdentifier: "inAppConsume",
                                       forResult: apiClient.inAppConsume(messageId: messageId))
@@ -197,7 +197,7 @@ struct DirectCallRequestProcessor: RequestProcessorProtocol {
                       onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         let result = apiClient.inAppConsume(inAppMessageContext: InAppMessageContext.from(message: message, location: location),
                                             source: source)
-        return DirectCallRequestProcessor.call(successHandler: onSuccess,
+        return OnlineRequestProcessor.call(successHandler: onSuccess,
                                              andFailureHandler: onFailure,
                                              withIdentifier: "inAppConsumeWithSource",
                                              forResult: result)
@@ -210,7 +210,7 @@ struct DirectCallRequestProcessor: RequestProcessorProtocol {
                         onSuccess: OnSuccessHandler? = nil,
                         onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         let result = apiClient.track(inAppOpen: messageId)
-        return DirectCallRequestProcessor.call(successHandler: onSuccess,
+        return OnlineRequestProcessor.call(successHandler: onSuccess,
                                              andFailureHandler: onFailure,
                                              withIdentifier: "trackInAppOpen",
                                              forResult: result)
@@ -221,7 +221,7 @@ struct DirectCallRequestProcessor: RequestProcessorProtocol {
                          clickedUrl: String,
                          onSuccess: OnSuccessHandler? = nil,
                          onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        DirectCallRequestProcessor.call(successHandler: onSuccess,
+        OnlineRequestProcessor.call(successHandler: onSuccess,
                                       andFailureHandler: onFailure,
                                       withIdentifier: "trackInAppClick",
                                       forResult: apiClient.track(inAppClick: messageId, clickedUrl: clickedUrl))
@@ -232,9 +232,9 @@ struct DirectCallRequestProcessor: RequestProcessorProtocol {
                           notificationsEnabled: Bool,
                           onSuccess: OnSuccessHandler? = nil,
                           onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        let pushServicePlatformString = DirectCallRequestProcessor.pushServicePlatformToString(registerTokenInfo.pushServicePlatform, apnsType: registerTokenInfo.apnsType)
+        let pushServicePlatformString = OnlineRequestProcessor.pushServicePlatformToString(registerTokenInfo.pushServicePlatform, apnsType: registerTokenInfo.apnsType)
         
-        return DirectCallRequestProcessor.call(successHandler: onSuccess,
+        return OnlineRequestProcessor.call(successHandler: onSuccess,
                                              andFailureHandler: onFailure,
                                              withIdentifier: "registerToken",
                                              forResult: apiClient.register(hexToken: registerTokenInfo.hexToken,
@@ -251,7 +251,7 @@ struct DirectCallRequestProcessor: RequestProcessorProtocol {
                                hexToken: String,
                                onSuccess: OnSuccessHandler? = nil,
                                onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        DirectCallRequestProcessor.call(successHandler: onSuccess,
+        OnlineRequestProcessor.call(successHandler: onSuccess,
                                       andFailureHandler: onFailure,
                                       withIdentifier: "disableDevice",
                                       forResult: apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken))
