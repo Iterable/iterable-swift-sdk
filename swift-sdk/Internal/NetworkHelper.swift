@@ -10,10 +10,14 @@ typealias SendRequestValue = [AnyHashable: Any]
 struct SendRequestError: Error {
     let reason: String?
     let data: Data?
+    let responseCode: Int?
+    let iterableCode: String?
     
-    init(reason: String? = nil, data: Data? = nil) {
+    init(reason: String? = nil, data: Data? = nil, responseCode: Int? = nil, iterableCode: String? = nil) {
         self.reason = reason
         self.data = data
+        self.responseCode = responseCode
+        self.iterableCode = iterableCode
     }
     
     static func createErroredFuture<T>(reason: String? = nil) -> Future<T, SendRequestError> {
@@ -137,7 +141,13 @@ struct NetworkHelper {
         }
         
         if responseCode == 401 {
-            return .failure(SendRequestError(reason: "Invalid API Key", data: data))
+            var iterableCode: String? = nil
+            
+            if let jsonDict = json as? [AnyHashable: Any] {
+                iterableCode = jsonDict["code"] as? String
+            }
+            
+            return .failure(SendRequestError(reason: "Invalid API Key", data: data, responseCode: responseCode, iterableCode: iterableCode))
         } else if responseCode >= 400 {
             var reason = "Invalid Request"
             if let jsonDict = json as? [AnyHashable: Any], let msgFromDict = jsonDict["msg"] as? String {
