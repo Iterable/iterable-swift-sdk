@@ -185,6 +185,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                     onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("updateUser")) {
         IterableAPIInternal.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
+                                 andAuthFailureHandler: config.authFailureDelegate,
                                  forResult: apiClient.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects))
     }
     
@@ -192,16 +193,19 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                      withToken token: String? = nil,
                      onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess("updateEmail"),
                      onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("updateEmail")) {
-        apiClient.updateEmail(newEmail: newEmail).onSuccess { json in
-            // only change email if one is being used
-            if self.email != nil {
-                self.setEmail(newEmail, withToken: token)
-            }
-            
-            onSuccess?(json)
-        }.onError { error in
-            onFailure?(error.reason, error.data)
-        }
+        IterableAPIInternal.call(
+            successHandler: { json in
+                if self.email != nil {
+                    self.setEmail(newEmail, withToken: token)
+                }
+                
+                onSuccess?(json)
+        },
+            andFailureHandler: { reason, data in
+                onFailure?(reason, data)
+        },
+            andAuthFailureHandler: config.authFailureDelegate,
+            forResult: apiClient.updateEmail(newEmail: newEmail))
     }
     
     func trackPurchase(_ total: NSNumber,
@@ -211,6 +215,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                        onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("trackPurchase")) {
         IterableAPIInternal.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
+                                 andAuthFailureHandler: config.authFailureDelegate,
                                  forResult: apiClient.track(purchase: total, items: items, dataFields: dataFields))
     }
     
@@ -242,6 +247,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                        onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("trackPushOpen")) {
         IterableAPIInternal.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
+                                 andAuthFailureHandler: config.authFailureDelegate,
                                  forResult: apiClient.track(pushOpen: campaignId,
                                                             templateId: templateId,
                                                             messageId: messageId,
@@ -255,6 +261,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("trackEvent")) {
         IterableAPIInternal.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
+                                 andAuthFailureHandler: config.authFailureDelegate,
                                  forResult: apiClient.track(event: eventName, dataFields: dataFields))
     }
     
@@ -268,6 +275,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                              onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("updateSubscriptions")) {
         IterableAPIInternal.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
+                                 andAuthFailureHandler: config.authFailureDelegate,
                                  forResult: apiClient.updateSubscriptions(emailListIds,
                                                                           unsubscribedChannelIds: unsubscribedChannelIds,
                                                                           unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
@@ -285,6 +293,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         let result = apiClient.track(inAppOpen: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId))
         return IterableAPIInternal.call(successHandler: onSuccess,
                                         andFailureHandler: onFailure,
+                                        andAuthFailureHandler: config.authFailureDelegate,
                                         forResult: result)
     }
     
@@ -299,6 +308,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                      clickedUrl: clickedUrl)
         return IterableAPIInternal.call(successHandler: onSuccess,
                                         andFailureHandler: onFailure,
+                                        andAuthFailureHandler: config.authFailureDelegate,
                                         forResult: result)
     }
     
@@ -315,6 +325,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                      clickedUrl: clickedUrl)
         return IterableAPIInternal.call(successHandler: onSuccess,
                                         andFailureHandler: onFailure,
+                                        andAuthFailureHandler: config.authFailureDelegate,
                                         forResult: result)
     }
     
@@ -326,18 +337,21 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         
         return IterableAPIInternal.call(successHandler: onSuccess,
                                         andFailureHandler: onFailure,
+                                        andAuthFailureHandler: config.authFailureDelegate,
                                         forResult: result)
     }
     
     func track(inAppDelivery message: IterableInAppMessage) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess("trackInAppDelivery"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure("trackInAppDelivery"),
+                                 andAuthFailureHandler: config.authFailureDelegate,
                                  forResult: apiClient.track(inAppDelivery: InAppMessageContext.from(message: message, location: nil)))
     }
     
     func inAppConsume(_ messageId: String) {
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess("inAppConsume"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure("inAppConsume"),
+                                 andAuthFailureHandler: config.authFailureDelegate,
                                  forResult: apiClient.inAppConsume(messageId: messageId))
     }
     
@@ -346,6 +360,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                             source: source)
         IterableAPIInternal.call(successHandler: IterableAPIInternal.defaultOnSuccess("inAppConsumeWithSource"),
                                  andFailureHandler: IterableAPIInternal.defaultOnFailure("inAppConsumeWithSource"),
+                                 andAuthFailureHandler: config.authFailureDelegate,
                                  forResult: result)
     }
     
@@ -473,6 +488,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         
         return IterableAPIInternal.call(successHandler: onSuccess,
                                         andFailureHandler: onFailure,
+                                        andAuthFailureHandler: config.authFailureDelegate,
                                         forResult: apiClient.register(hexToken: hexToken!,
                                                                       appName: appName,
                                                                       deviceId: deviceId,
@@ -512,6 +528,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         
         IterableAPIInternal.call(successHandler: onSuccess,
                                  andFailureHandler: onFailure,
+                                 andAuthFailureHandler: config.authFailureDelegate,
                                  forResult: apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken))
     }
     
