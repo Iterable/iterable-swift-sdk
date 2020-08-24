@@ -518,12 +518,19 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     @discardableResult
     private static func call(successHandler onSuccess: OnSuccessHandler? = nil,
                              andFailureHandler onFailure: OnFailureHandler? = nil,
-                             forResult result: Future<SendRequestValue, SendRequestError>) -> Future<SendRequestValue, SendRequestError> {
+                             andAuthFailureHandler onAuthFailure: IterableAuthFailureDelegate? = nil,
+                             forResult result: Future<SendRequestValue, SendRequestError>
+    ) -> Future<SendRequestValue, SendRequestError> {
         result.onSuccess { json in
             onSuccess?(json)
         }.onError { error in
+            if error.responseCode == 401, error.iterableCode == "InvalidJwtPayload" {
+                onAuthFailure?.authTokenFailed()
+            }
+            
             onFailure?(error.reason, error.data)
         }
+        
         return result
     }
     
