@@ -7,7 +7,7 @@ import XCTest
 
 @testable import IterableSDK
 
-class RequestProcessorTests: XCTestCase {
+class OfflineRequestProcessorTests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
         
@@ -64,7 +64,7 @@ class RequestProcessorTests: XCTestCase {
     }()
 }
 
-extension RequestProcessorTests: AuthProvider {
+extension OfflineRequestProcessorTests: AuthProvider {
     var auth: Auth {
         Auth(userId: nil, email: "user@example.com", authToken: nil)
     }
