@@ -10,18 +10,28 @@ typealias SendRequestValue = [AnyHashable: Any]
 struct SendRequestError: Error {
     let reason: String?
     let data: Data?
-    let responseCode: Int?
+    let httpStatusCode: Int?
     let iterableCode: String?
+    let originalError: Error?
     
-    init(reason: String? = nil, data: Data? = nil, responseCode: Int? = nil, iterableCode: String? = nil) {
+    init(reason: String? = nil,
+         data: Data? = nil,
+         httpStatusCode: Int? = nil,
+         iterableCode: String? = nil,
+         originalError: Error? = nil) {
         self.reason = reason
         self.data = data
-        self.responseCode = responseCode
+        self.httpStatusCode = httpStatusCode
         self.iterableCode = iterableCode
+        self.originalError = originalError
     }
     
     static func createErroredFuture<T>(reason: String? = nil) -> Future<T, SendRequestError> {
         Promise<T, SendRequestError>(error: SendRequestError(reason: reason))
+    }
+    
+    static func from(error: Error) -> SendRequestError {
+        SendRequestError(reason: error.localizedDescription)
     }
 }
 
@@ -80,21 +90,23 @@ struct NetworkHelper {
     static func sendRequest(_ request: URLRequest,
                             usingSession networkSession: NetworkSessionProtocol) -> Future<SendRequestValue, SendRequestError> {
         #if NETWORK_DEBUG
-            print()
-            print("====================================================>")
-            print("sending request: \(request)")
-            if let headers = request.allHTTPHeaderFields {
-                print("headers:")
-                print(headers)
+        let requestId = IterableUtil.generateUUID()
+        print()
+        print("====================================================>")
+        print("sending request: \(request)")
+        print("requestId: \(requestId)")
+        if let headers = request.allHTTPHeaderFields {
+            print("headers:")
+            print(headers)
+        }
+        if let body = request.httpBody {
+            if let dict = try? JSONSerialization.jsonObject(with: body, options: []) {
+                print("request body:")
+                print(dict)
             }
-            if let body = request.httpBody {
-                if let dict = try? JSONSerialization.jsonObject(with: body, options: []) {
-                    print("request body:")
-                    print(dict)
-                }
-            }
-            print("====================================================>")
-            print()
+        }
+        print("====================================================>")
+        print()
         #endif
         
         let promise = Promise<SendRequestValue, SendRequestError>()
@@ -104,8 +116,14 @@ struct NetworkHelper {
             
             switch result {
             case let .success(value):
+                #if NETWORK_DEBUG
+                print("request with requestId: \(requestId) successfully sent")
+                #endif
                 promise.resolve(with: value)
             case let .failure(error):
+                #if NETWORK_DEBUG
+                print("request with id: \(requestId) errored")
+                #endif
                 promise.reject(with: error)
             }
         }
@@ -117,7 +135,7 @@ struct NetworkHelper {
                                                 response: URLResponse?,
                                                 error: Error?) -> Result<SendRequestValue, SendRequestError> {
         if let error = error {
-            return .failure(SendRequestError(reason: "\(error.localizedDescription)", data: data))
+            return .failure(SendRequestError(reason: "\(error.localizedDescription)", data: data, originalError: error))
         }
         
         guard let response = response as? HTTPURLResponse else {
@@ -147,7 +165,7 @@ struct NetworkHelper {
                 iterableCode = jsonDict[JsonKey.Response.code] as? String
             }
             
-            return .failure(SendRequestError(reason: "Invalid API Key", data: data, responseCode: responseCode, iterableCode: iterableCode))
+            return .failure(SendRequestError(reason: "Invalid API Key", data: data, httpStatusCode: responseCode, iterableCode: iterableCode))
         } else if responseCode >= 400 {
             var reason = "Invalid Request"
             if let jsonDict = json as? [AnyHashable: Any], let msgFromDict = jsonDict["msg"] as? String {
@@ -156,7 +174,7 @@ struct NetworkHelper {
                 reason = "Internal Server Error"
             }
             
-            return .failure(SendRequestError(reason: reason, data: data))
+            return .failure(SendRequestError(reason: reason, data: data, httpStatusCode: responseCode))
         } else if responseCode == 200 {
             if let data = data, data.count > 0 {
                 if let jsonError = jsonError {
@@ -165,17 +183,17 @@ struct NetworkHelper {
                         reason = "Could not parse json: \(stringValue), error: \(jsonError.localizedDescription)"
                     }
                     
-                    return .failure(SendRequestError(reason: reason, data: data))
+                    return .failure(SendRequestError(reason: reason, data: data, httpStatusCode: responseCode))
                 } else if let json = json as? [AnyHashable: Any] {
                     return .success(json)
                 } else {
-                    return .failure(SendRequestError(reason: "Response is not a dictionary", data: data))
+                    return .failure(SendRequestError(reason: "Response is not a dictionary", data: data, httpStatusCode: responseCode))
                 }
             } else {
-                return .failure(SendRequestError(reason: "No data received", data: data))
+                return .failure(SendRequestError(reason: "No data received", data: data, httpStatusCode: responseCode))
             }
         } else {
-            return .failure(SendRequestError(reason: "Received non-200 response: \(responseCode)", data: data))
+            return .failure(SendRequestError(reason: "Received non-200 response: \(responseCode)", data: data, httpStatusCode: responseCode))
         }
     }
     

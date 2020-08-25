@@ -541,7 +541,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         result.onSuccess { json in
             onSuccess?(json)
         }.onError { error in
-            if error.responseCode == 401, error.iterableCode == JsonKey.Response.code {
+            if error.httpStatusCode == 401, error.iterableCode == JsonKey.Response.code {
                 onAuthFailure?.authTokenFailed()
             }
             
