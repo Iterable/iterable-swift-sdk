@@ -217,4 +217,41 @@ class AuthTests: XCTestCase {
         XCTAssertEqual(internalAPI.userId, AuthTests.userId)
         XCTAssertEqual(internalAPI.auth.authToken, newAuthToken)
     }
+    
+    func testAuthFailureDelegateCall() {
+        let expectation1 = expectation(description: "")
+        
+        class AuthFailureDelegate: IterableAuthFailureDelegate {
+            var didDelegateGetCalled = false
+            
+            func authTokenFailed() {
+                didDelegateGetCalled = true
+            }
+        }
+        
+        let authFailureDelegate = AuthFailureDelegate()
+        
+        let config = IterableConfig()
+        config.authFailureDelegate = authFailureDelegate
+        
+        let mockNetworkSession = MockNetworkSession(statusCode: 401,
+                                                    json: [JsonKey.Response.code: JsonValue.Code.invalidJwtPayload])
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(config: config,
+                                                                   networkSession: mockNetworkSession)
+        
+        internalAPI.email = AuthTests.email
+        
+        internalAPI.track("event",
+                          dataFields: nil,
+                          onSuccess: { data in
+                            XCTFail("track event shouldn't have succeeded")
+        },
+                          onFailure: { reason, data in
+                            XCTAssertTrue(authFailureDelegate.didDelegateGetCalled)
+                            expectation1.fulfill()
+        })
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
 }
