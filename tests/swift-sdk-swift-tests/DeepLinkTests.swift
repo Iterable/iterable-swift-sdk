@@ -11,7 +11,6 @@ import XCTest
 class DeepLinkTests: XCTestCase {
     override func setUp() {
         super.setUp()
-        TestUtils.clearTestUserDefaults()
     }
     
     override func tearDown() {

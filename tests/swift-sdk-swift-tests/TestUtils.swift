@@ -106,20 +106,12 @@ struct TestUtils {
         }
     }
     
-    static func validateDeviceInfo(inBody body: [String: Any]) {
-        validateMatch(keyPath: KeyPath(.deviceInfo, .deviceId), value: IterableAPIInternal.initializeForTesting().deviceId, inDictionary: body)
+    static func validateDeviceInfo(inBody body: [String: Any], withDeviceId deviceId: String) {
+        validateMatch(keyPath: KeyPath(.deviceInfo, .deviceId), value: deviceId, inDictionary: body)
         validateMatch(keyPath: KeyPath(.deviceInfo, .platform), value: JsonValue.iOS.jsonStringValue, inDictionary: body)
         validateMatch(keyPath: KeyPath(.deviceInfo, .appPackageName), value: Bundle.main.appPackageName, inDictionary: body)
     }
-    
-    static func getTestUserDefaults() -> UserDefaults {
-        TestHelper.getTestUserDefaults()
-    }
-    
-    static func clearTestUserDefaults() {
-        TestHelper.clearTestUserDefaults()
-    }
-    
+
     static func areEqual(dict1: [AnyHashable: Any], dict2: [AnyHashable: Any]) -> Bool {
         NSDictionary(dictionary: dict1).isEqual(to: dict2)
     }

@@ -21,8 +21,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let config = IterableConfig()
         config.customActionDelegate = self
         config.urlDelegate = self
-        TestHelper.getTestUserDefaults().set("user1@example.com", forKey: Const.UserDefaults.emailKey)
-        IterableAPI.initializeForTesting(config: config, networkSession: MockNetworkSession(), urlOpener: AppUrlOpener())
+        let localStorage = MockLocalStorage()
+        localStorage.email = "user1@example.com"
+        IterableAPI.initializeForTesting(config: config,
+                                         networkSession: MockNetworkSession(),
+                                         localStorage: localStorage,
+                                         urlOpener: AppUrlOpener())
         
         return true
     }

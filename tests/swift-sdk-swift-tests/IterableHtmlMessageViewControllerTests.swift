@@ -12,8 +12,6 @@ import WebKit
 class IterableHtmlMessageViewControllerTests: XCTestCase {
     override func setUp() {
         super.setUp()
-        
-        TestUtils.clearTestUserDefaults()
     }
     
     override func tearDown() {

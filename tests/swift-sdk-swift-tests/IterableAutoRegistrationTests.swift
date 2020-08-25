@@ -12,8 +12,6 @@ class IterableAutoRegistrationTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        
-        TestUtils.clearTestUserDefaults()
     }
     
     override func tearDown() {
@@ -128,8 +126,13 @@ class IterableAutoRegistrationTests: XCTestCase {
         config.autoPushRegistration = true
         let notificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: expectation1)
         
-        TestUtils.getTestUserDefaults().set("user1@example.com", forKey: Const.UserDefaults.emailKey)
-        IterableAPIInternal.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey, config: config, networkSession: networkSession, notificationStateProvider: notificationStateProvider)
+        let localStorage = MockLocalStorage()
+        localStorage.email = "user1@example.com"
+        IterableAPIInternal.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey,
+                                                 config: config,
+                                                 networkSession: networkSession,
+                                                 notificationStateProvider: notificationStateProvider,
+                                                 localStorage: localStorage)
         
         // only wait for small time, supposed to error out
         wait(for: [expectation1], timeout: testExpectationTimeout)
