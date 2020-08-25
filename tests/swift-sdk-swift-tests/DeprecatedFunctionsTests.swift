@@ -14,7 +14,6 @@ class DeprecatedFunctionsTests: XCTestCase {
     
     override class func setUp() {
         super.setUp()
-        TestUtils.clearTestUserDefaults()
     }
     
     func testDeprecatedTrackInAppOpen() {
@@ -43,7 +42,7 @@ class DeprecatedFunctionsTests: XCTestCase {
                                                        silentInbox: message.silentInbox,
                                                        inBody: body)
             
-            TestUtils.validateDeviceInfo(inBody: body)
+            TestUtils.validateDeviceInfo(inBody: body, withDeviceId: internalAPI.deviceId)
             
             expectation1.fulfill()
         }
@@ -87,7 +86,7 @@ class DeprecatedFunctionsTests: XCTestCase {
                                                        silentInbox: false,
                                                        inBody: body)
             
-            TestUtils.validateDeviceInfo(inBody: body)
+            TestUtils.validateDeviceInfo(inBody: body, withDeviceId: internalAPI.deviceId)
             
             TestUtils.validateMatch(keyPath: KeyPath(.clickedUrl), value: buttonUrl, inDictionary: body)
             

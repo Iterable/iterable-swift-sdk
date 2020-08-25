@@ -15,8 +15,6 @@ class MockDateProvider: DateProviderProtocol {
 class IterableNotificationResponseTests: XCTestCase {
     override func setUp() {
         super.setUp()
-        
-        TestUtils.clearTestUserDefaults()
     }
     
     func testTrackOpenPushWithCustomAction() {

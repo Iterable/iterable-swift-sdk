@@ -12,8 +12,6 @@ class DeferredDeepLinkTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        
-        TestUtils.clearTestUserDefaults()
     }
     
     func testCallCheckForDDL() {
@@ -39,7 +37,11 @@ class DeferredDeepLinkTests: XCTestCase {
         }
         
         config.urlDelegate = urlDelegate
-        IterableAPIInternal.initializeForTesting(apiKey: DeferredDeepLinkTests.apiKey, config: config, networkSession: networkSession)
+        let localStorage = MockLocalStorage()
+        IterableAPIInternal.initializeForTesting(apiKey: DeferredDeepLinkTests.apiKey,
+                                                 config: config,
+                                                 networkSession: networkSession,
+                                                 localStorage: localStorage)
         
         wait(for: [expectation], timeout: testExpectationTimeout)
         
@@ -52,8 +54,11 @@ class DeferredDeepLinkTests: XCTestCase {
         urlDelegate2.callback = { _, _ in
             expectation2.fulfill()
         }
-        config.urlDelegate = urlDelegate2
-        IterableAPIInternal.initializeForTesting(apiKey: DeferredDeepLinkTests.apiKey, config: config, networkSession: networkSession)
+        config2.urlDelegate = urlDelegate2
+        IterableAPIInternal.initializeForTesting(apiKey: DeferredDeepLinkTests.apiKey,
+                                                 config: config2,
+                                                 networkSession: networkSession,
+                                                 localStorage: localStorage)
         
         wait(for: [expectation2], timeout: 1.0)
     }

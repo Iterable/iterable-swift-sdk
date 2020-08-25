@@ -8,20 +8,11 @@ import Foundation
 @testable import IterableSDK
 
 struct TestConsts {
-    static let userDefaultsSuiteName = "testUserDefaults"
 }
 
 /// Add Utility methods common to multiple targets here.
 /// We can't use TestUtils in all tests because TestUtils targets Swift tests only.
 struct TestHelper {
-    static func getTestUserDefaults() -> UserDefaults {
-        UserDefaults(suiteName: TestConsts.userDefaultsSuiteName)!
-    }
-    
-    static func clearTestUserDefaults() {
-        getTestUserDefaults().removePersistentDomain(forName: TestConsts.userDefaultsSuiteName)
-    }
-    
     static func generateIntGuid() -> Int {
         var numbers = [Int]()
         16.times {

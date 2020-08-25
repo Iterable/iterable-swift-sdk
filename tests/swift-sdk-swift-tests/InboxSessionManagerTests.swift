@@ -10,8 +10,6 @@ import XCTest
 class InboxSessionManagerTests: XCTestCase {
     override class func setUp() {
         super.setUp()
-        
-        TestUtils.clearTestUserDefaults()
     }
     
     func testSessionIsTracking() {
