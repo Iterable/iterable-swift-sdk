@@ -20,62 +20,58 @@ class OfflineRequestProcessorTests: XCTestCase {
     override func tearDownWithError() throws {
         try super.tearDownWithError()
     }
-
+    
     func testTrackEvent() throws {
-        let expectation1 = expectation(description: #function)
-        let apiKey = "zee-api-key"
+        let notificationCenter = MockNotificationCenter()
         let eventName = "CustomEvent1"
         let dataFields = ["var1": "val1", "var2": "val2"]
-
-        let notificationCenter = MockNotificationCenter()
-
-        let requestProcessor = OfflineRequestProcessor(apiKey: apiKey,
-                                                       authProvider: self,
-                                                       endPoint: Endpoint.api,
-                                                       deviceMetadata: deviceMetadata,
-                                                       notificationCenter: notificationCenter)
-        requestProcessor.track(event: eventName,
-                               dataFields: dataFields,
-                               onSuccess: nil,
-                               onFailure: nil)
-        .onSuccess { json in
-            expectation1.fulfill()
-        }.onError { error in
-            XCTFail()
+        let bodyDict: [String: Any] = [
+            "eventName": eventName,
+            "dataFields": dataFields,
+            "email": "user@example.com"
+        ]
+        let requestProcessor = createRequestProcessor(notificationCenter: notificationCenter)
+        let request: () -> Future<SendRequestValue, SendRequestError> = {
+            requestProcessor.track(event: eventName,
+                                   dataFields: dataFields,
+                                   onSuccess: nil,
+                                   onFailure: nil)
         }
-        
-        let taskRunner = IterableTaskRunner(networkSession: MockNetworkSession(),
-                                            notificationCenter: notificationCenter,
-                                            timeInterval: 0.5)
-        taskRunner.start()
-        wait(for: [expectation1], timeout: 15.0)
-        taskRunner.stop()
+        testProcessRequestWithSuccess(notificationCenter: notificationCenter,
+                                      path: Const.Path.trackEvent,
+                                      bodyDict: bodyDict,
+                                      request: request)
+        testProcessRequestWithFailure(notificationCenter: notificationCenter,
+                                      path: Const.Path.trackEvent,
+                                      bodyDict: bodyDict,
+                                      request: request)
     }
-
-    func testTrackEventWithNoRetry() throws {
+    
+    private func createRequestProcessor(notificationCenter: NotificationCenterProtocol) -> RequestProcessorProtocol {
+        OfflineRequestProcessor(apiKey: "zee-api-key",
+                                authProvider: self,
+                                endPoint: Endpoint.api,
+                                deviceMetadata: deviceMetadata,
+                                notificationCenter: notificationCenter)
+    }
+    
+    private func testProcessRequestWithSuccess(notificationCenter: NotificationCenterProtocol,
+                                               path: String,
+                                               bodyDict: [AnyHashable: Any],
+                                               request: () -> Future<SendRequestValue, SendRequestError>) {
         let expectation1 = expectation(description: #function)
-        let apiKey = "zee-api-key"
-        let eventName = "CustomEvent1"
-        let dataFields = ["var1": "val1", "var2": "val2"]
-
-        let notificationCenter = MockNotificationCenter()
-
-        let requestProcessor = OfflineRequestProcessor(apiKey: apiKey,
-                                                       authProvider: self,
-                                                       endPoint: Endpoint.api,
-                                                       deviceMetadata: deviceMetadata,
-                                                       notificationCenter: notificationCenter)
-        requestProcessor.track(event: eventName,
-                               dataFields: dataFields,
-                               onSuccess: nil,
-                               onFailure: nil)
-        .onSuccess { json in
-            XCTFail()
-        }.onError { error in
+        let networkSession = MockNetworkSession()
+        
+        request().onSuccess { json in
             expectation1.fulfill()
+        }.onError { error in
+            XCTFail()
         }
         
-        let networkSession = MockNetworkSession(statusCode: 400)
+        networkSession.requestCallback = { request in
+            TestUtils.validate(request: request, apiEndPoint: Endpoint.api, path: path)
+            XCTAssertTrue(TestUtils.areEqual(dict1: bodyDict, dict2: request.bodyDict))
+        }
         let taskRunner = IterableTaskRunner(networkSession: networkSession,
                                             notificationCenter: notificationCenter,
                                             timeInterval: 0.5)
@@ -83,7 +79,32 @@ class OfflineRequestProcessorTests: XCTestCase {
         wait(for: [expectation1], timeout: 15.0)
         taskRunner.stop()
     }
-
+    
+    private func testProcessRequestWithFailure(notificationCenter: NotificationCenterProtocol,
+                                               path: String,
+                                               bodyDict: [AnyHashable: Any],
+                                               request: () -> Future<SendRequestValue, SendRequestError>) {
+        let expectation1 = expectation(description: #function)
+        let networkSession = MockNetworkSession(statusCode: 400)
+        
+        request().onSuccess { json in
+            XCTFail()
+        }.onError { error in
+            expectation1.fulfill()
+        }
+        
+        networkSession.requestCallback = { request in
+            TestUtils.validate(request: request, apiEndPoint: Endpoint.api, path: path)
+            XCTAssertTrue(TestUtils.areEqual(dict1: bodyDict, dict2: request.bodyDict))
+        }
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 0.5)
+        taskRunner.start()
+        wait(for: [expectation1], timeout: 15.0)
+        taskRunner.stop()
+    }
+    
     private let deviceMetadata = DeviceMetadata(deviceId: IterableUtil.generateUUID(),
                                                 platform: JsonValue.iOS.jsonStringValue,
                                                 appPackageName: Bundle.main.appPackageName ?? "")
