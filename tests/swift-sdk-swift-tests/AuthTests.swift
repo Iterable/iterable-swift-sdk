@@ -15,8 +15,6 @@ class AuthTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        
-        TestUtils.clearTestUserDefaults()
     }
     
     func testEmailPersistence() {
@@ -159,7 +157,7 @@ class AuthTests: XCTestCase {
     }
     
     func testLogoutUser() {
-        let localStorage = UserDefaultsLocalStorage(userDefaults: TestUtils.getTestUserDefaults())
+        let localStorage = MockLocalStorage()
         
         let internalAPI = IterableAPIInternal.initializeForTesting(localStorage: localStorage)
         

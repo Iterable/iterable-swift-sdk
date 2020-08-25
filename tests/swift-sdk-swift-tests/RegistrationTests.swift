@@ -12,8 +12,6 @@ class RegistrationTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        
-        TestUtils.clearTestUserDefaults()
     }
     
     override func tearDown() {

@@ -10,7 +10,6 @@ import XCTest
 class InboxTests: XCTestCase {
     override class func setUp() {
         super.setUp()
-        TestUtils.clearTestUserDefaults()
     }
     
     func testInboxOrdering() {
@@ -601,8 +600,6 @@ class InboxTests: XCTestCase {
     }
     
     func testInboxLogoutClearMessageQueue() {
-        TestUtils.clearTestUserDefaults()
-        
         let expectation1 = expectation(description: "initial messages sent")
         let expectation2 = expectation(description: "inbox change notification is fired on logout")
         
