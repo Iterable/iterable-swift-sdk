@@ -207,8 +207,11 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
             self.notificationCenter = notificationCenter
             super.init()
             self.notificationCenter.addObserver(self,
-                                                selector: #selector(on(notification:)),
+                                                selector: #selector(onTaskFinishedWithSuccess(notification:)),
                                                 name: .iterableTaskFinishedWithSuccess, object: nil)
+            self.notificationCenter.addObserver(self,
+                                                selector: #selector(onTaskFinishedWithNoRetry(notification:)),
+                                                name: .iterableTaskFinishedWithNoRetry, object: nil)
         }
         
         deinit {
@@ -221,43 +224,41 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
             pendingTasksMap[taskId] = result
             return result
         }
-        
+
         @objc
-        private func on(notification: Notification) {
-            switch notification.name {
-            case .iterableTaskFinishedWithSuccess:
-                if let taskSendRequestValue = IterableNotificationUtil.notificationToTaskSendRequestValue(notification) {
-                    let taskId = taskSendRequestValue.taskId
-                    ITBInfo("task: \(taskId) finished with success")
-                    if let promise = pendingTasksMap[taskId] {
-                        promise.resolve(with: taskSendRequestValue.sendRequestValue)
-                        pendingTasksMap.removeValue(forKey: taskId)
-                    } else {
-                        ITBError("could not find promise for taskId: \(taskId)")
-                    }
+        private func onTaskFinishedWithSuccess(notification: Notification) {
+            ITBInfo()
+            if let taskSendRequestValue = IterableNotificationUtil.notificationToTaskSendRequestValue(notification) {
+                let taskId = taskSendRequestValue.taskId
+                ITBInfo("task: \(taskId) finished with success")
+                if let promise = pendingTasksMap[taskId] {
+                    promise.resolve(with: taskSendRequestValue.sendRequestValue)
+                    pendingTasksMap.removeValue(forKey: taskId)
                 } else {
-                    ITBError("Could not find taskId for notification")
+                    ITBError("could not find promise for taskId: \(taskId)")
                 }
-            case .iterableTaskFinishedWithNoRetry:
-                if let taskSendRequestError = IterableNotificationUtil.notificationToTaskSendRequestError(notification) {
-                    let taskId = taskSendRequestError.taskId
-                    ITBInfo("task: \(taskId) finished with no retry")
-                    if let promise = pendingTasksMap[taskId] {
-                        promise.reject(with: taskSendRequestError.sendRequestError)
-                        pendingTasksMap.removeValue(forKey: taskId)
-                    } else {
-                        ITBError("could not find promise for taskId: \(taskId)")
-                    }
-                } else {
-                    ITBError("Could not find taskId for notification")
-                }
-            case .iterableTaskFinishedWithRetry:
-                break
-            default:
-                break
+            } else {
+                ITBError("Could not find taskId for notification")
             }
         }
-        
+
+        @objc
+        private func onTaskFinishedWithNoRetry(notification: Notification) {
+            ITBInfo()
+            if let taskSendRequestError = IterableNotificationUtil.notificationToTaskSendRequestError(notification) {
+                let taskId = taskSendRequestError.taskId
+                ITBInfo("task: \(taskId) finished with no retry")
+                if let promise = pendingTasksMap[taskId] {
+                    promise.reject(with: taskSendRequestError.sendRequestError)
+                    pendingTasksMap.removeValue(forKey: taskId)
+                } else {
+                    ITBError("could not find promise for taskId: \(taskId)")
+                }
+            } else {
+                ITBError("Could not find taskId for notification")
+            }
+        }
+
         private var notificationCenter: NotificationCenterProtocol
         private var pendingTasksMap = [String: Promise<SendRequestValue, SendRequestError>]()
     }
