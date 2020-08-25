@@ -195,6 +195,10 @@ public enum JsonKey: String, JsonKeyRepresentable {
         static let defaultAction = "defaultAction"
     }
     
+    public enum Response {
+        static let code = "code"
+    }
+    
     public var jsonKey: String {
         rawValue
     }
@@ -221,6 +225,10 @@ public enum JsonValue: String, JsonValueRepresentable {
         static let carPlay = "CarPlay"
         static let tv = "TV"
         static let unspecified = "Unspecified"
+    }
+    
+    public enum Code {
+        static let invalidJwtPayload = "InvalidJwtPayload"
     }
     
     public var jsonStringValue: String {
