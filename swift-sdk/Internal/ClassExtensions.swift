@@ -68,7 +68,10 @@ extension Encodable {
             return nil
         }
         
-        return try? JSONSerialization.jsonObject(with: data, options: [.allowFragments]) as? [String: Any]
+        guard let dictionary = try? JSONSerialization.jsonObject(with: data, options: [.allowFragments]) as? [String: Any] else {
+            return nil
+        }
+        return dictionary
     }
 }
 
