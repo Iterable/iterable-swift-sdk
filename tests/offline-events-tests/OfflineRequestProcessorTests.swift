@@ -67,7 +67,25 @@ class OfflineRequestProcessorTests: XCTestCase {
                                                 path: Const.Path.registerDeviceToken,
                                                 bodyDict: bodyDict)
     }
-    
+
+    func testDisableUserforCurrentUser() throws {
+        let hexToken = "zee-token"
+        let bodyDict: [String: Any] = [
+            "token": hexToken,
+            "email": "user@example.com"
+        ]
+        
+        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
+            requestProcessor.disableDeviceForCurrentUser(hexToken: hexToken,
+                                                         withOnSuccess: nil,
+                                                         onFailure: nil)
+        }
+        
+        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+                                                path: Const.Path.disableDevice,
+                                                bodyDict: bodyDict)
+    }
+
     func testTrackEvent() throws {
         let eventName = "CustomEvent1"
         let dataFields = ["var1": "val1", "var2": "val2"]

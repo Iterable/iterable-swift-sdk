@@ -68,6 +68,7 @@
 		AC32E16821DD55B900BD4F83 /* OrderedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC32E16721DD55B900BD4F83 /* OrderedDictionary.swift */; };
 		AC347B5C20E5A7E1003449CF /* APNSTypeChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC347B5B20E5A7E1003449CF /* APNSTypeChecker.swift */; };
 		AC347B6720E699FA003449CF /* IterableAppExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = AC347B6620E699D8003449CF /* IterableAppExtensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AC3A336D24F65579008225BA /* RequestProcessorUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3A336C24F65579008225BA /* RequestProcessorUtil.swift */; };
 		AC3C10F9213F46A900A9B839 /* IterableLogging.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3C10F8213F46A900A9B839 /* IterableLogging.swift */; };
 		AC3DD9C82142F3650046F886 /* ClassExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3DD9C72142F3650046F886 /* ClassExtensions.swift */; };
 		AC4095A422B18B9D006EF67C /* InboxViewControllerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4095A322B18B9D006EF67C /* InboxViewControllerViewModel.swift */; };
@@ -399,6 +400,7 @@
 		AC32E16721DD55B900BD4F83 /* OrderedDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderedDictionary.swift; sourceTree = "<group>"; };
 		AC347B5B20E5A7E1003449CF /* APNSTypeChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APNSTypeChecker.swift; sourceTree = "<group>"; };
 		AC347B6620E699D8003449CF /* IterableAppExtensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IterableAppExtensions.h; sourceTree = "<group>"; };
+		AC3A336C24F65579008225BA /* RequestProcessorUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestProcessorUtil.swift; sourceTree = "<group>"; };
 		AC3C10F8213F46A900A9B839 /* IterableLogging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableLogging.swift; sourceTree = "<group>"; };
 		AC3DD9C72142F3650046F886 /* ClassExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassExtensions.swift; sourceTree = "<group>"; };
 		AC4095A322B18B9D006EF67C /* InboxViewControllerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewControllerViewModel.swift; sourceTree = "<group>"; };
@@ -852,6 +854,7 @@
 				AC5E888824E1B7CE00752321 /* OnlineRequestProcessor.swift */,
 				AC5812F524F3A90F007E6D36 /* OfflineRequestProcessor.swift */,
 				AC5812F724F3AE8D007E6D36 /* RequestProcessor.swift */,
+				AC3A336C24F65579008225BA /* RequestProcessorUtil.swift */,
 			);
 			name = "Request Processing";
 			sourceTree = "<group>";
@@ -1658,6 +1661,7 @@
 				AC81918822713A110014955E /* Dwifft+UIKit.swift in Sources */,
 				AC426226238C27DD00164121 /* IterableInboxCell+Layout.swift in Sources */,
 				AC347B5C20E5A7E1003449CF /* APNSTypeChecker.swift in Sources */,
+				AC3A336D24F65579008225BA /* RequestProcessorUtil.swift in Sources */,
 				AC8E7CA524C7555E0039605F /* CoreDataUtil.swift in Sources */,
 				AC1AA1C624EBB2DC00F29C6B /* IterableTaskRunner.swift in Sources */,
 				ACFD5AC824C8290E008E497A /* IterableTaskManagedObject.swift in Sources */,

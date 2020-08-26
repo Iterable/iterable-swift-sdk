@@ -22,41 +22,31 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     @discardableResult
     func register(registerTokenInfo: RegisterTokenInfo,
                   notificationStateProvider: NotificationStateProviderProtocol,
-                  onSuccess: OnSuccessHandler?,
-                  onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        guard let authProvider = authProvider else {
-            fatalError("authProvider is missing")
-        }
-        
-        let requestCreator = createRequestCreator(authProvider: authProvider)
-        guard case let Result.success(trackEventRequest) =
+                  onSuccess: OnSuccessHandler? = nil,
+                  onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        let requestGenerator = { (requestCreator: RequestCreator) in
             requestCreator.createRegisterTokenRequest(registerTokenInfo: registerTokenInfo,
                                                       notificationsEnabled: true)
-            else {
-                return SendRequestError.createErroredFuture(reason: "Could not create trackEvent request")
         }
         
-        let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
-                                                    endPoint: endPoint,
-                                                    auth: authProvider.auth,
-                                                    deviceMetadata: deviceMetadata,
-                                                    iterableRequest: trackEventRequest)
-        
-        do {
-            let taskId = try IterableTaskScheduler().schedule(apiCallRequest: apiCallRequest,
-                                                              context: IterableTaskContext(blocking: true))
-            return notificationListener.futureFromTask(withTaskId: taskId)
-        } catch let error {
-            ITBError(error.localizedDescription)
-            return SendRequestError.createErroredFuture(reason: error.localizedDescription)
-        }
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
     }
     
     @discardableResult
     func disableDeviceForCurrentUser(hexToken: String,
-                                     withOnSuccess onSuccess: OnSuccessHandler?,
-                                     onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        fatalError()
+                                     withOnSuccess onSuccess: OnSuccessHandler? = nil,
+                                     onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createDisableDeviceRequest(forAllUsers: false, hexToken: hexToken)
+        }
+        
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
     }
     
     @discardableResult
@@ -105,32 +95,18 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     @discardableResult
     func track(event: String,
                dataFields: [AnyHashable: Any]?,
-               onSuccess: OnSuccessHandler?,
-               onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         ITBInfo()
-        guard let authProvider = authProvider else {
-            fatalError("authProvider is missing")
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createTrackEventRequest(event,
+                                                   dataFields: dataFields)
         }
 
-        let requestCreator = createRequestCreator(authProvider: authProvider)
-        guard case let Result.success(trackEventRequest) = requestCreator.createTrackEventRequest(event, dataFields: dataFields) else {
-            return SendRequestError.createErroredFuture(reason: "Could not create trackEvent request")
-        }
-        
-        let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
-                                                    endPoint: endPoint,
-                                                    auth: authProvider.auth,
-                                                    deviceMetadata: deviceMetadata,
-                                                    iterableRequest: trackEventRequest)
-
-        do {
-            let taskId = try IterableTaskScheduler().schedule(apiCallRequest: apiCallRequest,
-                                                              context: IterableTaskContext(blocking: true))
-            return notificationListener.futureFromTask(withTaskId: taskId)
-        } catch let error {
-            ITBError(error.localizedDescription)
-            return SendRequestError.createErroredFuture(reason: error.localizedDescription)
-        }
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
     }
     
     @discardableResult
@@ -225,6 +201,39 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     
     private func createRequestCreator(authProvider: AuthProvider) -> RequestCreator {
         return RequestCreator(apiKey: apiKey, auth: authProvider.auth, deviceMetadata: deviceMetadata)
+    }
+    
+    private func sendIterableRequest(requestGenerator: (RequestCreator) -> Result<IterableRequest, IterableError>,
+                                     successHandler onSuccess: OnSuccessHandler?,
+                                     failureHandler onFailure: OnFailureHandler?,
+                                     identifier: String) -> Future<SendRequestValue, SendRequestError> {
+        guard let authProvider = authProvider else {
+            fatalError("authProvider is missing")
+        }
+        
+        let requestCreator = createRequestCreator(authProvider: authProvider)
+        guard case let Result.success(iterableRequest) = requestGenerator(requestCreator) else {
+                return SendRequestError.createErroredFuture(reason: "Could not create request")
+        }
+
+        let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
+                                                    endPoint: endPoint,
+                                                    auth: authProvider.auth,
+                                                    deviceMetadata: deviceMetadata,
+                                                    iterableRequest: iterableRequest)
+        
+        do {
+            let taskId = try IterableTaskScheduler().schedule(apiCallRequest: apiCallRequest,
+                                                              context: IterableTaskContext(blocking: true))
+            let result = notificationListener.futureFromTask(withTaskId: taskId)
+            return RequestProcessorUtil.apply(successHandler: onSuccess,
+                                       andFailureHandler: onFailure,
+                                       toResult: result,
+                                       withIdentifier: identifier)
+        } catch let error {
+            ITBError(error.localizedDescription)
+            return SendRequestError.createErroredFuture(reason: error.localizedDescription)
+        }
     }
     
     private class NotificationListener: NSObject {
