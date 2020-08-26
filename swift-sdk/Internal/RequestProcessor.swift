@@ -67,11 +67,9 @@ struct RequestProcessor: RequestProcessorProtocol {
     
     @discardableResult
     func updateEmail(_ newEmail: String,
-                     withToken token: String?,
                      onSuccess: OnSuccessHandler?,
                      onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
         chooseRequestProcessor().updateEmail(newEmail,
-                                             withToken: token,
                                              onSuccess: onSuccess,
                                              onFailure: onFailure)
     }

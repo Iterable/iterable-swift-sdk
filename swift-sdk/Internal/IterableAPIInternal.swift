@@ -195,7 +195,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                      withToken token: String? = nil,
                      onSuccess: OnSuccessHandler? = nil,
                      onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        requestProcessor.updateEmail(newEmail, withToken: token, onSuccess: nil, onFailure: nil).onSuccess { json in
+        requestProcessor.updateEmail(newEmail, onSuccess: nil, onFailure: nil).onSuccess { json in
             if self.email != nil {
                 self.setEmail(newEmail, withToken: token)
             }

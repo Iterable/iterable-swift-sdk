@@ -80,7 +80,6 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     
     @discardableResult
     func updateEmail(_ newEmail: String,
-                     withToken _: String?,
                      onSuccess: OnSuccessHandler?,
                      onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
         let requestGenerator = { (requestCreator: RequestCreator) in

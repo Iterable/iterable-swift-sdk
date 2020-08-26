@@ -57,7 +57,6 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     
     @discardableResult
     func updateEmail(_ newEmail: String,
-                     withToken _: String? = nil,
                      onSuccess: OnSuccessHandler? = nil,
                      onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
         OnlineRequestProcessor.call(successHandler: onSuccess,

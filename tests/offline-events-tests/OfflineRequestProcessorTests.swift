@@ -152,7 +152,6 @@ class OfflineRequestProcessorTests: XCTestCase {
         
         let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
             requestProcessor.updateEmail("new_user@example.com",
-                                         withToken: nil,
                                          onSuccess: nil,
                                          onFailure: nil)
         }
