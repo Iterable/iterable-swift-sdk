@@ -118,7 +118,18 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                        dataFields: [AnyHashable: Any]?,
                        onSuccess: OnSuccessHandler?,
                        onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        fatalError()
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createTrackPushOpenRequest(campaignId,
+                                                      templateId: templateId,
+                                                      messageId: messageId,
+                                                      appAlreadyRunning: appAlreadyRunning,
+                                                      dataFields: dataFields)
+        }
+        
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
     }
     
     @discardableResult
@@ -142,7 +153,19 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     func updateSubscriptions(info: UpdateSubscriptionsInfo,
                              onSuccess: OnSuccessHandler?,
                              onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        fatalError()
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createUpdateSubscriptionsRequest(info.emailListIds,
+                                                            unsubscribedChannelIds: info.unsubscribedChannelIds,
+                                                            unsubscribedMessageTypeIds: info.unsubscribedMessageTypeIds,
+                                                            subscribedMessageTypeIds: info.subscribedMessageTypeIds,
+                                                            campaignId: info.campaignId,
+                                                            templateId: info.templateId)
+        }
+
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
     }
     
     @discardableResult

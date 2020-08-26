@@ -103,27 +103,6 @@ class RequestProcessorTests: XCTestCase {
                                                 bodyDict: bodyDict)
     }
     
-    func testTrackEvent() throws {
-        let eventName = "CustomEvent1"
-        let dataFields = ["var1": "val1", "var2": "val2"]
-        let bodyDict: [String: Any] = [
-            "eventName": eventName,
-            "dataFields": dataFields,
-            "email": "user@example.com"
-        ]
-        
-        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
-            requestProcessor.track(event: eventName,
-                                   dataFields: dataFields,
-                                   onSuccess: nil,
-                                   onFailure: nil)
-        }
-        
-        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
-                                                path: Const.Path.trackEvent,
-                                                bodyDict: bodyDict)
-    }
-    
     func testUpdateUser() throws {
         let dataFields = ["var1": "val1", "var2": "val2"]
         let bodyDict: [String: Any] = [
@@ -190,6 +169,89 @@ class RequestProcessorTests: XCTestCase {
         
         try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.trackPurchase,
+                                                bodyDict: bodyDict)
+    }
+
+    func testTrackPushOpen() throws {
+        let campaignId = 1
+        let templateId = 2
+        let messageId = "message_id"
+        let appAlreadyRunning = true
+        let dataFields: [String: Any] = [
+            "var1": "val1",
+            "var2": "val2",
+        ]
+        var bodyDataFields = dataFields
+        bodyDataFields["appAlreadyRunning"] = appAlreadyRunning
+        let bodyDict: [String: Any] = [
+            "dataFields": bodyDataFields,
+            "campaignId": campaignId,
+            "templateId": templateId,
+            "messageId": messageId,
+            "email": "user@example.com"
+        ]
+        
+        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
+            requestProcessor.trackPushOpen(NSNumber(value: campaignId),
+                                           templateId: NSNumber(value: templateId),
+                                           messageId: messageId,
+                                           appAlreadyRunning: appAlreadyRunning,
+                                           dataFields: dataFields,
+                                           onSuccess: nil,
+                                           onFailure: nil)
+        }
+        
+        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+                                                path: Const.Path.trackPushOpen,
+                                                bodyDict: bodyDict)
+    }
+
+    func testTrackEvent() throws {
+        let eventName = "CustomEvent1"
+        let dataFields = ["var1": "val1", "var2": "val2"]
+        let bodyDict: [String: Any] = [
+            "eventName": eventName,
+            "dataFields": dataFields,
+            "email": "user@example.com"
+        ]
+        
+        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
+            requestProcessor.track(event: eventName,
+                                   dataFields: dataFields,
+                                   onSuccess: nil,
+                                   onFailure: nil)
+        }
+        
+        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+                                                path: Const.Path.trackEvent,
+                                                bodyDict: bodyDict)
+    }
+    
+    func testUpdateSubscriptions() throws {
+        let info = UpdateSubscriptionsInfo(emailListIds: [123],
+                                           unsubscribedChannelIds: [456],
+                                           unsubscribedMessageTypeIds: [789],
+                                           subscribedMessageTypeIds: [111],
+                                           campaignId: 1,
+                                           templateId: 2)
+        let bodyDict: [String: Any] = [
+            "emailListIds": info.emailListIds!,
+            "unsubscribedChannelIds": info.unsubscribedChannelIds!,
+            "unsubscribedMessageTypeIds": info.unsubscribedMessageTypeIds!,
+            "subscribedMessageTypeIds": info.subscribedMessageTypeIds!,
+            "campaignId": info.campaignId!,
+            "templateId": info.templateId!,
+            "email": "user@example.com"
+        ]
+        
+        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
+            requestProcessor.updateSubscriptions(info: info,
+                                                 onSuccess: nil,
+                                                 onFailure: nil)
+        }
+        
+        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+                                                path: Const.Path.updateSubscriptions,
                                                 bodyDict: bodyDict)
     }
 
