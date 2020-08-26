@@ -22,7 +22,6 @@ class OfflineRequestProcessorTests: XCTestCase {
     }
     
     func testRegister() throws {
-        let notificationCenter = MockNotificationCenter()
         let registerTokenInfo = RegisterTokenInfo(hexToken: "zee-token",
                                                   appName: "zee-app-name",
                                                   pushServicePlatform: .auto,
@@ -56,25 +55,20 @@ class OfflineRequestProcessorTests: XCTestCase {
             "device": deviceDict,
             "email": "user@example.com"
         ]
-        let requestProcessor = createRequestProcessor(notificationCenter: notificationCenter)
-        let request: () -> Future<SendRequestValue, SendRequestError> = {
+        
+        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
             requestProcessor.register(registerTokenInfo: registerTokenInfo,
                                       notificationStateProvider: MockNotificationStateProvider(enabled: true),
                                       onSuccess: nil,
                                       onFailure: nil)
         }
-        testProcessRequestWithSuccess(notificationCenter: notificationCenter,
-                                      path: Const.Path.registerDeviceToken,
-                                      bodyDict: bodyDict,
-                                      request: request)
-        testProcessRequestWithFailure(notificationCenter: notificationCenter,
-                                      path: Const.Path.registerDeviceToken,
-                                      bodyDict: bodyDict,
-                                      request: request)
+        
+        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+                                                path: Const.Path.registerDeviceToken,
+                                                bodyDict: bodyDict)
     }
-
+    
     func testTrackEvent() throws {
-        let notificationCenter = MockNotificationCenter()
         let eventName = "CustomEvent1"
         let dataFields = ["var1": "val1", "var2": "val2"]
         let bodyDict: [String: Any] = [
@@ -82,21 +76,33 @@ class OfflineRequestProcessorTests: XCTestCase {
             "dataFields": dataFields,
             "email": "user@example.com"
         ]
-        let requestProcessor = createRequestProcessor(notificationCenter: notificationCenter)
-        let request: () -> Future<SendRequestValue, SendRequestError> = {
+        
+        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
             requestProcessor.track(event: eventName,
                                    dataFields: dataFields,
                                    onSuccess: nil,
                                    onFailure: nil)
         }
-        testProcessRequestWithSuccess(notificationCenter: notificationCenter,
-                                      path: Const.Path.trackEvent,
-                                      bodyDict: bodyDict,
-                                      request: request)
-        testProcessRequestWithFailure(notificationCenter: notificationCenter,
-                                      path: Const.Path.trackEvent,
-                                      bodyDict: bodyDict,
-                                      request: request)
+        
+        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+                                                path: Const.Path.trackEvent,
+                                                bodyDict: bodyDict)
+    }
+    
+    private func processRequestWithSuccessAndFailure(requestGenerator: (RequestProcessorProtocol) -> Future<SendRequestValue, SendRequestError>,
+                                                     path: String,
+                                                     bodyDict: [AnyHashable: Any]) throws {
+        let notificationCenter = MockNotificationCenter()
+        let requestProcessor = createRequestProcessor(notificationCenter: notificationCenter)
+        let request = { requestGenerator(requestProcessor) }
+        processRequestWithSuccess(notificationCenter: notificationCenter,
+                                  path: path,
+                                  bodyDict: bodyDict,
+                                  request: request)
+        processRequestWithFailure(notificationCenter: notificationCenter,
+                                  path: path,
+                                  bodyDict: bodyDict,
+                                  request: request)
     }
     
     private func createRequestProcessor(notificationCenter: NotificationCenterProtocol) -> RequestProcessorProtocol {
@@ -107,12 +113,11 @@ class OfflineRequestProcessorTests: XCTestCase {
                                 notificationCenter: notificationCenter)
     }
     
-    private func testProcessRequestWithSuccess(notificationCenter: NotificationCenterProtocol,
-                                               path: String,
-                                               bodyDict: [AnyHashable: Any],
-                                               request: () -> Future<SendRequestValue, SendRequestError>) {
+    private func processRequestWithSuccess(notificationCenter: NotificationCenterProtocol,
+                                           path: String,
+                                           bodyDict: [AnyHashable: Any],
+                                           request: () -> Future<SendRequestValue, SendRequestError>) {
         let expectation1 = expectation(description: #function)
-        let networkSession = MockNetworkSession()
         
         request().onSuccess { json in
             expectation1.fulfill()
@@ -120,24 +125,18 @@ class OfflineRequestProcessorTests: XCTestCase {
             XCTFail()
         }
         
-        networkSession.requestCallback = { request in
-            TestUtils.validate(request: request, apiEndPoint: Endpoint.api, path: path)
-            XCTAssertTrue(TestUtils.areEqual(dict1: bodyDict, dict2: request.bodyDict))
-        }
-        let taskRunner = IterableTaskRunner(networkSession: networkSession,
-                                            notificationCenter: notificationCenter,
-                                            timeInterval: 0.5)
-        taskRunner.start()
-        wait(for: [expectation1], timeout: 15.0)
-        taskRunner.stop()
+        validateRequest(networkSession: MockNetworkSession(),
+                        path: path,
+                        bodyDict: bodyDict,
+                        notificationCenter: notificationCenter,
+                        expectation: expectation1)
     }
     
-    private func testProcessRequestWithFailure(notificationCenter: NotificationCenterProtocol,
-                                               path: String,
-                                               bodyDict: [AnyHashable: Any],
-                                               request: () -> Future<SendRequestValue, SendRequestError>) {
+    private func processRequestWithFailure(notificationCenter: NotificationCenterProtocol,
+                                           path: String,
+                                           bodyDict: [AnyHashable: Any],
+                                           request: () -> Future<SendRequestValue, SendRequestError>) {
         let expectation1 = expectation(description: #function)
-        let networkSession = MockNetworkSession(statusCode: 400)
         
         request().onSuccess { json in
             XCTFail()
@@ -145,6 +144,17 @@ class OfflineRequestProcessorTests: XCTestCase {
             expectation1.fulfill()
         }
         
+        validateRequest(networkSession: MockNetworkSession(statusCode: 400),
+                        path: path,
+                        bodyDict: bodyDict,
+                        notificationCenter: notificationCenter,
+                        expectation: expectation1)
+    }
+    
+    private func validateRequest(networkSession: MockNetworkSession,
+                                 path: String, bodyDict: [AnyHashable : Any],
+                                 notificationCenter: NotificationCenterProtocol,
+                                 expectation: XCTestExpectation) {
         networkSession.requestCallback = { request in
             TestUtils.validate(request: request, apiEndPoint: Endpoint.api, path: path)
             XCTAssertTrue(TestUtils.areEqual(dict1: bodyDict, dict2: request.bodyDict))
@@ -153,7 +163,7 @@ class OfflineRequestProcessorTests: XCTestCase {
                                             notificationCenter: notificationCenter,
                                             timeInterval: 0.5)
         taskRunner.start()
-        wait(for: [expectation1], timeout: 15.0)
+        wait(for: [expectation], timeout: 15.0)
         taskRunner.stop()
     }
     
