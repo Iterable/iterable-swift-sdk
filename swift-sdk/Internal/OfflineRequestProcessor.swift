@@ -98,7 +98,16 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                        dataFields: [AnyHashable: Any]?,
                        onSuccess: OnSuccessHandler?,
                        onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        fatalError()
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createTrackPurchaseRequest(total,
+                                                      items: items,
+                                                      dataFields: dataFields)
+        }
+        
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
     }
     
     @discardableResult
