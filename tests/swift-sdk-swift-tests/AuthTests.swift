@@ -219,7 +219,7 @@ class AuthTests: XCTestCase {
     }
     
     func testAuthFailureDelegateCall() {
-        let expectation1 = expectation(description: "")
+        let expectation1 = expectation(description: "\(#function) - auth failure delegate didn't get called")
         
         class AuthFailureDelegate: IterableAuthFailureDelegate {
             var didDelegateGetCalled = false
