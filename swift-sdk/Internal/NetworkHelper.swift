@@ -162,7 +162,7 @@ struct NetworkHelper {
             var iterableCode: String? = nil
             
             if let jsonDict = json as? [AnyHashable: Any] {
-                iterableCode = jsonDict[JsonKey.Response.code] as? String
+                iterableCode = jsonDict[JsonKey.Response.iterableCode] as? String
             }
             
             return .failure(SendRequestError(reason: "Invalid API Key", data: data, httpStatusCode: responseCode, iterableCode: iterableCode))

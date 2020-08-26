@@ -196,7 +196,7 @@ public enum JsonKey: String, JsonKeyRepresentable {
     }
     
     public enum Response {
-        static let code = "code"
+        static let iterableCode = "code"
     }
     
     public var jsonKey: String {
