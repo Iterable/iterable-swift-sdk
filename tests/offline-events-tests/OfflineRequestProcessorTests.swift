@@ -86,6 +86,23 @@ class OfflineRequestProcessorTests: XCTestCase {
                                                 bodyDict: bodyDict)
     }
 
+    func testDisableUserforAllUsers() throws {
+        let hexToken = "zee-token"
+        let bodyDict: [String: Any] = [
+            "token": hexToken,
+        ]
+        
+        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
+            requestProcessor.disableDeviceForAllUsers(hexToken: hexToken,
+                                                      withOnSuccess: nil,
+                                                      onFailure: nil)
+        }
+        
+        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+                                                path: Const.Path.disableDevice,
+                                                bodyDict: bodyDict)
+    }
+
     func testTrackEvent() throws {
         let eventName = "CustomEvent1"
         let dataFields = ["var1": "val1", "var2": "val2"]
@@ -106,7 +123,45 @@ class OfflineRequestProcessorTests: XCTestCase {
                                                 path: Const.Path.trackEvent,
                                                 bodyDict: bodyDict)
     }
-    
+
+    func testUpdateUser() throws {
+        let dataFields = ["var1": "val1", "var2": "val2"]
+        let bodyDict: [String: Any] = [
+            "dataFields": dataFields,
+            "email": "user@example.com",
+            "mergeNestedObjects": true
+        ]
+        
+        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
+            requestProcessor.updateUser(dataFields,
+                                        mergeNestedObjects: true,
+                                        onSuccess: nil,
+                                        onFailure: nil)
+        }
+        
+        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+                                                path: Const.Path.updateUser,
+                                                bodyDict: bodyDict)
+    }
+
+    func testUpdateEmail() throws {
+        let bodyDict: [String: Any] = [
+            "currentEmail": "user@example.com",
+            "newEmail": "new_user@example.com"
+        ]
+        
+        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
+            requestProcessor.updateEmail("new_user@example.com",
+                                         withToken: nil,
+                                         onSuccess: nil,
+                                         onFailure: nil)
+        }
+        
+        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+                                                path: Const.Path.updateEmail,
+                                                bodyDict: bodyDict)
+    }
+
     private func processRequestWithSuccessAndFailure(requestGenerator: (RequestProcessorProtocol) -> Future<SendRequestValue, SendRequestError>,
                                                      path: String,
                                                      bodyDict: [AnyHashable: Any]) throws {

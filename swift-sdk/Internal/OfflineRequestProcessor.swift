@@ -53,7 +53,14 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     func disableDeviceForAllUsers(hexToken: String,
                                   withOnSuccess onSuccess: OnSuccessHandler?,
                                   onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        fatalError()
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createDisableDeviceRequest(forAllUsers: true, hexToken: hexToken)
+        }
+        
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
     }
     
     @discardableResult
@@ -61,7 +68,14 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                     mergeNestedObjects: Bool,
                     onSuccess: OnSuccessHandler?,
                     onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        fatalError()
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createUpdateUserRequest(dataFields: dataFields, mergeNestedObjects: mergeNestedObjects)
+        }
+        
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
     }
     
     @discardableResult
@@ -69,7 +83,14 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                      withToken _: String?,
                      onSuccess: OnSuccessHandler?,
                      onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        fatalError()
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createUpdateEmailRequest(newEmail: newEmail)
+        }
+        
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
     }
     
     @discardableResult
