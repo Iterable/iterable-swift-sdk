@@ -244,18 +244,11 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                           notificationsEnabled: Bool,
                           onSuccess: OnSuccessHandler? = nil,
                           onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        let pushServicePlatformString = OnlineRequestProcessor.pushServicePlatformToString(registerTokenInfo.pushServicePlatform, apnsType: registerTokenInfo.apnsType)
-        
         return OnlineRequestProcessor.call(successHandler: onSuccess,
-                                             andFailureHandler: onFailure,
-                                             withIdentifier: "registerToken",
-                                             forResult: apiClient.register(hexToken: registerTokenInfo.hexToken,
-                                                                           appName: registerTokenInfo.appName,
-                                                                           deviceId: registerTokenInfo.deviceId,
-                                                                           sdkVersion: registerTokenInfo.sdkVersion,
-                                                                           deviceAttributes: registerTokenInfo.deviceAttributes,
-                                                                           pushServicePlatform: pushServicePlatformString,
-                                                                           notificationsEnabled: notificationsEnabled))
+                                           andFailureHandler: onFailure,
+                                           withIdentifier: "registerToken",
+                                           forResult: apiClient.register(registerTokenInfo: registerTokenInfo,
+                                                                         notificationsEnabled: notificationsEnabled))
     }
     
     @discardableResult
@@ -267,17 +260,6 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                                       andFailureHandler: onFailure,
                                       withIdentifier: "disableDevice",
                                       forResult: apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken))
-    }
-    
-    private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform, apnsType: APNSType) -> String {
-        switch pushServicePlatform {
-        case .production:
-            return JsonValue.apnsProduction.jsonStringValue
-        case .sandbox:
-            return JsonValue.apnsSandbox.jsonStringValue
-        case .auto:
-            return apnsType == .sandbox ? JsonValue.apnsSandbox.jsonStringValue : JsonValue.apnsProduction.jsonStringValue
-        }
     }
     
     @discardableResult

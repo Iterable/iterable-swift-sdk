@@ -48,6 +48,7 @@
 		AC219C51225FEDBD00B98631 /* SampleInboxCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AC219C4F225FEDBD00B98631 /* SampleInboxCell.xib */; };
 		AC219C532260006600B98631 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC219C522260006600B98631 /* Assets.xcassets */; };
 		AC2263F020CF49B8009800EB /* IterableSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = AC2263E220CF49B8009800EB /* IterableSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AC241C2224F5757C00F8F9CC /* Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668320D3370600D46CC9 /* Mocks.swift */; };
 		AC28480A24AA44C600C1FC7F /* EndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC28480924AA44C600C1FC7F /* EndpointTests.swift */; };
 		AC28480C24AA44C600C1FC7F /* IterableSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2263DF20CF49B8009800EB /* IterableSDK.framework */; };
 		AC29D05C24B5A7E000A9E019 /* CI.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC29D05B24B5A7E000A9E019 /* CI.swift */; };
@@ -1808,6 +1809,7 @@
 				ACCF274C24F40C85004862D5 /* OfflineRequestProcessorTests.swift in Sources */,
 				ACC362C724D2C647002C67BA /* CommonMocks.swift in Sources */,
 				ACC362C824D2C7C9002C67BA /* TestUtils.swift in Sources */,
+				AC241C2224F5757C00F8F9CC /* Mocks.swift in Sources */,
 				ACC362C924D2CA8C002C67BA /* Common.swift in Sources */,
 				ACC362C524D2C190002C67BA /* TaskProcessorTests.swift in Sources */,
 				AC2AED4224EBC60C000EE5F3 /* TaskRunnerTests.swift in Sources */,

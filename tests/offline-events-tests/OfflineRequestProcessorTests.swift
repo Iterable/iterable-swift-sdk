@@ -21,6 +21,58 @@ class OfflineRequestProcessorTests: XCTestCase {
         try super.tearDownWithError()
     }
     
+    func testRegister() throws {
+        let notificationCenter = MockNotificationCenter()
+        let registerTokenInfo = RegisterTokenInfo(hexToken: "zee-token",
+                                                  appName: "zee-app-name",
+                                                  pushServicePlatform: .auto,
+                                                  apnsType: .sandbox,
+                                                  deviceId: "deviceId",
+                                                  deviceAttributes: [:],
+                                                  sdkVersion: "6.x.x")
+        
+        let device = UIDevice.current
+        let dataFields: [String: Any] = [
+            "deviceId": registerTokenInfo.deviceId,
+            "iterableSdkVersion": registerTokenInfo.sdkVersion!,
+            "notificationsEnabled": true,
+            "appPackageName": Bundle.main.appPackageName!,
+            "appVersion": Bundle.main.appVersion!,
+            "appBuild": Bundle.main.appBuild!,
+            "localizedModel": device.localizedModel,
+            "userInterfaceIdiom": "Phone",
+            "systemName": device.systemName,
+            "systemVersion": device.systemVersion,
+            "model": device.model,
+            "identifierForVendor": device.identifierForVendor!.uuidString
+        ]
+        let deviceDict: [String: Any] = [
+            "token": registerTokenInfo.hexToken,
+            "applicationName": registerTokenInfo.appName,
+            "platform": "APNS_SANDBOX",
+            "dataFields": dataFields
+        ]
+        let bodyDict: [String: Any] = [
+            "device": deviceDict,
+            "email": "user@example.com"
+        ]
+        let requestProcessor = createRequestProcessor(notificationCenter: notificationCenter)
+        let request: () -> Future<SendRequestValue, SendRequestError> = {
+            requestProcessor.register(registerTokenInfo: registerTokenInfo,
+                                      notificationStateProvider: MockNotificationStateProvider(enabled: true),
+                                      onSuccess: nil,
+                                      onFailure: nil)
+        }
+        testProcessRequestWithSuccess(notificationCenter: notificationCenter,
+                                      path: Const.Path.registerDeviceToken,
+                                      bodyDict: bodyDict,
+                                      request: request)
+        testProcessRequestWithFailure(notificationCenter: notificationCenter,
+                                      path: Const.Path.registerDeviceToken,
+                                      bodyDict: bodyDict,
+                                      request: request)
+    }
+
     func testTrackEvent() throws {
         let notificationCenter = MockNotificationCenter()
         let eventName = "CustomEvent1"

@@ -24,7 +24,32 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                   notificationStateProvider: NotificationStateProviderProtocol,
                   onSuccess: OnSuccessHandler?,
                   onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        fatalError()
+        guard let authProvider = authProvider else {
+            fatalError("authProvider is missing")
+        }
+        
+        let requestCreator = createRequestCreator(authProvider: authProvider)
+        guard case let Result.success(trackEventRequest) =
+            requestCreator.createRegisterTokenRequest(registerTokenInfo: registerTokenInfo,
+                                                      notificationsEnabled: true)
+            else {
+                return SendRequestError.createErroredFuture(reason: "Could not create trackEvent request")
+        }
+        
+        let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
+                                                    endPoint: endPoint,
+                                                    auth: authProvider.auth,
+                                                    deviceMetadata: deviceMetadata,
+                                                    iterableRequest: trackEventRequest)
+        
+        do {
+            let taskId = try IterableTaskScheduler().schedule(apiCallRequest: apiCallRequest,
+                                                              context: IterableTaskContext(blocking: true))
+            return notificationListener.futureFromTask(withTaskId: taskId)
+        } catch let error {
+            ITBError(error.localizedDescription)
+            return SendRequestError.createErroredFuture(reason: error.localizedDescription)
+        }
     }
     
     @discardableResult

@@ -31,29 +31,25 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: Const.Path.updateEmail, body: body)))
     }
     
-    func createRegisterTokenRequest(hexToken: String,
-                                    appName: String,
-                                    deviceId: String,
-                                    sdkVersion: String?,
-                                    deviceAttributes: [String: String],
-                                    pushServicePlatform: String,
+    func createRegisterTokenRequest(registerTokenInfo: RegisterTokenInfo,
                                     notificationsEnabled: Bool) -> Result<IterableRequest, IterableError> {
         guard let keyValueForCurrentUser = keyValueForCurrentUser else {
             ITBError("Both email and userId are nil")
             return .failure(IterableError.general(description: "Both email and userId are nil"))
         }
         
-        let dataFields = DataFieldsHelper.createDataFields(sdkVersion: sdkVersion,
-                                                           deviceId: deviceId,
+        let dataFields = DataFieldsHelper.createDataFields(sdkVersion: registerTokenInfo.sdkVersion,
+                                                           deviceId: registerTokenInfo.deviceId,
                                                            device: UIDevice.current,
                                                            bundle: Bundle.main,
                                                            notificationsEnabled: notificationsEnabled,
-                                                           deviceAttributes: deviceAttributes)
+                                                           deviceAttributes: registerTokenInfo.deviceAttributes)
         
         let deviceDictionary: [String: Any] = [
-            JsonKey.token.jsonKey: hexToken,
-            JsonKey.platform.jsonKey: pushServicePlatform,
-            JsonKey.applicationName.jsonKey: appName,
+            JsonKey.token.jsonKey: registerTokenInfo.hexToken,
+            JsonKey.platform.jsonKey: RequestCreator.pushServicePlatformToString(registerTokenInfo.pushServicePlatform,
+                                                                                 apnsType: registerTokenInfo.apnsType),
+            JsonKey.applicationName.jsonKey: registerTokenInfo.appName,
             JsonKey.dataFields.jsonKey: dataFields,
         ]
         
@@ -442,6 +438,17 @@ struct RequestCreator {
             return JsonValue.DeviceIdiom.carPlay
         default:
             return JsonValue.DeviceIdiom.unspecified
+        }
+    }
+    
+    private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform, apnsType: APNSType) -> String {
+        switch pushServicePlatform {
+        case .production:
+            return JsonValue.apnsProduction.jsonStringValue
+        case .sandbox:
+            return JsonValue.apnsSandbox.jsonStringValue
+        case .auto:
+            return apnsType == .sandbox ? JsonValue.apnsSandbox.jsonStringValue : JsonValue.apnsProduction.jsonStringValue
         }
     }
 }
