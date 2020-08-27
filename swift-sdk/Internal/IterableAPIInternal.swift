@@ -386,8 +386,21 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                   deviceMetadata: deviceMetadata)
     }()
     
-    lazy var requestProcessor: IterableRequestProcessor = {
-        dependencyContainer.createRequestProcessor(apiClient: apiClient)
+    lazy var requestProcessor: RequestProcessorProtocol = {
+        if #available(iOS 10.0, *) {
+            return RequestProcessor(apiKey: apiKey,
+                             authProvider: self,
+                             endPoint: config.apiEndpoint,
+                             networkSession: networkSession,
+                             deviceMetadata: deviceMetadata,
+                             notificationCenter: dependencyContainer.notificationCenter)
+        } else {
+            return OnlineRequestProcessor(apiKey: apiKey,
+                                   authProvider: self,
+                                   endPoint: config.apiEndpoint,
+                                   networkSession: networkSession,
+                                   deviceMetadata: deviceMetadata)
+        }
     }()
     
     private var deviceAttributes = [String: String]()
