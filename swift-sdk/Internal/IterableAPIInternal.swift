@@ -145,22 +145,12 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             return
         }
         
-        // check notificationsEnabled then call register with enabled/not-not enabled
-        notificationStateProvider.notificationsEnabled.onSuccess { enabled in
-            self.register(token: token,
-                          appName: appName,
-                          pushServicePlatform: self.config.pushPlatform,
-                          notificationsEnabled: enabled,
-                          onSuccess: onSuccess,
-                          onFailure: onFailure)
-        }.onError { _ in
-            self.register(token: token,
-                          appName: appName,
-                          pushServicePlatform: self.config.pushPlatform,
-                          notificationsEnabled: false,
-                          onSuccess: onSuccess,
-                          onFailure: onFailure)
-        }
+        self.register(token: token,
+                      appName: appName,
+                      pushServicePlatform: self.config.pushPlatform,
+                      notificationsEnabled: notificationStateProvider.notificationsEnabled,
+                      onSuccess: onSuccess,
+                      onFailure: onFailure)
     }
     
     func disableDeviceForCurrentUser(withOnSuccess onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess(identifier: "disableDevice"),

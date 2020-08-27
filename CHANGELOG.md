@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.2.9
+#### Fixed
+- In rare instances `regiserDeviceToken` API can cause crash. This should fix it.
+
 ## 6.2.8
 #### Added
 - In-app messages now get "pre-loaded" with a timer (or until the in-app loads) to mitigate seeing the loading of the message
