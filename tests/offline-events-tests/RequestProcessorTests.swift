@@ -56,16 +56,20 @@ class RequestProcessorTests: XCTestCase {
             "email": "user@example.com"
         ]
         
+        let expectations = createExpectations(description: #function)
+
         let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
             requestProcessor.register(registerTokenInfo: registerTokenInfo,
                                       notificationStateProvider: MockNotificationStateProvider(enabled: true),
-                                      onSuccess: nil,
-                                      onFailure: nil)
+                                      onSuccess: expectations.onSuccess,
+                                      onFailure: expectations.onFailure)
         }
         
         try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.registerDeviceToken,
                                                 bodyDict: bodyDict)
+        
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
     
     func testDisableUserforCurrentUser() throws {
@@ -75,15 +79,19 @@ class RequestProcessorTests: XCTestCase {
             "email": "user@example.com"
         ]
         
+        let expectations = createExpectations(description: #function)
+
         let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
             requestProcessor.disableDeviceForCurrentUser(hexToken: hexToken,
-                                                         withOnSuccess: nil,
-                                                         onFailure: nil)
+                                                         withOnSuccess: expectations.onSuccess,
+                                                         onFailure: expectations.onFailure)
         }
         
         try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.disableDevice,
                                                 bodyDict: bodyDict)
+
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
     
     func testDisableUserforAllUsers() throws {
@@ -92,15 +100,19 @@ class RequestProcessorTests: XCTestCase {
             "token": hexToken,
         ]
         
+        let expectations = createExpectations(description: #function)
+
         let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
             requestProcessor.disableDeviceForAllUsers(hexToken: hexToken,
-                                                      withOnSuccess: nil,
-                                                      onFailure: nil)
+                                                      withOnSuccess: expectations.onSuccess,
+                                                      onFailure: expectations.onFailure)
         }
         
         try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.disableDevice,
                                                 bodyDict: bodyDict)
+        
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
     
     func testUpdateUser() throws {
@@ -111,16 +123,20 @@ class RequestProcessorTests: XCTestCase {
             "mergeNestedObjects": true
         ]
         
+        let expectations = createExpectations(description: #function)
+
         let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
             requestProcessor.updateUser(dataFields,
                                         mergeNestedObjects: true,
-                                        onSuccess: nil,
-                                        onFailure: nil)
+                                        onSuccess: expectations.onSuccess,
+                                        onFailure: expectations.onFailure)
         }
         
         try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.updateUser,
                                                 bodyDict: bodyDict)
+        
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
     
     func testUpdateEmail() throws {
@@ -129,15 +145,19 @@ class RequestProcessorTests: XCTestCase {
             "newEmail": "new_user@example.com"
         ]
         
+        let expectations = createExpectations(description: #function)
+
         let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
             requestProcessor.updateEmail("new_user@example.com",
-                                         onSuccess: nil,
-                                         onFailure: nil)
+                                         onSuccess: expectations.onSuccess,
+                                         onFailure: expectations.onFailure)
         }
         
         try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.updateEmail,
                                                 bodyDict: bodyDict)
+        
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
     
     func testTrackPurchase() throws {
@@ -159,17 +179,21 @@ class RequestProcessorTests: XCTestCase {
             ],
         ]
         
+        let expectations = createExpectations(description: #function)
+
         let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
             requestProcessor.trackPurchase(total,
                                            items: items,
                                            dataFields: dataFields,
-                                           onSuccess: nil,
-                                           onFailure: nil)
+                                           onSuccess: expectations.onSuccess,
+                                           onFailure: expectations.onFailure)
         }
         
         try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.trackPurchase,
                                                 bodyDict: bodyDict)
+        
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
 
     func testTrackPushOpen() throws {
@@ -191,19 +215,23 @@ class RequestProcessorTests: XCTestCase {
             "email": "user@example.com"
         ]
         
+        let expectations = createExpectations(description: #function)
+
         let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
             requestProcessor.trackPushOpen(NSNumber(value: campaignId),
                                            templateId: NSNumber(value: templateId),
                                            messageId: messageId,
                                            appAlreadyRunning: appAlreadyRunning,
                                            dataFields: dataFields,
-                                           onSuccess: nil,
-                                           onFailure: nil)
+                                           onSuccess: expectations.onSuccess,
+                                           onFailure: expectations.onFailure)
         }
         
         try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.trackPushOpen,
                                                 bodyDict: bodyDict)
+        
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
 
     func testTrackEvent() throws {
@@ -215,16 +243,20 @@ class RequestProcessorTests: XCTestCase {
             "email": "user@example.com"
         ]
         
+        let expectations = createExpectations(description: #function)
+
         let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
             requestProcessor.track(event: eventName,
                                    dataFields: dataFields,
-                                   onSuccess: nil,
-                                   onFailure: nil)
+                                   onSuccess: expectations.onSuccess,
+                                   onFailure: expectations.onFailure)
         }
         
         try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.trackEvent,
                                                 bodyDict: bodyDict)
+        
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
     
     func testUpdateSubscriptions() throws {
@@ -244,15 +276,19 @@ class RequestProcessorTests: XCTestCase {
             "email": "user@example.com"
         ]
         
+        let expectations = createExpectations(description: #function)
+
         let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
             requestProcessor.updateSubscriptions(info: info,
-                                                 onSuccess: nil,
-                                                 onFailure: nil)
+                                                 onSuccess: expectations.onSuccess,
+                                                 onFailure: expectations.onFailure)
         }
         
         try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.updateSubscriptions,
                                                 bodyDict: bodyDict)
+        
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
 
     func testTrackInAppOpen() throws {
@@ -271,17 +307,21 @@ class RequestProcessorTests: XCTestCase {
             ],
         ]
         
+        let expectations = createExpectations(description: #function)
+
         let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
             requestProcessor.trackInAppOpen(message,
                                             location: .inApp,
                                             inboxSessionId: inboxSessionId,
-                                            onSuccess: nil,
-                                            onFailure: nil)
+                                            onSuccess: expectations.onSuccess,
+                                            onFailure: expectations.onFailure)
         }
         
         try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.trackInAppOpen,
                                                 bodyDict: bodyDict)
+        
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
 
     func testTrackInAppClick() throws {
@@ -302,18 +342,22 @@ class RequestProcessorTests: XCTestCase {
             ],
         ]
         
+        let expectations = createExpectations(description: #function)
+
         let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
             requestProcessor.trackInAppClick(message,
                                              location: .inbox,
                                              inboxSessionId: inboxSessionId,
                                              clickedUrl: clickedUrl,
-                                             onSuccess: nil,
-                                             onFailure: nil)
+                                             onSuccess: expectations.onSuccess,
+                                             onFailure: expectations.onFailure)
         }
         
         try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.trackInAppClick,
                                                 bodyDict: bodyDict)
+        
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
 
     func testTrackInAppClose() throws {
@@ -336,19 +380,23 @@ class RequestProcessorTests: XCTestCase {
             "closeAction": "link",
         ]
         
+        let expectations = createExpectations(description: #function)
+
         let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
             requestProcessor.trackInAppClose(message, location: .inbox,
                                              inboxSessionId: inboxSessionId,
                                              source: closeSource,
                                              clickedUrl: clickedUrl,
-                                             onSuccess: nil,
-                                             onFailure: nil)
+                                             onSuccess: expectations.onSuccess,
+                                             onFailure: expectations.onFailure)
             
         }
         
         try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.trackInAppClose,
                                                 bodyDict: bodyDict)
+        
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
 
     func testTrackInboxSession() throws {
@@ -381,16 +429,20 @@ class RequestProcessorTests: XCTestCase {
             "deviceInfo": deviceMetadata.asDictionary()!,
         ]
         
+        let expectations = createExpectations(description: #function)
+
         let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
             requestProcessor.track(inboxSession: inboxSession,
-                                   onSuccess: nil,
-                                   onFailure: nil)
+                                   onSuccess: expectations.onSuccess,
+                                   onFailure: expectations.onFailure)
             
         }
         
         try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.trackInboxSession,
                                                 bodyDict: bodyDict)
+        
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
 
     func testTrackInAppDelivery() throws {
@@ -407,16 +459,20 @@ class RequestProcessorTests: XCTestCase {
             "deviceInfo": deviceMetadata.asDictionary()!,
         ]
         
+        let expectations = createExpectations(description: #function)
+
         let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
             requestProcessor.track(inAppDelivery: message,
-                                   onSuccess: nil,
-                                   onFailure: nil)
+                                   onSuccess: expectations.onSuccess,
+                                   onFailure: expectations.onFailure)
             
         }
         
         try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.trackInAppDelivery,
                                                 bodyDict: bodyDict)
+        
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
     
     func testTrackInAppConsume() throws {
@@ -427,16 +483,20 @@ class RequestProcessorTests: XCTestCase {
             "messageId": messageId,
         ]
         
+        let expectations = createExpectations(description: #function)
+
         let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
             requestProcessor.inAppConsume(messageId,
-                                          onSuccess: nil,
-                                          onFailure: nil)
+                                          onSuccess: expectations.onSuccess,
+                                          onFailure: expectations.onFailure)
             
         }
         
         try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.inAppConsume,
                                                 bodyDict: bodyDict)
+        
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
 
     func testTrackInAppConsume2() throws {
@@ -456,18 +516,22 @@ class RequestProcessorTests: XCTestCase {
             "deviceInfo": deviceMetadata.asDictionary()!,
         ]
 
+        let expectations = createExpectations(description: #function)
+
         let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
             requestProcessor.inAppConsume(message: message,
                                           location: location,
                                           source: source,
-                                          onSuccess: nil,
-                                          onFailure: nil)
+                                          onSuccess: expectations.onSuccess,
+                                          onFailure: expectations.onFailure)
             
         }
         
         try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.inAppConsume,
                                                 bodyDict: bodyDict)
+        
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
     
     func testTrackInAppOpen2() throws {
@@ -483,15 +547,19 @@ class RequestProcessorTests: XCTestCase {
             ],
         ]
         
+        let expectations = createExpectations(description: #function)
+
         let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
             requestProcessor.trackInAppOpen(messageId,
-                                            onSuccess: nil,
-                                            onFailure: nil)
+                                            onSuccess: expectations.onSuccess,
+                                            onFailure: expectations.onFailure)
         }
         
         try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.trackInAppOpen,
                                                 bodyDict: bodyDict)
+        
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
 
     func testTrackInAppClick2() throws {
@@ -509,16 +577,20 @@ class RequestProcessorTests: XCTestCase {
             ],
         ]
         
+        let expectations = createExpectations(description: #function)
+
         let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
             requestProcessor.trackInAppClick(messageId,
                                              clickedUrl: clickedUrl,
-                                             onSuccess: nil,
-                                             onFailure: nil)
+                                             onSuccess: expectations.onSuccess,
+                                             onFailure: expectations.onFailure)
         }
         
         try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.trackInAppClick,
                                                 bodyDict: bodyDict)
+        
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
 
     private func processRequestWithSuccessAndFailure(requestGenerator: (RequestProcessorProtocol) -> Future<SendRequestValue, SendRequestError>,
@@ -687,8 +759,40 @@ class RequestProcessorTests: XCTestCase {
         taskRunner.stop()
     }
     
+    struct Exp {
+        let successExpectation: XCTestExpectation
+        let onSuccess: OnSuccessHandler
+        let failureExpectation: XCTestExpectation
+        let onFailure: OnFailureHandler
+    }
     
+    private func createExpectations(description: String) -> Exp {
+        let (successExpectation, onSuccess) = createSuccessExpectation(description: "success: \(description)")
+        let (failureExpectation, onFailure) = createFailureExpectation(description: "failure: \(description)")
+        return Exp(successExpectation: successExpectation,
+                   onSuccess: onSuccess,
+                   failureExpectation: failureExpectation,
+                   onFailure: onFailure)
+    }
     
+    private func createSuccessExpectation(description: String) -> (XCTestExpectation, OnSuccessHandler) {
+        let expectation1 = expectation(description: description)
+        expectation1.expectedFulfillmentCount = 2
+        let onSuccess: OnSuccessHandler = { _ in
+            expectation1.fulfill()
+        }
+        return (expectation: expectation1, onSuccess: onSuccess)
+    }
+    
+    private func createFailureExpectation(description: String) -> (XCTestExpectation, OnFailureHandler) {
+        let expectation1 = expectation(description: description)
+        expectation1.expectedFulfillmentCount = 2
+        let onFailure: OnFailureHandler = { _, _ in
+            expectation1.fulfill()
+        }
+        return (expectation: expectation1, onFailure: onFailure)
+    }
+
     private let deviceMetadata = DeviceMetadata(deviceId: IterableUtil.generateUUID(),
                                                 platform: JsonValue.iOS.jsonStringValue,
                                                 appPackageName: Bundle.main.appPackageName ?? "")
