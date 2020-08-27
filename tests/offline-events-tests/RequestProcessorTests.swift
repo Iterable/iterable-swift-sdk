@@ -255,6 +255,272 @@ class RequestProcessorTests: XCTestCase {
                                                 bodyDict: bodyDict)
     }
 
+    func testTrackInAppOpen() throws {
+        let messageId = "message_id"
+        let message = InAppTestHelper.emptyInAppMessage(messageId: messageId)
+        let inboxSessionId = "ibx1"
+        let bodyDict: [String: Any] = [
+            "email": "user@example.com",
+            "messageId": messageId,
+            "inboxSessionId": inboxSessionId,
+            "deviceInfo": deviceMetadata.asDictionary()!,
+            "messageContext": [
+                "location": "in-app",
+                "saveToInbox": false,
+                "silentInbox": false,
+            ],
+        ]
+        
+        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
+            requestProcessor.trackInAppOpen(message,
+                                            location: .inApp,
+                                            inboxSessionId: inboxSessionId,
+                                            onSuccess: nil,
+                                            onFailure: nil)
+        }
+        
+        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+                                                path: Const.Path.trackInAppOpen,
+                                                bodyDict: bodyDict)
+    }
+
+    func testTrackInAppClick() throws {
+        let messageId = "message_id"
+        let message = InAppTestHelper.emptyInAppMessage(messageId: messageId)
+        let inboxSessionId = "ibx1"
+        let clickedUrl = "https://somewhere.com"
+        let bodyDict: [String: Any] = [
+            "email": "user@example.com",
+            "messageId": messageId,
+            "inboxSessionId": inboxSessionId,
+            "deviceInfo": deviceMetadata.asDictionary()!,
+            "clickedUrl": clickedUrl,
+            "messageContext": [
+                "location": "inbox",
+                "saveToInbox": false,
+                "silentInbox": false,
+            ],
+        ]
+        
+        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
+            requestProcessor.trackInAppClick(message,
+                                             location: .inbox,
+                                             inboxSessionId: inboxSessionId,
+                                             clickedUrl: clickedUrl,
+                                             onSuccess: nil,
+                                             onFailure: nil)
+        }
+        
+        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+                                                path: Const.Path.trackInAppClick,
+                                                bodyDict: bodyDict)
+    }
+
+    func testTrackInAppClose() throws {
+        let messageId = "message_id"
+        let message = InAppTestHelper.emptyInAppMessage(messageId: messageId)
+        let inboxSessionId = "ibx1"
+        let clickedUrl = "https://closeme.com"
+        let closeSource = InAppCloseSource.link
+        let bodyDict: [String: Any] = [
+            "email": "user@example.com",
+            "messageId": messageId,
+            "inboxSessionId": inboxSessionId,
+            "deviceInfo": deviceMetadata.asDictionary()!,
+            "clickedUrl": clickedUrl,
+            "messageContext": [
+                "location": "inbox",
+                "saveToInbox": false,
+                "silentInbox": false,
+            ],
+            "closeAction": "link",
+        ]
+        
+        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
+            requestProcessor.trackInAppClose(message, location: .inbox,
+                                             inboxSessionId: inboxSessionId,
+                                             source: closeSource,
+                                             clickedUrl: clickedUrl,
+                                             onSuccess: nil,
+                                             onFailure: nil)
+            
+        }
+        
+        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+                                                path: Const.Path.trackInAppClose,
+                                                bodyDict: bodyDict)
+    }
+
+    func testTrackInboxSession() throws {
+        let inboxSessionId = IterableUtil.generateUUID()
+        let startDate = dateProvider.currentDate
+        let endDate = startDate.addingTimeInterval(60 * 5)
+        let impressions = [
+            IterableInboxImpression(messageId: "message1", silentInbox: true, displayCount: 2, displayDuration: 1.23),
+            IterableInboxImpression(messageId: "message2", silentInbox: false, displayCount: 3, displayDuration: 2.34),
+        ]
+        let inboxSession = IterableInboxSession(id: inboxSessionId,
+                                                sessionStartTime: startDate,
+                                                sessionEndTime: endDate,
+                                                startTotalMessageCount: 15,
+                                                startUnreadMessageCount: 5,
+                                                endTotalMessageCount: 10,
+                                                endUnreadMessageCount: 3,
+                                                impressions: impressions)
+        
+        let bodyDict: [String: Any] = [
+            "email": "user@example.com",
+            "inboxSessionId": inboxSessionId,
+            "inboxSessionStart": IterableUtil.int(fromDate: startDate),
+            "inboxSessionEnd": IterableUtil.int(fromDate: endDate),
+            "startTotalMessageCount": inboxSession.startTotalMessageCount,
+            "startUnreadMessageCount": inboxSession.startUnreadMessageCount,
+            "endTotalMessageCount": inboxSession.endTotalMessageCount,
+            "endUnreadMessageCount": inboxSession.endUnreadMessageCount,
+            "impressions": impressions.compactMap { $0.asDictionary() },
+            "deviceInfo": deviceMetadata.asDictionary()!,
+        ]
+        
+        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
+            requestProcessor.track(inboxSession: inboxSession,
+                                   onSuccess: nil,
+                                   onFailure: nil)
+            
+        }
+        
+        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+                                                path: Const.Path.trackInboxSession,
+                                                bodyDict: bodyDict)
+    }
+
+    func testTrackInAppDelivery() throws {
+        let messageId = "message_id"
+        let message = InAppTestHelper.emptyInAppMessage(messageId: messageId)
+
+        let bodyDict: [String: Any] = [
+            "email": "user@example.com",
+            "messageId": messageId,
+            "messageContext": [
+                "saveToInbox": false,
+                "silentInbox": false,
+            ],
+            "deviceInfo": deviceMetadata.asDictionary()!,
+        ]
+        
+        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
+            requestProcessor.track(inAppDelivery: message,
+                                   onSuccess: nil,
+                                   onFailure: nil)
+            
+        }
+        
+        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+                                                path: Const.Path.trackInAppDelivery,
+                                                bodyDict: bodyDict)
+    }
+    
+    func testTrackInAppConsume() throws {
+        let messageId = "message_id"
+
+        let bodyDict: [String: Any] = [
+            "email": "user@example.com",
+            "messageId": messageId,
+        ]
+        
+        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
+            requestProcessor.inAppConsume(messageId,
+                                          onSuccess: nil,
+                                          onFailure: nil)
+            
+        }
+        
+        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+                                                path: Const.Path.inAppConsume,
+                                                bodyDict: bodyDict)
+    }
+
+    func testTrackInAppConsume2() throws {
+        let messageId = "message_id"
+        let message = InAppTestHelper.emptyInAppMessage(messageId: messageId)
+        let location = InAppLocation.inbox
+        let source = InAppDeleteSource.deleteButton
+        let bodyDict: [String: Any] = [
+            "email": "user@example.com",
+            "messageId": messageId,
+            "messageContext": [
+                "location": "inbox",
+                "saveToInbox": false,
+                "silentInbox": false,
+            ],
+            "deleteAction": "delete-button",
+            "deviceInfo": deviceMetadata.asDictionary()!,
+        ]
+
+        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
+            requestProcessor.inAppConsume(message: message,
+                                          location: location,
+                                          source: source,
+                                          onSuccess: nil,
+                                          onFailure: nil)
+            
+        }
+        
+        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+                                                path: Const.Path.inAppConsume,
+                                                bodyDict: bodyDict)
+    }
+    
+    func testTrackInAppOpen2() throws {
+        let messageId = "message_id"
+        let bodyDict: [String: Any] = [
+            "email": "user@example.com",
+            "messageId": messageId,
+            "deviceInfo": deviceMetadata.asDictionary()!,
+            "messageContext": [
+                "location": "in-app",
+                "saveToInbox": false,
+                "silentInbox": false,
+            ],
+        ]
+        
+        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
+            requestProcessor.trackInAppOpen(messageId,
+                                            onSuccess: nil,
+                                            onFailure: nil)
+        }
+        
+        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+                                                path: Const.Path.trackInAppOpen,
+                                                bodyDict: bodyDict)
+    }
+
+    func testTrackInAppClick2() throws {
+        let messageId = "message_id"
+        let clickedUrl = "https://somewhere.com"
+        let bodyDict: [String: Any] = [
+            "email": "user@example.com",
+            "messageId": messageId,
+            "deviceInfo": deviceMetadata.asDictionary()!,
+            "clickedUrl": clickedUrl,
+            "messageContext": [
+                "location": "in-app",
+                "saveToInbox": false,
+                "silentInbox": false,
+            ],
+        ]
+        
+        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
+            requestProcessor.trackInAppClick(messageId,
+                                             clickedUrl: clickedUrl,
+                                             onSuccess: nil,
+                                             onFailure: nil)
+        }
+        
+        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+                                                path: Const.Path.trackInAppClick,
+                                                bodyDict: bodyDict)
+    }
+
     private func processRequestWithSuccessAndFailure(requestGenerator: (RequestProcessorProtocol) -> Future<SendRequestValue, SendRequestError>,
                                                      path: String,
                                                      bodyDict: [AnyHashable: Any]) throws {
@@ -421,11 +687,14 @@ class RequestProcessorTests: XCTestCase {
         taskRunner.stop()
     }
     
+    
+    
     private let deviceMetadata = DeviceMetadata(deviceId: IterableUtil.generateUUID(),
                                                 platform: JsonValue.iOS.jsonStringValue,
                                                 appPackageName: Bundle.main.appPackageName ?? "")
     
     private let dateProvider = MockDateProvider()
+    
     private lazy var persistenceContextProvider: IterablePersistenceContextProvider = {
         let provider = CoreDataPersistenceContextProvider(dateProvider: dateProvider)
         return provider

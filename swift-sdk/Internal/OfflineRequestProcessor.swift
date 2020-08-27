@@ -174,7 +174,16 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                         inboxSessionId: String?,
                         onSuccess: OnSuccessHandler?,
                         onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        fatalError()
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createTrackInAppOpenRequest(inAppMessageContext: InAppMessageContext.from(message: message,
+                                                                                                     location: location,
+                                                                                                     inboxSessionId: inboxSessionId))
+        }
+
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
     }
     
     @discardableResult
@@ -184,7 +193,17 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                          clickedUrl: String,
                          onSuccess: OnSuccessHandler?,
                          onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        fatalError()
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createTrackInAppClickRequest(inAppMessageContext: InAppMessageContext.from(message: message,
+                                                                                                      location: location,
+                                                                                                      inboxSessionId: inboxSessionId),
+                                                        clickedUrl: clickedUrl)
+        }
+
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
     }
     
     @discardableResult
@@ -195,28 +214,61 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                          clickedUrl: String?,
                          onSuccess: OnSuccessHandler?,
                          onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        fatalError()
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createTrackInAppCloseRequest(inAppMessageContext: InAppMessageContext.from(message: message,
+                                                                                                      location: location,
+                                                                                                      inboxSessionId: inboxSessionId),
+                                                        source: source,
+                                                        clickedUrl: clickedUrl)
+        }
+
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
     }
     
     @discardableResult
     func track(inboxSession: IterableInboxSession,
                onSuccess: OnSuccessHandler?,
                onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        fatalError()
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createTrackInboxSessionRequest(inboxSession: inboxSession)
+        }
+
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
     }
     
     @discardableResult
     func track(inAppDelivery message: IterableInAppMessage,
                onSuccess: OnSuccessHandler?,
                onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        fatalError()
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createTrackInAppDeliveryRequest(inAppMessageContext: InAppMessageContext.from(message: message,
+                                                                                                         location: nil))
+        }
+
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
     }
     
     @discardableResult
     func inAppConsume(_ messageId: String,
                       onSuccess: OnSuccessHandler?,
                       onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        fatalError()
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createInAppConsumeRequest(messageId)
+        }
+
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
     }
     
     @discardableResult
@@ -225,7 +277,15 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                       source: InAppDeleteSource?,
                       onSuccess: OnSuccessHandler?,
                       onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        fatalError()
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createTrackInAppConsumeRequest(inAppMessageContext: InAppMessageContext.from(message: message, location: location),
+                                                          source: source)
+        }
+
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
     }
     
     // MARK: DEPRECATED
@@ -234,7 +294,14 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     func trackInAppOpen(_ messageId: String,
                         onSuccess: OnSuccessHandler?,
                         onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        fatalError()
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createTrackInAppOpenRequest(messageId)
+        }
+
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
     }
     
     @discardableResult
@@ -242,7 +309,14 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                          clickedUrl: String,
                          onSuccess: OnSuccessHandler?,
                          onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        fatalError()
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createTrackInAppClickRequest(messageId, clickedUrl: clickedUrl)
+        }
+
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
     }
     
     private let apiKey: String

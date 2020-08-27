@@ -45,6 +45,13 @@ struct InAppTestHelper {
         InAppMessageParser.parse(payload: payload).compactMap(parseResultToOptionalMessage)
     }
     
+    static func emptyInAppMessage(messageId: String = "message_id",
+                                  campaignId: NSNumber = NSNumber(value: 1)) -> IterableInAppMessage {
+        IterableInAppMessage(messageId: messageId,
+                             campaignId: campaignId,
+                             content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""))
+    }
+    
     private static func parseResultToOptionalMessage(result: Result<IterableInAppMessage, InAppMessageParser.ParseError>) -> IterableInAppMessage? {
         switch result {
         case .failure:
