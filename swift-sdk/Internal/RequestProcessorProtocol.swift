@@ -50,7 +50,6 @@ protocol RequestProcessorProtocol {
     
     @discardableResult
     func updateEmail(_ newEmail: String,
-                     withToken _: String?,
                      onSuccess: OnSuccessHandler?,
                      onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
     

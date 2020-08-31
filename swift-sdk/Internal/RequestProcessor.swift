@@ -5,14 +5,27 @@
 
 import Foundation
 
+protocol RequestProcessorStrategy {
+    var chooseOfflineProcessor: Bool { get }
+}
+
+struct DefaultRequestProcessorStrategy: RequestProcessorStrategy {
+    let selectOffline: Bool
+
+    var chooseOfflineProcessor: Bool {
+        selectOffline
+    }
+}
+    
 @available(iOS 10.0, *)
 struct RequestProcessor: RequestProcessorProtocol {
     init(apiKey: String,
          authProvider: AuthProvider,
          endPoint: String,
-         networkSession: NetworkSessionProtocol,
          deviceMetadata: DeviceMetadata,
-         notificationCenter: NotificationCenterProtocol) {
+         networkSession: NetworkSessionProtocol,
+         notificationCenter: NotificationCenterProtocol,
+         strategy: RequestProcessorStrategy = DefaultRequestProcessorStrategy(selectOffline: false)) {
         offlineProcessor = OfflineRequestProcessor(apiKey: apiKey,
                                                    authProvider: authProvider,
                                                    endPoint: endPoint,
@@ -23,6 +36,7 @@ struct RequestProcessor: RequestProcessorProtocol {
                                                  endPoint: endPoint,
                                                  networkSession: networkSession,
                                                  deviceMetadata: deviceMetadata)
+        self.strategy = strategy
     }
     
     @discardableResult
@@ -67,11 +81,9 @@ struct RequestProcessor: RequestProcessorProtocol {
     
     @discardableResult
     func updateEmail(_ newEmail: String,
-                     withToken token: String?,
                      onSuccess: OnSuccessHandler?,
                      onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
         chooseRequestProcessor().updateEmail(newEmail,
-                                             withToken: token,
                                              onSuccess: onSuccess,
                                              onFailure: onFailure)
     }
@@ -233,10 +245,11 @@ struct RequestProcessor: RequestProcessorProtocol {
                                                  onFailure: onFailure)
     }
     
+    private let strategy: RequestProcessorStrategy
     private let offlineProcessor: OfflineRequestProcessor
     private let onlineProcessor: OnlineRequestProcessor
     
     private func chooseRequestProcessor() -> RequestProcessorProtocol {
-        onlineProcessor
+        strategy.chooseOfflineProcessor ? offlineProcessor: onlineProcessor
     }
 }

@@ -48,6 +48,7 @@
 		AC219C51225FEDBD00B98631 /* SampleInboxCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AC219C4F225FEDBD00B98631 /* SampleInboxCell.xib */; };
 		AC219C532260006600B98631 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AC219C522260006600B98631 /* Assets.xcassets */; };
 		AC2263F020CF49B8009800EB /* IterableSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = AC2263E220CF49B8009800EB /* IterableSDK.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AC241C2224F5757C00F8F9CC /* Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668320D3370600D46CC9 /* Mocks.swift */; };
 		AC28480A24AA44C600C1FC7F /* EndpointTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC28480924AA44C600C1FC7F /* EndpointTests.swift */; };
 		AC28480C24AA44C600C1FC7F /* IterableSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2263DF20CF49B8009800EB /* IterableSDK.framework */; };
 		AC29D05C24B5A7E000A9E019 /* CI.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC29D05B24B5A7E000A9E019 /* CI.swift */; };
@@ -67,6 +68,7 @@
 		AC32E16821DD55B900BD4F83 /* OrderedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC32E16721DD55B900BD4F83 /* OrderedDictionary.swift */; };
 		AC347B5C20E5A7E1003449CF /* APNSTypeChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC347B5B20E5A7E1003449CF /* APNSTypeChecker.swift */; };
 		AC347B6720E699FA003449CF /* IterableAppExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = AC347B6620E699D8003449CF /* IterableAppExtensions.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AC3A336D24F65579008225BA /* RequestProcessorUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3A336C24F65579008225BA /* RequestProcessorUtil.swift */; };
 		AC3C10F9213F46A900A9B839 /* IterableLogging.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3C10F8213F46A900A9B839 /* IterableLogging.swift */; };
 		AC3DD9C82142F3650046F886 /* ClassExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3DD9C72142F3650046F886 /* ClassExtensions.swift */; };
 		AC4095A422B18B9D006EF67C /* InboxViewControllerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4095A322B18B9D006EF67C /* InboxViewControllerViewModel.swift */; };
@@ -171,7 +173,7 @@
 		ACC87766215C20B50097E29B /* UITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACC87765215C20B50097E29B /* UITests.swift */; };
 		ACC8776D215C23CC0097E29B /* IterableSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2263DF20CF49B8009800EB /* IterableSDK.framework */; };
 		ACC8776E215C23CC0097E29B /* IterableSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AC2263DF20CF49B8009800EB /* IterableSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		ACCF274C24F40C85004862D5 /* OfflineRequestProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACCF274B24F40C85004862D5 /* OfflineRequestProcessorTests.swift */; };
+		ACCF274C24F40C85004862D5 /* RequestProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACCF274B24F40C85004862D5 /* RequestProcessorTests.swift */; };
 		ACD6116C2107D004003E7F6B /* NetworkHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD6116B2107D004003E7F6B /* NetworkHelper.swift */; };
 		ACD6116E21080564003E7F6B /* IterableAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD6116D21080564003E7F6B /* IterableAPITests.swift */; };
 		ACDA975C23159C37004C412E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACDA975B23159C37004C412E /* AppDelegate.swift */; };
@@ -398,6 +400,7 @@
 		AC32E16721DD55B900BD4F83 /* OrderedDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderedDictionary.swift; sourceTree = "<group>"; };
 		AC347B5B20E5A7E1003449CF /* APNSTypeChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APNSTypeChecker.swift; sourceTree = "<group>"; };
 		AC347B6620E699D8003449CF /* IterableAppExtensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IterableAppExtensions.h; sourceTree = "<group>"; };
+		AC3A336C24F65579008225BA /* RequestProcessorUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestProcessorUtil.swift; sourceTree = "<group>"; };
 		AC3C10F8213F46A900A9B839 /* IterableLogging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableLogging.swift; sourceTree = "<group>"; };
 		AC3DD9C72142F3650046F886 /* ClassExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassExtensions.swift; sourceTree = "<group>"; };
 		AC4095A322B18B9D006EF67C /* InboxViewControllerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewControllerViewModel.swift; sourceTree = "<group>"; };
@@ -490,7 +493,7 @@
 		ACC87763215C20B50097E29B /* ui-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "ui-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ACC87765215C20B50097E29B /* UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITests.swift; sourceTree = "<group>"; };
 		ACC87767215C20B50097E29B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		ACCF274B24F40C85004862D5 /* OfflineRequestProcessorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineRequestProcessorTests.swift; sourceTree = "<group>"; };
+		ACCF274B24F40C85004862D5 /* RequestProcessorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestProcessorTests.swift; sourceTree = "<group>"; };
 		ACD6116B2107D004003E7F6B /* NetworkHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkHelper.swift; sourceTree = "<group>"; };
 		ACD6116D21080564003E7F6B /* IterableAPITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPITests.swift; sourceTree = "<group>"; };
 		ACDA975923159C36004C412E /* inbox-ui-tests-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "inbox-ui-tests-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -851,6 +854,7 @@
 				AC5E888824E1B7CE00752321 /* OnlineRequestProcessor.swift */,
 				AC5812F524F3A90F007E6D36 /* OfflineRequestProcessor.swift */,
 				AC5812F724F3AE8D007E6D36 /* RequestProcessor.swift */,
+				AC3A336C24F65579008225BA /* RequestProcessorUtil.swift */,
 			);
 			name = "Request Processing";
 			sourceTree = "<group>";
@@ -1127,7 +1131,7 @@
 				ACFD5AC524C8216A008E497A /* TasksCRUDTests.swift */,
 				ACC362C424D2C190002C67BA /* TaskProcessorTests.swift */,
 				AC2AED4124EBC60C000EE5F3 /* TaskRunnerTests.swift */,
-				ACCF274B24F40C85004862D5 /* OfflineRequestProcessorTests.swift */,
+				ACCF274B24F40C85004862D5 /* RequestProcessorTests.swift */,
 			);
 			path = "offline-events-tests";
 			sourceTree = "<group>";
@@ -1657,6 +1661,7 @@
 				AC81918822713A110014955E /* Dwifft+UIKit.swift in Sources */,
 				AC426226238C27DD00164121 /* IterableInboxCell+Layout.swift in Sources */,
 				AC347B5C20E5A7E1003449CF /* APNSTypeChecker.swift in Sources */,
+				AC3A336D24F65579008225BA /* RequestProcessorUtil.swift in Sources */,
 				AC8E7CA524C7555E0039605F /* CoreDataUtil.swift in Sources */,
 				AC1AA1C624EBB2DC00F29C6B /* IterableTaskRunner.swift in Sources */,
 				ACFD5AC824C8290E008E497A /* IterableTaskManagedObject.swift in Sources */,
@@ -1805,9 +1810,10 @@
 			files = (
 				ACFD5AC624C8216A008E497A /* TasksCRUDTests.swift in Sources */,
 				ACC362C624D2C334002C67BA /* CommonExtensions.swift in Sources */,
-				ACCF274C24F40C85004862D5 /* OfflineRequestProcessorTests.swift in Sources */,
+				ACCF274C24F40C85004862D5 /* RequestProcessorTests.swift in Sources */,
 				ACC362C724D2C647002C67BA /* CommonMocks.swift in Sources */,
 				ACC362C824D2C7C9002C67BA /* TestUtils.swift in Sources */,
+				AC241C2224F5757C00F8F9CC /* Mocks.swift in Sources */,
 				ACC362C924D2CA8C002C67BA /* Common.swift in Sources */,
 				ACC362C524D2C190002C67BA /* TaskProcessorTests.swift in Sources */,
 				AC2AED4224EBC60C000EE5F3 /* TaskRunnerTests.swift in Sources */,

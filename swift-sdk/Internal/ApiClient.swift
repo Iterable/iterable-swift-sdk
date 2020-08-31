@@ -85,19 +85,8 @@ class ApiClient {
 // MARK: - API REQUEST CALLS
 
 extension ApiClient: ApiClientProtocol {
-    func register(hexToken: String,
-                  appName: String,
-                  deviceId: String,
-                  sdkVersion: String?,
-                  deviceAttributes: [String: String],
-                  pushServicePlatform: String,
-                  notificationsEnabled: Bool) -> Future<SendRequestValue, SendRequestError> {
-        send(iterableRequestResult: createRequestCreator().createRegisterTokenRequest(hexToken: hexToken,
-                                                                                      appName: appName,
-                                                                                      deviceId: deviceId,
-                                                                                      sdkVersion: sdkVersion,
-                                                                                      deviceAttributes: deviceAttributes,
-                                                                                      pushServicePlatform: pushServicePlatform,
+    func register(registerTokenInfo: RegisterTokenInfo, notificationsEnabled: Bool) -> Future<SendRequestValue, SendRequestError> {
+        send(iterableRequestResult: createRequestCreator().createRegisterTokenRequest(registerTokenInfo: registerTokenInfo,
                                                                                       notificationsEnabled: notificationsEnabled))
     }
     
