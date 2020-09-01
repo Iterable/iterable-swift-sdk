@@ -235,7 +235,7 @@ class AuthTests: XCTestCase {
         config.authFailureDelegate = authFailureDelegate
         
         let mockNetworkSession = MockNetworkSession(statusCode: 401,
-                                                    json: [JsonKey.Response.code: JsonValue.Code.invalidJwtPayload])
+                                                    json: [JsonKey.Response.iterableCode: JsonValue.Code.invalidJwtPayload])
         
         let internalAPI = IterableAPIInternal.initializeForTesting(config: config,
                                                                    networkSession: mockNetworkSession)
