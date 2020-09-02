@@ -9,7 +9,7 @@ import UIKit
 
 @objcMembers public final class IterableAPI: NSObject {
     // Current SDK Version.
-    public static let sdkVersion = "6.2.9"
+    public static let sdkVersion = "6.2.10"
     
     // MARK: Initialization
     
@@ -27,9 +27,14 @@ import UIKit
         initialize(apiKey: apiKey, launchOptions: nil, config: config)
     }
     
-    /// You should call this method and not call the init method directly.
-    /// - parameter apiKey: Iterable API Key.
-    /// - parameter launchOptions: The launchOptions coming from application:didLaunching:withOptions
+    /// An SDK initializer taking in the Iterable Mobile API key to be utilized and the
+    /// `launchOptions` passed on from the app delegate, using default SDK settings
+    ///
+    /// - Parameters:
+    ///    - apiKey: The Iterable Mobile API key to be used with the SDK
+    ///    - launchOptions: The `launchOptions` coming from `application(_:didFinishLaunchingWithOptions:)`
+    ///
+    /// - SeeAlso: IterableConfig
     public static func initialize(apiKey: String,
                                   launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
         initialize(apiKey: apiKey, launchOptions: launchOptions, config: IterableConfig())

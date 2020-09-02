@@ -6,8 +6,8 @@
 import Foundation
 import UIKit
 
-// This is needed because String(describing: ...) returns wrong
-// value for this enum when it is exposed to Objective C
+/// This is needed because String(describing: ...) returns the
+/// wrong value for this enum when it is exposed to Objective-C
 extension IterableInAppContentType: CustomStringConvertible {
     public var description: String {
         switch self {
@@ -36,8 +36,8 @@ extension IterableInAppContentType {
     }
 }
 
-// This is needed because String(describing: ...) returns wrong
-// value for this enum when it is exposed to Objective C
+/// This is needed because String(describing: ...) returns the
+/// wrong value for this enum when it is exposed to Objective-C
 extension IterableInAppTriggerType: CustomStringConvertible {
     public var description: String {
         switch self {
@@ -52,7 +52,6 @@ extension IterableInAppTriggerType: CustomStringConvertible {
 }
 
 extension IterableInAppTriggerType {
-    // Internal
     static func from(string: String) -> IterableInAppTriggerType {
         switch string.lowercased() {
         case String(describing: IterableInAppTriggerType.immediate).lowercased():
@@ -366,7 +365,6 @@ class InAppFilePersister: InAppPersistenceProtocol {
     private let ext: String
 }
 
-// Files Utility class
 struct FileHelper {
     static func getUrl(filename: String, ext: String) -> URL? {
         guard let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
