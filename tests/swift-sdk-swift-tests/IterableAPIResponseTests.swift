@@ -69,7 +69,7 @@ class IterableAPIResponseTests: XCTestCase {
         createApiClient(networkSession: MockNetworkSession(statusCode: 200, data: data))
             .send(iterableRequest: iterableRequest).onError { sendError in
                 xpectation.fulfill()
-                XCTAssert(sendError.reason!.lowercased().contains("could not parse json"))
+                XCTAssert(sendError.reason!.lowercased().contains("could not convert data"))
             }
         
         wait(for: [xpectation], timeout: testExpectationTimeout)
