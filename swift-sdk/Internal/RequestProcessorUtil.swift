@@ -9,6 +9,7 @@ struct RequestProcessorUtil {
     @discardableResult
     static func apply(successHandler onSuccess: OnSuccessHandler? = nil,
                       andFailureHandler onFailure: OnFailureHandler? = nil,
+                      andAuthFailureHandler onAuthFailure: IterableAuthFailureDelegate? = nil,
                       toResult result: Future<SendRequestValue, SendRequestError>,
                       withIdentifier identifier: String) -> Future<SendRequestValue, SendRequestError> {
         result.onSuccess { json in
@@ -18,6 +19,14 @@ struct RequestProcessorUtil {
                 defaultOnSuccess(identifier)(json)
             }
         }.onError { error in
+            if let onAuthFailure = onAuthFailure,
+                error.httpStatusCode == 401,
+                error.iterableCode == JsonValue.Code.invalidJwtPayload {
+                onAuthFailure.authTokenFailed()
+            } else {
+                ITBError("\(identifier) failed authorization.")
+            }
+
             if let onFailure = onFailure {
                 onFailure(error.reason, error.data)
             } else {
@@ -27,7 +36,7 @@ struct RequestProcessorUtil {
         return result
     }
     
-    static func defaultOnSuccess(_ identifier: String) -> OnSuccessHandler {
+    private static func defaultOnSuccess(_ identifier: String) -> OnSuccessHandler {
     { data in
         if let data = data {
             ITBInfo("\(identifier) succeeded, got response: \(data)")
@@ -37,7 +46,7 @@ struct RequestProcessorUtil {
         }
     }
     
-    static func defaultOnFailure(_ identifier: String) -> OnFailureHandler {
+    private static func defaultOnFailure(_ identifier: String) -> OnFailureHandler {
     { reason, data in
         var toLog = "\(identifier) failed:"
         if let reason = reason {

@@ -389,14 +389,16 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     lazy var requestProcessor: RequestProcessorProtocol = {
         if #available(iOS 10.0, *) {
             return RequestProcessor(apiKey: apiKey,
-                             authProvider: self,
-                             endPoint: config.apiEndpoint,
-                             deviceMetadata: deviceMetadata,
-                             networkSession: networkSession,
-                             notificationCenter: dependencyContainer.notificationCenter)
+                                    authProvider: self,
+                                    authFailureDelegate: config.authFailureDelegate,
+                                    endPoint: config.apiEndpoint,
+                                    deviceMetadata: deviceMetadata,
+                                    networkSession: networkSession,
+                                    notificationCenter: dependencyContainer.notificationCenter)
         } else {
             return OnlineRequestProcessor(apiKey: apiKey,
                                    authProvider: self,
+                                   authFailureDelegate: config.authFailureDelegate,
                                    endPoint: config.apiEndpoint,
                                    networkSession: networkSession,
                                    deviceMetadata: deviceMetadata)
