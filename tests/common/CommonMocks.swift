@@ -460,3 +460,62 @@ class MockWebView: WebViewProtocol {
 struct MockInjectedDependencyModule {
     let webView: WebViewProtocol
 }
+
+class MockLocalStorage: LocalStorageProtocol {
+    var userId: String? = nil
+    
+    var email: String? = nil
+    
+    var authToken: String? = nil
+    
+    var ddlChecked: Bool = false
+    
+    var deviceId: String? = nil
+    
+    var sdkVersion: String? = nil
+    
+    func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
+        guard !MockLocalStorage.isExpired(expiration: attributionInfoExpiration, currentDate: currentDate) else {
+            return nil
+        }
+        return attributionInfo
+    }
+    
+    func save(attributionInfo: IterableAttributionInfo?, withExpiration expiration: Date?) {
+        self.attributionInfo = attributionInfo
+        attributionInfoExpiration = expiration
+    }
+    
+    func getPayload(currentDate: Date) -> [AnyHashable : Any]? {
+        guard !MockLocalStorage.isExpired(expiration: payloadExpiration, currentDate: currentDate) else {
+            return nil
+        }
+        return payload
+    }
+    
+    func save(payload: [AnyHashable : Any]?, withExpiration: Date?) {
+        self.payload = payload
+        payloadExpiration = withExpiration
+    }
+    
+    private var payload: [AnyHashable: Any]? = nil
+    private var payloadExpiration: Date? = nil
+    
+    private var attributionInfo: IterableAttributionInfo? = nil
+    private var attributionInfoExpiration: Date? = nil
+    
+    private static func isExpired(expiration: Date?, currentDate: Date) -> Bool {
+        if let expiration = expiration {
+            if expiration.timeIntervalSinceReferenceDate > currentDate.timeIntervalSinceReferenceDate {
+                // expiration is later
+                return false
+            } else {
+                // expired
+                return true
+            }
+        } else {
+            // no expiration
+            return false
+        }
+    }
+}

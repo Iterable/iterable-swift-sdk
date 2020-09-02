@@ -11,15 +11,18 @@ struct SendRequestError: Error {
     let reason: String?
     let data: Data?
     let httpStatusCode: Int?
+    let iterableCode: String?
     let originalError: Error?
     
     init(reason: String? = nil,
          data: Data? = nil,
          httpStatusCode: Int? = nil,
+         iterableCode: String? = nil,
          originalError: Error? = nil) {
         self.reason = reason
         self.data = data
         self.httpStatusCode = httpStatusCode
+        self.iterableCode = iterableCode
         self.originalError = originalError
     }
     
@@ -87,23 +90,23 @@ struct NetworkHelper {
     static func sendRequest(_ request: URLRequest,
                             usingSession networkSession: NetworkSessionProtocol) -> Future<SendRequestValue, SendRequestError> {
         #if NETWORK_DEBUG
-            let requestId = IterableUtil.generateUUID()
-            print()
-            print("====================================================>")
-            print("sending request: \(request)")
-            print("requestId: \(requestId)")
-            if let headers = request.allHTTPHeaderFields {
-                print("headers:")
-                print(headers)
+        let requestId = IterableUtil.generateUUID()
+        print()
+        print("====================================================>")
+        print("sending request: \(request)")
+        print("requestId: \(requestId)")
+        if let headers = request.allHTTPHeaderFields {
+            print("headers:")
+            print(headers)
+        }
+        if let body = request.httpBody {
+            if let dict = try? JSONSerialization.jsonObject(with: body, options: []) {
+                print("request body:")
+                print(dict)
             }
-            if let body = request.httpBody {
-                if let dict = try? JSONSerialization.jsonObject(with: body, options: []) {
-                    print("request body:")
-                    print(dict)
-                }
-            }
-            print("====================================================>")
-            print()
+        }
+        print("====================================================>")
+        print()
         #endif
         
         let promise = Promise<SendRequestValue, SendRequestError>()
@@ -127,7 +130,7 @@ struct NetworkHelper {
         
         return promise
     }
-
+    
     static func createResultFromNetworkResponse(data: Data?,
                                                 response: URLResponse?,
                                                 error: Error?) -> Result<SendRequestValue, SendRequestError> {
@@ -156,7 +159,13 @@ struct NetworkHelper {
         }
         
         if responseCode == 401 {
-            return .failure(SendRequestError(reason: "Invalid API Key", data: data, httpStatusCode: responseCode))
+            var iterableCode: String? = nil
+            
+            if let jsonDict = json as? [AnyHashable: Any] {
+                iterableCode = jsonDict[JsonKey.Response.iterableCode] as? String
+            }
+            
+            return .failure(SendRequestError(reason: "Invalid API Key", data: data, httpStatusCode: responseCode, iterableCode: iterableCode))
         } else if responseCode >= 400 {
             var reason = "Invalid Request"
             if let jsonDict = json as? [AnyHashable: Any], let msgFromDict = jsonDict["msg"] as? String {

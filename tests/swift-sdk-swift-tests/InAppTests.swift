@@ -10,7 +10,6 @@ import XCTest
 class InAppTests: XCTestCase {
     override class func setUp() {
         super.setUp()
-        TestUtils.clearTestUserDefaults()
     }
     
     func testInAppDelivery() {
@@ -1295,7 +1294,6 @@ class InAppTests: XCTestCase {
         let config = IterableConfig()
         config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
         
-        TestUtils.clearTestUserDefaults()
         let internalApi = IterableAPIInternal.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher

@@ -15,8 +15,6 @@ class IterableAPITests: XCTestCase {
     
     override func setUp() {
         super.setUp()
-        
-        TestUtils.clearTestUserDefaults()
     }
     
     func testInitialize() {
@@ -757,7 +755,7 @@ class IterableAPITests: XCTestCase {
             let body = networkSession.getRequestBody() as! [String: Any]
             
             TestUtils.validateMessageContext(messageId: messageId, email: IterableAPITests.email, saveToInbox: true, silentInbox: true, location: .inbox, inBody: body)
-            TestUtils.validateDeviceInfo(inBody: body)
+            TestUtils.validateDeviceInfo(inBody: body, withDeviceId: internalAPI.deviceId)
             TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.deleteAction.jsonKey)"), value: InAppDeleteSource.deleteButton.jsonValue as! String, inDictionary: body)
             
             expectation1.fulfill()
@@ -804,8 +802,12 @@ class IterableAPITests: XCTestCase {
         }
         
         let config = IterableConfig()
-        TestUtils.getTestUserDefaults().set("user1@example.com", forKey: Const.UserDefaults.emailKey)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
+        let localStorage = MockLocalStorage()
+        localStorage.email = "user1@example.com"
+        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey,
+                                                                   config: config,
+                                                                   networkSession: networkSession,
+                                                                   localStorage: localStorage)
         internalAPI.updateSubscriptions(emailListIds,
                                         unsubscribedChannelIds: unsubscibedChannelIds,
                                         unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,

@@ -10,8 +10,6 @@ import XCTest
 class InboxViewControllerViewModelTests: XCTestCase {
     override func setUp() {
         super.setUp()
-        
-        TestUtils.clearTestUserDefaults()
     }
     
     override func tearDown() {
