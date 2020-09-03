@@ -228,6 +228,7 @@ public enum JsonValue: String, JsonValueRepresentable {
     }
     
     public enum Code {
+        static let badApiKey = "BadApiKey"
         static let invalidJwtPayload = "InvalidJwtPayload"
     }
     

@@ -542,7 +542,10 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             onSuccess?(json)
         }.onError { error in
             if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.invalidJwtPayload {
+                ITBError(error.reason)
                 onAuthFailure?.authTokenFailed()
+            } else if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.badApiKey {
+                ITBError(error.reason)
             }
             
             onFailure?(error.reason, error.data)
