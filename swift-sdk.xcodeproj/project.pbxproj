@@ -86,6 +86,7 @@
 		AC5812F824F3AE8D007E6D36 /* RequestProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5812F724F3AE8D007E6D36 /* RequestProcessor.swift */; };
 		AC5E888924E1B7CE00752321 /* OnlineRequestProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5E888824E1B7CE00752321 /* OnlineRequestProcessor.swift */; };
 		AC64626B2140AACF0046E1BD /* IterableAPIResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC64626A2140AACF0046E1BD /* IterableAPIResponseTests.swift */; };
+		AC67AF982507481200C1E974 /* NetworkConnectivityCheckerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC67AF972507481200C1E974 /* NetworkConnectivityCheckerTests.swift */; };
 		AC684A86222EF75C00F29749 /* InAppMessageParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC684A85222EF75C00F29749 /* InAppMessageParser.swift */; };
 		AC684A88222F4FDD00F29749 /* InAppDisplayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC684A87222F4FDD00F29749 /* InAppDisplayer.swift */; };
 		AC6FDD8820F4372E005D811E /* IterableAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC6FDD8720F4372E005D811E /* IterableAPI.swift */; };
@@ -133,6 +134,7 @@
 		AC8F35A2239806B500302994 /* InboxViewControllerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8F35A1239806B500302994 /* InboxViewControllerViewModelTests.swift */; };
 		AC90C4CD20D8632E00EECA5D /* IterableAppExtensions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC90C4C420D8632D00EECA5D /* IterableAppExtensions.framework */; };
 		AC90C4E220D8639E00EECA5D /* ITBNotificationServiceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC90C4E120D8639E00EECA5D /* ITBNotificationServiceExtension.swift */; };
+		AC978D3E24FF953C00372B8C /* NetworkConnectivityChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC978D3D24FF953C00372B8C /* NetworkConnectivityChecker.swift */; };
 		AC995F992166EE490099A184 /* CommonMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F942166EC880099A184 /* CommonMocks.swift */; };
 		AC995F9A2166EEB50099A184 /* CommonMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F942166EC880099A184 /* CommonMocks.swift */; };
 		AC995F9D2167E9FD0099A184 /* CommonExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F9C2167E9FD0099A184 /* CommonExtensions.swift */; };
@@ -417,6 +419,7 @@
 		AC5812F724F3AE8D007E6D36 /* RequestProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestProcessor.swift; sourceTree = "<group>"; };
 		AC5E888824E1B7CE00752321 /* OnlineRequestProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlineRequestProcessor.swift; sourceTree = "<group>"; };
 		AC64626A2140AACF0046E1BD /* IterableAPIResponseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPIResponseTests.swift; sourceTree = "<group>"; };
+		AC67AF972507481200C1E974 /* NetworkConnectivityCheckerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkConnectivityCheckerTests.swift; sourceTree = "<group>"; };
 		AC684A85222EF75C00F29749 /* InAppMessageParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppMessageParser.swift; sourceTree = "<group>"; };
 		AC684A87222F4FDD00F29749 /* InAppDisplayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppDisplayer.swift; sourceTree = "<group>"; };
 		AC6FDD8720F4372E005D811E /* IterableAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPI.swift; sourceTree = "<group>"; };
@@ -466,6 +469,7 @@
 		AC90C4CC20D8632E00EECA5D /* notification-extension-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "notification-extension-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC90C4D520D8632E00EECA5D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AC90C4E120D8639E00EECA5D /* ITBNotificationServiceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ITBNotificationServiceExtension.swift; sourceTree = "<group>"; };
+		AC978D3D24FF953C00372B8C /* NetworkConnectivityChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkConnectivityChecker.swift; sourceTree = "<group>"; };
 		AC98294A20D9D65E00796DAA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		AC995F942166EC880099A184 /* CommonMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonMocks.swift; sourceTree = "<group>"; };
 		AC995F9C2167E9FD0099A184 /* CommonExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonExtensions.swift; sourceTree = "<group>"; };
@@ -855,6 +859,7 @@
 				AC5812F524F3A90F007E6D36 /* OfflineRequestProcessor.swift */,
 				AC5812F724F3AE8D007E6D36 /* RequestProcessor.swift */,
 				AC3A336C24F65579008225BA /* RequestProcessorUtil.swift */,
+				AC978D3D24FF953C00372B8C /* NetworkConnectivityChecker.swift */,
 			);
 			name = "Request Processing";
 			sourceTree = "<group>";
@@ -1132,6 +1137,7 @@
 				ACC362C424D2C190002C67BA /* TaskProcessorTests.swift */,
 				AC2AED4124EBC60C000EE5F3 /* TaskRunnerTests.swift */,
 				ACCF274B24F40C85004862D5 /* RequestProcessorTests.swift */,
+				AC67AF972507481200C1E974 /* NetworkConnectivityCheckerTests.swift */,
 			);
 			path = "offline-events-tests";
 			sourceTree = "<group>";
@@ -1654,6 +1660,7 @@
 				ACE34AB321376B1000691224 /* UserDefaultsLocalStorage.swift in Sources */,
 				AC8E9268246284F800BEB68E /* DataFieldsHelper.swift in Sources */,
 				AC5E888924E1B7CE00752321 /* OnlineRequestProcessor.swift in Sources */,
+				AC978D3E24FF953C00372B8C /* NetworkConnectivityChecker.swift in Sources */,
 				ACC362C324D21332002C67BA /* IterableTaskError.swift in Sources */,
 				ACC362C124D21272002C67BA /* IterableTaskResult.swift in Sources */,
 				AC2C667E20D3111900D46CC9 /* DateProvider.swift in Sources */,
@@ -1808,6 +1815,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC67AF982507481200C1E974 /* NetworkConnectivityCheckerTests.swift in Sources */,
 				ACFD5AC624C8216A008E497A /* TasksCRUDTests.swift in Sources */,
 				ACC362C624D2C334002C67BA /* CommonExtensions.swift in Sources */,
 				ACCF274C24F40C85004862D5 /* RequestProcessorTests.swift in Sources */,

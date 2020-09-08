@@ -152,6 +152,31 @@ public class MockPushTracker: NSObject, PushTrackerProtocol {
 }
 
 class MockNetworkSession: NetworkSessionProtocol {
+    class MockDataTask: DataTaskProtocol {
+        init(url: URL, completionHandler: @escaping CompletionHandler, parent: MockNetworkSession) {
+            self.url = url
+            self.completionHandler = completionHandler
+            self.parent = parent
+        }
+
+        var state: URLSessionDataTask.State = .suspended
+        
+        func resume() {
+            state = .running
+            parent.makeDataRequest(with: url, completionHandler: completionHandler)
+        }
+        
+        func cancel() {
+            canceled = true
+            state = .completed
+        }
+        
+        private let url: URL
+        private let completionHandler: CompletionHandler
+        private let parent: MockNetworkSession
+        private var canceled = false
+    }
+
     var urlPatternDataMapping: [String: Data?]?
     var url: URL?
     var request: URLRequest?
@@ -206,6 +231,11 @@ class MockNetworkSession: NetworkSessionProtocol {
         }
     }
     
+    func createDataTask(with url: URL, completionHandler: @escaping CompletionHandler) -> DataTaskProtocol {
+        MockDataTask(url: url, completionHandler: completionHandler, parent: self)
+    }
+
+    
     func getRequestBody() -> [AnyHashable: Any] {
         MockNetworkSession.json(fromData: request!.httpBody!)
     }
@@ -247,6 +277,10 @@ class NoNetworkNetworkSession: NetworkSessionProtocol {
             let error = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: nil)
             completionHandler(try! JSONSerialization.data(withJSONObject: [:], options: []), response, error)
         }
+    }
+
+    func createDataTask(with url: URL, completionHandler: @escaping CompletionHandler) -> DataTaskProtocol {
+        fatalError("Not implemented")
     }
 }
 

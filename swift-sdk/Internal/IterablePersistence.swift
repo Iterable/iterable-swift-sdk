@@ -12,7 +12,7 @@ enum IterableDBError: Error {
 }
 
 extension IterableDBError: LocalizedError {
-    var localizedDescription: String {
+    var errorDescription: String? {
         switch self {
         case let .general(description):
             return description

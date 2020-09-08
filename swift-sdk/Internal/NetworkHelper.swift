@@ -74,10 +74,19 @@ extension NetworkError: LocalizedError {
     }
 }
 
+protocol DataTaskProtocol {
+    var state: URLSessionDataTask.State { get }
+    func resume()
+    func cancel()
+}
+
+extension URLSessionDataTask: DataTaskProtocol {}
+
 protocol NetworkSessionProtocol {
     typealias CompletionHandler = (Data?, URLResponse?, Error?) -> Void
     func makeRequest(_ request: URLRequest, completionHandler: @escaping CompletionHandler)
     func makeDataRequest(with url: URL, completionHandler: @escaping CompletionHandler)
+    func createDataTask(with url: URL, completionHandler: @escaping CompletionHandler) -> DataTaskProtocol
 }
 
 extension URLSession: NetworkSessionProtocol {
@@ -95,6 +104,10 @@ extension URLSession: NetworkSessionProtocol {
         }
         
         task.resume()
+    }
+
+    func createDataTask(with url: URL, completionHandler: @escaping CompletionHandler) -> DataTaskProtocol {
+        dataTask(with: url, completionHandler: completionHandler)
     }
 }
 
