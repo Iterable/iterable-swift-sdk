@@ -60,11 +60,6 @@ import Foundation
     func log(level: LogLevel, message: String)
 }
 
-@objc public protocol IterableAuthFailureDelegate: AnyObject {
-    /// This delegate function is called when the authentication token is invalid
-    func authTokenFailed()
-}
-
 /**
  Iterable Configuration Object. Use this when initializing the API.
  */
@@ -97,8 +92,8 @@ public class IterableConfig: NSObject {
     /// How to handle IterableActions which are other than 'openUrl'
     public weak var customActionDelegate: IterableCustomActionDelegate?
     
-    /// Handles authentication failures
-    public weak var authFailureDelegate: IterableAuthFailureDelegate?
+    /// If the app is using token-based authentication, this callback should be set to return a new token, or `nil` if unable to get a new one
+    public var retrieveNewAuthTokenCallback: (() -> String?)?
     
     /// When set to true, IterableSDK will automatically register and deregister
     /// notification tokens.

@@ -218,21 +218,14 @@ class AuthTests: XCTestCase {
         XCTAssertEqual(internalAPI.auth.authToken, newAuthToken)
     }
     
-    func testAuthFailureDelegateCall() {
-        let expectation1 = expectation(description: "\(#function) - auth failure delegate didn't get called")
-        
-        class AuthFailureDelegate: IterableAuthFailureDelegate {
-            var didDelegateGetCalled = false
-            
-            func authTokenFailed() {
-                didDelegateGetCalled = true
-            }
-        }
-        
-        let authFailureDelegate = AuthFailureDelegate()
+    func testRetrieveNewAuthTokenCallbackCalled() {
+        let expectation1 = expectation(description: "\(#function) - auth failure callback didn't get called")
         
         let config = IterableConfig()
-        config.authFailureDelegate = authFailureDelegate
+        config.retrieveNewAuthTokenCallback = {
+            expectation1.fulfill()
+            return nil
+        }
         
         let mockNetworkSession = MockNetworkSession(statusCode: 401,
                                                     json: [JsonKey.Response.iterableCode: JsonValue.Code.invalidJwtPayload])
@@ -246,10 +239,6 @@ class AuthTests: XCTestCase {
                           dataFields: nil,
                           onSuccess: { data in
                             XCTFail("track event shouldn't have succeeded")
-        },
-                          onFailure: { reason, data in
-                            XCTAssertTrue(authFailureDelegate.didDelegateGetCalled)
-                            expectation1.fulfill()
         })
         
         wait(for: [expectation1], timeout: testExpectationTimeout)

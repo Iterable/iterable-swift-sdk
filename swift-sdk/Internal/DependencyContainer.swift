@@ -40,6 +40,10 @@ extension DependencyContainerProtocol {
                      dateProvider: dateProvider,
                      retryInterval: config.inAppDisplayInterval)
     }
+    
+    func createAuthManager(config: IterableConfig) -> IterableInternalAuthManagerProtocol {
+        AuthManager(config: config)
+    }
 }
 
 struct DependencyContainer: DependencyContainerProtocol {
