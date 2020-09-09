@@ -8,11 +8,15 @@ import Foundation
 class NetworkConnectivityManager: NSObject {
     init(networkMonitor: NetworkMonitorProtocol? = nil,
          connectivityChecker: NetworkConnectivityChecker = NetworkConnectivityChecker(),
-         notificationCenter: NotificationCenterProtocol = NotificationCenter.default) {
+         notificationCenter: NotificationCenterProtocol = NotificationCenter.default,
+         offlineModePollingInterval: TimeInterval? = nil,
+         onlineModePollingInterval: TimeInterval? = nil) {
         ITBInfo()
         self.networkMonitor = networkMonitor ?? Self.createNetworkMonitor()
         self.connectivityChecker = connectivityChecker
         self.notificationCenter = notificationCenter
+        self.offlineModePollingInterval = offlineModePollingInterval ?? Self.defaultOfflineModePollingInterval
+        self.onlineModePollingInterval = onlineModePollingInterval ?? Self.defaultOnlineModePollingInterval
         super.init()
         notificationCenter.addObserver(self,
                                        selector: #selector(onAppWillEnterForeground(notification:)),
@@ -22,11 +26,20 @@ class NetworkConnectivityManager: NSObject {
                                        selector: #selector(onAppDidEnterBackground(notification:)),
                                        name: UIApplication.didEnterBackgroundNotification,
                                        object: nil)
+        notificationCenter.addObserver(self,
+                                       selector: #selector(onNetworkOnline(notification:)),
+                                       name: .iterableNetworkOnline,
+                                       object: nil)
+        notificationCenter.addObserver(self,
+                                       selector: #selector(onNetworkOffline(notification:)),
+                                       name: .iterableNetworkOffline,
+                                       object: nil)
     }
     
     deinit {
         ITBInfo()
         notificationCenter.removeObserver(self)
+        stopTimer()
     }
     
     var isOnline: Bool {
@@ -39,12 +52,38 @@ class NetworkConnectivityManager: NSObject {
         ITBInfo()
         networkMonitor.statusUpdatedCallback = updateStatus
         networkMonitor.start()
+        startTimer()
     }
     
     func stop() {
+        ITBInfo()
         networkMonitor.stop()
+        stopTimer()
     }
     
+    private func startTimer() {
+        ITBInfo()
+        let interval = online ? onlineModePollingInterval : offlineModePollingInterval
+        if #available(iOS 10.0, *) {
+            timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true, block: { [weak self] _ in
+                ITBInfo("timer called")
+                self?.updateStatus()
+            })
+        }
+    }
+
+    private func stopTimer() {
+        ITBInfo()
+        timer?.invalidate()
+        timer = nil
+    }
+    
+    private func resetTimer() {
+        ITBInfo()
+        stopTimer()
+        startTimer()
+    }
+
     private func updateStatus() {
         ITBInfo()
         connectivityChecker.checkConnectivity().onSuccess { connected in
@@ -64,6 +103,18 @@ class NetworkConnectivityManager: NSObject {
         stop()
     }
 
+    @objc
+    private func onNetworkOnline(notification _: Notification) {
+        ITBInfo()
+        online = true
+    }
+
+    @objc
+    private func onNetworkOffline(notification _: Notification) {
+        ITBInfo()
+        online = false
+    }
+
     private static func createNetworkMonitor() -> NetworkMonitorProtocol {
         if #available(iOS 12, *) {
             return NetworkMonitor()
@@ -75,11 +126,17 @@ class NetworkConnectivityManager: NSObject {
     private let notificationCenter: NotificationCenterProtocol
     private var networkMonitor: NetworkMonitorProtocol
     private let connectivityChecker: NetworkConnectivityChecker
+    private var timer: Timer?
+    private let offlineModePollingInterval: TimeInterval
+    private let onlineModePollingInterval: TimeInterval
+    private static let defaultOfflineModePollingInterval: TimeInterval = 1 * 60.0
+    private static let defaultOnlineModePollingInterval: TimeInterval = 10 * 60
     
     private var online = true {
         didSet {
             if online != oldValue {
                 connectivityChangedCallback?(online)
+                resetTimer()
             }
         }
     }

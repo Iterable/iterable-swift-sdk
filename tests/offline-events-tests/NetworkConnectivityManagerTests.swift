@@ -168,4 +168,74 @@ class NetworkConnectivityManagerTests: XCTestCase {
         notificationCenter.post(name: UIApplication.willEnterForegroundNotification, object: nil, userInfo: nil)
         wait(for: [expectation3], timeout: 10.0)
     }
+
+    func testOnlinePollingInterval() throws {
+        // Network status will never be updated
+        class NoUpdateNetworkMonitor: NetworkMonitorProtocol {
+            func start() {}
+            
+            func stop() {}
+            
+            var statusUpdatedCallback: (() -> Void)?
+        }
+        
+        let networkSession = MockNetworkSession()
+        let checker = NetworkConnectivityChecker(networkSession: networkSession)
+        let monitor = NoUpdateNetworkMonitor()
+        let notificationCenter = MockNotificationCenter()
+        let manager = NetworkConnectivityManager(networkMonitor: monitor,
+                                                 connectivityChecker: checker,
+                                                 notificationCenter: notificationCenter,
+                                                 onlineModePollingInterval: 0.5)
+        
+        // check online status before everything
+        XCTAssertTrue(manager.isOnline)
+        manager.start()
+
+        // check that status is updated when status is offline
+        let expectation1 = expectation(description: "ConnectivityManager: check status change on network offline")
+        manager.connectivityChangedCallback = { connected in
+            XCTAssertFalse(connected)
+            expectation1.fulfill()
+        }
+        networkSession.error = IterableError.general(description: "Mock error")
+
+        wait(for: [expectation1], timeout: 10.0)
+    }
+
+    func testOfflinePollingInterval() throws {
+        // Network status will never be updated
+        class NoUpdateNetworkMonitor: NetworkMonitorProtocol {
+            func start() {}
+            
+            func stop() {}
+            
+            var statusUpdatedCallback: (() -> Void)?
+        }
+        
+        let networkSession = MockNetworkSession()
+        let checker = NetworkConnectivityChecker(networkSession: networkSession)
+        let monitor = NoUpdateNetworkMonitor()
+        let notificationCenter = MockNotificationCenter()
+        let manager = NetworkConnectivityManager(networkMonitor: monitor,
+                                                 connectivityChecker: checker,
+                                                 notificationCenter: notificationCenter,
+                                                 offlineModePollingInterval: 0.5)
+        
+        // check online status before everything
+        XCTAssertTrue(manager.isOnline)
+        manager.start()
+
+        notificationCenter.post(name: .iterableNetworkOffline, object: nil, userInfo: nil)
+        XCTAssertFalse(manager.isOnline)
+        
+        // check that status is updated when status is online
+        let expectation1 = expectation(description: "ConnectivityManager: check status change on network online")
+        manager.connectivityChangedCallback = { connected in
+            XCTAssertTrue(connected)
+            expectation1.fulfill()
+        }
+
+        wait(for: [expectation1], timeout: 10.0)
+    }
 }
