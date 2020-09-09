@@ -10,10 +10,10 @@ import Foundation
 }
 
 class AuthManager: IterableInternalAuthManagerProtocol {
-    init(config: IterableConfig) {
+    init(onAuthTokenRequestedCallback: (() -> String?)?) {
         ITBInfo()
         
-        self.config = config
+        self.onAuthTokenRequestedCallback = onAuthTokenRequestedCallback
     }
     
     deinit {
@@ -24,7 +24,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     
     func requestNewAuthToken() {
         // change this when a bridge to the SDK stored auth token is created so it can actually be set
-        guard let newAuthToken = config.retrieveNewAuthTokenCallback?() else {
+        guard let newAuthToken = onAuthTokenRequestedCallback?() else {
             return
         }
         
@@ -33,5 +33,5 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     
     // MARK: - Private/Internal
     
-    private let config: IterableConfig
+    private let onAuthTokenRequestedCallback: (() -> String?)?
 }
