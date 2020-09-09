@@ -8,6 +8,12 @@ import XCTest
 @testable import IterableSDK
 
 class NetworkConnectivityCheckerTests: XCTestCase {
+    override func setUpWithError() throws {
+        try super.setUpWithError()
+        IterableLogUtil.sharedInstance = IterableLogUtil(dateProvider: SystemDateProvider(),
+                                                         logDelegate: DefaultLogDelegate())
+    }
+
     func testIsConnectedByDefault() throws {
         let expectation1 = expectation(description: #function)
         let checker = NetworkConnectivityChecker()
