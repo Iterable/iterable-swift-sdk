@@ -222,7 +222,7 @@ class AuthTests: XCTestCase {
         let expectation1 = expectation(description: "\(#function) - auth failure callback didn't get called")
         
         let config = IterableConfig()
-        config.retrieveNewAuthTokenCallback = {
+        config.onAuthTokenRequestedCallback = {
             expectation1.fulfill()
             return nil
         }
@@ -242,5 +242,9 @@ class AuthTests: XCTestCase {
         })
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+    
+    func testTempAuth() {
+        
     }
 }
