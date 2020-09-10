@@ -243,8 +243,4 @@ class AuthTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-    
-    func testTempAuth() {
-        
-    }
 }
