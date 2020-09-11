@@ -311,7 +311,7 @@ class AuthTests: XCTestCase {
         XCTAssertEqual(API.auth.authToken, newAuthToken)
     }
     
-    func testRetrieveNewAuthTokenCallbackCalled() {
+    func testOnNewAuthTokenCallbackCalled() {
         let condition1 = expectation(description: "\(#function) - auth failure callback didn't get called")
         
         var callbackCalled = false
