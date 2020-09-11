@@ -18,6 +18,8 @@ extension Notification.Name {
     static let iterableTaskFinishedWithSuccess = Notification.Name(rawValue: "itbl_task_finished_with_success")
     static let iterableTaskFinishedWithRetry = Notification.Name(rawValue: "itbl_task_finished_with_retry")
     static let iterableTaskFinishedWithNoRetry = Notification.Name(rawValue: "itbl_task_finished_with_no_retry")
+    static let iterableNetworkOffline = Notification.Name(rawValue: "itbl_network_offline")
+    static let iterableNetworkOnline = Notification.Name(rawValue: "itbl_network_online")
 }
 
 struct TaskSendRequestValue {

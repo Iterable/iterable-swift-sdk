@@ -14,7 +14,7 @@ enum IterableTaskError: Error {
 }
 
 extension IterableTaskError: LocalizedError {
-    var localizedDescription: String {
+    var errorDescription: String? {
         switch self {
         case let .general(description):
             return description ?? "general error"
