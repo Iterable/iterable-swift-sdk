@@ -31,16 +31,21 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         return authToken
     }
     
-    func requestNewAuthToken() {
+    // @objc attribute only needed for the pre-iOS 10 Timer constructor in queueAuthTokenExpirationRefresh
+    @objc func requestNewAuthToken() {
         authToken = onAuthTokenRequestedCallback?()
         
         storeAuthToken()
+        
+        queueAuthTokenExpirationRefresh(authToken)
     }
     
     func logoutUser() {
         authToken = nil
         
         storeAuthToken()
+        
+        expirationRefreshTimer?.invalidate()
     }
     
     // MARK: - Auth Manager Functions
@@ -51,15 +56,42 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     
     func retrieveAuthToken() {
         authToken = localStorage.authToken
+        
+        queueAuthTokenExpirationRefresh(authToken)
     }
     
     // MARK: - Private/Internal
+    
+    private static let refreshWindow = 60
+    
+    private var expirationRefreshTimer: Timer?
     
     private var authToken: String?
     
     private var localStorage: LocalStorageProtocol
     
     private let onAuthTokenRequestedCallback: (() -> String?)?
+    
+    private func queueAuthTokenExpirationRefresh(_ authToken: String?) {
+        guard let authToken = authToken, let expirationDate = AuthManager.decodeExpirationDateFromAuthToken(authToken) else {
+            return
+        }
+        
+        let refreshDate = TimeInterval(expirationDate - AuthManager.refreshWindow)
+        
+        if #available(iOS 10.0, *) {
+            expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: refreshDate, repeats: false) { timer in
+                self.requestNewAuthToken()
+            }
+        } else {
+            // Fallback on earlier versions
+            expirationRefreshTimer = Timer.scheduledTimer(timeInterval: refreshDate,
+                                                          target: self,
+                                                          selector: #selector(requestNewAuthToken),
+                                                          userInfo: nil,
+                                                          repeats: false)
+        }
+    }
     
     private static func decodeExpirationDateFromAuthToken(_ authToken: String) -> Int? {
         let components = authToken.components(separatedBy: ".")
