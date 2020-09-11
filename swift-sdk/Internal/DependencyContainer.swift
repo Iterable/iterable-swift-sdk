@@ -41,8 +41,10 @@ extension DependencyContainerProtocol {
                      retryInterval: config.inAppDisplayInterval)
     }
     
-    func createAuthManager(config: IterableConfig) -> IterableInternalAuthManagerProtocol {
-        AuthManager(onAuthTokenRequestedCallback: config.onAuthTokenRequestedCallback)
+    func createAuthManager(config: IterableConfig,
+                           localStorage: LocalStorageProtocol) -> IterableInternalAuthManagerProtocol {
+        AuthManager(onAuthTokenRequestedCallback: config.onAuthTokenRequestedCallback,
+                    localStorage: localStorage)
     }
 }
 

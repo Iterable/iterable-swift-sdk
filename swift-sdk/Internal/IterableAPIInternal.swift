@@ -58,7 +58,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     var auth: Auth {
-        Auth(userId: userId, email: email, authToken: authToken)
+        Auth(userId: userId, email: email, authToken: authManager.getAuthToken())
     }
     
     lazy var inAppManager: IterableInternalInAppManagerProtocol = {
@@ -68,7 +68,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }()
     
     lazy var authManager: IterableInternalAuthManagerProtocol = {
-        self.dependencyContainer.createAuthManager(config: self.config)
+        self.dependencyContainer.createAuthManager(config: self.config,
+                                                   localStorage: self.localStorage)
     }()
     
     // MARK: - SDK Functions
@@ -114,39 +115,33 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    func setEmail(_ email: String?, withToken token: String? = nil) {
+    func setEmail(_ email: String?) {
         if email != _email {
             logoutPreviousUser()
             
             _email = email
             _userId = nil
-            authToken = token
+            
+            authManager.requestNewAuthToken()
             
             storeAuthData()
             
             loginNewUser()
-        } else if token != authToken {
-            authToken = token
-            
-            storeAuthData()
         }
     }
     
-    func setUserId(_ userId: String?, withToken token: String? = nil) {
+    func setUserId(_ userId: String?) {
         if userId != _userId {
             logoutPreviousUser()
             
             _email = nil
             _userId = userId
-            authToken = token
+            
+            authManager.requestNewAuthToken()
             
             storeAuthData()
             
             loginNewUser()
-        } else if token != authToken {
-            authToken = token
-            
-            storeAuthData()
         }
     }
     
@@ -194,13 +189,12 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     func updateEmail(_ newEmail: String,
-                     withToken token: String? = nil,
                      onSuccess: OnSuccessHandler? = IterableAPIInternal.defaultOnSuccess("updateEmail"),
                      onFailure: OnFailureHandler? = IterableAPIInternal.defaultOnFailure("updateEmail")) {
         IterableAPIInternal.call(
             successHandler: { json in
                 if self.email != nil {
-                    self.setEmail(newEmail, withToken: token)
+                    self.setEmail(newEmail)
                 }
                 
                 onSuccess?(json)
@@ -384,7 +378,6 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     private var _email: String?
     private var _userId: String?
-    private var authToken: String?
     
     // the hex representation of this device token
     private var hexToken: String?
@@ -435,7 +428,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         
         _email = nil
         _userId = nil
-        authToken = nil
+        
+        authManager.logoutUser()
         
         storeAuthData()
         
@@ -470,13 +464,11 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     private func storeAuthData() {
         localStorage.email = _email
         localStorage.userId = _userId
-        localStorage.authToken = authToken
     }
     
     private func retrieveAuthData() {
         _email = localStorage.email
         _userId = localStorage.userId
-        authToken = localStorage.authToken
     }
     
     @discardableResult

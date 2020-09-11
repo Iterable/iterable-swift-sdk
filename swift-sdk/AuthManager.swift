@@ -6,14 +6,19 @@
 import Foundation
 
 @objc public protocol IterableInternalAuthManagerProtocol {
+    func getAuthToken() -> String?
     func requestNewAuthToken()
+    func logoutUser()
 }
 
 class AuthManager: IterableInternalAuthManagerProtocol {
-    init(onAuthTokenRequestedCallback: (() -> String?)?) {
+    init(onAuthTokenRequestedCallback: (() -> String?)?, localStorage: LocalStorageProtocol) {
         ITBInfo()
         
         self.onAuthTokenRequestedCallback = onAuthTokenRequestedCallback
+        self.localStorage = localStorage
+        
+        retrieveAuthToken()
     }
     
     deinit {
@@ -22,16 +27,37 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     
     // MARK: - IterableInternalAuthManagerProtocol
     
+    func getAuthToken() -> String? {
+        return authToken
+    }
+    
     func requestNewAuthToken() {
-        // change this when a bridge to the SDK stored auth token is created so it can actually be set
-        guard let newAuthToken = onAuthTokenRequestedCallback?() else {
-            return
-        }
+        authToken = onAuthTokenRequestedCallback?()
         
-        print("new token: \(newAuthToken) - update to the new token here")
+        storeAuthToken()
+    }
+    
+    func logoutUser() {
+        authToken = nil
+        
+        storeAuthToken()
+    }
+    
+    // MARK: - Auth Manager Functions
+    
+    func storeAuthToken() {
+        localStorage.authToken = authToken
+    }
+    
+    func retrieveAuthToken() {
+        authToken = localStorage.authToken
     }
     
     // MARK: - Private/Internal
+    
+    private var authToken: String?
+    
+    private var localStorage: LocalStorageProtocol
     
     private let onAuthTokenRequestedCallback: (() -> String?)?
     
