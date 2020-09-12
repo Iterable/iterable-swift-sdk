@@ -172,6 +172,40 @@ class TaskRunnerTests: XCTestCase {
         XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 0)
         taskRunner.stop()
     }
+    
+    func testForegroundBackgroundChange() throws {
+        let networkSession = MockNetworkSession()
+        let checker = NetworkConnectivityChecker(networkSession: networkSession)
+        let monitor = PollingNetworkMonitor(pollingInterval: 0.5)
+        let notificationCenter = MockNotificationCenter()
+        let manager = NetworkConnectivityManager(networkMonitor: monitor,
+                                                 connectivityChecker: checker,
+                                                 notificationCenter: notificationCenter)
+        
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 0.5,
+                                            connectivityManager: manager)
+        taskRunner.start()
+        
+        let _ = try! self.scheduleSampleTask(notificationCenter: notificationCenter)
+        verifyTaskIsExecuted(notificationCenter, withinInterval: 1.0)
+
+        // Now move app to background
+        notificationCenter.post(name: UIApplication.didEnterBackgroundNotification, object: nil, userInfo: nil)
+        // Now schedule a task, giving it some time for task runner to be updated with
+        // app background status
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            let _ = try! self.scheduleSampleTask(notificationCenter: notificationCenter)
+        }
+
+        verifyNoTaskIsExecuted(notificationCenter, forInterval: 1.0)
+
+        // Now move app to foreground
+        notificationCenter.post(name: UIApplication.willEnterForegroundNotification, object: nil, userInfo: nil)
+        verifyTaskIsExecuted(notificationCenter, withinInterval: 10.0)
+        taskRunner.stop()
+    }
 
     private func scheduleSampleTask(notificationCenter: NotificationCenterProtocol) throws -> String {
         let apiKey = "zee-api-key"
@@ -198,26 +232,26 @@ class TaskRunnerTests: XCTestCase {
         let expectation1 = expectation(description: "Wait for task complete notification.")
         expectation1.isInverted = true
         
-        notificationCenter.clearCallbacks()
-        notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithRetry) { _ in
+        let id1 = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithRetry) { _ in
             XCTFail()
         }
-        notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithNoRetry) { _ in
+        let id2 = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithNoRetry) { _ in
             XCTFail()
         }
-        notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithSuccess) { _ in
+        let id3 = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithSuccess) { _ in
             XCTFail()
         }
         wait(for: [expectation1], timeout: interval)
+        notificationCenter.removeCallbacks(withIds: id1, id2, id3)
     }
 
     private func verifyTaskIsExecuted(_ notificationCenter: MockNotificationCenter, withinInterval interval: TimeInterval) {
         let expectation1 = expectation(description: "Wait for task complete notification.")
-        notificationCenter.clearCallbacks()
-        notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithSuccess) { _ in
+        let id1 = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithSuccess) { _ in
             expectation1.fulfill()
         }
         wait(for: [expectation1], timeout: interval)
+        notificationCenter.removeCallbacks(withIds: id1)
     }
 
     private let deviceMetadata = DeviceMetadata(deviceId: IterableUtil.generateUUID(),

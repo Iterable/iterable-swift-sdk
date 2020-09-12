@@ -26,6 +26,14 @@ class IterableTaskRunner: NSObject {
                                             selector: #selector(onTaskScheduled(notification:)),
                                             name: .iterableTaskScheduled,
                                             object: nil)
+        self.notificationCenter.addObserver(self,
+                                       selector: #selector(onAppWillEnterForeground(notification:)),
+                                       name: UIApplication.willEnterForegroundNotification,
+                                       object: nil)
+        self.notificationCenter.addObserver(self,
+                                       selector: #selector(onAppDidEnterBackground(notification:)),
+                                       name: UIApplication.didEnterBackgroundNotification,
+                                       object: nil)
         self.connectivityManager.connectivityChangedCallback = onConnectivityChanged(connected:)
     }
     
@@ -51,6 +59,18 @@ class IterableTaskRunner: NSObject {
         }
     }
     
+    @objc
+    private func onAppWillEnterForeground(notification _: Notification) {
+        ITBInfo()
+        start()
+    }
+    
+    @objc
+    private func onAppDidEnterBackground(notification _: Notification) {
+        ITBInfo()
+        stop()
+    }
+
     private func runNow() {
         timer?.invalidate()
         run()
