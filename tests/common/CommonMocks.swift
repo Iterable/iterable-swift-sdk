@@ -417,6 +417,10 @@ class MockNotificationCenter: NotificationCenterProtocol {
         addObserver(callbackClass, selector: #selector(callbackClass.onNotification(notification:)), name: notification, object: self)
     }
     
+    func clearCallbacks() {
+        observers.removeAll()
+    }
+    
     private class Observer: NSObject {
         let observer: NSObject
         let notificationName: Notification.Name

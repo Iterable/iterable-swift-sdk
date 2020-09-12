@@ -134,7 +134,9 @@ class NetworkConnectivityManager: NSObject {
     
     private var online = true {
         didSet {
+            ITBInfo("online: \(online)")
             if online != oldValue {
+                ITBInfo()
                 connectivityChangedCallback?(online)
                 resetTimer()
             }
