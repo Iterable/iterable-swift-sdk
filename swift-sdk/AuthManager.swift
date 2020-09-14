@@ -61,7 +61,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     
     private let onAuthTokenRequestedCallback: (() -> String?)?
     
-    private static func decodeExpirationDateFromAuthToken(_ authToken: String) -> Int? {
+    static func decodeExpirationDateFromAuthToken(_ authToken: String) -> Int? {
         let components = authToken.components(separatedBy: ".")
         
         guard components.count > 1 else {

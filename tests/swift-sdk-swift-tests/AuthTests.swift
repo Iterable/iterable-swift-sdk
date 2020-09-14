@@ -341,4 +341,19 @@ class AuthTests: XCTestCase {
         
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
+    
+    func testDecodeExpirationDate() {
+        // generated using https://jwt.io
+        let encodedExpDate = 1516239122
+        let jwt = """
+        eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTYyMzkxMjJ9.-fM8Z-u88K5GGomqJxRCilYkjXZusY_Py6kdyzh1EAg
+        """
+        
+        guard let decodedExpDate = AuthManager.decodeExpirationDateFromAuthToken(jwt) else {
+            XCTFail()
+            return
+        }
+        
+        XCTAssertEqual(decodedExpDate, encodedExpDate)
+    }
 }
