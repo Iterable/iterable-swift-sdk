@@ -77,15 +77,15 @@ class AuthManager: IterableInternalAuthManagerProtocol {
             return
         }
         
-        let refreshDate = TimeInterval(expirationDate - AuthManager.refreshWindow)
+        let refreshTimeInterval = TimeInterval(expirationDate - AuthManager.refreshWindow)
         
         if #available(iOS 10.0, *) {
-            expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: refreshDate, repeats: false) { timer in
+            expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: refreshTimeInterval, repeats: false) { timer in
                 self.requestNewAuthToken()
             }
         } else {
             // Fallback on earlier versions
-            expirationRefreshTimer = Timer.scheduledTimer(timeInterval: refreshDate,
+            expirationRefreshTimer = Timer.scheduledTimer(timeInterval: refreshTimeInterval,
                                                           target: self,
                                                           selector: #selector(requestNewAuthToken),
                                                           userInfo: nil,
