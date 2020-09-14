@@ -14,7 +14,7 @@ import Foundation
 class AuthManager: IterableInternalAuthManagerProtocol {
     init(onAuthTokenRequestedCallback: (() -> String?)?,
          localStorage: LocalStorageProtocol,
-         refreshWindow: Int = AuthManager.defaultRefreshWindow) {
+         refreshWindow: TimeInterval = AuthManager.defaultRefreshWindow) {
         ITBInfo()
         
         self.onAuthTokenRequestedCallback = onAuthTokenRequestedCallback
@@ -65,9 +65,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     
     // MARK: - Private/Internal
     
-    static let defaultRefreshWindow = 60
-    
-    private let refreshWindow: Int
+    private let refreshWindow: TimeInterval
     
     private var expirationRefreshTimer: Timer?
     
@@ -77,12 +75,14 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     
     private let onAuthTokenRequestedCallback: (() -> String?)?
     
-    private func queueAuthTokenExpirationRefresh(_ authToken: String?) {
+    static let defaultRefreshWindow: TimeInterval = 60
+    
+    func queueAuthTokenExpirationRefresh(_ authToken: String?) {
         guard let authToken = authToken, let expirationDate = AuthManager.decodeExpirationDateFromAuthToken(authToken) else {
             return
         }
         
-        let refreshTimeInterval = TimeInterval(expirationDate - refreshWindow)
+        let refreshTimeInterval = TimeInterval(expirationDate) - Date().timeIntervalSince1970 - refreshWindow
         
         if #available(iOS 10.0, *) {
             expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: refreshTimeInterval, repeats: false) { timer in
