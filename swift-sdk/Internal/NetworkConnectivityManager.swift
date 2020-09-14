@@ -118,6 +118,7 @@ class NetworkConnectivityManager: NSObject {
             if online != oldValue {
                 ITBInfo("connectivity changed")
                 connectivityChangedCallback?(online)
+                resetTimer()
             }
         }
     }
