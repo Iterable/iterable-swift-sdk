@@ -124,7 +124,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             
             authManager.requestNewAuthToken()
             
-            storeAuthData()
+            storeIdentifierData()
             
             loginNewUser()
         }
@@ -139,7 +139,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             
             authManager.requestNewAuthToken()
             
-            storeAuthData()
+            storeIdentifierData()
             
             loginNewUser()
         }
@@ -431,7 +431,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         
         authManager.logoutUser()
         
-        storeAuthData()
+        storeIdentifierData()
         
         _ = inAppManager.reset()
     }
@@ -461,12 +461,12 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    private func storeAuthData() {
+    private func storeIdentifierData() {
         localStorage.email = _email
         localStorage.userId = _userId
     }
     
-    private func retrieveAuthData() {
+    private func retrieveIdentifierData() {
         _email = localStorage.email
         _userId = localStorage.userId
     }
@@ -577,8 +577,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         
         checkForDeferredDeepLink()
         
-        // get email, userId, and authToken from UserDefaults if present
-        retrieveAuthData()
+        // get email and userId from UserDefaults if present
+        retrieveIdentifierData()
         
         if config.autoPushRegistration, isEitherUserIdOrEmailSet() {
             notificationStateProvider.registerForRemoteNotifications()
