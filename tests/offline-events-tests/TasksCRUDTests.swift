@@ -11,10 +11,12 @@ class TasksCRUDTests: XCTestCase {
     func testCreate() throws {
         let context = persistenceProvider.newBackgroundContext()
         let taskId = IterableUtil.generateUUID()
-        let task = try createTask(context: context, id: taskId, type: .apiCall)
+        let taskName = "zee task name"
+        let task = try createTask(context: context, id: taskId, name: taskName, type: .apiCall)
         try context.save()
         XCTAssertEqual(task.id, taskId)
         XCTAssertEqual(task.type, .apiCall)
+        XCTAssertEqual(task.name, taskName)
         
         let newContext = persistenceProvider.mainQueueContext()
         let found = try newContext.findTask(withId: taskId)!
@@ -140,8 +142,12 @@ class TasksCRUDTests: XCTestCase {
     }
     
     @discardableResult
-    private func createTask(context: IterablePersistenceContext, id: String, type: IterableTaskType) throws -> IterableTask {
+    private func createTask(context: IterablePersistenceContext,
+                            id: String,
+                            name: String? = nil,
+                            type: IterableTaskType = .apiCall) throws -> IterableTask {
         let template = IterableTask(id: id,
+                                    name: name,
                                     type: type,
                                     scheduledAt: dateProvider.currentDate,
                                     requestedAt: dateProvider.currentDate)
