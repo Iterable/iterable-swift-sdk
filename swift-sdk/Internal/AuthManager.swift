@@ -12,11 +12,14 @@ import Foundation
 }
 
 class AuthManager: IterableInternalAuthManagerProtocol {
-    init(onAuthTokenRequestedCallback: (() -> String?)?, localStorage: LocalStorageProtocol) {
+    init(onAuthTokenRequestedCallback: (() -> String?)?,
+         localStorage: LocalStorageProtocol,
+         refreshWindow: TimeInterval = AuthManager.defaultRefreshWindow) {
         ITBInfo()
         
         self.onAuthTokenRequestedCallback = onAuthTokenRequestedCallback
         self.localStorage = localStorage
+        self.refreshWindow = refreshWindow
         
         retrieveAuthToken()
     }
@@ -31,16 +34,21 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         return authToken
     }
     
-    func requestNewAuthToken() {
+    // @objc attribute only needed for the pre-iOS 10 Timer constructor in queueAuthTokenExpirationRefresh
+    @objc func requestNewAuthToken() {
         authToken = onAuthTokenRequestedCallback?()
         
         storeAuthToken()
+        
+        queueAuthTokenExpirationRefresh(authToken)
     }
     
     func logoutUser() {
         authToken = nil
         
         storeAuthToken()
+        
+        expirationRefreshTimer?.invalidate()
     }
     
     // MARK: - Auth Manager Functions
@@ -51,15 +59,44 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     
     func retrieveAuthToken() {
         authToken = localStorage.authToken
+        
+        queueAuthTokenExpirationRefresh(authToken)
     }
     
     // MARK: - Private/Internal
+    
+    private let refreshWindow: TimeInterval
+    
+    private var expirationRefreshTimer: Timer?
     
     private var authToken: String?
     
     private var localStorage: LocalStorageProtocol
     
     private let onAuthTokenRequestedCallback: (() -> String?)?
+    
+    static let defaultRefreshWindow: TimeInterval = 60
+    
+    private func queueAuthTokenExpirationRefresh(_ authToken: String?) {
+        guard let authToken = authToken, let expirationDate = AuthManager.decodeExpirationDateFromAuthToken(authToken) else {
+            return
+        }
+        
+        let refreshTimeInterval = TimeInterval(expirationDate) - Date().timeIntervalSince1970 - refreshWindow
+        
+        if #available(iOS 10.0, *) {
+            expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: refreshTimeInterval, repeats: false) { timer in
+                self.requestNewAuthToken()
+            }
+        } else {
+            // Fallback on earlier versions
+            expirationRefreshTimer = Timer.scheduledTimer(timeInterval: refreshTimeInterval,
+                                                          target: self,
+                                                          selector: #selector(requestNewAuthToken),
+                                                          userInfo: nil,
+                                                          repeats: false)
+        }
+    }
     
     static func decodeExpirationDateFromAuthToken(_ authToken: String) -> Int? {
         let components = authToken.components(separatedBy: ".")
