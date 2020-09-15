@@ -38,13 +38,19 @@ class AuthTests: XCTestCase {
     }
     
     func testEmailWithTokenPersistence() {
-        let internalAPI = IterableAPIInternal.initializeForTesting()
-        
-        internalAPI.email = "previous.user@example.com"
+        let config = IterableConfig()
         
         let emailToken = "asdf"
         
-        internalAPI.setEmail(AuthTests.email, withToken: emailToken)
+        config.onAuthTokenRequestedCallback = { () in
+            emailToken
+        }
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(config: config)
+        
+        internalAPI.email = "previous.user@example.com"
+        
+        internalAPI.setEmail(AuthTests.email)
         
         XCTAssertEqual(internalAPI.email, AuthTests.email)
         XCTAssertNil(internalAPI.userId)
@@ -52,37 +58,43 @@ class AuthTests: XCTestCase {
     }
     
     func testUserIdWithTokenPersistence() {
-        let internalAPI = IterableAPIInternal.initializeForTesting()
-        
-        internalAPI.userId = "previousUserId"
+        let config = IterableConfig()
         
         let userIdToken = "qwer"
         
-        internalAPI.setUserId(AuthTests.userId, withToken: userIdToken)
+        config.onAuthTokenRequestedCallback = { () in
+            userIdToken
+        }
         
+        let internalAPI = IterableAPIInternal.initializeForTesting(config: config)
+
+        internalAPI.userId = "previousUserId"
+        
+        internalAPI.setUserId(AuthTests.userId)
+
         XCTAssertNil(internalAPI.email)
         XCTAssertEqual(internalAPI.userId, AuthTests.userId)
         XCTAssertEqual(internalAPI.auth.authToken, userIdToken)
     }
-    
+
     func testUserLoginAndLogout() {
         let internalAPI = IterableAPIInternal.initializeForTesting()
-        
+
         internalAPI.setEmail(AuthTests.email)
-        
+
         XCTAssertEqual(internalAPI.email, AuthTests.email)
         XCTAssertNil(internalAPI.userId)
         XCTAssertNil(internalAPI.auth.authToken)
-        
+
         internalAPI.email = nil
-        
+
         XCTAssertNil(internalAPI.email)
         XCTAssertNil(internalAPI.userId)
         XCTAssertNil(internalAPI.auth.authToken)
     }
-    
+
     func testNewEmailWithTokenChange() {
-        let internalAPI = IterableAPIInternal.initializeForTesting()
+        var internalAPI: IterableAPIInternal?
         
         let originalEmail = "first@example.com"
         let originalToken = "fdsa"
@@ -90,45 +102,73 @@ class AuthTests: XCTestCase {
         let newEmail = "second@example.com"
         let newToken = "jay"
         
-        internalAPI.setEmail(originalEmail, withToken: originalToken)
+        let config = IterableConfig()
+        config.onAuthTokenRequestedCallback = { () in
+            if internalAPI?.email == originalEmail { return originalToken }
+            if internalAPI?.email == newEmail { return newToken }
+            return nil
+        }
         
-        XCTAssertEqual(internalAPI.email, originalEmail)
-        XCTAssertNil(internalAPI.userId)
-        XCTAssertEqual(internalAPI.auth.authToken, originalToken)
+        internalAPI = IterableAPIInternal.initializeForTesting(config: config)
         
-        internalAPI.setEmail(newEmail, withToken: newToken)
-        
-        XCTAssertEqual(internalAPI.email, newEmail)
-        XCTAssertNil(internalAPI.userId)
-        XCTAssertEqual(internalAPI.auth.authToken, newToken)
+        guard let API = internalAPI else {
+            XCTFail()
+            return
+        }
+
+        API.setEmail(originalEmail)
+
+        XCTAssertEqual(API.email, originalEmail)
+        XCTAssertNil(API.userId)
+        XCTAssertEqual(API.auth.authToken, originalToken)
+
+        API.setEmail(newEmail)
+
+        XCTAssertEqual(API.email, newEmail)
+        XCTAssertNil(API.userId)
+        XCTAssertEqual(API.auth.authToken, newToken)
     }
     
     func testNewUserIdWithTokenChange() {
-        let internalAPI = IterableAPIInternal.initializeForTesting()
-        
+        var internalAPI: IterableAPIInternal?
+
         let originalUserId = "firstUserId"
         let originalToken = "nen"
-        
+
         let newUserId = "secondUserId"
         let newToken = "greedIsland"
         
-        internalAPI.setUserId(originalUserId, withToken: originalToken)
+        let config = IterableConfig()
+        config.onAuthTokenRequestedCallback = { () in
+            if internalAPI?.userId == originalUserId { return originalToken }
+            if internalAPI?.userId == newUserId { return newToken }
+            return nil
+        }
         
-        XCTAssertNil(internalAPI.email)
-        XCTAssertEqual(internalAPI.userId, originalUserId)
-        XCTAssertEqual(internalAPI.auth.authToken, originalToken)
+        internalAPI = IterableAPIInternal.initializeForTesting(config: config)
         
-        internalAPI.setUserId(newUserId, withToken: newToken)
+        guard let API = internalAPI else {
+            XCTFail()
+            return
+        }
         
-        XCTAssertNil(internalAPI.email)
-        XCTAssertEqual(internalAPI.userId, newUserId)
-        XCTAssertEqual(internalAPI.auth.authToken, newToken)
+        API.setUserId(originalUserId)
+
+        XCTAssertNil(API.email)
+        XCTAssertEqual(API.userId, originalUserId)
+        XCTAssertEqual(API.auth.authToken, originalToken)
+
+        API.setUserId(newUserId)
+
+        XCTAssertNil(API.email)
+        XCTAssertEqual(API.userId, newUserId)
+        XCTAssertEqual(API.auth.authToken, newToken)
     }
     
     func testUpdateEmailWithToken() {
         let condition1 = expectation(description: "update email with auth token")
         
-        let internalAPI = IterableAPIInternal.initializeForTesting()
+        var internalAPI: IterableAPIInternal?
         
         let originalEmail = "first@example.com"
         let originalToken = "fdsa"
@@ -136,103 +176,151 @@ class AuthTests: XCTestCase {
         let updatedEmail = "second@example.com"
         let updatedToken = "jay"
         
-        internalAPI.setEmail(originalEmail, withToken: originalToken)
+        let config = IterableConfig()
+        config.onAuthTokenRequestedCallback = { () in
+            if internalAPI?.email == originalEmail { return originalToken }
+            if internalAPI?.email == updatedEmail { return updatedToken }
+            return nil
+        }
         
-        XCTAssertEqual(internalAPI.email, originalEmail)
-        XCTAssertNil(internalAPI.userId)
-        XCTAssertEqual(internalAPI.auth.authToken, originalToken)
+        internalAPI = IterableAPIInternal.initializeForTesting(config: config)
         
-        internalAPI.updateEmail(updatedEmail,
-                                withToken: updatedToken,
-                                onSuccess: { _ in
-                                    XCTAssertEqual(internalAPI.email, updatedEmail)
-                                    XCTAssertNil(internalAPI.userId)
-                                    XCTAssertEqual(internalAPI.auth.authToken, updatedToken)
-                                    
-                                    condition1.fulfill()
-                                },
-                                onFailure: nil)
+        guard let API = internalAPI else {
+            XCTFail()
+            return
+        }
+        
+        API.setEmail(originalEmail)
+        
+        XCTAssertEqual(API.email, originalEmail)
+        XCTAssertNil(API.userId)
+        XCTAssertEqual(API.auth.authToken, originalToken)
+        
+        API.updateEmail(updatedEmail,
+                        onSuccess: { data in
+                            XCTAssertEqual(API.email, updatedEmail)
+                            XCTAssertNil(API.userId)
+                            XCTAssertEqual(API.auth.authToken, updatedToken)
+                            condition1.fulfill()
+        },
+                        onFailure: nil)
         
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
     
     func testLogoutUser() {
-        let localStorage = MockLocalStorage()
+        let config = IterableConfig()
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(localStorage: localStorage)
+        config.onAuthTokenRequestedCallback = { () in
+            AuthTests.authToken
+        }
+        
+        let localStorage = MockLocalStorage()
+
+        let internalAPI = IterableAPIInternal.initializeForTesting(config: config,
+                                                                   localStorage: localStorage)
         
         XCTAssertNil(localStorage.email)
         XCTAssertNil(localStorage.userId)
         XCTAssertNil(localStorage.authToken)
-        
-        internalAPI.setEmail(AuthTests.email, withToken: AuthTests.authToken)
-        
+
+        internalAPI.setEmail(AuthTests.email)
+
         XCTAssertEqual(internalAPI.email, AuthTests.email)
         XCTAssertNil(internalAPI.userId)
         XCTAssertEqual(internalAPI.auth.authToken, AuthTests.authToken)
-        
+
         XCTAssertEqual(localStorage.email, AuthTests.email)
         XCTAssertNil(localStorage.userId)
         XCTAssertEqual(localStorage.authToken, AuthTests.authToken)
-        
+
         internalAPI.logoutUser()
-        
+
         XCTAssertNil(internalAPI.email)
         XCTAssertNil(internalAPI.userId)
         XCTAssertNil(internalAPI.auth.authToken)
-        
+
         XCTAssertNil(localStorage.email)
         XCTAssertNil(localStorage.userId)
         XCTAssertNil(localStorage.authToken)
     }
     
     func testAuthTokenChangeWithSameEmail() {
-        let internalAPI = IterableAPIInternal.initializeForTesting()
+        var authTokenChanged = false
         
-        internalAPI.setEmail(AuthTests.email, withToken: AuthTests.authToken)
-        
-        XCTAssertEqual(internalAPI.email, AuthTests.email)
-        XCTAssertEqual(internalAPI.auth.authToken, AuthTests.authToken)
+        var internalAPI: IterableAPIInternal?
         
         let newAuthToken = AuthTests.authToken + "3984ru398gj893"
         
-        internalAPI.setEmail(AuthTests.email, withToken: newAuthToken)
+        let config = IterableConfig()
+        config.onAuthTokenRequestedCallback = { () in
+            guard internalAPI?.email == AuthTests.email else { return nil }
+            
+            return authTokenChanged ? newAuthToken : AuthTests.authToken
+        }
         
-        XCTAssertEqual(internalAPI.email, AuthTests.email)
-        XCTAssertEqual(internalAPI.auth.authToken, newAuthToken)
+        internalAPI = IterableAPIInternal.initializeForTesting(config: config)
+        
+        guard let API = internalAPI else {
+            XCTFail()
+            return
+        }
+
+        API.setEmail(AuthTests.email)
+        
+        XCTAssertEqual(API.email, AuthTests.email)
+        XCTAssertEqual(API.auth.authToken, AuthTests.authToken)
+        
+        authTokenChanged = true
+        API.authManager.requestNewAuthToken()
+        
+        XCTAssertEqual(API.email, AuthTests.email)
+        XCTAssertEqual(API.auth.authToken, newAuthToken)
     }
     
     func testAuthTokenChangeWithSameUserId() {
-        let internalAPI = IterableAPIInternal.initializeForTesting()
+        var authTokenChanged = false
         
-        internalAPI.setUserId(AuthTests.userId, withToken: AuthTests.authToken)
-        
-        XCTAssertEqual(internalAPI.userId, AuthTests.userId)
-        XCTAssertEqual(internalAPI.auth.authToken, AuthTests.authToken)
+        var internalAPI: IterableAPIInternal?
         
         let newAuthToken = AuthTests.authToken + "3984ru398gj893"
         
-        internalAPI.setUserId(AuthTests.userId, withToken: newAuthToken)
-        
-        XCTAssertEqual(internalAPI.userId, AuthTests.userId)
-        XCTAssertEqual(internalAPI.auth.authToken, newAuthToken)
-    }
-    
-    func testAuthFailureDelegateCall() {
-        let expectation1 = expectation(description: "\(#function) - auth failure delegate didn't get called")
-        
-        class AuthFailureDelegate: IterableAuthFailureDelegate {
-            var didDelegateGetCalled = false
+        let config = IterableConfig()
+        config.onAuthTokenRequestedCallback = { () in
+            guard internalAPI?.userId == AuthTests.userId else { return nil }
             
-            func authTokenFailed() {
-                didDelegateGetCalled = true
-            }
+            return authTokenChanged ? newAuthToken : AuthTests.authToken
         }
         
-        let authFailureDelegate = AuthFailureDelegate()
+        internalAPI = IterableAPIInternal.initializeForTesting(config: config)
+        
+        guard let API = internalAPI else {
+            XCTFail()
+            return
+        }
+        
+        API.setUserId(AuthTests.userId)
+
+        XCTAssertEqual(API.userId, AuthTests.userId)
+        XCTAssertEqual(API.auth.authToken, AuthTests.authToken)
+        
+        authTokenChanged = true
+        API.authManager.requestNewAuthToken()
+        
+        XCTAssertEqual(API.userId, AuthTests.userId)
+        XCTAssertEqual(API.auth.authToken, newAuthToken)
+    }
+    
+    func testRetrieveNewAuthTokenCallbackCalled() {
+        let condition1 = expectation(description: "\(#function) - auth failure callback didn't get called")
+        
+        var callbackCalled = false
         
         let config = IterableConfig()
-        config.authFailureDelegate = authFailureDelegate
+        config.onAuthTokenRequestedCallback = {
+            callbackCalled = true
+            return nil
+        }
         
         let mockNetworkSession = MockNetworkSession(statusCode: 401,
                                                     json: [JsonKey.Response.iterableCode: JsonValue.Code.invalidJwtPayload])
@@ -246,12 +334,26 @@ class AuthTests: XCTestCase {
                           dataFields: nil,
                           onSuccess: { data in
                             XCTFail("track event shouldn't have succeeded")
-        },
-                          onFailure: { reason, data in
-                            XCTAssertTrue(authFailureDelegate.didDelegateGetCalled)
-                            expectation1.fulfill()
+        }, onFailure: { reason, data in
+            XCTAssertTrue(callbackCalled)
+            condition1.fulfill()
         })
         
-        wait(for: [expectation1], timeout: testExpectationTimeout)
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+    
+    func testDecodeExpirationDate() {
+        // generated using https://jwt.io
+        let encodedExpDate = 1516239122
+        let jwt = """
+        eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTYyMzkxMjJ9.-fM8Z-u88K5GGomqJxRCilYkjXZusY_Py6kdyzh1EAg
+        """
+        
+        guard let decodedExpDate = AuthManager.decodeExpirationDateFromAuthToken(jwt) else {
+            XCTFail()
+            return
+        }
+        
+        XCTAssertEqual(decodedExpDate, encodedExpDate)
     }
 }

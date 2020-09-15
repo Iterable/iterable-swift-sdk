@@ -199,6 +199,10 @@ public enum JsonKey: String, JsonKeyRepresentable {
         static let iterableCode = "code"
     }
     
+    public enum JWT {
+        static let exp = "exp"
+    }
+    
     public var jsonKey: String {
         rawValue
     }
