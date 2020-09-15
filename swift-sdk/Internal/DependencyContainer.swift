@@ -44,7 +44,8 @@ extension DependencyContainerProtocol {
     func createAuthManager(config: IterableConfig,
                            localStorage: LocalStorageProtocol) -> IterableInternalAuthManagerProtocol {
         AuthManager(onAuthTokenRequestedCallback: config.onAuthTokenRequestedCallback,
-                    localStorage: localStorage)
+                    localStorage: localStorage,
+                    dateProvider: dateProvider)
     }
 }
 

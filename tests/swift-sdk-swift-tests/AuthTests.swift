@@ -372,6 +372,7 @@ class AuthTests: XCTestCase {
         
         let authManager = AuthManager(onAuthTokenRequestedCallback: authTokenRequestedCallback,
                                       localStorage: MockLocalStorage(),
+                                      dateProvider: MockDateProvider(),
                                       refreshWindow: refreshWindow)
         
         authManager.queueAuthTokenExpirationRefresh(mockEncodedPayload)
@@ -397,6 +398,7 @@ class AuthTests: XCTestCase {
         
         _ = AuthManager(onAuthTokenRequestedCallback: authTokenRequestedCallback,
                         localStorage: mockLocalStorage,
+                        dateProvider: MockDateProvider(),
                         refreshWindow: refreshWindow)
         
         wait(for: [condition1], timeout: testExpectationTimeout)
