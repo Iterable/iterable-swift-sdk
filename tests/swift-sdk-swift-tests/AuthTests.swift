@@ -370,15 +370,16 @@ class AuthTests: XCTestCase {
         let expirationTimeSinceEpoch = Date(timeIntervalSinceNow: refreshWindow + waitTime).timeIntervalSince1970
         let mockEncodedPayload = createMockEncodedPayload(exp: Int(expirationTimeSinceEpoch))
         
+        let localStorage = MockLocalStorage()
         let authManager = AuthManager(onAuthTokenRequestedCallback: authTokenRequestedCallback,
-                                      localStorage: MockLocalStorage(),
+                                      localStorage: localStorage,
                                       refreshWindow: refreshWindow)
-        
-        authManager.queueAuthTokenExpirationRefresh(mockEncodedPayload)
+        localStorage.authToken = mockEncodedPayload
+        authManager.retrieveAuthToken()
         
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
-    
+
     func testAuthTokenRefreshOnInit() {
         let condition1 = expectation(description: "\(#function) - callback didn't get called when refresh was fired")
         
