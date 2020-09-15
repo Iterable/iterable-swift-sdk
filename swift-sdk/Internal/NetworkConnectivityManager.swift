@@ -19,14 +19,6 @@ class NetworkConnectivityManager: NSObject {
         self.onlineModePollingInterval = onlineModePollingInterval ?? Self.defaultOnlineModePollingInterval
         super.init()
         notificationCenter.addObserver(self,
-                                       selector: #selector(onAppWillEnterForeground(notification:)),
-                                       name: UIApplication.willEnterForegroundNotification,
-                                       object: nil)
-        notificationCenter.addObserver(self,
-                                       selector: #selector(onAppDidEnterBackground(notification:)),
-                                       name: UIApplication.didEnterBackgroundNotification,
-                                       object: nil)
-        notificationCenter.addObserver(self,
                                        selector: #selector(onNetworkOnline(notification:)),
                                        name: .iterableNetworkOnline,
                                        object: nil)
@@ -92,18 +84,6 @@ class NetworkConnectivityManager: NSObject {
     }
     
     @objc
-    private func onAppWillEnterForeground(notification _: Notification) {
-        ITBInfo()
-        start()
-    }
-    
-    @objc
-    private func onAppDidEnterBackground(notification _: Notification) {
-        ITBInfo()
-        stop()
-    }
-
-    @objc
     private func onNetworkOnline(notification _: Notification) {
         ITBInfo()
         online = true
@@ -134,10 +114,13 @@ class NetworkConnectivityManager: NSObject {
     
     private var online = true {
         didSet {
+            ITBInfo("online: \(online)")
             if online != oldValue {
+                ITBInfo("connectivity changed")
                 connectivityChangedCallback?(online)
                 resetTimer()
             }
         }
     }
 }
+

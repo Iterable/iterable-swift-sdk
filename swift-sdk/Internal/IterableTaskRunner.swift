@@ -4,6 +4,8 @@
 //
 
 import Foundation
+import UIKit
+
 
 @available(iOS 10.0, *)
 class IterableTaskRunner: NSObject {
@@ -11,47 +13,101 @@ class IterableTaskRunner: NSObject {
     init(networkSession: NetworkSessionProtocol = URLSession(configuration: .default),
          persistenceContextProvider: IterablePersistenceContextProvider = CoreDataPersistenceContextProvider(),
          notificationCenter: NotificationCenterProtocol = NotificationCenter.default,
-         timeInterval: TimeInterval = 1.0 * 60) {
+         timeInterval: TimeInterval = 1.0 * 60,
+         connectivityManager: NetworkConnectivityManager = NetworkConnectivityManager()) {
         ITBInfo()
         self.networkSession = networkSession
         self.persistenceContextProvider = persistenceContextProvider
         self.notificationCenter = notificationCenter
         self.timeInterval = timeInterval
-
+        self.connectivityManager = connectivityManager
+        
         super.init()
 
         self.notificationCenter.addObserver(self,
                                             selector: #selector(onTaskScheduled(notification:)),
                                             name: .iterableTaskScheduled,
                                             object: nil)
+        self.notificationCenter.addObserver(self,
+                                       selector: #selector(onAppWillEnterForeground(notification:)),
+                                       name: UIApplication.willEnterForegroundNotification,
+                                       object: nil)
+        self.notificationCenter.addObserver(self,
+                                       selector: #selector(onAppDidEnterBackground(notification:)),
+                                       name: UIApplication.didEnterBackgroundNotification,
+                                       object: nil)
+        self.connectivityManager.connectivityChangedCallback = onConnectivityChanged(connected:)
     }
     
     func start() {
         ITBInfo()
         paused = false
         run()
+        connectivityManager.start()
     }
     
     func stop() {
         ITBInfo()
         paused = true
         timer?.invalidate()
+        connectivityManager.stop()
     }
     
     @objc
     private func onTaskScheduled(notification: Notification) {
         ITBInfo()
         if !running && !paused {
-            timer?.invalidate()
-            run()
+            runNow()
+        }
+    }
+    
+    @objc
+    private func onAppWillEnterForeground(notification _: Notification) {
+        ITBInfo()
+        start()
+    }
+    
+    @objc
+    private func onAppDidEnterBackground(notification _: Notification) {
+        ITBInfo()
+        stop()
+    }
+
+    private func runNow() {
+        timer?.invalidate()
+        run()
+    }
+    
+    private func onConnectivityChanged(connected: Bool) {
+        ITBInfo()
+        if connected {
+            if paused {
+                paused = false
+                if !running {
+                    runNow()
+                }
+            }
+        } else {
+            if !paused {
+                paused = true
+            }
         }
     }
     
     private func run() {
         ITBInfo()
+        guard !paused else {
+            ITBInfo("Cannot run when paused")
+            return
+        }
+        guard !running else {
+            ITBInfo("Already running")
+            return
+        }
+        
         persistenceContext.perform {
             self.processTasks().onSuccess { _ in
-                ITBInfo("done processing tasks")
+                ITBInfo("Done processing tasks")
                 self.running = false
                 self.scheduleNext()
             }
@@ -60,16 +116,19 @@ class IterableTaskRunner: NSObject {
     
     private func scheduleNext() {
         ITBInfo()
-        if !self.paused {
-            DispatchQueue.global().async {
-                ITBInfo("scheduling timer")
-                let timer = Timer.scheduledTimer(withTimeInterval: self.timeInterval, repeats: false) { _ in
-                    self.run()
-                }
-                self.timer = timer
-                RunLoop.current.add(timer, forMode: .default)
-                RunLoop.current.run()
+        guard !paused else {
+            ITBInfo("Paused")
+            return
+        }
+
+        DispatchQueue.global().async {
+            ITBInfo("Scheduling timer")
+            let timer = Timer.scheduledTimer(withTimeInterval: self.timeInterval, repeats: false) { _ in
+                self.run()
             }
+            self.timer = timer
+            RunLoop.current.add(timer, forMode: .default)
+            RunLoop.current.run()
         }
     }
     
@@ -78,8 +137,10 @@ class IterableTaskRunner: NSObject {
         ITBInfo()
         running = true
         
+        /// This is a recursive function.
+        /// Check whether we were stopped in the middle of running tasks
         guard !paused else {
-            ITBInfo("paused")
+            ITBInfo("Tasks paused before finishing processTasks()")
             return Promise<Void, Never>(value: ())
         }
 
@@ -101,7 +162,7 @@ class IterableTaskRunner: NSObject {
     
     @discardableResult
     private func execute(task: IterableTask) -> Future<TaskExecutionResult, Never> {
-        ITBInfo("executing taskId: \(task.id)")
+        ITBInfo("Executing taskId: \(task.id)")
         guard task.processing == false else {
             return Promise<TaskExecutionResult, Never>(value: .processing)
         }
@@ -184,6 +245,7 @@ class IterableTaskRunner: NSObject {
     private let persistenceContextProvider: IterablePersistenceContextProvider
     private let notificationCenter: NotificationCenterProtocol
     private let timeInterval: TimeInterval
+    private let connectivityManager: NetworkConnectivityManager
     private var timer: Timer?
     private var running = false
     

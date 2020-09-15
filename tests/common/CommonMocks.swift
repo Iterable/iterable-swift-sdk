@@ -389,7 +389,9 @@ class MockInAppDelegate: IterableInAppDelegate {
 
 class MockNotificationCenter: NotificationCenterProtocol {
     func addObserver(_ observer: Any, selector: Selector, name: Notification.Name?, object _: Any?) {
-        observers.append(Observer(observer: observer as! NSObject, notificationName: name!, selector: selector))
+        observers.append(Observer(observer: observer as! NSObject,
+                                  notificationName: name!,
+                                  selector: selector))
     }
     
     func removeObserver(_: Any) {}
@@ -401,9 +403,11 @@ class MockNotificationCenter: NotificationCenterProtocol {
         }
     }
     
-    func addCallback(forNotification notification: Notification.Name, callback: @escaping (Notification) -> Void) {
+    @discardableResult
+    func addCallback(forNotification notification: Notification.Name, callback: @escaping (Notification) -> Void) -> String {
         class CallbackClass: NSObject {
             let callback: (Notification) -> Void
+            
             init(callback: @escaping (Notification) -> Void) {
                 self.callback = callback
             }
@@ -412,17 +416,32 @@ class MockNotificationCenter: NotificationCenterProtocol {
                 callback(notification)
             }
         }
-        
+
+        let id = IterableUtil.generateUUID()
         let callbackClass = CallbackClass(callback: callback)
-        addObserver(callbackClass, selector: #selector(callbackClass.onNotification(notification:)), name: notification, object: self)
+
+        observers.append(Observer(id: id,
+                                  observer: callbackClass,
+                                  notificationName: notification,
+                                  selector: #selector(callbackClass.onNotification(notification:))))
+        return id
+    }
+
+    func removeCallbacks(withIds ids: String...) {
+        observers.removeAll { ids.contains($0.id) }
     }
     
     private class Observer: NSObject {
+        let id: String
         let observer: NSObject
         let notificationName: Notification.Name
         let selector: Selector
         
-        init(observer: NSObject, notificationName: Notification.Name, selector: Selector) {
+        init(id: String = IterableUtil.generateUUID(),
+             observer: NSObject,
+             notificationName: Notification.Name,
+             selector: Selector) {
+            self.id = id
             self.observer = observer
             self.notificationName = notificationName
             self.selector = selector
