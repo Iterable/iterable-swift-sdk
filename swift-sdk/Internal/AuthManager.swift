@@ -80,7 +80,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     
     static let defaultRefreshWindow: TimeInterval = 60
     
-    func queueAuthTokenExpirationRefresh(_ authToken: String?) {
+    private func queueAuthTokenExpirationRefresh(_ authToken: String?) {
         guard let authToken = authToken, let expirationDate = AuthManager.decodeExpirationDateFromAuthToken(authToken) else {
             return
         }
