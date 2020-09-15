@@ -24,6 +24,7 @@ class IterableTaskScheduler {
         let data = try JSONEncoder().encode(apiCallRequest)
 
         try persistenceContext.create(task: IterableTask(id: taskId,
+                                                         name: apiCallRequest.getPath(),
                                                          type: .apiCall,
                                                          scheduledAt: scheduledAt ?? dateProvider.currentDate,
                                                          data: data,

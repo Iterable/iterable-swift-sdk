@@ -11,10 +11,12 @@ class TasksCRUDTests: XCTestCase {
     func testCreate() throws {
         let context = persistenceProvider.newBackgroundContext()
         let taskId = IterableUtil.generateUUID()
-        let task = try context.createTask(id: taskId, type: .apiCall)
+        let taskName = "zee task name"
+        let task = try createTask(context: context, id: taskId, name: taskName, type: .apiCall)
         try context.save()
         XCTAssertEqual(task.id, taskId)
         XCTAssertEqual(task.type, .apiCall)
+        XCTAssertEqual(task.name, taskName)
         
         let newContext = persistenceProvider.mainQueueContext()
         let found = try newContext.findTask(withId: taskId)!
@@ -25,7 +27,7 @@ class TasksCRUDTests: XCTestCase {
     func testUpdate() throws {
         let context = persistenceProvider.newBackgroundContext()
         let taskId = IterableUtil.generateUUID()
-        let task = try context.createTask(id: taskId, type: .apiCall)
+        let task = try createTask(context: context, id: taskId, type: .apiCall)
         try context.save()
         
         let attempts = 2
@@ -67,7 +69,7 @@ class TasksCRUDTests: XCTestCase {
     func testDelete() throws {
         let context = persistenceProvider.newBackgroundContext()
         let taskId = IterableUtil.generateUUID()
-        try context.createTask(id: taskId, type: .apiCall)
+        try createTask(context: context, id: taskId, type: .apiCall)
         try context.save()
         
         let newContext = persistenceProvider.mainQueueContext()
@@ -128,8 +130,8 @@ class TasksCRUDTests: XCTestCase {
         let tasks = try context.findAllTasks()
         XCTAssertEqual(tasks.count, 0)
         
-        try context.createTask(id: IterableUtil.generateUUID(), type: .apiCall)
-        try context.createTask(id: IterableUtil.generateUUID(), type: .apiCall)
+        try createTask(context: context, id: IterableUtil.generateUUID(), type: .apiCall)
+        try createTask(context: context, id: IterableUtil.generateUUID(), type: .apiCall)
         try context.save()
         
         let newTasks = try context.findAllTasks()
@@ -137,6 +139,19 @@ class TasksCRUDTests: XCTestCase {
         
         try context.deleteAllTasks()
         try context.save()
+    }
+    
+    @discardableResult
+    private func createTask(context: IterablePersistenceContext,
+                            id: String,
+                            name: String? = nil,
+                            type: IterableTaskType = .apiCall) throws -> IterableTask {
+        let template = IterableTask(id: id,
+                                    name: name,
+                                    type: type,
+                                    scheduledAt: dateProvider.currentDate,
+                                    requestedAt: dateProvider.currentDate)
+        return try context.create(task: template)
     }
     
     private let dateProvider = MockDateProvider()

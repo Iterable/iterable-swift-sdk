@@ -23,6 +23,15 @@ struct IterableAPICallRequest {
         }
     }
     
+    func getPath() -> String {
+        switch iterableRequest {
+        case .get(let request):
+            return request.path
+        case .post(let request):
+            return request.path
+        }
+    }
+    
     private func createIterableHeaders() -> [String: String] {
         var headers = [JsonKey.contentType.jsonKey: JsonValue.applicationJson.jsonStringValue,
                        JsonKey.Header.sdkPlatform: JsonValue.iOS.jsonStringValue,

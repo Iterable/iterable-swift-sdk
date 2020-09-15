@@ -9,6 +9,7 @@ struct IterableTask {
     static let currentVersion = 1
     
     let id: String
+    let name: String?
     let version: Int
     let createdAt: Date?
     let modifiedAt: Date?
@@ -24,6 +25,7 @@ struct IterableTask {
     let taskFailureData: Data?
     
     init(id: String,
+         name: String? = nil,
          version: Int = IterableTask.currentVersion,
          createdAt: Date? = nil,
          modifiedAt: Date? = nil,
@@ -38,6 +40,7 @@ struct IterableTask {
          requestedAt: Date,
          taskFailureData: Data? = nil) {
         self.id = id
+        self.name = name
         self.version = version
         self.createdAt = createdAt
         self.modifiedAt = modifiedAt
@@ -61,6 +64,7 @@ struct IterableTask {
                  failed: Bool? = nil,
                  taskFailureData: Data? = nil) -> IterableTask {
         IterableTask(id: id,
+                     name: name,
                      version: version,
                      createdAt: createdAt,
                      modifiedAt: modifiedAt,
