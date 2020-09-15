@@ -356,4 +356,60 @@ class AuthTests: XCTestCase {
         
         XCTAssertEqual(decodedExpDate, encodedExpDate)
     }
+    
+    func testAuthTokenRefreshQueued() {
+        let condition1 = expectation(description: "\(#function) - callback didn't get called when refresh was fired")
+        
+        let authTokenRequestedCallback: (() -> String?)? = {
+            condition1.fulfill()
+            return nil
+        }
+        
+        let refreshWindow: TimeInterval = 0
+        let waitTime: TimeInterval = 2
+        let expirationTimeSinceEpoch = Date(timeIntervalSinceNow: refreshWindow + waitTime).timeIntervalSince1970
+        let mockEncodedPayload = createMockEncodedPayload(exp: Int(expirationTimeSinceEpoch))
+        
+        let authManager = AuthManager(onAuthTokenRequestedCallback: authTokenRequestedCallback,
+                                      localStorage: MockLocalStorage(),
+                                      refreshWindow: refreshWindow)
+        
+        authManager.queueAuthTokenExpirationRefresh(mockEncodedPayload)
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+    
+    func testAuthTokenRefreshOnInit() {
+        let condition1 = expectation(description: "\(#function) - callback didn't get called when refresh was fired")
+        
+        let authTokenRequestedCallback: (() -> String?)? = {
+            condition1.fulfill()
+            return nil
+        }
+        
+        let refreshWindow: TimeInterval = 0
+        let waitTime: TimeInterval = 2
+        let expirationTimeSinceEpoch = Date(timeIntervalSinceNow: refreshWindow + waitTime).timeIntervalSince1970
+        let mockEncodedPayload = createMockEncodedPayload(exp: Int(expirationTimeSinceEpoch))
+        
+        let mockLocalStorage = MockLocalStorage()
+        mockLocalStorage.authToken = mockEncodedPayload
+        
+        _ = AuthManager(onAuthTokenRequestedCallback: authTokenRequestedCallback,
+                        localStorage: mockLocalStorage,
+                        refreshWindow: refreshWindow)
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+    
+    private func createMockEncodedPayload(exp: Int) -> String {
+        let payload = """
+        {
+            "email": "\(AuthTests.email)",
+            "exp": \(exp)
+        }
+        """
+        
+        return "asdf.\(payload.data(using: .utf8)!.base64EncodedString()).asdf"
+    }
 }
