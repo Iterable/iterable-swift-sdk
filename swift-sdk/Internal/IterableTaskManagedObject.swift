@@ -21,6 +21,7 @@ extension IterableTaskManagedObject {
     @NSManaged public var modifiedAt: Date?
     @NSManaged public var data: Data?
     @NSManaged public var id: String
+    @NSManaged public var name: String?
     @NSManaged public var lastAttemptedAt: Date?
     @NSManaged public var processing: Bool
     @NSManaged public var type: String
