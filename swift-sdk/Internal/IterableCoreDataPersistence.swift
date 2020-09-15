@@ -94,11 +94,7 @@ struct CoreDataPersistenceContext: IterablePersistenceContext {
     func delete(task: IterableTask) throws {
         try deleteTask(withId: task.id)
     }
-    
-    func createTask(id: String, type: IterableTaskType) throws -> IterableTask {
-        try create(task: IterableTask(id: id, type: type, scheduledAt: dateProvider.currentDate, requestedAt: dateProvider.currentDate))
-    }
-    
+
     func nextTask() throws -> IterableTask? {
         let taskManagedObjects: [IterableTaskManagedObject] = try CoreDataUtil.findSortedEntities(context: managedObjectContext,
                                                                                                   entity: PersistenceConst.Entity.Task.name,
