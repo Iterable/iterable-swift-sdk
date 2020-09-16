@@ -7,7 +7,7 @@ import Foundation
 import UIKit
 
 struct DeviceInfo: Codable {
-    let mobileDeviceType = MobileDeviceType.iOS
+    var mobileDeviceType = MobileDeviceType.iOS
     let deviceFp: DeviceFp
     
     struct DeviceFp: Codable {
@@ -54,6 +54,8 @@ struct DeviceInfo: Codable {
             return "AppleTV"
         case .carPlay:
             return "CarPlay"
+        case .mac:
+            return "Mac"
         case .unspecified:
             return "Other"
         @unknown default:
