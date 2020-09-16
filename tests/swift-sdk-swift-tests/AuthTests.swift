@@ -405,6 +405,46 @@ class AuthTests: XCTestCase {
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
     
+    func testAuthTokenCallbackOnSetEmail() {
+        let condition1 = expectation(description: "\(#function) - callback didn't get called after setEmail")
+        
+        let authTokenRequestedCallback: (() -> String?)? = {
+            condition1.fulfill()
+            return nil
+        }
+        
+        let config = IterableConfig()
+        config.onAuthTokenRequestedCallback = authTokenRequestedCallback
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(config: config)
+        
+        internalAPI.setEmail(AuthTests.email)
+        
+        XCTAssertEqual(internalAPI.email, AuthTests.email)
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+    
+    func testAuthTokenCallbackOnSetUserId() {
+        let condition1 = expectation(description: "\(#function) - callback didn't get called after setEmail")
+        
+        let authTokenRequestedCallback: (() -> String?)? = {
+            condition1.fulfill()
+            return nil
+        }
+        
+        let config = IterableConfig()
+        config.onAuthTokenRequestedCallback = authTokenRequestedCallback
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(config: config)
+        
+        internalAPI.setUserId(AuthTests.userId)
+        
+        XCTAssertEqual(internalAPI.userId, AuthTests.userId)
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+    
     private func createMockEncodedPayload(exp: Int) -> String {
         let payload = """
         {
