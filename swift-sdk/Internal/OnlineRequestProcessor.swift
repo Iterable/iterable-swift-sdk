@@ -9,11 +9,11 @@ import Foundation
 struct OnlineRequestProcessor: RequestProcessorProtocol {
     init(apiKey: String,
          authProvider: AuthProvider,
-         authFailureDelegate: IterableAuthFailureDelegate?,
+         authManager: IterableInternalAuthManagerProtocol?,
          endPoint: String,
          networkSession: NetworkSessionProtocol,
          deviceMetadata: DeviceMetadata) {
-        self.authFailureDelegate = authFailureDelegate
+        self.authManager = authManager
         apiClient = ApiClient(apiKey: apiKey,
                               authProvider: authProvider,
                               endPoint: endPoint,
@@ -239,7 +239,7 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     }
     
     private let apiClient: ApiClientProtocol
-    private weak var authFailureDelegate: IterableAuthFailureDelegate?
+    private weak var authManager: IterableInternalAuthManagerProtocol?
     
     @discardableResult
     private func register(registerTokenInfo: RegisterTokenInfo,
@@ -270,7 +270,7 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                                 forResult result: Future<SendRequestValue, SendRequestError>) -> Future<SendRequestValue, SendRequestError> {
         RequestProcessorUtil.apply(successHandler: onSuccess,
                                    andFailureHandler: onFailure,
-                                   andAuthFailureHandler: authFailureDelegate,
+                                   andAuthManager: authManager,
                                    toResult: result,
                                    withIdentifier: identifier)
     }

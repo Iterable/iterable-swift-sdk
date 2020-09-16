@@ -9,7 +9,7 @@ struct RequestProcessorUtil {
     @discardableResult
     static func apply(successHandler onSuccess: OnSuccessHandler? = nil,
                       andFailureHandler onFailure: OnFailureHandler? = nil,
-                      andAuthFailureHandler onAuthFailure: IterableAuthFailureDelegate? = nil,
+                      andAuthManager authManager: IterableInternalAuthManagerProtocol? = nil,
                       toResult result: Future<SendRequestValue, SendRequestError>,
                       withIdentifier identifier: String) -> Future<SendRequestValue, SendRequestError> {
         result.onSuccess { json in
@@ -19,12 +19,11 @@ struct RequestProcessorUtil {
                 defaultOnSuccess(identifier)(json)
             }
         }.onError { error in
-            if let onAuthFailure = onAuthFailure,
-                error.httpStatusCode == 401,
-                error.iterableCode == JsonValue.Code.invalidJwtPayload {
-                onAuthFailure.authTokenFailed()
-            } else {
-                ITBError("\(identifier) failed authorization.")
+            if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.invalidJwtPayload {
+                ITBError(error.reason)
+                authManager?.requestNewAuthToken()
+            } else if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.badApiKey {
+                ITBError(error.reason)
             }
 
             if let onFailure = onFailure {

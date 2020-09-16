@@ -708,7 +708,7 @@ class RequestProcessorTests: XCTestCase {
                                         selectOffline: Bool) -> RequestProcessorProtocol {
         RequestProcessor(apiKey: "zee-api-key",
                          authProvider: self,
-                         authFailureDelegate: nil,
+                         authManager: nil,
                          endPoint: Endpoint.api,
                          deviceMetadata: deviceMetadata,
                          networkSession: networkSession,

@@ -138,26 +138,6 @@ import UIKit
         internalImplementation?.removeDeviceAttribute(name: name)
     }
     
-    /// Set the user of the SDK instance to the email address specified
-    ///
-    /// - Parameters:
-    ///    - email: The email of the user for the SDK instance
-    ///    - token: The associated authentication token for the user
-    @objc(setEmail:withToken:)
-    public static func setEmail(_ email: String?, withToken token: String? = nil) {
-        internalImplementation?.setEmail(email, withToken: token)
-    }
-    
-    /// Set the user of the SDK instance to the user ID specified
-    ///
-    /// - Parameters:
-    ///    - userId: The user ID of the user for the SDK instance
-    ///    - token: The associated authentication token for the user
-    @objc(setUserId:withToken:)
-    public static func setUserId(_ userId: String?, withToken token: String? = nil) {
-        internalImplementation?.setUserId(userId, withToken: token)
-    }
-    
     /// Logs out the current user from the SDK instance
     ///
     /// - Remark: This will empty out user specific authentication data and reset the in-app manager.
@@ -312,7 +292,7 @@ import UIKit
                                    withToken token: String,
                                    onSuccess: OnSuccessHandler?,
                                    onFailure: OnFailureHandler?) {
-        internalImplementation?.updateEmail(newEmail, withToken: token, onSuccess: onSuccess, onFailure: onFailure)
+        internalImplementation?.updateEmail(newEmail, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     /// Tracks a purchase

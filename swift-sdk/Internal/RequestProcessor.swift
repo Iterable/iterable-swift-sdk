@@ -21,7 +21,7 @@ struct DefaultRequestProcessorStrategy: RequestProcessorStrategy {
 struct RequestProcessor: RequestProcessorProtocol {
     init(apiKey: String,
          authProvider: AuthProvider,
-         authFailureDelegate: IterableAuthFailureDelegate?,
+         authManager: IterableInternalAuthManagerProtocol?,
          endPoint: String,
          deviceMetadata: DeviceMetadata,
          networkSession: NetworkSessionProtocol,
@@ -29,13 +29,13 @@ struct RequestProcessor: RequestProcessorProtocol {
          strategy: RequestProcessorStrategy = DefaultRequestProcessorStrategy(selectOffline: false)) {
         offlineProcessor = OfflineRequestProcessor(apiKey: apiKey,
                                                    authProvider: authProvider,
-                                                   authFailureDelegate: authFailureDelegate,
+                                                   authManager: authManager,
                                                    endPoint: endPoint,
                                                    deviceMetadata: deviceMetadata,
                                                    notificationCenter: notificationCenter)
         onlineProcessor = OnlineRequestProcessor(apiKey: apiKey,
                                                  authProvider: authProvider,
-                                                 authFailureDelegate: authFailureDelegate,
+                                                 authManager: authManager,
                                                  endPoint: endPoint,
                                                  networkSession: networkSession,
                                                  deviceMetadata: deviceMetadata)

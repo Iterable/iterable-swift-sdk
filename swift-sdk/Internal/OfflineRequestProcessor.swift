@@ -9,13 +9,13 @@ import Foundation
 struct OfflineRequestProcessor: RequestProcessorProtocol {
     init(apiKey: String,
          authProvider: AuthProvider,
-         authFailureDelegate: IterableAuthFailureDelegate?,
+         authManager: IterableInternalAuthManagerProtocol?,
          endPoint: String,
          deviceMetadata: DeviceMetadata,
          notificationCenter: NotificationCenterProtocol) {
         self.apiKey = apiKey
         self.authProvider = authProvider
-        self.authFailureDelegate = authFailureDelegate
+        self.authManager = authManager
         self.endPoint = endPoint
         self.deviceMetadata = deviceMetadata
         notificationListener = NotificationListener(notificationCenter: notificationCenter)
@@ -323,7 +323,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     
     private let apiKey: String
     private weak var authProvider: AuthProvider?
-    private weak var authFailureDelegate: IterableAuthFailureDelegate?
+    private weak var authManager: IterableInternalAuthManagerProtocol?
     private let endPoint: String
     private let deviceMetadata: DeviceMetadata
     private let notificationListener: NotificationListener
@@ -357,7 +357,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
             let result = notificationListener.futureFromTask(withTaskId: taskId)
             return RequestProcessorUtil.apply(successHandler: onSuccess,
                                        andFailureHandler: onFailure,
-                                       andAuthFailureHandler: authFailureDelegate,
+                                       andAuthManager: authManager,
                                        toResult: result,
                                        withIdentifier: identifier)
         } catch let error {
