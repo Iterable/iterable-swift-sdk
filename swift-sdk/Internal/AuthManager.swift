@@ -7,7 +7,7 @@ import Foundation
 
 @objc public protocol IterableInternalAuthManagerProtocol {
     func getAuthToken() -> String?
-    func requestNewAuthToken()
+    func requestNewAuthToken(_ hasFailedPriorAuth: Bool)
     func logoutUser()
 }
 
@@ -37,7 +37,13 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     }
     
     // @objc attribute only needed for the pre-iOS 10 Timer constructor in queueAuthTokenExpirationRefresh
-    @objc func requestNewAuthToken() {
+    @objc func requestNewAuthToken(_ hasFailedPriorAuth: Bool = false) {
+        guard !self.hasFailedPriorAuth || !hasFailedPriorAuth else {
+            return
+        }
+        
+        self.hasFailedPriorAuth = hasFailedPriorAuth
+        
         authToken = onAuthTokenRequestedCallback?()
         
         storeAuthToken()
@@ -73,6 +79,8 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     
     private var authToken: String?
     
+    private var hasFailedPriorAuth: Bool = false
+    
     private var localStorage: LocalStorageProtocol
     private let dateProvider: DateProviderProtocol
     
@@ -89,7 +97,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         
         if #available(iOS 10.0, *) {
             expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: refreshTimeInterval, repeats: false) { timer in
-                self.requestNewAuthToken()
+                self.requestNewAuthToken(false)
             }
         } else {
             // Fallback on earlier versions
