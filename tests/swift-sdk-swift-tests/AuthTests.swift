@@ -462,6 +462,31 @@ class AuthTests: XCTestCase {
         XCTAssertNil(internalAPI.auth.authToken)
     }
     
+    func testAuthTokenRefreshRetryOnlyOnce() {
+        let condition1 = expectation(description: "\(#function) - callback not called correctly in some form")
+        condition1.expectedFulfillmentCount = 2
+        
+        let config = IterableConfig()
+        config.onAuthTokenRequestedCallback = {
+            condition1.fulfill()
+            return AuthTests.authToken
+        }
+        
+        let mockNetworkSession = MockNetworkSession(statusCode: 401,
+                                                    json: [JsonKey.Response.iterableCode: JsonValue.Code.invalidJwtPayload])
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(config: config,
+                                                                   networkSession: mockNetworkSession)
+        
+        internalAPI.email = AuthTests.email
+        
+        // two calls here to trigger the retry more than once
+        internalAPI.track("event")
+        internalAPI.track("event")
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+    
     private func createMockEncodedPayload(exp: Int) -> String {
         let payload = """
         {
