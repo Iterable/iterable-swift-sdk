@@ -445,6 +445,23 @@ class AuthTests: XCTestCase {
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
     
+    func testAuthTokenDeletedOnLogout() {
+        let config = IterableConfig()
+        config.onAuthTokenRequestedCallback = {
+            return AuthTests.authToken
+        }
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(config: config)
+        
+        internalAPI.email = AuthTests.email
+        
+        XCTAssertEqual(internalAPI.auth.authToken, AuthTests.authToken)
+        
+        internalAPI.logoutUser()
+        
+        XCTAssertNil(internalAPI.auth.authToken)
+    }
+    
     private func createMockEncodedPayload(exp: Int) -> String {
         let payload = """
         {
