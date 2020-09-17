@@ -13,14 +13,20 @@ import Foundation
 
 class AuthManager: IterableInternalAuthManagerProtocol {
     init(onAuthTokenRequestedCallback: (() -> String?)?,
+         autoPushRegistration: Bool,
          localStorage: LocalStorageProtocol,
          dateProvider: DateProviderProtocol,
+         notificationStateProvider: NotificationStateProviderProtocol,
+         inAppManager: IterableInternalInAppManagerProtocol,
          refreshWindow: TimeInterval = AuthManager.defaultRefreshWindow) {
         ITBInfo()
         
         self.onAuthTokenRequestedCallback = onAuthTokenRequestedCallback
+        self.autoPushRegistration = autoPushRegistration
         self.localStorage = localStorage
         self.dateProvider = dateProvider
+        self.notificationStateProvider = notificationStateProvider
+        self.inAppManager = inAppManager
         self.refreshWindow = refreshWindow
         
         retrieveAuthToken()
@@ -47,6 +53,14 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         authToken = onAuthTokenRequestedCallback?()
         
         storeAuthToken()
+        
+        if authToken != nil {
+            if autoPushRegistration {
+                notificationStateProvider.registerForRemoteNotifications()
+            }
+            
+            _ = inAppManager.scheduleSync()
+        }
         
         queueAuthTokenExpirationRefresh(authToken)
     }
@@ -81,8 +95,11 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     
     private var hasFailedPriorAuth: Bool = false
     
+    private let autoPushRegistration: Bool
     private var localStorage: LocalStorageProtocol
     private let dateProvider: DateProviderProtocol
+    private let notificationStateProvider: NotificationStateProviderProtocol
+    private let inAppManager: IterableInternalInAppManagerProtocol
     
     private let onAuthTokenRequestedCallback: (() -> String?)?
     
