@@ -8,6 +8,7 @@ import Foundation
 
 enum PersistenceConst {
     static let dataModelFileName = "IterableDataModel"
+    static let dataModelExtension = "momd"
 
     enum Entity {
         enum Task {
@@ -24,7 +25,11 @@ enum PersistenceConst {
 @available(iOS 10.0, *)
 class PersistentContainer: NSPersistentContainer {
     static let shared: PersistentContainer = {
-        let container = PersistentContainer(name: PersistenceConst.dataModelFileName)
+        // TODO: @tqm remove force unwrapping
+        let url = Bundle(for: PersistentContainer.self).url(forResource: PersistenceConst.dataModelFileName, withExtension: PersistenceConst.dataModelExtension)!
+        let managedObjectModel = NSManagedObjectModel(contentsOf: url)!
+        
+        let container = PersistentContainer(name: PersistenceConst.dataModelFileName, managedObjectModel: managedObjectModel)
         container.loadPersistentStores { desc, error in
             if let error = error {
                 fatalError("Unresolved error \(error)")

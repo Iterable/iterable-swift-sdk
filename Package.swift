@@ -21,7 +21,7 @@ let package = Package(
         .target(name: "IterableSDK",
                 path: "swift-sdk",
                 resources: [
-                    .copy("Resources"),
+                    .process("Resources"),
                 ]),
         .target(name: "IterableAppExtensions",
                 path: "notification-extension"),
