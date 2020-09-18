@@ -7,7 +7,7 @@ import Foundation
 
 @objc public protocol IterableInternalAuthManagerProtocol {
     func getAuthToken() -> String?
-    func requestNewAuthToken(_ hasFailedPriorAuth: Bool)
+    func requestNewAuthToken(hasFailedPriorAuth: Bool)
     func logoutUser()
 }
 
@@ -37,7 +37,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     }
     
     // @objc attribute only needed for the pre-iOS 10 Timer constructor in queueAuthTokenExpirationRefresh
-    @objc func requestNewAuthToken(_ hasFailedPriorAuth: Bool = false) {
+    @objc func requestNewAuthToken(hasFailedPriorAuth: Bool = false) {
         guard !self.hasFailedPriorAuth || !hasFailedPriorAuth else {
             return
         }
@@ -97,7 +97,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         
         if #available(iOS 10.0, *) {
             expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: refreshTimeInterval, repeats: false) { timer in
-                self.requestNewAuthToken(false)
+                self.requestNewAuthToken(hasFailedPriorAuth: false)
             }
         } else {
             // Fallback on earlier versions
