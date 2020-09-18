@@ -36,7 +36,7 @@ class IterableTaskRunner: NSObject {
                                        selector: #selector(onAppDidEnterBackground(notification:)),
                                        name: UIApplication.didEnterBackgroundNotification,
                                        object: nil)
-        self.connectivityManager.connectivityChangedCallback = onConnectivityChanged(connected:)
+        self.connectivityManager.connectivityChangedCallback = { [weak self]  in self?.onConnectivityChanged(connected: $0) }
     }
     
     func start() {
@@ -50,6 +50,7 @@ class IterableTaskRunner: NSObject {
         ITBInfo()
         paused = true
         timer?.invalidate()
+        timer = nil
         connectivityManager.stop()
     }
     
@@ -75,6 +76,7 @@ class IterableTaskRunner: NSObject {
 
     private func runNow() {
         timer?.invalidate()
+        timer = nil
         run()
     }
     

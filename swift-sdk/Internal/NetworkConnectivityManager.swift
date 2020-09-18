@@ -42,7 +42,7 @@ class NetworkConnectivityManager: NSObject {
     
     func start() {
         ITBInfo()
-        networkMonitor.statusUpdatedCallback = updateStatus
+        networkMonitor.statusUpdatedCallback = { [weak self] in self?.updateStatus() }
         networkMonitor.start()
         startTimer()
     }
