@@ -539,6 +539,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         
         handle(launchOptions: launchOptions)
         
+        requestProcessor.start()
+        
         return inAppManager.start()
     }
     
