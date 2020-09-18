@@ -13,21 +13,21 @@ import Foundation
 
 class AuthManager: IterableInternalAuthManagerProtocol {
     init(onAuthTokenRequestedCallback: (() -> String?)?,
+         refreshWindow: TimeInterval,
          autoPushRegistration: Bool,
          localStorage: LocalStorageProtocol,
          dateProvider: DateProviderProtocol,
          notificationStateProvider: NotificationStateProviderProtocol,
-         inAppManager: IterableInternalInAppManagerProtocol,
-         refreshWindow: TimeInterval = AuthManager.defaultRefreshWindow) {
+         inAppManager: IterableInternalInAppManagerProtocol) {
         ITBInfo()
         
         self.onAuthTokenRequestedCallback = onAuthTokenRequestedCallback
+        self.refreshWindow = refreshWindow
         self.autoPushRegistration = autoPushRegistration
         self.localStorage = localStorage
         self.dateProvider = dateProvider
         self.notificationStateProvider = notificationStateProvider
         self.inAppManager = inAppManager
-        self.refreshWindow = refreshWindow
         
         retrieveAuthToken()
     }
@@ -87,38 +87,34 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     
     // MARK: - Private/Internal
     
-    private let refreshWindow: TimeInterval
-    
     private var expirationRefreshTimer: Timer?
     
     private var authToken: String?
     
     private var hasFailedPriorAuth: Bool = false
     
+    private let onAuthTokenRequestedCallback: (() -> String?)?
+    private let refreshWindow: TimeInterval
     private let autoPushRegistration: Bool
     private var localStorage: LocalStorageProtocol
     private let dateProvider: DateProviderProtocol
     private let notificationStateProvider: NotificationStateProviderProtocol
     private let inAppManager: IterableInternalInAppManagerProtocol
     
-    private let onAuthTokenRequestedCallback: (() -> String?)?
-    
-    static let defaultRefreshWindow: TimeInterval = 60
-    
     private func queueAuthTokenExpirationRefresh(_ authToken: String?) {
         guard let authToken = authToken, let expirationDate = AuthManager.decodeExpirationDateFromAuthToken(authToken) else {
             return
         }
         
-        let refreshTimeInterval = TimeInterval(expirationDate) - dateProvider.currentDate.timeIntervalSince1970 - refreshWindow
+        let timeIntervalToRefresh = TimeInterval(expirationDate) - dateProvider.currentDate.timeIntervalSince1970 - refreshWindow
         
         if #available(iOS 10.0, *) {
-            expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: refreshTimeInterval, repeats: false) { timer in
+            expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: timeIntervalToRefresh, repeats: false) { timer in
                 self.requestNewAuthToken(false)
             }
         } else {
             // Fallback on earlier versions
-            expirationRefreshTimer = Timer.scheduledTimer(timeInterval: refreshTimeInterval,
+            expirationRefreshTimer = Timer.scheduledTimer(timeInterval: timeIntervalToRefresh,
                                                           target: self,
                                                           selector: #selector(requestNewAuthToken),
                                                           userInfo: nil,
