@@ -272,7 +272,7 @@ class AuthTests: XCTestCase {
         XCTAssertEqual(API.auth.authToken, AuthTests.authToken)
         
         authTokenChanged = true
-        API.authManager.requestNewAuthToken(hasFailedPriorAuth: false)
+        API.authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: nil)
         
         XCTAssertEqual(API.email, AuthTests.email)
         XCTAssertEqual(API.auth.authToken, newAuthToken)
@@ -305,7 +305,7 @@ class AuthTests: XCTestCase {
         XCTAssertEqual(API.auth.authToken, AuthTests.authToken)
         
         authTokenChanged = true
-        API.authManager.requestNewAuthToken(hasFailedPriorAuth: false)
+        API.authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: nil)
         
         XCTAssertEqual(API.userId, AuthTests.userId)
         XCTAssertEqual(API.auth.authToken, newAuthToken)
@@ -372,11 +372,8 @@ class AuthTests: XCTestCase {
         
         let localStorage = MockLocalStorage()
         let authManager = AuthManager(onAuthTokenRequestedCallback: authTokenRequestedCallback,
-                                      autoPushRegistration: true,
                                       localStorage: localStorage,
                                       dateProvider: MockDateProvider(),
-                                      notificationStateProvider: MockNotificationStateProvider(enabled: true),
-                                      inAppManager: EmptyInAppManager(),
                                       refreshWindow: refreshWindow)
         localStorage.authToken = mockEncodedPayload
         authManager.retrieveAuthToken()
@@ -401,11 +398,8 @@ class AuthTests: XCTestCase {
         mockLocalStorage.authToken = mockEncodedPayload
         
         _ = AuthManager(onAuthTokenRequestedCallback: authTokenRequestedCallback,
-                        autoPushRegistration: true,
                         localStorage: mockLocalStorage,
                         dateProvider: MockDateProvider(),
-                        notificationStateProvider: MockNotificationStateProvider(enabled: true),
-                        inAppManager: EmptyInAppManager(),
                         refreshWindow: refreshWindow)
         
         wait(for: [condition1], timeout: testExpectationTimeout)
