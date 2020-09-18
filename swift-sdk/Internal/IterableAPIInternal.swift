@@ -392,7 +392,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                                     endPoint: config.apiEndpoint,
                                     deviceMetadata: deviceMetadata,
                                     networkSession: networkSession,
-                                    notificationCenter: dependencyContainer.notificationCenter)
+                                    notificationCenter: dependencyContainer.notificationCenter,
+                                    strategy: DefaultRequestProcessorStrategy(selectOffline: config.enableOfflineMode))
         } else {
             return OnlineRequestProcessor(apiKey: apiKey,
                                    authProvider: self,
