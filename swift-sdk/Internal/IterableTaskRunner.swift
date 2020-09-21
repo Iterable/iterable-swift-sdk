@@ -164,7 +164,7 @@ class IterableTaskRunner: NSObject {
     
     @discardableResult
     private func execute(task: IterableTask) -> Future<TaskExecutionResult, Never> {
-        ITBInfo("Executing taskId: \(task.id)")
+        ITBInfo("Executing taskId: \(task.id), name: \(task.name ?? "nil")")
         guard task.processing == false else {
             return Promise<TaskExecutionResult, Never>(value: .processing)
         }
@@ -212,6 +212,9 @@ class IterableTaskRunner: NSObject {
                     }
                     result.resolve(with: .retry)
                 }
+            }.onError { error in
+                ITBError("task processing error: \(error.localizedDescription)")
+                result.resolve(with: .failure)
             }
         } catch let error {
             ITBError("Error proessing task: \(task.id), message: \(error.localizedDescription)")

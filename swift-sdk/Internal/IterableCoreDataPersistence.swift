@@ -22,6 +22,8 @@ enum PersistenceConst {
     }
 }
 
+/// `Bundle.current` is used to find url path for core data model file.
+/// This is a temporary fix until we can use `Bundle.module` in IterableSDK.
 import class Foundation.Bundle
 private class BundleFinder {}
 extension Foundation.Bundle {
