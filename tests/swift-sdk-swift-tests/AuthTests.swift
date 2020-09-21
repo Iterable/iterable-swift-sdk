@@ -537,6 +537,27 @@ class AuthTests: XCTestCase {
         
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
+    
+    func testPushRegistrationAfterAuthTokenRetrieval() {
+        let condition1 = expectation(description: "\(#function) - notification state provider not fulfilled")
+        condition1.expectedFulfillmentCount = 2
+        
+        let mockNotificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: condition1)
+        
+        let config = IterableConfig()
+        config.onAuthTokenRequestedCallback = {
+            return nil
+        }
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(config: config,
+                                                                   notificationStateProvider: mockNotificationStateProvider)
+        
+        internalAPI.email = AuthTests.email
+        
+        internalAPI.email = "different@email.com"
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
 
     // MARK: - Private
     
