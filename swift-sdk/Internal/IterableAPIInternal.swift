@@ -121,7 +121,9 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             _email = email
             _userId = nil
             
-            authManager.requestNewAuthToken(hasFailedPriorAuth: false)
+            authManager.requestNewAuthToken(hasFailedPriorAuth: false) { [weak self] in
+                self?.loginNewUser()
+            }
             
             storeIdentifierData()
             
@@ -136,7 +138,9 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             _email = nil
             _userId = userId
             
-            authManager.requestNewAuthToken(hasFailedPriorAuth: false)
+            authManager.requestNewAuthToken(hasFailedPriorAuth: false) { [weak self] in
+                self?.loginNewUser()
+            }
             
             storeIdentifierData()
             
@@ -538,7 +542,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }.onError { error in
             if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.invalidJwtPayload {
                 ITBError(error.reason)
-                authManager?.requestNewAuthToken(hasFailedPriorAuth: true)
+                authManager?.requestNewAuthToken(hasFailedPriorAuth: true, onSuccess: nil)
             } else if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.badApiKey {
                 ITBError(error.reason)
             }
