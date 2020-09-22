@@ -93,7 +93,7 @@ public class IterableConfig: NSObject {
     public weak var customActionDelegate: IterableCustomActionDelegate?
     
     /// If the app is using token-based authentication, this callback should be set to return a new token, or `nil` if unable to get a new one
-    public var onAuthTokenRequestedCallback: (() -> String?)?
+    public var onAuthTokenRequestedCallback: (((String?) -> Void) -> Void)?
     
     /// When set to true, IterableSDK will automatically register and deregister
     /// notification tokens.

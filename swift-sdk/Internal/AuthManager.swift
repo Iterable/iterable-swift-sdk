@@ -12,7 +12,7 @@ import Foundation
 }
 
 class AuthManager: IterableInternalAuthManagerProtocol {
-    init(onAuthTokenRequestedCallback: (() -> String?)?,
+    init(onAuthTokenRequestedCallback: (((String?) -> Void) -> Void)?,
          refreshWindow: TimeInterval,
          localStorage: LocalStorageProtocol,
          dateProvider: DateProviderProtocol) {
@@ -44,15 +44,17 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         
         self.hasFailedPriorAuth = hasFailedPriorAuth
         
-        authToken = onAuthTokenRequestedCallback?()
-        
-        storeAuthToken()
-        
-        if authToken != nil {
-            onSuccess?()
-        }
-        
-        queueAuthTokenExpirationRefresh(authToken)
+        onAuthTokenRequestedCallback?({ completion in
+            authToken = completion
+            
+            storeAuthToken()
+            
+            if authToken != nil {
+                onSuccess?()
+            }
+            
+            queueAuthTokenExpirationRefresh(authToken)
+        })
     }
     
     func logoutUser() {
@@ -72,7 +74,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     
     private var hasFailedPriorAuth: Bool = false
     
-    private let onAuthTokenRequestedCallback: (() -> String?)?
+    private let onAuthTokenRequestedCallback: (((String?) -> Void) -> Void)?
     private let refreshWindow: TimeInterval
     private var localStorage: LocalStorageProtocol
     private let dateProvider: DateProviderProtocol
