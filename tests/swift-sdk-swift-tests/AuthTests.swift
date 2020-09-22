@@ -371,13 +371,15 @@ class AuthTests: XCTestCase {
         let mockEncodedPayload = createMockEncodedPayload(exp: Int(expirationTimeSinceEpoch))
         
         let localStorage = MockLocalStorage()
-        let authManager = AuthManager(onAuthTokenRequestedCallback: authTokenRequestedCallback,
-                                      localStorage: localStorage,
-                                      dateProvider: MockDateProvider(),
-                                      refreshWindow: refreshWindow)
-        localStorage.authToken = mockEncodedPayload
-        authManager.retrieveAuthToken()
         
+        localStorage.authToken = mockEncodedPayload
+        
+        let authManager = AuthManager(onAuthTokenRequestedCallback: authTokenRequestedCallback,
+                        localStorage: localStorage,
+                        dateProvider: MockDateProvider(),
+                        refreshWindow: refreshWindow)
+        
+        let _ = authManager
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
 
@@ -397,11 +399,11 @@ class AuthTests: XCTestCase {
         let mockLocalStorage = MockLocalStorage()
         mockLocalStorage.authToken = mockEncodedPayload
         
-        _ = AuthManager(onAuthTokenRequestedCallback: authTokenRequestedCallback,
+        let authManager = AuthManager(onAuthTokenRequestedCallback: authTokenRequestedCallback,
                         localStorage: mockLocalStorage,
                         dateProvider: MockDateProvider(),
                         refreshWindow: refreshWindow)
-        
+        let _ = authManager
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
     
