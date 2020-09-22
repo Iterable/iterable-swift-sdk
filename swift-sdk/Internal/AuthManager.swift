@@ -57,6 +57,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         storeAuthToken()
         
         expirationRefreshTimer?.invalidate()
+        expirationRefreshTimer = nil
     }
     
     // MARK: - Private/Internal
@@ -94,8 +95,8 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         let refreshTimeInterval = TimeInterval(expirationDate) - dateProvider.currentDate.timeIntervalSince1970 - refreshWindow
         
         if #available(iOS 10.0, *) {
-            expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: refreshTimeInterval, repeats: false) { timer in
-                self.requestNewAuthToken(hasFailedPriorAuth: false)
+            expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: refreshTimeInterval, repeats: false) { [weak self] _ in
+                self?.requestNewAuthToken(hasFailedPriorAuth: false)
             }
         } else {
             // Fallback on earlier versions
