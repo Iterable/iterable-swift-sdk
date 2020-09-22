@@ -7,27 +7,21 @@ import Foundation
 
 @objc public protocol IterableInternalAuthManagerProtocol {
     func getAuthToken() -> String?
-    func requestNewAuthToken(_ hasFailedPriorAuth: Bool)
+    func requestNewAuthToken(hasFailedPriorAuth: Bool, onSuccess: (() -> Void)?)
     func logoutUser()
 }
 
 class AuthManager: IterableInternalAuthManagerProtocol {
     init(onAuthTokenRequestedCallback: (() -> String?)?,
          refreshWindow: TimeInterval,
-         autoPushRegistration: Bool,
          localStorage: LocalStorageProtocol,
-         dateProvider: DateProviderProtocol,
-         notificationStateProvider: NotificationStateProviderProtocol,
-         inAppManager: IterableInternalInAppManagerProtocol) {
+         dateProvider: DateProviderProtocol) {
         ITBInfo()
         
         self.onAuthTokenRequestedCallback = onAuthTokenRequestedCallback
-        self.refreshWindow = refreshWindow
-        self.autoPushRegistration = autoPushRegistration
         self.localStorage = localStorage
         self.dateProvider = dateProvider
-        self.notificationStateProvider = notificationStateProvider
-        self.inAppManager = inAppManager
+        self.refreshWindow = refreshWindow
         
         retrieveAuthToken()
     }
@@ -43,7 +37,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     }
     
     // @objc attribute only needed for the pre-iOS 10 Timer constructor in queueAuthTokenExpirationRefresh
-    @objc func requestNewAuthToken(_ hasFailedPriorAuth: Bool = false) {
+    @objc func requestNewAuthToken(hasFailedPriorAuth: Bool = false, onSuccess: (() -> Void)? = nil) {
         guard !self.hasFailedPriorAuth || !hasFailedPriorAuth else {
             return
         }
@@ -55,11 +49,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         storeAuthToken()
         
         if authToken != nil {
-            if autoPushRegistration {
-                notificationStateProvider.registerForRemoteNotifications()
-            }
-            
-            _ = inAppManager.scheduleSync()
+            onSuccess?()
         }
         
         queueAuthTokenExpirationRefresh(authToken)
@@ -95,11 +85,8 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     
     private let onAuthTokenRequestedCallback: (() -> String?)?
     private let refreshWindow: TimeInterval
-    private let autoPushRegistration: Bool
     private var localStorage: LocalStorageProtocol
     private let dateProvider: DateProviderProtocol
-    private let notificationStateProvider: NotificationStateProviderProtocol
-    private let inAppManager: IterableInternalInAppManagerProtocol
     
     private func queueAuthTokenExpirationRefresh(_ authToken: String?) {
         guard let authToken = authToken, let expirationDate = AuthManager.decodeExpirationDateFromAuthToken(authToken) else {
@@ -110,7 +97,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         
         if #available(iOS 10.0, *) {
             expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: timeIntervalToRefresh, repeats: false) { timer in
-                self.requestNewAuthToken(false)
+                self.requestNewAuthToken(hasFailedPriorAuth: false)
             }
         } else {
             // Fallback on earlier versions

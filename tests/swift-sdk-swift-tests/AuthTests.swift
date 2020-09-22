@@ -272,7 +272,7 @@ class AuthTests: XCTestCase {
         XCTAssertEqual(API.auth.authToken, AuthTests.authToken)
         
         authTokenChanged = true
-        API.authManager.requestNewAuthToken(false)
+        API.authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: nil)
         
         XCTAssertEqual(API.email, AuthTests.email)
         XCTAssertEqual(API.auth.authToken, newAuthToken)
@@ -305,7 +305,7 @@ class AuthTests: XCTestCase {
         XCTAssertEqual(API.auth.authToken, AuthTests.authToken)
         
         authTokenChanged = true
-        API.authManager.requestNewAuthToken(false)
+        API.authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: nil)
         
         XCTAssertEqual(API.userId, AuthTests.userId)
         XCTAssertEqual(API.auth.authToken, newAuthToken)
@@ -373,11 +373,8 @@ class AuthTests: XCTestCase {
         let localStorage = MockLocalStorage()
         let authManager = AuthManager(onAuthTokenRequestedCallback: authTokenRequestedCallback,
                                       refreshWindow: refreshWindow,
-                                      autoPushRegistration: true,
                                       localStorage: localStorage,
-                                      dateProvider: MockDateProvider(),
-                                      notificationStateProvider: MockNotificationStateProvider(enabled: true),
-                                      inAppManager: EmptyInAppManager())
+                                      dateProvider: MockDateProvider())
         localStorage.authToken = mockEncodedPayload
         authManager.retrieveAuthToken()
         
@@ -402,11 +399,8 @@ class AuthTests: XCTestCase {
         
         _ = AuthManager(onAuthTokenRequestedCallback: authTokenRequestedCallback,
                         refreshWindow: refreshWindow,
-                        autoPushRegistration: true,
                         localStorage: mockLocalStorage,
-                        dateProvider: MockDateProvider(),
-                        notificationStateProvider: MockNotificationStateProvider(enabled: true),
-                        inAppManager: EmptyInAppManager())
+                        dateProvider: MockDateProvider())
         
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
@@ -493,6 +487,80 @@ class AuthTests: XCTestCase {
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
     
+    func testPriorAuthFailedRetryPrevention() {
+        let condition1 = expectation(description: "\(#function) - incorrect number of retry calls")
+        condition1.expectedFulfillmentCount = 2
+        
+        let config = IterableConfig()
+        config.onAuthTokenRequestedCallback = {
+            condition1.fulfill()
+            return nil
+        }
+        
+        let authManager = AuthManager(onAuthTokenRequestedCallback: config.onAuthTokenRequestedCallback,
+                                      refreshWindow: config.authTokenRefreshWindow,
+                                      localStorage: MockLocalStorage(),
+                                      dateProvider: MockDateProvider())
+        
+        // a normal call to ensure default states
+        authManager.requestNewAuthToken()
+        
+        // 2 failing calls to ensure both the manager and the incoming request test retry prevention
+        authManager.requestNewAuthToken(hasFailedPriorAuth: true)
+        authManager.requestNewAuthToken(hasFailedPriorAuth: true)
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+    
+    func testPriorAuthFailedRetrySuccess() {
+        let condition1 = expectation(description: "\(#function) - incorrect number of retry calls")
+        condition1.expectedFulfillmentCount = 3
+        
+        let config = IterableConfig()
+        config.onAuthTokenRequestedCallback = {
+            condition1.fulfill()
+            return nil
+        }
+        
+        let authManager = AuthManager(onAuthTokenRequestedCallback: config.onAuthTokenRequestedCallback,
+                                      refreshWindow: config.authTokenRefreshWindow,
+                                      localStorage: MockLocalStorage(),
+                                      dateProvider: MockDateProvider())
+        
+        // a normal call to ensure default states
+        authManager.requestNewAuthToken()
+        
+        // 2 failing calls to ensure both the manager and the incoming request test retry prevention
+        authManager.requestNewAuthToken(hasFailedPriorAuth: true)
+        authManager.requestNewAuthToken(hasFailedPriorAuth: true)
+        
+        // and now a normal call
+        authManager.requestNewAuthToken()
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+    
+    func testPushRegistrationAfterAuthTokenRetrieval() {
+        let condition1 = expectation(description: "\(#function) - notification state provider not fulfilled")
+        condition1.expectedFulfillmentCount = 2
+        
+        let mockNotificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: condition1)
+        
+        let config = IterableConfig()
+        config.onAuthTokenRequestedCallback = {
+            return nil
+        }
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(config: config,
+                                                                   notificationStateProvider: mockNotificationStateProvider)
+        
+        internalAPI.email = AuthTests.email
+        
+        internalAPI.email = "different@email.com"
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+
     // MARK: - Private
     
     private func createMockEncodedPayload(exp: Int) -> String {

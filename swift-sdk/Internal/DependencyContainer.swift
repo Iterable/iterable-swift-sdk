@@ -45,11 +45,8 @@ extension DependencyContainerProtocol {
                            inAppManager: IterableInternalInAppManagerProtocol) -> IterableInternalAuthManagerProtocol {
         AuthManager(onAuthTokenRequestedCallback: config.onAuthTokenRequestedCallback,
                     refreshWindow: config.authTokenRefreshWindow,
-                    autoPushRegistration: config.autoPushRegistration,
                     localStorage: localStorage,
-                    dateProvider: dateProvider,
-                    notificationStateProvider: notificationStateProvider,
-                    inAppManager: inAppManager)
+                    dateProvider: dateProvider)
     }
 }
 
