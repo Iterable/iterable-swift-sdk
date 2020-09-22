@@ -59,18 +59,6 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         expirationRefreshTimer?.invalidate()
     }
     
-    // MARK: - Auth Manager Functions
-    
-    func storeAuthToken() {
-        localStorage.authToken = authToken
-    }
-    
-    func retrieveAuthToken() {
-        authToken = localStorage.authToken
-        
-        queueAuthTokenExpirationRefresh(authToken)
-    }
-    
     // MARK: - Private/Internal
     
     private let refreshWindow: TimeInterval
@@ -87,6 +75,16 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     private let onAuthTokenRequestedCallback: (() -> String?)?
     
     static let defaultRefreshWindow: TimeInterval = 60
+    
+    private func storeAuthToken() {
+        localStorage.authToken = authToken
+    }
+    
+    private func retrieveAuthToken() {
+        authToken = localStorage.authToken
+        
+        queueAuthTokenExpirationRefresh(authToken)
+    }
     
     private func queueAuthTokenExpirationRefresh(_ authToken: String?) {
         guard let authToken = authToken, let expirationDate = AuthManager.decodeExpirationDateFromAuthToken(authToken) else {
