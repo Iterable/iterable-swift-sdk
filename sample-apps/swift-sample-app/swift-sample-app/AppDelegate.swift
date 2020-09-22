@@ -26,10 +26,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let config = IterableConfig()
         config.customActionDelegate = self
         config.urlDelegate = self
-        config.pushIntegrationName = Bundle.main.appPackageName!
-        config.sandboxPushIntegrationName = Bundle.main.appPackageName!
         config.inAppDisplayInterval = 1
-        // Replace with your api key and email here.
+        
         IterableAPI.initialize(apiKey: iterableApiKey,
                                launchOptions: launchOptions,
                                config: config)
@@ -119,7 +117,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if settings.authorizationStatus != .authorized {
                 // not authorized, ask for permission
                 UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, _ in
-                    if success == true {
+                    if success {
                         DispatchQueue.main.async {
                             UIApplication.shared.registerForRemoteNotifications()
                         }
@@ -155,7 +153,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 extension AppDelegate: IterableURLDelegate {
     // return true if we handled the url
     func handle(iterableURL url: URL, inContext _: IterableActionContext) -> Bool {
-        DeeplinkHandler.handle(url: url)
+        DeepLinkHandler.handle(url: url)
     }
 }
 
@@ -167,7 +165,7 @@ extension AppDelegate: IterableCustomActionDelegate {
     func handle(iterableCustomAction action: IterableAction, inContext _: IterableActionContext) -> Bool {
         if action.type == "handleFindCoffee" {
             if let query = action.userInput {
-                return DeeplinkHandler.handle(url: URL(string: "https://majumder.me/coffee?q=\(query)")!)
+                return DeepLinkHandler.handle(url: URL(string: "https://majumder.me/coffee?q=\(query)")!)
             }
         }
         return false

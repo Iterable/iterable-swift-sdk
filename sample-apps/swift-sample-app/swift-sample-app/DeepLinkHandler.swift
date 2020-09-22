@@ -1,5 +1,5 @@
 //
-//  DeeplinkHandler.swift
+//  DeepLinkHandler.swift
 //  iOS Demo
 //
 //  Created by Tapash Majumder on 5/18/18.
@@ -11,7 +11,7 @@ import UIKit
 
 import IterableSDK
 
-struct DeeplinkHandler {
+struct DeepLinkHandler {
     static func handle(url: URL) -> Bool {
         if let deeplink = Deeplink.from(url: url) {
             show(deeplink: deeplink)
