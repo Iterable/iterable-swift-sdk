@@ -61,18 +61,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         storeAuthToken()
         
         expirationRefreshTimer?.invalidate()
-    }
-    
-    // MARK: - Auth Manager Functions
-    
-    func storeAuthToken() {
-        localStorage.authToken = authToken
-    }
-    
-    func retrieveAuthToken() {
-        authToken = localStorage.authToken
-        
-        queueAuthTokenExpirationRefresh(authToken)
+        expirationRefreshTimer = nil
     }
     
     // MARK: - Private/Internal
@@ -87,6 +76,16 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     private let refreshWindow: TimeInterval
     private var localStorage: LocalStorageProtocol
     private let dateProvider: DateProviderProtocol
+
+    private func storeAuthToken() {
+        localStorage.authToken = authToken
+    }
+    
+    private func retrieveAuthToken() {
+        authToken = localStorage.authToken
+        
+        queueAuthTokenExpirationRefresh(authToken)
+    }
     
     private func queueAuthTokenExpirationRefresh(_ authToken: String?) {
         guard let authToken = authToken, let expirationDate = AuthManager.decodeExpirationDateFromAuthToken(authToken) else {
@@ -96,8 +95,8 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         let timeIntervalToRefresh = TimeInterval(expirationDate) - dateProvider.currentDate.timeIntervalSince1970 - refreshWindow
         
         if #available(iOS 10.0, *) {
-            expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: timeIntervalToRefresh, repeats: false) { timer in
-                self.requestNewAuthToken(hasFailedPriorAuth: false)
+            expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: timeIntervalToRefresh, repeats: false) { [weak self] _ in
+                self?.requestNewAuthToken(hasFailedPriorAuth: false)
             }
         } else {
             // Fallback on earlier versions
