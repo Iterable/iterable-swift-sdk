@@ -68,8 +68,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }()
     
     lazy var authManager: IterableInternalAuthManagerProtocol = {
-        self.dependencyContainer.createAuthManager(config: self.config,
-                                                   localStorage: self.localStorage)
+        self.dependencyContainer.createAuthManager(config: self.config)
     }()
     
     // MARK: - SDK Functions
@@ -122,7 +121,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             _email = email
             _userId = nil
             
-            authManager.requestNewAuthToken()
+            authManager.requestNewAuthToken(hasFailedPriorAuth: false)
             
             storeIdentifierData()
             
@@ -137,7 +136,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             _email = nil
             _userId = userId
             
-            authManager.requestNewAuthToken()
+            authManager.requestNewAuthToken(hasFailedPriorAuth: false)
             
             storeIdentifierData()
             
@@ -539,7 +538,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }.onError { error in
             if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.invalidJwtPayload {
                 ITBError(error.reason)
-                authManager?.requestNewAuthToken()
+                authManager?.requestNewAuthToken(hasFailedPriorAuth: true)
             } else if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.badApiKey {
                 ITBError(error.reason)
             }

@@ -7,18 +7,20 @@ import Foundation
 
 @objc public protocol IterableInternalAuthManagerProtocol {
     func getAuthToken() -> String?
-    func requestNewAuthToken()
+    func requestNewAuthToken(hasFailedPriorAuth: Bool)
     func logoutUser()
 }
 
 class AuthManager: IterableInternalAuthManagerProtocol {
     init(onAuthTokenRequestedCallback: (() -> String?)?,
          localStorage: LocalStorageProtocol,
+         dateProvider: DateProviderProtocol,
          refreshWindow: TimeInterval = AuthManager.defaultRefreshWindow) {
         ITBInfo()
         
         self.onAuthTokenRequestedCallback = onAuthTokenRequestedCallback
         self.localStorage = localStorage
+        self.dateProvider = dateProvider
         self.refreshWindow = refreshWindow
         
         retrieveAuthToken()
@@ -35,7 +37,13 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     }
     
     // @objc attribute only needed for the pre-iOS 10 Timer constructor in queueAuthTokenExpirationRefresh
-    @objc func requestNewAuthToken() {
+    @objc func requestNewAuthToken(hasFailedPriorAuth: Bool = false) {
+        guard !self.hasFailedPriorAuth || !hasFailedPriorAuth else {
+            return
+        }
+        
+        self.hasFailedPriorAuth = hasFailedPriorAuth
+        
         authToken = onAuthTokenRequestedCallback?()
         
         storeAuthToken()
@@ -49,18 +57,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         storeAuthToken()
         
         expirationRefreshTimer?.invalidate()
-    }
-    
-    // MARK: - Auth Manager Functions
-    
-    func storeAuthToken() {
-        localStorage.authToken = authToken
-    }
-    
-    func retrieveAuthToken() {
-        authToken = localStorage.authToken
-        
-        queueAuthTokenExpirationRefresh(authToken)
+        expirationRefreshTimer = nil
     }
     
     // MARK: - Private/Internal
@@ -71,22 +68,35 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     
     private var authToken: String?
     
+    private var hasFailedPriorAuth: Bool = false
+    
     private var localStorage: LocalStorageProtocol
+    private let dateProvider: DateProviderProtocol
     
     private let onAuthTokenRequestedCallback: (() -> String?)?
     
     static let defaultRefreshWindow: TimeInterval = 60
+    
+    private func storeAuthToken() {
+        localStorage.authToken = authToken
+    }
+    
+    private func retrieveAuthToken() {
+        authToken = localStorage.authToken
+        
+        queueAuthTokenExpirationRefresh(authToken)
+    }
     
     private func queueAuthTokenExpirationRefresh(_ authToken: String?) {
         guard let authToken = authToken, let expirationDate = AuthManager.decodeExpirationDateFromAuthToken(authToken) else {
             return
         }
         
-        let refreshTimeInterval = TimeInterval(expirationDate) - Date().timeIntervalSince1970 - refreshWindow
+        let refreshTimeInterval = TimeInterval(expirationDate) - dateProvider.currentDate.timeIntervalSince1970 - refreshWindow
         
         if #available(iOS 10.0, *) {
-            expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: refreshTimeInterval, repeats: false) { timer in
-                self.requestNewAuthToken()
+            expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: refreshTimeInterval, repeats: false) { [weak self] _ in
+                self?.requestNewAuthToken(hasFailedPriorAuth: false)
             }
         } else {
             // Fallback on earlier versions
