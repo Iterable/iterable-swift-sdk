@@ -3,7 +3,7 @@ name: Integration Testing
 on: pull_request
 
 jobs:
-  build:
+  run-e2e-job:
     runs-on: macos-latest
     
     steps:
