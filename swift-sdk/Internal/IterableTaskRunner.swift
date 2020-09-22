@@ -36,7 +36,7 @@ class IterableTaskRunner: NSObject {
                                        selector: #selector(onAppDidEnterBackground(notification:)),
                                        name: UIApplication.didEnterBackgroundNotification,
                                        object: nil)
-        self.connectivityManager.connectivityChangedCallback = onConnectivityChanged(connected:)
+        self.connectivityManager.connectivityChangedCallback = { [weak self]  in self?.onConnectivityChanged(connected: $0) }
     }
     
     func start() {
@@ -50,6 +50,7 @@ class IterableTaskRunner: NSObject {
         ITBInfo()
         paused = true
         timer?.invalidate()
+        timer = nil
         connectivityManager.stop()
     }
     
@@ -75,6 +76,7 @@ class IterableTaskRunner: NSObject {
 
     private func runNow() {
         timer?.invalidate()
+        timer = nil
         run()
     }
     
@@ -162,7 +164,7 @@ class IterableTaskRunner: NSObject {
     
     @discardableResult
     private func execute(task: IterableTask) -> Future<TaskExecutionResult, Never> {
-        ITBInfo("Executing taskId: \(task.id)")
+        ITBInfo("Executing taskId: \(task.id), name: \(task.name ?? "nil")")
         guard task.processing == false else {
             return Promise<TaskExecutionResult, Never>(value: .processing)
         }
@@ -210,6 +212,9 @@ class IterableTaskRunner: NSObject {
                     }
                     result.resolve(with: .retry)
                 }
+            }.onError { error in
+                ITBError("task processing error: \(error.localizedDescription)")
+                result.resolve(with: .failure)
             }
         } catch let error {
             ITBError("Error proessing task: \(task.id), message: \(error.localizedDescription)")

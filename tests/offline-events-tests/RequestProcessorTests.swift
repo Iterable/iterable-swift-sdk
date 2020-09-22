@@ -674,8 +674,7 @@ class RequestProcessorTests: XCTestCase {
                                   path: path,
                                   bodyDict: bodyDict,
                                   expectation: expectation1)
-        waitForTaskRunner(networkSession: networkSession,
-                          notificationCenter: notificationCenter,
+        waitForTaskRunner(requestProcessor: requestProcessor,
                           expectation: expectation1)
     }
     
@@ -698,22 +697,25 @@ class RequestProcessorTests: XCTestCase {
                                   path: path,
                                   bodyDict: bodyDict,
                                   expectation: expectation1)
-        waitForTaskRunner(networkSession: networkSession,
-                          notificationCenter: notificationCenter,
+        waitForTaskRunner(requestProcessor: requestProcessor,
                           expectation: expectation1)
     }
     
     private func createRequestProcessor(networkSession: NetworkSessionProtocol,
                                         notificationCenter: NotificationCenterProtocol,
                                         selectOffline: Bool) -> RequestProcessorProtocol {
-        RequestProcessor(apiKey: "zee-api-key",
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            notificationCenter: notificationCenter,
+                                            timeInterval: 0.5)
+        return RequestProcessor(apiKey: "zee-api-key",
                          authProvider: self,
                          authManager: nil,
                          endPoint: Endpoint.api,
                          deviceMetadata: deviceMetadata,
                          networkSession: networkSession,
                          notificationCenter: notificationCenter,
-                         strategy: DefaultRequestProcessorStrategy(selectOffline: selectOffline))
+                         strategy: DefaultRequestProcessorStrategy(selectOffline: selectOffline),
+                         taskRunner: taskRunner)
     }
     
     private func processRequestWithSuccess(request: () -> Future<SendRequestValue, SendRequestError>,
@@ -749,17 +751,13 @@ class RequestProcessorTests: XCTestCase {
         }
     }
     
-    private func waitForTaskRunner(networkSession: NetworkSessionProtocol,
-                                   notificationCenter: NotificationCenterProtocol,
+    private func waitForTaskRunner(requestProcessor: RequestProcessorProtocol,
                                    expectation: XCTestExpectation) {
-        let taskRunner = IterableTaskRunner(networkSession: networkSession,
-                                            notificationCenter: notificationCenter,
-                                            timeInterval: 0.5)
-        taskRunner.start()
+        requestProcessor.start()
         wait(for: [expectation], timeout: 15.0)
-        taskRunner.stop()
+        requestProcessor.stop()
     }
-    
+
     struct Exp {
         let successExpectation: XCTestExpectation
         let onSuccess: OnSuccessHandler

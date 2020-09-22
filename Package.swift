@@ -1,4 +1,4 @@
-// swift-tools-version:5.1
+// swift-tools-version:5.3
 
 import PackageDescription
 
@@ -19,7 +19,10 @@ let package = Package(
     ],
     targets: [
         .target(name: "IterableSDK",
-                path: "swift-sdk"),
+                path: "swift-sdk",
+                resources: [
+                    .process("Resources"),
+                ]),
         .target(name: "IterableAppExtensions",
                 path: "notification-extension"),
     ]

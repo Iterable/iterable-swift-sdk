@@ -26,12 +26,14 @@ struct RequestProcessor: RequestProcessorProtocol {
          deviceMetadata: DeviceMetadata,
          networkSession: NetworkSessionProtocol,
          notificationCenter: NotificationCenterProtocol,
-         strategy: RequestProcessorStrategy = DefaultRequestProcessorStrategy(selectOffline: false)) {
+         strategy: RequestProcessorStrategy = DefaultRequestProcessorStrategy(selectOffline: false),
+         taskRunner: IterableTaskRunner = IterableTaskRunner()) {
         offlineProcessor = OfflineRequestProcessor(apiKey: apiKey,
                                                    authProvider: authProvider,
                                                    authManager: authManager,
                                                    endPoint: endPoint,
                                                    deviceMetadata: deviceMetadata,
+                                                   taskRunner: taskRunner,
                                                    notificationCenter: notificationCenter)
         onlineProcessor = OnlineRequestProcessor(apiKey: apiKey,
                                                  authProvider: authProvider,
@@ -40,6 +42,16 @@ struct RequestProcessor: RequestProcessorProtocol {
                                                  networkSession: networkSession,
                                                  deviceMetadata: deviceMetadata)
         self.strategy = strategy
+    }
+    
+    func start() {
+        ITBInfo()
+        chooseRequestProcessor().start()
+    }
+    
+    func stop() {
+        ITBInfo()
+        chooseRequestProcessor().stop()
     }
     
     @discardableResult

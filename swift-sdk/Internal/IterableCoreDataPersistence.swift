@@ -8,6 +8,7 @@ import Foundation
 
 enum PersistenceConst {
     static let dataModelFileName = "IterableDataModel"
+    static let dataModelExtension = "momd"
 
     enum Entity {
         enum Task {
@@ -21,10 +22,42 @@ enum PersistenceConst {
     }
 }
 
+/// `Bundle.current` is used to find url path for core data model file.
+/// This is a temporary fix until we can use `Bundle.module` in IterableSDK.
+import class Foundation.Bundle
+private class BundleFinder {}
+extension Foundation.Bundle {
+    /// Returns the resource bundle associated with the current Swift module.
+    static var current: Bundle = {
+        // This is your `target.path` (located in your `Package.swift`) by replacing all the `/` by the `_`.
+        let bundleName = "IterableSDK_IterableSDK"
+        let candidates = [
+            // Bundle should be present here when the package is linked into an App.
+            Bundle.main.resourceURL,
+            // Bundle should be present here when the package is linked into a framework.
+            Bundle(for: BundleFinder.self).resourceURL,
+            // For command-line tools.
+            Bundle.main.bundleURL,
+        ]
+        for candidate in candidates {
+            let bundlePath = candidate?.appendingPathComponent(bundleName + ".bundle")
+            if let bundle = bundlePath.flatMap(Bundle.init(url:)) {
+                return bundle
+            }
+        }
+        
+        return Bundle(for: BundleFinder.self)
+    }()
+}
+
 @available(iOS 10.0, *)
 class PersistentContainer: NSPersistentContainer {
     static let shared: PersistentContainer = {
-        let container = PersistentContainer(name: PersistenceConst.dataModelFileName)
+        // TODO: @tqm remove force unwrapping
+        let url = Bundle.current.url(forResource: PersistenceConst.dataModelFileName, withExtension: PersistenceConst.dataModelExtension)!
+        let managedObjectModel = NSManagedObjectModel(contentsOf: url)!
+        
+        let container = PersistentContainer(name: PersistenceConst.dataModelFileName, managedObjectModel: managedObjectModel)
         container.loadPersistentStores { desc, error in
             if let error = error {
                 fatalError("Unresolved error \(error)")

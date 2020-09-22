@@ -26,6 +26,10 @@ struct UpdateSubscriptionsInfo {
 
 /// `IterableAPIinternal` will delegate all network related calls to this struct.
 protocol RequestProcessorProtocol {
+    func start()
+    
+    func stop()
+    
     @discardableResult
     func register(registerTokenInfo: RegisterTokenInfo,
                   notificationStateProvider: NotificationStateProviderProtocol,

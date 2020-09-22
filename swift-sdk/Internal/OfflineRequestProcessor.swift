@@ -12,13 +12,26 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
          authManager: IterableInternalAuthManagerProtocol?,
          endPoint: String,
          deviceMetadata: DeviceMetadata,
-         notificationCenter: NotificationCenterProtocol) {
+         taskRunner: IterableTaskRunner = IterableTaskRunner(),
+         notificationCenter: NotificationCenterProtocol
+         ) {
         self.apiKey = apiKey
         self.authProvider = authProvider
         self.authManager = authManager
         self.endPoint = endPoint
         self.deviceMetadata = deviceMetadata
+        self.taskRunner = taskRunner
         notificationListener = NotificationListener(notificationCenter: notificationCenter)
+    }
+    
+    func start() {
+        ITBInfo()
+        taskRunner.start()
+    }
+    
+    func stop(){
+        ITBInfo()
+        taskRunner.stop()
     }
     
     @discardableResult
@@ -327,6 +340,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     private let endPoint: String
     private let deviceMetadata: DeviceMetadata
     private let notificationListener: NotificationListener
+    private let taskRunner: IterableTaskRunner
     
     private func createRequestCreator(authProvider: AuthProvider) -> RequestCreator {
         return RequestCreator(apiKey: apiKey, auth: authProvider.auth, deviceMetadata: deviceMetadata)
@@ -423,7 +437,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
             }
         }
 
-        private var notificationCenter: NotificationCenterProtocol
+        private let notificationCenter: NotificationCenterProtocol
         private var pendingTasksMap = [String: Promise<SendRequestValue, SendRequestError>]()
     }
 }
