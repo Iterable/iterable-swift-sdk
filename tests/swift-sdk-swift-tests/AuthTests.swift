@@ -375,9 +375,9 @@ class AuthTests: XCTestCase {
         localStorage.authToken = mockEncodedPayload
         
         let authManager = AuthManager(onAuthTokenRequestedCallback: authTokenRequestedCallback,
-                        localStorage: localStorage,
-                        dateProvider: MockDateProvider(),
-                        refreshWindow: refreshWindow)
+                                      refreshWindow: refreshWindow,
+                                      localStorage: localStorage,
+                                      dateProvider: MockDateProvider())
         
         let _ = authManager
         wait(for: [condition1], timeout: testExpectationTimeout)
@@ -400,9 +400,9 @@ class AuthTests: XCTestCase {
         mockLocalStorage.authToken = mockEncodedPayload
         
         let authManager = AuthManager(onAuthTokenRequestedCallback: authTokenRequestedCallback,
-                        localStorage: mockLocalStorage,
-                        dateProvider: MockDateProvider(),
-                        refreshWindow: refreshWindow)
+                                      refreshWindow: refreshWindow,
+                                      localStorage: mockLocalStorage,
+                                      dateProvider: MockDateProvider())
         let _ = authManager
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
@@ -500,6 +500,7 @@ class AuthTests: XCTestCase {
         }
         
         let authManager = AuthManager(onAuthTokenRequestedCallback: config.onAuthTokenRequestedCallback,
+                                      refreshWindow: config.authTokenRefreshWindow,
                                       localStorage: MockLocalStorage(),
                                       dateProvider: MockDateProvider())
         
@@ -524,6 +525,7 @@ class AuthTests: XCTestCase {
         }
         
         let authManager = AuthManager(onAuthTokenRequestedCallback: config.onAuthTokenRequestedCallback,
+                                      refreshWindow: config.authTokenRefreshWindow,
                                       localStorage: MockLocalStorage(),
                                       dateProvider: MockDateProvider())
         

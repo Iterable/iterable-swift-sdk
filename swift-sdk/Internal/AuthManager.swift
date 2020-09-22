@@ -13,9 +13,9 @@ import Foundation
 
 class AuthManager: IterableInternalAuthManagerProtocol {
     init(onAuthTokenRequestedCallback: (() -> String?)?,
+         refreshWindow: TimeInterval,
          localStorage: LocalStorageProtocol,
-         dateProvider: DateProviderProtocol,
-         refreshWindow: TimeInterval = AuthManager.defaultRefreshWindow) {
+         dateProvider: DateProviderProtocol) {
         ITBInfo()
         
         self.onAuthTokenRequestedCallback = onAuthTokenRequestedCallback
@@ -66,21 +66,17 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     
     // MARK: - Private/Internal
     
-    private let refreshWindow: TimeInterval
-    
     private var expirationRefreshTimer: Timer?
     
     private var authToken: String?
     
     private var hasFailedPriorAuth: Bool = false
     
+    private let onAuthTokenRequestedCallback: (() -> String?)?
+    private let refreshWindow: TimeInterval
     private var localStorage: LocalStorageProtocol
     private let dateProvider: DateProviderProtocol
-    
-    private let onAuthTokenRequestedCallback: (() -> String?)?
-    
-    static let defaultRefreshWindow: TimeInterval = 60
-    
+
     private func storeAuthToken() {
         localStorage.authToken = authToken
     }
@@ -96,15 +92,15 @@ class AuthManager: IterableInternalAuthManagerProtocol {
             return
         }
         
-        let refreshTimeInterval = TimeInterval(expirationDate) - dateProvider.currentDate.timeIntervalSince1970 - refreshWindow
+        let timeIntervalToRefresh = TimeInterval(expirationDate) - dateProvider.currentDate.timeIntervalSince1970 - refreshWindow
         
         if #available(iOS 10.0, *) {
-            expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: refreshTimeInterval, repeats: false) { [weak self] _ in
+            expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: timeIntervalToRefresh, repeats: false) { [weak self] _ in
                 self?.requestNewAuthToken(hasFailedPriorAuth: false)
             }
         } else {
             // Fallback on earlier versions
-            expirationRefreshTimer = Timer.scheduledTimer(timeInterval: refreshTimeInterval,
+            expirationRefreshTimer = Timer.scheduledTimer(timeInterval: timeIntervalToRefresh,
                                                           target: self,
                                                           selector: #selector(requestNewAuthToken),
                                                           userInfo: nil,

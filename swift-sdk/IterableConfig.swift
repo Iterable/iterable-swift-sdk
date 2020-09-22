@@ -120,6 +120,9 @@ public class IterableConfig: NSObject {
     /// How many seconds to wait before showing the next in-app, if there are more than one present
     public var inAppDisplayInterval: Double = 30.0
     
+    /// the number of seconds before expiration of the auth token to get a new auth token
+    public var authTokenRefreshWindow: TimeInterval = 60.0
+    
     /// These are internal. Do not change
     internal var apiEndpoint = Endpoint.api
     internal var linksEndpoint = Endpoint.links
