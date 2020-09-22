@@ -46,7 +46,6 @@ class IterableAPIResponseTests: XCTestCase {
     
     func testResponseCode200WithNoData() {
         let xpectation = expectation(description: "no data")
-        let networkSession = MockNetworkSession(statusCode: 200, data: nil)
         let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
         
         createApiClient(networkSession: MockNetworkSession(statusCode: 200, data: nil))
@@ -61,7 +60,6 @@ class IterableAPIResponseTests: XCTestCase {
     func testResponseCode200WithInvalidJson() {
         let xpectation = expectation(description: "invalid json")
         let data = "{'''}}".data(using: .utf8)!
-        let networkSession = MockNetworkSession(statusCode: 200, data: data)
         let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
         
         createApiClient(networkSession: MockNetworkSession(statusCode: 200, data: data))
@@ -75,7 +73,6 @@ class IterableAPIResponseTests: XCTestCase {
     
     func testResponseCode400WithoutMessage() { // 400 = bad reqeust
         let xpectation = expectation(description: "400 without message")
-        let networkSession = MockNetworkSession(statusCode: 400)
         let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
         
         createApiClient(networkSession: MockNetworkSession(statusCode: 400))
@@ -89,7 +86,6 @@ class IterableAPIResponseTests: XCTestCase {
     
     func testResponseCode400WitMessage() {
         let xpectation = expectation(description: "400 with message")
-        let networkSession = MockNetworkSession(statusCode: 400, json: ["msg": "Test error"])
         let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
         
         createApiClient(networkSession: MockNetworkSession(statusCode: 400, json: ["msg": "Test error"]))
@@ -103,7 +99,6 @@ class IterableAPIResponseTests: XCTestCase {
     
     func testResponseCode401() { // 401 = unauthorized
         let xpectation = expectation(description: "401")
-        let networkSession = MockNetworkSession(statusCode: 401)
         let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
         
         createApiClient(networkSession: MockNetworkSession(statusCode: 401))
@@ -117,7 +112,6 @@ class IterableAPIResponseTests: XCTestCase {
     
     func testResponseCode500() { // 500 = internal server error
         let xpectation = expectation(description: "500")
-        let networkSession = MockNetworkSession(statusCode: 500)
         let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
         
         createApiClient(networkSession: MockNetworkSession(statusCode: 500))
@@ -131,7 +125,6 @@ class IterableAPIResponseTests: XCTestCase {
     
     func testNon200ResponseCode() { // 302 = redirection
         let xpectation = expectation(description: "non 200")
-        let networkSession = MockNetworkSession(statusCode: 302)
         let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
         
         createApiClient(networkSession: MockNetworkSession(statusCode: 302))
@@ -145,7 +138,6 @@ class IterableAPIResponseTests: XCTestCase {
     
     func testNoNetworkResponse() {
         let xpectation = expectation(description: "no network response")
-        let networkSession = NoNetworkNetworkSession()
         let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
         
         createApiClient(networkSession: NoNetworkNetworkSession())
