@@ -3,7 +3,7 @@ name: Build and test
 on: pull_request
 
 jobs:
-  build:
+  run-tests-job:
     runs-on: macos-latest
 
     steps:
@@ -15,7 +15,7 @@ jobs:
 
     - name: Build and test
       run: |
-        xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11' -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO | xcpretty || exit 1
+        xcodebuild test -project swift-sdk.xcodeproj -scheme swift-sdk -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11' -enableCodeCoverage YES CODE_SIGNING_REQUIRED=NO | xcpretty && exit ${PIPESTATUS[0]}
         
     - name: CocoaPods lint
       run: pod lib lint
