@@ -299,7 +299,7 @@ class RequestProcessorTests: XCTestCase {
             "email": "user@example.com",
             "messageId": messageId,
             "inboxSessionId": inboxSessionId,
-            "deviceInfo": deviceMetadata.asDictionary()!,
+            "deviceInfo": Self.deviceMetadata.asDictionary()!,
             "messageContext": [
                 "location": "in-app",
                 "saveToInbox": false,
@@ -333,7 +333,7 @@ class RequestProcessorTests: XCTestCase {
             "email": "user@example.com",
             "messageId": messageId,
             "inboxSessionId": inboxSessionId,
-            "deviceInfo": deviceMetadata.asDictionary()!,
+            "deviceInfo": Self.deviceMetadata.asDictionary()!,
             "clickedUrl": clickedUrl,
             "messageContext": [
                 "location": "inbox",
@@ -370,7 +370,7 @@ class RequestProcessorTests: XCTestCase {
             "email": "user@example.com",
             "messageId": messageId,
             "inboxSessionId": inboxSessionId,
-            "deviceInfo": deviceMetadata.asDictionary()!,
+            "deviceInfo": Self.deviceMetadata.asDictionary()!,
             "clickedUrl": clickedUrl,
             "messageContext": [
                 "location": "inbox",
@@ -426,7 +426,7 @@ class RequestProcessorTests: XCTestCase {
             "endTotalMessageCount": inboxSession.endTotalMessageCount,
             "endUnreadMessageCount": inboxSession.endUnreadMessageCount,
             "impressions": impressions.compactMap { $0.asDictionary() },
-            "deviceInfo": deviceMetadata.asDictionary()!,
+            "deviceInfo": Self.deviceMetadata.asDictionary()!,
         ]
         
         let expectations = createExpectations(description: #function)
@@ -456,7 +456,7 @@ class RequestProcessorTests: XCTestCase {
                 "saveToInbox": false,
                 "silentInbox": false,
             ],
-            "deviceInfo": deviceMetadata.asDictionary()!,
+            "deviceInfo": Self.deviceMetadata.asDictionary()!,
         ]
         
         let expectations = createExpectations(description: #function)
@@ -513,7 +513,7 @@ class RequestProcessorTests: XCTestCase {
                 "silentInbox": false,
             ],
             "deleteAction": "delete-button",
-            "deviceInfo": deviceMetadata.asDictionary()!,
+            "deviceInfo": Self.deviceMetadata.asDictionary()!,
         ]
 
         let expectations = createExpectations(description: #function)
@@ -539,7 +539,7 @@ class RequestProcessorTests: XCTestCase {
         let bodyDict: [String: Any] = [
             "email": "user@example.com",
             "messageId": messageId,
-            "deviceInfo": deviceMetadata.asDictionary()!,
+            "deviceInfo": Self.deviceMetadata.asDictionary()!,
             "messageContext": [
                 "location": "in-app",
                 "saveToInbox": false,
@@ -568,7 +568,7 @@ class RequestProcessorTests: XCTestCase {
         let bodyDict: [String: Any] = [
             "email": "user@example.com",
             "messageId": messageId,
-            "deviceInfo": deviceMetadata.asDictionary()!,
+            "deviceInfo": Self.deviceMetadata.asDictionary()!,
             "clickedUrl": clickedUrl,
             "messageContext": [
                 "location": "in-app",
@@ -707,15 +707,23 @@ class RequestProcessorTests: XCTestCase {
         let taskRunner = IterableTaskRunner(networkSession: networkSession,
                                             notificationCenter: notificationCenter,
                                             timeInterval: 0.5)
-        return RequestProcessor(apiKey: "zee-api-key",
-                         authProvider: self,
-                         authManager: nil,
-                         endPoint: Endpoint.api,
-                         deviceMetadata: deviceMetadata,
-                         networkSession: networkSession,
-                         notificationCenter: notificationCenter,
-                         strategy: DefaultRequestProcessorStrategy(selectOffline: selectOffline),
-                         taskRunner: taskRunner)
+        
+        return RequestProcessor(onlineCreator: {
+                                    OnlineRequestProcessor(apiKey: "zee-api-key",
+                                                           authProvider: self,
+                                                           authManager: nil,
+                                                           endPoint: Endpoint.api,
+                                                           networkSession: networkSession,
+                                                           deviceMetadata: Self.deviceMetadata) },
+                                offlineCreator: {
+                                    OfflineRequestProcessor(apiKey: "zee-api-key",
+                                                            authProvider: self,
+                                                            authManager: nil,
+                                                            endPoint: Endpoint.api,
+                                                            deviceMetadata: Self.deviceMetadata,
+                                                            taskRunner: taskRunner,
+                                                            notificationCenter: notificationCenter) },
+                                strategy: DefaultRequestProcessorStrategy(selectOffline: selectOffline))
     }
     
     private func processRequestWithSuccess(request: () -> Future<SendRequestValue, SendRequestError>,
@@ -792,9 +800,9 @@ class RequestProcessorTests: XCTestCase {
         return (expectation: expectation1, onFailure: onFailure)
     }
 
-    private let deviceMetadata = DeviceMetadata(deviceId: IterableUtil.generateUUID(),
-                                                platform: JsonValue.iOS.jsonStringValue,
-                                                appPackageName: Bundle.main.appPackageName ?? "")
+    private static let deviceMetadata = DeviceMetadata(deviceId: IterableUtil.generateUUID(),
+                                                       platform: JsonValue.iOS.jsonStringValue,
+                                                       appPackageName: Bundle.main.appPackageName ?? "")
     
     private let dateProvider = MockDateProvider()
     

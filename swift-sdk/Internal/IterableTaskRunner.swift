@@ -9,7 +9,6 @@ import UIKit
 
 @available(iOS 10.0, *)
 class IterableTaskRunner: NSObject {
-    // TODO: @tqm Move to `DependencyContainer` after we remove iOS 9 support
     init(networkSession: NetworkSessionProtocol = URLSession(configuration: .default),
          persistenceContextProvider: IterablePersistenceContextProvider = CoreDataPersistenceContextProvider(),
          notificationCenter: NotificationCenterProtocol = NotificationCenter.default,

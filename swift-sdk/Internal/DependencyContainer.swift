@@ -47,6 +47,46 @@ extension DependencyContainerProtocol {
                     localStorage: localStorage,
                     dateProvider: dateProvider)
     }
+    
+    func createRequestProcessor(apiKey: String,
+                                config: IterableConfig,
+                                authProvider: AuthProvider,
+                                authManager: IterableInternalAuthManagerProtocol,
+                                deviceMetadata: DeviceMetadata) -> RequestProcessorProtocol {
+        if #available(iOS 10.0, *) {
+            return RequestProcessor(onlineCreator: {
+                                        OnlineRequestProcessor(apiKey: apiKey,
+                                                               authProvider: authProvider,
+                                                               authManager: authManager,
+                                                               endPoint: config.apiEndpoint,
+                                                               networkSession: networkSession,
+                                                               deviceMetadata: deviceMetadata) },
+                                    offlineCreator: {
+                                        OfflineRequestProcessor(apiKey: apiKey,
+                                                                authProvider: authProvider,
+                                                                authManager: authManager,
+                                                                endPoint: config.apiEndpoint,
+                                                                deviceMetadata: deviceMetadata,
+                                                                taskRunner: createTaskRunner(),
+                                                                notificationCenter: notificationCenter) },
+                                    strategy: DefaultRequestProcessorStrategy(selectOffline: config.enableOfflineMode))
+        } else {
+            return OnlineRequestProcessor(apiKey: apiKey,
+                                          authProvider: authProvider,
+                                          authManager: authManager,
+                                          endPoint: config.apiEndpoint,
+                                          networkSession: networkSession,
+                                          deviceMetadata: deviceMetadata)
+        }
+    }
+    
+    @available(iOS 10.0, *)
+    private func createTaskRunner() -> IterableTaskRunner {
+        IterableTaskRunner(networkSession: networkSession,
+                           persistenceContextProvider: CoreDataPersistenceContextProvider(dateProvider: dateProvider),
+                           notificationCenter: notificationCenter,
+                           connectivityManager: NetworkConnectivityManager())
+    }
 }
 
 struct DependencyContainer: DependencyContainerProtocol {

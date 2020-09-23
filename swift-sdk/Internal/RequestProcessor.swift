@@ -18,29 +18,12 @@ struct DefaultRequestProcessorStrategy: RequestProcessorStrategy {
 }
     
 @available(iOS 10.0, *)
-struct RequestProcessor: RequestProcessorProtocol {
-    init(apiKey: String,
-         authProvider: AuthProvider,
-         authManager: IterableInternalAuthManagerProtocol?,
-         endPoint: String,
-         deviceMetadata: DeviceMetadata,
-         networkSession: NetworkSessionProtocol,
-         notificationCenter: NotificationCenterProtocol,
-         strategy: RequestProcessorStrategy = DefaultRequestProcessorStrategy(selectOffline: false),
-         taskRunner: IterableTaskRunner = IterableTaskRunner()) {
-        offlineProcessor = OfflineRequestProcessor(apiKey: apiKey,
-                                                   authProvider: authProvider,
-                                                   authManager: authManager,
-                                                   endPoint: endPoint,
-                                                   deviceMetadata: deviceMetadata,
-                                                   taskRunner: taskRunner,
-                                                   notificationCenter: notificationCenter)
-        onlineProcessor = OnlineRequestProcessor(apiKey: apiKey,
-                                                 authProvider: authProvider,
-                                                 authManager: authManager,
-                                                 endPoint: endPoint,
-                                                 networkSession: networkSession,
-                                                 deviceMetadata: deviceMetadata)
+class RequestProcessor: RequestProcessorProtocol {
+    init(onlineCreator: @escaping () -> OnlineRequestProcessor,
+         offlineCreator: @escaping () -> OfflineRequestProcessor,
+         strategy: RequestProcessorStrategy = DefaultRequestProcessorStrategy(selectOffline: false)) {
+        self.onlineCreator = onlineCreator
+        self.offlineCreator = offlineCreator
         self.strategy = strategy
     }
     
@@ -260,9 +243,18 @@ struct RequestProcessor: RequestProcessorProtocol {
                                                  onFailure: onFailure)
     }
     
+    private let onlineCreator: () -> OnlineRequestProcessor
+    private let offlineCreator: () -> OfflineRequestProcessor
+
     private let strategy: RequestProcessorStrategy
-    private let offlineProcessor: OfflineRequestProcessor
-    private let onlineProcessor: OnlineRequestProcessor
+
+    private lazy var offlineProcessor: OfflineRequestProcessor = {
+        offlineCreator()
+    }()
+    
+    private lazy var onlineProcessor: OnlineRequestProcessor = {
+        onlineCreator()
+    }()
     
     private func chooseRequestProcessor() -> RequestProcessorProtocol {
         strategy.chooseOfflineProcessor ? offlineProcessor: onlineProcessor
