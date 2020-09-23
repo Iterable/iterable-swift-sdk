@@ -124,7 +124,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         
         // This is public (via public protocol implementation), so make sure we call from Main Thread
         DispatchQueue.main.async {
-            _ = self.showInternal(message: message, consume: consume, callback: callback)
+            self.showInternal(message: message, consume: consume, callback: callback)
         }
     }
     
