@@ -120,6 +120,9 @@ public class IterableConfig: NSObject {
     /// How many seconds to wait before showing the next in-app, if there are more than one present
     public var inAppDisplayInterval: Double = 30.0
     
+    /// the number of seconds before expiration of the auth token to get a new auth token
+    public var authTokenRefreshWindow: TimeInterval = 60.0
+
     /// If set to true, events will be queued locally when network is offline.
     /// When the network is online again, the queued events will be sent to our backend.
     public var enableOfflineMode = false

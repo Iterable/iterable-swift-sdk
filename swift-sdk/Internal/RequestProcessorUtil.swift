@@ -21,7 +21,7 @@ struct RequestProcessorUtil {
         }.onError { error in
             if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.invalidJwtPayload {
                 ITBError(error.reason)
-                authManager?.requestNewAuthToken()
+                authManager?.requestNewAuthToken(hasFailedPriorAuth: true, onSuccess: nil)
             } else if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.badApiKey {
                 ITBError(error.reason)
             }

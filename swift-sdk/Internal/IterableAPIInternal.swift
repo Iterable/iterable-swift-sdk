@@ -68,8 +68,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }()
     
     lazy var authManager: IterableInternalAuthManagerProtocol = {
-        self.dependencyContainer.createAuthManager(config: self.config,
-                                                   localStorage: self.localStorage)
+        self.dependencyContainer.createAuthManager(config: self.config)
     }()
     
     // MARK: - SDK Functions
@@ -99,7 +98,9 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             _email = email
             _userId = nil
             
-            authManager.requestNewAuthToken()
+            authManager.requestNewAuthToken(hasFailedPriorAuth: false) { [weak self] in
+                self?.loginNewUser()
+            }
             
             storeIdentifierData()
             
@@ -114,7 +115,9 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             _email = nil
             _userId = userId
             
-            authManager.requestNewAuthToken()
+            authManager.requestNewAuthToken(hasFailedPriorAuth: false) { [weak self] in
+                self?.loginNewUser()
+            }
             
             storeIdentifierData()
             
@@ -483,18 +486,6 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                 attributionInfo = IterableAttributionInfo(campaignId: metadata.campaignId, templateId: templateId, messageId: metadata.messageId)
             }
         }
-    }
-    
-    @discardableResult
-    private static func call(successHandler onSuccess: OnSuccessHandler? = nil,
-                             andFailureHandler onFailure: OnFailureHandler? = nil,
-                             forResult result: Future<SendRequestValue, SendRequestError>) -> Future<SendRequestValue, SendRequestError> {
-        result.onSuccess { json in
-            onSuccess?(json)
-        }.onError { error in
-            onFailure?(error.reason, error.data)
-        }
-        return result
     }
     
     // package private method. Do not call this directly.

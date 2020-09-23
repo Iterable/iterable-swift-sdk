@@ -272,7 +272,7 @@ class AuthTests: XCTestCase {
         XCTAssertEqual(API.auth.authToken, AuthTests.authToken)
         
         authTokenChanged = true
-        API.authManager.requestNewAuthToken()
+        API.authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: nil)
         
         XCTAssertEqual(API.email, AuthTests.email)
         XCTAssertEqual(API.auth.authToken, newAuthToken)
@@ -305,7 +305,7 @@ class AuthTests: XCTestCase {
         XCTAssertEqual(API.auth.authToken, AuthTests.authToken)
         
         authTokenChanged = true
-        API.authManager.requestNewAuthToken()
+        API.authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: nil)
         
         XCTAssertEqual(API.userId, AuthTests.userId)
         XCTAssertEqual(API.auth.authToken, newAuthToken)
@@ -371,12 +371,15 @@ class AuthTests: XCTestCase {
         let mockEncodedPayload = createMockEncodedPayload(exp: Int(expirationTimeSinceEpoch))
         
         let localStorage = MockLocalStorage()
-        let authManager = AuthManager(onAuthTokenRequestedCallback: authTokenRequestedCallback,
-                                      localStorage: localStorage,
-                                      refreshWindow: refreshWindow)
-        localStorage.authToken = mockEncodedPayload
-        authManager.retrieveAuthToken()
         
+        localStorage.authToken = mockEncodedPayload
+        
+        let authManager = AuthManager(onAuthTokenRequestedCallback: authTokenRequestedCallback,
+                                      refreshWindow: refreshWindow,
+                                      localStorage: localStorage,
+                                      dateProvider: MockDateProvider())
+        
+        let _ = authManager
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
 
@@ -396,12 +399,171 @@ class AuthTests: XCTestCase {
         let mockLocalStorage = MockLocalStorage()
         mockLocalStorage.authToken = mockEncodedPayload
         
-        _ = AuthManager(onAuthTokenRequestedCallback: authTokenRequestedCallback,
-                        localStorage: mockLocalStorage,
-                        refreshWindow: refreshWindow)
+        let authManager = AuthManager(onAuthTokenRequestedCallback: authTokenRequestedCallback,
+                                      refreshWindow: refreshWindow,
+                                      localStorage: mockLocalStorage,
+                                      dateProvider: MockDateProvider())
+        let _ = authManager
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+    
+    func testAuthTokenCallbackOnSetEmail() {
+        let condition1 = expectation(description: "\(#function) - callback didn't get called after setEmail")
+        
+        let authTokenRequestedCallback: (() -> String?)? = {
+            condition1.fulfill()
+            return nil
+        }
+        
+        let config = IterableConfig()
+        config.onAuthTokenRequestedCallback = authTokenRequestedCallback
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(config: config)
+        
+        internalAPI.setEmail(AuthTests.email)
+        
+        XCTAssertEqual(internalAPI.email, AuthTests.email)
         
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
+    
+    func testAuthTokenCallbackOnSetUserId() {
+        let condition1 = expectation(description: "\(#function) - callback didn't get called after setEmail")
+        
+        let authTokenRequestedCallback: (() -> String?)? = {
+            condition1.fulfill()
+            return nil
+        }
+        
+        let config = IterableConfig()
+        config.onAuthTokenRequestedCallback = authTokenRequestedCallback
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(config: config)
+        
+        internalAPI.setUserId(AuthTests.userId)
+        
+        XCTAssertEqual(internalAPI.userId, AuthTests.userId)
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+    
+    func testAuthTokenDeletedOnLogout() {
+        let config = IterableConfig()
+        config.onAuthTokenRequestedCallback = {
+            return AuthTests.authToken
+        }
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(config: config)
+        
+        internalAPI.email = AuthTests.email
+        
+        XCTAssertEqual(internalAPI.auth.authToken, AuthTests.authToken)
+        
+        internalAPI.logoutUser()
+        
+        XCTAssertNil(internalAPI.auth.authToken)
+    }
+    
+    func testAuthTokenRefreshRetryOnlyOnce() {
+        let condition1 = expectation(description: "\(#function) - callback not called correctly in some form")
+        condition1.expectedFulfillmentCount = 2
+        
+        let config = IterableConfig()
+        config.onAuthTokenRequestedCallback = {
+            condition1.fulfill()
+            return AuthTests.authToken
+        }
+        
+        let mockNetworkSession = MockNetworkSession(statusCode: 401,
+                                                    json: [JsonKey.Response.iterableCode: JsonValue.Code.invalidJwtPayload])
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(config: config,
+                                                                   networkSession: mockNetworkSession)
+        
+        internalAPI.email = AuthTests.email
+        
+        // two calls here to trigger the retry more than once
+        internalAPI.track("event")
+        internalAPI.track("event")
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+    
+    func testPriorAuthFailedRetryPrevention() {
+        let condition1 = expectation(description: "\(#function) - incorrect number of retry calls")
+        condition1.expectedFulfillmentCount = 2
+        
+        let config = IterableConfig()
+        config.onAuthTokenRequestedCallback = {
+            condition1.fulfill()
+            return nil
+        }
+        
+        let authManager = AuthManager(onAuthTokenRequestedCallback: config.onAuthTokenRequestedCallback,
+                                      refreshWindow: config.authTokenRefreshWindow,
+                                      localStorage: MockLocalStorage(),
+                                      dateProvider: MockDateProvider())
+        
+        // a normal call to ensure default states
+        authManager.requestNewAuthToken()
+        
+        // 2 failing calls to ensure both the manager and the incoming request test retry prevention
+        authManager.requestNewAuthToken(hasFailedPriorAuth: true)
+        authManager.requestNewAuthToken(hasFailedPriorAuth: true)
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+    
+    func testPriorAuthFailedRetrySuccess() {
+        let condition1 = expectation(description: "\(#function) - incorrect number of retry calls")
+        condition1.expectedFulfillmentCount = 3
+        
+        let config = IterableConfig()
+        config.onAuthTokenRequestedCallback = {
+            condition1.fulfill()
+            return nil
+        }
+        
+        let authManager = AuthManager(onAuthTokenRequestedCallback: config.onAuthTokenRequestedCallback,
+                                      refreshWindow: config.authTokenRefreshWindow,
+                                      localStorage: MockLocalStorage(),
+                                      dateProvider: MockDateProvider())
+        
+        // a normal call to ensure default states
+        authManager.requestNewAuthToken()
+        
+        // 2 failing calls to ensure both the manager and the incoming request test retry prevention
+        authManager.requestNewAuthToken(hasFailedPriorAuth: true)
+        authManager.requestNewAuthToken(hasFailedPriorAuth: true)
+        
+        // and now a normal call
+        authManager.requestNewAuthToken()
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+    
+    func testPushRegistrationAfterAuthTokenRetrieval() {
+        let condition1 = expectation(description: "\(#function) - notification state provider not fulfilled")
+        condition1.expectedFulfillmentCount = 2
+        
+        let mockNotificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: condition1)
+        
+        let config = IterableConfig()
+        config.onAuthTokenRequestedCallback = {
+            return nil
+        }
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(config: config,
+                                                                   notificationStateProvider: mockNotificationStateProvider)
+        
+        internalAPI.email = AuthTests.email
+        
+        internalAPI.email = "different@email.com"
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+
+    // MARK: - Private
     
     private func createMockEncodedPayload(exp: Int) -> String {
         let payload = """
