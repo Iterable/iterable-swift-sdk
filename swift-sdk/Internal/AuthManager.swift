@@ -44,17 +44,9 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         
         self.hasFailedPriorAuth = hasFailedPriorAuth
         
-        delegate?.onAuthTokenRequested(completion: { retrievedAuthToken in
-            self.authToken = retrievedAuthToken
-            
-            self.storeAuthToken()
-            
-            if self.authToken != nil {
-                onSuccess?()
-            }
-            
-            self.queueAuthTokenExpirationRefresh(self.authToken)
-        })
+        delegate?.onAuthTokenRequested { [weak self] retrievedAuthToken in
+            self?.onAuthTokenReceived(retrievedAuthToken: retrievedAuthToken, onSuccess: onSuccess)
+        }
     }
     
     func logoutUser() {
@@ -87,6 +79,18 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         authToken = localStorage.authToken
         
         queueAuthTokenExpirationRefresh(authToken)
+    }
+    
+    private func onAuthTokenReceived(retrievedAuthToken: String?, onSuccess: (() -> Void)?) {
+        authToken = retrievedAuthToken
+        
+        storeAuthToken()
+        
+        if authToken != nil {
+            onSuccess?()
+        }
+        
+        queueAuthTokenExpirationRefresh(self.authToken)
     }
     
     private func queueAuthTokenExpirationRefresh(_ authToken: String?) {
