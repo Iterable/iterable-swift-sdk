@@ -359,3 +359,4 @@ public typealias OnSuccessHandler = (_ data: [AnyHashable: Any]?) -> Void
 public typealias OnFailureHandler = (_ reason: String?, _ data: Data?) -> Void
 public typealias UrlHandler = (URL) -> Bool
 public typealias CustomActionHandler = (String) -> Bool
+public typealias AuthTokenRetrievalHandler = (String?) -> Void

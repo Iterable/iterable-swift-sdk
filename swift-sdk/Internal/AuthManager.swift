@@ -12,13 +12,13 @@ import Foundation
 }
 
 class AuthManager: IterableInternalAuthManagerProtocol {
-    init(onAuthTokenRequestedCallback: (((String?) -> Void) -> Void)?,
+    init(delegate: IterableAuthDelegate?,
          refreshWindow: TimeInterval,
          localStorage: LocalStorageProtocol,
          dateProvider: DateProviderProtocol) {
         ITBInfo()
         
-        self.onAuthTokenRequestedCallback = onAuthTokenRequestedCallback
+        self.delegate = delegate
         self.localStorage = localStorage
         self.dateProvider = dateProvider
         self.refreshWindow = refreshWindow
@@ -44,8 +44,8 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         
         self.hasFailedPriorAuth = hasFailedPriorAuth
         
-        onAuthTokenRequestedCallback?({ completion in
-            authToken = completion
+        delegate?.onAuthTokenRequested(completion: { retrievedAuthToken in
+            authToken = retrievedAuthToken
             
             storeAuthToken()
             
@@ -74,7 +74,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     
     private var hasFailedPriorAuth: Bool = false
     
-    private let onAuthTokenRequestedCallback: (((String?) -> Void) -> Void)?
+    private weak var delegate: IterableAuthDelegate?
     private let refreshWindow: TimeInterval
     private var localStorage: LocalStorageProtocol
     private let dateProvider: DateProviderProtocol

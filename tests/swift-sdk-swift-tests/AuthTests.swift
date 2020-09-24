@@ -38,13 +38,14 @@ class AuthTests: XCTestCase {
     }
     
     func testEmailWithTokenPersistence() {
-        let config = IterableConfig()
-        
         let emailToken = "asdf"
         
-        config.onAuthTokenRequestedCallback = { completion in
+        let authDelegate = createAuthDelegate({ completion in
             completion(emailToken)
-        }
+        })
+        
+        let config = IterableConfig()
+        config.authDelegate = authDelegate
         
         let internalAPI = IterableAPIInternal.initializeForTesting(config: config)
         
@@ -58,13 +59,14 @@ class AuthTests: XCTestCase {
     }
     
     func testUserIdWithTokenPersistence() {
-        let config = IterableConfig()
-        
         let userIdToken = "qwer"
         
-        config.onAuthTokenRequestedCallback = { completion in
+        let authDelegate = createAuthDelegate { completion in
             completion(userIdToken)
         }
+        
+        let config = IterableConfig()
+        config.authDelegate = authDelegate
         
         let internalAPI = IterableAPIInternal.initializeForTesting(config: config)
         
@@ -102,11 +104,13 @@ class AuthTests: XCTestCase {
         let newEmail = "second@example.com"
         let newToken = "jay"
         
-        let config = IterableConfig()
-        config.onAuthTokenRequestedCallback = { completion in
+        let authDelegate = createAuthDelegate({ completion in
             if internalAPI?.email == originalEmail { completion(originalToken) }
             if internalAPI?.email == newEmail { completion(newToken) }
-        }
+        })
+        
+        let config = IterableConfig()
+        config.authDelegate = authDelegate
         
         internalAPI = IterableAPIInternal.initializeForTesting(config: config)
         
@@ -137,11 +141,13 @@ class AuthTests: XCTestCase {
         let newUserId = "secondUserId"
         let newToken = "greedIsland"
         
-        let config = IterableConfig()
-        config.onAuthTokenRequestedCallback = { completion in
+        let authDelegate = createAuthDelegate({ completion in
             if internalAPI?.userId == originalUserId { completion(originalToken) }
             if internalAPI?.userId == newUserId { completion(newToken) }
-        }
+        })
+        
+        let config = IterableConfig()
+        config.authDelegate = authDelegate
         
         internalAPI = IterableAPIInternal.initializeForTesting(config: config)
         
@@ -174,11 +180,13 @@ class AuthTests: XCTestCase {
         let updatedEmail = "second@example.com"
         let updatedToken = "jay"
         
-        let config = IterableConfig()
-        config.onAuthTokenRequestedCallback = { completion in
+        let authDelegate = createAuthDelegate({ completion in
             if internalAPI?.email == originalEmail { completion(originalToken) }
             if internalAPI?.email == updatedEmail { completion(updatedToken) }
-        }
+        })
+        
+        let config = IterableConfig()
+        config.authDelegate = authDelegate
         
         internalAPI = IterableAPIInternal.initializeForTesting(config: config)
         
@@ -206,11 +214,10 @@ class AuthTests: XCTestCase {
     }
     
     func testLogoutUser() {
-        let config = IterableConfig()
+        let authDelegate = createStockAuthDelegate()
         
-        config.onAuthTokenRequestedCallback = { completion in
-            completion(AuthTests.authToken)
-        }
+        let config = IterableConfig()
+        config.authDelegate = authDelegate
         
         let localStorage = MockLocalStorage()
         
@@ -249,15 +256,17 @@ class AuthTests: XCTestCase {
         
         let newAuthToken = AuthTests.authToken + "3984ru398gj893"
         
-        let config = IterableConfig()
-        config.onAuthTokenRequestedCallback = { completion in
+        let authDelegate = createAuthDelegate({ completion in
             guard internalAPI?.email == AuthTests.email else {
                 completion(nil)
                 return
             }
             
             completion(authTokenChanged ? newAuthToken : AuthTests.authToken)
-        }
+        })
+        
+        let config = IterableConfig()
+        config.authDelegate = authDelegate
         
         internalAPI = IterableAPIInternal.initializeForTesting(config: config)
         
@@ -285,15 +294,17 @@ class AuthTests: XCTestCase {
         
         let newAuthToken = AuthTests.authToken + "3984ru398gj893"
         
-        let config = IterableConfig()
-        config.onAuthTokenRequestedCallback = { completion in
+        let authDelegate = createAuthDelegate({ completion in
             guard internalAPI?.userId == AuthTests.userId else {
                 completion(nil)
                 return
             }
             
             completion(authTokenChanged ? newAuthToken : AuthTests.authToken)
-        }
+        })
+        
+        let config = IterableConfig()
+        config.authDelegate = authDelegate
         
         internalAPI = IterableAPIInternal.initializeForTesting(config: config)
         
@@ -319,11 +330,13 @@ class AuthTests: XCTestCase {
         
         var callbackCalled = false
         
-        let config = IterableConfig()
-        config.onAuthTokenRequestedCallback = { completion in
+        let authDelegate = createAuthDelegate({ completion in
             callbackCalled = true
             completion(nil)
-        }
+        })
+        
+        let config = IterableConfig()
+        config.authDelegate = authDelegate
         
         let mockNetworkSession = MockNetworkSession(statusCode: 401,
                                                     json: [JsonKey.Response.iterableCode: JsonValue.Code.invalidJwtPayload])
@@ -363,10 +376,10 @@ class AuthTests: XCTestCase {
     func testAuthTokenRefreshQueued() {
         let condition1 = expectation(description: "\(#function) - callback didn't get called when refresh was fired")
         
-        let authTokenRequestedCallback: (((String?) -> Void) -> Void)? = { completion in
+        let authDelegate = createAuthDelegate({ completion in
             condition1.fulfill()
             completion(nil)
-        }
+        })
         
         let refreshWindow: TimeInterval = 0
         let waitTime: TimeInterval = 2
@@ -377,22 +390,23 @@ class AuthTests: XCTestCase {
         
         localStorage.authToken = mockEncodedPayload
         
-        let authManager = AuthManager(onAuthTokenRequestedCallback: authTokenRequestedCallback,
+        let authManager = AuthManager(delegate: authDelegate,
                                       refreshWindow: refreshWindow,
                                       localStorage: localStorage,
                                       dateProvider: MockDateProvider())
         
         let _ = authManager
+        
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
     
     func testAuthTokenRefreshOnInit() {
         let condition1 = expectation(description: "\(#function) - callback didn't get called when refresh was fired")
         
-        let authTokenRequestedCallback: (((String?) -> Void) -> Void)? = { completion in
+        let authDelegate = createAuthDelegate({ completion in
             condition1.fulfill()
             completion(nil)
-        }
+        })
         
         let refreshWindow: TimeInterval = 0
         let waitTime: TimeInterval = 2
@@ -402,24 +416,26 @@ class AuthTests: XCTestCase {
         let mockLocalStorage = MockLocalStorage()
         mockLocalStorage.authToken = mockEncodedPayload
         
-        let authManager = AuthManager(onAuthTokenRequestedCallback: authTokenRequestedCallback,
+        let authManager = AuthManager(delegate: authDelegate,
                                       refreshWindow: refreshWindow,
                                       localStorage: mockLocalStorage,
                                       dateProvider: MockDateProvider())
+        
         let _ = authManager
+        
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
     
     func testAuthTokenCallbackOnSetEmail() {
         let condition1 = expectation(description: "\(#function) - callback didn't get called after setEmail")
         
-        let authTokenRequestedCallback: (((String?) -> Void) -> Void)? = { completion in
+        let authDelegate = createAuthDelegate({ completion in
             condition1.fulfill()
             completion(nil)
-        }
+        })
         
         let config = IterableConfig()
-        config.onAuthTokenRequestedCallback = authTokenRequestedCallback
+        config.authDelegate = authDelegate
         
         let internalAPI = IterableAPIInternal.initializeForTesting(config: config)
         
@@ -433,13 +449,13 @@ class AuthTests: XCTestCase {
     func testAuthTokenCallbackOnSetUserId() {
         let condition1 = expectation(description: "\(#function) - callback didn't get called after setEmail")
         
-        let authTokenRequestedCallback: (((String?) -> Void) -> Void)? = { completion in
+        let authDelegate = createAuthDelegate({ completion in
             condition1.fulfill()
             completion(nil)
-        }
+        })
         
         let config = IterableConfig()
-        config.onAuthTokenRequestedCallback = authTokenRequestedCallback
+        config.authDelegate = authDelegate
         
         let internalAPI = IterableAPIInternal.initializeForTesting(config: config)
         
@@ -451,10 +467,12 @@ class AuthTests: XCTestCase {
     }
     
     func testAuthTokenDeletedOnLogout() {
-        let config = IterableConfig()
-        config.onAuthTokenRequestedCallback = { completion in
+        let authDelegate = createAuthDelegate({ completion in
             completion(AuthTests.authToken)
-        }
+        })
+        
+        let config = IterableConfig()
+        config.authDelegate = authDelegate
         
         let internalAPI = IterableAPIInternal.initializeForTesting(config: config)
         
@@ -471,11 +489,13 @@ class AuthTests: XCTestCase {
         let condition1 = expectation(description: "\(#function) - callback not called correctly in some form")
         condition1.expectedFulfillmentCount = 2
         
-        let config = IterableConfig()
-        config.onAuthTokenRequestedCallback = { completion in
+        let authDelegate = createAuthDelegate({ completion in
             condition1.fulfill()
             completion(AuthTests.authToken)
-        }
+        })
+        
+        let config = IterableConfig()
+        config.authDelegate = authDelegate
         
         let mockNetworkSession = MockNetworkSession(statusCode: 401,
                                                     json: [JsonKey.Response.iterableCode: JsonValue.Code.invalidJwtPayload])
@@ -496,13 +516,15 @@ class AuthTests: XCTestCase {
         let condition1 = expectation(description: "\(#function) - incorrect number of retry calls")
         condition1.expectedFulfillmentCount = 2
         
-        let config = IterableConfig()
-        config.onAuthTokenRequestedCallback = { completion in
+        let authDelegate = createAuthDelegate({ completion in
             condition1.fulfill()
             completion(nil)
-        }
+        })
         
-        let authManager = AuthManager(onAuthTokenRequestedCallback: config.onAuthTokenRequestedCallback,
+        let config = IterableConfig()
+        config.authDelegate = authDelegate
+        
+        let authManager = AuthManager(delegate: authDelegate,
                                       refreshWindow: config.authTokenRefreshWindow,
                                       localStorage: MockLocalStorage(),
                                       dateProvider: MockDateProvider())
@@ -521,13 +543,15 @@ class AuthTests: XCTestCase {
         let condition1 = expectation(description: "\(#function) - incorrect number of retry calls")
         condition1.expectedFulfillmentCount = 3
         
-        let config = IterableConfig()
-        config.onAuthTokenRequestedCallback = { completion in
+        let authDelegate = createAuthDelegate({ completion in
             condition1.fulfill()
             completion(nil)
-        }
+        })
         
-        let authManager = AuthManager(onAuthTokenRequestedCallback: config.onAuthTokenRequestedCallback,
+        let config = IterableConfig()
+        config.authDelegate = authDelegate
+        
+        let authManager = AuthManager(delegate: authDelegate,
                                       refreshWindow: config.authTokenRefreshWindow,
                                       localStorage: MockLocalStorage(),
                                       dateProvider: MockDateProvider())
@@ -549,12 +573,14 @@ class AuthTests: XCTestCase {
         let condition1 = expectation(description: "\(#function) - notification state provider not fulfilled")
         condition1.expectedFulfillmentCount = 2
         
+        let authDelegate = createAuthDelegate({ completion in
+            completion(nil)
+        })
+        
         let mockNotificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: condition1)
         
         let config = IterableConfig()
-        config.onAuthTokenRequestedCallback = { completion in
-            completion(nil)
-        }
+        config.authDelegate = authDelegate
         
         let internalAPI = IterableAPIInternal.initializeForTesting(config: config,
                                                                    notificationStateProvider: mockNotificationStateProvider)
@@ -568,6 +594,28 @@ class AuthTests: XCTestCase {
     
     // MARK: - Private
     
+    class DefaultAuthDelegate: IterableAuthDelegate {
+        var requestedCallback: ((AuthTokenRetrievalHandler) -> Void)?
+        
+        init(_ requestedCallback: ((AuthTokenRetrievalHandler) -> Void)?) {
+            self.requestedCallback = requestedCallback
+        }
+        
+        func onAuthTokenRequested(completion: AuthTokenRetrievalHandler) {
+            requestedCallback?(completion)
+        }
+    }
+    
+    private func createAuthDelegate(_ requestedCallback: @escaping (AuthTokenRetrievalHandler) -> Void) -> IterableAuthDelegate {
+        return DefaultAuthDelegate(requestedCallback)
+    }
+    
+    private func createStockAuthDelegate() -> IterableAuthDelegate {
+        return DefaultAuthDelegate({ completion in
+            completion(AuthTests.authToken)
+        })
+    }
+    
     private func createMockEncodedPayload(exp: Int) -> String {
         let payload = """
         {
@@ -579,4 +627,3 @@ class AuthTests: XCTestCase {
         return "asdf.\(payload.data(using: .utf8)!.base64EncodedString()).asdf"
     }
 }
-

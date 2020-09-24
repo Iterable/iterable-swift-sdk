@@ -60,6 +60,10 @@ import Foundation
     func log(level: LogLevel, message: String)
 }
 
+@objc public protocol IterableAuthDelegate: AnyObject {
+    @objc func onAuthTokenRequested(completion: AuthTokenRetrievalHandler)
+}
+
 /**
  Iterable Configuration Object. Use this when initializing the API.
  */
@@ -92,8 +96,8 @@ public class IterableConfig: NSObject {
     /// How to handle IterableActions which are other than 'openUrl'
     public weak var customActionDelegate: IterableCustomActionDelegate?
     
-    /// If the app is using token-based authentication, this callback should be set to return a new token, or `nil` if unable to get a new one
-    public var onAuthTokenRequestedCallback: (((String?) -> Void) -> Void)?
+    /// Implement this protocol to enable token-based authentication with the Iterable SDK
+    public weak var authDelegate: IterableAuthDelegate?
     
     /// When set to true, IterableSDK will automatically register and deregister
     /// notification tokens.
@@ -120,7 +124,9 @@ public class IterableConfig: NSObject {
     /// How many seconds to wait before showing the next in-app, if there are more than one present
     public var inAppDisplayInterval: Double = 30.0
     
-    /// the number of seconds before expiration of the auth token to get a new auth token
+    /// the number of seconds before expiration of the current auth token to get a new auth token
+    /// will only apply if token-based authentication is enabled, and the current auth token has
+    /// an expiration date field in it
     public var authTokenRefreshWindow: TimeInterval = 60.0
     
     /// These are internal. Do not change
