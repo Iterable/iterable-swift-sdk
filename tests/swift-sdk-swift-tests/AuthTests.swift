@@ -592,6 +592,33 @@ class AuthTests: XCTestCase {
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
     
+    func testAsyncAuthTokenRetrieval() {
+        let condition1 = expectation(description: "\(#function) - async auth token retrieval failed")
+        
+        class AsyncAuthDelegate: IterableAuthDelegate {
+            func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    completion(AuthTests.authToken)
+                }
+            }
+        }
+        
+        let authDelegate = AsyncAuthDelegate()
+        
+        let authManager = AuthManager(delegate: authDelegate,
+                                      refreshWindow: 0,
+                                      localStorage: MockLocalStorage(),
+                                      dateProvider: MockDateProvider())
+        
+        authManager.requestNewAuthToken(hasFailedPriorAuth: false,
+                                        onSuccess: {
+                                            XCTAssertEqual(authManager.getAuthToken(), AuthTests.authToken)
+                                            condition1.fulfill()
+        })
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+    
     // MARK: - Private
     
     class DefaultAuthDelegate: IterableAuthDelegate {
