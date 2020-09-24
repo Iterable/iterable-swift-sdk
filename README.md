@@ -1,4 +1,4 @@
-![Iterable logo](./images/Iterable-Logo.png "Iterable Logo")
+![Iterable logo](https://raw.githubusercontent.com/Iterable/swift-sdk/master/images/Iterable-Logo.png "Iterable Logo")
 
 [![License](https://img.shields.io/github/license/Iterable/swift-sdk)](https://opensource.org/licenses/MIT)
 [![Build Status](https://travis-ci.com/Iterable/swift-sdk.svg?branch=master)](https://travis-ci.com/Iterable/swift-sdk)
