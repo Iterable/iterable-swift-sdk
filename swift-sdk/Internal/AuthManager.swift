@@ -45,15 +45,15 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         self.hasFailedPriorAuth = hasFailedPriorAuth
         
         delegate?.onAuthTokenRequested(completion: { retrievedAuthToken in
-            authToken = retrievedAuthToken
+            self.authToken = retrievedAuthToken
             
-            storeAuthToken()
+            self.storeAuthToken()
             
-            if authToken != nil {
+            if self.authToken != nil {
                 onSuccess?()
             }
             
-            queueAuthTokenExpirationRefresh(authToken)
+            self.queueAuthTokenExpirationRefresh(self.authToken)
         })
     }
     

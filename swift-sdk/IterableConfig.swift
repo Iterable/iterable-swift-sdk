@@ -61,7 +61,7 @@ import Foundation
 }
 
 @objc public protocol IterableAuthDelegate: AnyObject {
-    @objc func onAuthTokenRequested(completion: AuthTokenRetrievalHandler)
+    @objc func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler)
 }
 
 /**
