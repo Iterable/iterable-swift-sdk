@@ -12,13 +12,13 @@ import Foundation
 }
 
 class AuthManager: IterableInternalAuthManagerProtocol {
-    init(onAuthTokenRequestedCallback: (() -> String?)?,
+    init(delegate: IterableAuthDelegate?,
          refreshWindow: TimeInterval,
          localStorage: LocalStorageProtocol,
          dateProvider: DateProviderProtocol) {
         ITBInfo()
         
-        self.onAuthTokenRequestedCallback = onAuthTokenRequestedCallback
+        self.delegate = delegate
         self.localStorage = localStorage
         self.dateProvider = dateProvider
         self.refreshWindow = refreshWindow
@@ -44,15 +44,9 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         
         self.hasFailedPriorAuth = hasFailedPriorAuth
         
-        authToken = onAuthTokenRequestedCallback?()
-        
-        storeAuthToken()
-        
-        if authToken != nil {
-            onSuccess?()
+        delegate?.onAuthTokenRequested { [weak self] retrievedAuthToken in
+            self?.onAuthTokenReceived(retrievedAuthToken: retrievedAuthToken, onSuccess: onSuccess)
         }
-        
-        queueAuthTokenExpirationRefresh(authToken)
     }
     
     func logoutUser() {
@@ -72,7 +66,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     
     private var hasFailedPriorAuth: Bool = false
     
-    private let onAuthTokenRequestedCallback: (() -> String?)?
+    private weak var delegate: IterableAuthDelegate?
     private let refreshWindow: TimeInterval
     private var localStorage: LocalStorageProtocol
     private let dateProvider: DateProviderProtocol
@@ -85,6 +79,18 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         authToken = localStorage.authToken
         
         queueAuthTokenExpirationRefresh(authToken)
+    }
+    
+    private func onAuthTokenReceived(retrievedAuthToken: String?, onSuccess: (() -> Void)?) {
+        authToken = retrievedAuthToken
+        
+        storeAuthToken()
+        
+        if authToken != nil {
+            onSuccess?()
+        }
+        
+        queueAuthTokenExpirationRefresh(self.authToken)
     }
     
     private func queueAuthTokenExpirationRefresh(_ authToken: String?) {
