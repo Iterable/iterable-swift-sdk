@@ -25,7 +25,8 @@ protocol DependencyContainerProtocol {
 extension DependencyContainerProtocol {
     func createInAppManager(config: IterableConfig,
                             apiClient: ApiClientProtocol,
-                            deviceMetadata: DeviceMetadata) -> IterableInternalInAppManagerProtocol {
+                            deviceMetadata: DeviceMetadata) -> IterableInternalInAppManagerProtocol
+    {
         InAppManager(apiClient: apiClient,
                      deviceMetadata: deviceMetadata,
                      fetcher: createInAppFetcher(apiClient: apiClient),

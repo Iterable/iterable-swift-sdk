@@ -160,7 +160,7 @@ struct KeyPath {
     }
     
     init(_ jsonKeys: JsonKey...) {
-        segments = jsonKeys.map { $0.jsonKey }
+        segments = jsonKeys.map(\.jsonKey)
     }
     
     init(segments: [String]) {

@@ -105,7 +105,8 @@ public class MockPushTracker: NSObject, PushTrackerProtocol {
     public func trackPushOpen(_ userInfo: [AnyHashable: Any],
                               dataFields: [AnyHashable: Any]?,
                               onSuccess: OnSuccessHandler?,
-                              onFailure: OnFailureHandler?) {
+                              onFailure: OnFailureHandler?)
+    {
         // save payload
         lastPushPayload = userInfo
         
@@ -449,17 +450,17 @@ struct MockInjectedDependencyModule {
 }
 
 class MockLocalStorage: LocalStorageProtocol {
-    var userId: String? = nil
+    var userId: String?
     
-    var email: String? = nil
+    var email: String?
     
-    var authToken: String? = nil
+    var authToken: String?
     
     var ddlChecked: Bool = false
     
-    var deviceId: String? = nil
+    var deviceId: String?
     
-    var sdkVersion: String? = nil
+    var sdkVersion: String?
     
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
         guard !MockLocalStorage.isExpired(expiration: attributionInfoExpiration, currentDate: currentDate) else {
@@ -473,23 +474,23 @@ class MockLocalStorage: LocalStorageProtocol {
         attributionInfoExpiration = expiration
     }
     
-    func getPayload(currentDate: Date) -> [AnyHashable : Any]? {
+    func getPayload(currentDate: Date) -> [AnyHashable: Any]? {
         guard !MockLocalStorage.isExpired(expiration: payloadExpiration, currentDate: currentDate) else {
             return nil
         }
         return payload
     }
     
-    func save(payload: [AnyHashable : Any]?, withExpiration: Date?) {
+    func save(payload: [AnyHashable: Any]?, withExpiration: Date?) {
         self.payload = payload
         payloadExpiration = withExpiration
     }
     
-    private var payload: [AnyHashable: Any]? = nil
-    private var payloadExpiration: Date? = nil
+    private var payload: [AnyHashable: Any]?
+    private var payloadExpiration: Date?
     
-    private var attributionInfo: IterableAttributionInfo? = nil
-    private var attributionInfoExpiration: Date? = nil
+    private var attributionInfo: IterableAttributionInfo?
+    private var attributionInfoExpiration: Date?
     
     private static func isExpired(expiration: Date?, currentDate: Date) -> Bool {
         if let expiration = expiration {

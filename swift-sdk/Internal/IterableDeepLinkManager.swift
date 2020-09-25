@@ -86,7 +86,8 @@ class IterableDeepLinkManager: NSObject {
                 } else {
                     if let deepLinkCampaignId = self.deepLinkCampaignId,
                         let deepLinkTemplateId = self.deepLinkTemplateId,
-                        let deepLinkMessageId = self.deepLinkMessageId {
+                        let deepLinkMessageId = self.deepLinkMessageId
+                    {
                         promise.resolve(with: (self.deepLinkLocation, IterableAttributionInfo(campaignId: deepLinkCampaignId, templateId: deepLinkTemplateId, messageId: deepLinkMessageId)))
                     } else {
                         promise.resolve(with: (self.deepLinkLocation, nil))
@@ -134,7 +135,8 @@ extension IterableDeepLinkManager: URLSessionDelegate, URLSessionTaskDelegate {
                            task _: URLSessionTask,
                            willPerformHTTPRedirection response: HTTPURLResponse,
                            newRequest request: URLRequest,
-                           completionHandler: @escaping (URLRequest?) -> Void) {
+                           completionHandler: @escaping (URLRequest?) -> Void)
+    {
         deepLinkLocation = request.url
         
         guard let headerFields = response.allHeaderFields as? [String: String] else {

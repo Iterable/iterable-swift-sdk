@@ -209,7 +209,7 @@ class InAppTests: XCTestCase {
         mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, payload).onSuccess { _ in
             let messages = internalApi.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 3)
-            XCTAssertEqual(Set(messages.map { $0.didProcessTrigger }), Set([true, true, true]))
+            XCTAssertEqual(Set(messages.map(\.didProcessTrigger)), Set([true, true, true]))
             expectation2.fulfill()
         }
         

@@ -7,8 +7,7 @@ import Foundation
 
 @testable import IterableSDK
 
-struct TestConsts {
-}
+struct TestConsts {}
 
 /// Add Utility methods common to multiple targets here.
 /// We can't use TestUtils in all tests because TestUtils targets Swift tests only.

@@ -21,7 +21,8 @@ import UserNotifications
     @objc
     public static func application(_ application: UIApplication,
                                    didReceiveRemoteNotification userInfo: [AnyHashable: Any],
-                                   fetchCompletionHandler completionHandler: ((UIBackgroundFetchResult) -> Void)?) {
+                                   fetchCompletionHandler completionHandler: ((UIBackgroundFetchResult) -> Void)?)
+    {
         ITBInfo()
         
         implementation?.application(application,
@@ -42,7 +43,8 @@ import UserNotifications
     @objc(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:)
     public static func userNotificationCenter(_ center: UNUserNotificationCenter?,
                                               didReceive response: UNNotificationResponse,
-                                              withCompletionHandler completionHandler: (() -> Void)?) {
+                                              withCompletionHandler completionHandler: (() -> Void)?)
+    {
         ITBInfo()
         
         implementation?.userNotificationCenter(center,

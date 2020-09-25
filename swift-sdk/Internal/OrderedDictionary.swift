@@ -13,7 +13,7 @@ public struct OrderedDictionary<K: Hashable, V> {
     }
     
     public var values: [V] {
-        map { $0.1 }
+        map(\.1)
     }
     
     public subscript(key: K) -> V? {

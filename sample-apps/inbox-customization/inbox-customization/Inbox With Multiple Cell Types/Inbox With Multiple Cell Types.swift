@@ -33,7 +33,8 @@ public class MultipleCellTypesInboxViewDelegate: IterableInboxViewControllerView
     public let customNibNameMapper: (IterableInAppMessage) -> String? = {
         guard
             let payload = $0.customPayload as? [String: AnyHashable],
-            let customNibName = payload["customCellName"] as? String else {
+            let customNibName = payload["customCellName"] as? String
+        else {
             return nil
         }
         return customNibName

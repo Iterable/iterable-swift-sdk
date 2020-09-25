@@ -19,7 +19,7 @@ class EndpointTests: XCTestCase {
                        mergeNestedObjects: true,
                        onSuccess: { _ in
                            expectation1.fulfill()
-        }) { _, _ in
+                       }) { _, _ in
             XCTFail()
         }
         
@@ -63,7 +63,7 @@ class EndpointTests: XCTestCase {
                           items: items,
                           onSuccess: { _ in
                               expectation1.fulfill()
-        }) { _, _ in
+                          }) { _, _ in
             XCTFail()
         }
         
@@ -84,7 +84,7 @@ class EndpointTests: XCTestCase {
                           dataFields: ["data_field1": "value1"],
                           onSuccess: { _ in
                               expectation1.fulfill()
-        }) { reason, _ in
+                          }) { reason, _ in
             XCTFail(reason ?? "failed")
         }
         
@@ -110,7 +110,7 @@ class EndpointTests: XCTestCase {
                           dataFields: ["data_field1": "value1"],
                           onSuccess: { _ in
                               expectation1.fulfill()
-        }) { reason, _ in
+                          }) { reason, _ in
             XCTFail(reason ?? "failed")
         }
         
@@ -128,7 +128,7 @@ class EndpointTests: XCTestCase {
                   dataFields: ["data_field1": "value1"],
                   onSuccess: { _ in
                       expectation1.fulfill()
-        }) { reason, _ in
+                  }) { reason, _ in
             XCTFail(reason ?? "failed")
         }
         
@@ -150,7 +150,7 @@ class EndpointTests: XCTestCase {
                                 templateId: EndpointTests.pushTemplateId,
                                 onSuccess: { _ in
                                     expectation1.fulfill()
-        }) { reason, _ in
+                                }) { reason, _ in
             XCTFail(reason ?? "failed")
         }
         
@@ -167,7 +167,7 @@ class EndpointTests: XCTestCase {
         api.disableDeviceForCurrentUser(
             withOnSuccess: { _ in
                 XCTFail("device should have been disabled")
-        }) { _, _ in
+            }) { _, _ in
             expectation1.fulfill()
         }
         
@@ -184,7 +184,7 @@ class EndpointTests: XCTestCase {
         api.disableDeviceForAllUsers(
             withOnSuccess: { _ in
                 XCTFail("device should have been disabled")
-        }) { _, _ in
+            }) { _, _ in
             expectation1.fulfill()
         }
         

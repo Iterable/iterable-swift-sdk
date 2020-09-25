@@ -77,7 +77,8 @@ extension IterableAPI {
                                   launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
                                   config: IterableConfig = IterableConfig(),
                                   networkSession: NetworkSessionProtocol,
-                                  inAppFetcher: InAppFetcherProtocol) {
+                                  inAppFetcher: InAppFetcherProtocol)
+    {
         let demoDependencyContainer = DemoDependencyContainer(networkSession: networkSession, inAppFetcher: inAppFetcher)
         
         internalImplementation = IterableAPIInternal(apiKey: apiKey,

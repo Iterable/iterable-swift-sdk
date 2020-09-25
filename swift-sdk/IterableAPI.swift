@@ -64,7 +64,8 @@ import UIKit
     ///
     /// - SeeAlso: IterableConfig
     public static func initialize(apiKey: String,
-                                  config: IterableConfig) {
+                                  config: IterableConfig)
+    {
         initialize(apiKey: apiKey, launchOptions: nil, config: config)
     }
     
@@ -77,7 +78,8 @@ import UIKit
     ///
     /// - SeeAlso: IterableConfig
     public static func initialize(apiKey: String,
-                                  launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
+                                  launchOptions: [UIApplication.LaunchOptionsKey: Any]?)
+    {
         initialize(apiKey: apiKey, launchOptions: launchOptions, config: IterableConfig())
     }
     
@@ -92,7 +94,8 @@ import UIKit
     /// - SeeAlso: IterableConfig
     public static func initialize(apiKey: String,
                                   launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
-                                  config: IterableConfig = IterableConfig()) {
+                                  config: IterableConfig = IterableConfig())
+    {
         internalImplementation = IterableAPIInternal(apiKey: apiKey, launchOptions: launchOptions, config: config)
         _ = internalImplementation?.start()
     }
@@ -254,7 +257,8 @@ import UIKit
     public static func updateUser(_ dataFields: [AnyHashable: Any],
                                   mergeNestedObjects: Bool,
                                   onSuccess: OnSuccessHandler? = nil,
-                                  onFailure: OnFailureHandler? = nil) {
+                                  onFailure: OnFailureHandler? = nil)
+    {
         internalImplementation?.updateUser(dataFields,
                                            mergeNestedObjects: mergeNestedObjects,
                                            onSuccess: onSuccess,
@@ -289,9 +293,10 @@ import UIKit
     /// - SeeAlso: OnSuccessHandler, OnFailureHandler
     @objc(updateEmail:withToken:onSuccess:onFailure:)
     public static func updateEmail(_ newEmail: String,
-                                   withToken token: String,
+                                   withToken _: String,
                                    onSuccess: OnSuccessHandler?,
-                                   onFailure: OnFailureHandler?) {
+                                   onFailure: OnFailureHandler?)
+    {
         internalImplementation?.updateEmail(newEmail, onSuccess: onSuccess, onFailure: onFailure)
     }
     
@@ -335,7 +340,8 @@ import UIKit
                              items: [CommerceItem],
                              dataFields: [AnyHashable: Any]?,
                              onSuccess: OnSuccessHandler?,
-                             onFailure: OnFailureHandler?) {
+                             onFailure: OnFailureHandler?)
+    {
         internalImplementation?.trackPurchase(withTotal,
                                               items: items,
                                               dataFields: dataFields,
@@ -375,7 +381,8 @@ import UIKit
     public static func track(pushOpen userInfo: [AnyHashable: Any],
                              dataFields: [AnyHashable: Any]?,
                              onSuccess: OnSuccessHandler?,
-                             onFailure: OnFailureHandler?) {
+                             onFailure: OnFailureHandler?)
+    {
         internalImplementation?.trackPushOpen(userInfo,
                                               dataFields: dataFields,
                                               onSuccess: onSuccess,
@@ -399,7 +406,8 @@ import UIKit
                              templateId: NSNumber?,
                              messageId: String,
                              appAlreadyRunning: Bool,
-                             dataFields: [AnyHashable: Any]?) {
+                             dataFields: [AnyHashable: Any]?)
+    {
         internalImplementation?.trackPushOpen(campaignId,
                                               templateId: templateId,
                                               messageId: messageId,
@@ -428,7 +436,8 @@ import UIKit
                              appAlreadyRunning: Bool,
                              dataFields: [AnyHashable: Any]?,
                              onSuccess: OnSuccessHandler?,
-                             onFailure: OnFailureHandler?) {
+                             onFailure: OnFailureHandler?)
+    {
         internalImplementation?.trackPushOpen(campaignId,
                                               templateId: templateId,
                                               messageId: messageId,
@@ -474,7 +483,8 @@ import UIKit
     public static func track(event eventName: String,
                              dataFields: [AnyHashable: Any]?,
                              onSuccess: OnSuccessHandler?,
-                             onFailure: OnFailureHandler?) {
+                             onFailure: OnFailureHandler?)
+    {
         internalImplementation?.track(eventName,
                                       dataFields: dataFields,
                                       onSuccess: onSuccess,
@@ -495,7 +505,8 @@ import UIKit
                                            unsubscribedMessageTypeIds: [NSNumber]?,
                                            subscribedMessageTypeIds: [NSNumber]?,
                                            campaignId: NSNumber?,
-                                           templateId: NSNumber?) {
+                                           templateId: NSNumber?)
+    {
         internalImplementation?.updateSubscriptions(emailListIds,
                                                     unsubscribedChannelIds: unsubscribedChannelIds,
                                                     unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,

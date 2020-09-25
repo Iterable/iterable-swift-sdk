@@ -86,7 +86,8 @@ class E2EDependencyContainer: DependencyContainerProtocol {
 extension IterableAPIInternal {
     @discardableResult static func initializeForE2E(apiKey: String,
                                                     launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
-                                                    config: IterableConfig = IterableConfig()) -> IterableAPIInternal {
+                                                    config: IterableConfig = IterableConfig()) -> IterableAPIInternal
+    {
         let e2eDependencyContainer = E2EDependencyContainer()
         let internalImplementation = IterableAPIInternal(apiKey: apiKey,
                                                          launchOptions: launchOptions,

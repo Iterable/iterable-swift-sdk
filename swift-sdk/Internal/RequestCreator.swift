@@ -55,7 +55,8 @@ struct RequestCreator {
                                     sdkVersion: String?,
                                     deviceAttributes: [String: String],
                                     pushServicePlatform: String,
-                                    notificationsEnabled: Bool) -> Result<IterableRequest, IterableError> {
+                                    notificationsEnabled: Bool) -> Result<IterableRequest, IterableError>
+    {
         guard let keyValueForCurrentUser = keyValueForCurrentUser else {
             ITBError("Both email and userId are nil")
             return .failure(IterableError.general(description: "Both email and userId are nil"))
@@ -183,7 +184,8 @@ struct RequestCreator {
                                           unsubscribedMessageTypeIds: [NSNumber]? = nil,
                                           subscribedMessageTypeIds: [NSNumber]? = nil,
                                           campaignId: NSNumber? = nil,
-                                          templateId: NSNumber? = nil) -> Result<IterableRequest, IterableError> {
+                                          templateId: NSNumber? = nil) -> Result<IterableRequest, IterableError>
+    {
         guard let keyValueForCurrentUser = keyValueForCurrentUser else {
             ITBError("Both email and userId are nil")
             return .failure(IterableError.general(description: "Both email and userId are nil"))

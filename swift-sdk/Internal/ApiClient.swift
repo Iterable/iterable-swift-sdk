@@ -18,7 +18,8 @@ class ApiClient {
          authProvider: AuthProvider,
          endPoint: String,
          networkSession: NetworkSessionProtocol,
-         deviceMetadata: DeviceMetadata) {
+         deviceMetadata: DeviceMetadata)
+    {
         self.apiKey = apiKey
         self.authProvider = authProvider
         self.endPoint = endPoint
@@ -91,7 +92,8 @@ extension ApiClient: ApiClientProtocol {
                   sdkVersion: String?,
                   deviceAttributes: [String: String],
                   pushServicePlatform: String,
-                  notificationsEnabled: Bool) -> Future<SendRequestValue, SendRequestError> {
+                  notificationsEnabled: Bool) -> Future<SendRequestValue, SendRequestError>
+    {
         send(iterableRequestResult: createRequestCreator().createRegisterTokenRequest(hexToken: hexToken,
                                                                                       appName: appName,
                                                                                       deviceId: deviceId,
@@ -138,7 +140,8 @@ extension ApiClient: ApiClientProtocol {
                              unsubscribedMessageTypeIds: [NSNumber]? = nil,
                              subscribedMessageTypeIds: [NSNumber]? = nil,
                              campaignId: NSNumber? = nil,
-                             templateId: NSNumber? = nil) -> Future<SendRequestValue, SendRequestError> {
+                             templateId: NSNumber? = nil) -> Future<SendRequestValue, SendRequestError>
+    {
         send(iterableRequestResult: createRequestCreator().createUpdateSubscriptionsRequest(emailListIds,
                                                                                             unsubscribedChannelIds: unsubscribedChannelIds,
                                                                                             unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,

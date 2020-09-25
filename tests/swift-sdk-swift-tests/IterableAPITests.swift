@@ -266,7 +266,7 @@ class IterableAPITests: XCTestCase {
                                     } else {
                                         XCTFail("encountered error")
                                     }
-        })
+                                })
         
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
@@ -300,7 +300,7 @@ class IterableAPITests: XCTestCase {
                                     } else {
                                         XCTFail("encountered error")
                                     }
-        })
+                                })
         
         wait(for: [expectation], timeout: testExpectationTimeout)
     }

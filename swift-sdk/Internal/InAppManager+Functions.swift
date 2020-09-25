@@ -13,7 +13,8 @@ enum MessagesProcessorResult {
 struct MessagesProcessor {
     init(inAppDelegate: IterableInAppDelegate,
          inAppDisplayChecker: InAppDisplayChecker,
-         messagesMap: OrderedDictionary<String, IterableInAppMessage>) {
+         messagesMap: OrderedDictionary<String, IterableInAppMessage>)
+    {
         ITBInfo()
         
         self.inAppDelegate = inAppDelegate

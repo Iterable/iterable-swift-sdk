@@ -18,7 +18,8 @@ struct SendRequestError: Error {
          data: Data? = nil,
          httpStatusCode: Int? = nil,
          iterableCode: String? = nil,
-         originalError: Error? = nil) {
+         originalError: Error? = nil)
+    {
         self.reason = reason
         self.data = data
         self.httpStatusCode = httpStatusCode
@@ -88,25 +89,26 @@ struct NetworkHelper {
     }
     
     static func sendRequest(_ request: URLRequest,
-                            usingSession networkSession: NetworkSessionProtocol) -> Future<SendRequestValue, SendRequestError> {
+                            usingSession networkSession: NetworkSessionProtocol) -> Future<SendRequestValue, SendRequestError>
+    {
         #if NETWORK_DEBUG
-        let requestId = IterableUtil.generateUUID()
-        print()
-        print("====================================================>")
-        print("sending request: \(request)")
-        print("requestId: \(requestId)")
-        if let headers = request.allHTTPHeaderFields {
-            print("headers:")
-            print(headers)
-        }
-        if let body = request.httpBody {
-            if let dict = try? JSONSerialization.jsonObject(with: body, options: []) {
-                print("request body:")
-                print(dict)
+            let requestId = IterableUtil.generateUUID()
+            print()
+            print("====================================================>")
+            print("sending request: \(request)")
+            print("requestId: \(requestId)")
+            if let headers = request.allHTTPHeaderFields {
+                print("headers:")
+                print(headers)
             }
-        }
-        print("====================================================>")
-        print()
+            if let body = request.httpBody {
+                if let dict = try? JSONSerialization.jsonObject(with: body, options: []) {
+                    print("request body:")
+                    print(dict)
+                }
+            }
+            print("====================================================>")
+            print()
         #endif
         
         let promise = Promise<SendRequestValue, SendRequestError>()
@@ -117,12 +119,12 @@ struct NetworkHelper {
             switch result {
             case let .success(value):
                 #if NETWORK_DEBUG
-                print("request with requestId: \(requestId) successfully sent")
+                    print("request with requestId: \(requestId) successfully sent")
                 #endif
                 promise.resolve(with: value)
             case let .failure(error):
                 #if NETWORK_DEBUG
-                print("request with id: \(requestId) errored")
+                    print("request with id: \(requestId) errored")
                 #endif
                 promise.reject(with: error)
             }
@@ -133,7 +135,8 @@ struct NetworkHelper {
     
     static func createResultFromNetworkResponse(data: Data?,
                                                 response: URLResponse?,
-                                                error: Error?) -> Result<SendRequestValue, SendRequestError> {
+                                                error: Error?) -> Result<SendRequestValue, SendRequestError>
+    {
         if let error = error {
             return .failure(SendRequestError(reason: "\(error.localizedDescription)", data: data, originalError: error))
         }
@@ -159,7 +162,7 @@ struct NetworkHelper {
         }
         
         if responseCode == 401 {
-            var iterableCode: String? = nil
+            var iterableCode: String?
             
             if let jsonDict = json as? [AnyHashable: Any] {
                 iterableCode = jsonDict[JsonKey.Response.iterableCode] as? String
@@ -199,7 +202,8 @@ struct NetworkHelper {
     
     static func createDataResultFromNetworkResponse(data: Data?,
                                                     response _: URLResponse?,
-                                                    error: Error?) -> Result<Data, SendRequestError> {
+                                                    error: Error?) -> Result<Data, SendRequestError>
+    {
         if let error = error {
             return .failure(SendRequestError(reason: "\(error.localizedDescription)"))
         }

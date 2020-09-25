@@ -26,7 +26,8 @@ public class AdvancedInboxViewDelegate: IterableInboxViewControllerViewDelegate 
     public let customNibNameMapper: (IterableInAppMessage) -> String? = {
         guard
             let payload = $0.customPayload as? [String: AnyHashable],
-            let customNibName = payload["customCellName"] as? String else {
+            let customNibName = payload["customCellName"] as? String
+        else {
             return nil
         }
         return customNibName
@@ -36,7 +37,8 @@ public class AdvancedInboxViewDelegate: IterableInboxViewControllerViewDelegate 
         guard
             let customCell = cell as? AdvancedInboxCell,
             let payload = message.customPayload as? [String: AnyHashable],
-            let discount = payload["discount"] as? String else {
+            let discount = payload["discount"] as? String
+        else {
             return
         }
         

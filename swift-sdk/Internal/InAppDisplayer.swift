@@ -43,7 +43,8 @@ class InAppDisplayer: InAppDisplayerProtocol {
     @discardableResult static func showIterableHtmlMessage(_ htmlString: String,
                                                            messageMetadata: IterableInAppMessageMetadata? = nil,
                                                            backgroundAlpha: Double = 0,
-                                                           padding: UIEdgeInsets = .zero) -> ShowResult {
+                                                           padding: UIEdgeInsets = .zero) -> ShowResult
+    {
         guard !InAppPresenter.isPresenting else {
             return .notShown("In-app notification is being presented.")
         }
@@ -86,7 +87,8 @@ class InAppDisplayer: InAppDisplayerProtocol {
                                        body: String,
                                        buttonLeft: String?,
                                        buttonRight: String?,
-                                       callbackBlock: ITEActionBlock?) {
+                                       callbackBlock: ITEActionBlock?)
+    {
         guard let topViewController = getTopViewController() else {
             return
         }

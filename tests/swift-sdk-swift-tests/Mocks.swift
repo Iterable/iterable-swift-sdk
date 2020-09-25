@@ -12,7 +12,7 @@ import XCTest
 // Note: This is used only by swift tests. So can't put this in Common
 class MockNotificationStateProvider: NotificationStateProviderProtocol {
     var notificationsEnabled: Bool {
-        return enabled
+        enabled
     }
     
     func registerForRemoteNotifications() {

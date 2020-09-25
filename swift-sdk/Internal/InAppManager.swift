@@ -48,7 +48,8 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
          applicationStateProvider: ApplicationStateProviderProtocol,
          notificationCenter: NotificationCenterProtocol,
          dateProvider: DateProviderProtocol,
-         retryInterval: Double) {
+         retryInterval: Double)
+    {
         ITBInfo()
         
         self.apiClient = apiClient
@@ -174,7 +175,8 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     
     func createInboxMessageViewController(for message: IterableInAppMessage,
                                           withInboxMode inboxMode: IterableInboxViewController.InboxMode,
-                                          inboxSessionId: String? = nil) -> UIViewController? {
+                                          inboxSessionId: String? = nil) -> UIViewController?
+    {
         guard let content = message.content as? IterableHtmlInAppContent else {
             ITBError("Invalid Content in message")
             return nil
@@ -292,7 +294,8 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     
     private func showInternal(message: IterableInAppMessage,
                               consume: Bool,
-                              callback: ITBURLCallback? = nil) {
+                              callback: ITBURLCallback? = nil)
+    {
         ITBInfo()
         
         guard Thread.isMainThread else {
@@ -358,7 +361,8 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     private func updateMessage(_ message: IterableInAppMessage,
                                read: Bool? = nil,
                                didProcessTrigger: Bool? = nil,
-                               consumed: Bool? = nil) -> Future<Bool, IterableError> {
+                               consumed: Bool? = nil) -> Future<Bool, IterableError>
+    {
         ITBDebug()
         
         let result = Promise<Bool, IterableError>()
@@ -374,7 +378,8 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     private func updateMessageSync(_ message: IterableInAppMessage,
                                    read: Bool? = nil,
                                    didProcessTrigger: Bool? = nil,
-                                   consumed: Bool? = nil) {
+                                   consumed: Bool? = nil)
+    {
         ITBDebug()
         
         let toUpdate = message
@@ -486,7 +491,8 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     private func removePrivate(message: IterableInAppMessage,
                                location: InAppLocation = .inApp,
                                source: InAppDeleteSource? = nil,
-                               inboxSessionId: String? = nil) {
+                               inboxSessionId: String? = nil)
+    {
         ITBInfo()
         
         updateMessage(message, didProcessTrigger: true, consumed: true)
@@ -511,7 +517,8 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     }
     
     fileprivate static func getAppIsReady(applicationStateProvider: ApplicationStateProviderProtocol,
-                                          displayer: InAppDisplayerProtocol) -> Promise<Bool, Error> {
+                                          displayer: InAppDisplayerProtocol) -> Promise<Bool, Error>
+    {
         if Thread.isMainThread {
             let ready = (applicationStateProvider.applicationState == .active) && (displayer.isShowingInApp() == false)
             return Promise(value: ready)

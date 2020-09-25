@@ -51,7 +51,8 @@ struct APNSTypeChecker: APNSTypeCheckerProtocol {
         } else {
             if
                 let entitlements = mobileProvision["Entitlements"] as? [AnyHashable: Any],
-                let apsEnv = entitlements["aps-environment"] as? String {
+                let apsEnv = entitlements["aps-environment"] as? String
+            {
                 return apsEnv == "development"
             }
         }

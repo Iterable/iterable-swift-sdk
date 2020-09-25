@@ -455,7 +455,8 @@ private struct CellLoader {
     let cellNibName: String?
     
     init(viewDelegate: IterableInboxViewControllerViewDelegate?,
-         cellNibName: String?) {
+         cellNibName: String?)
+    {
         self.viewDelegate = viewDelegate
         self.cellNibName = cellNibName
     }

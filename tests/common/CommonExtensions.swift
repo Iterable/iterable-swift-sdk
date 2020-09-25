@@ -92,7 +92,8 @@ class MockDependencyContainer: DependencyContainerProtocol {
          urlOpener: UrlOpenerProtocol,
          applicationStateProvider: ApplicationStateProviderProtocol,
          notificationCenter: NotificationCenterProtocol,
-         apnsTypeChecker: APNSTypeCheckerProtocol) {
+         apnsTypeChecker: APNSTypeCheckerProtocol)
+    {
         self.dateProvider = dateProvider
         self.networkSession = networkSession
         self.notificationStateProvider = notificationStateProvider
@@ -126,7 +127,8 @@ extension IterableAPI {
                                      urlOpener: UrlOpenerProtocol = MockUrlOpener(),
                                      applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
                                      notificationCenter: NotificationCenterProtocol = NotificationCenter.default,
-                                     apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker()) {
+                                     apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker())
+    {
         let mockDependencyContainer = MockDependencyContainer(dateProvider: dateProvider,
                                                               networkSession: networkSession,
                                                               notificationStateProvider: notificationStateProvider,
@@ -163,7 +165,8 @@ extension IterableAPIInternal {
                                                         urlOpener: UrlOpenerProtocol = MockUrlOpener(),
                                                         applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
                                                         notificationCenter: NotificationCenterProtocol = NotificationCenter.default,
-                                                        apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker()) -> IterableAPIInternal {
+                                                        apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker()) -> IterableAPIInternal
+    {
         let mockDependencyContainer = MockDependencyContainer(dateProvider: dateProvider,
                                                               networkSession: networkSession,
                                                               notificationStateProvider: notificationStateProvider,

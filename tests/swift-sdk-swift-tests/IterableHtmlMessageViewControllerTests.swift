@@ -71,7 +71,8 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
                                   safeAreaInsets: UIEdgeInsets,
                                   inAppHeight: CGFloat,
                                   messageLocation: IterableMessageLocation,
-                                  expectedWebViewPosition: ViewPosition) {
+                                  expectedWebViewPosition: ViewPosition)
+    {
         let expectation1 = expectation(description: "checkPositioning")
         let webView = MockWebView(height: inAppHeight)
         

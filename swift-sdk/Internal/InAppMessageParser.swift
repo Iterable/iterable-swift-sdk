@@ -65,7 +65,8 @@ struct InAppMessageParser {
     private static func moveValue(withSourceKey sourceKey: String,
                                   andDestinationKey destinationKey: String,
                                   from source: inout [AnyHashable: Any],
-                                  to destination: inout [AnyHashable: Any]) {
+                                  to destination: inout [AnyHashable: Any])
+    {
         guard destination[destinationKey] == nil else {
             // value exists in destination, so don't override
             return

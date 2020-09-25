@@ -97,7 +97,8 @@ public protocol PushTrackerProtocol: AnyObject {
 
 extension PushTrackerProtocol {
     func trackPushOpen(_ userInfo: [AnyHashable: Any],
-                       dataFields: [AnyHashable: Any]? = nil) {
+                       dataFields: [AnyHashable: Any]? = nil)
+    {
         trackPushOpen(userInfo,
                       dataFields: dataFields,
                       onSuccess: IterableAPIInternal.defaultOnSuccess("trackPushOpen"),
@@ -108,7 +109,8 @@ extension PushTrackerProtocol {
                        templateId: NSNumber? = nil,
                        messageId: String,
                        appAlreadyRunning: Bool = false,
-                       dataFields: [AnyHashable: Any]? = nil) {
+                       dataFields: [AnyHashable: Any]? = nil)
+    {
         trackPushOpen(campaignId,
                       templateId: templateId,
                       messageId: messageId,
@@ -137,7 +139,8 @@ struct IterableAppIntegrationInternal {
          urlDelegate: IterableURLDelegate? = nil,
          customActionDelegate: IterableCustomActionDelegate? = nil,
          urlOpener: UrlOpenerProtocol? = nil,
-         inAppNotifiable: InAppNotifiable) {
+         inAppNotifiable: InAppNotifiable)
+    {
         self.tracker = tracker
         self.urlDelegate = urlDelegate
         self.customActionDelegate = customActionDelegate
@@ -240,7 +243,8 @@ struct IterableAppIntegrationInternal {
     private static func createIterableAction(actionIdentifier: String,
                                              userText: String?,
                                              userInfo: [AnyHashable: Any],
-                                             iterableElement itbl: [AnyHashable: Any]) -> IterableAction? {
+                                             iterableElement itbl: [AnyHashable: Any]) -> IterableAction?
+    {
         var action: IterableAction?
         
         if actionIdentifier == UNNotificationDefaultActionIdentifier {

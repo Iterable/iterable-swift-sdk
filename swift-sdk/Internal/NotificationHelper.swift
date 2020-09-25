@@ -50,7 +50,8 @@ struct IterablePushNotificationMetadata {
     }
     
     fileprivate static func parse(itblElement: [AnyHashable: Any],
-                                  isGhostPush: Bool) -> IterablePushNotificationMetadata? {
+                                  isGhostPush: Bool) -> IterablePushNotificationMetadata?
+    {
         guard isValidCampaignId(itblElement[Keys.campaignId.rawValue]) else {
             return nil
         }

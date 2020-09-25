@@ -31,7 +31,8 @@ public class InboxWithAdditionalFieldsViewDelegate: IterableInboxViewControllerV
         guard
             let customCell = cell as? AdditionalFieldsInboxCell,
             let payload = message.customPayload as? [String: AnyHashable],
-            let discount = payload["discount"] as? String else {
+            let discount = payload["discount"] as? String
+        else {
             return
         }
         

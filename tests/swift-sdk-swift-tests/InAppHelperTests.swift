@@ -101,7 +101,8 @@ class InAppHelperTests: XCTestCase {
                       sdkVersion _: String?,
                       deviceAttributes _: [String: String],
                       pushServicePlatform _: String,
-                      notificationsEnabled _: Bool) -> Future<SendRequestValue, SendRequestError> {
+                      notificationsEnabled _: Bool) -> Future<SendRequestValue, SendRequestError>
+        {
             fatalError()
         }
         

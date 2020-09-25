@@ -35,7 +35,8 @@ struct IterableActionRunner {
                         context: IterableActionContext,
                         urlHandler: UrlHandler? = nil,
                         customActionHandler: CustomActionHandler? = nil,
-                        urlOpener: UrlOpenerProtocol? = nil) -> Bool {
+                        urlOpener: UrlOpenerProtocol? = nil) -> Bool
+    {
         let handled = callExternalHandlers(action: action,
                                            from: context.source,
                                            urlHandler: urlHandler,
@@ -59,7 +60,8 @@ struct IterableActionRunner {
     private static func callExternalHandlers(action: IterableAction,
                                              from _: IterableActionSource,
                                              urlHandler: UrlHandler? = nil,
-                                             customActionHandler: CustomActionHandler? = nil) -> Bool {
+                                             customActionHandler: CustomActionHandler? = nil) -> Bool
+    {
         let actionType = detectActionType(fromAction: action)
         switch actionType {
         case .noop:

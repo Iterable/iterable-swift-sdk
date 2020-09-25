@@ -16,7 +16,8 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     init(delegate: IterableAuthDelegate?,
          refreshWindow: TimeInterval,
          localStorage: LocalStorageProtocol,
-         dateProvider: DateProviderProtocol) {
+         dateProvider: DateProviderProtocol)
+    {
         ITBInfo()
         
         self.delegate = delegate
@@ -34,7 +35,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     // MARK: - IterableInternalAuthManagerProtocol
     
     func getAuthToken() -> String? {
-        return authToken
+        authToken
     }
     
     func resetFailedAuthCount() {
@@ -95,7 +96,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
             onSuccess?(authToken)
         }
         
-        queueAuthTokenExpirationRefresh(self.authToken)
+        queueAuthTokenExpirationRefresh(authToken)
     }
     
     private func queueAuthTokenExpirationRefresh(_ authToken: String?) {
@@ -133,7 +134,8 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         
         guard let decoded = Data(base64Encoded: fixedEncodedPayload),
             let serialized = try? JSONSerialization.jsonObject(with: decoded) as? [String: Any],
-            let payloadExpTime = serialized[JsonKey.JWT.exp] as? Int else {
+            let payloadExpTime = serialized[JsonKey.JWT.exp] as? Int
+        else {
             return nil
         }
         

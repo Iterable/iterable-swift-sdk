@@ -22,7 +22,7 @@ class PromiseTests: XCTestCase {
         expectation2.isInverted = true
         
         let f1 = createSucessfulFuture(withValue: "zeeString")
-        let f2 = f1.map { $0.count }
+        let f2 = f1.map(\.count)
         
         f2.onSuccess { value in
             XCTAssertEqual(value, "zeeString".count)
@@ -41,7 +41,7 @@ class PromiseTests: XCTestCase {
         let expectation2 = expectation(description: "test map failure")
         
         let f1: Future<String, Error> = createFailureFuture(withError: MyError(message: "zeeErrorMessage"))
-        let f2 = f1.map { $0.count }
+        let f2 = f1.map(\.count)
         
         f2.onSuccess { _ in
             expectation1.fulfill()

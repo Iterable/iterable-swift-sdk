@@ -315,6 +315,6 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
 
 extension SectionedValues {
     var values: [Value] {
-        sectionsAndValues.flatMap { $0.1 }
+        sectionsAndValues.flatMap(\.1)
     }
 }

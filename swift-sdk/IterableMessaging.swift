@@ -97,7 +97,8 @@ public extension Notification.Name {
     
     init(edgeInsets: UIEdgeInsets,
          backgroundAlpha: Double,
-         html: String) {
+         html: String)
+    {
         self.edgeInsets = edgeInsets
         self.backgroundAlpha = backgroundAlpha
         self.html = html
@@ -113,7 +114,8 @@ public extension Notification.Name {
     
     init(title: String? = nil,
          subtitle: String? = nil,
-         icon: String? = nil) {
+         icon: String? = nil)
+    {
         self.title = title
         self.subtitle = subtitle
         self.icon = icon
@@ -203,7 +205,8 @@ public extension Notification.Name {
          saveToInbox: Bool = false,
          inboxMetadata: IterableInboxMetadata? = nil,
          customPayload: [AnyHashable: Any]? = nil,
-         read: Bool = false) {
+         read: Bool = false)
+    {
         self.messageId = messageId
         self.campaignId = campaignId
         self.trigger = trigger

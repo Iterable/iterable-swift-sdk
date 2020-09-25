@@ -14,7 +14,8 @@ struct DataFieldsHelper {
                                  device: UIDevice,
                                  bundle: Bundle,
                                  notificationsEnabled: Bool,
-                                 deviceAttributes: [String: String]) -> [String: Any] {
+                                 deviceAttributes: [String: String]) -> [String: Any]
+    {
         var dataFields = [String: Any]()
         
         deviceAttributes.forEach { deviceAttribute in

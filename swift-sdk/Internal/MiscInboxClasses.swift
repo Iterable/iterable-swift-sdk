@@ -21,7 +21,8 @@ class IterableInboxImpression: NSObject, Codable {
     public init(messageId: String,
                 silentInbox: Bool,
                 displayCount: Int,
-                displayDuration: TimeInterval) {
+                displayDuration: TimeInterval)
+    {
         self.messageId = messageId
         self.silentInbox = silentInbox
         self.displayCount = displayCount
@@ -62,7 +63,8 @@ final class IterableInboxSession: NSObject, Codable {
                 startUnreadMessageCount: Int = 0,
                 endTotalMessageCount: Int = 0,
                 endUnreadMessageCount: Int = 0,
-                impressions: [IterableInboxImpression] = []) {
+                impressions: [IterableInboxImpression] = [])
+    {
         self.id = id
         self.sessionStartTime = sessionStartTime
         self.sessionEndTime = sessionEndTime

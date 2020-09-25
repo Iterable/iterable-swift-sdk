@@ -26,7 +26,8 @@ class IterableHtmlMessageViewController: UIViewController {
              padding: UIEdgeInsets = .zero,
              messageMetadata: IterableInAppMessageMetadata? = nil,
              isModal: Bool,
-             inboxSessionId: String? = nil) {
+             inboxSessionId: String? = nil)
+        {
             self.html = html
             self.padding = IterableHtmlMessageViewController.padding(fromPadding: padding)
             self.messageMetadata = messageMetadata
@@ -39,7 +40,8 @@ class IterableHtmlMessageViewController: UIViewController {
     
     init(parameters: Parameters,
          internalAPIProvider: @escaping @autoclosure () -> IterableAPIInternal? = IterableAPI.internalImplementation,
-         webViewProvider: @escaping @autoclosure () -> WebViewProtocol = IterableHtmlMessageViewController.createWebView()) {
+         webViewProvider: @escaping @autoclosure () -> WebViewProtocol = IterableHtmlMessageViewController.createWebView())
+    {
         self.internalAPIProvider = internalAPIProvider
         self.webViewProvider = webViewProvider
         self.parameters = parameters
@@ -183,7 +185,8 @@ class IterableHtmlMessageViewController: UIViewController {
                                          parentPosition: ViewPosition,
                                          paddingLeft: CGFloat,
                                          paddingRight: CGFloat,
-                                         location: IterableMessageLocation) -> Future<ViewPosition, IterableError> {
+                                         location: IterableMessageLocation) -> Future<ViewPosition, IterableError>
+    {
         guard location != .full else {
             return Promise(value: parentPosition)
         }
@@ -204,7 +207,8 @@ class IterableHtmlMessageViewController: UIViewController {
                                                  paddingLeft: CGFloat,
                                                  paddingRight: CGFloat,
                                                  location: IterableMessageLocation,
-                                                 inAppHeight: CGFloat) -> ViewPosition {
+                                                 inAppHeight: CGFloat) -> ViewPosition
+    {
         var position = ViewPosition()
         // set the height
         position.height = inAppHeight
