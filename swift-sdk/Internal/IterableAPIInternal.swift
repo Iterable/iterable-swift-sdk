@@ -538,6 +538,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                              forResult result: Future<SendRequestValue, SendRequestError>
     ) -> Future<SendRequestValue, SendRequestError> {
         result.onSuccess { json in
+            authManager?.resetFailedAuthCount()
             onSuccess?(json)
         }.onError { error in
             if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.invalidJwtPayload {

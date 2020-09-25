@@ -619,6 +619,51 @@ class AuthTests: XCTestCase {
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
     
+    func testAuthTokenRetrievalFailureReset() {
+        let condition1 = expectation(description: "\(#function) - retry was not reset")
+        let condition2 = expectation(description: "\(#function) - call should not have reached success handler")
+        condition2.isInverted = true
+        let condition3 = expectation(description: "\(#function) - couldn't get token when requested")
+        
+        class AuthDelegate: IterableAuthDelegate {
+            func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler) {
+                completion(AuthTests.authToken)
+            }
+        }
+        
+        let authDelegate = AuthDelegate()
+        
+        let config = IterableConfig()
+        config.authDelegate = authDelegate
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(config: config)
+        
+        // setEmail calls gets the new auth token successfully
+        internalAPI.email = AuthTests.email
+        
+        // pass a failed state to the AuthManager
+        internalAPI.authManager.requestNewAuthToken(hasFailedPriorAuth: true, onSuccess: nil)
+        
+        // verify that on retry it's still in a failed state with the inverted condition
+        internalAPI.authManager.requestNewAuthToken(hasFailedPriorAuth: true,
+                                                    onSuccess: { token in
+                                                        condition2.fulfill()
+        })
+        
+        // now make a successful request to reset the AuthManager
+        internalAPI.track("", onSuccess: { data in
+            condition1.fulfill()
+        })
+        
+        // verify that the AuthManager is able to request a new token again
+        internalAPI.authManager.requestNewAuthToken(hasFailedPriorAuth: false,
+                                                    onSuccess: { token in
+                                                        condition3.fulfill()
+                                                    })
+        
+        wait(for: [condition1, condition2, condition3], timeout: testExpectationTimeoutForInverted)
+    }
+    
     // MARK: - Private
     
     class DefaultAuthDelegate: IterableAuthDelegate {
