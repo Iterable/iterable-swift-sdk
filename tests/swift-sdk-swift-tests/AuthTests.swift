@@ -611,8 +611,8 @@ class AuthTests: XCTestCase {
                                       dateProvider: MockDateProvider())
         
         authManager.requestNewAuthToken(hasFailedPriorAuth: false,
-                                        onSuccess: {
-                                            XCTAssertEqual(authManager.getAuthToken(), AuthTests.authToken)
+                                        onSuccess: { token in
+                                            XCTAssertEqual(token, AuthTests.authToken)
                                             condition1.fulfill()
         })
         
