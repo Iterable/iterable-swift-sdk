@@ -233,7 +233,12 @@ open class IterableInboxViewController: UITableViewController {
     // MARK: - UITableViewDataSource (Optional Functions)
     
     override open func numberOfSections(in _: UITableView) -> Int {
-        viewModel.numSections
+        if viewModel.isEmpty() {
+            tableView.setEmptyView(title: "No messages", message: "There are no messages in your inbox.")
+        } else {
+            tableView.restore()
+        }
+        return viewModel.numSections
     }
     
     override open func tableView(_: UITableView, canEditRowAt _: IndexPath) -> Bool {
@@ -534,5 +539,39 @@ private struct CellLoader {
         }
         
         return cell
+    }
+}
+
+extension UITableView {
+    func setEmptyView(title: String, message: String) {
+        let emptyView = UIView(frame: self.bounds)
+        let titleLabel = UILabel()
+        emptyView.addSubview(titleLabel)
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.textColor = UIColor.black
+        titleLabel.font = UIFont(name: "HelveticaNeue-Bold", size: 20)
+        titleLabel.text = title
+
+        let messageLabel = UILabel()
+        emptyView.addSubview(messageLabel)
+        messageLabel.translatesAutoresizingMaskIntoConstraints = false
+        messageLabel.textColor = UIColor.lightGray
+        messageLabel.font = UIFont(name: "HelveticaNeue-Regular", size: 18)
+        messageLabel.text = message
+        messageLabel.numberOfLines = 0
+        messageLabel.textAlignment = .center
+
+        titleLabel.centerXAnchor.constraint(equalTo: emptyView.centerXAnchor).isActive = true
+        titleLabel.centerYAnchor.constraint(equalTo: emptyView.centerYAnchor).isActive = true
+        messageLabel.centerXAnchor.constraint(equalTo: emptyView.centerXAnchor).isActive = true
+        messageLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 25).isActive = true
+
+        self.backgroundView = emptyView
+        self.separatorStyle = .none
+    }
+    
+    func restore() {
+        self.backgroundView = nil
+        self.separatorStyle = .singleLine
     }
 }
