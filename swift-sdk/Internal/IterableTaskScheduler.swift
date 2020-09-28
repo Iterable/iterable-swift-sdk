@@ -7,8 +7,7 @@ import Foundation
 
 @available(iOS 10.0, *)
 class IterableTaskScheduler {
-    // TODO: @tqm Move to `DependencyContainer` after we remove iOS 9 support
-    init(persistenceContextProvider: IterablePersistenceContextProvider = CoreDataPersistenceContextProvider(),
+    init(persistenceContextProvider: IterablePersistenceContextProvider,
          notificationCenter: NotificationCenterProtocol = NotificationCenter.default,
          dateProvider: DateProviderProtocol = SystemDateProvider()) {
         self.persistenceContextProvider = persistenceContextProvider

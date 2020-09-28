@@ -35,6 +35,7 @@ class TaskRunnerTests: XCTestCase {
         }
 
         let taskRunner = IterableTaskRunner(networkSession: MockNetworkSession(),
+                                            persistenceContextProvider: persistenceContextProvider,
                                             notificationCenter: notificationCenter,
                                             timeInterval: 0.5)
         taskRunner.start()
@@ -65,6 +66,7 @@ class TaskRunnerTests: XCTestCase {
         }
 
         let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
                                             notificationCenter: notificationCenter,
                                             timeInterval: 1.0)
         taskRunner.start()
@@ -100,6 +102,7 @@ class TaskRunnerTests: XCTestCase {
         }
 
         let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
                                             notificationCenter: notificationCenter,
                                             timeInterval: 0.5)
         taskRunner.start()
@@ -125,6 +128,7 @@ class TaskRunnerTests: XCTestCase {
                                                  notificationCenter: notificationCenter)
 
         let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
                                             notificationCenter: notificationCenter,
                                             connectivityManager: manager)
         taskRunner.start()
@@ -151,6 +155,7 @@ class TaskRunnerTests: XCTestCase {
                                                  notificationCenter: notificationCenter)
 
         let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
                                             notificationCenter: notificationCenter,
                                             connectivityManager: manager)
         taskRunner.start()
@@ -183,6 +188,7 @@ class TaskRunnerTests: XCTestCase {
                                                  notificationCenter: notificationCenter)
         
         let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
                                             notificationCenter: notificationCenter,
                                             timeInterval: 0.5,
                                             connectivityManager: manager)
@@ -259,7 +265,7 @@ class TaskRunnerTests: XCTestCase {
                                                 appPackageName: Bundle.main.appPackageName ?? "")
     
     private lazy var persistenceContextProvider: IterablePersistenceContextProvider = {
-        let provider = CoreDataPersistenceContextProvider(dateProvider: dateProvider)
+        let provider = CoreDataPersistenceContextProvider(dateProvider: dateProvider)!
         return provider
     }()
 
