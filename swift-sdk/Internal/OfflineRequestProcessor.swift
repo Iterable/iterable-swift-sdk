@@ -12,7 +12,8 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
          authManager: IterableInternalAuthManagerProtocol?,
          endPoint: String,
          deviceMetadata: DeviceMetadata,
-         taskRunner: IterableTaskRunner = IterableTaskRunner(),
+         taskScheduler: IterableTaskScheduler,
+         taskRunner: IterableTaskRunner,
          notificationCenter: NotificationCenterProtocol
          ) {
         self.apiKey = apiKey
@@ -20,6 +21,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         self.authManager = authManager
         self.endPoint = endPoint
         self.deviceMetadata = deviceMetadata
+        self.taskScheduler = taskScheduler
         self.taskRunner = taskRunner
         notificationListener = NotificationListener(notificationCenter: notificationCenter)
     }
@@ -340,6 +342,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     private let endPoint: String
     private let deviceMetadata: DeviceMetadata
     private let notificationListener: NotificationListener
+    private let taskScheduler: IterableTaskScheduler
     private let taskRunner: IterableTaskRunner
     
     private func createRequestCreator(authProvider: AuthProvider) -> RequestCreator {
@@ -366,14 +369,14 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                                                     iterableRequest: iterableRequest)
         
         do {
-            let taskId = try IterableTaskScheduler().schedule(apiCallRequest: apiCallRequest,
-                                                              context: IterableTaskContext(blocking: true))
+            let taskId = try taskScheduler.schedule(apiCallRequest: apiCallRequest,
+                                                    context: IterableTaskContext(blocking: true))
             let result = notificationListener.futureFromTask(withTaskId: taskId)
             return RequestProcessorUtil.apply(successHandler: onSuccess,
-                                       andFailureHandler: onFailure,
-                                       andAuthManager: authManager,
-                                       toResult: result,
-                                       withIdentifier: identifier)
+                                              andFailureHandler: onFailure,
+                                              andAuthManager: authManager,
+                                              toResult: result,
+                                              withIdentifier: identifier)
         } catch let error {
             ITBError(error.localizedDescription)
             return SendRequestError.createErroredFuture(reason: error.localizedDescription)

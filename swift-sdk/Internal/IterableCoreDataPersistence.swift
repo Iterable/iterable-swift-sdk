@@ -52,10 +52,15 @@ extension Foundation.Bundle {
 
 @available(iOS 10.0, *)
 class PersistentContainer: NSPersistentContainer {
-    static let shared: PersistentContainer = {
-        // TODO: @tqm remove force unwrapping
-        let url = Bundle.current.url(forResource: PersistenceConst.dataModelFileName, withExtension: PersistenceConst.dataModelExtension)!
-        let managedObjectModel = NSManagedObjectModel(contentsOf: url)!
+    static let shared: PersistentContainer? = {
+        guard let url = Bundle.current.url(forResource: PersistenceConst.dataModelFileName, withExtension: PersistenceConst.dataModelExtension) else {
+            ITBError("Could not find \(PersistenceConst.dataModelFileName) in bundle")
+            return nil
+        }
+        guard let managedObjectModel = NSManagedObjectModel(contentsOf: url) else {
+            ITBError("Could not initialize managed object model")
+            return nil
+        }
         
         let container = PersistentContainer(name: PersistenceConst.dataModelFileName, managedObjectModel: managedObjectModel)
         container.loadPersistentStores { desc, error in
@@ -82,18 +87,23 @@ class PersistentContainer: NSPersistentContainer {
 
 @available(iOS 10.0, *)
 struct CoreDataPersistenceContextProvider: IterablePersistenceContextProvider {
-    init(dateProvider: DateProviderProtocol = SystemDateProvider()) {
+    init?(dateProvider: DateProviderProtocol = SystemDateProvider()) {
+        guard let persistentContainer = PersistentContainer.shared else {
+            return nil
+        }
+        self.persistentContainer = persistentContainer
         self.dateProvider = dateProvider
     }
     
     func newBackgroundContext() -> IterablePersistenceContext {
-        CoreDataPersistenceContext(managedObjectContext: PersistentContainer.shared.newBackgroundContext(), dateProvider: dateProvider)
+        return CoreDataPersistenceContext(managedObjectContext: persistentContainer.newBackgroundContext(), dateProvider: dateProvider)
     }
     
     func mainQueueContext() -> IterablePersistenceContext {
-        CoreDataPersistenceContext(managedObjectContext: PersistentContainer.shared.viewContext, dateProvider: dateProvider)
+        return CoreDataPersistenceContext(managedObjectContext: persistentContainer.viewContext, dateProvider: dateProvider)
     }
     
+    private let persistentContainer: PersistentContainer
     private let dateProvider: DateProviderProtocol
 }
 

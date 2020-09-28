@@ -20,6 +20,7 @@ protocol DependencyContainerProtocol {
     var apnsTypeChecker: APNSTypeCheckerProtocol { get }
     
     func createInAppFetcher(apiClient: ApiClientProtocol) -> InAppFetcherProtocol
+    func createPersistenceContextProvider() -> IterablePersistenceContextProvider?
 }
 
 extension DependencyContainerProtocol {
@@ -62,12 +63,17 @@ extension DependencyContainerProtocol {
                                                                networkSession: networkSession,
                                                                deviceMetadata: deviceMetadata) },
                                     offlineCreator: {
-                                        OfflineRequestProcessor(apiKey: apiKey,
+                                        guard let persistenceContextProvider = createPersistenceContextProvider() else {
+                                            return nil
+                                        }
+                                        
+                                        return OfflineRequestProcessor(apiKey: apiKey,
                                                                 authProvider: authProvider,
                                                                 authManager: authManager,
                                                                 endPoint: config.apiEndpoint,
                                                                 deviceMetadata: deviceMetadata,
-                                                                taskRunner: createTaskRunner(),
+                                                                taskScheduler: createTaskScheduler(persistenceContextProvider: persistenceContextProvider),
+                                                                taskRunner: createTaskRunner(persistenceContextProvider: persistenceContextProvider),
                                                                 notificationCenter: notificationCenter) },
                                     strategy: DefaultRequestProcessorStrategy(selectOffline: config.enableOfflineMode))
         } else {
@@ -80,10 +86,25 @@ extension DependencyContainerProtocol {
         }
     }
     
+    func createPersistenceContextProvider() -> IterablePersistenceContextProvider? {
+        if #available(iOS 10.0, *) {
+            return CoreDataPersistenceContextProvider(dateProvider: dateProvider)
+        } else {
+            fatalError("Unable to create persistence container for iOS < 10")
+        }
+    }
+
     @available(iOS 10.0, *)
-    private func createTaskRunner() -> IterableTaskRunner {
+    private func createTaskScheduler(persistenceContextProvider: IterablePersistenceContextProvider) -> IterableTaskScheduler {
+        IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                              notificationCenter: notificationCenter,
+                              dateProvider: dateProvider)
+    }
+    
+    @available(iOS 10.0, *)
+    private func createTaskRunner(persistenceContextProvider: IterablePersistenceContextProvider) -> IterableTaskRunner {
         IterableTaskRunner(networkSession: networkSession,
-                           persistenceContextProvider: CoreDataPersistenceContextProvider(dateProvider: dateProvider),
+                           persistenceContextProvider: persistenceContextProvider,
                            notificationCenter: notificationCenter,
                            connectivityManager: NetworkConnectivityManager())
     }

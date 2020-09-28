@@ -20,7 +20,7 @@ struct DefaultRequestProcessorStrategy: RequestProcessorStrategy {
 @available(iOS 10.0, *)
 class RequestProcessor: RequestProcessorProtocol {
     init(onlineCreator: @escaping () -> OnlineRequestProcessor,
-         offlineCreator: @escaping () -> OfflineRequestProcessor,
+         offlineCreator: @escaping () -> OfflineRequestProcessor?,
          strategy: RequestProcessorStrategy = DefaultRequestProcessorStrategy(selectOffline: false)) {
         self.onlineCreator = onlineCreator
         self.offlineCreator = offlineCreator
@@ -244,11 +244,11 @@ class RequestProcessor: RequestProcessorProtocol {
     }
     
     private let onlineCreator: () -> OnlineRequestProcessor
-    private let offlineCreator: () -> OfflineRequestProcessor
+    private let offlineCreator: () -> OfflineRequestProcessor?
 
     private let strategy: RequestProcessorStrategy
 
-    private lazy var offlineProcessor: OfflineRequestProcessor = {
+    private lazy var offlineProcessor: OfflineRequestProcessor? = {
         offlineCreator()
     }()
     
@@ -257,6 +257,13 @@ class RequestProcessor: RequestProcessorProtocol {
     }()
     
     private func chooseRequestProcessor() -> RequestProcessorProtocol {
-        strategy.chooseOfflineProcessor ? offlineProcessor: onlineProcessor
+        if strategy.chooseOfflineProcessor {
+            if let offlineProcessor = self.offlineProcessor {
+                return offlineProcessor
+            }
+            return onlineProcessor
+        } else {
+            return onlineProcessor
+        }
     }
 }

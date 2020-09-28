@@ -704,7 +704,11 @@ class RequestProcessorTests: XCTestCase {
     private func createRequestProcessor(networkSession: NetworkSessionProtocol,
                                         notificationCenter: NotificationCenterProtocol,
                                         selectOffline: Bool) -> RequestProcessorProtocol {
+        let taskScheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                                  notificationCenter: notificationCenter,
+                                                  dateProvider: dateProvider)
         let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                                            persistenceContextProvider: persistenceContextProvider,
                                             notificationCenter: notificationCenter,
                                             timeInterval: 0.5)
         
@@ -721,6 +725,7 @@ class RequestProcessorTests: XCTestCase {
                                                             authManager: nil,
                                                             endPoint: Endpoint.api,
                                                             deviceMetadata: Self.deviceMetadata,
+                                                            taskScheduler: taskScheduler,
                                                             taskRunner: taskRunner,
                                                             notificationCenter: notificationCenter) },
                                 strategy: DefaultRequestProcessorStrategy(selectOffline: selectOffline))
@@ -807,7 +812,7 @@ class RequestProcessorTests: XCTestCase {
     private let dateProvider = MockDateProvider()
     
     private lazy var persistenceContextProvider: IterablePersistenceContextProvider = {
-        let provider = CoreDataPersistenceContextProvider(dateProvider: dateProvider)
+        let provider = CoreDataPersistenceContextProvider(dateProvider: dateProvider)!
         return provider
     }()
 }

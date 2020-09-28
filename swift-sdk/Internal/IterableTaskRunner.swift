@@ -10,7 +10,7 @@ import UIKit
 @available(iOS 10.0, *)
 class IterableTaskRunner: NSObject {
     init(networkSession: NetworkSessionProtocol = URLSession(configuration: .default),
-         persistenceContextProvider: IterablePersistenceContextProvider = CoreDataPersistenceContextProvider(),
+         persistenceContextProvider: IterablePersistenceContextProvider,
          notificationCenter: NotificationCenterProtocol = NotificationCenter.default,
          timeInterval: TimeInterval = 1.0 * 60,
          connectivityManager: NetworkConnectivityManager = NetworkConnectivityManager()) {
