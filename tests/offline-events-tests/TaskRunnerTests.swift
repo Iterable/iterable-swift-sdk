@@ -231,7 +231,7 @@ class TaskRunnerTests: XCTestCase {
         
         return try IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
                                          notificationCenter: notificationCenter,
-                                         dateProvider: dateProvider).schedule(apiCallRequest: apiCallRequest)
+                                         dateProvider: dateProvider).schedule(apiCallRequest: apiCallRequest).get()
     }
 
     private func verifyNoTaskIsExecuted(_ notificationCenter: MockNotificationCenter, forInterval interval: TimeInterval) {

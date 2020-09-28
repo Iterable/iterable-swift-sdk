@@ -367,17 +367,15 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                                                     auth: authProvider.auth,
                                                     deviceMetadata: deviceMetadata,
                                                     iterableRequest: iterableRequest)
-        
-        do {
-            let taskId = try taskScheduler.schedule(apiCallRequest: apiCallRequest,
-                                                    context: IterableTaskContext(blocking: true))
+        switch taskScheduler.schedule(apiCallRequest: apiCallRequest, context: IterableTaskContext(blocking: true)) {
+        case .success(let taskId):
             let result = notificationListener.futureFromTask(withTaskId: taskId)
             return RequestProcessorUtil.apply(successHandler: onSuccess,
                                               andFailureHandler: onFailure,
                                               andAuthManager: authManager,
                                               toResult: result,
                                               withIdentifier: identifier)
-        } catch let error {
+        case .failure(let error):
             ITBError(error.localizedDescription)
             return SendRequestError.createErroredFuture(reason: error.localizedDescription)
         }
