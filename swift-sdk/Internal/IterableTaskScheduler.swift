@@ -17,22 +17,25 @@ class IterableTaskScheduler {
     
     func schedule(apiCallRequest: IterableAPICallRequest,
                   context: IterableTaskContext = IterableTaskContext(blocking: true),
-                  scheduledAt: Date? = nil) throws -> String {
+                  scheduledAt: Date? = nil) -> Result<String, IterableTaskError> {
         ITBInfo()
         let taskId = IterableUtil.generateUUID()
-        let data = try JSONEncoder().encode(apiCallRequest)
-
-        try persistenceContext.create(task: IterableTask(id: taskId,
-                                                         name: apiCallRequest.getPath(),
-                                                         type: .apiCall,
-                                                         scheduledAt: scheduledAt ?? dateProvider.currentDate,
-                                                         data: data,
-                                                         requestedAt: dateProvider.currentDate))
-        try persistenceContext.save()
-
-        notificationCenter.post(name: .iterableTaskScheduled, object: self, userInfo: nil)
-        
-        return taskId
+        do {
+            let data = try JSONEncoder().encode(apiCallRequest)
+            
+            try persistenceContext.create(task: IterableTask(id: taskId,
+                                                             name: apiCallRequest.getPath(),
+                                                             type: .apiCall,
+                                                             scheduledAt: scheduledAt ?? dateProvider.currentDate,
+                                                             data: data,
+                                                             requestedAt: dateProvider.currentDate))
+            try persistenceContext.save()
+            
+            notificationCenter.post(name: .iterableTaskScheduled, object: self, userInfo: nil)
+        } catch let error {
+            return Result.failure(IterableTaskError.general("schedule taskId: \(taskId) failed with error: \(error.localizedDescription)"))
+        }
+        return Result.success(taskId)
     }
     
     private let persistenceContextProvider: IterablePersistenceContextProvider

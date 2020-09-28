@@ -45,7 +45,7 @@ class TaskSchedulerTests: XCTestCase {
         let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
                                               notificationCenter: notificationCenter,
                                               dateProvider: dateProvider)
-        let taskId = try scheduler.schedule(apiCallRequest: apiCallRequest)
+        let taskId = try scheduler.schedule(apiCallRequest: apiCallRequest).get()
 
         wait(for: [expectation1], timeout: 10.0)
         
