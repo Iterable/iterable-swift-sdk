@@ -1,5 +1,5 @@
 //
-//  DeeplinkHandler.h
+//  DeepLinkHandler.h
 //  objc-sample-app
 //
 //  Created by Tapash Majumder on 6/21/18.
@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface DeeplinkHandler: NSObject
+@interface DeepLinkHandler: NSObject
 
 + (BOOL)handleURL:(NSURL *)url;
 
