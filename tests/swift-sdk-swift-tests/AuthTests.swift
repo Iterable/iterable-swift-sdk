@@ -661,7 +661,8 @@ class AuthTests: XCTestCase {
                                                         condition3.fulfill()
                                                     })
         
-        wait(for: [condition1, condition2, condition3], timeout: testExpectationTimeoutForInverted)
+        wait(for: [condition1, condition3], timeout: testExpectationTimeout)
+        wait(for: [condition2], timeout: testExpectationTimeoutForInverted)
     }
     
     // MARK: - Private
