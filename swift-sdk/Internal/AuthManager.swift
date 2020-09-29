@@ -14,7 +14,7 @@ import Foundation
 
 class AuthManager: IterableInternalAuthManagerProtocol {
     init(delegate: IterableAuthDelegate?,
-         refreshWindow: TimeInterval,
+         expirationRefreshPeriod: TimeInterval,
          localStorage: LocalStorageProtocol,
          dateProvider: DateProviderProtocol) {
         ITBInfo()
@@ -22,7 +22,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         self.delegate = delegate
         self.localStorage = localStorage
         self.dateProvider = dateProvider
-        self.refreshWindow = refreshWindow
+        self.expirationRefreshPeriod = expirationRefreshPeriod
         
         retrieveAuthToken()
     }
@@ -72,7 +72,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     private var hasFailedPriorAuth: Bool = false
     
     private weak var delegate: IterableAuthDelegate?
-    private let refreshWindow: TimeInterval
+    private let expirationRefreshPeriod: TimeInterval
     private var localStorage: LocalStorageProtocol
     private let dateProvider: DateProviderProtocol
 
@@ -103,7 +103,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
             return
         }
         
-        let timeIntervalToRefresh = TimeInterval(expirationDate) - dateProvider.currentDate.timeIntervalSince1970 - refreshWindow
+        let timeIntervalToRefresh = TimeInterval(expirationDate) - dateProvider.currentDate.timeIntervalSince1970 - expirationRefreshPeriod
         
         if #available(iOS 10.0, *) {
             expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: timeIntervalToRefresh, repeats: false) { [weak self] _ in

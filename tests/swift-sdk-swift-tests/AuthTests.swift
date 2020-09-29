@@ -381,9 +381,9 @@ class AuthTests: XCTestCase {
             completion(nil)
         })
         
-        let refreshWindow: TimeInterval = 0
+        let expirationRefreshPeriod: TimeInterval = 0
         let waitTime: TimeInterval = 2
-        let expirationTimeSinceEpoch = Date(timeIntervalSinceNow: refreshWindow + waitTime).timeIntervalSince1970
+        let expirationTimeSinceEpoch = Date(timeIntervalSinceNow: expirationRefreshPeriod + waitTime).timeIntervalSince1970
         let mockEncodedPayload = createMockEncodedPayload(exp: Int(expirationTimeSinceEpoch))
         
         let localStorage = MockLocalStorage()
@@ -391,7 +391,7 @@ class AuthTests: XCTestCase {
         localStorage.authToken = mockEncodedPayload
         
         let authManager = AuthManager(delegate: authDelegate,
-                                      refreshWindow: refreshWindow,
+                                      expirationRefreshPeriod: expirationRefreshPeriod,
                                       localStorage: localStorage,
                                       dateProvider: MockDateProvider())
         
@@ -408,16 +408,16 @@ class AuthTests: XCTestCase {
             completion(nil)
         })
         
-        let refreshWindow: TimeInterval = 0
+        let expirationRefreshPeriod: TimeInterval = 0
         let waitTime: TimeInterval = 2
-        let expirationTimeSinceEpoch = Date(timeIntervalSinceNow: refreshWindow + waitTime).timeIntervalSince1970
+        let expirationTimeSinceEpoch = Date(timeIntervalSinceNow: expirationRefreshPeriod + waitTime).timeIntervalSince1970
         let mockEncodedPayload = createMockEncodedPayload(exp: Int(expirationTimeSinceEpoch))
         
         let mockLocalStorage = MockLocalStorage()
         mockLocalStorage.authToken = mockEncodedPayload
         
         let authManager = AuthManager(delegate: authDelegate,
-                                      refreshWindow: refreshWindow,
+                                      expirationRefreshPeriod: expirationRefreshPeriod,
                                       localStorage: mockLocalStorage,
                                       dateProvider: MockDateProvider())
         
@@ -525,7 +525,7 @@ class AuthTests: XCTestCase {
         config.authDelegate = authDelegate
         
         let authManager = AuthManager(delegate: authDelegate,
-                                      refreshWindow: config.authTokenRefreshWindow,
+                                      expirationRefreshPeriod: config.expiringAuthTokenRefreshPeriod,
                                       localStorage: MockLocalStorage(),
                                       dateProvider: MockDateProvider())
         
@@ -552,7 +552,7 @@ class AuthTests: XCTestCase {
         config.authDelegate = authDelegate
         
         let authManager = AuthManager(delegate: authDelegate,
-                                      refreshWindow: config.authTokenRefreshWindow,
+                                      expirationRefreshPeriod: config.expiringAuthTokenRefreshPeriod,
                                       localStorage: MockLocalStorage(),
                                       dateProvider: MockDateProvider())
         
@@ -606,7 +606,7 @@ class AuthTests: XCTestCase {
         let authDelegate = AsyncAuthDelegate()
         
         let authManager = AuthManager(delegate: authDelegate,
-                                      refreshWindow: 0,
+                                      expirationRefreshPeriod: 0,
                                       localStorage: MockLocalStorage(),
                                       dateProvider: MockDateProvider())
         
