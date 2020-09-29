@@ -8,7 +8,7 @@
 
 
 #import "AppDelegate.h"
-#import "DeeplinkHandler.h"
+#import "DeepLinkHandler.h"
 
 @import IterableSDK;
 
@@ -29,8 +29,6 @@ NSString *iterableApiKey = @"";
     IterableConfig *config = [[IterableConfig alloc] init];
     config.urlDelegate = self;
     config.customActionDelegate = self;
-    config.pushIntegrationName = @"objc-sample-app";
-    config.sandboxPushIntegrationName = @"objc-sample-app";
     
     [IterableAPI initializeWithApiKey: iterableApiKey
                         launchOptions: launchOptions
@@ -127,7 +125,7 @@ NSString *iterableApiKey = @"";
 #pragma mark - IterableURLDelegate
 // return true if we handled the url
 - (BOOL)handleIterableURL:(NSURL *)url context:(IterableActionContext *)context {
-    return [DeeplinkHandler handleURL:url];
+    return [DeepLinkHandler handleURL:url];
 }
 
 #pragma mark - IterableCustomActionDelegate
@@ -138,7 +136,7 @@ NSString *iterableApiKey = @"";
         if (action.userInput != nil) {
             NSString *urlString = [[NSString alloc] initWithFormat:@"https://majumder.me/coffee?q=%@", action.userInput];
             NSURL *url = [[NSURL alloc] initWithString:urlString];
-            return [DeeplinkHandler handleURL:url];
+            return [DeepLinkHandler handleURL:url];
         }
     }
 

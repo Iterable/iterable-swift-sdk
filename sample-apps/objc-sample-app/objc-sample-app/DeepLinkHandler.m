@@ -1,36 +1,36 @@
 //
-//  DeeplinkHandler.m
+//  DeepLinkHandler.m
 //  objc-sample-app
 //
 //  Created by Tapash Majumder on 6/21/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
-#import "DeeplinkHandler.h"
+#import "DeepLinkHandler.h"
 #import "CoffeeType.h"
 #import "CoffeeViewController.h"
 #import "CoffeeListTableViewController.h"
 
-@implementation DeeplinkHandler
+@implementation DeepLinkHandler
 
 + (BOOL)handleURL:(NSURL *)url {
     NSString *page = url.lastPathComponent.lowercaseString;
     
     if ([page isEqualToString:@"mocha"]) {
-        [DeeplinkHandler showCoffee:CoffeeType.mocha];
+        [DeepLinkHandler showCoffee:CoffeeType.mocha];
         return YES;
     } else if ([page isEqualToString:@"latte"]) {
-        [DeeplinkHandler showCoffee:CoffeeType.latte];
+        [DeepLinkHandler showCoffee:CoffeeType.latte];
         return YES;
     } else if ([page isEqualToString:@"cappuccino"]) {
-        [DeeplinkHandler showCoffee:CoffeeType.cappuccino];
+        [DeepLinkHandler showCoffee:CoffeeType.cappuccino];
         return YES;
     } else if ([page isEqualToString:@"black"]) {
-        [DeeplinkHandler showCoffee:CoffeeType.black];
+        [DeepLinkHandler showCoffee:CoffeeType.black];
         return YES;
     } else if ([page isEqualToString:@"coffee"]) {
-        NSString *query = [DeeplinkHandler parseQueryFromURL: url];
-        [DeeplinkHandler showCoffeeListWithQuery: query];
+        NSString *query = [DeepLinkHandler parseQueryFromURL: url];
+        [DeepLinkHandler showCoffeeListWithQuery: query];
         return YES;
     } else {
         [UIApplication.sharedApplication openURL: url options: @{} completionHandler: nil];

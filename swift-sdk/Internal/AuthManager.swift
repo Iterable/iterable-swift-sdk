@@ -7,18 +7,18 @@ import Foundation
 
 @objc public protocol IterableInternalAuthManagerProtocol {
     func getAuthToken() -> String?
-    func requestNewAuthToken(hasFailedPriorAuth: Bool, onSuccess: (() -> Void)?)
+    func requestNewAuthToken(hasFailedPriorAuth: Bool, onSuccess: ((String?) -> Void)?)
     func logoutUser()
 }
 
 class AuthManager: IterableInternalAuthManagerProtocol {
-    init(onAuthTokenRequestedCallback: (() -> String?)?,
+    init(delegate: IterableAuthDelegate?,
          refreshWindow: TimeInterval,
          localStorage: LocalStorageProtocol,
          dateProvider: DateProviderProtocol) {
         ITBInfo()
         
-        self.onAuthTokenRequestedCallback = onAuthTokenRequestedCallback
+        self.delegate = delegate
         self.localStorage = localStorage
         self.dateProvider = dateProvider
         self.refreshWindow = refreshWindow
@@ -37,22 +37,16 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     }
     
     // @objc attribute only needed for the pre-iOS 10 Timer constructor in queueAuthTokenExpirationRefresh
-    @objc func requestNewAuthToken(hasFailedPriorAuth: Bool = false, onSuccess: (() -> Void)? = nil) {
+    @objc func requestNewAuthToken(hasFailedPriorAuth: Bool = false, onSuccess: ((String?) -> Void)? = nil) {
         guard !self.hasFailedPriorAuth || !hasFailedPriorAuth else {
             return
         }
         
         self.hasFailedPriorAuth = hasFailedPriorAuth
         
-        authToken = onAuthTokenRequestedCallback?()
-        
-        storeAuthToken()
-        
-        if authToken != nil {
-            onSuccess?()
+        delegate?.onAuthTokenRequested { [weak self] retrievedAuthToken in
+            self?.onAuthTokenReceived(retrievedAuthToken: retrievedAuthToken, onSuccess: onSuccess)
         }
-        
-        queueAuthTokenExpirationRefresh(authToken)
     }
     
     func logoutUser() {
@@ -72,7 +66,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     
     private var hasFailedPriorAuth: Bool = false
     
-    private let onAuthTokenRequestedCallback: (() -> String?)?
+    private weak var delegate: IterableAuthDelegate?
     private let refreshWindow: TimeInterval
     private var localStorage: LocalStorageProtocol
     private let dateProvider: DateProviderProtocol
@@ -85,6 +79,18 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         authToken = localStorage.authToken
         
         queueAuthTokenExpirationRefresh(authToken)
+    }
+    
+    private func onAuthTokenReceived(retrievedAuthToken: String?, onSuccess: ((String?) -> Void)?) {
+        authToken = retrievedAuthToken
+        
+        storeAuthToken()
+        
+        if authToken != nil {
+            onSuccess?(authToken)
+        }
+        
+        queueAuthTokenExpirationRefresh(self.authToken)
     }
     
     private func queueAuthTokenExpirationRefresh(_ authToken: String?) {
