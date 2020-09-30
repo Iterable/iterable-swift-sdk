@@ -614,7 +614,7 @@ class AuthTests: XCTestCase {
                                         onSuccess: { token in
                                             XCTAssertEqual(token, AuthTests.authToken)
                                             condition1.fulfill()
-        })
+                                        })
         
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
@@ -663,6 +663,44 @@ class AuthTests: XCTestCase {
         
         wait(for: [condition1, condition3], timeout: testExpectationTimeout)
         wait(for: [condition2], timeout: testExpectationTimeoutForInverted)
+    }
+    
+    func testRefreshTimerQueueRejection() {
+        let condition1 = expectation(description: "\(#function) - first refresh timer never happened called")
+        let condition2 = expectation(description: "\(#function) - second refresh timer should not have been called")
+        condition2.isInverted = true
+        
+        class AsyncAuthDelegate: IterableAuthDelegate {
+            func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    completion(AuthTests.authToken)
+                }
+            }
+        }
+        
+        let authDelegate = AsyncAuthDelegate()
+        
+        let config = IterableConfig()
+        config.authDelegate = authDelegate
+        
+        let authManager = AuthManager(delegate: config.authDelegate,
+                                      expirationRefreshPeriod: config.expiringAuthTokenRefreshPeriod,
+                                      localStorage: MockLocalStorage(),
+                                      dateProvider: MockDateProvider())
+        
+        authManager.requestNewAuthToken(hasFailedPriorAuth: false,
+                                        onSuccess: { token in
+                                            XCTAssertEqual(token, AuthTests.authToken)
+                                            condition1.fulfill()
+                                        })
+        
+        authManager.requestNewAuthToken(hasFailedPriorAuth: false,
+                                        onSuccess: { token in
+                                            condition2.fulfill()
+                                        })
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+        wait(for: [condition2], timeout: 3)
     }
     
     // MARK: - Private
