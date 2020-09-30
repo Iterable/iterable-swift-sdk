@@ -59,8 +59,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         
         storeAuthToken()
         
-        expirationRefreshTimer?.invalidate()
-        expirationRefreshTimer = nil
+        clearRefreshTimer()
     }
     
     // MARK: - Private/Internal
@@ -117,6 +116,11 @@ class AuthManager: IterableInternalAuthManagerProtocol {
                                                           userInfo: nil,
                                                           repeats: false)
         }
+    }
+    
+    private func clearRefreshTimer() {
+        expirationRefreshTimer?.invalidate()
+        expirationRefreshTimer = nil
     }
     
     static func decodeExpirationDateFromAuthToken(_ authToken: String) -> Int? {
