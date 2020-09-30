@@ -213,51 +213,6 @@ class TaskRunnerTests: XCTestCase {
         taskRunner.stop()
     }
     
-    func ignore_testMultiThreading() throws {
-        let expectation1 = expectation(description: #function)
-        
-        struct LongRunningNetworkSession: NetworkSessionProtocol {
-            var statusCode = 200
-            var interval: TimeInterval
-            
-            func makeRequest(_ request: URLRequest, completionHandler: @escaping CompletionHandler) {
-                let response = HTTPURLResponse(url: request.url!, statusCode: self.statusCode, httpVersion: "HTTP/1.1", headerFields: [:])
-                DispatchQueue.global().asyncAfter(deadline: .now() + interval) {
-                    completionHandler([:].toJsonData(), response, nil)
-                }
-            }
-            
-            func makeDataRequest(with url: URL, completionHandler: @escaping CompletionHandler) {
-                fatalError()
-            }
-            
-            func createDataTask(with url: URL, completionHandler: @escaping CompletionHandler) -> DataTaskProtocol {
-                fatalError()
-            }
-            
-            
-        }
-
-        let networkSession = LongRunningNetworkSession(interval: 1.0)
-        let notificationCenter = MockNotificationCenter()
-        let taskRunner = IterableTaskRunner(networkSession: networkSession,
-                                            persistenceContextProvider: persistenceContextProvider,
-                                            notificationCenter: notificationCenter,
-                                            timeInterval: 0.001)
-        taskRunner.start()
-
-        var taskIds = [String]()
-        2.times {
-            let taskId = try! scheduleSampleTask(notificationCenter: notificationCenter)
-            taskIds.append(taskId)
-//            Thread.sleep(forTimeInterval: 1.0)
-//            taskRunner.start()
-        }
-
-        wait(for: [expectation1], timeout: 2.0)
-        taskRunner.stop()
-    }
-
     private func scheduleSampleTask(notificationCenter: NotificationCenterProtocol) throws -> String {
         let apiKey = "zee-api-key"
         let eventName = "CustomEvent1"
