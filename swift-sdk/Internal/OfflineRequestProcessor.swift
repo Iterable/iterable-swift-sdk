@@ -8,7 +8,7 @@ import Foundation
 @available(iOS 10.0, *)
 struct OfflineRequestProcessor: RequestProcessorProtocol {
     init(apiKey: String,
-         authProvider: AuthProvider,
+         authProvider: AuthProvider?,
          authManager: IterableInternalAuthManagerProtocol?,
          endPoint: String,
          deviceMetadata: DeviceMetadata,
@@ -16,6 +16,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
          taskRunner: IterableTaskRunner,
          notificationCenter: NotificationCenterProtocol
          ) {
+        ITBInfo()
         self.apiKey = apiKey
         self.authProvider = authProvider
         self.authManager = authManager
@@ -383,6 +384,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     
     private class NotificationListener: NSObject {
         init(notificationCenter: NotificationCenterProtocol) {
+            ITBInfo("OfflineRequestProcessor.NotificationListener.init()")
             self.notificationCenter = notificationCenter
             super.init()
             self.notificationCenter.addObserver(self,
@@ -394,6 +396,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         }
         
         deinit {
+            ITBInfo("OfflineRequestProcessor.NotificationListener.deinit()")
             self.notificationCenter.removeObserver(self)
         }
         

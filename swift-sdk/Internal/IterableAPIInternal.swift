@@ -606,6 +606,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     deinit {
         ITBInfo()
+        requestProcessor.stop()
     }
 }
 

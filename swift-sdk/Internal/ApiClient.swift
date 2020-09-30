@@ -15,7 +15,7 @@ struct DeviceMetadata: Codable {
 
 class ApiClient {
     init(apiKey: String,
-         authProvider: AuthProvider,
+         authProvider: AuthProvider?,
          endPoint: String,
          networkSession: NetworkSessionProtocol,
          deviceMetadata: DeviceMetadata) {

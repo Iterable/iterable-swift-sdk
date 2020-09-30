@@ -26,6 +26,7 @@ class NetworkMonitor: NetworkMonitorProtocol {
     
     deinit {
         ITBInfo()
+        stop()
     }
     
     var statusUpdatedCallback: (() -> Void)?
@@ -45,9 +46,10 @@ class NetworkMonitor: NetworkMonitorProtocol {
     func stop() {
         ITBInfo()
         networkMonitor?.cancel()
+        networkMonitor = nil
     }
     
-    private var networkMonitor: NWPathMonitor?
+    private weak var networkMonitor: NWPathMonitor?
     private let queue = DispatchQueue(label: "NetworkMonitor")
 }
 
