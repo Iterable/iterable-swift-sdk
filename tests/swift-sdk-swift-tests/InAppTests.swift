@@ -10,7 +10,6 @@ import XCTest
 class InAppTests: XCTestCase {
     override class func setUp() {
         super.setUp()
-        TestUtils.clearTestUserDefaults()
     }
     
     func testInAppDelivery() {
@@ -1295,7 +1294,6 @@ class InAppTests: XCTestCase {
         let config = IterableConfig()
         config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
         
-        TestUtils.clearTestUserDefaults()
         let internalApi = IterableAPIInternal.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher
@@ -1427,11 +1425,11 @@ class InAppTests: XCTestCase {
     }
     
     private func getEmptyInAppMessage() -> IterableInAppMessage {
-        return IterableInAppMessage(messageId: "", campaignId: 0, content: getEmptyInAppContent())
+        IterableInAppMessage(messageId: "", campaignId: 0, content: getEmptyInAppContent())
     }
     
     private func getEmptyInAppContent() -> IterableInAppContent {
-        return IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0, html: "")
+        IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0, html: "")
     }
     
     fileprivate func verifyCustomActionIsCalled(expectation1: XCTestExpectation, customActionScheme: String, customActionName: String) {
@@ -1486,42 +1484,42 @@ class InAppTests: XCTestCase {
 }
 
 extension IterableInAppTrigger {
-    public override var description: String {
-        return "type: \(type)"
+    override public var description: String {
+        "type: \(type)"
     }
 }
 
 extension IterableHtmlInAppContent {
-    public override var description: String {
-        return IterableUtil.describe("type", type,
-                                     "edgeInsets", edgeInsets,
-                                     "backgroundAlpha", backgroundAlpha,
-                                     "html", html, pairSeparator: " = ", separator: ", ")
+    override public var description: String {
+        IterableUtil.describe("type", type,
+                              "edgeInsets", edgeInsets,
+                              "backgroundAlpha", backgroundAlpha,
+                              "html", html, pairSeparator: " = ", separator: ", ")
     }
 }
 
 extension IterableInboxMetadata {
-    public override var description: String {
-        return IterableUtil.describe("title", title ?? "nil",
-                                     "subtitle", subtitle ?? "nil",
-                                     "icon", icon ?? "nil",
-                                     pairSeparator: " = ", separator: ", ")
+    override public var description: String {
+        IterableUtil.describe("title", title ?? "nil",
+                              "subtitle", subtitle ?? "nil",
+                              "icon", icon ?? "nil",
+                              pairSeparator: " = ", separator: ", ")
     }
 }
 
 extension IterableInAppMessage {
-    public override var description: String {
-        return IterableUtil.describe("messageId", messageId,
-                                     "campaignId", campaignId ?? "nil",
-                                     "saveToInbox", saveToInbox,
-                                     "inboxMetadata", inboxMetadata ?? "nil",
-                                     "trigger", trigger,
-                                     "createdAt", createdAt ?? "nil",
-                                     "expiresAt", expiresAt ?? "nil",
-                                     "content", content,
-                                     "didProcessTrigger", didProcessTrigger,
-                                     "consumed", consumed,
-                                     "read", read,
-                                     pairSeparator: " = ", separator: "\n")
+    override public var description: String {
+        IterableUtil.describe("messageId", messageId,
+                              "campaignId", campaignId ?? "nil",
+                              "saveToInbox", saveToInbox,
+                              "inboxMetadata", inboxMetadata ?? "nil",
+                              "trigger", trigger,
+                              "createdAt", createdAt ?? "nil",
+                              "expiresAt", expiresAt ?? "nil",
+                              "content", content,
+                              "didProcessTrigger", didProcessTrigger,
+                              "consumed", consumed,
+                              "read", read,
+                              pairSeparator: " = ", separator: "\n")
     }
 }

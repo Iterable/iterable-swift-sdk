@@ -10,7 +10,6 @@ import XCTest
 class InboxTests: XCTestCase {
     override class func setUp() {
         super.setUp()
-        TestUtils.clearTestUserDefaults()
     }
     
     func testInboxOrdering() {
@@ -600,9 +599,7 @@ class InboxTests: XCTestCase {
         wait(for: [expectation3, expectation1, expectation2], timeout: testExpectationTimeout)
     }
     
-    func testLogout() {
-        TestUtils.clearTestUserDefaults()
-        
+    func testInboxLogoutClearMessageQueue() {
         let expectation1 = expectation(description: "initial messages sent")
         let expectation2 = expectation(description: "inbox change notification is fired on logout")
         
@@ -615,6 +612,7 @@ class InboxTests: XCTestCase {
             inAppFetcher: mockInAppFetcher,
             notificationCenter: mockNotificationCenter
         )
+        
         internalAPI.email = "user@example.com"
         
         let payload = """
@@ -639,6 +637,7 @@ class InboxTests: XCTestCase {
             mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) {
                 expectation2.fulfill()
             }
+            
             internalAPI.email = nil
         }
         

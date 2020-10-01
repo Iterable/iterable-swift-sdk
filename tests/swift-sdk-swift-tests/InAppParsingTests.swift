@@ -11,7 +11,6 @@ import XCTest
 class InAppParsingTests: XCTestCase {
     override class func setUp() {
         super.setUp()
-        TestUtils.clearTestUserDefaults()
     }
     
     func testGetPaddingInvalid() {
@@ -161,7 +160,7 @@ class InAppParsingTests: XCTestCase {
                                queryParams: [])
             let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMessageContext(messageId: message.messageId, userId: InAppParsingTests.userId, saveToInbox: false, silentInbox: false, location: .inApp, inBody: body)
-            TestUtils.validateDeviceInfo(inBody: body)
+            TestUtils.validateDeviceInfo(inBody: body, withDeviceId: internalAPI.deviceId)
             TestUtils.validateMatch(keyPath: KeyPath("clickedUrl"), value: buttonUrl, inDictionary: body)
             expectation1.fulfill()
         }
@@ -192,7 +191,7 @@ class InAppParsingTests: XCTestCase {
                                queryParams: [])
             let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMessageContext(messageId: message.messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: .inbox, inBody: body)
-            TestUtils.validateDeviceInfo(inBody: body)
+            TestUtils.validateDeviceInfo(inBody: body, withDeviceId: internalAPI.deviceId)
             expectation1.fulfill()
         }
         internalAPI.trackInAppOpen(message, location: .inbox)
@@ -216,7 +215,7 @@ class InAppParsingTests: XCTestCase {
             
             let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMessageContext(messageId: messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: .inbox, inBody: body)
-            TestUtils.validateDeviceInfo(inBody: body)
+            TestUtils.validateDeviceInfo(inBody: body, withDeviceId: internalAPI.deviceId)
             TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.closeAction.jsonKey)"), value: "back", inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.clickedUrl.jsonKey)"), value: "https://somewhere.com", inDictionary: body)
             
@@ -255,7 +254,7 @@ class InAppParsingTests: XCTestCase {
             
             let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMessageContext(messageId: messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: .inbox, inBody: body)
-            TestUtils.validateDeviceInfo(inBody: body)
+            TestUtils.validateDeviceInfo(inBody: body, withDeviceId: internalAPI.deviceId)
             XCTAssertNil(body[keyPath: KeyPath("\(JsonKey.closeAction.jsonKey)")])
             TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.clickedUrl.jsonKey)"), value: "https://somewhere.com", inDictionary: body)
             
@@ -294,7 +293,7 @@ class InAppParsingTests: XCTestCase {
             
             let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMessageContext(messageId: messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: nil, inBody: body)
-            TestUtils.validateDeviceInfo(inBody: body)
+            TestUtils.validateDeviceInfo(inBody: body, withDeviceId: internalAPI.deviceId)
             expectation1.fulfill()
         }
         

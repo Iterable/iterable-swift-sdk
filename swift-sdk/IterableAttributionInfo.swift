@@ -36,11 +36,11 @@ import Foundation
         try container.encode(messageId, forKey: .messageId)
     }
     
-    public override var description: String {
-        return "campaignId: \(campaignId), templateId: \(templateId), messageId: \(messageId)"
+    override public var description: String {
+        "campaignId: \(campaignId), templateId: \(templateId), messageId: \(messageId)"
     }
 }
 
 func == (lhs: IterableAttributionInfo, rhs: IterableAttributionInfo) -> Bool {
-    return lhs.campaignId == rhs.campaignId && lhs.templateId == rhs.templateId && lhs.messageId == rhs.messageId
+    lhs.campaignId == rhs.campaignId && lhs.templateId == rhs.templateId && lhs.messageId == rhs.messageId
 }

@@ -11,7 +11,6 @@ import XCTest
 class DeepLinkTests: XCTestCase {
     override func setUp() {
         super.setUp()
-        TestUtils.clearTestUserDefaults()
     }
     
     override func tearDown() {
@@ -169,6 +168,6 @@ class DeepLinkTests: XCTestCase {
     }
     
     private func createCookieValue(nameValuePairs values: Any...) -> String {
-        return values.take(2).map { "\($0[0])=\($0[1])" }.joined(separator: ";,")
+        values.take(2).map { "\($0[0])=\($0[1])" }.joined(separator: ";,")
     }
 }

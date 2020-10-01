@@ -32,7 +32,7 @@ open class IterableInboxCell: UITableViewCell {
     
     // override this to show unreadCircle color when highlighted
     // otherwise the background color is not correct.
-    open override func setHighlighted(_ highlighted: Bool, animated: Bool) {
+    override open func setHighlighted(_ highlighted: Bool, animated: Bool) {
         let color = unreadCircleView?.backgroundColor
         super.setHighlighted(highlighted, animated: animated)
         if highlighted {
@@ -48,7 +48,7 @@ open class IterableInboxCell: UITableViewCell {
     }
     
     // This constructor is used when initializing in code
-    public override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+    override public init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         doLayout()

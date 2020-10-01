@@ -61,7 +61,7 @@ class CoffeeListTableViewController: UITableViewController {
     // MARK: - TableViewDataSourceDelegate Functions
     
     override func tableView(_: UITableView, numberOfRowsInSection _: Int) -> Int {
-        return filtering ? filteredCoffees.count : coffees.count
+        filtering ? filteredCoffees.count : coffees.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {

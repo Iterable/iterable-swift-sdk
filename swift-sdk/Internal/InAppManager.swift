@@ -14,20 +14,20 @@ protocol NotificationCenterProtocol {
 
 extension NotificationCenter: NotificationCenterProtocol {}
 
-// This is internal. Do not expose
-
 protocol InAppDisplayChecker {
     func isOkToShowNow(message: IterableInAppMessage) -> Bool
 }
 
 protocol IterableInternalInAppManagerProtocol: IterableInAppManagerProtocol, InAppNotifiable, InAppDisplayChecker {
     func start() -> Future<Bool, Error>
+    
     /// This will create a ViewController which displays an inbox message.
     /// This ViewController would typically be pushed into the navigation stack.
     /// - parameter message: The message to show.
     /// - parameter inboxMode:
     /// - returns: UIViewController which displays the message.
     func createInboxMessageViewController(for message: IterableInAppMessage, withInboxMode inboxMode: IterableInboxViewController.InboxMode, inboxSessionId: String?) -> UIViewController?
+    
     /// - parameter message: The message to remove.
     /// - parameter location: The location from where this message was shown. `inbox` or `inApp`.
     /// - parameter source: The source of deletion `inboxSwipe` or `deleteButton`.`
@@ -106,11 +106,11 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     func getInboxMessages() -> [IterableInAppMessage] {
         ITBInfo()
         
-        return Array(messagesMap.values.filter { InAppManager.isValid(message: $0, currentDate: self.dateProvider.currentDate) && $0.saveToInbox == true })
+        return Array(messagesMap.values.filter { InAppManager.isValid(message: $0, currentDate: self.dateProvider.currentDate) && $0.saveToInbox })
     }
     
     func getUnreadInboxMessagesCount() -> Int {
-        return getInboxMessages().filter { $0.read == false }.count
+        getInboxMessages().filter { $0.read == false }.count
     }
     
     func show(message: IterableInAppMessage) {
@@ -155,7 +155,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     }
     
     func getMessage(withId id: String) -> IterableInAppMessage? {
-        return messagesMap[id]
+        messagesMap[id]
     }
     
     // MARK: - IterableInternalInAppManagerProtocol
@@ -230,7 +230,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     
     // messages are new messages coming from the server
     private func mergeMessages(_ messages: [IterableInAppMessage]) -> MergeMessagesResult {
-        return MessagesObtainedHandler(messagesMap: messagesMap, messages: messages).handle()
+        MessagesObtainedHandler(messagesMap: messagesMap, messages: messages).handle()
     }
     
     private func processMergedMessages(appIsReady: Bool, mergeMessagesResult: MergeMessagesResult) -> Bool {
@@ -274,7 +274,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     
     // Not a pure function.
     private func showMessage(fromMessagesProcessorResult messagesProcessorResult: MessagesProcessorResult) {
-        if case MessagesProcessorResult.show(let message, _) = messagesProcessorResult {
+        if case let MessagesProcessorResult.show(message, _) = messagesProcessorResult {
             lastDisplayTime = dateProvider.currentDate
             ITBDebug("Setting last display time: \(String(describing: lastDisplayTime))")
             
@@ -398,7 +398,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     // How long do we have to wait before showing the message
     // > 0 means wait, otherwise we are good to show
     private func getInAppShowingWaitTimeInterval() -> TimeInterval {
-        return InAppManager.getWaitTimeInterval(fromLastTime: lastDismissedTime, currentTime: dateProvider.currentDate, gap: retryInterval)
+        InAppManager.getWaitTimeInterval(fromLastTime: lastDismissedTime, currentTime: dateProvider.currentDate, gap: retryInterval)
     }
     
     // How long do we have to wait?
@@ -507,7 +507,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     }
     
     fileprivate static func isValid(message: IterableInAppMessage, currentDate: Date) -> Bool {
-        return message.consumed == false && isExpired(message: message, currentDate: currentDate) == false
+        message.consumed == false && isExpired(message: message, currentDate: currentDate) == false
     }
     
     fileprivate static func getAppIsReady(applicationStateProvider: ApplicationStateProviderProtocol,

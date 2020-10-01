@@ -9,11 +9,11 @@ import Foundation
 
 struct TestInAppPayloadGenerator {
     static func createPayloadWithUrl(numMessages: Int, triggerType: IterableInAppTriggerType = .immediate, expiresAt: Date? = nil, saveToInbox: Bool = false) -> [AnyHashable: Any] {
-        return createPayloadWithUrl(indices: 1 ... numMessages, triggerType: triggerType, expiresAt: expiresAt, saveToInbox: saveToInbox)
+        createPayloadWithUrl(indices: 1 ... numMessages, triggerType: triggerType, expiresAt: expiresAt, saveToInbox: saveToInbox)
     }
     
     static func createPayloadWithUrl<T: Sequence>(indices: T, triggerType: IterableInAppTriggerType = .immediate, expiresAt: Date? = nil, saveToInbox: Bool = false) -> [AnyHashable: Any] where T.Element == Int {
-        return [
+        [
             "inAppMessages": indices.reduce(into: [[AnyHashable: Any]]()) { result, index in
                 result.append(createOneInAppDictWithUrl(index: index, triggerType: triggerType, expiresAt: expiresAt, saveToInbox: saveToInbox))
             },
@@ -21,7 +21,7 @@ struct TestInAppPayloadGenerator {
     }
     
     static func createPayloadWithCustomAction(numMessages: Int, triggerType: IterableInAppTriggerType = .immediate, saveToInbox: Bool = false) -> [AnyHashable: Any] {
-        return [
+        [
             "inAppMessages": (1 ... numMessages).reduce(into: [[AnyHashable: Any]]()) { result, index in
                 result.append(createOneInAppDictWithCustomAction(index: index, triggerType: triggerType, saveToInbox: saveToInbox))
             },
@@ -29,39 +29,39 @@ struct TestInAppPayloadGenerator {
     }
     
     static func getMessageId(index: Int) -> String {
-        return "message\(index)"
+        "message\(index)"
     }
     
     static func getCampaignId(index: Int) -> Int {
-        return index
+        index
     }
     
     static func getClickedUrl(index: Int) -> URL {
-        return URL(string: getClickedLink(index: index))!
+        URL(string: getClickedLink(index: index))!
     }
     
     static func getCustomActionUrl(index: Int) -> URL {
-        return URL(string: "action://\(getCustomActionName(index: index))")!
+        URL(string: "action://\(getCustomActionName(index: index))")!
     }
     
     static func getCustomActionName(index: Int) -> String {
-        return "action\(index)"
+        "action\(index)"
     }
     
     static func index(fromCampaignId campaignId: NSNumber?) -> Int {
-        return (campaignId as? Int) ?? -1
+        (campaignId as? Int) ?? -1
     }
     
     static func createOneInAppDictWithUrl(index: Int, trigger: IterableInAppTrigger?, expiresAt: Date? = nil, saveToInbox: Bool = false) -> [AnyHashable: Any] {
-        return createOneInAppDict(withHref: getClickedLink(index: index), index: index, trigger: trigger, expiresAt: expiresAt, saveToInbox: saveToInbox)
+        createOneInAppDict(withHref: getClickedLink(index: index), index: index, trigger: trigger, expiresAt: expiresAt, saveToInbox: saveToInbox)
     }
     
     static func createOneInAppDictWithUrl(index: Int, triggerType: IterableInAppTriggerType, expiresAt: Date? = nil, saveToInbox: Bool = false) -> [AnyHashable: Any] {
-        return createOneInAppDict(withHref: getClickedLink(index: index), index: index, trigger: trigger(fromTriggerType: triggerType), expiresAt: expiresAt, saveToInbox: saveToInbox)
+        createOneInAppDict(withHref: getClickedLink(index: index), index: index, trigger: trigger(fromTriggerType: triggerType), expiresAt: expiresAt, saveToInbox: saveToInbox)
     }
     
     static func createOneInAppDictWithCustomAction(index: Int, triggerType: IterableInAppTriggerType, saveToInbox: Bool = false) -> [AnyHashable: Any] {
-        return createOneInAppDict(withHref: getCustomActionUrl(index: index).absoluteString, index: index, trigger: trigger(fromTriggerType: triggerType), expiresAt: nil, saveToInbox: saveToInbox)
+        createOneInAppDict(withHref: getCustomActionUrl(index: index).absoluteString, index: index, trigger: trigger(fromTriggerType: triggerType), expiresAt: nil, saveToInbox: saveToInbox)
     }
     
     private static func createOneInAppDict(withHref href: String, index: Int, trigger: IterableInAppTrigger?, expiresAt: Date?, saveToInbox: Bool = false) -> [AnyHashable: Any] {
@@ -99,10 +99,10 @@ struct TestInAppPayloadGenerator {
     }
     
     private static func trigger(fromTriggerType triggerType: IterableInAppTriggerType) -> IterableInAppTrigger {
-        return IterableInAppTrigger(dict: ["type": String(describing: triggerType)])
+        IterableInAppTrigger(dict: ["type": String(describing: triggerType)])
     }
     
     private static func getClickedLink(index: Int) -> String {
-        return "https://www.site\(index).com"
+        "https://www.site\(index).com"
     }
 }

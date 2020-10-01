@@ -38,7 +38,7 @@ class RequestCreatorTests: XCTestCase {
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.endTotalMessageCount), value: inboxSession.endTotalMessageCount, inDictionary: body)
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.endUnreadMessageCount), value: inboxSession.endUnreadMessageCount, inDictionary: body)
         
-        TestUtils.validateDeviceInfo(inBody: body)
+        TestUtils.validateDeviceInfo(inBody: body, withDeviceId: deviceMetadata.deviceId)
         
         validateImpressions(impressions, inBody: body)
     }
@@ -149,8 +149,8 @@ class RequestCreatorTests: XCTestCase {
     }
     
     func testGetInAppMessagesRequestFailure() {
-        let auth = Auth(userId: nil, email: nil)
-        let requestCreator = RequestCreator(apiKey: apiKey, auth: auth, deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata)
+        let auth = Auth(userId: nil, email: nil, authToken: nil)
+        let requestCreator = RequestCreator(apiKey: apiKey, auth: auth, deviceMetadata: deviceMetadata)
         
         let failingRequest = requestCreator.createGetInAppMessagesRequest(1)
         
@@ -205,7 +205,7 @@ class RequestCreatorTests: XCTestCase {
         let body = request.bodyDict
         TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body)
         TestUtils.validateMatch(keyPath: KeyPath(.messageId), value: messageId, inDictionary: body)
-        TestUtils.validateDeviceInfo(inBody: body)
+        TestUtils.validateDeviceInfo(inBody: body, withDeviceId: deviceMetadata.deviceId)
     }
     
     func testTrackInAppConsumeRequest() {
@@ -288,24 +288,24 @@ class RequestCreatorTests: XCTestCase {
     }
     
     private func createRequestCreator() -> RequestCreator {
-        return RequestCreator(apiKey: apiKey, auth: auth, deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata)
+        RequestCreator(apiKey: apiKey, auth: auth, deviceMetadata: deviceMetadata)
     }
     
     private func createApiClient(networkSession: NetworkSessionProtocol) -> ApiClient {
-        return ApiClient(apiKey: apiKey,
-                         authProvider: self,
-                         endPoint: Endpoint.api,
-                         networkSession: networkSession,
-                         deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata)
+        ApiClient(apiKey: apiKey,
+                  authProvider: self,
+                  endPoint: Endpoint.api,
+                  networkSession: networkSession,
+                  deviceMetadata: deviceMetadata)
     }
     
     private func getEmptyInAppContent() -> IterableHtmlInAppContent {
-        return IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
+        IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
     }
 }
 
 extension RequestCreatorTests: AuthProvider {
     var auth: Auth {
-        return Auth(userId: nil, email: email)
+        Auth(userId: nil, email: email, authToken: nil)
     }
 }

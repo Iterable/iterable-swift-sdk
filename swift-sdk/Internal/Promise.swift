@@ -49,7 +49,7 @@ class Future<Value, Failure> where Failure: Error {
     }
     
     public func isResolved() -> Bool {
-        return result != nil
+        result != nil
     }
     
     public func wait() {

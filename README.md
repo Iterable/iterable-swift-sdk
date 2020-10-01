@@ -1,4 +1,4 @@
-![Iterable logo](./images/Iterable-Logo.png "Iterable Logo")
+![Iterable logo](https://raw.githubusercontent.com/Iterable/swift-sdk/master/images/Iterable-Logo.png "Iterable Logo")
 
 [![License](https://img.shields.io/github/license/Iterable/swift-sdk)](https://opensource.org/licenses/MIT)
 [![Build Status](https://travis-ci.com/Iterable/swift-sdk.svg?branch=master)](https://travis-ci.com/Iterable/swift-sdk)
@@ -52,8 +52,9 @@ Release notes:
 
 Support policies:
 
-- Iterable's [Mobile SDK Support Policy](https://support.iterable.com/hc/articles/360027798391#mobile-sdk-support-policy)
-- Iterable's [iOS SDK Deprecation and End-of-Life Schedule](https://support.iterable.com/hc/articles/360027798391#ios-sdk-deprecation-and-end-of-life-schedule)
+- Iterable's [Mobile SDK Support Policy](https://support.iterable.com/hc/articles/360046136171)
+- Iterable's [iOS SDK Deprecation and End-of-Life Schedule](https://support.iterable.com/hc/articles/360027798391#deprecation-and-end-of-life-schedule)
+- Iterable's [Beta Mobile SDK Disclaimer](https://support.iterable.com/hc/articles/360034753412)
 
 Troubleshooting:
 
@@ -65,7 +66,7 @@ Please contact your customer success manager with any questions.
 
 ## License
 
-This SDK is released under the MIT License. See [LICENSE](https://github.com/Iterable/swift-sdk/blob/master/LICENSE?raw=true)
+This SDK is released under the MIT License. See [LICENSE](https://github.com/Iterable/swift-sdk/blob/master/LICENSE.md)
 for more information.
 
 ## Want to contribute?

@@ -64,20 +64,20 @@ struct InAppMessageContext {
     var inboxSessionId: String?
     
     static func from(message: IterableInAppMessage, location: InAppLocation?, inboxSessionId: String? = nil) -> InAppMessageContext {
-        return InAppMessageContext(messageId: message.messageId,
-                                   saveToInbox: message.saveToInbox,
-                                   silentInbox: message.silentInbox,
-                                   location: location,
-                                   inboxSessionId: inboxSessionId)
+        InAppMessageContext(messageId: message.messageId,
+                            saveToInbox: message.saveToInbox,
+                            silentInbox: message.silentInbox,
+                            location: location,
+                            inboxSessionId: inboxSessionId)
     }
     
     /// For backward compatibility, assume .inApp
     static func from(messageId: String, deviceMetadata _: DeviceMetadata) -> InAppMessageContext {
-        return InAppMessageContext(messageId: messageId,
-                                   saveToInbox: false,
-                                   silentInbox: false,
-                                   location: .inApp,
-                                   inboxSessionId: nil)
+        InAppMessageContext(messageId: messageId,
+                            saveToInbox: false,
+                            silentInbox: false,
+                            location: .inApp,
+                            inboxSessionId: nil)
     }
     
     func toMessageContextDictionary() -> [AnyHashable: Any] {

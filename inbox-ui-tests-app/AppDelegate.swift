@@ -11,7 +11,7 @@ import UserNotifications
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     static var sharedInstance: AppDelegate {
-        return UIApplication.shared.delegate as! AppDelegate
+        UIApplication.shared.delegate as! AppDelegate
     }
     
     var window: UIWindow?
@@ -33,10 +33,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let config = IterableConfig()
         config.customActionDelegate = self
         config.urlDelegate = self
-        TestHelper.getTestUserDefaults().set("user1@example.com", forKey: Const.UserDefaults.emailKey)
-        
+        let localStorage = MockLocalStorage()
+        localStorage.email = "user1@example.com"
         IterableAPI.initializeForTesting(config: config,
                                          networkSession: mockNetworkSession,
+                                         localStorage: localStorage,
                                          inAppFetcher: mockInAppFetcher,
                                          urlOpener: AppUrlOpener())
         

@@ -30,11 +30,12 @@ class AppUrlOpener: UrlOpenerProtocol {
 
 struct IterableActionRunner {
     // returns true if an action is performed either by us or by the calling app.
-    @discardableResult static func execute(action: IterableAction,
-                                           context: IterableActionContext,
-                                           urlHandler: UrlHandler? = nil,
-                                           customActionHandler: CustomActionHandler? = nil,
-                                           urlOpener: UrlOpenerProtocol? = nil) -> Bool {
+    @discardableResult
+    static func execute(action: IterableAction,
+                        context: IterableActionContext,
+                        urlHandler: UrlHandler? = nil,
+                        customActionHandler: CustomActionHandler? = nil,
+                        urlOpener: UrlOpenerProtocol? = nil) -> Bool {
         let handled = callExternalHandlers(action: action,
                                            from: context.source,
                                            urlHandler: urlHandler,
@@ -51,6 +52,8 @@ struct IterableActionRunner {
             }
         }
     }
+    
+    // MARK: - Private
     
     // return true if the action is handled by the calling app either by opening a url or performing a custom action.
     private static func callExternalHandlers(action: IterableAction,
@@ -75,8 +78,6 @@ struct IterableActionRunner {
             }
         }
     }
-    
-    // MARK: Private
     
     private static func shouldOpenUrl(url: URL, from source: IterableActionSource) -> Bool {
         if source == .push || source == .inApp, let scheme = url.scheme, scheme == "http" || scheme == "https" {

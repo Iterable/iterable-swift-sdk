@@ -59,15 +59,15 @@ public protocol NotificationResponseProtocol {
 @available(iOS 10.0, *)
 struct UserNotificationResponse: NotificationResponseProtocol {
     var userInfo: [AnyHashable: Any] {
-        return response.notification.request.content.userInfo
+        response.notification.request.content.userInfo
     }
     
     var actionIdentifier: String {
-        return response.actionIdentifier
+        response.actionIdentifier
     }
     
     var textInputResponse: UNTextInputNotificationResponse? {
-        return response as? UNTextInputNotificationResponse
+        response as? UNTextInputNotificationResponse
     }
     
     private let response: UNNotificationResponse
@@ -88,7 +88,7 @@ public protocol PushTrackerProtocol: AnyObject {
     
     func trackPushOpen(_ campaignId: NSNumber,
                        templateId: NSNumber?,
-                       messageId: String?,
+                       messageId: String,
                        appAlreadyRunning: Bool,
                        dataFields: [AnyHashable: Any]?,
                        onSuccess: OnSuccessHandler?,
@@ -100,13 +100,13 @@ extension PushTrackerProtocol {
                        dataFields: [AnyHashable: Any]? = nil) {
         trackPushOpen(userInfo,
                       dataFields: dataFields,
-                      onSuccess: IterableAPIInternal.defaultOnSuccess(identifier: "trackPushOpen"),
-                      onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPushOpen"))
+                      onSuccess: IterableAPIInternal.defaultOnSuccess("trackPushOpen"),
+                      onFailure: IterableAPIInternal.defaultOnFailure("trackPushOpen"))
     }
     
     func trackPushOpen(_ campaignId: NSNumber,
                        templateId: NSNumber? = nil,
-                       messageId: String? = nil,
+                       messageId: String,
                        appAlreadyRunning: Bool = false,
                        dataFields: [AnyHashable: Any]? = nil) {
         trackPushOpen(campaignId,
@@ -114,8 +114,8 @@ extension PushTrackerProtocol {
                       messageId: messageId,
                       appAlreadyRunning: appAlreadyRunning,
                       dataFields: dataFields,
-                      onSuccess: IterableAPIInternal.defaultOnSuccess(identifier: "trackPushOpen"),
-                      onFailure: IterableAPIInternal.defaultOnFailure(identifier: "trackPushOpen"))
+                      onSuccess: IterableAPIInternal.defaultOnSuccess("trackPushOpen"),
+                      onFailure: IterableAPIInternal.defaultOnFailure("trackPushOpen"))
     }
 }
 
@@ -321,6 +321,7 @@ struct IterableAppIntegrationInternal {
         // Execute the action
         if let action = IterableAppIntegrationInternal.createDefaultAction(userInfo: userInfo, iterableElement: itbl) {
             let context = IterableActionContext(action: action, source: .push)
+            
             IterableActionRunner.execute(action: action,
                                          context: context,
                                          urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate, inContext: context),
@@ -360,8 +361,8 @@ struct IterableAppIntegrationInternal {
     private static func legacyDefaultActionFromPayload(userInfo: [AnyHashable: Any]) -> IterableAction? {
         if let deepLinkUrl = userInfo[JsonKey.url.jsonKey] as? String {
             return IterableAction.actionOpenUrl(fromUrlString: deepLinkUrl)
-        } else {
-            return nil
         }
+        
+        return nil
     }
 }

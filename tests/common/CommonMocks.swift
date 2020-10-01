@@ -20,14 +20,14 @@ struct MockNotificationResponse: NotificationResponseProtocol {
     }
     
     var textInputResponse: UNTextInputNotificationResponse? {
-        return nil
+        nil
     }
 }
 
 @objcMembers
 public class MockUrlDelegate: NSObject, IterableURLDelegate {
     // returnValue = true if we handle the url, else false
-    private convenience override init() {
+    override private convenience init() {
         self.init(returnValue: false)
     }
     
@@ -51,7 +51,7 @@ public class MockUrlDelegate: NSObject, IterableURLDelegate {
 @objcMembers
 public class MockCustomActionDelegate: NSObject, IterableCustomActionDelegate {
     // returnValue is reserved for future, don't rely on this
-    private convenience override init() {
+    override private convenience init() {
         self.init(returnValue: false)
     }
     
@@ -116,7 +116,7 @@ public class MockPushTracker: NSObject, PushTrackerProtocol {
         }
     }
     
-    public func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String?, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    public func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
         self.campaignId = campaignId
         self.templateId = templateId
         self.messageId = messageId
@@ -128,7 +128,7 @@ public class MockPushTracker: NSObject, PushTrackerProtocol {
 }
 
 @objc public class MockApplicationStateProvider: NSObject, ApplicationStateProviderProtocol {
-    private convenience override init() {
+    override private convenience init() {
         self.init(applicationState: .active)
     }
     
@@ -195,11 +195,11 @@ class MockNetworkSession: NetworkSessionProtocol {
     }
     
     func getRequestBody() -> [AnyHashable: Any] {
-        return MockNetworkSession.json(fromData: request!.httpBody!)
+        MockNetworkSession.json(fromData: request!.httpBody!)
     }
     
     static func json(fromData data: Data) -> [AnyHashable: Any] {
-        return try! JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
+        try! JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
     }
     
     private func data(for urlAbsoluteString: String?) -> Data? {
@@ -296,7 +296,7 @@ class MockInAppDisplayer: InAppDisplayerProtocol {
     var onShow: Promise<IterableInAppMessage, IterableError> = Promise<IterableInAppMessage, IterableError>()
     
     func isShowingInApp() -> Bool {
-        return showing
+        showing
     }
     
     // This is not resolved until a url is clicked.
@@ -389,7 +389,7 @@ class MockInAppPesister: InAppPersistenceProtocol {
     private var messages = [IterableInAppMessage]()
     
     func getMessages() -> [IterableInAppMessage] {
-        return messages
+        messages
     }
     
     func persist(_ messages: [IterableInAppMessage]) {
@@ -413,7 +413,7 @@ class MockWebView: WebViewProtocol {
     let view: UIView = UIView()
     
     func loadHTMLString(_: String, baseURL _: URL?) -> WKNavigation? {
-        return nil
+        nil
     }
     
     func set(position: ViewPosition) {
@@ -432,7 +432,7 @@ class MockWebView: WebViewProtocol {
     func layoutSubviews() {}
     
     func calculateHeight() -> Future<CGFloat, IterableError> {
-        return Promise<CGFloat, IterableError>(value: height)
+        Promise<CGFloat, IterableError>(value: height)
     }
     
     var position: ViewPosition?
@@ -446,4 +446,63 @@ class MockWebView: WebViewProtocol {
 
 struct MockInjectedDependencyModule {
     let webView: WebViewProtocol
+}
+
+class MockLocalStorage: LocalStorageProtocol {
+    var userId: String? = nil
+    
+    var email: String? = nil
+    
+    var authToken: String? = nil
+    
+    var ddlChecked: Bool = false
+    
+    var deviceId: String? = nil
+    
+    var sdkVersion: String? = nil
+    
+    func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
+        guard !MockLocalStorage.isExpired(expiration: attributionInfoExpiration, currentDate: currentDate) else {
+            return nil
+        }
+        return attributionInfo
+    }
+    
+    func save(attributionInfo: IterableAttributionInfo?, withExpiration expiration: Date?) {
+        self.attributionInfo = attributionInfo
+        attributionInfoExpiration = expiration
+    }
+    
+    func getPayload(currentDate: Date) -> [AnyHashable : Any]? {
+        guard !MockLocalStorage.isExpired(expiration: payloadExpiration, currentDate: currentDate) else {
+            return nil
+        }
+        return payload
+    }
+    
+    func save(payload: [AnyHashable : Any]?, withExpiration: Date?) {
+        self.payload = payload
+        payloadExpiration = withExpiration
+    }
+    
+    private var payload: [AnyHashable: Any]? = nil
+    private var payloadExpiration: Date? = nil
+    
+    private var attributionInfo: IterableAttributionInfo? = nil
+    private var attributionInfoExpiration: Date? = nil
+    
+    private static func isExpired(expiration: Date?, currentDate: Date) -> Bool {
+        if let expiration = expiration {
+            if expiration.timeIntervalSinceReferenceDate > currentDate.timeIntervalSinceReferenceDate {
+                // expiration is later
+                return false
+            } else {
+                // expired
+                return true
+            }
+        } else {
+            // no expiration
+            return false
+        }
+    }
 }

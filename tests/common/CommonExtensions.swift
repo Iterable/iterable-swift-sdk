@@ -11,17 +11,17 @@ import WebKit
 
 extension String {
     func toJsonDict() -> [AnyHashable: Any] {
-        return try! JSONSerialization.jsonObject(with: data(using: .utf8)!, options: []) as! [AnyHashable: Any]
+        try! JSONSerialization.jsonObject(with: data(using: .utf8)!, options: []) as! [AnyHashable: Any]
     }
 }
 
 extension Dictionary where Key == AnyHashable {
     func toJsonData() -> Data {
-        return try! JSONSerialization.data(withJSONObject: self, options: [])
+        try! JSONSerialization.data(withJSONObject: self, options: [])
     }
     
     func toJsonString() -> String {
-        return String(data: toJsonData(), encoding: .utf8)!
+        String(data: toJsonData(), encoding: .utf8)!
     }
 }
 
@@ -107,7 +107,7 @@ class MockDependencyContainer: DependencyContainerProtocol {
     }
     
     func createInAppFetcher(apiClient _: ApiClientProtocol) -> InAppFetcherProtocol {
-        return inAppFetcher
+        inAppFetcher
     }
 }
 
@@ -119,6 +119,7 @@ extension IterableAPI {
                                      dateProvider: DateProviderProtocol = SystemDateProvider(),
                                      networkSession: NetworkSessionProtocol = MockNetworkSession(),
                                      notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
+                                     localStorage: LocalStorageProtocol = MockLocalStorage(),
                                      inAppFetcher: InAppFetcherProtocol = MockInAppFetcher(),
                                      inAppDisplayer: InAppDisplayerProtocol = MockInAppDisplayer(),
                                      inAppPersister: InAppPersistenceProtocol = MockInAppPesister(),
@@ -129,7 +130,7 @@ extension IterableAPI {
         let mockDependencyContainer = MockDependencyContainer(dateProvider: dateProvider,
                                                               networkSession: networkSession,
                                                               notificationStateProvider: notificationStateProvider,
-                                                              localStorage: UserDefaultsLocalStorage(userDefaults: TestHelper.getTestUserDefaults()),
+                                                              localStorage: localStorage,
                                                               inAppFetcher: inAppFetcher,
                                                               inAppDisplayer: inAppDisplayer,
                                                               inAppPersister: inAppPersister,
@@ -155,6 +156,7 @@ extension IterableAPIInternal {
                                                         dateProvider: DateProviderProtocol = SystemDateProvider(),
                                                         networkSession: NetworkSessionProtocol = MockNetworkSession(),
                                                         notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
+                                                        localStorage: LocalStorageProtocol = MockLocalStorage(),
                                                         inAppFetcher: InAppFetcherProtocol = MockInAppFetcher(),
                                                         inAppDisplayer: InAppDisplayerProtocol = MockInAppDisplayer(),
                                                         inAppPersister: InAppPersistenceProtocol = MockInAppPesister(),
@@ -165,7 +167,7 @@ extension IterableAPIInternal {
         let mockDependencyContainer = MockDependencyContainer(dateProvider: dateProvider,
                                                               networkSession: networkSession,
                                                               notificationStateProvider: notificationStateProvider,
-                                                              localStorage: UserDefaultsLocalStorage(userDefaults: TestHelper.getTestUserDefaults()),
+                                                              localStorage: localStorage,
                                                               inAppFetcher: inAppFetcher,
                                                               inAppDisplayer: inAppDisplayer,
                                                               inAppPersister: inAppPersister,

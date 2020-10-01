@@ -11,11 +11,10 @@ import XCTest
 class IterableAPITests: XCTestCase {
     private static let apiKey = "zeeApiKey"
     private static let email = "user@example.com"
+    private static let userId = "testUserId"
     
     override func setUp() {
         super.setUp()
-        
-        TestUtils.clearTestUserDefaults()
     }
     
     func testInitialize() {
@@ -170,16 +169,19 @@ class IterableAPITests: XCTestCase {
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
     
-    func testEmailUserIdPersistence() {
+    func testEmailPersistence() {
         let internalAPI = IterableAPIInternal.initializeForTesting()
         
         internalAPI.email = IterableAPITests.email
         XCTAssertEqual(internalAPI.email, IterableAPITests.email)
         XCTAssertNil(internalAPI.userId)
+    }
+    
+    func testUserIdPersistence() {
+        let internalAPI = IterableAPIInternal.initializeForTesting()
         
-        let userId = "testUserId"
-        internalAPI.userId = userId
-        XCTAssertEqual(internalAPI.userId, userId)
+        internalAPI.userId = IterableAPITests.userId
+        XCTAssertEqual(internalAPI.userId, IterableAPITests.userId)
         XCTAssertNil(internalAPI.email)
     }
     
@@ -306,17 +308,20 @@ class IterableAPITests: XCTestCase {
     func testRegisterTokenNilAppName() {
         let expectation = XCTestExpectation(description: "testRegisterToken")
         
-        let networkSession = MockNetworkSession(statusCode: 200)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
+        let config = IterableConfig()
+        config.pushIntegrationName = nil
+        config.sandboxPushIntegrationName = nil
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey,
+                                                                   config: config,
+                                                                   networkSession: MockNetworkSession(statusCode: 200))
         
         internalAPI.register(token: "zeeToken".data(using: .utf8)!, onSuccess: { _ in
             XCTFail("did not expect success here")
         }) { _, _ in
-            // failure
             expectation.fulfill()
         }
         
-        // only wait for small time, supposed to error out
         wait(for: [expectation], timeout: testExpectationTimeoutForInverted)
     }
     
@@ -333,11 +338,9 @@ class IterableAPITests: XCTestCase {
         internalAPI.register(token: "zeeToken".data(using: .utf8)!, onSuccess: { _ in
             XCTFail("did not expect success here")
         }) { _, _ in
-            // failure
             expectation.fulfill()
         }
         
-        // only wait for small time, supposed to error out
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
     
@@ -752,7 +755,7 @@ class IterableAPITests: XCTestCase {
             let body = networkSession.getRequestBody() as! [String: Any]
             
             TestUtils.validateMessageContext(messageId: messageId, email: IterableAPITests.email, saveToInbox: true, silentInbox: true, location: .inbox, inBody: body)
-            TestUtils.validateDeviceInfo(inBody: body)
+            TestUtils.validateDeviceInfo(inBody: body, withDeviceId: internalAPI.deviceId)
             TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.deleteAction.jsonKey)"), value: InAppDeleteSource.deleteButton.jsonValue as! String, inDictionary: body)
             
             expectation1.fulfill()
@@ -776,7 +779,7 @@ class IterableAPITests: XCTestCase {
     func testUpdateSubscriptions() {
         let expectation1 = expectation(description: "update subscriptions")
         let emailListIds = [NSNumber(value: 382)]
-        let unsubscriptedChannelIds = [NSNumber(value: 7845), NSNumber(value: 1048)]
+        let unsubscibedChannelIds = [NSNumber(value: 7845), NSNumber(value: 1048)]
         let unsubscribedMessageTypeIds = [NSNumber(value: 5671), NSNumber(value: 9087)]
         let campaignId = NSNumber(value: 23)
         let templateId = NSNumber(value: 10)
@@ -791,7 +794,7 @@ class IterableAPITests: XCTestCase {
             
             let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMatch(keyPath: KeyPath(JsonKey.emailListIds.jsonKey), value: emailListIds, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath(JsonKey.unsubscribedChannelIds.jsonKey), value: unsubscriptedChannelIds, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(JsonKey.unsubscribedChannelIds.jsonKey), value: unsubscibedChannelIds, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(JsonKey.unsubscribedMessageTypeIds.jsonKey), value: unsubscribedMessageTypeIds, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(JsonKey.campaignId.jsonKey), value: campaignId, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(JsonKey.templateId.jsonKey), value: templateId, inDictionary: body)
@@ -799,10 +802,14 @@ class IterableAPITests: XCTestCase {
         }
         
         let config = IterableConfig()
-        TestUtils.getTestUserDefaults().set("user1@example.com", forKey: Const.UserDefaults.emailKey)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
+        let localStorage = MockLocalStorage()
+        localStorage.email = "user1@example.com"
+        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey,
+                                                                   config: config,
+                                                                   networkSession: networkSession,
+                                                                   localStorage: localStorage)
         internalAPI.updateSubscriptions(emailListIds,
-                                        unsubscribedChannelIds: unsubscriptedChannelIds,
+                                        unsubscribedChannelIds: unsubscibedChannelIds,
                                         unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
                                         subscribedMessageTypeIds: nil,
                                         campaignId: campaignId,

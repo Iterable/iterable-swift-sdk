@@ -8,18 +8,18 @@ import UIKit
 /**
  `CommerceItem` represents a product. These are used by the commerce API; see [IterableAPI trackPurchase:items:dataFields:]
  */
-@objc public class CommerceItem: NSObject {
+@objcMembers public class CommerceItem: NSObject {
     /** id of this product */
-    @objc public var id: String
+    public var id: String
     
     /** name of this product */
-    @objc public var name: String
+    public var name: String
     
     /** price of this product */
-    @objc public var price: NSNumber
+    public var price: NSNumber
     
     /** quantity of this product */
-    @objc public var quantity: UInt
+    public var quantity: UInt
     
     /**
      Creates a `CommerceItem` with the specified properties
@@ -32,7 +32,7 @@ import UIKit
      
      - returns: an instance of `CommerceItem` with the specified properties
      */
-    @objc public init(id: String, name: String, price: NSNumber, quantity: UInt) {
+    public init(id: String, name: String, price: NSNumber, quantity: UInt) {
         self.id = id
         self.name = name
         self.price = price
@@ -44,10 +44,10 @@ import UIKit
      
      - returns: An NSDictionary representing this item
      */
-    @objc public func toDictionary() -> [AnyHashable: Any] {
-        return ["id": id,
-                "name": name,
-                "price": price,
-                "quantity": quantity]
+    public func toDictionary() -> [AnyHashable: Any] {
+        ["id": id,
+         "name": name,
+         "price": price,
+         "quantity": quantity]
     }
 }

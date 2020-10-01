@@ -17,7 +17,7 @@ class IterableDeepLinkManager: NSObject {
     
     // deprecated - will be removed in version 6.3.x or above
     func getAndTrack(deepLink: URL, callbackBlock: @escaping ITEActionBlock) -> Future<IterableAttributionInfo?, Error> {
-        return resolve(appLinkURL: deepLink).map { resolvedURL, attributionInfo in
+        resolve(appLinkURL: deepLink).map { resolvedURL, attributionInfo in
             callbackBlock(resolvedURL?.absoluteString)
             return attributionInfo
         }
@@ -39,11 +39,14 @@ class IterableDeepLinkManager: NSObject {
                 
                 if let action = IterableAction.actionOpenUrl(fromUrlString: resolvedUrlString) {
                     let context = IterableActionContext(action: action, source: .universalLink)
+                    
                     IterableActionRunner.execute(action: action,
                                                  context: context,
-                                                 urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate, inContext: context),
+                                                 urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate,
+                                                                                     inContext: context),
                                                  urlOpener: urlOpener)
                 }
+                
                 return attributionInfo
             }
             
@@ -52,10 +55,13 @@ class IterableDeepLinkManager: NSObject {
         } else {
             if let action = IterableAction.actionOpenUrl(fromUrlString: url.absoluteString) {
                 let context = IterableActionContext(action: action, source: .universalLink)
+                
                 let result = IterableActionRunner.execute(action: action,
                                                           context: context,
-                                                          urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate, inContext: context),
+                                                          urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate,
+                                                                                              inContext: context),
                                                           urlOpener: urlOpener)
+                
                 return (result, Promise<IterableAttributionInfo?, Error>(value: nil))
             } else {
                 return (false, Promise<IterableAttributionInfo?, Error>(value: nil))
@@ -124,7 +130,11 @@ extension IterableDeepLinkManager: URLSessionDelegate, URLSessionTaskDelegate {
         - request: the request
         - completionHandler: the completionHandler
      */
-    public func urlSession(_: URLSession, task _: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) {
+    public func urlSession(_: URLSession,
+                           task _: URLSessionTask,
+                           willPerformHTTPRedirection response: HTTPURLResponse,
+                           newRequest request: URLRequest,
+                           completionHandler: @escaping (URLRequest?) -> Void) {
         deepLinkLocation = request.url
         
         guard let headerFields = response.allHeaderFields as? [String: String] else {
@@ -151,8 +161,8 @@ extension IterableDeepLinkManager: URLSessionDelegate, URLSessionTaskDelegate {
     private func number(fromString str: String) -> NSNumber {
         if let intValue = Int(str) {
             return NSNumber(value: intValue)
-        } else {
-            return NSNumber(value: 0)
         }
+        
+        return NSNumber(value: 0)
     }
 }

@@ -106,22 +106,14 @@ struct TestUtils {
         }
     }
     
-    static func validateDeviceInfo(inBody body: [String: Any]) {
-        validateMatch(keyPath: KeyPath(.deviceInfo, .deviceId), value: IterableAPIInternal.initializeForTesting().deviceId, inDictionary: body)
+    static func validateDeviceInfo(inBody body: [String: Any], withDeviceId deviceId: String) {
+        validateMatch(keyPath: KeyPath(.deviceInfo, .deviceId), value: deviceId, inDictionary: body)
         validateMatch(keyPath: KeyPath(.deviceInfo, .platform), value: JsonValue.iOS.jsonStringValue, inDictionary: body)
         validateMatch(keyPath: KeyPath(.deviceInfo, .appPackageName), value: Bundle.main.appPackageName, inDictionary: body)
     }
-    
-    static func getTestUserDefaults() -> UserDefaults {
-        return TestHelper.getTestUserDefaults()
-    }
-    
-    static func clearTestUserDefaults() {
-        return TestHelper.clearTestUserDefaults()
-    }
-    
+
     static func areEqual(dict1: [AnyHashable: Any], dict2: [AnyHashable: Any]) -> Bool {
-        return NSDictionary(dictionary: dict1).isEqual(to: dict2)
+        NSDictionary(dictionary: dict1).isEqual(to: dict2)
     }
     
     static func validateEqual(date1: Date?, date2: Date?) {
@@ -154,7 +146,7 @@ struct TestUtils {
     }
     
     private static func findQueryItem(inUrlComponents urlComponents: URLComponents, withName name: String) -> URLQueryItem {
-        return urlComponents.queryItems!.first { (queryItem) -> Bool in
+        urlComponents.queryItems!.first { (queryItem) -> Bool in
             queryItem.name == name
         }!
     }
@@ -176,7 +168,7 @@ struct KeyPath {
     }
     
     var isEmpty: Bool {
-        return segments.isEmpty
+        segments.isEmpty
     }
     
     func firstAndRest() -> (String, KeyPath)? {
@@ -224,6 +216,6 @@ extension Dictionary where Key: StringKey {
 
 public extension URLRequest {
     var bodyDict: [String: Any] {
-        return try! JSONSerialization.jsonObject(with: httpBody!, options: []) as! [String: Any]
+        try! JSONSerialization.jsonObject(with: httpBody!, options: []) as! [String: Any]
     }
 }

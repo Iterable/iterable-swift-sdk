@@ -1,0 +1,68 @@
+version: "2"
+exclude_patterns:
+  - ".*/"
+  - "build/"
+  - "host-app/"
+  - "images/"
+  - "inbox-ui-tests-app/"
+  - "sample-apps/"
+  - "scripts/"
+  - "swift-sdk/Resources/"
+  - "swift-sdk/Internal/Dwifft"
+  - "tests/"
+  - "ui-tests-app/"
+  - "**/.*"
+  - "**/*.h"
+  - "**/*.md"
+  - "**/*.plist"
+  - "**/*.podspec"
+  - "**/*.xcodeproj"
+  - "**/*.yml"
+  - "Package.swift"
+plugins:
+  tailor:
+    enabled: true
+    checks:
+      trailing-whitespace:
+        enabled: false
+checks:
+  argument-count:
+    enabled: true
+    config:
+      threshold: 4
+  complex-logic:
+    enabled: true
+    config:
+      threshold: 4
+  file-lines:
+    enabled: true
+    config:
+      threshold: 250
+  method-complexity:
+    enabled: true
+    config:
+      threshold: 5
+  method-count:
+    enabled: true
+    config:
+      threshold: 20
+  method-lines:
+    enabled: true
+    config:
+      threshold: 25
+  nested-control-flow:
+    enabled: true
+    config:
+      threshold: 4
+  return-statements:
+    enabled: true
+    config:
+      threshold: 4
+  similar-code:
+    enabled: true
+    config:
+      threshold: 40
+  identical-code:
+    enabled: true
+    config:
+      threshold: 40

@@ -15,10 +15,10 @@ enum NotificationInfo {
 struct IterablePushNotificationMetadata {
     let campaignId: NSNumber
     let templateId: NSNumber?
-    let messageId: String?
+    let messageId: String
     let isGhostPush: Bool
     
-    init(campaignId: NSNumber, templateId: NSNumber?, messageId: String?, isGhostPush: Bool) {
+    init(campaignId: NSNumber, templateId: NSNumber?, messageId: String, isGhostPush: Bool) {
         self.campaignId = campaignId
         self.templateId = templateId
         self.messageId = messageId
@@ -26,19 +26,19 @@ struct IterablePushNotificationMetadata {
     }
     
     static func metadata(fromLaunchOptions userInfo: [AnyHashable: Any]) -> IterablePushNotificationMetadata? {
-        return IterablePushNotificationMetadata(fromLaunchOptions: userInfo)
+        IterablePushNotificationMetadata(fromLaunchOptions: userInfo)
     }
     
     func isRealCampaignNotification() -> Bool {
-        return !(isGhostPush || isProof() || isTestPush())
+        !(isGhostPush || isProof() || isTestPush())
     }
     
     func isProof() -> Bool {
-        return campaignId.intValue == 0 && templateId?.intValue != 0
+        campaignId.intValue == 0 && templateId?.intValue != 0
     }
     
     func isTestPush() -> Bool {
-        return campaignId.intValue == 0 && templateId?.intValue == 0
+        campaignId.intValue == 0 && templateId?.intValue == 0
     }
     
     private init?(fromLaunchOptions userInfo: [AnyHashable: Any]) {
@@ -49,15 +49,21 @@ struct IterablePushNotificationMetadata {
         }
     }
     
-    fileprivate static func parse(itblElement: [AnyHashable: Any], isGhostPush: Bool) -> IterablePushNotificationMetadata? {
+    fileprivate static func parse(itblElement: [AnyHashable: Any],
+                                  isGhostPush: Bool) -> IterablePushNotificationMetadata? {
         guard isValidCampaignId(itblElement[Keys.campaignId.rawValue]) else {
             return nil
         }
+        
         guard let templateId = itblElement[Keys.templateId.rawValue] as? NSNumber else {
             return nil
         }
+        
+        guard let messageId = itblElement[Keys.messageId.rawValue] as? String else {
+            return nil
+        }
+        
         let campaignId = itblElement[Keys.campaignId.rawValue] as? NSNumber ?? NSNumber(value: 0)
-        let messageId = itblElement[Keys.messageId.rawValue] as? String
         
         return IterablePushNotificationMetadata(campaignId: campaignId,
                                                 templateId: templateId,
@@ -116,7 +122,7 @@ struct NotificationHelper {
             return .other
         }
         
-        if isGhostPush == true {
+        if isGhostPush {
             if let silentPush = ITBLSilentPushNotificationInfo.parse(notification: notification) {
                 return .silentPush(silentPush)
             } else {

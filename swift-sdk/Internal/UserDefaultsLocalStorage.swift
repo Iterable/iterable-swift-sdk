@@ -12,7 +12,7 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
     
     var userId: String? {
         get {
-            return string(withKey: .userId)
+            string(withKey: .userId)
         } set {
             save(string: newValue, withKey: .userId)
         }
@@ -20,15 +20,23 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
     
     var email: String? {
         get {
-            return string(withKey: .email)
+            string(withKey: .email)
         } set {
             save(string: newValue, withKey: .email)
         }
     }
     
+    var authToken: String? {
+        get {
+            string(withKey: .authToken)
+        } set {
+            save(string: newValue, withKey: .authToken)
+        }
+    }
+    
     var ddlChecked: Bool {
         get {
-            return bool(withKey: .ddlChecked)
+            bool(withKey: .ddlChecked)
         } set {
             save(bool: newValue, withKey: .ddlChecked)
         }
@@ -36,7 +44,7 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
     
     var deviceId: String? {
         get {
-            return string(withKey: .deviceId)
+            string(withKey: .deviceId)
         } set {
             save(string: newValue, withKey: .deviceId)
         }
@@ -44,14 +52,14 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
     
     var sdkVersion: String? {
         get {
-            return string(withKey: .sdkVersion)
+            string(withKey: .sdkVersion)
         } set {
             save(string: newValue, withKey: .sdkVersion)
         }
     }
     
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
-        return (try? codable(withKey: .attributionInfo, currentDate: currentDate)) ?? nil
+        (try? codable(withKey: .attributionInfo, currentDate: currentDate)) ?? nil
     }
     
     func save(attributionInfo: IterableAttributionInfo?, withExpiration expiration: Date?) {
@@ -59,7 +67,7 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
     }
     
     func getPayload(currentDate: Date) -> [AnyHashable: Any]? {
-        return (try? dict(withKey: .payload, currentDate: currentDate)) ?? nil
+        (try? dict(withKey: .payload, currentDate: currentDate)) ?? nil
     }
     
     func save(payload: [AnyHashable: Any]?, withExpiration expiration: Date?) {
@@ -102,11 +110,11 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
     }
     
     private func string(withKey key: LocalStorageKey) -> String? {
-        return userDefaults.string(forKey: key.value)
+        userDefaults.string(forKey: key.value)
     }
     
     private func bool(withKey key: LocalStorageKey) -> Bool {
-        return userDefaults.bool(forKey: key.value)
+        userDefaults.bool(forKey: key.value)
     }
     
     private static func isExpired(expiration: Date?, currentDate: Date) -> Bool {
@@ -174,6 +182,7 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
         static let attributionInfo = LocalStorageKey(value: Const.UserDefaults.attributionInfoKey)
         static let email = LocalStorageKey(value: Const.UserDefaults.emailKey)
         static let userId = LocalStorageKey(value: Const.UserDefaults.userIdKey)
+        static let authToken = LocalStorageKey(value: Const.UserDefaults.authTokenKey)
         static let ddlChecked = LocalStorageKey(value: Const.UserDefaults.ddlChecked)
         static let deviceId = LocalStorageKey(value: Const.UserDefaults.deviceId)
         static let sdkVersion = LocalStorageKey(value: Const.UserDefaults.sdkVersion)

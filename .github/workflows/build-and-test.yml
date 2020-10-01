@@ -3,7 +3,7 @@ name: Build and test
 on: pull_request
 
 jobs:
-  build:
+  run-tests-job:
     runs-on: macos-latest
 
     steps:

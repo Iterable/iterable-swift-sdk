@@ -57,7 +57,7 @@ class IterableHtmlMessageViewController: UIViewController {
         return CreateResult(viewController: viewController, futureClickedURL: viewController.futureClickedURL)
     }
     
-    override var prefersStatusBarHidden: Bool { return parameters.isModal }
+    override var prefersStatusBarHidden: Bool { parameters.isModal }
     
     override func loadView() {
         ITBInfo()
@@ -103,7 +103,7 @@ class IterableHtmlMessageViewController: UIViewController {
         resizeWebView()
     }
     
-    open override func viewWillDisappear(_ animated: Bool) {
+    override open func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
         guard let messageMetadata = parameters.messageMetadata else {
@@ -143,7 +143,7 @@ class IterableHtmlMessageViewController: UIViewController {
     
     private lazy var webView = webViewProvider()
     private var internalAPI: IterableAPIInternal? {
-        return internalAPIProvider()
+        internalAPIProvider()
     }
     
     private static func createWebView() -> WebViewProtocol {
