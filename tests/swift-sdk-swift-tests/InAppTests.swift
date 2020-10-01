@@ -515,26 +515,23 @@ class InAppTests: XCTestCase {
 
         XCTAssertEqual(internalApi.inAppManager.getMessages().count, 0)
     }
-    
+
     func testShowInAppWithIterableCustomActionDismiss() {
-        var internalApi: IterableAPIInternal!
-        let expectation1 = expectation(description: "messages fetched")
-        let expectation2 = expectation(description: "custom action dismiss called")
-        
+        let expectation1 = expectation(description: "message is shown")
+
         let mockInAppFetcher = MockInAppFetcher()
-        
-        let iterableDismissUrl = "iterable://dismiss"
+        let iterableDeleteUrl = "iterable://dismiss"
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShow.onSuccess { _ in
-            mockInAppDisplayer.click(url: URL(string: iterableDismissUrl)!)
-            XCTAssertEqual(internalApi.inAppManager.getMessages().count, 1)
-            expectation2.fulfill()
+            mockInAppDisplayer.click(url: URL(string: iterableDeleteUrl)!)
+            expectation1.fulfill()
         }
         
         let config = IterableConfig()
         config.inAppDelegate = MockInAppDelegate(showInApp: .show)
+        config.logDelegate = AllLogDelegate()
         
-        internalApi = IterableAPIInternal.initializeForTesting(
+        let internalApi = IterableAPIInternal.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer
@@ -545,7 +542,7 @@ class InAppTests: XCTestCase {
         [
             {
                 "saveToInbox": true,
-                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'\(iterableDismissUrl)'>Click Here</a>"},
+                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'\(iterableDeleteUrl)'>Click Here</a>"},
                 "trigger": {"type": "immediate"},
                 "messageId": "message0",
                 "campaignId": 1,
@@ -554,15 +551,14 @@ class InAppTests: XCTestCase {
         ]
         }
         """.toJsonDict()
-        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, payload).onSuccess { _ in
-            let messages = internalApi.inAppManager.getMessages()
-            XCTAssertEqual(messages.count, 1)
-            expectation1.fulfill()
-        }
         
-        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
+        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, payload)
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+
+        XCTAssertEqual(internalApi.inAppManager.getMessages().count, 1)
     }
-    
+
     func testShowInAppWithCustomActionBackwardCompatibility() {
         let customActionScheme = "itbl"
         let customActionName = "my_custom_action"
@@ -1472,7 +1468,11 @@ class InAppTests: XCTestCase {
         }
         """.toJsonDict()
         
-        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, payload).onSuccess { _ in
+        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, payload).onSuccess { [weak internalApi] _ in
+            guard let internalApi = internalApi else {
+                XCTFail("Expected internalApi to be not nil")
+                return
+            }
             let messages = internalApi.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 1)
             expectation2.fulfill()
