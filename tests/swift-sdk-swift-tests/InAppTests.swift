@@ -621,10 +621,18 @@ class InAppTests: XCTestCase {
             inAppFetcher: mockInAppFetcher
         )
         
-        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 3)).onSuccess { _ in
+        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 3)).onSuccess { [weak internalApi] _ in
+            guard let internalApi = internalApi else {
+                XCTFail("Expected internalApi to be not nil")
+                return
+            }
             XCTAssertEqual(internalApi.inAppManager.getMessages().count, 3)
             expectation1.fulfill()
-            mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 2)).onSuccess { _ in
+            mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 2)).onSuccess { [weak internalApi] _ in
+                guard let internalApi = internalApi else {
+                    XCTFail("Expected internalApi to be not nil")
+                    return
+                }
                 XCTAssertEqual(internalApi.inAppManager.getMessages().count, 2)
                 expectation2.fulfill()
             }
@@ -1043,7 +1051,11 @@ class InAppTests: XCTestCase {
             inAppPersister: InAppFilePersister()
         )
         
-        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi1, TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 3, 2])).onSuccess { _ in
+        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi1, TestInAppPayloadGenerator.createPayloadWithUrl(indices: [1, 3, 2])).onSuccess { [weak internalApi1] _ in
+            guard let internalApi1 = internalApi1 else {
+                XCTFail("Expected internalApi to be not nil")
+                return
+            }
             XCTAssertEqual(internalApi1.inAppManager.getMessages().count, 3)
             expectation1.fulfill()
         }
@@ -1234,7 +1246,11 @@ class InAppTests: XCTestCase {
         }
         """.toJsonDict()
         
-        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, payloadFromServer).onSuccess { _ in
+        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, payloadFromServer).onSuccess { [weak internalApi] _ in
+            guard let internalApi = internalApi else {
+                XCTFail("Expected internalApi to be not nil")
+                return
+            }
             let messages = internalApi.inAppManager.getInboxMessages()
             XCTAssertEqual(messages.count, 2)
             
@@ -1359,7 +1375,11 @@ class InAppTests: XCTestCase {
                                            campaignId: 1,
                                            expiresAt: mockDateProvider.currentDate.addingTimeInterval(1.0 * 60.0), // one minute from now
                                            content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "<html></html>"))
-        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalApi, messages: [message]).onSuccess { _ in
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalApi, messages: [message]).onSuccess { [weak internalApi] _ in
+            guard let internalApi = internalApi else {
+                XCTFail("Expected internalApi to be not nil")
+                return
+            }
             XCTAssertEqual(internalApi.inAppManager.getMessages().count, 1)
             
             mockDateProvider.currentDate = mockDateProvider.currentDate.addingTimeInterval(2.0 * 60) // two minutes from now
