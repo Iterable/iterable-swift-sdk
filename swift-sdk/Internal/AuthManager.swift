@@ -7,13 +7,14 @@ import Foundation
 
 @objc public protocol IterableInternalAuthManagerProtocol {
     func getAuthToken() -> String?
+    func resetFailedAuthCount()
     func requestNewAuthToken(hasFailedPriorAuth: Bool, onSuccess: ((String?) -> Void)?)
     func logoutUser()
 }
 
 class AuthManager: IterableInternalAuthManagerProtocol {
     init(delegate: IterableAuthDelegate?,
-         refreshWindow: TimeInterval,
+         expirationRefreshPeriod: TimeInterval,
          localStorage: LocalStorageProtocol,
          dateProvider: DateProviderProtocol) {
         ITBInfo()
@@ -21,7 +22,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         self.delegate = delegate
         self.localStorage = localStorage
         self.dateProvider = dateProvider
-        self.refreshWindow = refreshWindow
+        self.expirationRefreshPeriod = expirationRefreshPeriod
         
         retrieveAuthToken()
     }
@@ -36,13 +37,23 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         return authToken
     }
     
+    func resetFailedAuthCount() {
+        hasFailedPriorAuth = false
+    }
+    
     // @objc attribute only needed for the pre-iOS 10 Timer constructor in queueAuthTokenExpirationRefresh
     @objc func requestNewAuthToken(hasFailedPriorAuth: Bool = false, onSuccess: ((String?) -> Void)? = nil) {
+        guard !pendingAuth else {
+            return
+        }
+        
         guard !self.hasFailedPriorAuth || !hasFailedPriorAuth else {
             return
         }
         
         self.hasFailedPriorAuth = hasFailedPriorAuth
+        
+        pendingAuth = true
         
         delegate?.onAuthTokenRequested { [weak self] retrievedAuthToken in
             self?.onAuthTokenReceived(retrievedAuthToken: retrievedAuthToken, onSuccess: onSuccess)
@@ -54,8 +65,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         
         storeAuthToken()
         
-        expirationRefreshTimer?.invalidate()
-        expirationRefreshTimer = nil
+        clearRefreshTimer()
     }
     
     // MARK: - Private/Internal
@@ -64,10 +74,11 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     
     private var authToken: String?
     
+    private var pendingAuth: Bool = false
     private var hasFailedPriorAuth: Bool = false
     
     private weak var delegate: IterableAuthDelegate?
-    private let refreshWindow: TimeInterval
+    private let expirationRefreshPeriod: TimeInterval
     private var localStorage: LocalStorageProtocol
     private let dateProvider: DateProviderProtocol
 
@@ -82,6 +93,8 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     }
     
     private func onAuthTokenReceived(retrievedAuthToken: String?, onSuccess: ((String?) -> Void)?) {
+        pendingAuth = false
+        
         authToken = retrievedAuthToken
         
         storeAuthToken()
@@ -98,7 +111,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
             return
         }
         
-        let timeIntervalToRefresh = TimeInterval(expirationDate) - dateProvider.currentDate.timeIntervalSince1970 - refreshWindow
+        let timeIntervalToRefresh = TimeInterval(expirationDate) - dateProvider.currentDate.timeIntervalSince1970 - expirationRefreshPeriod
         
         if #available(iOS 10.0, *) {
             expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: timeIntervalToRefresh, repeats: false) { [weak self] _ in
@@ -112,6 +125,11 @@ class AuthManager: IterableInternalAuthManagerProtocol {
                                                           userInfo: nil,
                                                           repeats: false)
         }
+    }
+    
+    private func clearRefreshTimer() {
+        expirationRefreshTimer?.invalidate()
+        expirationRefreshTimer = nil
     }
     
     static func decodeExpirationDateFromAuthToken(_ authToken: String) -> Int? {

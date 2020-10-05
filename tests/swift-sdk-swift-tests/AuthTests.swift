@@ -381,9 +381,9 @@ class AuthTests: XCTestCase {
             completion(nil)
         })
         
-        let refreshWindow: TimeInterval = 0
+        let expirationRefreshPeriod: TimeInterval = 0
         let waitTime: TimeInterval = 2
-        let expirationTimeSinceEpoch = Date(timeIntervalSinceNow: refreshWindow + waitTime).timeIntervalSince1970
+        let expirationTimeSinceEpoch = Date(timeIntervalSinceNow: expirationRefreshPeriod + waitTime).timeIntervalSince1970
         let mockEncodedPayload = createMockEncodedPayload(exp: Int(expirationTimeSinceEpoch))
         
         let localStorage = MockLocalStorage()
@@ -391,7 +391,7 @@ class AuthTests: XCTestCase {
         localStorage.authToken = mockEncodedPayload
         
         let authManager = AuthManager(delegate: authDelegate,
-                                      refreshWindow: refreshWindow,
+                                      expirationRefreshPeriod: expirationRefreshPeriod,
                                       localStorage: localStorage,
                                       dateProvider: MockDateProvider())
         
@@ -408,16 +408,16 @@ class AuthTests: XCTestCase {
             completion(nil)
         })
         
-        let refreshWindow: TimeInterval = 0
+        let expirationRefreshPeriod: TimeInterval = 0
         let waitTime: TimeInterval = 2
-        let expirationTimeSinceEpoch = Date(timeIntervalSinceNow: refreshWindow + waitTime).timeIntervalSince1970
+        let expirationTimeSinceEpoch = Date(timeIntervalSinceNow: expirationRefreshPeriod + waitTime).timeIntervalSince1970
         let mockEncodedPayload = createMockEncodedPayload(exp: Int(expirationTimeSinceEpoch))
         
         let mockLocalStorage = MockLocalStorage()
         mockLocalStorage.authToken = mockEncodedPayload
         
         let authManager = AuthManager(delegate: authDelegate,
-                                      refreshWindow: refreshWindow,
+                                      expirationRefreshPeriod: expirationRefreshPeriod,
                                       localStorage: mockLocalStorage,
                                       dateProvider: MockDateProvider())
         
@@ -525,7 +525,7 @@ class AuthTests: XCTestCase {
         config.authDelegate = authDelegate
         
         let authManager = AuthManager(delegate: authDelegate,
-                                      refreshWindow: config.authTokenRefreshWindow,
+                                      expirationRefreshPeriod: config.expiringAuthTokenRefreshPeriod,
                                       localStorage: MockLocalStorage(),
                                       dateProvider: MockDateProvider())
         
@@ -552,7 +552,7 @@ class AuthTests: XCTestCase {
         config.authDelegate = authDelegate
         
         let authManager = AuthManager(delegate: authDelegate,
-                                      refreshWindow: config.authTokenRefreshWindow,
+                                      expirationRefreshPeriod: config.expiringAuthTokenRefreshPeriod,
                                       localStorage: MockLocalStorage(),
                                       dateProvider: MockDateProvider())
         
@@ -606,7 +606,7 @@ class AuthTests: XCTestCase {
         let authDelegate = AsyncAuthDelegate()
         
         let authManager = AuthManager(delegate: authDelegate,
-                                      refreshWindow: 0,
+                                      expirationRefreshPeriod: 0,
                                       localStorage: MockLocalStorage(),
                                       dateProvider: MockDateProvider())
         
@@ -614,9 +614,93 @@ class AuthTests: XCTestCase {
                                         onSuccess: { token in
                                             XCTAssertEqual(token, AuthTests.authToken)
                                             condition1.fulfill()
-        })
+                                        })
         
         wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+    
+    func testAuthTokenRetrievalFailureReset() {
+        let condition1 = expectation(description: "\(#function) - retry was not reset")
+        let condition2 = expectation(description: "\(#function) - call should not have reached success handler")
+        condition2.isInverted = true
+        let condition3 = expectation(description: "\(#function) - couldn't get token when requested")
+        
+        class AuthDelegate: IterableAuthDelegate {
+            func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler) {
+                completion(AuthTests.authToken)
+            }
+        }
+        
+        let authDelegate = AuthDelegate()
+        
+        let config = IterableConfig()
+        config.authDelegate = authDelegate
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(config: config)
+        
+        // setEmail calls gets the new auth token successfully
+        internalAPI.email = AuthTests.email
+        
+        // pass a failed state to the AuthManager
+        internalAPI.authManager.requestNewAuthToken(hasFailedPriorAuth: true, onSuccess: nil)
+        
+        // verify that on retry it's still in a failed state with the inverted condition
+        internalAPI.authManager.requestNewAuthToken(hasFailedPriorAuth: true,
+                                                    onSuccess: { token in
+                                                        condition2.fulfill()
+        })
+        
+        // now make a successful request to reset the AuthManager
+        internalAPI.track("", onSuccess: { data in
+            condition1.fulfill()
+        })
+        
+        // verify that the AuthManager is able to request a new token again
+        internalAPI.authManager.requestNewAuthToken(hasFailedPriorAuth: false,
+                                                    onSuccess: { token in
+                                                        condition3.fulfill()
+                                                    })
+        
+        wait(for: [condition1, condition3], timeout: testExpectationTimeout)
+        wait(for: [condition2], timeout: testExpectationTimeoutForInverted)
+    }
+    
+    func testRefreshTimerQueueRejection() {
+        let condition1 = expectation(description: "\(#function) - first refresh timer never happened called")
+        let condition2 = expectation(description: "\(#function) - second refresh timer should not have been called")
+        condition2.isInverted = true
+        
+        class AsyncAuthDelegate: IterableAuthDelegate {
+            func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    completion(AuthTests.authToken)
+                }
+            }
+        }
+        
+        let authDelegate = AsyncAuthDelegate()
+        
+        let config = IterableConfig()
+        config.authDelegate = authDelegate
+        
+        let authManager = AuthManager(delegate: config.authDelegate,
+                                      expirationRefreshPeriod: config.expiringAuthTokenRefreshPeriod,
+                                      localStorage: MockLocalStorage(),
+                                      dateProvider: MockDateProvider())
+        
+        authManager.requestNewAuthToken(hasFailedPriorAuth: false,
+                                        onSuccess: { token in
+                                            XCTAssertEqual(token, AuthTests.authToken)
+                                            condition1.fulfill()
+                                        })
+        
+        authManager.requestNewAuthToken(hasFailedPriorAuth: false,
+                                        onSuccess: { token in
+                                            condition2.fulfill()
+                                        })
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+        wait(for: [condition2], timeout: 3)
     }
     
     // MARK: - Private

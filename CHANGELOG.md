@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.2.11
+#### Added
+- Xcode 12 and iOS 14 support.
+
+#### Fixed
+- Fixed minor warnings.
+
 ## 6.2.10
 #### Added
 - An option to pause automatic in-app displaying has been added. To pause, set `IterableAPI.inAppManager.isAutoDisplayPaused` to `true` (default: `false`).

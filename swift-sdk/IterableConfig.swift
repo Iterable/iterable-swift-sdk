@@ -127,7 +127,7 @@ public class IterableConfig: NSObject {
     /// the number of seconds before expiration of the current auth token to get a new auth token
     /// will only apply if token-based authentication is enabled, and the current auth token has
     /// an expiration date field in it
-    public var authTokenRefreshWindow: TimeInterval = 60.0
+    public var expiringAuthTokenRefreshPeriod: TimeInterval = 60.0
 
     /// If set to true, events will be queued locally when network is offline.
     /// When the network is online again, the queued events will be sent to our backend.

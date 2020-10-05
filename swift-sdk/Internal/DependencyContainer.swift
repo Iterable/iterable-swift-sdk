@@ -44,7 +44,7 @@ extension DependencyContainerProtocol {
     
     func createAuthManager(config: IterableConfig) -> IterableInternalAuthManagerProtocol {
         AuthManager(delegate: config.authDelegate,
-                    refreshWindow: config.authTokenRefreshWindow,
+                    expirationRefreshPeriod: config.expiringAuthTokenRefreshPeriod,
                     localStorage: localStorage,
                     dateProvider: dateProvider)
     }
