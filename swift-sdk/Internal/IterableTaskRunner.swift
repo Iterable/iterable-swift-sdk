@@ -121,13 +121,17 @@ class IterableTaskRunner: NSObject {
             ITBInfo("Paused")
             return
         }
-
-        DispatchQueue.global().async {
+        
+        DispatchQueue.global().async { [weak self] in
             ITBInfo("Scheduling timer")
-            let timer = Timer.scheduledTimer(withTimeInterval: self.timeInterval, repeats: false) { _ in
-                self.run()
+            guard let timeInterval = self?.timeInterval else {
+                return
             }
-            self.timer = timer
+
+            let timer = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: false) { [weak self] _ in
+                self?.run()
+            }
+            self?.timer = timer
             RunLoop.current.add(timer, forMode: .default)
             RunLoop.current.run()
         }
@@ -224,6 +228,7 @@ class IterableTaskRunner: NSObject {
     
     deinit {
         ITBInfo()
+        stop()
         notificationCenter.removeObserver(self)
     }
     
@@ -250,7 +255,7 @@ class IterableTaskRunner: NSObject {
     private let notificationCenter: NotificationCenterProtocol
     private let timeInterval: TimeInterval
     private let connectivityManager: NetworkConnectivityManager
-    private var timer: Timer?
+    private weak var timer: Timer?
     private var running = false
     
     private lazy var persistenceContext: IterablePersistenceContext = {

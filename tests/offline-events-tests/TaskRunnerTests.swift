@@ -212,7 +212,7 @@ class TaskRunnerTests: XCTestCase {
         verifyTaskIsExecuted(notificationCenter, withinInterval: 10.0)
         taskRunner.stop()
     }
-
+    
     private func scheduleSampleTask(notificationCenter: NotificationCenterProtocol) throws -> String {
         let apiKey = "zee-api-key"
         let eventName = "CustomEvent1"

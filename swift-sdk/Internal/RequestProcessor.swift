@@ -22,9 +22,14 @@ class RequestProcessor: RequestProcessorProtocol {
     init(onlineCreator: @escaping () -> OnlineRequestProcessor,
          offlineCreator: @escaping () -> OfflineRequestProcessor?,
          strategy: RequestProcessorStrategy = DefaultRequestProcessorStrategy(selectOffline: false)) {
+        ITBInfo()
         self.onlineCreator = onlineCreator
         self.offlineCreator = offlineCreator
         self.strategy = strategy
+    }
+    
+    deinit {
+        ITBInfo()
     }
     
     func start() {

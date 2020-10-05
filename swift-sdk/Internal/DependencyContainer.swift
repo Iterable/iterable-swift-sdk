@@ -51,18 +51,18 @@ extension DependencyContainerProtocol {
     
     func createRequestProcessor(apiKey: String,
                                 config: IterableConfig,
-                                authProvider: AuthProvider,
+                                authProvider: AuthProvider?,
                                 authManager: IterableInternalAuthManagerProtocol,
                                 deviceMetadata: DeviceMetadata) -> RequestProcessorProtocol {
         if #available(iOS 10.0, *) {
-            return RequestProcessor(onlineCreator: {
+            return RequestProcessor(onlineCreator: { [weak authProvider] in
                                         OnlineRequestProcessor(apiKey: apiKey,
                                                                authProvider: authProvider,
                                                                authManager: authManager,
                                                                endPoint: config.apiEndpoint,
                                                                networkSession: networkSession,
                                                                deviceMetadata: deviceMetadata) },
-                                    offlineCreator: {
+                                    offlineCreator: { [weak authProvider] in
                                         guard let persistenceContextProvider = createPersistenceContextProvider() else {
                                             return nil
                                         }

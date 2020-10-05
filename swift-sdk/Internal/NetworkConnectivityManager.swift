@@ -31,7 +31,7 @@ class NetworkConnectivityManager: NSObject {
     deinit {
         ITBInfo()
         notificationCenter.removeObserver(self)
-        stopTimer()
+        stop()
     }
     
     var isOnline: Bool {
