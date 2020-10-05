@@ -15,7 +15,7 @@ struct DeviceMetadata: Codable {
 
 class ApiClient {
     init(apiKey: String,
-         authProvider: AuthProvider,
+         authProvider: AuthProvider?,
          endPoint: String,
          networkSession: NetworkSessionProtocol,
          deviceMetadata: DeviceMetadata) {
@@ -54,13 +54,14 @@ class ApiClient {
     
     // MARK: - Private
     
-    private func createRequestCreator() -> RequestCreator {
+    private func createRequestCreator() -> Result<RequestCreator, IterableError> {
         guard let authProvider = authProvider else {
-            fatalError("authProvider is missing")
+            return .failure(IterableError.general(description: "authProvider is missing"))
         }
         
-        return RequestCreator(apiKey: apiKey, auth: authProvider.auth, deviceMetadata: deviceMetadata)
+        return .success(RequestCreator(apiKey: apiKey, auth: authProvider.auth, deviceMetadata: deviceMetadata))
     }
+
     
     private func createIterableHeaders() -> [String: String] {
         var headers = [JsonKey.contentType.jsonKey: JsonValue.applicationJson.jsonStringValue,
@@ -85,52 +86,53 @@ class ApiClient {
 // MARK: - API REQUEST CALLS
 
 extension ApiClient: ApiClientProtocol {
-    func register(hexToken: String,
-                  appName: String,
-                  deviceId: String,
-                  sdkVersion: String?,
-                  deviceAttributes: [String: String],
-                  pushServicePlatform: String,
-                  notificationsEnabled: Bool) -> Future<SendRequestValue, SendRequestError> {
-        send(iterableRequestResult: createRequestCreator().createRegisterTokenRequest(hexToken: hexToken,
-                                                                                      appName: appName,
-                                                                                      deviceId: deviceId,
-                                                                                      sdkVersion: sdkVersion,
-                                                                                      deviceAttributes: deviceAttributes,
-                                                                                      pushServicePlatform: pushServicePlatform,
-                                                                                      notificationsEnabled: notificationsEnabled))
+    func register(registerTokenInfo: RegisterTokenInfo, notificationsEnabled: Bool) -> Future<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createRegisterTokenRequest(registerTokenInfo: registerTokenInfo,
+                                                                                     notificationsEnabled: notificationsEnabled) }
+        return send(iterableRequestResult: result)
     }
     
     func updateUser(_ dataFields: [AnyHashable: Any], mergeNestedObjects: Bool) -> Future<SendRequestValue, SendRequestError> {
-        send(iterableRequestResult: createRequestCreator().createUpdateUserRequest(dataFields: dataFields, mergeNestedObjects: mergeNestedObjects))
+        let result = createRequestCreator().flatMap { $0.createUpdateUserRequest(dataFields: dataFields,
+                                                                                  mergeNestedObjects: mergeNestedObjects) }
+        return send(iterableRequestResult: result)
     }
     
     func updateEmail(newEmail: String) -> Future<SendRequestValue, SendRequestError> {
-        send(iterableRequestResult: createRequestCreator().createUpdateEmailRequest(newEmail: newEmail))
+        let result = createRequestCreator().flatMap { $0.createUpdateEmailRequest(newEmail: newEmail) }
+        return send(iterableRequestResult: result)
     }
     
     func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError> {
-        send(iterableRequestResult: createRequestCreator().createGetInAppMessagesRequest(count))
+        let result = createRequestCreator().flatMap { $0.createGetInAppMessagesRequest(count) }
+        return send(iterableRequestResult: result)
     }
     
     func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Future<SendRequestValue, SendRequestError> {
-        send(iterableRequestResult: createRequestCreator().createDisableDeviceRequest(forAllUsers: allUsers, hexToken: hexToken))
+        let result = createRequestCreator().flatMap { $0.createDisableDeviceRequest(forAllUsers: allUsers,
+                                                                                     hexToken: hexToken) }
+        return send(iterableRequestResult: result)
     }
     
     func track(purchase total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError> {
-        send(iterableRequestResult: createRequestCreator().createTrackPurchaseRequest(total, items: items, dataFields: dataFields))
+        let result = createRequestCreator().flatMap { $0.createTrackPurchaseRequest(total, items: items,
+                                                                                     dataFields: dataFields) }
+        return send(iterableRequestResult: result)
     }
     
     func track(pushOpen campaignId: NSNumber, templateId: NSNumber?, messageId: String, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError> {
-        send(iterableRequestResult: createRequestCreator().createTrackPushOpenRequest(campaignId,
-                                                                                      templateId: templateId,
-                                                                                      messageId: messageId,
-                                                                                      appAlreadyRunning: appAlreadyRunning,
-                                                                                      dataFields: dataFields))
+        let result = createRequestCreator().flatMap { $0.createTrackPushOpenRequest(campaignId,
+                                                                                     templateId: templateId,
+                                                                                     messageId: messageId,
+                                                                                     appAlreadyRunning: appAlreadyRunning,
+                                                                                     dataFields: dataFields) }
+        return send(iterableRequestResult: result)
     }
     
     func track(event eventName: String, dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError> {
-        send(iterableRequestResult: createRequestCreator().createTrackEventRequest(eventName, dataFields: dataFields))
+        let result = createRequestCreator().flatMap { $0.createTrackEventRequest(eventName,
+                                                                                  dataFields: dataFields) }
+        return send(iterableRequestResult: result)
     }
     
     func updateSubscriptions(_ emailListIds: [NSNumber]? = nil,
@@ -139,40 +141,52 @@ extension ApiClient: ApiClientProtocol {
                              subscribedMessageTypeIds: [NSNumber]? = nil,
                              campaignId: NSNumber? = nil,
                              templateId: NSNumber? = nil) -> Future<SendRequestValue, SendRequestError> {
-        send(iterableRequestResult: createRequestCreator().createUpdateSubscriptionsRequest(emailListIds,
-                                                                                            unsubscribedChannelIds: unsubscribedChannelIds,
-                                                                                            unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
-                                                                                            subscribedMessageTypeIds: subscribedMessageTypeIds,
-                                                                                            campaignId: campaignId,
-                                                                                            templateId: templateId))
+        let result = createRequestCreator().flatMap { $0.createUpdateSubscriptionsRequest(emailListIds,
+                                                                                           unsubscribedChannelIds: unsubscribedChannelIds,
+                                                                                           unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
+                                                                                           subscribedMessageTypeIds: subscribedMessageTypeIds,
+                                                                                           campaignId: campaignId,
+                                                                                           templateId: templateId) }
+        return send(iterableRequestResult: result)
     }
     
     func track(inAppOpen inAppMessageContext: InAppMessageContext) -> Future<SendRequestValue, SendRequestError> {
-        send(iterableRequestResult: createRequestCreator().createTrackInAppOpenRequest(inAppMessageContext: inAppMessageContext))
+        let result = createRequestCreator().flatMap { $0.createTrackInAppOpenRequest(inAppMessageContext: inAppMessageContext) }
+        return send(iterableRequestResult: result)
     }
     
     func track(inAppClick inAppMessageContext: InAppMessageContext, clickedUrl: String) -> Future<SendRequestValue, SendRequestError> {
-        send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(inAppMessageContext: inAppMessageContext, clickedUrl: clickedUrl))
+        let result = createRequestCreator().flatMap { $0.createTrackInAppClickRequest(inAppMessageContext: inAppMessageContext,
+                                                                                       clickedUrl: clickedUrl) }
+        return send(iterableRequestResult: result)
     }
     
     func track(inAppClose inAppMessageContext: InAppMessageContext, source: InAppCloseSource?, clickedUrl: String?) -> Future<SendRequestValue, SendRequestError> {
-        send(iterableRequestResult: createRequestCreator().createTrackInAppCloseRequest(inAppMessageContext: inAppMessageContext, source: source, clickedUrl: clickedUrl))
+        let result = createRequestCreator().flatMap { $0.createTrackInAppCloseRequest(inAppMessageContext: inAppMessageContext,
+                                                                                       source: source,
+                                                                                       clickedUrl: clickedUrl) }
+        return send(iterableRequestResult: result)
     }
     
     func track(inAppDelivery inAppMessageContext: InAppMessageContext) -> Future<SendRequestValue, SendRequestError> {
-        send(iterableRequestResult: createRequestCreator().createTrackInAppDeliveryRequest(inAppMessageContext: inAppMessageContext))
+        let result = createRequestCreator().flatMap { $0.createTrackInAppDeliveryRequest(inAppMessageContext: inAppMessageContext) }
+        return send(iterableRequestResult: result)
     }
     
     func track(inboxSession: IterableInboxSession) -> Future<SendRequestValue, SendRequestError> {
-        send(iterableRequestResult: createRequestCreator().createTrackInboxSessionRequest(inboxSession: inboxSession))
+        let result = createRequestCreator().flatMap { $0.createTrackInboxSessionRequest(inboxSession: inboxSession) }
+        return send(iterableRequestResult:  result)
     }
     
     func inAppConsume(messageId: String) -> Future<SendRequestValue, SendRequestError> {
-        send(iterableRequestResult: createRequestCreator().createInAppConsumeRequest(messageId))
+        let result = createRequestCreator().flatMap { $0.createInAppConsumeRequest(messageId) }
+        return send(iterableRequestResult: result)
     }
     
     func inAppConsume(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource?) -> Future<SendRequestValue, SendRequestError> {
-        send(iterableRequestResult: createRequestCreator().createTrackInAppConsumeRequest(inAppMessageContext: inAppMessageContext, source: source))
+        let result = createRequestCreator().flatMap { $0.createTrackInAppConsumeRequest(inAppMessageContext: inAppMessageContext,
+                                                                                         source: source) }
+        return send(iterableRequestResult: result)
     }
 }
 
@@ -181,11 +195,14 @@ extension ApiClient: ApiClientProtocol {
 extension ApiClient {
     // deprecated - will be removed in version 6.3.x or above
     func track(inAppOpen messageId: String) -> Future<SendRequestValue, SendRequestError> {
-        send(iterableRequestResult: createRequestCreator().createTrackInAppOpenRequest(messageId))
+        let value = createRequestCreator().flatMap { $0.createTrackInAppOpenRequest(messageId) }
+        return send(iterableRequestResult: value)
     }
     
     // deprecated - will be removed in version 6.3.x or above
     func track(inAppClick messageId: String, clickedUrl: String) -> Future<SendRequestValue, SendRequestError> {
-        send(iterableRequestResult: createRequestCreator().createTrackInAppClickRequest(messageId, clickedUrl: clickedUrl))
+        let result = createRequestCreator().flatMap { $0.createTrackInAppClickRequest(messageId,
+                                                                                       clickedUrl: clickedUrl) }
+        return send(iterableRequestResult: result)
     }
 }

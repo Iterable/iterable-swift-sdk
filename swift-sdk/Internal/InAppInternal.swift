@@ -10,7 +10,7 @@ protocol InAppFetcherProtocol {
 }
 
 /// For callbacks when silent push notifications arrive
-protocol InAppNotifiable {
+protocol InAppNotifiable: AnyObject {
     func scheduleSync() -> Future<Bool, Error>
     func onInAppRemoved(messageId: String)
     func reset() -> Future<Bool, Error>

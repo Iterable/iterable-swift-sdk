@@ -8,10 +8,6 @@ import XCTest
 
 @testable import IterableSDK
 
-class MockDateProvider: DateProviderProtocol {
-    var currentDate = Date()
-}
-
 class IterableNotificationResponseTests: XCTestCase {
     override func setUp() {
         super.setUp()

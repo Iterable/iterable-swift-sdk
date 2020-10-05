@@ -6,13 +6,7 @@
 import Foundation
 
 protocol ApiClientProtocol: AnyObject {
-    func register(hexToken: String,
-                  appName: String,
-                  deviceId: String,
-                  sdkVersion: String?,
-                  deviceAttributes: [String: String],
-                  pushServicePlatform: String,
-                  notificationsEnabled: Bool) -> Future<SendRequestValue, SendRequestError>
+    func register(registerTokenInfo: RegisterTokenInfo, notificationsEnabled: Bool) -> Future<SendRequestValue, SendRequestError>
     
     func updateUser(_ dataFields: [AnyHashable: Any], mergeNestedObjects: Bool) -> Future<SendRequestValue, SendRequestError>
     

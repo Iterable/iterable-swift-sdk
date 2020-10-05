@@ -9,6 +9,10 @@ import WebKit
 
 @testable import IterableSDK
 
+class MockDateProvider: DateProviderProtocol {
+    var currentDate = Date()
+}
+
 @available(iOS 10.0, *)
 struct MockNotificationResponse: NotificationResponseProtocol {
     let userInfo: [AnyHashable: Any]
@@ -105,18 +109,24 @@ public class MockPushTracker: NSObject, PushTrackerProtocol {
     public func trackPushOpen(_ userInfo: [AnyHashable: Any],
                               dataFields: [AnyHashable: Any]?,
                               onSuccess: OnSuccessHandler?,
-                              onFailure: OnFailureHandler?) {
+                              onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
         // save payload
         lastPushPayload = userInfo
         
         if let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: userInfo), metadata.isRealCampaignNotification() {
-            trackPushOpen(metadata.campaignId, templateId: metadata.templateId, messageId: metadata.messageId, appAlreadyRunning: false, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
+            return trackPushOpen(metadata.campaignId, templateId: metadata.templateId, messageId: metadata.messageId, appAlreadyRunning: false, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
         } else {
-            onFailure?("Not tracking push open - payload is not an Iterable notification, or a test/proof/ghost push", nil)
+            return SendRequestError.createErroredFuture(reason: "Not tracking push open - payload is not an Iterable notification, or a test/proof/ghost push")
         }
     }
     
-    public func trackPushOpen(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?, onSuccess: OnSuccessHandler?, onFailure: OnFailureHandler?) {
+    public func trackPushOpen(_ campaignId: NSNumber,
+                              templateId: NSNumber?,
+                              messageId: String,
+                              appAlreadyRunning: Bool,
+                              dataFields: [AnyHashable: Any]?,
+                              onSuccess: OnSuccessHandler?,
+                              onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
         self.campaignId = campaignId
         self.templateId = templateId
         self.messageId = messageId
@@ -124,6 +134,8 @@ public class MockPushTracker: NSObject, PushTrackerProtocol {
         self.dataFields = dataFields
         self.onSuccess = onSuccess
         self.onFailure = onFailure
+        
+        return Promise<SendRequestValue, SendRequestError>(value: [:])
     }
 }
 
@@ -140,6 +152,31 @@ public class MockPushTracker: NSObject, PushTrackerProtocol {
 }
 
 class MockNetworkSession: NetworkSessionProtocol {
+    class MockDataTask: DataTaskProtocol {
+        init(url: URL, completionHandler: @escaping CompletionHandler, parent: MockNetworkSession) {
+            self.url = url
+            self.completionHandler = completionHandler
+            self.parent = parent
+        }
+
+        var state: URLSessionDataTask.State = .suspended
+        
+        func resume() {
+            state = .running
+            parent.makeDataRequest(with: url, completionHandler: completionHandler)
+        }
+        
+        func cancel() {
+            canceled = true
+            state = .completed
+        }
+        
+        private let url: URL
+        private let completionHandler: CompletionHandler
+        private let parent: MockNetworkSession
+        private var canceled = false
+    }
+
     var urlPatternDataMapping: [String: Data?]?
     var url: URL?
     var request: URLRequest?
@@ -194,6 +231,11 @@ class MockNetworkSession: NetworkSessionProtocol {
         }
     }
     
+    func createDataTask(with url: URL, completionHandler: @escaping CompletionHandler) -> DataTaskProtocol {
+        MockDataTask(url: url, completionHandler: completionHandler, parent: self)
+    }
+
+    
     func getRequestBody() -> [AnyHashable: Any] {
         MockNetworkSession.json(fromData: request!.httpBody!)
     }
@@ -235,6 +277,10 @@ class NoNetworkNetworkSession: NetworkSessionProtocol {
             let error = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: nil)
             completionHandler(try! JSONSerialization.data(withJSONObject: [:], options: []), response, error)
         }
+    }
+
+    func createDataTask(with url: URL, completionHandler: @escaping CompletionHandler) -> DataTaskProtocol {
+        fatalError("Not implemented")
     }
 }
 
@@ -343,39 +389,59 @@ class MockInAppDelegate: IterableInAppDelegate {
 
 class MockNotificationCenter: NotificationCenterProtocol {
     func addObserver(_ observer: Any, selector: Selector, name: Notification.Name?, object _: Any?) {
-        observers.append(Observer(observer: observer as! NSObject, notificationName: name!, selector: selector))
+        observers.append(Observer(observer: observer as! NSObject,
+                                  notificationName: name!,
+                                  selector: selector))
     }
     
     func removeObserver(_: Any) {}
     
-    func post(name: Notification.Name, object _: Any?, userInfo _: [AnyHashable: Any]?) {
+    func post(name: Notification.Name, object: Any?, userInfo: [AnyHashable: Any]?) {
         _ = observers.filter { $0.notificationName == name }.map {
-            _ = $0.observer.perform($0.selector, with: Notification(name: name))
+            let notification = Notification(name: name, object: object, userInfo: userInfo)
+            _ = $0.observer.perform($0.selector, with: notification)
         }
     }
     
-    func addCallback(forNotification notification: Notification.Name, callback: @escaping () -> Void) {
+    @discardableResult
+    func addCallback(forNotification notification: Notification.Name, callback: @escaping (Notification) -> Void) -> String {
         class CallbackClass: NSObject {
-            let callback: () -> Void
-            init(callback: @escaping () -> Void) {
+            let callback: (Notification) -> Void
+            
+            init(callback: @escaping (Notification) -> Void) {
                 self.callback = callback
             }
             
-            @objc func onNotification(notification _: Notification) {
-                callback()
+            @objc func onNotification(notification: Notification) {
+                callback(notification)
             }
         }
-        
+
+        let id = IterableUtil.generateUUID()
         let callbackClass = CallbackClass(callback: callback)
-        addObserver(callbackClass, selector: #selector(callbackClass.onNotification(notification:)), name: notification, object: self)
+
+        observers.append(Observer(id: id,
+                                  observer: callbackClass,
+                                  notificationName: notification,
+                                  selector: #selector(callbackClass.onNotification(notification:))))
+        return id
+    }
+
+    func removeCallbacks(withIds ids: String...) {
+        observers.removeAll { ids.contains($0.id) }
     }
     
     private class Observer: NSObject {
+        let id: String
         let observer: NSObject
         let notificationName: Notification.Name
         let selector: Selector
         
-        init(observer: NSObject, notificationName: Notification.Name, selector: Selector) {
+        init(id: String = IterableUtil.generateUUID(),
+             observer: NSObject,
+             notificationName: Notification.Name,
+             selector: Selector) {
+            self.id = id
             self.observer = observer
             self.notificationName = notificationName
             self.selector = selector

@@ -23,7 +23,7 @@ class EndpointTests: XCTestCase {
             XCTFail()
         }
         
-        wait(for: [expectation1], timeout: 15)
+        wait(for: [expectation1], timeout: 60)
     }
     
     func test02UpdateEmail() throws {
@@ -45,7 +45,7 @@ class EndpointTests: XCTestCase {
         }) { _, _ in
             XCTFail()
         }
-        wait(for: [expectation1, expectation2], timeout: 15)
+        wait(for: [expectation1, expectation2], timeout: 60)
     }
     
     func test03TrackPurchase() throws {

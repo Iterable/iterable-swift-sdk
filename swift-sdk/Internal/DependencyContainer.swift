@@ -20,6 +20,7 @@ protocol DependencyContainerProtocol {
     var apnsTypeChecker: APNSTypeCheckerProtocol { get }
     
     func createInAppFetcher(apiClient: ApiClientProtocol) -> InAppFetcherProtocol
+    func createPersistenceContextProvider() -> IterablePersistenceContextProvider?
 }
 
 extension DependencyContainerProtocol {
@@ -46,6 +47,66 @@ extension DependencyContainerProtocol {
                     expirationRefreshPeriod: config.expiringAuthTokenRefreshPeriod,
                     localStorage: localStorage,
                     dateProvider: dateProvider)
+    }
+    
+    func createRequestProcessor(apiKey: String,
+                                config: IterableConfig,
+                                authProvider: AuthProvider?,
+                                authManager: IterableInternalAuthManagerProtocol,
+                                deviceMetadata: DeviceMetadata) -> RequestProcessorProtocol {
+        if #available(iOS 10.0, *) {
+            return RequestProcessor(onlineCreator: { [weak authProvider] in
+                                        OnlineRequestProcessor(apiKey: apiKey,
+                                                               authProvider: authProvider,
+                                                               authManager: authManager,
+                                                               endPoint: config.apiEndpoint,
+                                                               networkSession: networkSession,
+                                                               deviceMetadata: deviceMetadata) },
+                                    offlineCreator: { [weak authProvider] in
+                                        guard let persistenceContextProvider = createPersistenceContextProvider() else {
+                                            return nil
+                                        }
+                                        
+                                        return OfflineRequestProcessor(apiKey: apiKey,
+                                                                authProvider: authProvider,
+                                                                authManager: authManager,
+                                                                endPoint: config.apiEndpoint,
+                                                                deviceMetadata: deviceMetadata,
+                                                                taskScheduler: createTaskScheduler(persistenceContextProvider: persistenceContextProvider),
+                                                                taskRunner: createTaskRunner(persistenceContextProvider: persistenceContextProvider),
+                                                                notificationCenter: notificationCenter) },
+                                    strategy: DefaultRequestProcessorStrategy(selectOffline: config.enableOfflineMode))
+        } else {
+            return OnlineRequestProcessor(apiKey: apiKey,
+                                          authProvider: authProvider,
+                                          authManager: authManager,
+                                          endPoint: config.apiEndpoint,
+                                          networkSession: networkSession,
+                                          deviceMetadata: deviceMetadata)
+        }
+    }
+    
+    func createPersistenceContextProvider() -> IterablePersistenceContextProvider? {
+        if #available(iOS 10.0, *) {
+            return CoreDataPersistenceContextProvider(dateProvider: dateProvider)
+        } else {
+            fatalError("Unable to create persistence container for iOS < 10")
+        }
+    }
+
+    @available(iOS 10.0, *)
+    private func createTaskScheduler(persistenceContextProvider: IterablePersistenceContextProvider) -> IterableTaskScheduler {
+        IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                              notificationCenter: notificationCenter,
+                              dateProvider: dateProvider)
+    }
+    
+    @available(iOS 10.0, *)
+    private func createTaskRunner(persistenceContextProvider: IterablePersistenceContextProvider) -> IterableTaskRunner {
+        IterableTaskRunner(networkSession: networkSession,
+                           persistenceContextProvider: persistenceContextProvider,
+                           notificationCenter: notificationCenter,
+                           connectivityManager: NetworkConnectivityManager())
     }
 }
 

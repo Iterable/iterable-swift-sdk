@@ -60,7 +60,7 @@ struct DataFieldsHelper {
         fields[JsonKey.Device.systemName] = device.systemName
         fields[JsonKey.Device.systemVersion] = device.systemVersion
         fields[JsonKey.Device.model] = device.model
-        
+
         if let identifierForVendor = device.identifierForVendor?.uuidString {
             fields[JsonKey.Device.vendorId] = identifierForVendor
         }

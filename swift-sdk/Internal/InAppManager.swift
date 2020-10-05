@@ -6,14 +6,6 @@
 import Foundation
 import UIKit
 
-protocol NotificationCenterProtocol {
-    func addObserver(_ observer: Any, selector: Selector, name: Notification.Name?, object: Any?)
-    func removeObserver(_ observer: Any)
-    func post(name: Notification.Name, object: Any?, userInfo: [AnyHashable: Any]?)
-}
-
-extension NotificationCenter: NotificationCenterProtocol {}
-
 protocol InAppDisplayChecker {
     func isOkToShowNow(message: IterableInAppMessage) -> Bool
 }

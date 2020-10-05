@@ -95,12 +95,7 @@ class InAppHelperTests: XCTestCase {
     }
     
     private class MockApiClient: ApiClientProtocol {
-        func register(hexToken _: String,
-                      appName _: String,
-                      deviceId _: String,
-                      sdkVersion _: String?,
-                      deviceAttributes _: [String: String],
-                      pushServicePlatform _: String,
+        func register(registerTokenInfo _: RegisterTokenInfo,
                       notificationsEnabled _: Bool) -> Future<SendRequestValue, SendRequestError> {
             fatalError()
         }
@@ -114,10 +109,6 @@ class InAppHelperTests: XCTestCase {
         }
         
         func track(purchase _: NSNumber, items _: [CommerceItem], dataFields _: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError> {
-            fatalError()
-        }
-        
-        func track(pushOpen _: NSNumber, templateId _: NSNumber?, messageId _: String?, appAlreadyRunning _: Bool, dataFields _: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
