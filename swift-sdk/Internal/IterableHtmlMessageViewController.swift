@@ -15,18 +15,26 @@ enum IterableMessageLocation: Int {
 
 class IterableHtmlMessageViewController: UIViewController {
     struct Parameters {
+        struct AnimationParams {
+            let shouldAnimate = true
+            let bgColor = UIColor.clear.withAlphaComponent(0.5)
+            let duration = 0.67
+        }
+
         let html: String
         let padding: UIEdgeInsets
         let messageMetadata: IterableInAppMessageMetadata?
         let isModal: Bool
         
         let inboxSessionId: String?
+        let animationParams = AnimationParams()
         
         init(html: String,
              padding: UIEdgeInsets = .zero,
              messageMetadata: IterableInAppMessageMetadata? = nil,
              isModal: Bool,
              inboxSessionId: String? = nil) {
+            ITBInfo()
             self.html = html
             self.padding = IterableHtmlMessageViewController.padding(fromPadding: padding)
             self.messageMetadata = messageMetadata
@@ -40,6 +48,7 @@ class IterableHtmlMessageViewController: UIViewController {
     init(parameters: Parameters,
          internalAPIProvider: @escaping @autoclosure () -> IterableAPIInternal? = IterableAPI.internalImplementation,
          webViewProvider: @escaping @autoclosure () -> WebViewProtocol = IterableHtmlMessageViewController.createWebView()) {
+        ITBInfo()
         self.internalAPIProvider = internalAPIProvider
         self.webViewProvider = webViewProvider
         self.parameters = parameters
@@ -154,6 +163,34 @@ class IterableHtmlMessageViewController: UIViewController {
         return webView as WebViewProtocol
     }
     
+    private static func animate(duration: TimeInterval,
+                                initialValues: @escaping () -> Void,
+                                finalValues: @escaping () -> Void,
+                                completion: (() -> Void)? = nil) {
+        ITBInfo()
+        initialValues()
+        UIView.animate(withDuration: duration) {
+            finalValues()
+        } completion: { _ in
+            completion?()
+        }
+    }
+    
+    fileprivate static func trackClickOnDismiss(internalAPI: IterableAPIInternal?,
+                                                params: Parameters,
+                                                futureClickedURL: Promise<URL, IterableError>,
+                                                withURL url: URL,
+                                                andDestinationURL destinationURL: String) {
+        ITBInfo()
+        futureClickedURL.resolve(with: url)
+        if let messageMetadata = params.messageMetadata {
+            internalAPI?.trackInAppClick(messageMetadata.message,
+                                         location: messageMetadata.location,
+                                         inboxSessionId: params.inboxSessionId,
+                                         clickedUrl: destinationURL)
+        }
+    }
+
     /// Resizes the webview based upon the insetPadding, height etc
     private func resizeWebView() {
         let parentPosition = ViewPosition(width: view.bounds.width,
@@ -166,10 +203,75 @@ class IterableHtmlMessageViewController: UIViewController {
                                                                    paddingRight: parameters.padding.right,
                                                                    location: location)
             .onSuccess { [weak self] position in
-                self?.webView.set(position: position)
+                if self?.parameters.isModal == true && self?.parameters.animationParams.shouldAnimate == true {
+                    self?.animateWhileEntering(position: position)
+                } else {
+                    self?.webView.set(position: position)
+                }
             }
     }
     
+    private func animateWhileEntering(position: ViewPosition) {
+        Self.animate(duration: parameters.animationParams.duration) { [weak self] in
+            self?.setInitialValuesForAnimationWhileEntering(position: position)
+        } finalValues: { [weak self] in
+            self?.setFinalValuesForAnimationWhileEntering(position: position)
+        }
+    }
+
+    private func setInitialValuesForAnimationWhileEntering(position: ViewPosition) {
+        view.backgroundColor = UIColor.clear
+        switch location {
+        case .top:
+            webView.set(position: ViewPosition(width: position.width, height: position.height, center: CGPoint(x: position.width / 2, y: -(position.height / 2))))
+        case .bottom:
+            webView.set(position: ViewPosition(width: position.width, height: position.height, center: CGPoint(x: position.width / 2, y: -(position.height / 2))))
+        case .center:
+            webView.set(position: ViewPosition(width: position.width, height: position.height, center: CGPoint(x: position.width / 2, y: -(position.height / 2))))
+        case .full:
+            webView.set(position: ViewPosition(width: position.width, height: position.height, center: CGPoint(x: position.width / 2, y: -(position.height / 2))))
+        }
+    }
+
+    private func setFinalValuesForAnimationWhileEntering(position: ViewPosition) {
+        view.backgroundColor = parameters.animationParams.bgColor
+        webView.set(position: position)
+    }
+    
+    private func animateWhileLeaving(position: ViewPosition, url: URL, destinationUrl: String) {
+        ITBInfo()
+        Self.animate(duration: parameters.animationParams.duration) {
+        } finalValues: { [weak self] in
+            self?.setFinalValuesForAnimationWhileLeaving(position: position)
+        } completion: { [weak self, weak internalApi = internalAPI, futureClickedURL = futureClickedURL, parameters = parameters] in
+            self?.dismiss(animated: false, completion: {
+                Self.trackClickOnDismiss(internalAPI: internalApi,
+                                         params: parameters,
+                                         futureClickedURL: futureClickedURL,
+                                         withURL: url,
+                                         andDestinationURL: destinationUrl)
+            })
+        }
+    }
+    
+    private func performAnimationCompletionWhileLeaving() {
+        ITBInfo()
+    }
+
+    private func setFinalValuesForAnimationWhileLeaving(position: ViewPosition) {
+        view.backgroundColor = UIColor.clear
+        switch location {
+        case .top:
+            webView.set(position: ViewPosition(width: position.width, height: position.height, center: CGPoint(x: position.width / 2, y: -(position.height / 2))))
+        case .bottom:
+            webView.set(position: ViewPosition(width: position.width, height: position.height, center: CGPoint(x: position.width / 2, y: -(position.height / 2))))
+        case .center:
+            webView.set(position: ViewPosition(width: position.width, height: position.height, center: CGPoint(x: position.width / 2, y: -(position.height / 2))))
+        case .full:
+            webView.set(position: ViewPosition(width: position.width, height: position.height, center: CGPoint(x: position.width / 2, y: -(position.height / 2))))
+        }
+    }
+
     private static func safeAreaInsets(for view: UIView) -> UIEdgeInsets {
         if #available(iOS 11, *) {
             return view.safeAreaInsets
@@ -251,15 +353,6 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
         presenter?.webViewDidFinish()
     }
     
-    fileprivate func trackInAppClick(destinationUrl: String) {
-        if let messageMetadata = parameters.messageMetadata {
-            internalAPI?.trackInAppClick(messageMetadata.message,
-                                         location: messageMetadata.location,
-                                         inboxSessionId: parameters.inboxSessionId,
-                                         clickedUrl: destinationUrl)
-        }
-    }
-    
     func webView(_: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         guard navigationAction.navigationType == .linkActivated, let url = navigationAction.request.url else {
             decisionHandler(.allow)
@@ -282,13 +375,23 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
         clickedLink = destinationUrl
         
         if parameters.isModal {
-            dismiss(animated: true) { [weak self, destinationUrl] in
-                self?.futureClickedURL.resolve(with: url)
-                self?.trackInAppClick(destinationUrl: destinationUrl)
+            if parameters.animationParams.shouldAnimate {
+                animateWhileLeaving(position: webView.position, url: url, destinationUrl: destinationUrl)
+            } else {
+                dismiss(animated: false) { [weak internalAPI, futureClickedURL, parameters, url, destinationUrl] in
+                    Self.trackClickOnDismiss(internalAPI: internalAPI,
+                                             params: parameters,
+                                             futureClickedURL: futureClickedURL,
+                                             withURL: url,
+                                             andDestinationURL: destinationUrl)
+                }
             }
         } else {
-            futureClickedURL.resolve(with: url)
-            trackInAppClick(destinationUrl: destinationUrl)
+            Self.trackClickOnDismiss(internalAPI: internalAPI,
+                                     params: parameters,
+                                     futureClickedURL: futureClickedURL,
+                                     withURL: url,
+                                     andDestinationURL: destinationUrl)
             
             navigationController?.popViewController(animated: true)
         }
