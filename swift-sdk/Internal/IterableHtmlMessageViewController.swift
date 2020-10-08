@@ -165,13 +165,21 @@ class IterableHtmlMessageViewController: UIViewController {
         return webView as WebViewProtocol
     }
     
-    private static func calculateStartPositionForAnimation(location: IterableMessageLocation, position: ViewPosition) -> ViewPosition {
+    private static func calculateStartPositionForAnimation(location: IterableMessageLocation,
+                                                           position: ViewPosition,
+                                                           safeAreaInsets: UIEdgeInsets) -> ViewPosition {
         let startPosition: ViewPosition
         switch location {
         case .top:
-            startPosition = ViewPosition(width: position.width, height: position.height, center: CGPoint(x: position.center.x, y:  position.center.y - position.height))
+            startPosition = ViewPosition(width: position.width,
+                                         height: position.height,
+                                         center: CGPoint(x: position.center.x,
+                                                         y:  position.center.y - position.height - safeAreaInsets.top))
         case .bottom:
-            startPosition = ViewPosition(width: position.width, height: position.height, center: CGPoint(x: position.center.x, y:  position.center.y + position.height))
+            startPosition = ViewPosition(width: position.width,
+                                         height: position.height,
+                                         center: CGPoint(x: position.center.x,
+                                                         y:  position.center.y + position.height + safeAreaInsets.bottom))
         case .center:
             startPosition = position
         case .full:
@@ -257,7 +265,9 @@ class IterableHtmlMessageViewController: UIViewController {
 
     private func setInitialValuesForAnimation(position: ViewPosition) {
         view.backgroundColor = UIColor.clear
-        let startPosition = Self.calculateStartPositionForAnimation(location: location, position: position)
+        let startPosition = Self.calculateStartPositionForAnimation(location: location,
+                                                                    position: position,
+                                                                    safeAreaInsets: IterableHtmlMessageViewController.safeAreaInsets(for: view))
         let startAlpha = Self.calculateStartAlphaForAnimation(location: location)
         webView.set(position: startPosition)
         webView.view.alpha = startAlpha
