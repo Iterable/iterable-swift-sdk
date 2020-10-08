@@ -74,9 +74,7 @@ class IterableHtmlMessageViewController: UIViewController {
         
         super.loadView()
         
-        // :tqm CHANGE THIS!!!!!
-        // location = HtmlContentParser.location(fromPadding: parameters.padding)
-        location = parameters.animationParams.location
+        location = HtmlContentParser.location(fromPadding: parameters.padding)
 
         if parameters.isModal {
             view.backgroundColor = UIColor.clear
