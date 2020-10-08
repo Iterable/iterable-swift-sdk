@@ -17,7 +17,8 @@ class IterableHtmlMessageViewController: UIViewController {
     struct Parameters {
         struct AnimationParams {
             let shouldAnimate = true
-            let bgColor = UIColor.clear.withAlphaComponent(0.5)
+            let location = IterableMessageLocation.top
+            let bgColor = UIColor.brown.withAlphaComponent(0.5)
             let duration = 0.67
         }
 
@@ -73,7 +74,10 @@ class IterableHtmlMessageViewController: UIViewController {
         
         super.loadView()
         
-        location = HtmlContentParser.location(fromPadding: parameters.padding)
+        // :tqm CHANGE THIS!!!!!
+        // location = HtmlContentParser.location(fromPadding: parameters.padding)
+        location = parameters.animationParams.location
+
         if parameters.isModal {
             view.backgroundColor = UIColor.clear
         } else {
@@ -163,6 +167,38 @@ class IterableHtmlMessageViewController: UIViewController {
         return webView as WebViewProtocol
     }
     
+    private static func calculateStartPositionForAnimation(location: IterableMessageLocation, position: ViewPosition) -> ViewPosition {
+        let startPosition: ViewPosition
+        switch location {
+        case .top:
+            startPosition = ViewPosition(width: position.width, height: position.height, center: CGPoint(x: position.center.x, y:  position.center.y - position.height))
+        case .bottom:
+            startPosition = ViewPosition(width: position.width, height: position.height, center: CGPoint(x: position.center.x, y:  position.center.y + position.height))
+        case .center:
+            startPosition = position
+        case .full:
+            startPosition = position
+        }
+        
+        return startPosition
+    }
+
+    private static func calculateStartAlphaForAnimation(location: IterableMessageLocation) -> CGFloat {
+        let startAlpha: CGFloat
+        switch location {
+        case .top:
+            startAlpha = 1.0
+        case .bottom:
+            startAlpha = 1.0
+        case .center:
+            startAlpha = 0.0
+        case .full:
+            startAlpha = 0.0
+        }
+        
+        return startAlpha
+    }
+
     private static func animate(duration: TimeInterval,
                                 initialValues: @escaping () -> Void,
                                 finalValues: @escaping () -> Void,
@@ -213,36 +249,27 @@ class IterableHtmlMessageViewController: UIViewController {
     
     private func animateWhileEntering(position: ViewPosition) {
         Self.animate(duration: parameters.animationParams.duration) { [weak self] in
-            self?.setInitialValuesForAnimationWhileEntering(position: position)
+            self?.setInitialValuesForAnimation(position: position)
         } finalValues: { [weak self] in
-            self?.setFinalValuesForAnimationWhileEntering(position: position)
+            self?.view.backgroundColor = self?.parameters.animationParams.bgColor
+            self?.webView.set(position: position)
+            self?.webView.view.alpha = 1.0
         }
     }
 
-    private func setInitialValuesForAnimationWhileEntering(position: ViewPosition) {
+    private func setInitialValuesForAnimation(position: ViewPosition) {
         view.backgroundColor = UIColor.clear
-        switch location {
-        case .top:
-            webView.set(position: ViewPosition(width: position.width, height: position.height, center: CGPoint(x: position.width / 2, y: -(position.height / 2))))
-        case .bottom:
-            webView.set(position: ViewPosition(width: position.width, height: position.height, center: CGPoint(x: position.width / 2, y: -(position.height / 2))))
-        case .center:
-            webView.set(position: ViewPosition(width: position.width, height: position.height, center: CGPoint(x: position.width / 2, y: -(position.height / 2))))
-        case .full:
-            webView.set(position: ViewPosition(width: position.width, height: position.height, center: CGPoint(x: position.width / 2, y: -(position.height / 2))))
-        }
-    }
-
-    private func setFinalValuesForAnimationWhileEntering(position: ViewPosition) {
-        view.backgroundColor = parameters.animationParams.bgColor
-        webView.set(position: position)
+        let startPosition = Self.calculateStartPositionForAnimation(location: location, position: position)
+        let startAlpha = Self.calculateStartAlphaForAnimation(location: location)
+        webView.set(position: startPosition)
+        webView.view.alpha = startAlpha
     }
     
     private func animateWhileLeaving(position: ViewPosition, url: URL, destinationUrl: String) {
         ITBInfo()
         Self.animate(duration: parameters.animationParams.duration) {
         } finalValues: { [weak self] in
-            self?.setFinalValuesForAnimationWhileLeaving(position: position)
+            self?.setInitialValuesForAnimation(position: position)
         } completion: { [weak self, weak internalApi = internalAPI, futureClickedURL = futureClickedURL, parameters = parameters] in
             self?.dismiss(animated: false, completion: {
                 Self.trackClickOnDismiss(internalAPI: internalApi,
@@ -254,24 +281,6 @@ class IterableHtmlMessageViewController: UIViewController {
         }
     }
     
-    private func performAnimationCompletionWhileLeaving() {
-        ITBInfo()
-    }
-
-    private func setFinalValuesForAnimationWhileLeaving(position: ViewPosition) {
-        view.backgroundColor = UIColor.clear
-        switch location {
-        case .top:
-            webView.set(position: ViewPosition(width: position.width, height: position.height, center: CGPoint(x: position.width / 2, y: -(position.height / 2))))
-        case .bottom:
-            webView.set(position: ViewPosition(width: position.width, height: position.height, center: CGPoint(x: position.width / 2, y: -(position.height / 2))))
-        case .center:
-            webView.set(position: ViewPosition(width: position.width, height: position.height, center: CGPoint(x: position.width / 2, y: -(position.height / 2))))
-        case .full:
-            webView.set(position: ViewPosition(width: position.width, height: position.height, center: CGPoint(x: position.width / 2, y: -(position.height / 2))))
-        }
-    }
-
     private static func safeAreaInsets(for view: UIView) -> UIEdgeInsets {
         if #available(iOS 11, *) {
             return view.safeAreaInsets
