@@ -288,7 +288,23 @@ class IterableHtmlMessageViewController: UIViewController {
             })
         }
     }
-    
+
+    private func animateWhileLeavingX(position: ViewPosition, url: URL, destinationUrl: String) {
+        ITBInfo()
+        Self.animate(duration: parameters.animationParams.duration) {
+        } finalValues: { [weak self] in
+            self?.setInitialValuesForAnimation(position: position)
+        } completion: { [weak self, weak internalApi = internalAPI, futureClickedURL = futureClickedURL, parameters = parameters] in
+            self?.dismiss(animated: false, completion: {
+                Self.trackClickOnDismiss(internalAPI: internalApi,
+                                         params: parameters,
+                                         futureClickedURL: futureClickedURL,
+                                         withURL: url,
+                                         andDestinationURL: destinationUrl)
+            })
+        }
+    }
+
     private static func safeAreaInsets(for view: UIView) -> UIEdgeInsets {
         if #available(iOS 11, *) {
             return view.safeAreaInsets
@@ -339,11 +355,13 @@ class IterableHtmlMessageViewController: UIViewController {
         position.center.x = parentPosition.width * (paddingLeft + notificationWidth / 2) / 100
         
         // set center y
-        let halfWebViewHeight = inAppHeight / 2
         switch location {
         case .top:
-            position.center.y = halfWebViewHeight + safeAreaInsets.top
+            position.height = position.height + safeAreaInsets.top
+            let halfWebViewHeight = position.height / 2
+            position.center.y = halfWebViewHeight
         case .bottom:
+            let halfWebViewHeight = position.height / 2
             position.center.y = parentPosition.height - halfWebViewHeight - safeAreaInsets.bottom
         default: break
         }
