@@ -10,10 +10,10 @@ enum IterableError: Error {
 }
 
 extension IterableError: LocalizedError {
-    public var localizedDescription: String {
+    var errorDescription: String? {
         switch self {
         case let .general(description):
-            return description
+            return NSLocalizedString(description, comment: "error description")
         }
     }
 }
@@ -128,6 +128,20 @@ extension Future {
         onError { error in
             let nextError = closure(error)
             promise.reject(with: nextError)
+        }
+        
+        return promise
+    }
+    
+    func replaceError(with defaultForError: Value) -> Future<Value, Failure> {
+        let promise = Promise<Value, Failure>()
+        
+        onSuccess { value in
+            promise.resolve(with: value)
+        }
+        
+        onError { _ in
+            promise.resolve(with: defaultForError)
         }
         
         return promise

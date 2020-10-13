@@ -78,21 +78,23 @@ struct UserNotificationResponse: NotificationResponseProtocol {
 }
 
 /// Abstraction of push tracking
-public protocol PushTrackerProtocol: AnyObject {
+protocol PushTrackerProtocol: AnyObject {
     var lastPushPayload: [AnyHashable: Any]? { get }
     
+    @discardableResult
     func trackPushOpen(_ userInfo: [AnyHashable: Any],
                        dataFields: [AnyHashable: Any]?,
                        onSuccess: OnSuccessHandler?,
-                       onFailure: OnFailureHandler?)
+                       onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
     
+    @discardableResult
     func trackPushOpen(_ campaignId: NSNumber,
                        templateId: NSNumber?,
                        messageId: String,
                        appAlreadyRunning: Bool,
                        dataFields: [AnyHashable: Any]?,
                        onSuccess: OnSuccessHandler?,
-                       onFailure: OnFailureHandler?)
+                       onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
 }
 
 extension PushTrackerProtocol {
@@ -100,8 +102,8 @@ extension PushTrackerProtocol {
                        dataFields: [AnyHashable: Any]? = nil) {
         trackPushOpen(userInfo,
                       dataFields: dataFields,
-                      onSuccess: IterableAPIInternal.defaultOnSuccess("trackPushOpen"),
-                      onFailure: IterableAPIInternal.defaultOnFailure("trackPushOpen"))
+                      onSuccess: nil,
+                      onFailure: nil)
     }
     
     func trackPushOpen(_ campaignId: NSNumber,
@@ -114,8 +116,8 @@ extension PushTrackerProtocol {
                       messageId: messageId,
                       appAlreadyRunning: appAlreadyRunning,
                       dataFields: dataFields,
-                      onSuccess: IterableAPIInternal.defaultOnSuccess("trackPushOpen"),
-                      onFailure: IterableAPIInternal.defaultOnFailure("trackPushOpen"))
+                      onSuccess: nil,
+                      onFailure: nil)
     }
 }
 
@@ -127,11 +129,11 @@ extension PushTrackerProtocol {
 extension UIApplication: ApplicationStateProviderProtocol {}
 
 struct IterableAppIntegrationInternal {
-    private let tracker: PushTrackerProtocol
+    private weak var tracker: PushTrackerProtocol?
     private let urlDelegate: IterableURLDelegate?
     private let customActionDelegate: IterableCustomActionDelegate?
     private let urlOpener: UrlOpenerProtocol?
-    private let inAppNotifiable: InAppNotifiable
+    private weak var inAppNotifiable: InAppNotifiable?
     
     init(tracker: PushTrackerProtocol,
          urlDelegate: IterableURLDelegate? = nil,
@@ -160,10 +162,10 @@ struct IterableAppIntegrationInternal {
         if case let NotificationInfo.silentPush(silentPush) = NotificationHelper.inspect(notification: userInfo) {
             switch silentPush.notificationType {
             case .update:
-                _ = inAppNotifiable.scheduleSync()
+                _ = inAppNotifiable?.scheduleSync()
             case .remove:
                 if let messageId = silentPush.messageId {
-                    inAppNotifiable.onInAppRemoved(messageId: messageId)
+                    inAppNotifiable?.onInAppRemoved(messageId: messageId)
                 } else {
                     ITBError("messageId not found in 'remove' silent push")
                 }
@@ -220,7 +222,7 @@ struct IterableAppIntegrationInternal {
         
         // Track push open
         if let _ = dataFields[JsonKey.actionIdentifier.jsonKey] { // i.e., if action is not dismiss
-            tracker.trackPushOpen(userInfo, dataFields: dataFields)
+            tracker?.trackPushOpen(userInfo, dataFields: dataFields)
         }
         
         // Execute the action
@@ -312,7 +314,7 @@ struct IterableAppIntegrationInternal {
         
         // Track push open
         let dataFields = [JsonKey.actionIdentifier.jsonKey: JsonValue.ActionIdentifier.pushOpenDefault]
-        tracker.trackPushOpen(userInfo, dataFields: dataFields)
+        tracker?.trackPushOpen(userInfo, dataFields: dataFields)
         
         guard let itbl = IterableAppIntegrationInternal.itblValue(fromUserInfo: userInfo) else {
             return
@@ -331,7 +333,7 @@ struct IterableAppIntegrationInternal {
     }
     
     private func alreadyTracked(userInfo: [AnyHashable: Any]) -> Bool {
-        guard let lastPushPayload = tracker.lastPushPayload else {
+        guard let lastPushPayload = tracker?.lastPushPayload else {
             return false
         }
         
