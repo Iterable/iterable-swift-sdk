@@ -93,7 +93,139 @@ class InAppParsingTests: XCTestCase {
         padding.right = CGFloat(HtmlContentParser.decodePadding(payload["right"]))
         XCTAssertEqual(padding, UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
     }
-    
+
+    func testParseShouldAnimate1() {
+        let inAppSettings = [
+            "something": "nothing"
+        ]
+        let shouldAnimate = HtmlContentParser.parseShouldAnimate(fromInAppSettings: inAppSettings)
+        XCTAssertEqual(shouldAnimate, false)
+    }
+
+    func testParseShouldAnimate2() {
+        let inAppSettings = [
+            "shouldAnimate": true
+        ]
+        let shouldAnimate = HtmlContentParser.parseShouldAnimate(fromInAppSettings: inAppSettings)
+        XCTAssertEqual(shouldAnimate, true)
+    }
+
+    func testParseShouldAnimate3() {
+        let inAppSettings = [
+            "shouldAnimate": 1
+        ]
+        let shouldAnimate = HtmlContentParser.parseShouldAnimate(fromInAppSettings: inAppSettings)
+        XCTAssertEqual(shouldAnimate, true)
+    }
+
+    func testParseShouldAnimate4() {
+        let inAppSettings = [
+            "shouldAnimate": "1"
+        ]
+        let shouldAnimate = HtmlContentParser.parseShouldAnimate(fromInAppSettings: inAppSettings)
+        XCTAssertEqual(shouldAnimate, true)
+    }
+
+    func testParseShouldAnimate5() {
+        let inAppSettings = [
+            "shouldAnimate": false
+        ]
+        let shouldAnimate = HtmlContentParser.parseShouldAnimate(fromInAppSettings: inAppSettings)
+        XCTAssertEqual(shouldAnimate, false)
+    }
+
+    func testParseShouldAnimate6() {
+        let inAppSettings = [
+            "shouldAnimate": 0
+        ]
+        let shouldAnimate = HtmlContentParser.parseShouldAnimate(fromInAppSettings: inAppSettings)
+        XCTAssertEqual(shouldAnimate, false)
+    }
+
+    func testParseShouldAnimate7() {
+        let inAppSettings = [
+            "shouldAnimate": "0"
+        ]
+        let shouldAnimate = HtmlContentParser.parseShouldAnimate(fromInAppSettings: inAppSettings)
+        XCTAssertEqual(shouldAnimate, false)
+    }
+
+    func testBackgroundColor1() {
+        let inAppSettings = [
+            "something": "nothing"
+        ]
+        
+        let color = HtmlContentParser.parseBackgroundColor(fromInAppSettings: inAppSettings)
+        XCTAssertNil(color)
+    }
+
+    func testBackgroundColor2() {
+        let inAppSettings = [
+            "bgColor": [
+                "hexXXX": "007788",
+                "alpha": 0.5],
+        ]
+        
+        let color = HtmlContentParser.parseBackgroundColor(fromInAppSettings: inAppSettings)
+        XCTAssertNil(color)
+    }
+
+    func testBackgroundColor3() {
+        let inAppSettings = [
+            "bgColor": [
+                "hex": "xyz",
+                "alpha": 0.5],
+        ]
+        
+        let color = HtmlContentParser.parseBackgroundColor(fromInAppSettings: inAppSettings)
+        XCTAssertNil(color)
+    }
+
+    func testBackgroundColor4() {
+        let inAppSettings = [
+            "bgColor": [
+                "hex": "007788",
+                "alpha": 0.4],
+        ]
+        
+        let color = HtmlContentParser.parseBackgroundColor(fromInAppSettings: inAppSettings)!
+
+        XCTAssertTrue(TestUtils.areEqual(color1: color, color2: UIColor(red: 0,
+                                                                        green: CGFloat(Int("77", radix: 16)!) / 255,
+                                                                        blue: CGFloat(Int("88", radix: 16)!) / 255,
+                                                                        alpha: 0.4)))
+    }
+
+    func testBackgroundColor5() {
+        let inAppSettings = [
+            "bgColor": [
+                "hex": "007788",
+                "alphaXXX": 0.4],
+        ]
+        
+        let color = HtmlContentParser.parseBackgroundColor(fromInAppSettings: inAppSettings)!
+
+        XCTAssertTrue(TestUtils.areEqual(color1: color, color2: UIColor(red: 0,
+                                                                        green: CGFloat(Int("77", radix: 16)!) / 255,
+                                                                        blue: CGFloat(Int("88", radix: 16)!) / 255,
+                                                                        alpha: 0.0)))
+    }
+
+    func testBackgroundColor6() {
+        let inAppSettings = [
+            "bgColor": [
+                "hex": "#007788",
+                "alpha": 0.4],
+        ]
+        
+        let color = HtmlContentParser.parseBackgroundColor(fromInAppSettings: inAppSettings)!
+
+        XCTAssertTrue(TestUtils.areEqual(color1: color, color2: UIColor(red: 0,
+                                                                        green: CGFloat(Int("77", radix: 16)!) / 255,
+                                                                        blue: CGFloat(Int("88", radix: 16)!) / 255,
+                                                                        alpha: 0.4)))
+    }
+
     func testNotificationPaddingFull() {
         let notificationType = HtmlContentParser.location(fromPadding: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0))
         XCTAssertEqual(notificationType, .full)
@@ -659,3 +791,4 @@ class InAppParsingTests: XCTestCase {
     private static let email = "user@example.com"
     private static let userId = "userId1"
 }
+
