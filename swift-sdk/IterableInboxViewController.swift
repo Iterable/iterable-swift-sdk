@@ -260,7 +260,7 @@ open class IterableInboxViewController: UITableViewController {
             } else {
                 setModalPresentationStyle(for: viewController)
                 
-                present(viewController, animated: true)
+                present(viewController, animated: false)
             }
         }
     }
@@ -376,6 +376,7 @@ open class IterableInboxViewController: UITableViewController {
             viewController.modalPresentationStyle = .overFullScreen
             return
         }
+        viewController.modalPresentationStyle = .overFullScreen
     }
 }
 

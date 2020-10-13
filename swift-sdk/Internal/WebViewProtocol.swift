@@ -15,6 +15,7 @@ struct ViewPosition: Equatable {
 
 protocol WebViewProtocol {
     var view: UIView { get }
+    var position: ViewPosition { get }
     @discardableResult func loadHTMLString(_ string: String, baseURL: URL?) -> WKNavigation?
     func set(position: ViewPosition)
     func set(navigationDelegate: WKNavigationDelegate?)
@@ -26,6 +27,10 @@ protocol WebViewProtocol {
 extension WKWebView: WebViewProtocol {
     var view: UIView {
         self
+    }
+    
+    var position: ViewPosition {
+        ViewPosition(width: frame.size.width, height: frame.size.height, center: center)
     }
     
     func set(position: ViewPosition) {

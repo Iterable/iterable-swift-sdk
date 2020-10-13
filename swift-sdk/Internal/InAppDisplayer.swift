@@ -73,7 +73,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
             htmlMessageVC.view.backgroundColor = UIColor.white.withAlphaComponent(CGFloat(backgroundAlpha))
         }
         
-        htmlMessageVC.modalPresentationStyle = .overCurrentContext
+        htmlMessageVC.modalPresentationStyle = .overFullScreen
         
         let presenter = InAppPresenter(topViewController: topViewController, htmlMessageViewController: htmlMessageVC)
         presenter.show()
