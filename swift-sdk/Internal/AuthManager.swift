@@ -42,7 +42,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     }
     
     // @objc attribute only needed for the pre-iOS 10 Timer constructor in queueAuthTokenExpirationRefresh
-    @objc func requestNewAuthToken(hasFailedPriorAuth: Bool = false, onSuccess: ((String?) -> Void)? = nil) {
+    @objc func requestNewAuthToken(hasFailedPriorAuth: Bool = false, onSuccess: AuthTokenRetrievalHandler? = nil) {
         guard !pendingAuth else {
             return
         }
@@ -92,7 +92,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         queueAuthTokenExpirationRefresh(authToken)
     }
     
-    private func onAuthTokenReceived(retrievedAuthToken: String?, onSuccess: ((String?) -> Void)?) {
+    private func onAuthTokenReceived(retrievedAuthToken: String?, onSuccess: AuthTokenRetrievalHandler?) {
         pendingAuth = false
         
         authToken = retrievedAuthToken
