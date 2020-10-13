@@ -29,18 +29,42 @@ extension Dictionary where Key == AnyHashable, Value == Any {
         self[key.jsonKey]
     }
     
+    func getValue(for key: JsonKeyRepresentable) -> Any? {
+        self[key.jsonKey]
+    }
+    
     func getStringValue(for key: JsonKey, withDefault default: String? = nil) -> String? {
         getValue(for: key) as? String ?? `default`
     }
-    
+
+    func getStringValue(for key: JsonKeyRepresentable, withDefault default: String? = nil) -> String? {
+        getValue(for: key) as? String ?? `default`
+    }
+
     func getIntValue(for key: JsonKey) -> Int? {
         getValue(for: key) as? Int
     }
-    
+
+    func getIntValue(for key: JsonKeyRepresentable) -> Int? {
+        getValue(for: key) as? Int
+    }
+
+    func getDoubleValue(for key: JsonKey) -> Double? {
+        getValue(for: key) as? Double
+    }
+
+    func getDoubleValue(for key: JsonKeyRepresentable) -> Double? {
+        getValue(for: key) as? Double
+    }
+
     func getBoolValue(for key: JsonKey) -> Bool? {
         getValue(for: key) as? Bool
     }
-    
+
+    func getBoolValue(for key: JsonKeyRepresentable) -> Bool? {
+        getValue(for: key) as? Bool
+    }
+
     mutating func setValue(for key: JsonKey, value: JsonValueRepresentable?) {
         self[key.jsonKey] = value?.jsonValue
     }
