@@ -60,7 +60,7 @@ class InAppPresenterTests: XCTestCase {
     }
     
     private func getEmptyHtmlInAppContent() -> IterableHtmlInAppContent {
-        IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
+        IterableHtmlInAppContent(edgeInsets: .zero, html: "")
     }
     
     private func getEmptyInAppMessage() -> IterableInAppMessage {

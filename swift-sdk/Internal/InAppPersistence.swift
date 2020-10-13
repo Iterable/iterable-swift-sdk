@@ -127,7 +127,6 @@ extension IterableInAppTrigger: Codable {
 extension IterableHtmlInAppContent: Codable {
     enum CodingKeys: String, CodingKey {
         case edgeInsets
-        case backgroundAlpha
         case html
     }
     
@@ -135,28 +134,26 @@ extension IterableHtmlInAppContent: Codable {
         guard let container = try? decoder.container(keyedBy: CodingKeys.self) else {
             ITBError("Can not decode, returning default")
             
-            return IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
+            return IterableHtmlInAppContent(edgeInsets: .zero, html: "")
         }
         
         let edgeInsets = (try? container.decode(UIEdgeInsets.self, forKey: .edgeInsets)) ?? .zero
-        let backgroundAlpha = (try? container.decode(Double.self, forKey: .backgroundAlpha)) ?? 0.0
         let html = (try? container.decode(String.self, forKey: .html)) ?? ""
         
-        return IterableHtmlInAppContent(edgeInsets: edgeInsets, backgroundAlpha: backgroundAlpha, html: html)
+        return IterableHtmlInAppContent(edgeInsets: edgeInsets, html: html)
     }
     
     static func encode(htmlContent: IterableHtmlInAppContent, to encoder: Encoder) {
         var container = encoder.container(keyedBy: CodingKeys.self)
         
         try? container.encode(htmlContent.edgeInsets, forKey: .edgeInsets)
-        try? container.encode(htmlContent.backgroundAlpha, forKey: .backgroundAlpha)
         try? container.encode(htmlContent.html, forKey: .html)
     }
     
     public convenience init(from decoder: Decoder) {
         let htmlContent = IterableHtmlInAppContent.htmlContent(from: decoder)
         
-        self.init(edgeInsets: htmlContent.edgeInsets, backgroundAlpha: htmlContent.backgroundAlpha, html: htmlContent.html)
+        self.init(edgeInsets: htmlContent.edgeInsets, html: htmlContent.html)
     }
     
     public func encode(to encoder: Encoder) {
@@ -277,7 +274,7 @@ extension IterableInAppMessage: Codable {
     }
     
     private static func createDefaultContent() -> IterableInAppContent {
-        IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
+        IterableHtmlInAppContent(edgeInsets: .zero, html: "")
     }
     
     private static func serialize(customPayload: [AnyHashable: Any]?) -> Data? {

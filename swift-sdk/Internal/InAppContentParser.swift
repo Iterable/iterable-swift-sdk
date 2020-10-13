@@ -53,18 +53,6 @@ struct HtmlContentParser {
         PaddingParser.decodePadding(value)
     }
     
-    static func getBackgroundAlpha(fromInAppSettings settings: [AnyHashable: Any]?) -> Double {
-        guard let settings = settings else {
-            return 0
-        }
-        
-        if let number = settings[JsonKey.InApp.backgroundAlpha] as? NSNumber {
-            return number.doubleValue
-        } else {
-            return 0
-        }
-    }
-
     struct PaddingParser {
         enum PaddingEdge: String, JsonKeyRepresentable {
             var jsonKey: String {
@@ -150,9 +138,8 @@ extension HtmlContentParser: ContentFromJsonParser {
         }
         
         let inAppDisplaySettings = json[JsonKey.InApp.inAppDisplaySettings] as? [AnyHashable: Any]
-        let backgroundAlpha = getBackgroundAlpha(fromInAppSettings: inAppDisplaySettings)
         let edgeInsets = getPadding(fromInAppSettings: inAppDisplaySettings)
         
-        return .success(content: IterableHtmlInAppContent(edgeInsets: edgeInsets, backgroundAlpha: backgroundAlpha, html: html))
+        return .success(content: IterableHtmlInAppContent(edgeInsets: edgeInsets, html: html))
     }
 }

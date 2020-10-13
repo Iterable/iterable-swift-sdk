@@ -1374,7 +1374,7 @@ class InAppTests: XCTestCase {
         let message = IterableInAppMessage(messageId: "messageId-1",
                                            campaignId: 1,
                                            expiresAt: mockDateProvider.currentDate.addingTimeInterval(1.0 * 60.0), // one minute from now
-                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "<html></html>"))
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, html: "<html></html>"))
         mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalApi, messages: [message]).onSuccess { [weak internalApi] _ in
             guard let internalApi = internalApi else {
                 XCTFail("Expected internalApi to be not nil")
@@ -1444,7 +1444,7 @@ class InAppTests: XCTestCase {
     }
     
     private func getEmptyInAppContent() -> IterableInAppContent {
-        IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0, html: "")
+        IterableHtmlInAppContent(edgeInsets: .zero, html: "")
     }
     
     fileprivate func verifyCustomActionIsCalled(expectation1: XCTestExpectation, customActionScheme: String, customActionName: String) {
@@ -1512,7 +1512,6 @@ extension IterableHtmlInAppContent {
     override public var description: String {
         IterableUtil.describe("type", type,
                               "edgeInsets", edgeInsets,
-                              "backgroundAlpha", backgroundAlpha,
                               "html", html, pairSeparator: " = ", separator: ", ")
     }
 }

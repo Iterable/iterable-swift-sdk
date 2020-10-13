@@ -90,16 +90,13 @@ public extension Notification.Name {
     public let type = IterableInAppContentType.html
     
     public let edgeInsets: UIEdgeInsets
-    public let backgroundAlpha: Double
     public let html: String
     
     // MARK: - Private/Internal
     
     init(edgeInsets: UIEdgeInsets,
-         backgroundAlpha: Double,
          html: String) {
         self.edgeInsets = edgeInsets
-        self.backgroundAlpha = backgroundAlpha
         self.html = html
     }
 }

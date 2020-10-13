@@ -52,11 +52,15 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
     }
     
     func testWebViewTopPositioningWithSafeAreaInsets() {
-        checkPositioning(viewPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
-                         safeAreaInsets: UIEdgeInsets(top: 25, left: 0, bottom: 30, right: 0),
-                         inAppHeight: 200,
+        let inAppHeight: CGFloat = 200
+        let safeAreaTop: CGFloat = 25
+        let calculatedHeight = inAppHeight + safeAreaTop
+        let calculatedCenterY = calculatedHeight / 2
+        checkPositioning(viewPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 400 / 2)),
+                         safeAreaInsets: UIEdgeInsets(top: safeAreaTop, left: 0, bottom: 30, right: 0),
+                         inAppHeight: inAppHeight,
                          messageLocation: .top,
-                         expectedWebViewPosition: ViewPosition(width: 1234, height: 200, center: CGPoint(x: 617.0, y: 125.0)))
+                         expectedWebViewPosition: ViewPosition(width: 1234, height: calculatedHeight, center: CGPoint(x: 617.0, y: calculatedCenterY)))
     }
     
     func testWebViewBottomPositioningWithSafeAreaInsets() {

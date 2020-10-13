@@ -129,20 +129,13 @@ class InAppParsingTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
-    func testGetBackgroundAlpha() {
-        XCTAssert(HtmlContentParser.getBackgroundAlpha(fromInAppSettings: nil) == 0)
-        XCTAssert(HtmlContentParser.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha": "x"]) == 0)
-        XCTAssert(HtmlContentParser.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha": 0.5]) == 0.5)
-        XCTAssert(HtmlContentParser.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha": 1]) == 1.0)
-    }
-    
     func testTrackInAppClickWithClickedUrl() {
         let message = IterableInAppMessage(messageId: "message1",
                                            campaignId: 1,
                                            trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "immediate"]),
                                            createdAt: nil,
                                            expiresAt: nil,
-                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
                                            saveToInbox: false,
                                            inboxMetadata: nil,
                                            customPayload: nil)
@@ -174,7 +167,7 @@ class InAppParsingTests: XCTestCase {
                                            trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                            createdAt: nil,
                                            expiresAt: nil,
-                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
                                            saveToInbox: true,
                                            inboxMetadata: nil,
                                            customPayload: nil)
@@ -227,7 +220,7 @@ class InAppParsingTests: XCTestCase {
                                            trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                            createdAt: nil,
                                            expiresAt: nil,
-                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
                                            saveToInbox: true,
                                            inboxMetadata: nil,
                                            customPayload: nil)
@@ -266,7 +259,7 @@ class InAppParsingTests: XCTestCase {
                                            trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                            createdAt: nil,
                                            expiresAt: nil,
-                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
                                            saveToInbox: true,
                                            inboxMetadata: nil,
                                            customPayload: nil)
@@ -302,7 +295,7 @@ class InAppParsingTests: XCTestCase {
                                            trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                            createdAt: nil,
                                            expiresAt: nil,
-                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
                                            saveToInbox: true,
                                            inboxMetadata: nil,
                                            customPayload: nil)

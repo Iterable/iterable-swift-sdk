@@ -91,7 +91,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return IterableInAppMessage(messageId: "message-\(id)",
                                     campaignId: TestHelper.generateIntGuid() as NSNumber,
                                     trigger: IterableInAppTrigger.neverTrigger,
-                                    content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 1.0, html: html),
+                                    content: IterableHtmlInAppContent(edgeInsets: .zero, html: html),
                                     saveToInbox: true,
                                     inboxMetadata: IterableInboxMetadata(title: "title-\(id)", subtitle: "subTitle-\(id)"))
     }

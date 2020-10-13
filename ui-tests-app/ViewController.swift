@@ -131,7 +131,7 @@ class ViewController: UIViewController {
         let html = """
             <a href="http://website/resource#something">Click Me</a>
         """
-        let content = IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: html)
+        let content = IterableHtmlInAppContent(edgeInsets: .zero, html: html)
         let message = IterableInAppMessage(messageId: messageId, campaignId: 1234, content: content)
         
         let config = IterableConfig()
@@ -164,7 +164,7 @@ class ViewController: UIViewController {
             <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>
             </body>
         """
-        let content = IterableHtmlInAppContent(edgeInsets: UIEdgeInsets(top: -1, left: 10, bottom: -1, right: 10), backgroundAlpha: 0.5, html: html)
+        let content = IterableHtmlInAppContent(edgeInsets: UIEdgeInsets(top: -1, left: 10, bottom: -1, right: 10), html: html)
         let message = IterableInAppMessage(messageId: messageId, campaignId: 1234, content: content)
         
         let config = IterableConfig()
@@ -193,7 +193,7 @@ class ViewController: UIViewController {
         let html = """
             <a href="http://website/resource#something">Click Me</a>
         """
-        let content = IterableHtmlInAppContent(edgeInsets: UIEdgeInsets(top: -1, left: 10, bottom: -1, right: 10), backgroundAlpha: 0.5, html: html)
+        let content = IterableHtmlInAppContent(edgeInsets: UIEdgeInsets(top: -1, left: 10, bottom: -1, right: 10), html: html)
         let inboxMetadata = IterableInboxMetadata(title: "Title #1", subtitle: "Subtitle #1", icon: nil)
         let message = IterableInAppMessage(messageId: messageId, campaignId: 1234, trigger: IterableInAppTrigger(dict: ["type": "never"]), content: content, saveToInbox: true, inboxMetadata: inboxMetadata)
         

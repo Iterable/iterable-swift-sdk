@@ -300,7 +300,7 @@ class RequestCreatorTests: XCTestCase {
     }
     
     private func getEmptyInAppContent() -> IterableHtmlInAppContent {
-        IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
+        IterableHtmlInAppContent(edgeInsets: .zero, html: "")
     }
 }
 
