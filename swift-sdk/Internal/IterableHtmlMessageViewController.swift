@@ -402,7 +402,8 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
             if parameters.shouldAnimate {
                 animateWhileLeaving(position: webView.position, url: url, destinationUrl: destinationUrl)
             } else {
-                dismiss(animated: false) { [weak internalAPI, futureClickedURL, parameters, url, destinationUrl] in
+                let animated = parameters.messageMetadata?.location == .inbox
+                dismiss(animated: animated) { [weak internalAPI, futureClickedURL, parameters, url, destinationUrl] in
                     Self.trackClickOnDismiss(internalAPI: internalAPI,
                                              params: parameters,
                                              futureClickedURL: futureClickedURL,
