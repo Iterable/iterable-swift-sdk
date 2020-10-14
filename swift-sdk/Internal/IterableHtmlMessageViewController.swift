@@ -15,21 +15,14 @@ enum IterableMessageLocation: Int {
 
 class IterableHtmlMessageViewController: UIViewController {
     struct Parameters {
-        struct AnimationParams {
-            let shouldAnimate = true
-            let location = IterableMessageLocation.top
-            let bgColor = UIColor.brown.withAlphaComponent(0.5)
-            let duration = 0.67
-        }
-
         let html: String
         let padding: UIEdgeInsets
         let messageMetadata: IterableInAppMessageMetadata?
         let isModal: Bool
         
         let inboxSessionId: String?
-        let animationParams = AnimationParams()
-        
+        let animationDuration = 0.67
+
         init(html: String,
              padding: UIEdgeInsets = .zero,
              messageMetadata: IterableInAppMessageMetadata? = nil,
@@ -41,6 +34,18 @@ class IterableHtmlMessageViewController: UIViewController {
             self.messageMetadata = messageMetadata
             self.isModal = isModal
             self.inboxSessionId = inboxSessionId
+        }
+        
+        var shouldAnimate: Bool {
+            messageMetadata
+                .flatMap { $0.message.content as? IterableHtmlInAppContent }
+                .map { $0.shouldAnimate } ?? false
+        }
+        
+        var backgroundColor: UIColor {
+            messageMetadata
+                .flatMap { $0.message.content as? IterableHtmlInAppContent }
+                .map { $0.backgroundColor } ?? IterableHtmlInAppContent.defaultBackgroundColor()
         }
     }
     
@@ -245,7 +250,7 @@ class IterableHtmlMessageViewController: UIViewController {
                                                                    paddingRight: parameters.padding.right,
                                                                    location: location)
             .onSuccess { [weak self] position in
-                if self?.parameters.isModal == true && self?.parameters.animationParams.shouldAnimate == true {
+                if self?.parameters.isModal == true && self?.parameters.shouldAnimate == true {
                     self?.animateWhileEntering(position: position)
                 } else {
                     self?.webView.set(position: position)
@@ -254,10 +259,10 @@ class IterableHtmlMessageViewController: UIViewController {
     }
     
     private func animateWhileEntering(position: ViewPosition) {
-        Self.animate(duration: parameters.animationParams.duration) { [weak self] in
+        Self.animate(duration: parameters.animationDuration) { [weak self] in
             self?.setInitialValuesForAnimation(position: position)
         } finalValues: { [weak self] in
-            self?.view.backgroundColor = self?.parameters.animationParams.bgColor
+            self?.view.backgroundColor = self?.parameters.backgroundColor
             self?.webView.set(position: position)
             self?.webView.view.alpha = 1.0
         }
@@ -275,23 +280,7 @@ class IterableHtmlMessageViewController: UIViewController {
     
     private func animateWhileLeaving(position: ViewPosition, url: URL, destinationUrl: String) {
         ITBInfo()
-        Self.animate(duration: parameters.animationParams.duration) {
-        } finalValues: { [weak self] in
-            self?.setInitialValuesForAnimation(position: position)
-        } completion: { [weak self, weak internalApi = internalAPI, futureClickedURL = futureClickedURL, parameters = parameters] in
-            self?.dismiss(animated: false, completion: {
-                Self.trackClickOnDismiss(internalAPI: internalApi,
-                                         params: parameters,
-                                         futureClickedURL: futureClickedURL,
-                                         withURL: url,
-                                         andDestinationURL: destinationUrl)
-            })
-        }
-    }
-
-    private func animateWhileLeavingX(position: ViewPosition, url: URL, destinationUrl: String) {
-        ITBInfo()
-        Self.animate(duration: parameters.animationParams.duration) {
+        Self.animate(duration: parameters.animationDuration) {
         } finalValues: { [weak self] in
             self?.setInitialValuesForAnimation(position: position)
         } completion: { [weak self, weak internalApi = internalAPI, futureClickedURL = futureClickedURL, parameters = parameters] in
@@ -410,7 +399,7 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
         clickedLink = destinationUrl
         
         if parameters.isModal {
-            if parameters.animationParams.shouldAnimate {
+            if parameters.shouldAnimate {
                 animateWhileLeaving(position: webView.position, url: url, destinationUrl: destinationUrl)
             } else {
                 dismiss(animated: false) { [weak internalAPI, futureClickedURL, parameters, url, destinationUrl] in
