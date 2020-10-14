@@ -20,7 +20,7 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
     }
     
     func testWebViewTopPositioning() {
-        checkPositioning(viewPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
+        checkPositioning(parentPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
                          safeAreaInsets: .zero,
                          inAppHeight: 200,
                          messageLocation: .top,
@@ -28,7 +28,7 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
     }
     
     func testWebViewBottomPositioning() {
-        checkPositioning(viewPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
+        checkPositioning(parentPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
                          safeAreaInsets: .zero,
                          inAppHeight: 200,
                          messageLocation: .bottom,
@@ -36,7 +36,7 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
     }
     
     func testWebViewCenterPositioning() {
-        checkPositioning(viewPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
+        checkPositioning(parentPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
                          safeAreaInsets: .zero,
                          inAppHeight: 200,
                          messageLocation: .center,
@@ -44,7 +44,7 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
     }
     
     func testWebViewFullPositioning() {
-        checkPositioning(viewPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
+        checkPositioning(parentPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
                          safeAreaInsets: .zero,
                          inAppHeight: 200,
                          messageLocation: .full,
@@ -56,7 +56,7 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
         let safeAreaTop: CGFloat = 25
         let calculatedHeight = inAppHeight + safeAreaTop
         let calculatedCenterY = calculatedHeight / 2
-        checkPositioning(viewPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 400 / 2)),
+        checkPositioning(parentPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 400 / 2)),
                          safeAreaInsets: UIEdgeInsets(top: safeAreaTop, left: 0, bottom: 30, right: 0),
                          inAppHeight: inAppHeight,
                          messageLocation: .top,
@@ -64,14 +64,78 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
     }
     
     func testWebViewBottomPositioningWithSafeAreaInsets() {
-        checkPositioning(viewPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
+        checkPositioning(parentPosition: ViewPosition(width: 1234, height: 400, center: CGPoint(x: 617.0, y: 200.0)),
                          safeAreaInsets: UIEdgeInsets(top: 25, left: 0, bottom: 30, right: 0),
                          inAppHeight: 200,
                          messageLocation: .bottom,
                          expectedWebViewPosition: ViewPosition(width: 1234, height: 200, center: CGPoint(x: 617.0, y: 270.0)))
     }
     
-    private func checkPositioning(viewPosition: ViewPosition,
+    func testTopAnimation() {
+        let safeAreaInsets = UIEdgeInsets(top: 55, left: 0, bottom: 30, right: 0)
+        let width: CGFloat = 200
+        let height: CGFloat = 100
+        let center = CGPoint(x: width / 2, y: 200)
+        let position = ViewPosition(width: width, height: height, center: center)
+        let startPos = InAppCalculations.calculateAnimationStartPosition(for: position,
+                                                                         location: .top,
+                                                                         safeAreaInsets: safeAreaInsets)
+        let expectedPosition = ViewPosition(width: width,
+                                            height: height,
+                                            center: CGPoint(x: center.x,
+                                                            y: center.y - height - safeAreaInsets.top))
+        XCTAssertEqual(startPos, expectedPosition)
+        
+        XCTAssertEqual(InAppCalculations.calculateAnimationStartAlpha(location: .top), 1.0)
+    }
+
+    func testCenterAnimation() {
+        let safeAreaInsets = UIEdgeInsets(top: 55, left: 0, bottom: 30, right: 0)
+        let width: CGFloat = 200
+        let height: CGFloat = 100
+        let center = CGPoint(x: width / 2, y: 200)
+        let position = ViewPosition(width: width, height: height, center: center)
+        let startPos = InAppCalculations.calculateAnimationStartPosition(for: position,
+                                                                         location: .center,
+                                                                         safeAreaInsets: safeAreaInsets)
+        XCTAssertEqual(startPos, position)
+        
+        XCTAssertEqual(InAppCalculations.calculateAnimationStartAlpha(location: .center), 0.0)
+    }
+
+    func testFullAnimation() {
+        let safeAreaInsets = UIEdgeInsets(top: 55, left: 0, bottom: 30, right: 0)
+        let width: CGFloat = 200
+        let height: CGFloat = 100
+        let center = CGPoint(x: width / 2, y: 200)
+        let position = ViewPosition(width: width, height: height, center: center)
+        let startPos = InAppCalculations.calculateAnimationStartPosition(for: position,
+                                                                         location: .full,
+                                                                         safeAreaInsets: safeAreaInsets)
+        XCTAssertEqual(startPos, position)
+        
+        XCTAssertEqual(InAppCalculations.calculateAnimationStartAlpha(location: .full), 0.0)
+    }
+
+    func testBottomAnimation() {
+        let safeAreaInsets = UIEdgeInsets(top: 55, left: 0, bottom: 30, right: 0)
+        let width: CGFloat = 200
+        let height: CGFloat = 100
+        let center = CGPoint(x: width / 2, y: 200)
+        let position = ViewPosition(width: width, height: height, center: center)
+        let startPos = InAppCalculations.calculateAnimationStartPosition(for: position,
+                                                                         location: .bottom,
+                                                                         safeAreaInsets: safeAreaInsets)
+        let expectedPosition = ViewPosition(width: width,
+                                            height: height,
+                                            center: CGPoint(x: center.x,
+                                                            y: center.y + height + safeAreaInsets.bottom))
+        XCTAssertEqual(startPos, expectedPosition)
+        
+        XCTAssertEqual(InAppCalculations.calculateAnimationStartAlpha(location: .bottom), 1.0)
+    }
+
+    private func checkPositioning(parentPosition: ViewPosition,
                                   safeAreaInsets: UIEdgeInsets,
                                   inAppHeight: CGFloat,
                                   messageLocation: IterableMessageLocation,
@@ -81,7 +145,7 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
         
         let future = IterableHtmlMessageViewController.calculateWebViewPosition(webView: webView,
                                                                                 safeAreaInsets: safeAreaInsets,
-                                                                                parentPosition: viewPosition,
+                                                                                parentPosition: parentPosition,
                                                                                 paddingLeft: 0,
                                                                                 paddingRight: 0,
                                                                                 location: messageLocation)

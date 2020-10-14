@@ -8,9 +8,9 @@ import Foundation
 import UIKit
 
 struct InAppCalculations {
-    static func calculateAnimationStartPosition(location: IterableMessageLocation,
-                                       position: ViewPosition,
-                                       safeAreaInsets: UIEdgeInsets) -> ViewPosition {
+    static func calculateAnimationStartPosition(for position: ViewPosition,
+                                                location: IterableMessageLocation,
+                                                safeAreaInsets: UIEdgeInsets) -> ViewPosition {
         let startPosition: ViewPosition
         switch location {
         case .top:
@@ -23,9 +23,7 @@ struct InAppCalculations {
                                          height: position.height,
                                          center: CGPoint(x: position.center.x,
                                                          y:  position.center.y + position.height + safeAreaInsets.bottom))
-        case .center:
-            startPosition = position
-        case .full:
+        case .center, .full:
             startPosition = position
         }
         
@@ -35,13 +33,9 @@ struct InAppCalculations {
     static func calculateAnimationStartAlpha(location: IterableMessageLocation) -> CGFloat {
         let startAlpha: CGFloat
         switch location {
-        case .top:
+        case .top, .bottom:
             startAlpha = 1.0
-        case .bottom:
-            startAlpha = 1.0
-        case .center:
-            startAlpha = 0.0
-        case .full:
+        case .center, .full:
             startAlpha = 0.0
         }
         

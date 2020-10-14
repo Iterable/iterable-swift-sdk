@@ -215,8 +215,8 @@ class IterableHtmlMessageViewController: UIViewController {
         
     private func setInitialValuesForAnimation(position: ViewPosition) {
         view.backgroundColor = UIColor.clear
-        let startPosition = InAppCalculations.calculateAnimationStartPosition(location: location,
-                                                                              position: position,
+        let startPosition = InAppCalculations.calculateAnimationStartPosition(for: position,
+                                                                              location: location,
                                                                               safeAreaInsets: InAppCalculations.safeAreaInsets(for: view))
         let startAlpha = InAppCalculations.calculateAnimationStartAlpha(location: location)
         webView.set(position: startPosition)
