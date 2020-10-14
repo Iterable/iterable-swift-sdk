@@ -47,6 +47,10 @@ class IterableHtmlMessageViewController: UIViewController {
                 .flatMap { $0.message.content as? IterableHtmlInAppContent }
                 .map { $0.backgroundColor } ?? IterableHtmlInAppContent.defaultBackgroundColor()
         }
+        
+        var location: IterableMessageLocation {
+            HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.location(fromPadding: padding)
+        }
     }
     
     weak var presenter: InAppPresenter?
@@ -79,7 +83,7 @@ class IterableHtmlMessageViewController: UIViewController {
         
         super.loadView()
         
-        location = HtmlContentParser.location(fromPadding: parameters.padding)
+        location = parameters.location
 
         if parameters.isModal {
             view.backgroundColor = UIColor.clear

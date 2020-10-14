@@ -30,10 +30,10 @@ class InAppParsingTests: XCTestCase {
         XCTAssertEqual(insets, UIEdgeInsets.zero)
         
         var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(HtmlContentParser.decodePadding(payload["top"]))
-        padding.left = CGFloat(HtmlContentParser.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(HtmlContentParser.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(HtmlContentParser.decodePadding(payload["right"]))
+        padding.top = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["top"]))
+        padding.left = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["left"]))
+        padding.bottom = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["bottom"]))
+        padding.right = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["right"]))
         XCTAssertEqual(padding, UIEdgeInsets.zero)
     }
     
@@ -49,10 +49,10 @@ class InAppParsingTests: XCTestCase {
         XCTAssertEqual(insets, UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
         
         var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(HtmlContentParser.decodePadding(payload["top"]))
-        padding.left = CGFloat(HtmlContentParser.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(HtmlContentParser.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(HtmlContentParser.decodePadding(payload["right"]))
+        padding.top = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["top"]))
+        padding.left = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["left"]))
+        padding.bottom = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["bottom"]))
+        padding.right = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["right"]))
         XCTAssertEqual(padding, UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
     }
     
@@ -68,10 +68,10 @@ class InAppParsingTests: XCTestCase {
         XCTAssertEqual(insets, UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
         
         var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(HtmlContentParser.decodePadding(payload["top"]))
-        padding.left = CGFloat(HtmlContentParser.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(HtmlContentParser.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(HtmlContentParser.decodePadding(payload["right"]))
+        padding.top = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["top"]))
+        padding.left = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["left"]))
+        padding.bottom = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["bottom"]))
+        padding.right = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["right"]))
         XCTAssertEqual(padding, UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
     }
     
@@ -87,10 +87,10 @@ class InAppParsingTests: XCTestCase {
         XCTAssertEqual(insets, UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
         
         var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(HtmlContentParser.decodePadding(payload["top"]))
-        padding.left = CGFloat(HtmlContentParser.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(HtmlContentParser.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(HtmlContentParser.decodePadding(payload["right"]))
+        padding.top = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["top"]))
+        padding.left = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["left"]))
+        padding.bottom = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["bottom"]))
+        padding.right = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["right"]))
         XCTAssertEqual(padding, UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
     }
 
@@ -227,27 +227,27 @@ class InAppParsingTests: XCTestCase {
     }
 
     func testNotificationPaddingFull() {
-        let notificationType = HtmlContentParser.location(fromPadding: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0))
+        let notificationType = HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.location(fromPadding: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0))
         XCTAssertEqual(notificationType, .full)
     }
     
     func testNotificationPaddingTop() {
-        let notificationType = HtmlContentParser.location(fromPadding: UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
+        let notificationType = HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.location(fromPadding: UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
         XCTAssertEqual(notificationType, .top)
     }
     
     func testNotificationPaddingBottom() {
-        let notificationType = HtmlContentParser.location(fromPadding: UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
+        let notificationType = HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.location(fromPadding: UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
         XCTAssertEqual(notificationType, .bottom)
     }
     
     func testNotificationPaddingCenter() {
-        let notificationType = HtmlContentParser.location(fromPadding: UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
+        let notificationType = HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.location(fromPadding: UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
         XCTAssertEqual(notificationType, .center)
     }
     
     func testNotificationPaddingDefault() {
-        let notificationType = HtmlContentParser.location(fromPadding: UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0))
+        let notificationType = HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.location(fromPadding: UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0))
         XCTAssertEqual(notificationType, .center)
     }
     

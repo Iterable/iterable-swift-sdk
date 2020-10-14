@@ -45,14 +45,6 @@ struct HtmlContentParser {
         InAppDisplaySettingsParser.PaddingParser.getPadding(fromInAppSettings: settings)
     }
     
-    static func location(fromPadding padding: UIEdgeInsets) -> IterableMessageLocation {
-        InAppDisplaySettingsParser.PaddingParser.location(fromPadding: padding)
-    }
-
-    static func decodePadding(_ value: Any?) -> Int {
-        InAppDisplaySettingsParser.PaddingParser.decodePadding(value)
-    }
-    
     static func parseShouldAnimate(fromInAppSettings inAppSettings: [AnyHashable: Any]) -> Bool {
         InAppDisplaySettingsParser.parseShouldAnimate(fromInAppSettings: inAppSettings)
     }
