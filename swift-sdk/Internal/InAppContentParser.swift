@@ -184,6 +184,12 @@ extension HtmlContentParser: ContentFromJsonParser {
         let inAppDisplaySettings = json[JsonKey.InApp.inAppDisplaySettings] as? [AnyHashable: Any]
         let edgeInsets = getPadding(fromInAppSettings: inAppDisplaySettings)
         
-        return .success(content: IterableHtmlInAppContent(edgeInsets: edgeInsets, html: html))
+        let shouldAnimate = inAppDisplaySettings.map(Self.parseShouldAnimate(fromInAppSettings:)) ?? false
+        let backgroundColor = inAppDisplaySettings.flatMap(Self.parseBackgroundColor(fromInAppSettings:)) ?? IterableHtmlInAppContent.defaultBackgroundColor()
+        
+        return .success(content: IterableHtmlInAppContent(edgeInsets: edgeInsets,
+                                                          html: html,
+                                                          shouldAnimate: shouldAnimate,
+                                                          backgroundColor: backgroundColor))
     }
 }

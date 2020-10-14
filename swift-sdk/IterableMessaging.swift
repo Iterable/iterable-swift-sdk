@@ -105,8 +105,8 @@ public extension Notification.Name {
         self.shouldAnimate = shouldAnimate
         self.backgroundColor = backgroundColor
     }
-    
-    private static func defaultBackgroundColor() -> UIColor {
+
+    static func defaultBackgroundColor() -> UIColor {
         if #available(iOS 13, *) {
             return UIColor.systemBackground.withAlphaComponent(0.0)
         } else {
