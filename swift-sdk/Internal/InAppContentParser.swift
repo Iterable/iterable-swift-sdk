@@ -41,101 +41,126 @@ private protocol ContentFromJsonParser {
 }
 
 struct HtmlContentParser {
-    /**
-     Parses the padding offsets from the payload
-     
-     - parameter settings:         the settings distionary.
-     
-     - returns: the UIEdgeInset
-     */
     static func getPadding(fromInAppSettings settings: [AnyHashable: Any]?) -> UIEdgeInsets {
-        guard let dict = settings else {
-            return UIEdgeInsets.zero
-        }
-        
-        var padding = UIEdgeInsets.zero
-        
-        if let topPadding = dict[PADDING_TOP] {
-            padding.top = CGFloat(decodePadding(topPadding))
-        }
-        
-        if let leftPadding = dict[PADDING_LEFT] {
-            padding.left = CGFloat(decodePadding(leftPadding))
-        }
-        
-        if let rightPadding = dict[PADDING_RIGHT] {
-            padding.right = CGFloat(decodePadding(rightPadding))
-        }
-        
-        if let bottomPadding = dict[PADDING_BOTTOM] {
-            padding.bottom = CGFloat(decodePadding(bottomPadding))
-        }
-        
-        return padding
+        InAppDisplaySettingsParser.PaddingParser.getPadding(fromInAppSettings: settings)
     }
     
-    /**
-     Gets the location from a inset data
-     
-     - returns: the location as an INAPP_NOTIFICATION_TYPE
-     */
-    static func location(fromPadding padding: UIEdgeInsets) -> IterableMessageLocation {
-        if padding.top == 0, padding.bottom == 0 {
-            return .full
-        } else if padding.top == 0, padding.bottom < 0 {
-            return .top
-        } else if padding.top < 0, padding.bottom == 0 {
-            return .bottom
-        } else {
-            return .center
-        }
+    static func parseShouldAnimate(fromInAppSettings inAppSettings: [AnyHashable: Any]) -> Bool {
+        InAppDisplaySettingsParser.parseShouldAnimate(fromInAppSettings: inAppSettings)
     }
     
-    /**
-     Gets the int value of the padding from the payload
-     
-     @param value          the value
-     
-     @return the padding integer
-     
-     @discussion Passes back -1 for Auto expanded padding
-     */
-    static func decodePadding(_ value: Any?) -> Int {
-        guard let dict = value as? [AnyHashable: Any] else {
-            return 0
+    static func parseBackgroundColor(fromInAppSettings inAppSettings: [AnyHashable: Any]) -> UIColor? {
+        InAppDisplaySettingsParser.parseBackgroundColor(fromInAppSettings: inAppSettings)
+    }
+    
+    struct InAppDisplaySettingsParser {
+        enum Key: String, JsonKeyRepresentable {
+            case shouldAnimate
+            case bgColor
+            
+            enum BGColor: String, JsonKeyRepresentable {
+                case hex
+                case alpha
+
+                var jsonKey: String {
+                    rawValue
+                }
+            }
+
+            var jsonKey: String {
+                rawValue
+            }
         }
         
-        if let displayOption = dict[IN_APP_DISPLAY_OPTION] as? String, displayOption == IN_APP_AUTO_EXPAND {
-            return -1
-        } else {
-            if let percentage = dict[IN_APP_PERCENTAGE] as? NSNumber {
-                return percentage.intValue
+        static func parseShouldAnimate(fromInAppSettings settings: [AnyHashable: Any]) -> Bool {
+            settings.getBoolValue(for: Key.shouldAnimate) ?? false
+        }
+        
+        static func parseBackgroundColor(fromInAppSettings settings: [AnyHashable: Any]) -> UIColor? {
+            guard let bgColorSettings = settings.getValue(for: Key.bgColor) as? [AnyHashable: Any],
+                  let hexString = bgColorSettings.getValue(for: Key.BGColor.hex) as? String else {
+                return nil
             }
             
-            return 0
-        }
-    }
-    
-    static func getBackgroundAlpha(fromInAppSettings settings: [AnyHashable: Any]?) -> Double {
-        guard let settings = settings else {
-            return 0
+            let hex = hexString.starts(with: "#") ? String(hexString.dropFirst()) : hexString
+            
+            let alpha = bgColorSettings.getDoubleValue(for: Key.BGColor.alpha) ?? 0.0
+            
+            return UIColor(hex: hex, alpha: CGFloat(alpha))
         }
         
-        if let number = settings[JsonKey.InApp.backgroundAlpha] as? NSNumber {
-            return number.doubleValue
-        } else {
-            return 0
+        struct PaddingParser {
+            enum PaddingEdge: String, JsonKeyRepresentable {
+                var jsonKey: String {
+                    rawValue
+                }
+
+                case top
+                case left
+                case right
+                case bottom
+            }
+            
+            enum PaddingKey: String, JsonKeyRepresentable {
+                var jsonKey: String {
+                    rawValue
+                }
+                
+                case displayOption
+                case percentage
+            }
+
+            static let displayOptionAutoExpand = "AutoExpand"
+
+            /// `settings` json looks like the following
+            /// {"bottom": {"displayOption": "AutoExpand"}, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}
+            static func getPadding(fromInAppSettings settings: [AnyHashable: Any]?) -> UIEdgeInsets {
+                UIEdgeInsets(top: getEdgePadding(fromInAppSettings: settings, edge: .top),
+                             left: getEdgePadding(fromInAppSettings: settings, edge: .left),
+                             bottom: getEdgePadding(fromInAppSettings: settings, edge: .bottom),
+                             right: getEdgePadding(fromInAppSettings: settings, edge: .right))
+            }
+            
+            /// json comes in as
+            /// `{"displayOption": "AutoExpand"}`
+            /// or `{"percentage": 60}`
+            /// returns `-1` for `AutoExpand` type
+            static func decodePadding(_ value: Any?) -> Int {
+                guard let dict = value as? [AnyHashable: Any] else {
+                    return 0
+                }
+                
+                if let displayOption = dict.getValue(for: PaddingKey.displayOption) as? String, displayOption == Self.displayOptionAutoExpand {
+                    return -1
+                } else {
+                    if let percentage = dict.getValue(for: PaddingKey.percentage) as? NSNumber {
+                        return percentage.intValue
+                    }
+                    
+                    return 0
+                }
+            }
+            
+            static func location(fromPadding padding: UIEdgeInsets) -> IterableMessageLocation {
+                if padding.top == 0, padding.bottom == 0 {
+                    return .full
+                } else if padding.top == 0, padding.bottom < 0 {
+                    return .top
+                } else if padding.top < 0, padding.bottom == 0 {
+                    return .bottom
+                } else {
+                    return .center
+                }
+            }
+            
+            private static func getEdgePadding(fromInAppSettings settings: [AnyHashable: Any]?,
+                                               edge: PaddingEdge) -> CGFloat {
+                settings?.getValue(for: edge)
+                    .map(decodePadding(_:))
+                    .map { CGFloat($0) } ?? .zero
+            }
         }
     }
-    
-    private static let PADDING_TOP = "top"
-    private static let PADDING_LEFT = "left"
-    private static let PADDING_BOTTOM = "bottom"
-    private static let PADDING_RIGHT = "right"
-    
-    private static let IN_APP_DISPLAY_OPTION = "displayOption"
-    private static let IN_APP_AUTO_EXPAND = "AutoExpand"
-    private static let IN_APP_PERCENTAGE = "percentage"
 }
 
 extension HtmlContentParser: ContentFromJsonParser {
@@ -149,9 +174,14 @@ extension HtmlContentParser: ContentFromJsonParser {
         }
         
         let inAppDisplaySettings = json[JsonKey.InApp.inAppDisplaySettings] as? [AnyHashable: Any]
-        let backgroundAlpha = getBackgroundAlpha(fromInAppSettings: inAppDisplaySettings)
         let edgeInsets = getPadding(fromInAppSettings: inAppDisplaySettings)
         
-        return .success(content: IterableHtmlInAppContent(edgeInsets: edgeInsets, backgroundAlpha: backgroundAlpha, html: html))
+        let shouldAnimate = inAppDisplaySettings.map(Self.parseShouldAnimate(fromInAppSettings:)) ?? false
+        let backgroundColor = inAppDisplaySettings.flatMap(Self.parseBackgroundColor(fromInAppSettings:)) ?? IterableHtmlInAppContent.defaultBackgroundColor()
+        
+        return .success(content: IterableHtmlInAppContent(edgeInsets: edgeInsets,
+                                                          html: html,
+                                                          shouldAnimate: shouldAnimate,
+                                                          backgroundColor: backgroundColor))
     }
 }

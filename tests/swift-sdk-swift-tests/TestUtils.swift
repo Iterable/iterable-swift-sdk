@@ -134,6 +134,27 @@ struct TestUtils {
         return abs(date1.timeIntervalSinceReferenceDate - date2.timeIntervalSinceReferenceDate) < 0.001
     }
     
+    static func areEqual(color1: UIColor?, color2: UIColor?, accuracy: Double = 0.001) -> Bool {
+        guard let color1 = color1 else {
+            return color2 == nil
+        }
+        guard let color2 = color2 else {
+            return false
+        }
+        
+        let (r1, g1, b1, a1) = color1.rgba
+        let (r2, g2, b2, a2) = color2.rgba
+        
+        return
+            abs(Double(r1) - Double(r2)) < accuracy
+            &&
+            abs(Double(g1) - Double(g2)) < accuracy
+            &&
+            abs(Double(b1) - Double(b2)) < accuracy
+            &&
+            abs(Double(a1) - Double(a2)) < accuracy
+    }
+
     private static func validateQueryParameters(inUrlComponents urlComponents: URLComponents, queryParams: [(name: String, value: String)]) {
         queryParams.forEach { name, value in
             validateQueryParameter(inUrlComponents: urlComponents, withName: name, andValue: value)

@@ -42,7 +42,6 @@ class InAppDisplayer: InAppDisplayerProtocol {
      */
     @discardableResult static func showIterableHtmlMessage(_ htmlString: String,
                                                            messageMetadata: IterableInAppMessageMetadata? = nil,
-                                                           backgroundAlpha: Double = 0,
                                                            padding: UIEdgeInsets = .zero) -> ShowResult {
         guard !InAppPresenter.isPresenting else {
             return .notShown("In-app notification is being presented.")
@@ -68,12 +67,12 @@ class InAppDisplayer: InAppDisplayerProtocol {
         // htmlMessageVC.view triggers WKWebView's loadView() to start loading the HTML.
         // just make sure that's triggered for the InAppPresenter work correctly
         if #available(iOS 13, *) {
-            htmlMessageVC.view.backgroundColor = UIColor.systemBackground.withAlphaComponent(CGFloat(backgroundAlpha))
+            htmlMessageVC.view.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.0)
         } else {
-            htmlMessageVC.view.backgroundColor = UIColor.white.withAlphaComponent(CGFloat(backgroundAlpha))
+            htmlMessageVC.view.backgroundColor = UIColor.white.withAlphaComponent(0.0)
         }
         
-        htmlMessageVC.modalPresentationStyle = .overCurrentContext
+        htmlMessageVC.modalPresentationStyle = .overFullScreen
         
         let presenter = InAppPresenter(topViewController: topViewController, htmlMessageViewController: htmlMessageVC)
         presenter.show()
@@ -140,7 +139,6 @@ class InAppDisplayer: InAppDisplayerProtocol {
         
         return showIterableHtmlMessage(content.html,
                                        messageMetadata: metadata,
-                                       backgroundAlpha: content.backgroundAlpha,
                                        padding: content.edgeInsets)
     }
     

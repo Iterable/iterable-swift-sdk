@@ -40,7 +40,7 @@ struct InAppTestHelper {
                                   campaignId: NSNumber = NSNumber(value: 1)) -> IterableInAppMessage {
         IterableInAppMessage(messageId: messageId,
                              campaignId: campaignId,
-                             content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""))
+                             content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""))
     }
     
     private static func parseResultToOptionalMessage(result: Result<IterableInAppMessage, InAppMessageParser.ParseError>) -> IterableInAppMessage? {

@@ -90,17 +90,28 @@ public extension Notification.Name {
     public let type = IterableInAppContentType.html
     
     public let edgeInsets: UIEdgeInsets
-    public let backgroundAlpha: Double
     public let html: String
-    
+    public let shouldAnimate: Bool
+    public let backgroundColor: UIColor
+
     // MARK: - Private/Internal
     
     init(edgeInsets: UIEdgeInsets,
-         backgroundAlpha: Double,
-         html: String) {
+         html: String,
+         shouldAnimate: Bool = false,
+         backgroundColor: UIColor = IterableHtmlInAppContent.defaultBackgroundColor()) {
         self.edgeInsets = edgeInsets
-        self.backgroundAlpha = backgroundAlpha
         self.html = html
+        self.shouldAnimate = shouldAnimate
+        self.backgroundColor = backgroundColor
+    }
+
+    static func defaultBackgroundColor() -> UIColor {
+        if #available(iOS 13, *) {
+            return UIColor.systemBackground.withAlphaComponent(0.0)
+        } else {
+            return UIColor.white.withAlphaComponent(0.0)
+        }
     }
 }
 

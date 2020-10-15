@@ -501,7 +501,7 @@ class MockWebView: WebViewProtocol {
         Promise<CGFloat, IterableError>(value: height)
     }
     
-    var position: ViewPosition?
+    var position: ViewPosition = ViewPosition()
     
     private var height: CGFloat
     

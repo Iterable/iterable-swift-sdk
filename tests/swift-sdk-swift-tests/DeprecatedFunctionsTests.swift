@@ -58,7 +58,7 @@ class DeprecatedFunctionsTests: XCTestCase {
                                            trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "immediate"]),
                                            createdAt: nil,
                                            expiresAt: nil,
-                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
                                            saveToInbox: false,
                                            inboxMetadata: nil,
                                            customPayload: nil)
@@ -99,7 +99,7 @@ class DeprecatedFunctionsTests: XCTestCase {
     }
     
     private func getEmptyInAppContent() -> IterableHtmlInAppContent {
-        IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: "")
+        IterableHtmlInAppContent(edgeInsets: .zero, html: "")
     }
 }
 

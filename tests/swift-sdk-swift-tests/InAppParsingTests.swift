@@ -30,10 +30,10 @@ class InAppParsingTests: XCTestCase {
         XCTAssertEqual(insets, UIEdgeInsets.zero)
         
         var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(HtmlContentParser.decodePadding(payload["top"]))
-        padding.left = CGFloat(HtmlContentParser.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(HtmlContentParser.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(HtmlContentParser.decodePadding(payload["right"]))
+        padding.top = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["top"]))
+        padding.left = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["left"]))
+        padding.bottom = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["bottom"]))
+        padding.right = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["right"]))
         XCTAssertEqual(padding, UIEdgeInsets.zero)
     }
     
@@ -49,10 +49,10 @@ class InAppParsingTests: XCTestCase {
         XCTAssertEqual(insets, UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
         
         var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(HtmlContentParser.decodePadding(payload["top"]))
-        padding.left = CGFloat(HtmlContentParser.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(HtmlContentParser.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(HtmlContentParser.decodePadding(payload["right"]))
+        padding.top = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["top"]))
+        padding.left = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["left"]))
+        padding.bottom = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["bottom"]))
+        padding.right = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["right"]))
         XCTAssertEqual(padding, UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
     }
     
@@ -68,10 +68,10 @@ class InAppParsingTests: XCTestCase {
         XCTAssertEqual(insets, UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
         
         var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(HtmlContentParser.decodePadding(payload["top"]))
-        padding.left = CGFloat(HtmlContentParser.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(HtmlContentParser.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(HtmlContentParser.decodePadding(payload["right"]))
+        padding.top = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["top"]))
+        padding.left = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["left"]))
+        padding.bottom = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["bottom"]))
+        padding.right = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["right"]))
         XCTAssertEqual(padding, UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
     }
     
@@ -87,35 +87,167 @@ class InAppParsingTests: XCTestCase {
         XCTAssertEqual(insets, UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
         
         var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(HtmlContentParser.decodePadding(payload["top"]))
-        padding.left = CGFloat(HtmlContentParser.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(HtmlContentParser.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(HtmlContentParser.decodePadding(payload["right"]))
+        padding.top = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["top"]))
+        padding.left = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["left"]))
+        padding.bottom = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["bottom"]))
+        padding.right = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["right"]))
         XCTAssertEqual(padding, UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
     }
-    
+
+    func testParseShouldAnimate1() {
+        let inAppSettings = [
+            "something": "nothing"
+        ]
+        let shouldAnimate = HtmlContentParser.parseShouldAnimate(fromInAppSettings: inAppSettings)
+        XCTAssertEqual(shouldAnimate, false)
+    }
+
+    func testParseShouldAnimate2() {
+        let inAppSettings = [
+            "shouldAnimate": true
+        ]
+        let shouldAnimate = HtmlContentParser.parseShouldAnimate(fromInAppSettings: inAppSettings)
+        XCTAssertEqual(shouldAnimate, true)
+    }
+
+    func testParseShouldAnimate3() {
+        let inAppSettings = [
+            "shouldAnimate": 1
+        ]
+        let shouldAnimate = HtmlContentParser.parseShouldAnimate(fromInAppSettings: inAppSettings)
+        XCTAssertEqual(shouldAnimate, true)
+    }
+
+    func testParseShouldAnimate4() {
+        let inAppSettings = [
+            "shouldAnimate": "1"
+        ]
+        let shouldAnimate = HtmlContentParser.parseShouldAnimate(fromInAppSettings: inAppSettings)
+        XCTAssertEqual(shouldAnimate, true)
+    }
+
+    func testParseShouldAnimate5() {
+        let inAppSettings = [
+            "shouldAnimate": false
+        ]
+        let shouldAnimate = HtmlContentParser.parseShouldAnimate(fromInAppSettings: inAppSettings)
+        XCTAssertEqual(shouldAnimate, false)
+    }
+
+    func testParseShouldAnimate6() {
+        let inAppSettings = [
+            "shouldAnimate": 0
+        ]
+        let shouldAnimate = HtmlContentParser.parseShouldAnimate(fromInAppSettings: inAppSettings)
+        XCTAssertEqual(shouldAnimate, false)
+    }
+
+    func testParseShouldAnimate7() {
+        let inAppSettings = [
+            "shouldAnimate": "0"
+        ]
+        let shouldAnimate = HtmlContentParser.parseShouldAnimate(fromInAppSettings: inAppSettings)
+        XCTAssertEqual(shouldAnimate, false)
+    }
+
+    func testBackgroundColor1() {
+        let inAppSettings = [
+            "something": "nothing"
+        ]
+        
+        let color = HtmlContentParser.parseBackgroundColor(fromInAppSettings: inAppSettings)
+        XCTAssertNil(color)
+    }
+
+    func testBackgroundColor2() {
+        let inAppSettings = [
+            "bgColor": [
+                "hexXXX": "007788",
+                "alpha": 0.5],
+        ]
+        
+        let color = HtmlContentParser.parseBackgroundColor(fromInAppSettings: inAppSettings)
+        XCTAssertNil(color)
+    }
+
+    func testBackgroundColor3() {
+        let inAppSettings = [
+            "bgColor": [
+                "hex": "xyz",
+                "alpha": 0.5],
+        ]
+        
+        let color = HtmlContentParser.parseBackgroundColor(fromInAppSettings: inAppSettings)
+        XCTAssertNil(color)
+    }
+
+    func testBackgroundColor4() {
+        let inAppSettings = [
+            "bgColor": [
+                "hex": "007788",
+                "alpha": 0.4],
+        ]
+        
+        let color = HtmlContentParser.parseBackgroundColor(fromInAppSettings: inAppSettings)!
+
+        XCTAssertTrue(TestUtils.areEqual(color1: color, color2: UIColor(red: 0,
+                                                                        green: CGFloat(Int("77", radix: 16)!) / 255,
+                                                                        blue: CGFloat(Int("88", radix: 16)!) / 255,
+                                                                        alpha: 0.4)))
+    }
+
+    func testBackgroundColor5() {
+        let inAppSettings = [
+            "bgColor": [
+                "hex": "007788",
+                "alphaXXX": 0.4],
+        ]
+        
+        let color = HtmlContentParser.parseBackgroundColor(fromInAppSettings: inAppSettings)!
+
+        XCTAssertTrue(TestUtils.areEqual(color1: color, color2: UIColor(red: 0,
+                                                                        green: CGFloat(Int("77", radix: 16)!) / 255,
+                                                                        blue: CGFloat(Int("88", radix: 16)!) / 255,
+                                                                        alpha: 0.0)))
+    }
+
+    func testBackgroundColor6() {
+        let inAppSettings = [
+            "bgColor": [
+                "hex": "#007788",
+                "alpha": 0.4],
+        ]
+        
+        let color = HtmlContentParser.parseBackgroundColor(fromInAppSettings: inAppSettings)!
+
+        XCTAssertTrue(TestUtils.areEqual(color1: color, color2: UIColor(red: 0,
+                                                                        green: CGFloat(Int("77", radix: 16)!) / 255,
+                                                                        blue: CGFloat(Int("88", radix: 16)!) / 255,
+                                                                        alpha: 0.4)))
+    }
+
     func testNotificationPaddingFull() {
-        let notificationType = HtmlContentParser.location(fromPadding: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0))
+        let notificationType = HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.location(fromPadding: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0))
         XCTAssertEqual(notificationType, .full)
     }
     
     func testNotificationPaddingTop() {
-        let notificationType = HtmlContentParser.location(fromPadding: UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
+        let notificationType = HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.location(fromPadding: UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
         XCTAssertEqual(notificationType, .top)
     }
     
     func testNotificationPaddingBottom() {
-        let notificationType = HtmlContentParser.location(fromPadding: UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
+        let notificationType = HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.location(fromPadding: UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
         XCTAssertEqual(notificationType, .bottom)
     }
     
     func testNotificationPaddingCenter() {
-        let notificationType = HtmlContentParser.location(fromPadding: UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
+        let notificationType = HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.location(fromPadding: UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
         XCTAssertEqual(notificationType, .center)
     }
     
     func testNotificationPaddingDefault() {
-        let notificationType = HtmlContentParser.location(fromPadding: UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0))
+        let notificationType = HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.location(fromPadding: UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0))
         XCTAssertEqual(notificationType, .center)
     }
     
@@ -129,20 +261,13 @@ class InAppParsingTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
-    func testGetBackgroundAlpha() {
-        XCTAssert(HtmlContentParser.getBackgroundAlpha(fromInAppSettings: nil) == 0)
-        XCTAssert(HtmlContentParser.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha": "x"]) == 0)
-        XCTAssert(HtmlContentParser.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha": 0.5]) == 0.5)
-        XCTAssert(HtmlContentParser.getBackgroundAlpha(fromInAppSettings: ["backgroundAlpha": 1]) == 1.0)
-    }
-    
     func testTrackInAppClickWithClickedUrl() {
         let message = IterableInAppMessage(messageId: "message1",
                                            campaignId: 1,
                                            trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "immediate"]),
                                            createdAt: nil,
                                            expiresAt: nil,
-                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
                                            saveToInbox: false,
                                            inboxMetadata: nil,
                                            customPayload: nil)
@@ -174,7 +299,7 @@ class InAppParsingTests: XCTestCase {
                                            trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                            createdAt: nil,
                                            expiresAt: nil,
-                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
                                            saveToInbox: true,
                                            inboxMetadata: nil,
                                            customPayload: nil)
@@ -227,7 +352,7 @@ class InAppParsingTests: XCTestCase {
                                            trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                            createdAt: nil,
                                            expiresAt: nil,
-                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
                                            saveToInbox: true,
                                            inboxMetadata: nil,
                                            customPayload: nil)
@@ -266,7 +391,7 @@ class InAppParsingTests: XCTestCase {
                                            trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                            createdAt: nil,
                                            expiresAt: nil,
-                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
                                            saveToInbox: true,
                                            inboxMetadata: nil,
                                            customPayload: nil)
@@ -302,7 +427,7 @@ class InAppParsingTests: XCTestCase {
                                            trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                            createdAt: nil,
                                            expiresAt: nil,
-                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
                                            saveToInbox: true,
                                            inboxMetadata: nil,
                                            customPayload: nil)
@@ -666,3 +791,4 @@ class InAppParsingTests: XCTestCase {
     private static let email = "user@example.com"
     private static let userId = "userId1"
 }
+

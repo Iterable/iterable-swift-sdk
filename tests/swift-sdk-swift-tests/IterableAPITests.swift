@@ -683,13 +683,11 @@ class IterableAPITests: XCTestCase {
         let inAppMsg1 = IterableInAppMessage(messageId: "aswefwdf",
                                              campaignId: 123_344,
                                              content: IterableHtmlInAppContent(edgeInsets: .zero,
-                                                                               backgroundAlpha: 0,
                                                                                html: ""))
         
         let inAppMsg2 = IterableInAppMessage(messageId: "oeirgjoeigj",
                                              campaignId: 948,
                                              content: IterableHtmlInAppContent(edgeInsets: .zero,
-                                                                               backgroundAlpha: 0,
                                                                                html: ""))
         
         mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: [inAppMsg1, inAppMsg2]).onSuccess { _ in
@@ -729,7 +727,7 @@ class IterableAPITests: XCTestCase {
                                            trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                            createdAt: nil,
                                            expiresAt: nil,
-                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
                                            saveToInbox: true,
                                            inboxMetadata: nil,
                                            customPayload: nil)
@@ -766,7 +764,7 @@ class IterableAPITests: XCTestCase {
                                            trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
                                            createdAt: nil,
                                            expiresAt: nil,
-                                           content: IterableHtmlInAppContent(edgeInsets: .zero, backgroundAlpha: 0.0, html: ""),
+                                           content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
                                            saveToInbox: true,
                                            inboxMetadata: nil,
                                            customPayload: nil)
