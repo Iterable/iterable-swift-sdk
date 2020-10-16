@@ -53,10 +53,11 @@ extension Foundation.Bundle {
 @available(iOS 10.0, *)
 class PersistentContainer: NSPersistentContainer {
     static let shared: PersistentContainer? = {
-        guard let url = Bundle.current.url(forResource: PersistenceConst.dataModelFileName, withExtension: PersistenceConst.dataModelExtension) else {
+        guard let url = ResourceHelper.url(forResource: PersistenceConst.dataModelFileName, withExtension: PersistenceConst.dataModelExtension, fromBundle: Bundle(for: PersistentContainer.self)) else {
             ITBError("Could not find \(PersistenceConst.dataModelFileName) in bundle")
             return nil
         }
+        ITBInfo("DB Bundle url: \(url)")
         guard let managedObjectModel = NSManagedObjectModel(contentsOf: url) else {
             ITBError("Could not initialize managed object model")
             return nil

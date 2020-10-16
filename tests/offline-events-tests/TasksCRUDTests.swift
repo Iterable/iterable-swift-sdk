@@ -8,6 +8,17 @@ import XCTest
 @testable import IterableSDK
 
 class TasksCRUDTests: XCTestCase {
+    override func setUpWithError() throws {
+        try super.setUpWithError()
+        
+        IterableLogUtil.sharedInstance = IterableLogUtil(dateProvider: SystemDateProvider(),
+                                                         logDelegate: DefaultLogDelegate())
+    }
+    
+    override func tearDownWithError() throws {
+        try super.tearDownWithError()
+    }
+
     func testCreate() throws {
         let context = persistenceProvider.newBackgroundContext()
         let taskId = IterableUtil.generateUUID()
