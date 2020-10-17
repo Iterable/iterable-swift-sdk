@@ -136,6 +136,7 @@
 		AC8F35A2239806B500302994 /* InboxViewControllerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8F35A1239806B500302994 /* InboxViewControllerViewModelTests.swift */; };
 		AC90C4CD20D8632E00EECA5D /* IterableAppExtensions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC90C4C420D8632D00EECA5D /* IterableAppExtensions.framework */; };
 		AC90C4E220D8639E00EECA5D /* ITBNotificationServiceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC90C4E120D8639E00EECA5D /* ITBNotificationServiceExtension.swift */; };
+		AC942BC62539DEDA002988C9 /* ResourceHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC942BC52539DEDA002988C9 /* ResourceHelper.swift */; };
 		AC978D3E24FF953C00372B8C /* NetworkConnectivityChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC978D3D24FF953C00372B8C /* NetworkConnectivityChecker.swift */; };
 		AC995F992166EE490099A184 /* CommonMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F942166EC880099A184 /* CommonMocks.swift */; };
 		AC995F9A2166EEB50099A184 /* CommonMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F942166EC880099A184 /* CommonMocks.swift */; };
@@ -478,6 +479,7 @@
 		AC90C4CC20D8632E00EECA5D /* notification-extension-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "notification-extension-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC90C4D520D8632E00EECA5D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AC90C4E120D8639E00EECA5D /* ITBNotificationServiceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ITBNotificationServiceExtension.swift; sourceTree = "<group>"; };
+		AC942BC52539DEDA002988C9 /* ResourceHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceHelper.swift; sourceTree = "<group>"; };
 		AC978D3D24FF953C00372B8C /* NetworkConnectivityChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkConnectivityChecker.swift; sourceTree = "<group>"; };
 		AC98294A20D9D65E00796DAA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		AC995F942166EC880099A184 /* CommonMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonMocks.swift; sourceTree = "<group>"; };
@@ -895,6 +897,7 @@
 				AC1AA1C724EBB39500F29C6B /* Notification Center */,
 				AC5E888724E1B7AD00752321 /* Request Processing */,
 				ACC362BB24D21153002C67BA /* Task Processing */,
+				AC942BC42539DEB4002988C9 /* Resource Loading */,
 				AC50865124C60133001DC132 /* Persistence */,
 				AC845105228DF5360052BB8F /* API Client */,
 				AC0248062279132400495FB9 /* Dwifft */,
@@ -1040,6 +1043,14 @@
 				AC347B6620E699D8003449CF /* IterableAppExtensions.h */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		AC942BC42539DEB4002988C9 /* Resource Loading */ = {
+			isa = PBXGroup;
+			children = (
+				AC942BC52539DEDA002988C9 /* ResourceHelper.swift */,
+			);
+			name = "Resource Loading";
 			sourceTree = "<group>";
 		};
 		AC995F932166EC310099A184 /* common */ = {
@@ -1629,6 +1640,7 @@
 				AC50865424C60172001DC132 /* IterableDataModel.xcdatamodeld in Sources */,
 				ACA8D1A321910C66001B1332 /* IterableMessaging.swift in Sources */,
 				ACF40621250781F1005FD775 /* NetworkConnectivityManager.swift in Sources */,
+				AC942BC62539DEDA002988C9 /* ResourceHelper.swift in Sources */,
 				AC4B039622A8743F0043185B /* InAppManager+Functions.swift in Sources */,
 				AC72A0D420CF4D19004D7997 /* IterableDeepLinkManager.swift in Sources */,
 				ACC51A6B22A879070095E81F /* EmptyInAppManager.swift in Sources */,
@@ -2126,7 +2138,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = "swift-sdk/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2138,6 +2150,7 @@
 				PRODUCT_NAME = IterableSDK;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				"SWIFT_ACTIVE_COMPILATION_CONDITIONS[arch=*]" = "DEBUG NETWORK_DEBUG";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -2156,7 +2169,7 @@
 				ENABLE_TESTABILITY = YES;
 				INFOPLIST_FILE = "swift-sdk/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2168,6 +2181,7 @@
 				PRODUCT_NAME = IterableSDK;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -2266,7 +2280,7 @@
 				ENABLE_TESTABILITY = YES;
 				INFOPLIST_FILE = "notification-extension/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2277,6 +2291,7 @@
 				PRODUCT_NAME = IterableAppExtensions;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -2297,7 +2312,7 @@
 				ENABLE_TESTABILITY = YES;
 				INFOPLIST_FILE = "notification-extension/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2308,6 +2323,7 @@
 				PRODUCT_NAME = IterableAppExtensions;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
