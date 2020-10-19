@@ -98,9 +98,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             _email = email
             _userId = nil
             
-            authManager.requestNewAuthToken(hasFailedPriorAuth: false) { [weak self] authToken in
-                self?.loginNewUser()
-            }
+            authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: nil)
             
             storeIdentifierData()
             
@@ -115,9 +113,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             _email = nil
             _userId = userId
             
-            authManager.requestNewAuthToken(hasFailedPriorAuth: false) { [weak self] authToken in
-                self?.loginNewUser()
-            }
+            authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: nil)
             
             storeIdentifierData()
             
