@@ -112,6 +112,7 @@
 		AC776DA22118B86600C27C27 /* DeviceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC776DA12118B86600C27C27 /* DeviceInfo.swift */; };
 		AC776DA4211A17C700C27C27 /* IterableRequestUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC776DA3211A17C700C27C27 /* IterableRequestUtilTests.swift */; };
 		AC776DA6211A1B8A00C27C27 /* IterableRequestUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC776DA5211A1B8A00C27C27 /* IterableRequestUtil.swift */; };
+		AC78F0E7253D7F09006378A5 /* IterablePushNotificationMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC78F0E6253D7F09006378A5 /* IterablePushNotificationMetadata.swift */; };
 		AC7A5261227BB9D10064D67E /* DependencyContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7A5260227BB9D10064D67E /* DependencyContainer.swift */; };
 		AC7B143020D02CE200877BFE /* IterableSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2263DF20CF49B8009800EB /* IterableSDK.framework */; };
 		AC7B4AF923C6547A00DB4758 /* CustomInboxCell3.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC7B4AF823C6547A00DB4758 /* CustomInboxCell3.swift */; };
@@ -448,6 +449,7 @@
 		AC776DA12118B86600C27C27 /* DeviceInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceInfo.swift; sourceTree = "<group>"; };
 		AC776DA3211A17C700C27C27 /* IterableRequestUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableRequestUtilTests.swift; sourceTree = "<group>"; };
 		AC776DA5211A1B8A00C27C27 /* IterableRequestUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableRequestUtil.swift; sourceTree = "<group>"; };
+		AC78F0E6253D7F09006378A5 /* IterablePushNotificationMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterablePushNotificationMetadata.swift; sourceTree = "<group>"; };
 		AC7A5260227BB9D10064D67E /* DependencyContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependencyContainer.swift; sourceTree = "<group>"; };
 		AC7B142B20D02CE200877BFE /* swift-sdk-swift-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "swift-sdk-swift-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC7B142F20D02CE200877BFE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -755,6 +757,7 @@
 				AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */,
 				AC3C10F8213F46A900A9B839 /* IterableLogging.swift */,
 				ACA8D1A221910C66001B1332 /* IterableMessaging.swift */,
+				AC78F0E6253D7F09006378A5 /* IterablePushNotificationMetadata.swift */,
 			);
 			path = "swift-sdk";
 			sourceTree = "<group>";
@@ -1662,6 +1665,7 @@
 				AC7A5261227BB9D10064D67E /* DependencyContainer.swift in Sources */,
 				AC776DA6211A1B8A00C27C27 /* IterableRequestUtil.swift in Sources */,
 				ACEDF41D2183C2EC000B9BFE /* Promise.swift in Sources */,
+				AC78F0E7253D7F09006378A5 /* IterablePushNotificationMetadata.swift in Sources */,
 				AC7125EF20D4579E0043BBC1 /* IterableConfig.swift in Sources */,
 				AC03094B21E532470003A288 /* InAppPersistence.swift in Sources */,
 				557AE6BF24A56E5E00B57750 /* Auth.swift in Sources */,
