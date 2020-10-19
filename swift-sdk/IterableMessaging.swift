@@ -107,7 +107,7 @@ public extension Notification.Name {
     }
 
     static func defaultBackgroundColor() -> UIColor {
-        if #available(iOS 13, *) {
+        if #available(iOS 14, *) {
             return UIColor.systemBackground.withAlphaComponent(0.0)
         } else {
             return UIColor.white.withAlphaComponent(0.0)
