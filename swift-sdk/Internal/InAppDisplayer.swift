@@ -67,7 +67,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
         
         // htmlMessageVC.view triggers WKWebView's loadView() to start loading the HTML.
         // just make sure that's triggered for the InAppPresenter work correctly
-        if #available(iOS 13, *) {
+        if #available(iOS 14, *) {
             htmlMessageVC.view.backgroundColor = UIColor.systemBackground.withAlphaComponent(CGFloat(backgroundAlpha))
         } else {
             htmlMessageVC.view.backgroundColor = UIColor.white.withAlphaComponent(CGFloat(backgroundAlpha))

@@ -68,7 +68,7 @@ class IterableHtmlMessageViewController: UIViewController {
         if parameters.isModal {
             view.backgroundColor = UIColor.clear
         } else {
-            if #available(iOS 13, *) {
+            if #available(iOS 14, *) {
                 view.backgroundColor = UIColor.systemBackground
             } else {
                 view.backgroundColor = UIColor.white
