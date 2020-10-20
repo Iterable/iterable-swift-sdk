@@ -129,11 +129,13 @@ public class IterableConfig: NSObject {
     /// an expiration date field in it
     public var expiringAuthTokenRefreshPeriod: TimeInterval = 60.0
 
-    /// If set to true, events will be queued locally when network is offline.
-    /// When the network is online again, the queued events will be sent to our backend.
-    public var enableOfflineMode = false
-    
     /// These are internal. Do not change
     internal var apiEndpoint = Endpoint.api
     internal var linksEndpoint = Endpoint.links
+
+    /// If set to true, events will be queued locally when network is offline.
+    /// When the network is online again, the queued events will be sent to our backend.
+    /// This is currently an experimental feature.
+    /// Please *DO NOT* enable this option without talking to your customer service rep.
+    internal var enableOfflineMode = false
 }
