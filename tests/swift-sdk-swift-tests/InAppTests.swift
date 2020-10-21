@@ -1388,7 +1388,7 @@ extension IterableHtmlInAppContent {
         IterableUtil.describe("type", type,
                               "edgeInsets", edgeInsets,
                               "shouldAnimate", shouldAnimate,
-                              "backgroundColor", CodableColor.codableColorFromUIColor(backgroundColor),
+                              "backgroundColor", backgroundColor.map(CodableColor.codableColorFromUIColor(_:)) ?? "nil",
                               "html", html, pairSeparator: " = ", separator: ", ")
     }
 }

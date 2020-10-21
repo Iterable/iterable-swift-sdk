@@ -158,7 +158,7 @@ extension IterableHtmlInAppContent: Codable {
         let edgeInsets = (try? container.decode(UIEdgeInsets.self, forKey: .edgeInsets)) ?? .zero
         let html = (try? container.decode(String.self, forKey: .html)) ?? ""
         let shouldAnimate = (try? container.decode(Bool.self, forKey: .shouldAnimate)) ?? false
-        let backgroundColor = (try? container.decode(CodableColor.self, forKey: .bgColor)).map(CodableColor.uiColorFromCodableColor(_:)) ?? IterableHtmlInAppContent.defaultBackgroundColor()
+        let backgroundColor = (try? container.decode(CodableColor.self, forKey: .bgColor)).map(CodableColor.uiColorFromCodableColor(_:))
 
         return IterableHtmlInAppContent(edgeInsets: edgeInsets,
                                         html: html,
@@ -172,7 +172,9 @@ extension IterableHtmlInAppContent: Codable {
         try? container.encode(htmlContent.edgeInsets, forKey: .edgeInsets)
         try? container.encode(htmlContent.html, forKey: .html)
         try? container.encode(htmlContent.shouldAnimate, forKey: .shouldAnimate)
-        try? container.encode(CodableColor.codableColorFromUIColor(htmlContent.backgroundColor), forKey: .bgColor)
+        if let backgroundColor = htmlContent.backgroundColor {
+            try? container.encode(CodableColor.codableColorFromUIColor(backgroundColor), forKey: .bgColor)
+        }
     }
     
     public convenience init(from decoder: Decoder) {
