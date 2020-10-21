@@ -426,21 +426,6 @@ struct RequestCreator {
                    args: args)
     }
     
-    private static func userInterfaceIdiomEnumToString(_ idiom: UIUserInterfaceIdiom) -> String {
-        switch idiom {
-        case .phone:
-            return JsonValue.DeviceIdiom.phone
-        case .pad:
-            return JsonValue.DeviceIdiom.pad
-        case .tv:
-            return JsonValue.DeviceIdiom.tv
-        case .carPlay:
-            return JsonValue.DeviceIdiom.carPlay
-        default:
-            return JsonValue.DeviceIdiom.unspecified
-        }
-    }
-    
     private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform, apnsType: APNSType) -> String {
         switch pushServicePlatform {
         case .production:
