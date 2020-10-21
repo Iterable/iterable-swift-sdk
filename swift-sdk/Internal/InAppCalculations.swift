@@ -8,6 +8,58 @@ import Foundation
 import UIKit
 
 struct InAppCalculations {
+    struct AnimationInput {
+        let position: ViewPosition
+        let isModal: Bool
+        let shouldAnimate: Bool
+        let location: IterableMessageLocation
+        let safeAreaInsets: UIEdgeInsets
+        let backgroundColor: UIColor?
+    }
+    
+    struct AnimationDetail {
+        let initial: AnimationParam
+        let final: AnimationParam
+    }
+    
+    struct AnimationParam {
+        let position: ViewPosition
+        let alpha: CGFloat
+        let bgColor: UIColor
+    }
+    
+    static func calculateAnimationDetail(animationInput input: AnimationInput) -> AnimationDetail? {
+        guard input.isModal == true else {
+            return nil
+        }
+        
+        if input.shouldAnimate {
+            let startPosition = calculateAnimationStartPosition(for: input.position,
+                                                                location: input.location,
+                                                                safeAreaInsets: input.safeAreaInsets)
+            let startAlpha = calculateAnimationStartAlpha(location: input.location)
+            
+            let initialParam = AnimationParam(position: startPosition,
+                                              alpha: startAlpha,
+                                              bgColor: UIColor.clear)
+            let finalBgColor = finalViewBackgroundColor(bgColor: input.backgroundColor, isModal: input.isModal)
+            let finalParam = AnimationParam(position: input.position,
+                                            alpha: 1.0,
+                                            bgColor: finalBgColor)
+            return AnimationDetail(initial: initialParam,
+                                   final: finalParam)
+        } else if let bgColor = input.backgroundColor {
+            return AnimationDetail(initial: AnimationParam(position: input.position, alpha: 1.0, bgColor: UIColor.clear),
+                                   final: AnimationParam(position: input.position, alpha: 1.0, bgColor: bgColor))
+        } else {
+            return nil
+        }
+    }
+    
+    static func swapAnimation(animationDetail: AnimationDetail) -> AnimationDetail {
+        AnimationDetail(initial: animationDetail.final, final: animationDetail.initial)
+    }
+
     static func calculateAnimationStartPosition(for position: ViewPosition,
                                                 location: IterableMessageLocation,
                                                 safeAreaInsets: UIEdgeInsets) -> ViewPosition {
@@ -94,5 +146,37 @@ struct InAppCalculations {
         }
         
         return position
+    }
+    
+    static func createDismisser(for viewController: UIViewController, isModal: Bool, isInboxMessage: Bool) -> () -> Void {
+        guard isModal else {
+            return { [weak viewController] in
+                viewController?.navigationController?.popViewController(animated: true)
+            }
+        }
+        
+        return { [weak viewController] in
+            viewController?.dismiss(animated: isInboxMessage)
+        }
+    }
+    
+    static func initialViewBackgroundColor(isModal: Bool) -> UIColor {
+        isModal ? UIColor.clear : systemBackgroundColor
+    }
+    
+    static func finalViewBackgroundColor(bgColor: UIColor?, isModal: Bool) -> UIColor {
+        if isModal {
+            return bgColor ?? UIColor.clear
+        } else {
+            return systemBackgroundColor
+        }
+    }
+
+    static var systemBackgroundColor: UIColor {
+        if #available(iOS 14, *) {
+            return UIColor.systemBackground
+        } else {
+            return UIColor.white
+        }
     }
 }

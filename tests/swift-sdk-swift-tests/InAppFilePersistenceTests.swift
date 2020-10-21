@@ -36,10 +36,44 @@ class InAppFilePersistenceTests: XCTestCase {
         """.toJsonDict()
         
         let messages = InAppTestHelper.inAppMessages(fromPayload: payload)
+        let bgColor = (messages[0].content as? IterableHtmlInAppContent).flatMap { $0.backgroundColor }
+        XCTAssertNotNil(bgColor)
 
         let persister = InAppFilePersister()
         persister.persist(messages)
         let obtained = persister.getMessages()
+        let obtainedBgColor = (obtained[0].content as? IterableHtmlInAppContent).flatMap { $0.backgroundColor }
+        XCTAssertEqual(obtainedBgColor, bgColor)
+        XCTAssertEqual(messages.description, obtained.description)
+
+        persister.clear()
+    }
+
+    func testShouldAnimateWithoutBGColorPersistence() {
+        let payload = """
+        {"inAppMessages":
+        [
+            {
+                "saveToInbox": false,
+                "content": {"type": "html", "inAppDisplaySettings": {"shouldAnimate": true, "bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site1.com\'>Click Here</a>"},
+                "trigger": {"type": "event", "details": "some event details"},
+                "messageId": "message1",
+                "campaignId": 1,
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+        ]
+        }
+        """.toJsonDict()
+        
+        let messages = InAppTestHelper.inAppMessages(fromPayload: payload)
+        let bgColor = (messages[0].content as? IterableHtmlInAppContent).flatMap { $0.backgroundColor }
+        XCTAssertNil(bgColor)
+        
+        let persister = InAppFilePersister()
+        persister.persist(messages)
+        let obtained = persister.getMessages()
+        let obtainedBgColor = (obtained[0].content as? IterableHtmlInAppContent).flatMap { $0.backgroundColor }
+        XCTAssertNil(obtainedBgColor)
         XCTAssertEqual(messages.description, obtained.description)
 
         persister.clear()

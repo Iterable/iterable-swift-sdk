@@ -177,7 +177,7 @@ extension HtmlContentParser: ContentFromJsonParser {
         let edgeInsets = getPadding(fromInAppSettings: inAppDisplaySettings)
         
         let shouldAnimate = inAppDisplaySettings.map(Self.parseShouldAnimate(fromInAppSettings:)) ?? false
-        let backgroundColor = inAppDisplaySettings.flatMap(Self.parseBackgroundColor(fromInAppSettings:)) ?? IterableHtmlInAppContent.defaultBackgroundColor()
+        let backgroundColor = inAppDisplaySettings.flatMap(Self.parseBackgroundColor(fromInAppSettings:))
         
         return .success(content: IterableHtmlInAppContent(edgeInsets: edgeInsets,
                                                           html: html,
