@@ -246,11 +246,89 @@ class RequestCreatorTests: XCTestCase {
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.templateId.jsonKey), value: templateId, inDictionary: body)
     }
     
+    func testUserlessUpdateUserRequest() {
+        let userlessRequestCreator = RequestCreator(apiKey: apiKey,
+                                                    auth: userlessAuth,
+                                                    deviceMetadata: deviceMetadata)
+        
+        let result = userlessRequestCreator.createUpdateUserRequest(dataFields: [:], mergeNestedObjects: false)
+        
+        switch result {
+        case .success(_):
+            XCTFail("request shouldn't have succeeded")
+        case .failure(let error):
+            XCTAssertEqual(error.errorDescription, "Both email and userId are nil")
+        }
+    }
+    
+    func testUserlessUpdateSubscriptionsRequest() {
+        let userlessRequestCreator = RequestCreator(apiKey: apiKey,
+                                                    auth: userlessAuth,
+                                                    deviceMetadata: deviceMetadata)
+        
+        let result = userlessRequestCreator.createUpdateSubscriptionsRequest()
+        
+        switch result {
+        case .success(_):
+            XCTFail("request shouldn't have succeeded")
+        case .failure(let error):
+            XCTAssertEqual(error.errorDescription, "Both email and userId are nil")
+        }
+    }
+    
+    func testUserlessTrackInboxSessionRequest() {
+        let userlessRequestCreator = RequestCreator(apiKey: apiKey,
+                                                    auth: userlessAuth,
+                                                    deviceMetadata: deviceMetadata)
+        
+        let result = userlessRequestCreator.createTrackInboxSessionRequest(inboxSession: IterableInboxSession())
+        
+        switch result {
+        case .success(_):
+            XCTFail("request shouldn't have succeeded")
+        case .failure(let error):
+            XCTAssertEqual(error.errorDescription, "Both email and userId are nil")
+        }
+    }
+    
+    func testFaultyTrackInboxSessionRequest() {
+        let condition1 = expectation(description: "no inbox session ID")
+        let condition2 = expectation(description: "no inbox session start date")
+        let condition3 = expectation(description: "no inbox session end date")
+        
+        func createResultWithInboxSession(_ inboxSession: IterableInboxSession) -> Result<IterableRequest, IterableError> {
+            return createRequestCreator().createTrackInboxSessionRequest(inboxSession: inboxSession)
+        }
+        
+        let inboxSessions = [IterableInboxSession(id: nil, sessionStartTime: Date(), sessionEndTime: Date()),
+                             IterableInboxSession(id: "", sessionStartTime: Date(), sessionEndTime: nil),
+                             IterableInboxSession(id: "", sessionStartTime: nil, sessionEndTime: Date())]
+        
+        for inboxSession in inboxSessions {
+            switch createResultWithInboxSession(inboxSession) {
+            case .success(_):
+                XCTFail("request shouldn't have succeeded")
+            case .failure(let error):
+                if error.errorDescription == "expecting session UUID" {
+                    condition1.fulfill()
+                } else if error.errorDescription == "expecting session start time" {
+                    condition2.fulfill()
+                } else if error.errorDescription == "expecting session end time" {
+                    condition3.fulfill()
+                }
+            }
+        }
+        
+        wait(for: [condition1, condition2, condition3], timeout: testExpectationTimeout)
+    }
+    
     private let apiKey = "zee-api-key"
     
     private let email = "user@example.com"
     
     private let locationKeyPath = "\(JsonKey.inAppMessageContext.jsonKey).\(JsonKey.inAppLocation.jsonKey)"
+    
+    private let userlessAuth = Auth(userId: nil, email: nil, authToken: nil)
     
     private let deviceMetadata = DeviceMetadata(deviceId: IterableUtil.generateUUID(),
                                                 platform: JsonValue.iOS.jsonStringValue,
