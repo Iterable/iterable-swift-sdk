@@ -29,6 +29,7 @@
 		55B9F15324B6625D00E8198A /* ApiClientProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B9F15224B6625D00E8198A /* ApiClientProtocol.swift */; };
 		55CC257B2462064F00A77FD5 /* InAppPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */; };
 		55D54656239AE5750093ED1E /* LoggingInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D54655239AE5750093ED1E /* LoggingInternal.swift */; };
+		55E02D39253F8D86009DB8BC /* WebViewProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */; };
 		55E6F460238E066400808BCE /* DeferredDeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6F45D238E066400808BCE /* DeferredDeepLinkTests.swift */; };
 		55E6F462238E066400808BCE /* DeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6F45E238E066400808BCE /* DeepLinkTests.swift */; };
 		AC02480822791E2100495FB9 /* IterableInboxNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */; };
@@ -372,6 +373,7 @@
 		55B9F15224B6625D00E8198A /* ApiClientProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiClientProtocol.swift; sourceTree = "<group>"; };
 		55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPresenterTests.swift; sourceTree = "<group>"; };
 		55D54655239AE5750093ED1E /* LoggingInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingInternal.swift; sourceTree = "<group>"; };
+		55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewProtocolTests.swift; sourceTree = "<group>"; };
 		55E6F45D238E066400808BCE /* DeferredDeepLinkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeferredDeepLinkTests.swift; sourceTree = "<group>"; };
 		55E6F45E238E066400808BCE /* DeepLinkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepLinkTests.swift; sourceTree = "<group>"; };
 		AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxNavigationViewController.swift; sourceTree = "<group>"; };
@@ -972,6 +974,7 @@
 				AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */,
 				ACAA816D231163660035C743 /* RequestCreatorTests.swift */,
 				ACB37AAF240268A60093A8EA /* SampleInboxViewDelegateImplementations.swift */,
+				55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */,
 			);
 			path = "swift-sdk-swift-tests";
 			sourceTree = "<group>";
@@ -1766,6 +1769,7 @@
 				5531CDAE22A9C992000D05E2 /* ClassExtensionsTests.swift in Sources */,
 				AC995F9E2167E9FD0099A184 /* CommonExtensions.swift in Sources */,
 				AC2C668020D31B1F00D46CC9 /* IterableNotificationResponseTests.swift in Sources */,
+				55E02D39253F8D86009DB8BC /* WebViewProtocolTests.swift in Sources */,
 				AC750A4A234CD67900561902 /* InAppHelperTests.swift in Sources */,
 				AC87172621A4E47E00FEA369 /* TestInAppPayloadGenerator.swift in Sources */,
 				AC1670CD2230A91C00989F8E /* InboxTests.swift in Sources */,
