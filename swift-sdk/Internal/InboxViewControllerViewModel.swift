@@ -257,7 +257,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     private func getMessages() -> [InboxMessageViewModel] {
-        internalAPI?.inAppManager.getMessages().map { InboxMessageViewModel(message: $0) } ?? []
+        internalAPI?.inAppManager.getInboxMessages().map { InboxMessageViewModel(message: $0) } ?? []
     }
     
     private func sortAndFilter(messages: [InboxMessageViewModel]) -> SectionedValues<Int, InboxMessageViewModel> {
