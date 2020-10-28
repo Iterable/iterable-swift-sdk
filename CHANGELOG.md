@@ -2,13 +2,20 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.2.14
+#### Added
+- Added in-app animations
+
+#### Fixed
+- Fixed non-inbox in-apps showing up in the inbox if multiple were about to be shown
+
 ## 6.2.13
 #### Fixed
-- Make `IterablePushNotificationMetadata` struct public.
-- Optimize auth token refresh.
+- Made `IterablePushNotificationMetadata` struct public.
+- Optimized auth token refresh.
 - Use `systemBackground` color for iOS 14.
 
-	## 6.2.12
+## 6.2.12
 #### Added
 - Added authentication support
 
