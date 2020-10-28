@@ -4,11 +4,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 6.2.13
 #### Fixed
-- Make `IterablePushNotificationMetadata` struct public.
-- Optimize auth token refresh.
-- Use `systemBackground` color for iOS 14.
+- Made `IterablePushNotificationMetadata` struct public.
+- Optimized auth token refresh.
+- Used `systemBackground` color for iOS 14.
 
-	## 6.2.12
+## 6.2.12
 #### Added
 - Added authentication support
 
