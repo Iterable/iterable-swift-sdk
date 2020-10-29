@@ -20,10 +20,12 @@ let package = Package(
     targets: [
         .target(name: "IterableSDK",
                 path: "swift-sdk",
+                exclude: ["Info.plist"],
                 resources: [
                     .process("Resources"),
                 ]),
         .target(name: "IterableAppExtensions",
-                path: "notification-extension"),
+                path: "notification-extension",
+                exclude: ["Info.plist"]),
     ]
 )
