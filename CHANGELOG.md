@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.2.15
+#### Fixed
+- Removed specific plist files from the SPM targets to stop unnecessary warnings
+
 ## 6.2.14
 #### Added
 - Added in-app animations
