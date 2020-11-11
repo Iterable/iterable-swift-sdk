@@ -10,5 +10,5 @@ xcodebuild -target "notification-extension" -configuration Release ONLY_ACTIVE_A
 xcodebuild -create-xcframework -output "build/IterableSDK.xcframework" -framework "build/Release-iphoneos/IterableSDK.framework" -framework "build/Release-iphonesimulator/IterableSDK.framework"
 xcodebuild -create-xcframework -output "build/IterableAppExtensions.xcframework" -framework "build/Release-iphoneos/IterableAppExtensions.framework" -framework  "build/Release-iphonesimulator/IterableAppExtensions.framework"
 
-zip -r "build/IterableSDK.zip" "build/IterableSDK.xcframework"
-zip -r "build/IterableAppExtensions.zip" "build/IterableAppExtensions.xcframework"
+zip -r "build/IterableSDK.xcframework.zip" "build/IterableSDK.xcframework"
+zip -r "build/IterableAppExtensions.xcframework.zip" "build/IterableAppExtensions.xcframework"
