@@ -5,8 +5,7 @@ Pod::Spec.new do |s|
   s.summary      = "Iterable's official SDK for iOS"
 
   s.description  = <<-DESC
-                   iOS SDK containing a wrapper around Iterable's API, in addition
-                   to some utility functions
+                   Iterable's iOS SDK integrating utility and the Iterable API
                    DESC
 
   s.homepage     = "https://github.com/Iterable/swift-sdk.git"
@@ -18,11 +17,11 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/Iterable/swift-sdk.git", :tag => s.version }
   s.source_files = "swift-sdk/**/*.{h,m,swift}"
 
-  s.resource_bundles = {'Resources' => 'swift-sdk/Resources/**/*.{storyboard,xib,xcassets,xcdatamodeld}' }
-
   s.pod_target_xcconfig = {
     'SWIFT_VERSION' => '5.2'
   }
 
   s.swift_version = '5.2'
+
+  s.resource_bundles = {'Resources' => 'swift-sdk/Resources/**/*.{storyboard,xib,xcassets,xcdatamodeld}' }
 end
