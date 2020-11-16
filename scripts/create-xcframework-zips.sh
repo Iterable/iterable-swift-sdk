@@ -11,10 +11,10 @@ OUTPUT_FOLDER=build
 rm -rf "${OUTPUT_FOLDER}"
 
 # -destination="iOS" -- seems like "-sdk iphoneos" is needed and not this?
-xcodebuild archive -scheme "swift-sdk" SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES -archivePath "./${OUTPUT_FOLDER}/IterableSDK-iOS" -sdk iphoneos
+xcodebuild archive -scheme "swift-sdk" SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES BITCODE_GENERATION_MODE=bitcode -archivePath "./${OUTPUT_FOLDER}/IterableSDK-iOS" -sdk iphoneos
 
 # -destination="iOS Simulator" -- seems like "-sdk iphonesimulator" is needed and not this?
-xcodebuild archive -scheme "swift-sdk" SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES -archivePath "./${OUTPUT_FOLDER}/IterableSDK-Simulator" -sdk iphonesimulator
+xcodebuild archive -scheme "swift-sdk" SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES BITCODE_GENERATION_MODE=bitcode -archivePath "./${OUTPUT_FOLDER}/IterableSDK-Simulator" -sdk iphonesimulator
 
 # create IterableSDK.xcframework
 xcodebuild -create-xcframework \
