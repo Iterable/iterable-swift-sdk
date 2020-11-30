@@ -357,6 +357,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     private var config: IterableConfig
     
+    static var pendingNotificationResponse: NotificationResponseProtocol?
+    
     private let dateProvider: DateProviderProtocol
     private let inAppDisplayer: InAppDisplayerProtocol
     private var notificationStateProvider: NotificationStateProviderProtocol
@@ -514,6 +516,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         
         handle(launchOptions: launchOptions)
         
+        handlePendingNotifications()
+        
         requestProcessor.start()
         
         return inAppManager.start()
@@ -533,6 +537,15 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                     IterableAppIntegration.implementation?.performDefaultNotificationAction(remoteNotificationPayload)
                 }
             }
+        }
+    }
+    
+    private func handlePendingNotifications() {
+        if let pendingNotificationResponse = Self.pendingNotificationResponse {
+            if #available(iOS 10.0, *) {
+                IterableAppIntegration.implementation?.userNotificationCenter(nil, didReceive: pendingNotificationResponse, withCompletionHandler: nil)
+            }
+            Self.pendingNotificationResponse = nil
         }
     }
     

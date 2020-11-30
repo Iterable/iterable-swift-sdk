@@ -47,7 +47,6 @@ struct SystemNotificationStateProvider: NotificationStateProviderProtocol {
     }
 }
 
-@available(iOS 10.0, *)
 public protocol NotificationResponseProtocol {
     var userInfo: [AnyHashable: Any] { get }
     

@@ -45,9 +45,13 @@ import UserNotifications
                                               withCompletionHandler completionHandler: (() -> Void)?) {
         ITBInfo()
         
-        implementation?.userNotificationCenter(center,
-                                               didReceive: UserNotificationResponse(response: response),
-                                               withCompletionHandler: completionHandler)
+        if let implementation = implementation {
+            implementation.userNotificationCenter(center,
+                                                  didReceive: UserNotificationResponse(response: response),
+                                                  withCompletionHandler: completionHandler)
+        } else {
+            IterableAPIInternal.pendingNotificationResponse = UserNotificationResponse(response: response)
+        }
     }
     
     // MARK: Private
