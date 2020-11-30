@@ -357,7 +357,9 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     
     private var config: IterableConfig
     
+    // Following are needed for handling pending notification and deep link.
     static var pendingNotificationResponse: NotificationResponseProtocol?
+    static var pendingUniversalLink: URL?
     
     private let dateProvider: DateProviderProtocol
     private let inAppDisplayer: InAppDisplayerProtocol
@@ -516,7 +518,10 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         
         handle(launchOptions: launchOptions)
         
-        handlePendingNotifications()
+        
+        handlePendingNotification()
+        
+        handlePendingUniversalLink()
         
         requestProcessor.start()
         
@@ -540,12 +545,19 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    private func handlePendingNotifications() {
+    private func handlePendingNotification() {
         if let pendingNotificationResponse = Self.pendingNotificationResponse {
             if #available(iOS 10.0, *) {
                 IterableAppIntegration.implementation?.userNotificationCenter(nil, didReceive: pendingNotificationResponse, withCompletionHandler: nil)
             }
             Self.pendingNotificationResponse = nil
+        }
+    }
+    
+    private func handlePendingUniversalLink() {
+        if let pendingUniversalLink = Self.pendingUniversalLink {
+            handleUniversalLink(pendingUniversalLink)
+            Self.pendingUniversalLink = nil
         }
     }
     
