@@ -23,7 +23,7 @@ struct MockNotificationResponse: NotificationResponseProtocol {
         self.actionIdentifier = actionIdentifier
     }
     
-    var textInputResponse: UNTextInputNotificationResponse? {
+    var userText: String? {
         nil
     }
 }
