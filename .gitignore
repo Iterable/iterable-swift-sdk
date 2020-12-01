@@ -13,6 +13,7 @@ Pods/
 dev.config
 
 Build/
+build2/
 
 # needed integration testing
 env_vars.sh
