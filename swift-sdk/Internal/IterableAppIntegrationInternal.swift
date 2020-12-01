@@ -47,13 +47,12 @@ struct SystemNotificationStateProvider: NotificationStateProviderProtocol {
     }
 }
 
-@available(iOS 10.0, *)
 public protocol NotificationResponseProtocol {
     var userInfo: [AnyHashable: Any] { get }
     
     var actionIdentifier: String { get }
     
-    var textInputResponse: UNTextInputNotificationResponse? { get }
+    var userText: String? { get }
 }
 
 @available(iOS 10.0, *)
@@ -66,8 +65,12 @@ struct UserNotificationResponse: NotificationResponseProtocol {
         response.actionIdentifier
     }
     
-    var textInputResponse: UNTextInputNotificationResponse? {
-        response as? UNTextInputNotificationResponse
+    var userText: String? {
+        guard let textInputResponse = response as? UNTextInputNotificationResponse else {
+            return nil
+        }
+
+        return textInputResponse.userText
     }
     
     private let response: UNNotificationResponse
@@ -217,8 +220,8 @@ struct IterableAppIntegrationInternal {
             return
         }
         
-        let dataFields = IterableAppIntegrationInternal.createIterableDataFields(actionIdentifier: response.actionIdentifier, userText: response.textInputResponse?.userText)
-        let action = IterableAppIntegrationInternal.createIterableAction(actionIdentifier: response.actionIdentifier, userText: response.textInputResponse?.userText, userInfo: userInfo, iterableElement: itbl)
+        let dataFields = IterableAppIntegrationInternal.createIterableDataFields(actionIdentifier: response.actionIdentifier, userText: response.userText)
+        let action = IterableAppIntegrationInternal.createIterableAction(actionIdentifier: response.actionIdentifier, userText: response.userText, userInfo: userInfo, iterableElement: itbl)
         
         // Track push open
         if let _ = dataFields[JsonKey.actionIdentifier.jsonKey] { // i.e., if action is not dismiss
