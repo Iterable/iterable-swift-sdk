@@ -45,4 +45,18 @@ class OrderedDictionaryTests: XCTestCase {
         
         XCTAssertNil(dict["key"])
     }
+    
+    func testRemoveValue() {
+        var dict = OrderedDictionary<String, String>()
+        
+        let key = "asdf"
+        
+        dict[key] = "thing"
+        
+        XCTAssertNotNil(dict[key])
+        
+        dict[key] = nil
+        
+        XCTAssertNil(dict[key])
+    }
 }
