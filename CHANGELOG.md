@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.2.16
+#### Fixed
+- SDK initialization fix for React Native. Push notifications and deep links were not working for React Native when app is not in memory.
+
 ## 6.2.15
 #### Fixed
 - Removed specific plist files from the SPM targets to stop unnecessary warnings
