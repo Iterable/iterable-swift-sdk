@@ -106,4 +106,10 @@ class IterableActionRunnerTests: XCTestCase {
         wait(for: [expection], timeout: testExpectationTimeout)
         XCTAssertFalse(handled)
     }
+    
+    func testBadDataInIterableAction() {
+        let action = IterableAction.action(fromDictionary: ["type": 1])
+        
+        XCTAssertNil(action)
+    }
 }
