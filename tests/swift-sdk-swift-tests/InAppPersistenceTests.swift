@@ -45,4 +45,17 @@ class InAppPersistenceTests: XCTestCase {
         XCTAssertEqual(inboxMetadata.subtitle, decodedInboxMetadata.subtitle)
         XCTAssertEqual(inboxMetadata.icon, decodedInboxMetadata.icon)
     }
+    
+    func testDefaultTriggerDict() {
+        let defaultTriggerDict = IterableInAppTrigger.createDefaultTriggerDict()
+        
+        let createdDict = IterableInAppTrigger.createTriggerDict(forTriggerType: .defaultTriggerType)
+        
+        if let defaultDictValue = defaultTriggerDict[JsonKey.InApp.type] as? String,
+           let createdDictValue = createdDict[JsonKey.InApp.type] as? String {
+            XCTAssertEqual(defaultDictValue, createdDictValue)
+        } else {
+            XCTFail("conversion to string failed")
+        }
+    }
 }
