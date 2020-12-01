@@ -322,6 +322,29 @@ class RequestCreatorTests: XCTestCase {
         wait(for: [condition1, condition2, condition3], timeout: testExpectationTimeout)
     }
     
+    func testRegisterTokenRequestPrefersUserId() {
+        let userIdRequestCreator = RequestCreator(apiKey: apiKey,
+                                                  auth: userIdAuth,
+                                                  deviceMetadata: deviceMetadata)
+        
+        let registerTokenInfo = RegisterTokenInfo(hexToken: "hex-token",
+                                                  appName: "tester",
+                                                  pushServicePlatform: .auto,
+                                                  apnsType: .production,
+                                                  deviceId: IterableUtil.generateUUID(),
+                                                  deviceAttributes: [:],
+                                                  sdkVersion: nil)
+        
+        let urlRequest = convertToUrlRequest(userIdRequestCreator.createRegisterTokenRequest(registerTokenInfo: registerTokenInfo,
+                                                                                             notificationsEnabled: true))
+        TestUtils.validateHeader(urlRequest, apiKey)
+        TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.registerDeviceToken)
+        
+        let body = urlRequest.bodyDict
+        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.userId), value: userIdAuth.userId, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.preferUserId), value: true, inDictionary: body)
+    }
+    
     private let apiKey = "zee-api-key"
     
     private let email = "user@example.com"
@@ -329,6 +352,8 @@ class RequestCreatorTests: XCTestCase {
     private let locationKeyPath = "\(JsonKey.inAppMessageContext.jsonKey).\(JsonKey.inAppLocation.jsonKey)"
     
     private let userlessAuth = Auth(userId: nil, email: nil, authToken: nil)
+    
+    private let userIdAuth = Auth(userId: "ein", email: nil, authToken: nil)
     
     private let deviceMetadata = DeviceMetadata(deviceId: IterableUtil.generateUUID(),
                                                 platform: JsonValue.iOS.jsonStringValue,
