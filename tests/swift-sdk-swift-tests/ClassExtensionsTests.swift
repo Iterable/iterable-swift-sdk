@@ -29,6 +29,24 @@ class ClassExtensionsTests: XCTestCase {
         }
     }
     
+    func testArrayIsAscending() {
+        let ascendingArray = [1, 2, 3]
+        let descendingArray = [3, 2, 1]
+        
+        XCTAssertTrue(ascendingArray.isAscending())
+        
+        XCTAssertFalse(descendingArray.isAscending())
+    }
+    
+    func testArrayIsDescending() {
+        let ascendingArray = [1, 2, 3]
+        let descendingArray = [3, 2, 1]
+        
+        XCTAssertTrue(descendingArray.isDescending())
+        
+        XCTAssertFalse(ascendingArray.isDescending())
+    }
+    
     private func generateRandomInt(max: Int) -> Int {
         Int(arc4random_uniform(UInt32(max)))
     }
