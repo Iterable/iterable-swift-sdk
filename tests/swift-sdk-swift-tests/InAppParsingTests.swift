@@ -1,6 +1,4 @@
 //
-//  Created by David Truong on 10/3/17.
-//  Migrated to Swift by Tapash Majumder on 7/10/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
