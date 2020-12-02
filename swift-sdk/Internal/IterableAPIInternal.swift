@@ -356,6 +356,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     // MARK: - Private/Internal
     
     private var config: IterableConfig
+    private var apiEndPoint: String
+    private var linksEndPoint: String
     
     // Following are needed for handling pending notification and deep link.
     static var pendingNotificationResponse: NotificationResponseProtocol?
@@ -382,7 +384,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     lazy var apiClient: ApiClientProtocol = {
         ApiClient(apiKey: apiKey,
                   authProvider: self,
-                  endPoint: config.apiEndpoint,
+                  endPoint: apiEndPoint,
                   networkSession: networkSession,
                   deviceMetadata: deviceMetadata)
     }()
@@ -390,6 +392,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     private lazy var requestProcessor: RequestProcessorProtocol = {
         dependencyContainer.createRequestProcessor(apiKey: apiKey,
                                                    config: config,
+                                                   endPoint: apiEndPoint,
                                                    authProvider: self,
                                                    authManager: authManager,
                                                    deviceMetadata: deviceMetadata)
@@ -480,12 +483,16 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     init(apiKey: String,
          launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
          config: IterableConfig = IterableConfig(),
+         apiEndPointOverride: String? = nil,
+         linksEndPointOverride: String? = nil,
          dependencyContainer: DependencyContainerProtocol = DependencyContainer()) {
         IterableLogUtil.sharedInstance = IterableLogUtil(dateProvider: dependencyContainer.dateProvider, logDelegate: config.logDelegate)
         ITBInfo()
         self.apiKey = apiKey
         self.launchOptions = launchOptions
         self.config = config
+        apiEndPoint = apiEndPointOverride ?? Endpoint.api
+        linksEndPoint = linksEndPointOverride ?? Endpoint.links
         self.dependencyContainer = dependencyContainer
         dateProvider = dependencyContainer.dateProvider
         networkSession = dependencyContainer.networkSession
@@ -569,7 +576,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             return
         }
         
-        guard let request = IterableRequestUtil.createPostRequest(forApiEndPoint: config.linksEndpoint,
+        guard let request = IterableRequestUtil.createPostRequest(forApiEndPoint: linksEndPoint,
                                                                   path: Const.Path.ddlMatch,
                                                                   headers: [JsonKey.Header.apiKey: apiKey],
                                                                   args: nil,

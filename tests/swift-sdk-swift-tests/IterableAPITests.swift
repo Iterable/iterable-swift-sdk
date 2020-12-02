@@ -80,10 +80,12 @@ class IterableAPITests: XCTestCase {
         }
         
         let config = IterableConfig()
-        config.apiEndpoint = newApiEndpoint
-        config.linksEndpoint = newLinksEndpoint
         config.checkForDeferredDeeplink = true
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: mockNetworkSession)
+        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey,
+                                                                   config: config,
+                                                                   apiEndPointOverride: newApiEndpoint,
+                                                                   linksEndPointOverride: newLinksEndpoint,
+                                                                   networkSession: mockNetworkSession)
         internalAPI.email = IterableAPITests.email
         internalAPI.track("Some Event")
         

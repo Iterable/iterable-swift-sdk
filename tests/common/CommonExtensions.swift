@@ -116,6 +116,8 @@ extension IterableAPI {
     static func initializeForTesting(apiKey: String = "zeeApiKey",
                                      launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
                                      config: IterableConfig = IterableConfig(),
+                                     apiEndPointOverride: String? = nil,
+                                     linksEndPointOverride: String? = nil,
                                      dateProvider: DateProviderProtocol = SystemDateProvider(),
                                      networkSession: NetworkSessionProtocol = MockNetworkSession(),
                                      notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
@@ -142,6 +144,8 @@ extension IterableAPI {
         internalImplementation = IterableAPIInternal(apiKey: apiKey,
                                                      launchOptions: launchOptions,
                                                      config: config,
+                                                     apiEndPointOverride: apiEndPointOverride,
+                                                     linksEndPointOverride: linksEndPointOverride,
                                                      dependencyContainer: mockDependencyContainer)
         
         internalImplementation?.start().wait()
@@ -153,6 +157,8 @@ extension IterableAPIInternal {
     @discardableResult static func initializeForTesting(apiKey: String = "zeeApiKey",
                                                         launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
                                                         config: IterableConfig = IterableConfig(),
+                                                        apiEndPointOverride: String? = nil,
+                                                        linksEndPointOverride: String? = nil,
                                                         dateProvider: DateProviderProtocol = SystemDateProvider(),
                                                         networkSession: NetworkSessionProtocol = MockNetworkSession(),
                                                         notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
@@ -179,6 +185,8 @@ extension IterableAPIInternal {
         let internalImplementation = IterableAPIInternal(apiKey: apiKey,
                                                          launchOptions: launchOptions,
                                                          config: config,
+                                                         apiEndPointOverride: apiEndPointOverride,
+                                                         linksEndPointOverride: linksEndPointOverride,
                                                          dependencyContainer: mockDependencyContainer)
         
         internalImplementation.start().wait()

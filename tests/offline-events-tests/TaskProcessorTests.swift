@@ -29,7 +29,7 @@ class TaskProcessorTests: XCTestCase {
         }
         
         let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
-                                                    endPoint: config.apiEndpoint,
+                                                    endPoint: Endpoint.api,
                                                     auth: auth,
                                                     deviceMetadata: internalAPI.deviceMetadata,
                                                     iterableRequest: trackEventRequest)
