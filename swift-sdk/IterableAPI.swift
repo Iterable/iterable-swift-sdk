@@ -7,7 +7,8 @@
 import Foundation
 import UIKit
 
-@objcMembers public final class IterableAPI: NSObject {
+@objcMembers
+public final class IterableAPI: NSObject {
     /// The current SDK version
     public static let sdkVersion = "6.2.16"
     
@@ -93,10 +94,26 @@ import UIKit
     public static func initialize(apiKey: String,
                                   launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
                                   config: IterableConfig = IterableConfig()) {
-        internalImplementation = IterableAPIInternal(apiKey: apiKey, launchOptions: launchOptions, config: config)
+        initialize2(apiKey: apiKey,
+                    launchOptions: launchOptions,
+                    config: config)
+    }
+
+    /// DO NOT USE THIS.
+    /// This method is used internally to connect to staging and test environments.
+    public static func initialize2(apiKey: String,
+                                   launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
+                                   config: IterableConfig = IterableConfig(),
+                                   apiEndPointOverride: String? = nil,
+                                   linksEndPointOverride: String? = nil) {
+        internalImplementation = IterableAPIInternal(apiKey: apiKey,
+                                                     launchOptions: launchOptions,
+                                                     config: config,
+                                                     apiEndPointOverride: apiEndPointOverride,
+                                                     linksEndPointOverride: linksEndPointOverride)
         _ = internalImplementation?.start()
     }
-    
+
     // MARK: - SDK
     
     /// Handle a Universal Link

@@ -51,6 +51,7 @@ extension DependencyContainerProtocol {
     
     func createRequestProcessor(apiKey: String,
                                 config: IterableConfig,
+                                endPoint: String,
                                 authProvider: AuthProvider?,
                                 authManager: IterableInternalAuthManagerProtocol,
                                 deviceMetadata: DeviceMetadata) -> RequestProcessorProtocol {
@@ -59,7 +60,7 @@ extension DependencyContainerProtocol {
                                         OnlineRequestProcessor(apiKey: apiKey,
                                                                authProvider: authProvider,
                                                                authManager: authManager,
-                                                               endPoint: config.apiEndpoint,
+                                                               endPoint: endPoint,
                                                                networkSession: networkSession,
                                                                deviceMetadata: deviceMetadata) },
                                     offlineCreator: { [weak authProvider] in
@@ -70,7 +71,7 @@ extension DependencyContainerProtocol {
                                         return OfflineRequestProcessor(apiKey: apiKey,
                                                                 authProvider: authProvider,
                                                                 authManager: authManager,
-                                                                endPoint: config.apiEndpoint,
+                                                                endPoint: endPoint,
                                                                 deviceMetadata: deviceMetadata,
                                                                 taskScheduler: createTaskScheduler(persistenceContextProvider: persistenceContextProvider),
                                                                 taskRunner: createTaskRunner(persistenceContextProvider: persistenceContextProvider),
@@ -80,7 +81,7 @@ extension DependencyContainerProtocol {
             return OnlineRequestProcessor(apiKey: apiKey,
                                           authProvider: authProvider,
                                           authManager: authManager,
-                                          endPoint: config.apiEndpoint,
+                                          endPoint: endPoint,
                                           networkSession: networkSession,
                                           deviceMetadata: deviceMetadata)
         }
