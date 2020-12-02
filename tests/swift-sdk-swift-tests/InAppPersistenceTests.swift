@@ -1,5 +1,4 @@
 //
-//  Created by Jay Kim on 5/29/19.
 //  Copyright © 2019 Iterable. All rights reserved.
 //
 
@@ -44,5 +43,18 @@ class InAppPersistenceTests: XCTestCase {
         XCTAssertEqual(inboxMetadata.title, decodedInboxMetadata.title)
         XCTAssertEqual(inboxMetadata.subtitle, decodedInboxMetadata.subtitle)
         XCTAssertEqual(inboxMetadata.icon, decodedInboxMetadata.icon)
+    }
+    
+    func testDefaultTriggerDict() {
+        let defaultTriggerDict = IterableInAppTrigger.createDefaultTriggerDict()
+        
+        let createdDict = IterableInAppTrigger.createTriggerDict(forTriggerType: .defaultTriggerType)
+        
+        if let defaultDictValue = defaultTriggerDict[JsonKey.InApp.type] as? String,
+           let createdDictValue = createdDict[JsonKey.InApp.type] as? String {
+            XCTAssertEqual(defaultDictValue, createdDictValue)
+        } else {
+            XCTFail("conversion to string failed")
+        }
     }
 }

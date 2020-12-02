@@ -1,5 +1,4 @@
 //
-//  Created by Jay Kim on 5/23/19.
 //  Copyright © 2019 Iterable. All rights reserved.
 //
 
@@ -44,5 +43,19 @@ class OrderedDictionaryTests: XCTestCase {
         let dict = OrderedDictionary<String, String>()
         
         XCTAssertNil(dict["key"])
+    }
+    
+    func testRemoveValue() {
+        var dict = OrderedDictionary<String, String>()
+        
+        let key = "asdf"
+        
+        dict[key] = "thing"
+        
+        XCTAssertNotNil(dict[key])
+        
+        dict[key] = nil
+        
+        XCTAssertNil(dict[key])
     }
 }

@@ -1,5 +1,4 @@
 //
-//  Created by Jay Kim on 6/6/19.
 //  Copyright © 2019 Iterable. All rights reserved.
 //
 
@@ -27,6 +26,24 @@ class ClassExtensionsTests: XCTestCase {
             let hex = token.hexString()
             XCTAssertEqual(token, data(fromHexString: hex))
         }
+    }
+    
+    func testArrayIsAscending() {
+        let ascendingArray = [1, 2, 3]
+        let descendingArray = [3, 2, 1]
+        
+        XCTAssertTrue(ascendingArray.isAscending())
+        
+        XCTAssertFalse(descendingArray.isAscending())
+    }
+    
+    func testArrayIsDescending() {
+        let ascendingArray = [1, 2, 3]
+        let descendingArray = [3, 2, 1]
+        
+        XCTAssertTrue(descendingArray.isDescending())
+        
+        XCTAssertFalse(ascendingArray.isDescending())
     }
     
     private func generateRandomInt(max: Int) -> Int {

@@ -1,5 +1,4 @@
 //
-//  Created by Tapash Majumder on 8/29/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
@@ -14,7 +13,7 @@ class LocalStorageTests: XCTestCase {
     }
     
     static let userDefaultsSuiteName = "localstorage.tests"
-
+    
     private static func getTestUserDefaults() -> UserDefaults {
         UserDefaults(suiteName: userDefaultsSuiteName)!
     }
@@ -141,5 +140,19 @@ class LocalStorageTests: XCTestCase {
         let sdkVersion = "6.0.2"
         localStorage.sdkVersion = sdkVersion
         XCTAssertEqual(localStorage.sdkVersion, sdkVersion)
+    }
+    
+    func testAuthToken() {
+        var localStorage = UserDefaultsLocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
+        let authToken = "03.10.11"
+        localStorage.authToken = authToken
+        XCTAssertEqual(localStorage.authToken, authToken)
+        
+        let newAuthToken = "09.09.1999"
+        localStorage.authToken = newAuthToken
+        XCTAssertEqual(localStorage.authToken, newAuthToken)
+        
+        localStorage.authToken = nil
+        XCTAssertNil(localStorage.authToken)
     }
 }

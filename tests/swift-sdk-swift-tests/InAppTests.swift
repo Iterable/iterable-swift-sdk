@@ -1,5 +1,4 @@
 //
-//  Created by Tapash Majumder on 11/9/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
@@ -1276,6 +1275,10 @@ class InAppTests: XCTestCase {
         
         XCTAssertNil(emptyManager.createInboxMessageViewController(for: getEmptyInAppMessage(), withInboxMode: .nav))
         
+        emptyManager.isAutoDisplayPaused = true
+        
+        XCTAssertFalse(emptyManager.isAutoDisplayPaused)
+        
         XCTAssertEqual(emptyManager.getMessages(), [])
         
         XCTAssertEqual(emptyManager.getInboxMessages(), [])
@@ -1294,6 +1297,8 @@ class InAppTests: XCTestCase {
         emptyManager.remove(message: getEmptyInAppMessage(), location: .inApp, source: .deleteButton, inboxSessionId: nil)
         
         emptyManager.set(read: true, forMessage: getEmptyInAppMessage())
+        
+        XCTAssertNil(emptyManager.getMessage(withId: "asdf"))
         
         XCTAssertEqual(emptyManager.getUnreadInboxMessagesCount(), 0)
         

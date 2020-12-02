@@ -1,5 +1,4 @@
 //
-//  Created by Tapash Majumder on 6/14/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
@@ -105,5 +104,11 @@ class IterableActionRunnerTests: XCTestCase {
         
         wait(for: [expection], timeout: testExpectationTimeout)
         XCTAssertFalse(handled)
+    }
+    
+    func testBadDataInIterableAction() {
+        let action = IterableAction.action(fromDictionary: ["type": 1])
+        
+        XCTAssertNil(action)
     }
 }
