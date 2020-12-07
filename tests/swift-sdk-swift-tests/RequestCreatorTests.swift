@@ -175,6 +175,7 @@ class RequestCreatorTests: XCTestCase {
         XCTAssertEqual(args[JsonKey.email.jsonKey], auth.email)
         XCTAssertEqual(args[JsonKey.InApp.packageName], Bundle.main.appPackageName)
         XCTAssertEqual(args[JsonKey.InApp.count], inAppMessageRequestCount.stringValue)
+        XCTAssertEqual(args[JsonKey.systemVersion.jsonKey], UIDevice.current.systemVersion)
     }
     
     func testTrackEventRequest() {
