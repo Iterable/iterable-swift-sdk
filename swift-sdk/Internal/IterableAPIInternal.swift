@@ -100,8 +100,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             
             storeIdentifierData()
             
-            authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: { authToken in
-                _ = self.inAppManager.scheduleSync()
+            authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: { [weak self] authToken in
+                _ = self?.inAppManager.scheduleSync()
             })
             
             loginNewUser()
@@ -117,8 +117,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             
             storeIdentifierData()
             
-            authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: { authToken in
-                _ = self.inAppManager.scheduleSync()
+            authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: { [weak self] authToken in
+                _ = self?.inAppManager.scheduleSync()
             })
             
             loginNewUser()
