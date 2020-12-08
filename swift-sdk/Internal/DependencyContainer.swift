@@ -13,7 +13,6 @@ protocol DependencyContainerProtocol {
     var notificationStateProvider: NotificationStateProviderProtocol { get }
     var localStorage: LocalStorageProtocol { get }
     var inAppDisplayer: InAppDisplayerProtocol { get }
-    var inAppNotifiable: InAppNotifiable { get }
     var inAppPersister: InAppPersistenceProtocol { get }
     var urlOpener: UrlOpenerProtocol { get }
     var applicationStateProvider: ApplicationStateProviderProtocol { get }
@@ -47,8 +46,7 @@ extension DependencyContainerProtocol {
         AuthManager(delegate: config.authDelegate,
                     expirationRefreshPeriod: config.expiringAuthTokenRefreshPeriod,
                     localStorage: localStorage,
-                    dateProvider: dateProvider,
-                    inAppNotifiable: inAppNotifiable)
+                    dateProvider: dateProvider)
     }
     
     func createRequestProcessor(apiKey: String,

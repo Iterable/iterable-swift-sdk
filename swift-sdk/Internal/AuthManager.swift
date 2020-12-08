@@ -16,15 +16,13 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     init(delegate: IterableAuthDelegate?,
          expirationRefreshPeriod: TimeInterval,
          localStorage: LocalStorageProtocol,
-         dateProvider: DateProviderProtocol,
-         inAppNotifiable: InAppNotifiable) {
+         dateProvider: DateProviderProtocol) {
         ITBInfo()
         
         self.delegate = delegate
         self.localStorage = localStorage
         self.dateProvider = dateProvider
         self.expirationRefreshPeriod = expirationRefreshPeriod
-        self.inAppNotifiable = inAppNotifiable
         
         retrieveAuthToken()
     }
@@ -83,8 +81,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     private let expirationRefreshPeriod: TimeInterval
     private var localStorage: LocalStorageProtocol
     private let dateProvider: DateProviderProtocol
-    private let inAppNotifiable: InAppNotifiable
-
+    
     private func storeAuthToken() {
         localStorage.authToken = authToken
     }
@@ -106,9 +103,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
             onSuccess?(authToken)
         }
         
-        inAppNotifiable.scheduleSync()
-        
-        queueAuthTokenExpirationRefresh(self.authToken)
+        queueAuthTokenExpirationRefresh(authToken)
     }
     
     private func queueAuthTokenExpirationRefresh(_ authToken: String?) {
