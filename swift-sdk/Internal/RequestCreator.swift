@@ -206,6 +206,7 @@ struct RequestCreator {
         
         var args: [AnyHashable: Any] = [JsonKey.InApp.count: count.description,
                                         JsonKey.platform.jsonKey: JsonValue.iOS.jsonStringValue,
+                                        JsonKey.systemVersion.jsonKey: UIDevice.current.systemVersion,
                                         JsonKey.InApp.sdkVersion: IterableAPI.sdkVersion]
         
         if let packageName = Bundle.main.appPackageName {

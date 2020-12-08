@@ -61,7 +61,6 @@ class ApiClient {
         
         return .success(RequestCreator(apiKey: apiKey, auth: authProvider.auth, deviceMetadata: deviceMetadata))
     }
-
     
     private func createIterableHeaders() -> [String: String] {
         var headers = [JsonKey.contentType.jsonKey: JsonValue.applicationJson.jsonStringValue,
