@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.2.17
+#### Fixed
+- Added a call to get in-app messages after a JWT retrieval when setting the user to the Iterable SDK instance
+- Fixed passing along deep links from the React Native SDK initialization
+
 ## 6.2.16
 #### Fixed
 - SDK initialization fix for React Native. Push notifications and deep links were not working for React Native when app is not in memory.

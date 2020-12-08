@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name         = "Iterable-iOS-AppExtensions"
   s.module_name  = "IterableAppExtensions"
-  s.version      = "6.2.16"
+  s.version      = "6.2.17"
   s.summary      = "App Extensions for Iterable SDK"
 
   s.description  = <<-DESC
@@ -18,8 +18,8 @@ Pod::Spec.new do |s|
   s.source_files = "notification-extension/*.{h,m,swift}"
 
   s.pod_target_xcconfig = {
-    'SWIFT_VERSION' => '5.2'
+    'SWIFT_VERSION' => '5.3'
   }
 
-  s.swift_version = '5.2'
+  s.swift_version = '5.3'
 end
