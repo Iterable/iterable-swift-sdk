@@ -81,7 +81,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
     private let expirationRefreshPeriod: TimeInterval
     private var localStorage: LocalStorageProtocol
     private let dateProvider: DateProviderProtocol
-
+    
     private func storeAuthToken() {
         localStorage.authToken = authToken
     }
@@ -103,7 +103,7 @@ class AuthManager: IterableInternalAuthManagerProtocol {
             onSuccess?(authToken)
         }
         
-        queueAuthTokenExpirationRefresh(self.authToken)
+        queueAuthTokenExpirationRefresh(authToken)
     }
     
     private func queueAuthTokenExpirationRefresh(_ authToken: String?) {
