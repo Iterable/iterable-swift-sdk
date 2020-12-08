@@ -129,7 +129,12 @@ public final class IterableAPI: NSObject {
     @objc(handleUniversalLink:)
     @discardableResult
     public static func handle(universalLink url: URL) -> Bool {
-        internalImplementation?.handleUniversalLink(url) ?? false
+        if let internalImplementation = internalImplementation {
+            return internalImplementation.handleUniversalLink(url)
+        } else {
+            IterableAPIInternal.pendingUniversalLink = url
+            return false
+        }
     }
     
     /// Add an entry in the device attributes
