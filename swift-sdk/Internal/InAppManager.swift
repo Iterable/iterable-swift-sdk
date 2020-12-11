@@ -13,13 +13,6 @@ protocol InAppDisplayChecker {
 protocol IterableInternalInAppManagerProtocol: IterableInAppManagerProtocol, InAppNotifiable, InAppDisplayChecker {
     func start() -> Future<Bool, Error>
     
-    /// This will create a ViewController which displays an inbox message.
-    /// This ViewController would typically be pushed into the navigation stack.
-    /// - parameter message: The message to show.
-    /// - parameter inboxMode:
-    /// - returns: UIViewController which displays the message.
-    func createInboxMessageViewController(for message: IterableInAppMessage, withInboxMode inboxMode: IterableInboxViewController.InboxMode, inboxSessionId: String?) -> UIViewController?
-    
     /// - parameter message: The message to remove.
     /// - parameter location: The location from where this message was shown. `inbox` or `inApp`.
     /// - parameter source: The source of deletion `inboxSwipe` or `deleteButton`.`
@@ -162,34 +155,6 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         }
         
         return scheduleSync()
-    }
-    
-    func createInboxMessageViewController(for message: IterableInAppMessage,
-                                          withInboxMode inboxMode: IterableInboxViewController.InboxMode,
-                                          inboxSessionId: String? = nil) -> UIViewController? {
-        guard let content = message.content as? IterableHtmlInAppContent else {
-            ITBError("Invalid Content in message")
-            return nil
-        }
-        
-        let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
-                                                                      padding: content.edgeInsets,
-                                                                      messageMetadata: IterableInAppMessageMetadata(message: message, location: .inbox),
-                                                                      isModal: inboxMode == .popup,
-                                                                      inboxSessionId: inboxSessionId)
-        let createResult = IterableHtmlMessageViewController.create(parameters: parameters)
-        let viewController = createResult.viewController
-        
-        createResult.futureClickedURL.onSuccess { url in
-            ITBInfo()
-            
-            // in addition perform action or url delegate task
-            self.handle(clickedUrl: url, forMessage: message, location: .inbox)
-        }
-        
-        viewController.navigationItem.title = message.inboxMetadata?.title
-        
-        return viewController
     }
     
     func remove(message: IterableInAppMessage) {

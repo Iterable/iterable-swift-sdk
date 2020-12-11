@@ -33,7 +33,6 @@
 		55E02D39253F8D86009DB8BC /* WebViewProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */; };
 		55E6F460238E066400808BCE /* DeferredDeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6F45D238E066400808BCE /* DeferredDeepLinkTests.swift */; };
 		55E6F462238E066400808BCE /* DeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6F45E238E066400808BCE /* DeepLinkTests.swift */; };
-		AC02480822791E2100495FB9 /* IterableInboxNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */; };
 		AC02CAA6234E50B5006617E0 /* RegistrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */; };
 		AC03094B21E532470003A288 /* InAppPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC03094A21E532470003A288 /* InAppPersistence.swift */; };
 		AC0674E620D8766600C2806D /* NotificationExtensionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AC0674E520D8766600C2806D /* NotificationExtensionTests.m */; };
@@ -45,7 +44,6 @@
 		AC1AA1C624EBB2DC00F29C6B /* IterableTaskRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1AA1C524EBB2DC00F29C6B /* IterableTaskRunner.swift */; };
 		AC1AA1C924EBB3C300F29C6B /* IterableNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1AA1C824EBB3C300F29C6B /* IterableNotifications.swift */; };
 		AC1BED9523F1D4C700FDD75F /* MiscInboxClasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1BED9423F1D4C700FDD75F /* MiscInboxClasses.swift */; };
-		AC219C49225FD7EB00B98631 /* IterableInboxViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC219C48225FD7EB00B98631 /* IterableInboxViewController.swift */; };
 		AC219C4D225FE4C000B98631 /* InboxMessageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC219C4C225FE4C000B98631 /* InboxMessageViewModel.swift */; };
 		AC219C50225FEDBD00B98631 /* IterableInboxCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC219C4E225FEDBD00B98631 /* IterableInboxCell.swift */; };
 		AC219C51225FEDBD00B98631 /* SampleInboxCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AC219C4F225FEDBD00B98631 /* SampleInboxCell.xib */; };
@@ -75,7 +73,6 @@
 		AC3C10F9213F46A900A9B839 /* IterableLogging.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3C10F8213F46A900A9B839 /* IterableLogging.swift */; };
 		AC3DD9C82142F3650046F886 /* ClassExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3DD9C72142F3650046F886 /* ClassExtensions.swift */; };
 		AC3EFFF02510B8FB007F1330 /* TaskSchedulerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3EFFEF2510B8FB007F1330 /* TaskSchedulerTests.swift */; };
-		AC4095A422B18B9D006EF67C /* InboxViewControllerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4095A322B18B9D006EF67C /* InboxViewControllerViewModel.swift */; };
 		AC426226238C27DD00164121 /* IterableInboxCell+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC426225238C27DD00164121 /* IterableInboxCell+Layout.swift */; };
 		AC426CC4211B5497002EDBE8 /* ServerResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC426CC3211B5497002EDBE8 /* ServerResponse.swift */; };
 		AC43E7FF23A8C2C0008917E2 /* image.jpg in Resources */ = {isa = PBXBuildFile; fileRef = AC74FE1E23A8C0DB004AC442 /* image.jpg */; };
@@ -378,7 +375,6 @@
 		55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewProtocolTests.swift; sourceTree = "<group>"; };
 		55E6F45D238E066400808BCE /* DeferredDeepLinkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeferredDeepLinkTests.swift; sourceTree = "<group>"; };
 		55E6F45E238E066400808BCE /* DeepLinkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepLinkTests.swift; sourceTree = "<group>"; };
-		AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxNavigationViewController.swift; sourceTree = "<group>"; };
 		AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTests.swift; sourceTree = "<group>"; };
 		AC03094A21E532470003A288 /* InAppPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPersistence.swift; sourceTree = "<group>"; };
 		AC0674E420D8766600C2806D /* notification-extensionTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "notification-extensionTests-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -389,7 +385,6 @@
 		AC1AA1C524EBB2DC00F29C6B /* IterableTaskRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableTaskRunner.swift; sourceTree = "<group>"; };
 		AC1AA1C824EBB3C300F29C6B /* IterableNotifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableNotifications.swift; sourceTree = "<group>"; };
 		AC1BED9423F1D4C700FDD75F /* MiscInboxClasses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiscInboxClasses.swift; sourceTree = "<group>"; };
-		AC219C48225FD7EB00B98631 /* IterableInboxViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxViewController.swift; sourceTree = "<group>"; };
 		AC219C4C225FE4C000B98631 /* InboxMessageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxMessageViewModel.swift; sourceTree = "<group>"; };
 		AC219C4E225FEDBD00B98631 /* IterableInboxCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxCell.swift; sourceTree = "<group>"; };
 		AC219C4F225FEDBD00B98631 /* SampleInboxCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SampleInboxCell.xib; sourceTree = "<group>"; };
@@ -420,7 +415,6 @@
 		AC3C10F8213F46A900A9B839 /* IterableLogging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableLogging.swift; sourceTree = "<group>"; };
 		AC3DD9C72142F3650046F886 /* ClassExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassExtensions.swift; sourceTree = "<group>"; };
 		AC3EFFEF2510B8FB007F1330 /* TaskSchedulerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskSchedulerTests.swift; sourceTree = "<group>"; };
-		AC4095A322B18B9D006EF67C /* InboxViewControllerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewControllerViewModel.swift; sourceTree = "<group>"; };
 		AC426225238C27DD00164121 /* IterableInboxCell+Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IterableInboxCell+Layout.swift"; sourceTree = "<group>"; };
 		AC426CC3211B5497002EDBE8 /* ServerResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerResponse.swift; sourceTree = "<group>"; };
 		AC4B039122A8743F0043185B /* EmptyInAppManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyInAppManager.swift; sourceTree = "<group>"; };
@@ -704,8 +698,6 @@
 			isa = PBXGroup;
 			children = (
 				AC219C4E225FEDBD00B98631 /* IterableInboxCell.swift */,
-				AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */,
-				AC219C48225FD7EB00B98631 /* IterableInboxViewController.swift */,
 			);
 			name = "Inbox UI";
 			sourceTree = "<group>";
@@ -827,7 +819,6 @@
 			isa = PBXGroup;
 			children = (
 				AC219C4C225FE4C000B98631 /* InboxMessageViewModel.swift */,
-				AC4095A322B18B9D006EF67C /* InboxViewControllerViewModel.swift */,
 				AC31B03F232AB42100BE25EB /* InboxSessionManager.swift */,
 				AC31B041232AB53500BE25EB /* InboxImpressionTracker.swift */,
 			);
@@ -1638,7 +1629,6 @@
 				55D54656239AE5750093ED1E /* LoggingInternal.swift in Sources */,
 				ACF32BDB24E3EA7C0072E2CC /* RequestProcessorProtocol.swift in Sources */,
 				AC426CC4211B5497002EDBE8 /* ServerResponse.swift in Sources */,
-				AC219C49225FD7EB00B98631 /* IterableInboxViewController.swift in Sources */,
 				AC3DD9C82142F3650046F886 /* ClassExtensions.swift in Sources */,
 				AC219C50225FEDBD00B98631 /* IterableInboxCell.swift in Sources */,
 				ACE6888D2228B86C00A95E5E /* InAppInternal.swift in Sources */,
@@ -1686,7 +1676,6 @@
 				AC72A0C820CF4CE2004D7997 /* Constants.swift in Sources */,
 				AC50865824C60426001DC132 /* IterableTask.swift in Sources */,
 				AC2B79F721E6A38900A59080 /* NotificationHelper.swift in Sources */,
-				AC4095A422B18B9D006EF67C /* InboxViewControllerViewModel.swift in Sources */,
 				AC7A5261227BB9D10064D67E /* DependencyContainer.swift in Sources */,
 				AC776DA6211A1B8A00C27C27 /* IterableRequestUtil.swift in Sources */,
 				ACEDF41D2183C2EC000B9BFE /* Promise.swift in Sources */,
@@ -1695,7 +1684,6 @@
 				AC03094B21E532470003A288 /* InAppPersistence.swift in Sources */,
 				557AE6BF24A56E5E00B57750 /* Auth.swift in Sources */,
 				AC819184227138EF0014955E /* Dwifft.swift in Sources */,
-				AC02480822791E2100495FB9 /* IterableInboxNavigationViewController.swift in Sources */,
 				AC845107228DF54E0052BB8F /* ApiClient.swift in Sources */,
 				AC72A0D120CF4D0B004D7997 /* InAppHelper.swift in Sources */,
 				AC8874AA22178BD80075B54B /* InAppContentParser.swift in Sources */,
