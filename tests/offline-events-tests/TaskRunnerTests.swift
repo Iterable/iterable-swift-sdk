@@ -240,7 +240,34 @@ class TaskRunnerTests: XCTestCase {
         wait(for: [expectation1], timeout: 5.0)
     }
     
-    private func scheduleSampleTask(notificationCenter: NotificationCenterProtocol) throws -> String {
+    func testCreatedAtInBody() throws {
+        let date = Date()
+        let createdAtTime = Int(date.timeIntervalSince1970 * 1000)
+        let dateProvider = MockDateProvider()
+        dateProvider.currentDate = date
+        let expectation1 = expectation(description: #function)
+        let networkSession = MockNetworkSession()
+        networkSession.requestCallback = { request in
+            if request.bodyDict.contains(where: { $0.key == "createdAt" && ($0.value as! Int) == createdAtTime }) {
+                expectation1.fulfill()
+            }
+        }
+        let notificationCenter = MockNotificationCenter()
+        
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                           persistenceContextProvider: persistenceContextProvider,
+                           notificationCenter: notificationCenter,
+                           timeInterval: 0.5)
+        taskRunner.start()
+
+        let _ = try! self.scheduleSampleTask(notificationCenter: notificationCenter, dateProvider: dateProvider)
+        verifyTaskIsExecuted(notificationCenter, withinInterval: 1.0)
+
+        taskRunner.stop()
+        wait(for: [expectation1], timeout: 5.0)
+    }
+    
+    private func scheduleSampleTask(notificationCenter: NotificationCenterProtocol, dateProvider: DateProviderProtocol = SystemDateProvider()) throws -> String {
         let apiKey = "zee-api-key"
         let eventName = "CustomEvent1"
         let dataFields = ["var1": "val1", "var2": "val2"]
@@ -292,11 +319,9 @@ class TaskRunnerTests: XCTestCase {
                                                 appPackageName: Bundle.main.appPackageName ?? "")
     
     private lazy var persistenceContextProvider: IterablePersistenceContextProvider = {
-        let provider = CoreDataPersistenceContextProvider(dateProvider: dateProvider)!
+        let provider = CoreDataPersistenceContextProvider()!
         return provider
     }()
-
-    private let dateProvider = MockDateProvider()
 }
 
 extension TaskRunnerTests: AuthProvider {

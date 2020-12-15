@@ -180,7 +180,42 @@ class TaskProcessorTests: XCTestCase {
         wait(for: [expectation1], timeout: 5.0)
     }
 
-    private func createSampleTask() throws -> IterableTask? {
+    func testCreatedAtInBody() throws {
+        let expectation1 = expectation(description: #function)
+        let date = Date()
+        let createdAtTime = Int(date.timeIntervalSince1970 * 1000)
+        let task = try createSampleTask(scheduledAt: date)!
+        
+        let networkSession = MockNetworkSession()
+        networkSession.requestCallback = { request in
+            if request.bodyDict.contains(where: { $0.key == "createdAt" && ($0.value as! Int) == createdAtTime }) {
+                expectation1.fulfill()
+            }
+        }
+        
+        // process data
+        let processor = IterableAPICallTaskProcessor(networkSession: networkSession)
+        try processor.process(task: task)
+            .onSuccess { taskResult in
+                switch taskResult {
+                case .success(detail: _):
+                    break
+                case .failureWithNoRetry(detail: _):
+                    XCTFail("not expecting failure with no retry")
+                case .failureWithRetry(retryAfter: _, detail: _):
+                    XCTFail("not expecting failure with retry")
+                }
+            }
+            .onError { _ in
+                XCTFail()
+            }
+
+        try persistenceProvider.mainQueueContext().delete(task: task)
+        try persistenceProvider.mainQueueContext().save()
+        wait(for: [expectation1], timeout: 5.0)
+    }
+
+    private func createSampleTask(scheduledAt: Date = Date(), requestedAt: Date = Date()) throws -> IterableTask? {
         let apiKey = "test-api-key"
         let email = "user@example.com"
         let eventName = "CustomEvent1"
@@ -206,9 +241,9 @@ class TaskProcessorTests: XCTestCase {
         let taskId = IterableUtil.generateUUID()
         try persistenceProvider.mainQueueContext().create(task: IterableTask(id: taskId,
                                                                              type: .apiCall,
-                                                                             scheduledAt: Date(),
+                                                                             scheduledAt: scheduledAt,
                                                                              data: data,
-                                                                             requestedAt: Date()))
+                                                                             requestedAt: requestedAt))
         try persistenceProvider.mainQueueContext().save()
 
         return try persistenceProvider.mainQueueContext().findTask(withId: taskId)

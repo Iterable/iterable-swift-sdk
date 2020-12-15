@@ -19,7 +19,10 @@ struct IterableAPICallTaskProcessor: IterableTaskProcessor {
             return IterableTaskError.createErroredFuture(reason: "expecting data")
         }
         
-        let iterableRequest = try JSONDecoder().decode(IterableAPICallRequest.self, from: data)
+        let decodedIterableRequest = try JSONDecoder().decode(IterableAPICallRequest.self, from: data)
+        let iterableRequest = decodedIterableRequest.addingBodyField(key: JsonKey.Body.createdAt,
+                                                                     value: IterableUtil.int(fromDate: task.scheduledAt))
+        
         guard let urlRequest = iterableRequest.convertToURLRequest(currentDate: dateProvider.currentDate) else {
             return IterableTaskError.createErroredFuture(reason: "could not convert to url request")
         }

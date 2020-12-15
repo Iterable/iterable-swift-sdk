@@ -39,6 +39,14 @@ struct IterableAPICallRequest {
         }
     }
     
+    func addingBodyField(key: AnyHashable, value: Any) -> IterableAPICallRequest {
+        IterableAPICallRequest(apiKey: apiKey,
+                               endPoint: endPoint,
+                               auth: auth,
+                               deviceMetadata: deviceMetadata,
+                               iterableRequest: iterableRequest.addingBodyField(key: key, value: value))
+    }
+    
     private func createIterableHeaders(currentDate: Date) -> [String: String] {
         var headers = [JsonKey.contentType.jsonKey: JsonValue.applicationJson.jsonStringValue,
                        JsonKey.Header.sdkPlatform: JsonValue.iOS.jsonStringValue,

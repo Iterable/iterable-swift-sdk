@@ -176,6 +176,10 @@ public enum JsonKey: String, JsonKeyRepresentable {
         static let sentAt = "sentAt"
     }
     
+    public enum Body {
+        static let createdAt = "createdAt"
+    }
+    
     public enum InApp {
         static let trigger = "trigger"
         static let type = "type"
