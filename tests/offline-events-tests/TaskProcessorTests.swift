@@ -142,6 +142,43 @@ class TaskProcessorTests: XCTestCase {
         try persistenceProvider.mainQueueContext().save()
         wait(for: [expectation1], timeout: 15.0)
     }
+    
+    func testSentAtInHeader() throws {
+        let expectation1 = expectation(description: #function)
+        let task = try createSampleTask()!
+        let date = Date()
+        let sentAtTime = "\(Int(date.timeIntervalSince1970 * 1000))"
+        let dateProvider = MockDateProvider()
+        dateProvider.currentDate = date
+        
+        let networkSession = MockNetworkSession()
+        networkSession.requestCallback = { request in
+            if request.allHTTPHeaderFields!.contains(where: { $0.key == "sentAt" && $0.value == sentAtTime }) {
+                expectation1.fulfill()
+            }
+        }
+        
+        // process data
+        let processor = IterableAPICallTaskProcessor(networkSession: networkSession, dateProvider: dateProvider)
+        try processor.process(task: task)
+            .onSuccess { taskResult in
+                switch taskResult {
+                case .success(detail: _):
+                    break
+                case .failureWithNoRetry(detail: _):
+                    XCTFail("not expecting failure with no retry")
+                case .failureWithRetry(retryAfter: _, detail: _):
+                    XCTFail("not expecting failure with retry")
+                }
+            }
+            .onError { _ in
+                XCTFail()
+            }
+
+        try persistenceProvider.mainQueueContext().delete(task: task)
+        try persistenceProvider.mainQueueContext().save()
+        wait(for: [expectation1], timeout: 5.0)
+    }
 
     private func createSampleTask() throws -> IterableTask? {
         let apiKey = "test-api-key"

@@ -212,6 +212,34 @@ class TaskRunnerTests: XCTestCase {
         taskRunner.stop()
     }
     
+    func testSentAtInHeader() throws {
+        let date = Date()
+        let sentAtTime = "\(Int(date.timeIntervalSince1970 * 1000))"
+        let dateProvider = MockDateProvider()
+        dateProvider.currentDate = date
+        let expectation1 = expectation(description: #function)
+        let networkSession = MockNetworkSession()
+        networkSession.requestCallback = { request in
+            if request.allHTTPHeaderFields!.contains(where: { $0.key == "sentAt" && $0.value == sentAtTime }) {
+                expectation1.fulfill()
+            }
+        }
+        let notificationCenter = MockNotificationCenter()
+        
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
+                           persistenceContextProvider: persistenceContextProvider,
+                           notificationCenter: notificationCenter,
+                           timeInterval: 0.5,
+                           dateProvider: dateProvider)
+        taskRunner.start()
+
+        let _ = try! self.scheduleSampleTask(notificationCenter: notificationCenter)
+        verifyTaskIsExecuted(notificationCenter, withinInterval: 1.0)
+
+        taskRunner.stop()
+        wait(for: [expectation1], timeout: 5.0)
+    }
+    
     private func scheduleSampleTask(notificationCenter: NotificationCenterProtocol) throws -> String {
         let apiKey = "zee-api-key"
         let eventName = "CustomEvent1"
