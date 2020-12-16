@@ -552,7 +552,9 @@ extension InAppManager: InAppNotifiable {
     func scheduleSync() -> Future<Bool, Error> {
         ITBInfo()
         
-        return InAppManager.getAppIsReady(applicationStateProvider: applicationStateProvider, displayer: displayer).flatMap { self.scheduleSync(appIsReady: $0) }
+        return InAppManager.getAppIsReady(applicationStateProvider: applicationStateProvider,
+                                          displayer: displayer)
+            .flatMap { self.scheduleSync(appIsReady: $0) }
     }
     
     private func scheduleSync(appIsReady: Bool) -> Future<Bool, Error> {

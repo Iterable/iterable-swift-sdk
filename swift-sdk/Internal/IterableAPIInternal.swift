@@ -92,37 +92,51 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     func setEmail(_ email: String?) {
-        if email != _email {
+        ITBInfo()
+        
+        if email == nil {
             logoutPreviousUser()
-            
-            _email = email
-            _userId = nil
-            
-            storeIdentifierData()
-            
-            authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: { [weak self] authToken in
-                _ = self?.inAppManager.scheduleSync()
-            })
-            
-            loginNewUser()
+            return
         }
+        
+        if _email == email {
+            requestNewAuthToken()
+            return
+        }
+        
+        logoutPreviousUser()
+        
+        _email = email
+        _userId = nil
+        
+        storeIdentifierData()
+        
+        requestNewAuthToken()
+        loginNewUser()
     }
     
     func setUserId(_ userId: String?) {
-        if userId != _userId {
+        ITBInfo()
+        
+        if userId == nil {
             logoutPreviousUser()
-            
-            _email = nil
-            _userId = userId
-            
-            storeIdentifierData()
-            
-            authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: { [weak self] authToken in
-                _ = self?.inAppManager.scheduleSync()
-            })
-            
-            loginNewUser()
+            return
         }
+        
+        if _userId == userId {
+            requestNewAuthToken()
+            return
+        }
+        
+        logoutPreviousUser()
+        
+        _email = nil
+        _userId = userId
+        
+        storeIdentifierData()
+        
+        requestNewAuthToken()
+        loginNewUser()
     }
     
     func logoutUser() {
@@ -425,6 +439,12 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         IterableUtil.isNotNullOrEmpty(string: _email) || IterableUtil.isNotNullOrEmpty(string: _userId)
     }
     
+    private func requestNewAuthToken() {
+        authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: { [weak self] authToken in
+            _ = self?.inAppManager.scheduleSync()
+        })
+    }
+    
     private func logoutPreviousUser() {
         ITBInfo()
         
@@ -439,9 +459,9 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         _email = nil
         _userId = nil
         
-        authManager.logoutUser()
-        
         storeIdentifierData()
+        
+        authManager.logoutUser()
         
         _ = inAppManager.reset()
         

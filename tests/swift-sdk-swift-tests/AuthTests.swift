@@ -702,6 +702,55 @@ class AuthTests: XCTestCase {
         wait(for: [condition2], timeout: 3)
     }
     
+    func testAuthTokenRequestingForAlreadyExistingEmail() {
+        let condition1 = expectation(description: "auth handler didn't get called")
+        
+        let localStorage = MockLocalStorage()
+        localStorage.email = AuthTests.email
+        
+        let authDelegate = createAuthDelegate({ handler in
+            condition1.fulfill()
+        })
+        
+        let config = IterableConfig()
+        config.authDelegate = authDelegate
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(config: config,
+                                                                   localStorage: localStorage)
+        
+        XCTAssertNotNil(internalAPI.email)
+        XCTAssertNil(internalAPI.authManager.getAuthToken())
+        
+        internalAPI.email = AuthTests.email
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+    
+    func testLoggedOutAuthTokenRequest() {
+        let condition1 = expectation(description: "auth handler was called")
+        condition1.isInverted = true
+        
+        let localStorage = MockLocalStorage()
+        localStorage.email = AuthTests.email
+        
+        let authDelegate = createAuthDelegate({ handler in
+            condition1.fulfill()
+        })
+        
+        let config = IterableConfig()
+        config.authDelegate = authDelegate
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(config: config,
+                                                                   localStorage: localStorage)
+        
+        XCTAssertNotNil(internalAPI.email)
+        XCTAssertNil(internalAPI.authManager.getAuthToken())
+        
+        internalAPI.logoutUser()
+        
+        wait(for: [condition1], timeout: testExpectationTimeoutForInverted)
+    }
+    
     // MARK: - Private
     
     class DefaultAuthDelegate: IterableAuthDelegate {
