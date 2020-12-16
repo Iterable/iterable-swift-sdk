@@ -34,12 +34,16 @@ class RequestHandler: RequestHandlerProtocol {
     
     func start() {
         ITBInfo()
-        chooseRequestProcessor().start()
+        if strategy.chooseOfflineProcessor {
+            offlineProcessor?.start()
+        }
     }
     
     func stop() {
         ITBInfo()
-        chooseRequestProcessor().stop()
+        if strategy.chooseOfflineProcessor {
+            offlineProcessor?.stop()
+        }
     }
     
     @discardableResult

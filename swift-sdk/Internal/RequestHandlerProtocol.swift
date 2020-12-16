@@ -4,7 +4,7 @@
 
 import Foundation
 
-/// `IterableAPIinternal` will delegate all network related calls to this struct.
+/// `IterableAPIinternal` will delegate all network related calls to this protocol.
 protocol RequestHandlerProtocol {
     func start()
     

@@ -883,9 +883,9 @@
 				ACF32BDA24E3EA7C0072E2CC /* RequestProcessorProtocol.swift */,
 				AC5E888824E1B7CE00752321 /* OnlineRequestProcessor.swift */,
 				AC5812F524F3A90F007E6D36 /* OfflineRequestProcessor.swift */,
-				AC5812F724F3AE8D007E6D36 /* RequestHandler.swift */,
 				AC3A336C24F65579008225BA /* RequestProcessorUtil.swift */,
 				AC9355D02589F9F90056C903 /* RequestHandlerProtocol.swift */,
+				AC5812F724F3AE8D007E6D36 /* RequestHandler.swift */,
 				AC9355DA2589FC070056C903 /* LegacyRequestHandler.swift */,
 			);
 			name = "Request Processing";

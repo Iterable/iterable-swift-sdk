@@ -24,12 +24,8 @@ struct UpdateSubscriptionsInfo {
     let templateId: NSNumber?
 }
 
-/// `IterableAPIinternal` will delegate all network related calls to this struct.
+/// `RequestHandler` will delegate network related calls to this protocol.
 protocol RequestProcessorProtocol {
-    func start()
-    
-    func stop()
-    
     @discardableResult
     func register(registerTokenInfo: RegisterTokenInfo,
                   notificationStateProvider: NotificationStateProviderProtocol,

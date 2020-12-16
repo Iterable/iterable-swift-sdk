@@ -21,14 +21,6 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                               deviceMetadata: deviceMetadata)
     }
     
-    func start() {
-        ITBInfo()
-    }
-    
-    func stop() {
-        ITBInfo()
-    }
-    
     @discardableResult
     func register(registerTokenInfo: RegisterTokenInfo,
                   notificationStateProvider: NotificationStateProviderProtocol,
