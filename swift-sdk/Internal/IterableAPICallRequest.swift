@@ -14,12 +14,19 @@ struct IterableAPICallRequest {
     let deviceMetadata: DeviceMetadata
     let iterableRequest: IterableRequest
     
-    func convertToURLRequest() -> URLRequest? {
+    func convertToURLRequest(currentDate: Date) -> URLRequest? {
         switch iterableRequest {
         case let .get(getRequest):
-            return IterableRequestUtil.createGetRequest(forApiEndPoint: endPoint, path: getRequest.path, headers: createIterableHeaders(), args: getRequest.args)
+            return IterableRequestUtil.createGetRequest(forApiEndPoint: endPoint,
+                                                        path: getRequest.path,
+                                                        headers: createIterableHeaders(currentDate: currentDate),
+                                                        args: getRequest.args)
         case let .post(postRequest):
-            return IterableRequestUtil.createPostRequest(forApiEndPoint: endPoint, path: postRequest.path, headers: createIterableHeaders(), args: postRequest.args, body: postRequest.body)
+            return IterableRequestUtil.createPostRequest(forApiEndPoint: endPoint,
+                                                         path: postRequest.path,
+                                                         headers: createIterableHeaders(currentDate: currentDate),
+                                                         args: postRequest.args,
+                                                         body: postRequest.body)
         }
     }
     
@@ -32,17 +39,31 @@ struct IterableAPICallRequest {
         }
     }
     
-    private func createIterableHeaders() -> [String: String] {
+    func addingBodyField(key: AnyHashable, value: Any) -> IterableAPICallRequest {
+        IterableAPICallRequest(apiKey: apiKey,
+                               endPoint: endPoint,
+                               auth: auth,
+                               deviceMetadata: deviceMetadata,
+                               iterableRequest: iterableRequest.addingBodyField(key: key, value: value))
+    }
+    
+    private func createIterableHeaders(currentDate: Date) -> [String: String] {
         var headers = [JsonKey.contentType.jsonKey: JsonValue.applicationJson.jsonStringValue,
                        JsonKey.Header.sdkPlatform: JsonValue.iOS.jsonStringValue,
                        JsonKey.Header.sdkVersion: IterableAPI.sdkVersion,
-                       JsonKey.Header.apiKey: apiKey]
+                       JsonKey.Header.apiKey: apiKey,
+                       JsonKey.Header.sentAt: Self.format(sentAt: currentDate),
+        ]
         
         if let authToken = auth.authToken {
             headers[JsonKey.Header.authorization] = "Bearer \(authToken)"
         }
         
         return headers
+    }
+    
+    private static func format(sentAt: Date) -> String {
+        return "\(IterableUtil.int(fromDate: sentAt))"
     }
 }
 

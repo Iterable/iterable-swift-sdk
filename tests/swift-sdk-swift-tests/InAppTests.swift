@@ -63,7 +63,6 @@ class InAppTests: XCTestCase {
         
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShow.onSuccess { message in
-            print(message)
             mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: 1))
             expectation1.fulfill()
         }

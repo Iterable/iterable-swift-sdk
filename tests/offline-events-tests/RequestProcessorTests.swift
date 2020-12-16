@@ -684,7 +684,9 @@ class RequestProcessorTests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 400)
         networkSession.requestCallback = { request in
             TestUtils.validate(request: request, apiEndPoint: Endpoint.api, path: path)
-            XCTAssertTrue(TestUtils.areEqual(dict1: bodyDict, dict2: request.bodyDict))
+            var requestBody = request.bodyDict
+            requestBody.removeValue(forKey: "createdAt")
+            XCTAssertTrue(TestUtils.areEqual(dict1: bodyDict, dict2: requestBody))
         }
         let requestProcessor = createRequestProcessor(networkSession: networkSession,
                                                       notificationCenter: notificationCenter,
@@ -737,7 +739,9 @@ class RequestProcessorTests: XCTestCase {
                                            expectation: XCTestExpectation) {
         networkSession.requestCallback = { request in
             TestUtils.validate(request: request, apiEndPoint: Endpoint.api, path: path)
-            XCTAssertTrue(TestUtils.areEqual(dict1: bodyDict, dict2: request.bodyDict))
+            var requestBody = request.bodyDict
+            requestBody.removeValue(forKey: "createdAt")
+            XCTAssertTrue(TestUtils.areEqual(dict1: bodyDict, dict2: requestBody))
         }
         
         request().onSuccess { json in
@@ -754,7 +758,9 @@ class RequestProcessorTests: XCTestCase {
                                            expectation: XCTestExpectation) {
         networkSession.requestCallback = { request in
             TestUtils.validate(request: request, apiEndPoint: Endpoint.api, path: path)
-            XCTAssertTrue(TestUtils.areEqual(dict1: bodyDict, dict2: request.bodyDict))
+            var requestBody = request.bodyDict
+            requestBody.removeValue(forKey: "createdAt")
+            XCTAssertTrue(TestUtils.areEqual(dict1: bodyDict, dict2: requestBody))
         }
         request().onSuccess { json in
             XCTFail()

@@ -45,6 +45,14 @@ extension IterableRequest: Codable {
         }
     }
     
+    func addingBodyField(key: AnyHashable, value: Any) -> IterableRequest {
+        if case .post(let postRequest) = self {
+            return .post(postRequest.addingBodyField(key: key, value: value))
+        } else {
+            return self
+        }
+    }
+    
     private static let requestTypeGet = "get"
     private static let requestTypePost = "post"
 }
@@ -58,6 +66,12 @@ struct PostRequest {
     let path: String
     let args: [String: String]?
     let body: [AnyHashable: Any]?
+    
+    func addingBodyField(key: AnyHashable, value: Any) -> PostRequest {
+        var newBody = body ?? [AnyHashable: Any]()
+        newBody[key] = value
+        return PostRequest(path: path, args: args, body: newBody)
+    }
 }
 
 extension PostRequest: Codable {

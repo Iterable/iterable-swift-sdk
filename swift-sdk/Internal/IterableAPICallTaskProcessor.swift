@@ -8,14 +8,22 @@ import Foundation
 struct IterableAPICallTaskProcessor: IterableTaskProcessor {
     let networkSession: NetworkSessionProtocol
     
+    init(networkSession: NetworkSessionProtocol, dateProvider: DateProviderProtocol = SystemDateProvider()) {
+        self.networkSession = networkSession
+        self.dateProvider = dateProvider
+    }
+    
     func process(task: IterableTask) throws -> Future<IterableTaskResult, IterableTaskError> {
         ITBInfo()
         guard let data = task.data else {
             return IterableTaskError.createErroredFuture(reason: "expecting data")
         }
         
-        let iterableRequest = try JSONDecoder().decode(IterableAPICallRequest.self, from: data)
-        guard let urlRequest = iterableRequest.convertToURLRequest() else {
+        let decodedIterableRequest = try JSONDecoder().decode(IterableAPICallRequest.self, from: data)
+        let iterableRequest = decodedIterableRequest.addingBodyField(key: JsonKey.Body.createdAt,
+                                                                     value: IterableUtil.int(fromDate: task.scheduledAt))
+        
+        guard let urlRequest = iterableRequest.convertToURLRequest(currentDate: dateProvider.currentDate) else {
             return IterableTaskError.createErroredFuture(reason: "could not convert to url request")
         }
         
@@ -37,6 +45,8 @@ struct IterableAPICallTaskProcessor: IterableTaskProcessor {
         
         return result
     }
+    
+    private let dateProvider: DateProviderProtocol
     
     private static func isNetworkUnavailable(sendRequestError: SendRequestError) -> Bool {
         if let originalError = sendRequestError.originalError {

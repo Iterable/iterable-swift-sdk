@@ -13,12 +13,14 @@ class IterableTaskRunner: NSObject {
          persistenceContextProvider: IterablePersistenceContextProvider,
          notificationCenter: NotificationCenterProtocol = NotificationCenter.default,
          timeInterval: TimeInterval = 1.0 * 60,
-         connectivityManager: NetworkConnectivityManager = NetworkConnectivityManager()) {
+         connectivityManager: NetworkConnectivityManager = NetworkConnectivityManager(),
+         dateProvider: DateProviderProtocol = SystemDateProvider()) {
         ITBInfo()
         self.networkSession = networkSession
         self.persistenceContextProvider = persistenceContextProvider
         self.notificationCenter = notificationCenter
         self.timeInterval = timeInterval
+        self.dateProvider = dateProvider
         self.connectivityManager = connectivityManager
         
         super.init()
@@ -174,7 +176,7 @@ class IterableTaskRunner: NSObject {
 
         switch task.type {
         case .apiCall:
-            let processor = IterableAPICallTaskProcessor(networkSession: networkSession)
+            let processor = IterableAPICallTaskProcessor(networkSession: networkSession, dateProvider: dateProvider)
             return processAPICallTask(processor: processor, task: task)
         }
     }
@@ -183,7 +185,6 @@ class IterableTaskRunner: NSObject {
                                     task: IterableTask) -> Future<TaskExecutionResult, Never> {
         ITBInfo()
         let result = Promise<TaskExecutionResult, Never>()
-        let processor = IterableAPICallTaskProcessor(networkSession: networkSession)
         do {
             try processor.process(task: task).onSuccess { taskResult in
                 switch taskResult {
@@ -254,6 +255,7 @@ class IterableTaskRunner: NSObject {
     private let persistenceContextProvider: IterablePersistenceContextProvider
     private let notificationCenter: NotificationCenterProtocol
     private let timeInterval: TimeInterval
+    private let dateProvider: DateProviderProtocol
     private let connectivityManager: NetworkConnectivityManager
     private weak var timer: Timer?
     private var running = false

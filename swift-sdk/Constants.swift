@@ -173,6 +173,11 @@ public enum JsonKey: String, JsonKeyRepresentable {
         static let sdkVersion = "SDK-Version"
         static let sdkPlatform = "SDK-Platform"
         static let authorization = "Authorization"
+        static let sentAt = "sentAt"
+    }
+    
+    public enum Body {
+        static let createdAt = "createdAt"
     }
     
     public enum InApp {

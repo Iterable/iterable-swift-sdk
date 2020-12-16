@@ -8,15 +8,35 @@
 import Foundation
 
 struct IterableRequestUtil {
-    static func createPostRequest(forApiEndPoint apiEndPoint: String, path: String, headers: [String: String]? = nil, args: [String: String]? = nil, body: [AnyHashable: Any]? = nil) -> URLRequest? {
-        createPostRequest(forApiEndPoint: apiEndPoint, path: path, headers: headers, args: args, body: dictToJsonData(body))
+    static func createPostRequest(forApiEndPoint apiEndPoint: String,
+                                  path: String,
+                                  headers: [String: String]? = nil,
+                                  args: [String: String]? = nil,
+                                  body: [AnyHashable: Any]? = nil) -> URLRequest? {
+        createPostRequest(forApiEndPoint: apiEndPoint,
+                          path: path,
+                          headers: headers,
+                          args: args,
+                          body: dictToJsonData(body))
     }
     
-    static func createPostRequest<T: Encodable>(forApiEndPoint apiEndPoint: String, path: String, headers: [String: String]? = nil, args: [String: String]? = nil, body: T) -> URLRequest? {
-        createPostRequest(forApiEndPoint: apiEndPoint, path: path, headers: headers, args: args, body: try? JSONEncoder().encode(body))
+    static func createPostRequest<T: Encodable>(forApiEndPoint apiEndPoint: String,
+                                                path: String,
+                                                headers: [String: String]? = nil,
+                                                args: [String: String]? = nil,
+                                                body: T) -> URLRequest? {
+        createPostRequest(forApiEndPoint: apiEndPoint,
+                          path: path,
+                          headers: headers,
+                          args: args,
+                          body: try? JSONEncoder().encode(body))
     }
     
-    static func createPostRequest(forApiEndPoint apiEndPoint: String, path: String, headers: [String: String]? = nil, args: [String: String]? = nil, body: Data? = nil) -> URLRequest? {
+    static func createPostRequest(forApiEndPoint apiEndPoint: String,
+                                  path: String,
+                                  headers: [String: String]? = nil,
+                                  args: [String: String]? = nil,
+                                  body: Data? = nil) -> URLRequest? {
         guard let url = getUrlComponents(forApiEndPoint: apiEndPoint, path: path, args: args)?.url else {
             return nil
         }
@@ -29,7 +49,10 @@ struct IterableRequestUtil {
         return request
     }
     
-    static func createGetRequest(forApiEndPoint apiEndPoint: String, path: String, headers: [String: String]? = nil, args: [String: String]? = nil) -> URLRequest? {
+    static func createGetRequest(forApiEndPoint apiEndPoint: String,
+                                 path: String,
+                                 headers: [String: String]? = nil,
+                                 args: [String: String]? = nil) -> URLRequest? {
         guard let url = getUrlComponents(forApiEndPoint: apiEndPoint, path: path, args: args)?.url else {
             return nil
         }

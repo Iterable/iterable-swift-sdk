@@ -11,17 +11,17 @@ struct IterableTask {
     let id: String
     let name: String?
     let version: Int
-    let createdAt: Date?
-    let modifiedAt: Date?
+    let createdAt: Date? // Time at which this task record was created
+    let modifiedAt: Date? // Time when this record was modified
     let type: IterableTaskType
     let attempts: Int
     let lastAttemptedAt: Date?
     let processing: Bool
-    let scheduledAt: Date
+    let scheduledAt: Date // Time after which this task can be scheduled
     let data: Data?
     let failed: Bool
     let blocking: Bool
-    let requestedAt: Date
+    let requestedAt: Date // Time when the request was made by SDK
     let taskFailureData: Data?
     
     init(id: String,
