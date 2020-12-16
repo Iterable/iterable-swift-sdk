@@ -245,6 +245,11 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                                    identifier: #function)
     }
     
+    func deleteAllTasks() throws {
+        ITBInfo()
+        try taskScheduler.deleteAllTasks()
+    }
+    
     private let apiKey: String
     private weak var authProvider: AuthProvider?
     private weak var authManager: IterableInternalAuthManagerProtocol?

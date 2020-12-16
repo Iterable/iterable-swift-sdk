@@ -245,6 +245,9 @@ struct LegacyRequestHandler: RequestHandlerProtocol {
                        forResult: apiClient.track(inAppClick: messageId, clickedUrl: clickedUrl))
     }
     
+    func handleLogout() {
+    }
+
     private let apiClient: ApiClientProtocol
     private weak var authManager: IterableInternalAuthManagerProtocol?
     

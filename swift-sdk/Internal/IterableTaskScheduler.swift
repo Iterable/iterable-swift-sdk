@@ -38,6 +38,11 @@ class IterableTaskScheduler {
         return Result.success(taskId)
     }
     
+    func deleteAllTasks() throws {
+        ITBInfo()
+        try persistenceContextProvider.mainQueueContext().deleteAllTasks()
+    }
+    
     private let persistenceContextProvider: IterablePersistenceContextProvider
     private let notificationCenter: NotificationCenterProtocol
     private let dateProvider: DateProviderProtocol

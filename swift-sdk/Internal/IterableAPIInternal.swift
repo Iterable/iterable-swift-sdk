@@ -444,6 +444,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         storeIdentifierData()
         
         _ = inAppManager.reset()
+        
+        try? requestHandler.handleLogout()
     }
     
     private func loginNewUser() {

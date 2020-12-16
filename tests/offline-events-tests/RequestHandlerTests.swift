@@ -592,6 +592,25 @@ class RequestHandlerTests: XCTestCase {
         wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
     
+    func testDeleteAllTasksOnLogout() throws {
+        let config = IterableConfig()
+        config.enableOfflineMode = true
+        let internalApi = IterableAPIInternal.initializeForTesting(config: config)
+        internalApi.email = "user@example.com"
+        
+        let taskId = IterableUtil.generateUUID()
+        try persistenceContextProvider.mainQueueContext().create(task: IterableTask(id: taskId,
+                                                                             type: .apiCall,
+                                                                             scheduledAt: Date(),
+                                                                             data: nil,
+                                                                             requestedAt: Date()))
+        try persistenceContextProvider.mainQueueContext().save()
+
+        internalApi.logoutUser()
+        
+        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 0)
+    }
+    
     private func handleRequestWithSuccessAndFailure(requestGenerator: (RequestHandlerProtocol) -> Future<SendRequestValue, SendRequestError>,
                                                      path: String,
                                                      bodyDict: [AnyHashable: Any]) throws {
