@@ -33,16 +33,6 @@ protocol RequestProcessorProtocol {
                   onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
     
     @discardableResult
-    func disableDeviceForCurrentUser(hexToken: String,
-                                     withOnSuccess onSuccess: OnSuccessHandler?,
-                                     onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
-    
-    @discardableResult
-    func disableDeviceForAllUsers(hexToken: String,
-                                  withOnSuccess onSuccess: OnSuccessHandler?,
-                                  onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
-    
-    @discardableResult
     func updateUser(_ dataFields: [AnyHashable: Any],
                     mergeNestedObjects: Bool,
                     onSuccess: OnSuccessHandler?,

@@ -54,34 +54,6 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     }
     
     @discardableResult
-    func disableDeviceForCurrentUser(hexToken: String,
-                                     withOnSuccess onSuccess: OnSuccessHandler? = nil,
-                                     onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        let requestGenerator = { (requestCreator: RequestCreator) in
-            requestCreator.createDisableDeviceRequest(forAllUsers: false, hexToken: hexToken)
-        }
-        
-        return sendIterableRequest(requestGenerator: requestGenerator,
-                                   successHandler: onSuccess,
-                                   failureHandler: onFailure,
-                                   identifier: #function)
-    }
-    
-    @discardableResult
-    func disableDeviceForAllUsers(hexToken: String,
-                                  withOnSuccess onSuccess: OnSuccessHandler?,
-                                  onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        let requestGenerator = { (requestCreator: RequestCreator) in
-            requestCreator.createDisableDeviceRequest(forAllUsers: true, hexToken: hexToken)
-        }
-        
-        return sendIterableRequest(requestGenerator: requestGenerator,
-                                   successHandler: onSuccess,
-                                   failureHandler: onFailure,
-                                   identifier: #function)
-    }
-    
-    @discardableResult
     func updateUser(_ dataFields: [AnyHashable: Any],
                     mergeNestedObjects: Bool,
                     onSuccess: OnSuccessHandler?,

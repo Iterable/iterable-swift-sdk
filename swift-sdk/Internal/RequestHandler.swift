@@ -11,12 +11,12 @@ protocol RequestProcessorStrategy {
 
 struct DefaultRequestProcessorStrategy: RequestProcessorStrategy {
     let selectOffline: Bool
-
+    
     var chooseOfflineProcessor: Bool {
         selectOffline
     }
 }
-    
+
 @available(iOS 10.0, *)
 class RequestHandler: RequestHandlerProtocol {
     init(onlineCreator: @escaping () -> OnlineRequestProcessor,
@@ -61,18 +61,18 @@ class RequestHandler: RequestHandlerProtocol {
     func disableDeviceForCurrentUser(hexToken: String,
                                      withOnSuccess onSuccess: OnSuccessHandler?,
                                      onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        chooseRequestProcessor().disableDeviceForCurrentUser(hexToken: hexToken,
-                                                             withOnSuccess: onSuccess,
-                                                             onFailure: onFailure)
+        onlineProcessor.disableDeviceForCurrentUser(hexToken: hexToken,
+                                                    withOnSuccess: onSuccess,
+                                                    onFailure: onFailure)
     }
     
     @discardableResult
     func disableDeviceForAllUsers(hexToken: String,
                                   withOnSuccess onSuccess: OnSuccessHandler?,
                                   onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        chooseRequestProcessor().disableDeviceForAllUsers(hexToken: hexToken,
-                                                          withOnSuccess: onSuccess,
-                                                          onFailure: onFailure)
+        onlineProcessor.disableDeviceForAllUsers(hexToken: hexToken,
+                                                 withOnSuccess: onSuccess,
+                                                 onFailure: onFailure)
     }
     
     @discardableResult
@@ -254,9 +254,9 @@ class RequestHandler: RequestHandlerProtocol {
     
     private let onlineCreator: () -> OnlineRequestProcessor
     private let offlineCreator: () -> OfflineRequestProcessor?
-
+    
     private let strategy: RequestProcessorStrategy
-
+    
     private lazy var offlineProcessor: OfflineRequestProcessor? = {
         offlineCreator()
     }()
