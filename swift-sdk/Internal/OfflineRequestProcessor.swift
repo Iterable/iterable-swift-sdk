@@ -38,51 +38,6 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     }
     
     @discardableResult
-    func register(registerTokenInfo: RegisterTokenInfo,
-                  notificationStateProvider: NotificationStateProviderProtocol,
-                  onSuccess: OnSuccessHandler? = nil,
-                  onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        let requestGenerator = { (requestCreator: RequestCreator) in
-            requestCreator.createRegisterTokenRequest(registerTokenInfo: registerTokenInfo,
-                                                      notificationsEnabled: true)
-        }
-        
-        return sendIterableRequest(requestGenerator: requestGenerator,
-                                   successHandler: onSuccess,
-                                   failureHandler: onFailure,
-                                   identifier: #function)
-    }
-    
-    @discardableResult
-    func updateUser(_ dataFields: [AnyHashable: Any],
-                    mergeNestedObjects: Bool,
-                    onSuccess: OnSuccessHandler?,
-                    onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        let requestGenerator = { (requestCreator: RequestCreator) in
-            requestCreator.createUpdateUserRequest(dataFields: dataFields, mergeNestedObjects: mergeNestedObjects)
-        }
-        
-        return sendIterableRequest(requestGenerator: requestGenerator,
-                                   successHandler: onSuccess,
-                                   failureHandler: onFailure,
-                                   identifier: #function)
-    }
-    
-    @discardableResult
-    func updateEmail(_ newEmail: String,
-                     onSuccess: OnSuccessHandler?,
-                     onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        let requestGenerator = { (requestCreator: RequestCreator) in
-            requestCreator.createUpdateEmailRequest(newEmail: newEmail)
-        }
-        
-        return sendIterableRequest(requestGenerator: requestGenerator,
-                                   successHandler: onSuccess,
-                                   failureHandler: onFailure,
-                                   identifier: #function)
-    }
-    
-    @discardableResult
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]?,
@@ -131,25 +86,6 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         let requestGenerator = { (requestCreator: RequestCreator) in
             requestCreator.createTrackEventRequest(event,
                                                    dataFields: dataFields)
-        }
-
-        return sendIterableRequest(requestGenerator: requestGenerator,
-                                   successHandler: onSuccess,
-                                   failureHandler: onFailure,
-                                   identifier: #function)
-    }
-    
-    @discardableResult
-    func updateSubscriptions(info: UpdateSubscriptionsInfo,
-                             onSuccess: OnSuccessHandler?,
-                             onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        let requestGenerator = { (requestCreator: RequestCreator) in
-            requestCreator.createUpdateSubscriptionsRequest(info.emailListIds,
-                                                            unsubscribedChannelIds: info.unsubscribedChannelIds,
-                                                            unsubscribedMessageTypeIds: info.unsubscribedMessageTypeIds,
-                                                            subscribedMessageTypeIds: info.subscribedMessageTypeIds,
-                                                            campaignId: info.campaignId,
-                                                            templateId: info.templateId)
         }
 
         return sendIterableRequest(requestGenerator: requestGenerator,

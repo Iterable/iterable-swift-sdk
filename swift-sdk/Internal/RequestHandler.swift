@@ -51,10 +51,10 @@ class RequestHandler: RequestHandlerProtocol {
                   notificationStateProvider: NotificationStateProviderProtocol,
                   onSuccess: OnSuccessHandler?,
                   onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        chooseRequestProcessor().register(registerTokenInfo: registerTokenInfo,
-                                          notificationStateProvider: notificationStateProvider,
-                                          onSuccess: onSuccess,
-                                          onFailure: onFailure)
+        onlineProcessor.register(registerTokenInfo: registerTokenInfo,
+                                 notificationStateProvider: notificationStateProvider,
+                                 onSuccess: onSuccess,
+                                 onFailure: onFailure)
     }
     
     @discardableResult
@@ -80,19 +80,19 @@ class RequestHandler: RequestHandlerProtocol {
                     mergeNestedObjects: Bool,
                     onSuccess: OnSuccessHandler?,
                     onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        chooseRequestProcessor().updateUser(dataFields,
-                                            mergeNestedObjects: mergeNestedObjects,
-                                            onSuccess: onSuccess,
-                                            onFailure: onFailure)
+        onlineProcessor.updateUser(dataFields,
+                                   mergeNestedObjects: mergeNestedObjects,
+                                   onSuccess: onSuccess,
+                                   onFailure: onFailure)
     }
     
     @discardableResult
     func updateEmail(_ newEmail: String,
                      onSuccess: OnSuccessHandler?,
                      onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        chooseRequestProcessor().updateEmail(newEmail,
-                                             onSuccess: onSuccess,
-                                             onFailure: onFailure)
+        onlineProcessor.updateEmail(newEmail,
+                                    onSuccess: onSuccess,
+                                    onFailure: onFailure)
     }
     
     @discardableResult
@@ -140,9 +140,9 @@ class RequestHandler: RequestHandlerProtocol {
     func updateSubscriptions(info: UpdateSubscriptionsInfo,
                              onSuccess: OnSuccessHandler?,
                              onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        chooseRequestProcessor().updateSubscriptions(info: info,
-                                                     onSuccess: onSuccess,
-                                                     onFailure: onFailure)
+        onlineProcessor.updateSubscriptions(info: info,
+                                            onSuccess: onSuccess,
+                                            onFailure: onFailure)
     }
     
     @discardableResult

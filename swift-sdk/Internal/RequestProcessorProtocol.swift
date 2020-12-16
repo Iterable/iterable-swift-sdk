@@ -27,23 +27,6 @@ struct UpdateSubscriptionsInfo {
 /// `RequestHandler` will delegate network related calls to this protocol.
 protocol RequestProcessorProtocol {
     @discardableResult
-    func register(registerTokenInfo: RegisterTokenInfo,
-                  notificationStateProvider: NotificationStateProviderProtocol,
-                  onSuccess: OnSuccessHandler?,
-                  onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
-    
-    @discardableResult
-    func updateUser(_ dataFields: [AnyHashable: Any],
-                    mergeNestedObjects: Bool,
-                    onSuccess: OnSuccessHandler?,
-                    onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
-    
-    @discardableResult
-    func updateEmail(_ newEmail: String,
-                     onSuccess: OnSuccessHandler?,
-                     onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
-    
-    @discardableResult
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]?,
@@ -64,11 +47,6 @@ protocol RequestProcessorProtocol {
                dataFields: [AnyHashable: Any]?,
                onSuccess: OnSuccessHandler?,
                onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
-    
-    @discardableResult
-    func updateSubscriptions(info: UpdateSubscriptionsInfo,
-                             onSuccess: OnSuccessHandler?,
-                             onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
     
     @discardableResult
     func trackInAppOpen(_ message: IterableInAppMessage,
