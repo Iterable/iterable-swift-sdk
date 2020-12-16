@@ -18,7 +18,7 @@ struct DefaultRequestProcessorStrategy: RequestProcessorStrategy {
 }
     
 @available(iOS 10.0, *)
-class RequestProcessor: RequestProcessorProtocol {
+class RequestHandler: RequestHandlerProtocol {
     init(onlineCreator: @escaping () -> OnlineRequestProcessor,
          offlineCreator: @escaping () -> OfflineRequestProcessor?,
          strategy: RequestProcessorStrategy = DefaultRequestProcessorStrategy(selectOffline: false)) {
