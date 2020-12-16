@@ -1,12 +1,11 @@
 //
-//  Created by Tapash Majumder on 8/10/20.
 //  Copyright © 2020 Iterable. All rights reserved.
 //
 
 import Foundation
 
-/// `IterableAPIinternal` will delegate all network related calls to this struct.
-struct OnlineRequestProcessor: RequestProcessorProtocol {
+/// Request handling pre iOS 10.0
+struct LegacyRequestHandler: RequestHandlerProtocol {
     init(apiKey: String,
          authProvider: AuthProvider?,
          authManager: IterableInternalAuthManagerProtocol?,
@@ -19,6 +18,14 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                               endPoint: endPoint,
                               networkSession: networkSession,
                               deviceMetadata: deviceMetadata)
+    }
+    
+    func start() {
+        ITBInfo()
+    }
+    
+    func stop() {
+        ITBInfo()
     }
     
     @discardableResult

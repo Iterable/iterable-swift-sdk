@@ -6,7 +6,7 @@ import XCTest
 
 @testable import IterableSDK
 
-class RequestProcessorTests: XCTestCase {
+class RequestHandlerTests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
         
@@ -56,15 +56,15 @@ class RequestProcessorTests: XCTestCase {
         ]
         
         let expectations = createExpectations(description: #function)
-
-        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
-            requestProcessor.register(registerTokenInfo: registerTokenInfo,
-                                      notificationStateProvider: MockNotificationStateProvider(enabled: true),
-                                      onSuccess: expectations.onSuccess,
-                                      onFailure: expectations.onFailure)
+        
+        let requestGenerator = { (requestHandler: RequestHandlerProtocol) in
+            requestHandler.register(registerTokenInfo: registerTokenInfo,
+                                    notificationStateProvider: MockNotificationStateProvider(enabled: true),
+                                    onSuccess: expectations.onSuccess,
+                                    onFailure: expectations.onFailure)
         }
         
-        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+        try handleRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.registerDeviceToken,
                                                 bodyDict: bodyDict)
         
@@ -79,17 +79,17 @@ class RequestProcessorTests: XCTestCase {
         ]
         
         let expectations = createExpectations(description: #function)
-
-        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
-            requestProcessor.disableDeviceForCurrentUser(hexToken: hexToken,
-                                                         withOnSuccess: expectations.onSuccess,
-                                                         onFailure: expectations.onFailure)
+        
+        let requestGenerator = { (requestHandler: RequestHandlerProtocol) in
+            requestHandler.disableDeviceForCurrentUser(hexToken: hexToken,
+                                                       withOnSuccess: expectations.onSuccess,
+                                                       onFailure: expectations.onFailure)
         }
         
-        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+        try handleRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.disableDevice,
                                                 bodyDict: bodyDict)
-
+        
         wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
     
@@ -100,14 +100,14 @@ class RequestProcessorTests: XCTestCase {
         ]
         
         let expectations = createExpectations(description: #function)
-
-        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
-            requestProcessor.disableDeviceForAllUsers(hexToken: hexToken,
-                                                      withOnSuccess: expectations.onSuccess,
-                                                      onFailure: expectations.onFailure)
+        
+        let requestGenerator = { (requestHandler: RequestHandlerProtocol) in
+            requestHandler.disableDeviceForAllUsers(hexToken: hexToken,
+                                                    withOnSuccess: expectations.onSuccess,
+                                                    onFailure: expectations.onFailure)
         }
         
-        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+        try handleRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.disableDevice,
                                                 bodyDict: bodyDict)
         
@@ -123,15 +123,15 @@ class RequestProcessorTests: XCTestCase {
         ]
         
         let expectations = createExpectations(description: #function)
-
-        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
-            requestProcessor.updateUser(dataFields,
-                                        mergeNestedObjects: true,
-                                        onSuccess: expectations.onSuccess,
-                                        onFailure: expectations.onFailure)
+        
+        let requestGenerator = { (requestHandler: RequestHandlerProtocol) in
+            requestHandler.updateUser(dataFields,
+                                      mergeNestedObjects: true,
+                                      onSuccess: expectations.onSuccess,
+                                      onFailure: expectations.onFailure)
         }
         
-        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+        try handleRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.updateUser,
                                                 bodyDict: bodyDict)
         
@@ -145,14 +145,14 @@ class RequestProcessorTests: XCTestCase {
         ]
         
         let expectations = createExpectations(description: #function)
-
-        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
-            requestProcessor.updateEmail("new_user@example.com",
-                                         onSuccess: expectations.onSuccess,
-                                         onFailure: expectations.onFailure)
+        
+        let requestGenerator = { (requestHandler: RequestHandlerProtocol) in
+            requestHandler.updateEmail("new_user@example.com",
+                                       onSuccess: expectations.onSuccess,
+                                       onFailure: expectations.onFailure)
         }
         
-        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+        try handleRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.updateEmail,
                                                 bodyDict: bodyDict)
         
@@ -163,7 +163,7 @@ class RequestProcessorTests: XCTestCase {
         let total = NSNumber(value: 15.32)
         let items = [CommerceItem(id: "id1", name: "myCommerceItem", price: 5.1, quantity: 2)]
         let dataFields = ["var1": "val1", "var2": "val2"]
-
+        
         let bodyDict: [String: Any] = [
             "items": [[
                 "id": items[0].id,
@@ -179,22 +179,22 @@ class RequestProcessorTests: XCTestCase {
         ]
         
         let expectations = createExpectations(description: #function)
-
-        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
-            requestProcessor.trackPurchase(total,
-                                           items: items,
-                                           dataFields: dataFields,
-                                           onSuccess: expectations.onSuccess,
-                                           onFailure: expectations.onFailure)
+        
+        let requestGenerator = { (requestHandler: RequestHandlerProtocol) in
+            requestHandler.trackPurchase(total,
+                                         items: items,
+                                         dataFields: dataFields,
+                                         onSuccess: expectations.onSuccess,
+                                         onFailure: expectations.onFailure)
         }
         
-        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+        try handleRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.trackPurchase,
                                                 bodyDict: bodyDict)
         
         wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
-
+    
     func testTrackPushOpen() throws {
         let campaignId = 1
         let templateId = 2
@@ -215,24 +215,24 @@ class RequestProcessorTests: XCTestCase {
         ]
         
         let expectations = createExpectations(description: #function)
-
-        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
-            requestProcessor.trackPushOpen(NSNumber(value: campaignId),
-                                           templateId: NSNumber(value: templateId),
-                                           messageId: messageId,
-                                           appAlreadyRunning: appAlreadyRunning,
-                                           dataFields: dataFields,
-                                           onSuccess: expectations.onSuccess,
-                                           onFailure: expectations.onFailure)
+        
+        let requestGenerator = { (requestHandler: RequestHandlerProtocol) in
+            requestHandler.trackPushOpen(NSNumber(value: campaignId),
+                                         templateId: NSNumber(value: templateId),
+                                         messageId: messageId,
+                                         appAlreadyRunning: appAlreadyRunning,
+                                         dataFields: dataFields,
+                                         onSuccess: expectations.onSuccess,
+                                         onFailure: expectations.onFailure)
         }
         
-        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+        try handleRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.trackPushOpen,
                                                 bodyDict: bodyDict)
         
         wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
-
+    
     func testTrackEvent() throws {
         let eventName = "CustomEvent1"
         let dataFields = ["var1": "val1", "var2": "val2"]
@@ -243,15 +243,15 @@ class RequestProcessorTests: XCTestCase {
         ]
         
         let expectations = createExpectations(description: #function)
-
-        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
-            requestProcessor.track(event: eventName,
-                                   dataFields: dataFields,
-                                   onSuccess: expectations.onSuccess,
-                                   onFailure: expectations.onFailure)
+        
+        let requestGenerator = { (requestHandler: RequestHandlerProtocol) in
+            requestHandler.track(event: eventName,
+                                 dataFields: dataFields,
+                                 onSuccess: expectations.onSuccess,
+                                 onFailure: expectations.onFailure)
         }
         
-        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+        try handleRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.trackEvent,
                                                 bodyDict: bodyDict)
         
@@ -276,20 +276,20 @@ class RequestProcessorTests: XCTestCase {
         ]
         
         let expectations = createExpectations(description: #function)
-
-        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
-            requestProcessor.updateSubscriptions(info: info,
-                                                 onSuccess: expectations.onSuccess,
-                                                 onFailure: expectations.onFailure)
+        
+        let requestGenerator = { (requestHandler: RequestHandlerProtocol) in
+            requestHandler.updateSubscriptions(info: info,
+                                               onSuccess: expectations.onSuccess,
+                                               onFailure: expectations.onFailure)
         }
         
-        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+        try handleRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.updateSubscriptions,
                                                 bodyDict: bodyDict)
         
         wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
-
+    
     func testTrackInAppOpen() throws {
         let messageId = "message_id"
         let message = InAppTestHelper.emptyInAppMessage(messageId: messageId)
@@ -307,22 +307,22 @@ class RequestProcessorTests: XCTestCase {
         ]
         
         let expectations = createExpectations(description: #function)
-
-        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
-            requestProcessor.trackInAppOpen(message,
-                                            location: .inApp,
-                                            inboxSessionId: inboxSessionId,
-                                            onSuccess: expectations.onSuccess,
-                                            onFailure: expectations.onFailure)
+        
+        let requestGenerator = { (requestHandler: RequestHandlerProtocol) in
+            requestHandler.trackInAppOpen(message,
+                                          location: .inApp,
+                                          inboxSessionId: inboxSessionId,
+                                          onSuccess: expectations.onSuccess,
+                                          onFailure: expectations.onFailure)
         }
         
-        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+        try handleRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.trackInAppOpen,
                                                 bodyDict: bodyDict)
         
         wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
-
+    
     func testTrackInAppClick() throws {
         let messageId = "message_id"
         let message = InAppTestHelper.emptyInAppMessage(messageId: messageId)
@@ -342,23 +342,23 @@ class RequestProcessorTests: XCTestCase {
         ]
         
         let expectations = createExpectations(description: #function)
-
-        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
-            requestProcessor.trackInAppClick(message,
-                                             location: .inbox,
-                                             inboxSessionId: inboxSessionId,
-                                             clickedUrl: clickedUrl,
-                                             onSuccess: expectations.onSuccess,
-                                             onFailure: expectations.onFailure)
+        
+        let requestGenerator = { (requestHandler: RequestHandlerProtocol) in
+            requestHandler.trackInAppClick(message,
+                                           location: .inbox,
+                                           inboxSessionId: inboxSessionId,
+                                           clickedUrl: clickedUrl,
+                                           onSuccess: expectations.onSuccess,
+                                           onFailure: expectations.onFailure)
         }
         
-        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+        try handleRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.trackInAppClick,
                                                 bodyDict: bodyDict)
         
         wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
-
+    
     func testTrackInAppClose() throws {
         let messageId = "message_id"
         let message = InAppTestHelper.emptyInAppMessage(messageId: messageId)
@@ -380,24 +380,24 @@ class RequestProcessorTests: XCTestCase {
         ]
         
         let expectations = createExpectations(description: #function)
-
-        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
-            requestProcessor.trackInAppClose(message, location: .inbox,
-                                             inboxSessionId: inboxSessionId,
-                                             source: closeSource,
-                                             clickedUrl: clickedUrl,
-                                             onSuccess: expectations.onSuccess,
-                                             onFailure: expectations.onFailure)
+        
+        let requestGenerator = { (requestHandler: RequestHandlerProtocol) in
+            requestHandler.trackInAppClose(message, location: .inbox,
+                                           inboxSessionId: inboxSessionId,
+                                           source: closeSource,
+                                           clickedUrl: clickedUrl,
+                                           onSuccess: expectations.onSuccess,
+                                           onFailure: expectations.onFailure)
             
         }
         
-        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+        try handleRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.trackInAppClose,
                                                 bodyDict: bodyDict)
         
         wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
-
+    
     func testTrackInboxSession() throws {
         let inboxSessionId = IterableUtil.generateUUID()
         let startDate = dateProvider.currentDate
@@ -429,25 +429,25 @@ class RequestProcessorTests: XCTestCase {
         ]
         
         let expectations = createExpectations(description: #function)
-
-        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
-            requestProcessor.track(inboxSession: inboxSession,
-                                   onSuccess: expectations.onSuccess,
-                                   onFailure: expectations.onFailure)
+        
+        let requestGenerator = { (requestHandler: RequestHandlerProtocol) in
+            requestHandler.track(inboxSession: inboxSession,
+                                 onSuccess: expectations.onSuccess,
+                                 onFailure: expectations.onFailure)
             
         }
         
-        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+        try handleRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.trackInboxSession,
                                                 bodyDict: bodyDict)
         
         wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
-
+    
     func testTrackInAppDelivery() throws {
         let messageId = "message_id"
         let message = InAppTestHelper.emptyInAppMessage(messageId: messageId)
-
+        
         let bodyDict: [String: Any] = [
             "email": "user@example.com",
             "messageId": messageId,
@@ -459,15 +459,15 @@ class RequestProcessorTests: XCTestCase {
         ]
         
         let expectations = createExpectations(description: #function)
-
-        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
-            requestProcessor.track(inAppDelivery: message,
-                                   onSuccess: expectations.onSuccess,
-                                   onFailure: expectations.onFailure)
+        
+        let requestGenerator = { (requestHandler: RequestHandlerProtocol) in
+            requestHandler.track(inAppDelivery: message,
+                                 onSuccess: expectations.onSuccess,
+                                 onFailure: expectations.onFailure)
             
         }
         
-        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+        try handleRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.trackInAppDelivery,
                                                 bodyDict: bodyDict)
         
@@ -476,28 +476,28 @@ class RequestProcessorTests: XCTestCase {
     
     func testTrackInAppConsume() throws {
         let messageId = "message_id"
-
+        
         let bodyDict: [String: Any] = [
             "email": "user@example.com",
             "messageId": messageId,
         ]
         
         let expectations = createExpectations(description: #function)
-
-        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
-            requestProcessor.inAppConsume(messageId,
-                                          onSuccess: expectations.onSuccess,
-                                          onFailure: expectations.onFailure)
+        
+        let requestGenerator = { (requestHandler: RequestHandlerProtocol) in
+            requestHandler.inAppConsume(messageId,
+                                        onSuccess: expectations.onSuccess,
+                                        onFailure: expectations.onFailure)
             
         }
         
-        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+        try handleRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.inAppConsume,
                                                 bodyDict: bodyDict)
         
         wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
-
+    
     func testTrackInAppConsume2() throws {
         let messageId = "message_id"
         let message = InAppTestHelper.emptyInAppMessage(messageId: messageId)
@@ -514,19 +514,19 @@ class RequestProcessorTests: XCTestCase {
             "deleteAction": "delete-button",
             "deviceInfo": Self.deviceMetadata.asDictionary()!,
         ]
-
+        
         let expectations = createExpectations(description: #function)
-
-        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
-            requestProcessor.inAppConsume(message: message,
-                                          location: location,
-                                          source: source,
-                                          onSuccess: expectations.onSuccess,
-                                          onFailure: expectations.onFailure)
+        
+        let requestGenerator = { (requestHandler: RequestHandlerProtocol) in
+            requestHandler.inAppConsume(message: message,
+                                        location: location,
+                                        source: source,
+                                        onSuccess: expectations.onSuccess,
+                                        onFailure: expectations.onFailure)
             
         }
         
-        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+        try handleRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.inAppConsume,
                                                 bodyDict: bodyDict)
         
@@ -547,20 +547,20 @@ class RequestProcessorTests: XCTestCase {
         ]
         
         let expectations = createExpectations(description: #function)
-
-        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
-            requestProcessor.trackInAppOpen(messageId,
-                                            onSuccess: expectations.onSuccess,
-                                            onFailure: expectations.onFailure)
+        
+        let requestGenerator = { (requestHandler: RequestHandlerProtocol) in
+            requestHandler.trackInAppOpen(messageId,
+                                          onSuccess: expectations.onSuccess,
+                                          onFailure: expectations.onFailure)
         }
         
-        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+        try handleRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.trackInAppOpen,
                                                 bodyDict: bodyDict)
         
         wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
-
+    
     func testTrackInAppClick2() throws {
         let messageId = "message_id"
         let clickedUrl = "https://somewhere.com"
@@ -577,40 +577,40 @@ class RequestProcessorTests: XCTestCase {
         ]
         
         let expectations = createExpectations(description: #function)
-
-        let requestGenerator = { (requestProcessor: RequestProcessorProtocol) in
-            requestProcessor.trackInAppClick(messageId,
-                                             clickedUrl: clickedUrl,
-                                             onSuccess: expectations.onSuccess,
-                                             onFailure: expectations.onFailure)
+        
+        let requestGenerator = { (requestHandler: RequestHandlerProtocol) in
+            requestHandler.trackInAppClick(messageId,
+                                           clickedUrl: clickedUrl,
+                                           onSuccess: expectations.onSuccess,
+                                           onFailure: expectations.onFailure)
         }
         
-        try processRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+        try handleRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
                                                 path: Const.Path.trackInAppClick,
                                                 bodyDict: bodyDict)
         
         wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
     }
-
-    private func processRequestWithSuccessAndFailure(requestGenerator: (RequestProcessorProtocol) -> Future<SendRequestValue, SendRequestError>,
+    
+    private func handleRequestWithSuccessAndFailure(requestGenerator: (RequestHandlerProtocol) -> Future<SendRequestValue, SendRequestError>,
                                                      path: String,
                                                      bodyDict: [AnyHashable: Any]) throws {
         
-        processOnlineRequestWithSuccess(requestGenerator: requestGenerator,
+        handleOnlineRequestWithSuccess(requestGenerator: requestGenerator,
                                         path: path,
                                         bodyDict: bodyDict)
-        processOnlineRequestWithFailure(requestGenerator: requestGenerator,
+        handleOnlineRequestWithFailure(requestGenerator: requestGenerator,
                                         path: path,
                                         bodyDict: bodyDict)
-        processOfflineRequestWithSuccess(requestGenerator: requestGenerator,
+        handleOfflineRequestWithSuccess(requestGenerator: requestGenerator,
                                          path: path,
                                          bodyDict: bodyDict)
-        processOfflineRequestWithFailure(requestGenerator: requestGenerator,
+        handleOfflineRequestWithFailure(requestGenerator: requestGenerator,
                                          path: path,
                                          bodyDict: bodyDict)
     }
     
-    private func processOnlineRequestWithSuccess(requestGenerator: (RequestProcessorProtocol) -> Future<SendRequestValue, SendRequestError>,
+    private func handleOnlineRequestWithSuccess(requestGenerator: (RequestHandlerProtocol) -> Future<SendRequestValue, SendRequestError>,
                                                  path: String,
                                                  bodyDict: [AnyHashable: Any]) {
         let notificationCenter = MockNotificationCenter()
@@ -619,12 +619,12 @@ class RequestProcessorTests: XCTestCase {
             TestUtils.validate(request: request, apiEndPoint: Endpoint.api, path: path)
             XCTAssertTrue(TestUtils.areEqual(dict1: bodyDict, dict2: request.bodyDict))
         }
-        let requestProcessor = createRequestProcessor(networkSession: networkSession,
-                                                      notificationCenter: notificationCenter,
-                                                      selectOffline: false)
-        let request = { requestGenerator(requestProcessor) }
+        let requestHandler = createRequestHandler(networkSession: networkSession,
+                                                  notificationCenter: notificationCenter,
+                                                  selectOffline: false)
+        let request = { requestGenerator(requestHandler) }
         let expectation1 = expectation(description: #function)
-        processRequestWithSuccess(request: request,
+        handleRequestWithSuccess(request: request,
                                   networkSession: networkSession,
                                   path: path,
                                   bodyDict: bodyDict,
@@ -632,7 +632,7 @@ class RequestProcessorTests: XCTestCase {
         wait(for: [expectation1], timeout: 15.0)
     }
     
-    private func processOnlineRequestWithFailure(requestGenerator: (RequestProcessorProtocol) -> Future<SendRequestValue, SendRequestError>,
+    private func handleOnlineRequestWithFailure(requestGenerator: (RequestHandlerProtocol) -> Future<SendRequestValue, SendRequestError>,
                                                  path: String,
                                                  bodyDict: [AnyHashable: Any]) {
         let notificationCenter = MockNotificationCenter()
@@ -641,12 +641,12 @@ class RequestProcessorTests: XCTestCase {
             TestUtils.validate(request: request, apiEndPoint: Endpoint.api, path: path)
             XCTAssertTrue(TestUtils.areEqual(dict1: bodyDict, dict2: request.bodyDict))
         }
-        let requestProcessor = createRequestProcessor(networkSession: networkSession,
-                                                      notificationCenter: notificationCenter,
-                                                      selectOffline: false)
-        let request = { requestGenerator(requestProcessor) }
+        let requestHandler = createRequestHandler(networkSession: networkSession,
+                                                  notificationCenter: notificationCenter,
+                                                  selectOffline: false)
+        let request = { requestGenerator(requestHandler) }
         let expectation1 = expectation(description: #function)
-        processRequestWithFailure(request: request,
+        handleRequestWithFailure(request: request,
                                   networkSession: networkSession,
                                   path: path,
                                   bodyDict: bodyDict,
@@ -654,7 +654,7 @@ class RequestProcessorTests: XCTestCase {
         wait(for: [expectation1], timeout: 15.0)
     }
     
-    private func processOfflineRequestWithSuccess(requestGenerator: (RequestProcessorProtocol) -> Future<SendRequestValue, SendRequestError>,
+    private func handleOfflineRequestWithSuccess(requestGenerator: (RequestHandlerProtocol) -> Future<SendRequestValue, SendRequestError>,
                                                   path: String,
                                                   bodyDict: [AnyHashable: Any]) {
         let notificationCenter = MockNotificationCenter()
@@ -663,21 +663,21 @@ class RequestProcessorTests: XCTestCase {
             TestUtils.validate(request: request, apiEndPoint: Endpoint.api, path: path)
             XCTAssertTrue(TestUtils.areEqual(dict1: bodyDict, dict2: request.bodyDict))
         }
-        let requestProcessor = createRequestProcessor(networkSession: networkSession,
-                                                      notificationCenter: notificationCenter,
-                                                      selectOffline: true)
-        let request = { requestGenerator(requestProcessor) }
+        let requestHandler = createRequestHandler(networkSession: networkSession,
+                                                  notificationCenter: notificationCenter,
+                                                  selectOffline: true)
+        let request = { requestGenerator(requestHandler) }
         let expectation1 = expectation(description: #function)
-        processRequestWithSuccess(request: request,
+        handleRequestWithSuccess(request: request,
                                   networkSession: networkSession,
                                   path: path,
                                   bodyDict: bodyDict,
                                   expectation: expectation1)
-        waitForTaskRunner(requestProcessor: requestProcessor,
+        waitForTaskRunner(requestHandler: requestHandler,
                           expectation: expectation1)
     }
     
-    private func processOfflineRequestWithFailure(requestGenerator: (RequestProcessorProtocol) -> Future<SendRequestValue, SendRequestError>,
+    private func handleOfflineRequestWithFailure(requestGenerator: (RequestHandlerProtocol) -> Future<SendRequestValue, SendRequestError>,
                                                   path: String,
                                                   bodyDict: [AnyHashable: Any]) {
         let notificationCenter = MockNotificationCenter()
@@ -688,23 +688,23 @@ class RequestProcessorTests: XCTestCase {
             requestBody.removeValue(forKey: "createdAt")
             XCTAssertTrue(TestUtils.areEqual(dict1: bodyDict, dict2: requestBody))
         }
-        let requestProcessor = createRequestProcessor(networkSession: networkSession,
-                                                      notificationCenter: notificationCenter,
-                                                      selectOffline: true)
-        let request = { requestGenerator(requestProcessor) }
+        let requestHandler = createRequestHandler(networkSession: networkSession,
+                                                  notificationCenter: notificationCenter,
+                                                  selectOffline: true)
+        let request = { requestGenerator(requestHandler) }
         let expectation1 = expectation(description: #function)
-        processRequestWithFailure(request: request,
+        handleRequestWithFailure(request: request,
                                   networkSession: networkSession,
                                   path: path,
                                   bodyDict: bodyDict,
                                   expectation: expectation1)
-        waitForTaskRunner(requestProcessor: requestProcessor,
+        waitForTaskRunner(requestHandler: requestHandler,
                           expectation: expectation1)
     }
     
-    private func createRequestProcessor(networkSession: NetworkSessionProtocol,
-                                        notificationCenter: NotificationCenterProtocol,
-                                        selectOffline: Bool) -> RequestProcessorProtocol {
+    private func createRequestHandler(networkSession: NetworkSessionProtocol,
+                                      notificationCenter: NotificationCenterProtocol,
+                                      selectOffline: Bool) -> RequestHandlerProtocol {
         let taskScheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
                                                   notificationCenter: notificationCenter,
                                                   dateProvider: dateProvider)
@@ -713,26 +713,26 @@ class RequestProcessorTests: XCTestCase {
                                             notificationCenter: notificationCenter,
                                             timeInterval: 0.5)
         
-        return RequestProcessor(onlineCreator: {
-                                    OnlineRequestProcessor(apiKey: "zee-api-key",
-                                                           authProvider: self,
-                                                           authManager: nil,
-                                                           endPoint: Endpoint.api,
-                                                           networkSession: networkSession,
-                                                           deviceMetadata: Self.deviceMetadata) },
-                                offlineCreator: {
-                                    OfflineRequestProcessor(apiKey: "zee-api-key",
-                                                            authProvider: self,
-                                                            authManager: nil,
-                                                            endPoint: Endpoint.api,
-                                                            deviceMetadata: Self.deviceMetadata,
-                                                            taskScheduler: taskScheduler,
-                                                            taskRunner: taskRunner,
-                                                            notificationCenter: notificationCenter) },
-                                strategy: DefaultRequestProcessorStrategy(selectOffline: selectOffline))
+        return RequestHandler(onlineCreator: {
+                                OnlineRequestProcessor(apiKey: "zee-api-key",
+                                                       authProvider: self,
+                                                       authManager: nil,
+                                                       endPoint: Endpoint.api,
+                                                       networkSession: networkSession,
+                                                       deviceMetadata: Self.deviceMetadata) },
+                              offlineCreator: {
+                                OfflineRequestProcessor(apiKey: "zee-api-key",
+                                                        authProvider: self,
+                                                        authManager: nil,
+                                                        endPoint: Endpoint.api,
+                                                        deviceMetadata: Self.deviceMetadata,
+                                                        taskScheduler: taskScheduler,
+                                                        taskRunner: taskRunner,
+                                                        notificationCenter: notificationCenter) },
+                              strategy: DefaultRequestProcessorStrategy(selectOffline: selectOffline))
     }
     
-    private func processRequestWithSuccess(request: () -> Future<SendRequestValue, SendRequestError>,
+    private func handleRequestWithSuccess(request: () -> Future<SendRequestValue, SendRequestError>,
                                            networkSession: MockNetworkSession,
                                            path: String,
                                            bodyDict: [AnyHashable: Any],
@@ -751,7 +751,7 @@ class RequestProcessorTests: XCTestCase {
         }
     }
     
-    private func processRequestWithFailure(request: () -> Future<SendRequestValue, SendRequestError>,
+    private func handleRequestWithFailure(request: () -> Future<SendRequestValue, SendRequestError>,
                                            networkSession: MockNetworkSession,
                                            path: String,
                                            bodyDict: [AnyHashable: Any],
@@ -769,13 +769,13 @@ class RequestProcessorTests: XCTestCase {
         }
     }
     
-    private func waitForTaskRunner(requestProcessor: RequestProcessorProtocol,
+    private func waitForTaskRunner(requestHandler: RequestHandlerProtocol,
                                    expectation: XCTestExpectation) {
-        requestProcessor.start()
+        requestHandler.start()
         wait(for: [expectation], timeout: 15.0)
-        requestProcessor.stop()
+        requestHandler.stop()
     }
-
+    
     struct Exp {
         let successExpectation: XCTestExpectation
         let onSuccess: OnSuccessHandler
@@ -809,7 +809,7 @@ class RequestProcessorTests: XCTestCase {
         }
         return (expectation: expectation1, onFailure: onFailure)
     }
-
+    
     private static let deviceMetadata = DeviceMetadata(deviceId: IterableUtil.generateUUID(),
                                                        platform: JsonValue.iOS.jsonStringValue,
                                                        appPackageName: Bundle.main.appPackageName ?? "")
@@ -822,7 +822,7 @@ class RequestProcessorTests: XCTestCase {
     }()
 }
 
-extension RequestProcessorTests: AuthProvider {
+extension RequestHandlerTests: AuthProvider {
     var auth: Auth {
         Auth(userId: nil, email: "user@example.com", authToken: nil)
     }

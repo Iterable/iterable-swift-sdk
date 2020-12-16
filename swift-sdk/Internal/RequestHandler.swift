@@ -11,14 +11,14 @@ protocol RequestProcessorStrategy {
 
 struct DefaultRequestProcessorStrategy: RequestProcessorStrategy {
     let selectOffline: Bool
-
+    
     var chooseOfflineProcessor: Bool {
         selectOffline
     }
 }
-    
+
 @available(iOS 10.0, *)
-class RequestProcessor: RequestProcessorProtocol {
+class RequestHandler: RequestHandlerProtocol {
     init(onlineCreator: @escaping () -> OnlineRequestProcessor,
          offlineCreator: @escaping () -> OfflineRequestProcessor?,
          strategy: RequestProcessorStrategy = DefaultRequestProcessorStrategy(selectOffline: false)) {
@@ -34,12 +34,16 @@ class RequestProcessor: RequestProcessorProtocol {
     
     func start() {
         ITBInfo()
-        chooseRequestProcessor().start()
+        if strategy.chooseOfflineProcessor {
+            offlineProcessor?.start()
+        }
     }
     
     func stop() {
         ITBInfo()
-        chooseRequestProcessor().stop()
+        if strategy.chooseOfflineProcessor {
+            offlineProcessor?.stop()
+        }
     }
     
     @discardableResult
@@ -47,28 +51,28 @@ class RequestProcessor: RequestProcessorProtocol {
                   notificationStateProvider: NotificationStateProviderProtocol,
                   onSuccess: OnSuccessHandler?,
                   onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        chooseRequestProcessor().register(registerTokenInfo: registerTokenInfo,
-                                          notificationStateProvider: notificationStateProvider,
-                                          onSuccess: onSuccess,
-                                          onFailure: onFailure)
+        onlineProcessor.register(registerTokenInfo: registerTokenInfo,
+                                 notificationStateProvider: notificationStateProvider,
+                                 onSuccess: onSuccess,
+                                 onFailure: onFailure)
     }
     
     @discardableResult
     func disableDeviceForCurrentUser(hexToken: String,
                                      withOnSuccess onSuccess: OnSuccessHandler?,
                                      onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        chooseRequestProcessor().disableDeviceForCurrentUser(hexToken: hexToken,
-                                                             withOnSuccess: onSuccess,
-                                                             onFailure: onFailure)
+        onlineProcessor.disableDeviceForCurrentUser(hexToken: hexToken,
+                                                    withOnSuccess: onSuccess,
+                                                    onFailure: onFailure)
     }
     
     @discardableResult
     func disableDeviceForAllUsers(hexToken: String,
                                   withOnSuccess onSuccess: OnSuccessHandler?,
                                   onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        chooseRequestProcessor().disableDeviceForAllUsers(hexToken: hexToken,
-                                                          withOnSuccess: onSuccess,
-                                                          onFailure: onFailure)
+        onlineProcessor.disableDeviceForAllUsers(hexToken: hexToken,
+                                                 withOnSuccess: onSuccess,
+                                                 onFailure: onFailure)
     }
     
     @discardableResult
@@ -76,19 +80,19 @@ class RequestProcessor: RequestProcessorProtocol {
                     mergeNestedObjects: Bool,
                     onSuccess: OnSuccessHandler?,
                     onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        chooseRequestProcessor().updateUser(dataFields,
-                                            mergeNestedObjects: mergeNestedObjects,
-                                            onSuccess: onSuccess,
-                                            onFailure: onFailure)
+        onlineProcessor.updateUser(dataFields,
+                                   mergeNestedObjects: mergeNestedObjects,
+                                   onSuccess: onSuccess,
+                                   onFailure: onFailure)
     }
     
     @discardableResult
     func updateEmail(_ newEmail: String,
                      onSuccess: OnSuccessHandler?,
                      onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        chooseRequestProcessor().updateEmail(newEmail,
-                                             onSuccess: onSuccess,
-                                             onFailure: onFailure)
+        onlineProcessor.updateEmail(newEmail,
+                                    onSuccess: onSuccess,
+                                    onFailure: onFailure)
     }
     
     @discardableResult
@@ -136,9 +140,9 @@ class RequestProcessor: RequestProcessorProtocol {
     func updateSubscriptions(info: UpdateSubscriptionsInfo,
                              onSuccess: OnSuccessHandler?,
                              onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        chooseRequestProcessor().updateSubscriptions(info: info,
-                                                     onSuccess: onSuccess,
-                                                     onFailure: onFailure)
+        onlineProcessor.updateSubscriptions(info: info,
+                                            onSuccess: onSuccess,
+                                            onFailure: onFailure)
     }
     
     @discardableResult
@@ -250,9 +254,9 @@ class RequestProcessor: RequestProcessorProtocol {
     
     private let onlineCreator: () -> OnlineRequestProcessor
     private let offlineCreator: () -> OfflineRequestProcessor?
-
+    
     private let strategy: RequestProcessorStrategy
-
+    
     private lazy var offlineProcessor: OfflineRequestProcessor? = {
         offlineCreator()
     }()

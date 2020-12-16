@@ -49,41 +49,41 @@ extension DependencyContainerProtocol {
                     dateProvider: dateProvider)
     }
     
-    func createRequestProcessor(apiKey: String,
-                                config: IterableConfig,
-                                endPoint: String,
-                                authProvider: AuthProvider?,
-                                authManager: IterableInternalAuthManagerProtocol,
-                                deviceMetadata: DeviceMetadata) -> RequestProcessorProtocol {
+    func createRequestHandler(apiKey: String,
+                              config: IterableConfig,
+                              endPoint: String,
+                              authProvider: AuthProvider?,
+                              authManager: IterableInternalAuthManagerProtocol,
+                              deviceMetadata: DeviceMetadata) -> RequestHandlerProtocol {
         if #available(iOS 10.0, *) {
-            return RequestProcessor(onlineCreator: { [weak authProvider] in
-                                        OnlineRequestProcessor(apiKey: apiKey,
-                                                               authProvider: authProvider,
-                                                               authManager: authManager,
-                                                               endPoint: endPoint,
-                                                               networkSession: networkSession,
-                                                               deviceMetadata: deviceMetadata) },
-                                    offlineCreator: { [weak authProvider] in
-                                        guard let persistenceContextProvider = createPersistenceContextProvider() else {
-                                            return nil
-                                        }
-                                        
-                                        return OfflineRequestProcessor(apiKey: apiKey,
-                                                                authProvider: authProvider,
-                                                                authManager: authManager,
-                                                                endPoint: endPoint,
-                                                                deviceMetadata: deviceMetadata,
-                                                                taskScheduler: createTaskScheduler(persistenceContextProvider: persistenceContextProvider),
-                                                                taskRunner: createTaskRunner(persistenceContextProvider: persistenceContextProvider),
-                                                                notificationCenter: notificationCenter) },
-                                    strategy: DefaultRequestProcessorStrategy(selectOffline: config.enableOfflineMode))
+            return RequestHandler(onlineCreator: { [weak authProvider] in
+                                    OnlineRequestProcessor(apiKey: apiKey,
+                                                           authProvider: authProvider,
+                                                           authManager: authManager,
+                                                           endPoint: endPoint,
+                                                           networkSession: networkSession,
+                                                           deviceMetadata: deviceMetadata) },
+                                  offlineCreator: { [weak authProvider] in
+                                    guard let persistenceContextProvider = createPersistenceContextProvider() else {
+                                        return nil
+                                    }
+                                    
+                                    return OfflineRequestProcessor(apiKey: apiKey,
+                                                                   authProvider: authProvider,
+                                                                   authManager: authManager,
+                                                                   endPoint: endPoint,
+                                                                   deviceMetadata: deviceMetadata,
+                                                                   taskScheduler: createTaskScheduler(persistenceContextProvider: persistenceContextProvider),
+                                                                   taskRunner: createTaskRunner(persistenceContextProvider: persistenceContextProvider),
+                                                                   notificationCenter: notificationCenter) },
+                                  strategy: DefaultRequestProcessorStrategy(selectOffline: config.enableOfflineMode))
         } else {
-            return OnlineRequestProcessor(apiKey: apiKey,
-                                          authProvider: authProvider,
-                                          authManager: authManager,
-                                          endPoint: endPoint,
-                                          networkSession: networkSession,
-                                          deviceMetadata: deviceMetadata)
+            return LegacyRequestHandler(apiKey: apiKey,
+                                        authProvider: authProvider,
+                                        authManager: authManager,
+                                        endPoint: endPoint,
+                                        networkSession: networkSession,
+                                        deviceMetadata: deviceMetadata)
         }
     }
     
@@ -94,7 +94,7 @@ extension DependencyContainerProtocol {
             fatalError("Unable to create persistence container for iOS < 10")
         }
     }
-
+    
     @available(iOS 10.0, *)
     private func createTaskScheduler(persistenceContextProvider: IterablePersistenceContextProvider) -> IterableTaskScheduler {
         IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,

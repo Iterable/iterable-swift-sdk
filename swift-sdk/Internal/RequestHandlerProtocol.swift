@@ -1,31 +1,42 @@
 //
-//  Created by Tapash Majumder on 8/10/20.
 //  Copyright © 2020 Iterable. All rights reserved.
 //
 
 import Foundation
 
-struct RegisterTokenInfo {
-    let hexToken: String
-    let appName: String
-    let pushServicePlatform: PushServicePlatform
-    let apnsType: APNSType
-    let deviceId: String
-    let deviceAttributes: [String: String]
-    let sdkVersion: String?
-}
-
-struct UpdateSubscriptionsInfo {
-    let emailListIds: [NSNumber]?
-    let unsubscribedChannelIds: [NSNumber]?
-    let unsubscribedMessageTypeIds: [NSNumber]?
-    let subscribedMessageTypeIds: [NSNumber]?
-    let campaignId: NSNumber?
-    let templateId: NSNumber?
-}
-
-/// `RequestHandler` will delegate network related calls to this protocol.
-protocol RequestProcessorProtocol {
+/// `IterableAPIinternal` will delegate all network related calls to this protocol.
+protocol RequestHandlerProtocol {
+    func start()
+    
+    func stop()
+    
+    @discardableResult
+    func register(registerTokenInfo: RegisterTokenInfo,
+                  notificationStateProvider: NotificationStateProviderProtocol,
+                  onSuccess: OnSuccessHandler?,
+                  onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
+    
+    @discardableResult
+    func disableDeviceForCurrentUser(hexToken: String,
+                                     withOnSuccess onSuccess: OnSuccessHandler?,
+                                     onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
+    
+    @discardableResult
+    func disableDeviceForAllUsers(hexToken: String,
+                                  withOnSuccess onSuccess: OnSuccessHandler?,
+                                  onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
+    
+    @discardableResult
+    func updateUser(_ dataFields: [AnyHashable: Any],
+                    mergeNestedObjects: Bool,
+                    onSuccess: OnSuccessHandler?,
+                    onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
+    
+    @discardableResult
+    func updateEmail(_ newEmail: String,
+                     onSuccess: OnSuccessHandler?,
+                     onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
+    
     @discardableResult
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
@@ -47,6 +58,11 @@ protocol RequestProcessorProtocol {
                dataFields: [AnyHashable: Any]?,
                onSuccess: OnSuccessHandler?,
                onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
+    
+    @discardableResult
+    func updateSubscriptions(info: UpdateSubscriptionsInfo,
+                             onSuccess: OnSuccessHandler?,
+                             onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
     
     @discardableResult
     func trackInAppOpen(_ message: IterableInAppMessage,
