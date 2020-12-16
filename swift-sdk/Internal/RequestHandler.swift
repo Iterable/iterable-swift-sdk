@@ -252,6 +252,12 @@ class RequestHandler: RequestHandlerProtocol {
                                                  onFailure: onFailure)
     }
     
+    func handleLogout() throws {
+        if strategy.chooseOfflineProcessor {
+            try offlineProcessor?.deleteAllTasks()
+        }
+    }
+
     private let onlineCreator: () -> OnlineRequestProcessor
     private let offlineCreator: () -> OfflineRequestProcessor?
     

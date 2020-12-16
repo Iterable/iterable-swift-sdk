@@ -108,6 +108,8 @@ protocol RequestHandlerProtocol {
                       source: InAppDeleteSource?,
                       onSuccess: OnSuccessHandler?,
                       onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
+
+    func handleLogout() throws
     
     // MARK: DEPRECATED
     
