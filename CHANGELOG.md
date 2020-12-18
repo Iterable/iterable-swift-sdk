@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.2.18
+#### Fixed
+- Users who were already set to the SDK will now always request a JWT (if enabled) whenever a user is set to the SDK
+
 ## 6.2.17
 #### Fixed
 - Added a call to get in-app messages after a JWT retrieval when setting the user to the Iterable SDK instance
