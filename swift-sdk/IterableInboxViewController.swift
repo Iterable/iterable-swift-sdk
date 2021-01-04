@@ -111,6 +111,9 @@ open class IterableInboxViewController: UITableViewController {
         }
     }
     
+    /// when in popup mode, specify here if you'd like to change the presentation style
+    public var popupModalPresentationStyle: UIModalPresentationStyle? = nil
+    
     /// Set this property to override default inbox display behavior. You should set either this property
     /// or `viewDelegateClassName`property but not both.
     public var viewDelegate: IterableInboxViewControllerViewDelegate? {
@@ -255,6 +258,7 @@ open class IterableInboxViewController: UITableViewController {
         
         if let viewController = viewModel.createInboxMessageViewController(for: message, withInboxMode: inboxMode) {
             viewModel.set(read: true, forMessage: message)
+            
             if inboxMode == .nav {
                 navigationController?.pushViewController(viewController, animated: true)
             } else {
@@ -375,6 +379,10 @@ open class IterableInboxViewController: UITableViewController {
         guard #available(iOS 13.0, *) else {
             viewController.modalPresentationStyle = .overFullScreen
             return
+        }
+        
+        if let modalPresentationStyle = popupModalPresentationStyle {
+            viewController.modalPresentationStyle = modalPresentationStyle
         }
     }
 }
