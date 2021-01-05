@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.2.19
+#### Added
+- When using the inbox feature in popup mode, the method of modal transition can now be specified through  `popupModalPresentationStyle`
+
 ## 6.2.18
 #### Fixed
 - Users who were already set to the SDK will now always request a JWT (if enabled) whenever a user is set to the SDK
