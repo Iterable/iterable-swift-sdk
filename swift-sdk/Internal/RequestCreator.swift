@@ -1,14 +1,13 @@
 //
-//  Created by Tapash Majumder on 5/16/19.
 //  Copyright © 2019 Iterable. All rights reserved.
 //
 
 import Foundation
 import UIKit
 
-// This is a stateless pure functional class
-// This will create IterableRequest
-// The API Endpoint and request endpoint is not defined yet
+/// This is a stateless pure functional class
+/// This will create IterableRequest
+/// The API Endpoint and request endpoint is not defined yet
 struct RequestCreator {
     let apiKey: String
     let auth: Auth

@@ -1,9 +1,9 @@
 //
-//  Created by Tapash Majumder on 8/7/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
-//  This is a utility class which takes an apiEndpoint, path, header, args etc to create URLRequest objects.
-//  The methods should be generic and not specific to Iterable.
+
+/// This is a utility class which takes an apiEndpoint, path, header, args etc to create URLRequest objects.
+/// The methods should be generic and not specific to Iterable.
 
 import Foundation
 

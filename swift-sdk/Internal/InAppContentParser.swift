@@ -1,9 +1,8 @@
 //
-//  Created by Tapash Majumder on 2/15/19.
 //  Copyright © 2019 Iterable. All rights reserved.
 //
-// Parses content JSON coming from the server based on 'contentType' attribute.
-//
+
+/// Parses content JSON coming from the server based on `contentType` attribute.
 
 import Foundation
 import UIKit

@@ -1,10 +1,9 @@
 //
-//  Created by David Truong on 9/14/16.
-//  Ported to Swift by Tapash Majumder on 6/7/18.
 //  Copyright © 2018 Iterable. All rights reserved.
 //
-// Utility Methods for in-app
-// All classes/structs are internal.
+
+/// Utility Methods for in-app
+/// All classes/structs are internal.
 
 import UIKit
 

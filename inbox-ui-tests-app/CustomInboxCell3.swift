@@ -1,5 +1,4 @@
 //
-//  Created by Tapash Majumder on 2020-01-08.
 //  Copyright © 2020 Iterable. All rights reserved.
 //
 

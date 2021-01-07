@@ -1,8 +1,8 @@
 //
-//  Created by Tapash Majumder on 1/9/19.
 //  Copyright © 2019 Iterable. All rights reserved.
 //
-//  This file helps with parsing push notification information coming from the server.
+
+/// This file helps with parsing push notification information coming from the server
 
 import Foundation
 

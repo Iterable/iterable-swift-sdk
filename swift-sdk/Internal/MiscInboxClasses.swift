@@ -1,4 +1,4 @@
-//  Created by Tapash Majumder on 2/10/20.
+//
 //  Copyright © 2020 Iterable. All rights reserved.
 //
 
