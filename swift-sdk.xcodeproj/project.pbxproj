@@ -676,7 +676,7 @@
 			path = "swift-sdk/misc";
 			sourceTree = "<group>";
 		};
-		557059B125A691D1009BDEE2 /* In-App Tests */ = {
+		557059B125A691D1009BDEE2 /* in-app-tests */ = {
 			isa = PBXGroup;
 			children = (
 				AC750A49234CD67900561902 /* InAppHelperTests.swift */,
@@ -686,10 +686,10 @@
 				ACA8D1A821965B7D001B1332 /* InAppTests.swift */,
 				ACC3FD9D2536D7A30004A2E0 /* InAppFilePersistenceTests.swift */,
 			);
-			path = "In-App Tests";
+			path = "in-app-tests";
 			sourceTree = "<group>";
 		};
-		557059BC25A69352009BDEE2 /* Inbox Tests */ = {
+		557059BC25A69352009BDEE2 /* inbox-tests */ = {
 			isa = PBXGroup;
 			children = (
 				5585DF8E22A73390000A32B9 /* IterableInboxViewControllerTests.swift */,
@@ -699,10 +699,10 @@
 				AC1670CC2230A91C00989F8E /* InboxTests.swift */,
 				AC8F35A1239806B500302994 /* InboxViewControllerViewModelTests.swift */,
 			);
-			path = "Inbox Tests";
+			path = "inbox-tests";
 			sourceTree = "<group>";
 		};
-		557059C525A6938B009BDEE2 /* Foundational Tests */ = {
+		557059C525A6938B009BDEE2 /* foundational-tests */ = {
 			isa = PBXGroup;
 			children = (
 				00B6FACB210E8484007535CF /* APNSTypeCheckerTests.swift */,
@@ -714,25 +714,25 @@
 				55B37FC5229752DD0042F13A /* OrderedDictionaryTests.swift */,
 				ACEDF41E2183C436000B9BFE /* PromiseTests.swift */,
 			);
-			path = "Foundational Tests";
+			path = "foundational-tests";
 			sourceTree = "<group>";
 		};
-		557059EE25A69752009BDEE2 /* Deep Linking Tests */ = {
+		557059EE25A69752009BDEE2 /* deep-linking-tests */ = {
 			isa = PBXGroup;
 			children = (
 				55E6F45E238E066400808BCE /* DeepLinkTests.swift */,
 				55E6F45D238E066400808BCE /* DeferredDeepLinkTests.swift */,
 			);
-			path = "Deep Linking Tests";
+			path = "deep-linking-tests";
 			sourceTree = "<group>";
 		};
-		557059FF25A69780009BDEE2 /* Request Tests */ = {
+		557059FF25A69780009BDEE2 /* request-tests */ = {
 			isa = PBXGroup;
 			children = (
 				ACC362B724D17005002C67BA /* IterableRequestTests.swift */,
 				AC776DA3211A17C700C27C27 /* IterableRequestUtilTests.swift */,
 			);
-			path = "Request Tests";
+			path = "request-tests";
 			sourceTree = "<group>";
 		};
 		AC0248062279132400495FB9 /* Dwifft */ = {
@@ -1004,13 +1004,13 @@
 		AC7B142C20D02CE200877BFE /* swift-sdk-swift-tests */ = {
 			isa = PBXGroup;
 			children = (
-				557059EE25A69752009BDEE2 /* Deep Linking Tests */,
-				557059C525A6938B009BDEE2 /* Foundational Tests */,
 				AC87172421A4E3FF00FEA369 /* Helper Classes */,
-				557059B125A691D1009BDEE2 /* In-App Tests */,
-				557059BC25A69352009BDEE2 /* Inbox Tests */,
-				557059FF25A69780009BDEE2 /* Request Tests */,
 				00B6FACF210E8B10007535CF /* Test Files */,
+				557059EE25A69752009BDEE2 /* deep-linking-tests */,
+				557059C525A6938B009BDEE2 /* foundational-tests */,
+				557059B125A691D1009BDEE2 /* in-app-tests */,
+				557059BC25A69352009BDEE2 /* inbox-tests */,
+				557059FF25A69780009BDEE2 /* request-tests */,
 				55B9F15024B3D33700E8198A /* AuthTests.swift */,
 				551E5C0F234D485A005FEE9E /* DeprecatedFunctionsTests.swift */,
 				AC2C668620D3435700D46CC9 /* IterableActionRunnerTests.swift */,
