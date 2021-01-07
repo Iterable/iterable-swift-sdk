@@ -1,12 +1,12 @@
 //
-//  Created by Tapash Majumder on 7/29/20.
 //  Copyright © 2020 Iterable. All rights reserved.
 //
 
+/// These are Iterable specific Request items.
+/// They don't have Api endpoint and request endpoint defined yet.
+
 import Foundation
 
-// These are Iterable specific Request items.
-// They don't have Api endpoint and request endpoint defined yet.
 enum IterableRequest {
     case get(GetRequest)
     case post(PostRequest)

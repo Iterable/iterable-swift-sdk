@@ -1,9 +1,9 @@
 //
-//  Created by Tapash Majumder on 5/6/20.
 //  Copyright © 2020 Iterable. All rights reserved.
 //
-//  This file contains static pure helper functions for creating
-//  the dataFields dictionary.
+
+/// This file contains static pure helper functions for creating
+/// the dataFields dictionary.
 
 import Foundation
 import UIKit

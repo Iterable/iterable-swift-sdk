@@ -1,9 +1,9 @@
 //
-//  Created by Tapash Majumder on 7/20/20.
 //  Copyright © 2020 Iterable. All rights reserved.
 //
-// This defines persistence contracts for Iterable.
-// This should not be dependent on Coredata
+
+// This defines persistence contracts for Iterable
+// This should not be dependent on CoreData
 
 import Foundation
 
