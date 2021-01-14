@@ -55,6 +55,13 @@ public enum Const {
         static let payloadExpiration = 24
         static let attributionInfoExpiration = 24
     }
+    
+    enum PriorityLevel {
+        static let critical = 100.0
+        static let high = 200.0
+        static let medium = 300.0
+        static let low = 400.0
+    }
 }
 
 public protocol JsonKeyValueRepresentable {
@@ -105,6 +112,7 @@ public enum JsonKey: String, JsonKeyRepresentable {
     case inAppLocation = "location"
     case clickedUrl
     case read
+    case priorityLevel
     
     case inboxSessionStart
     case inboxSessionEnd
