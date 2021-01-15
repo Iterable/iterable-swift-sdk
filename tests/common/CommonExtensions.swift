@@ -80,6 +80,7 @@ class MockDependencyContainer: DependencyContainerProtocol {
     let applicationStateProvider: ApplicationStateProviderProtocol
     let notificationCenter: NotificationCenterProtocol
     let apnsTypeChecker: APNSTypeCheckerProtocol
+    let offlineMode: Bool
     
     init(dateProvider: DateProviderProtocol,
          networkSession: NetworkSessionProtocol,
@@ -91,7 +92,8 @@ class MockDependencyContainer: DependencyContainerProtocol {
          urlOpener: UrlOpenerProtocol,
          applicationStateProvider: ApplicationStateProviderProtocol,
          notificationCenter: NotificationCenterProtocol,
-         apnsTypeChecker: APNSTypeCheckerProtocol) {
+         apnsTypeChecker: APNSTypeCheckerProtocol,
+         offlineMode: Bool) {
         self.dateProvider = dateProvider
         self.networkSession = networkSession
         self.notificationStateProvider = notificationStateProvider
@@ -103,37 +105,11 @@ class MockDependencyContainer: DependencyContainerProtocol {
         self.applicationStateProvider = applicationStateProvider
         self.notificationCenter = notificationCenter
         self.apnsTypeChecker = apnsTypeChecker
+        self.offlineMode = offlineMode
     }
     
     func createInAppFetcher(apiClient _: ApiClientProtocol) -> InAppFetcherProtocol {
         inAppFetcher
-    }
-
-    func createRequestHandler(apiKey: String,
-                              config: IterableConfig,
-                              endPoint: String,
-                              authProvider: AuthProvider?,
-                              authManager: IterableInternalAuthManagerProtocol,
-                              deviceMetadata: DeviceMetadata) -> RequestHandlerProtocol {
-        if #available(iOS 10.0, *) {
-            return RequestHandler(onlineCreator: { [weak authProvider] in
-                                    OnlineRequestProcessor(apiKey: apiKey,
-                                                           authProvider: authProvider,
-                                                           authManager: authManager,
-                                                           endPoint: endPoint,
-                                                           networkSession: self.networkSession,
-                                                           deviceMetadata: deviceMetadata) },
-                                  offlineCreator: {
-                                    return nil
-                                  })
-        } else {
-            return LegacyRequestHandler(apiKey: apiKey,
-                                        authProvider: authProvider,
-                                        authManager: authManager,
-                                        endPoint: endPoint,
-                                        networkSession: networkSession,
-                                        deviceMetadata: deviceMetadata)
-        }
     }
 }
 
@@ -154,7 +130,8 @@ extension IterableAPI {
                                      urlOpener: UrlOpenerProtocol = MockUrlOpener(),
                                      applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
                                      notificationCenter: NotificationCenterProtocol = NotificationCenter.default,
-                                     apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker()) {
+                                     apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker(),
+                                     offlineMode: Bool = false) {
         let mockDependencyContainer = MockDependencyContainer(dateProvider: dateProvider,
                                                               networkSession: networkSession,
                                                               notificationStateProvider: notificationStateProvider,
@@ -165,7 +142,8 @@ extension IterableAPI {
                                                               urlOpener: urlOpener,
                                                               applicationStateProvider: applicationStateProvider,
                                                               notificationCenter: notificationCenter,
-                                                              apnsTypeChecker: apnsTypeChecker)
+                                                              apnsTypeChecker: apnsTypeChecker,
+                                                              offlineMode: offlineMode)
         
         internalImplementation = IterableAPIInternal(apiKey: apiKey,
                                                      launchOptions: launchOptions,
@@ -195,7 +173,8 @@ extension IterableAPIInternal {
                                                         urlOpener: UrlOpenerProtocol = MockUrlOpener(),
                                                         applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
                                                         notificationCenter: NotificationCenterProtocol = NotificationCenter.default,
-                                                        apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker()) -> IterableAPIInternal {
+                                                        apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker(),
+                                                        offlineMode: Bool = false) -> IterableAPIInternal {
         let mockDependencyContainer = MockDependencyContainer(dateProvider: dateProvider,
                                                               networkSession: networkSession,
                                                               notificationStateProvider: notificationStateProvider,
@@ -206,7 +185,8 @@ extension IterableAPIInternal {
                                                               urlOpener: urlOpener,
                                                               applicationStateProvider: applicationStateProvider,
                                                               notificationCenter: notificationCenter,
-                                                              apnsTypeChecker: apnsTypeChecker)
+                                                              apnsTypeChecker: apnsTypeChecker,
+                                                              offlineMode: offlineMode)
         
         let internalImplementation = IterableAPIInternal(apiKey: apiKey,
                                                          launchOptions: launchOptions,

@@ -593,8 +593,7 @@ class RequestHandlerTests: XCTestCase {
     }
     
     func testDeleteAllTasksOnLogout() throws {
-        let config = IterableConfig()
-        let internalApi = IterableAPIInternal.initializeForTesting(config: config)
+        let internalApi = IterableAPIInternal.initializeForTesting(offlineMode: true)
         internalApi.email = "user@example.com"
         
         let taskId = IterableUtil.generateUUID()
@@ -774,7 +773,7 @@ class RequestHandlerTests: XCTestCase {
                                                         taskScheduler: taskScheduler,
                                                         taskRunner: taskRunner,
                                                         notificationCenter: notificationCenter) },
-                              strategy: DefaultRequestProcessorStrategy(selectOffline: selectOffline))
+                              offlineMode: selectOffline)
     }
     
     private func handleRequestWithSuccess(request: () -> Future<SendRequestValue, SendRequestError>,

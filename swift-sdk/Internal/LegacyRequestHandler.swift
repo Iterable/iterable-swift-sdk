@@ -20,6 +20,8 @@ struct LegacyRequestHandler: RequestHandlerProtocol {
                               deviceMetadata: deviceMetadata)
     }
     
+    var offlineMode = false
+    
     func start() {
         ITBInfo()
     }
