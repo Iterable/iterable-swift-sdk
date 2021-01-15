@@ -610,7 +610,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             return
         }
         
-        NetworkHelper.sendRequest(request, usingSession: networkSession).onSuccess { json in
+        RequestSender.sendRequest(request, usingSession: networkSession).onSuccess { json in
             self.handleDDL(json: json)
         }.onError { sendError in
             ITBError(sendError.reason)

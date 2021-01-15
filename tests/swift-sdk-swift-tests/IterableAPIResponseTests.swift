@@ -177,7 +177,7 @@ class IterableAPIResponseTests: XCTestCase {
         var urlRequest = apiClient.convertToURLRequest(iterableRequest: iterableRequest)!
         urlRequest.timeoutInterval = timeout
         
-        NetworkHelper.sendRequest(urlRequest, usingSession: networkSession).onError { sendError in
+        RequestSender.sendRequest(urlRequest, usingSession: networkSession).onError { sendError in
             xpectation.fulfill()
             XCTAssert(sendError.reason!.lowercased().contains("timed out"))
         }

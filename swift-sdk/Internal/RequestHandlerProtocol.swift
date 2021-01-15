@@ -111,6 +111,8 @@ protocol RequestHandlerProtocol {
 
     func handleLogout() throws
     
+    func getRemoteConfiguration() -> Future<RemoteConfiguration, SendRequestError>
+
     // MARK: DEPRECATED
     
     @discardableResult

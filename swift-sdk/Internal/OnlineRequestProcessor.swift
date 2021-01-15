@@ -213,6 +213,10 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                               forResult: result)
     }
     
+    func getRemoteConfiguration() -> Future<RemoteConfiguration, SendRequestError> {
+        apiClient.getRemoteConfiguration()
+    }
+    
     // MARK: DEPRECATED
     
     @discardableResult

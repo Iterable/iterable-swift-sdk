@@ -402,6 +402,18 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: Const.Path.disableDevice, body: body)))
     }
     
+    func createGetRemoteConfigurationRequest() -> Result<IterableRequest, IterableError> {
+        var args: [AnyHashable: Any] = [JsonKey.platform.jsonKey: JsonValue.iOS.jsonStringValue,
+                                        JsonKey.systemVersion.jsonKey: UIDevice.current.systemVersion,
+                                        JsonKey.InApp.sdkVersion: IterableAPI.sdkVersion]
+        
+        if let packageName = Bundle.main.appPackageName {
+            args[JsonKey.InApp.packageName] = packageName
+        }
+
+        return .success(.get(createGetRequest(forPath: Const.Path.getRemoteConfiguration, withArgs: args as! [String: String])))
+    }
+    
     // MARK: - PRIVATE
     
     private var keyValueForCurrentUser: JsonKeyValueRepresentable? {

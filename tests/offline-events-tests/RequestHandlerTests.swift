@@ -611,6 +611,33 @@ class RequestHandlerTests: XCTestCase {
         XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 0)
     }
     
+    func testGetRemoteConfiguration() throws {
+        let expectation1 = expectation(description: #function)
+        let expectedRemoteConfiguration = RemoteConfiguration(offlineMode: false, offlineModeBeta: true)
+        let data = try JSONEncoder().encode(expectedRemoteConfiguration)
+        let notificationCenter = MockNotificationCenter()
+        let networkSession = MockNetworkSession(statusCode: 200, data: data)
+
+        networkSession.requestCallback = { request in
+            TestUtils.validate(request: request,
+                               requestType: .get,
+                               apiEndPoint: Endpoint.api,
+                               path: Const.Path.getRemoteConfiguration,
+                               queryParams: [("platform", "iOS"),
+                                             ("systemVersion", UIDevice.current.systemVersion),
+                                             ("SDKVersion", IterableAPI.sdkVersion),
+                                             ("packageName", Bundle.main.appPackageName!)])
+        }
+        let requestHandler = createRequestHandler(networkSession: networkSession,
+                                                  notificationCenter: notificationCenter,
+                                                  selectOffline: false)
+        requestHandler.getRemoteConfiguration().onSuccess { remoteConfiguration in
+            XCTAssertEqual(remoteConfiguration, expectedRemoteConfiguration)
+            expectation1.fulfill()
+        }
+        wait(for: [expectation1], timeout: 5.0)
+    }
+    
     private func handleRequestWithSuccessAndFailure(requestGenerator: (RequestHandlerProtocol) -> Future<SendRequestValue, SendRequestError>,
                                                      path: String,
                                                      bodyDict: [AnyHashable: Any]) throws {

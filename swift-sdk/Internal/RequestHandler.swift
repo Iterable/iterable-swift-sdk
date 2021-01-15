@@ -251,6 +251,10 @@ class RequestHandler: RequestHandlerProtocol {
                                                  onFailure: onFailure)
     }
     
+    func getRemoteConfiguration() -> Future<RemoteConfiguration, SendRequestError> {
+        onlineProcessor.getRemoteConfiguration()
+    }
+    
     func handleLogout() throws {
         if strategy.chooseOfflineProcessor {
             try offlineProcessor?.deleteAllTasks()

@@ -42,13 +42,30 @@ class ApiClient {
             return SendRequestError.createErroredFuture(reason: iterableError.localizedDescription)
         }
     }
-    
+
+    func send<T>(iterableRequestResult result: Result<IterableRequest, IterableError>) -> Future<T, SendRequestError> where T: Decodable {
+        switch result {
+        case let .success(iterableRequest):
+            return send(iterableRequest: iterableRequest)
+        case let .failure(iterableError):
+            return SendRequestError.createErroredFuture(reason: iterableError.localizedDescription)
+        }
+    }
+
     func send(iterableRequest: IterableRequest) -> Future<SendRequestValue, SendRequestError> {
         guard let urlRequest = convertToURLRequest(iterableRequest: iterableRequest) else {
             return SendRequestError.createErroredFuture()
         }
         
-        return NetworkHelper.sendRequest(urlRequest, usingSession: networkSession)
+        return RequestSender.sendRequest(urlRequest, usingSession: networkSession)
+    }
+    
+    func send<T>(iterableRequest: IterableRequest) -> Future<T, SendRequestError> where T: Decodable {
+        guard let urlRequest = convertToURLRequest(iterableRequest: iterableRequest) else {
+            return SendRequestError.createErroredFuture()
+        }
+
+        return RequestSender.sendRequest(urlRequest, usingSession: networkSession)
     }
     
     // MARK: - Private
@@ -184,6 +201,11 @@ extension ApiClient: ApiClientProtocol {
     func inAppConsume(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource?) -> Future<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createTrackInAppConsumeRequest(inAppMessageContext: inAppMessageContext,
                                                                                          source: source) }
+        return send(iterableRequestResult: result)
+    }
+    
+    func getRemoteConfiguration() -> Future<RemoteConfiguration, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createGetRemoteConfigurationRequest() }
         return send(iterableRequestResult: result)
     }
 }

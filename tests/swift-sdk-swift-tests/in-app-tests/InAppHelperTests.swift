@@ -166,5 +166,9 @@ class InAppHelperTests: XCTestCase {
         func disableDevice(forAllUsers _: Bool, hexToken _: String) -> Future<SendRequestValue, SendRequestError> {
             fatalError()
         }
+        
+        func getRemoteConfiguration() -> Future<RemoteConfiguration, SendRequestError> {
+            fatalError()
+        }
     }
 }

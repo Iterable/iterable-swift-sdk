@@ -40,6 +40,7 @@ public enum Const {
         static let updateEmail = "users/updateEmail"
         static let updateSubscriptions = "users/updateSubscriptions"
         static let ddlMatch = "a/matchFp" // DDL = Deferred Deep Linking
+        static let getRemoteConfiguration = "mobile/getRemoteConfiguration"
     }
     
     public enum UserDefaults {
