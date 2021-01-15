@@ -61,6 +61,8 @@ public enum Const {
         static let high = 200.0
         static let medium = 300.0
         static let low = 400.0
+        
+        static let unassigned = 300.5
     }
 }
 
