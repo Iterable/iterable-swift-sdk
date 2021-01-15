@@ -108,6 +108,33 @@ class MockDependencyContainer: DependencyContainerProtocol {
     func createInAppFetcher(apiClient _: ApiClientProtocol) -> InAppFetcherProtocol {
         inAppFetcher
     }
+
+    func createRequestHandler(apiKey: String,
+                              config: IterableConfig,
+                              endPoint: String,
+                              authProvider: AuthProvider?,
+                              authManager: IterableInternalAuthManagerProtocol,
+                              deviceMetadata: DeviceMetadata) -> RequestHandlerProtocol {
+        if #available(iOS 10.0, *) {
+            return RequestHandler(onlineCreator: { [weak authProvider] in
+                                    OnlineRequestProcessor(apiKey: apiKey,
+                                                           authProvider: authProvider,
+                                                           authManager: authManager,
+                                                           endPoint: endPoint,
+                                                           networkSession: self.networkSession,
+                                                           deviceMetadata: deviceMetadata) },
+                                  offlineCreator: {
+                                    return nil
+                                  })
+        } else {
+            return LegacyRequestHandler(apiKey: apiKey,
+                                        authProvider: authProvider,
+                                        authManager: authManager,
+                                        endPoint: endPoint,
+                                        networkSession: networkSession,
+                                        deviceMetadata: deviceMetadata)
+        }
+    }
 }
 
 extension IterableAPI {

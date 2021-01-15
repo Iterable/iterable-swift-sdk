@@ -20,6 +20,12 @@ protocol DependencyContainerProtocol {
     
     func createInAppFetcher(apiClient: ApiClientProtocol) -> InAppFetcherProtocol
     func createPersistenceContextProvider() -> IterablePersistenceContextProvider?
+    func createRequestHandler(apiKey: String,
+                              config: IterableConfig,
+                              endPoint: String,
+                              authProvider: AuthProvider?,
+                              authManager: IterableInternalAuthManagerProtocol,
+                              deviceMetadata: DeviceMetadata) -> RequestHandlerProtocol
 }
 
 extension DependencyContainerProtocol {
@@ -75,7 +81,7 @@ extension DependencyContainerProtocol {
                                                                    taskScheduler: createTaskScheduler(persistenceContextProvider: persistenceContextProvider),
                                                                    taskRunner: createTaskRunner(persistenceContextProvider: persistenceContextProvider),
                                                                    notificationCenter: notificationCenter) },
-                                  strategy: DefaultRequestProcessorStrategy(selectOffline: config.enableOfflineMode))
+                                  strategy: DefaultRequestProcessorStrategy(selectOffline: true))
         } else {
             return LegacyRequestHandler(apiKey: apiKey,
                                         authProvider: authProvider,

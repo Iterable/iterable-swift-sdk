@@ -594,7 +594,6 @@ class RequestHandlerTests: XCTestCase {
     
     func testDeleteAllTasksOnLogout() throws {
         let config = IterableConfig()
-        config.enableOfflineMode = true
         let internalApi = IterableAPIInternal.initializeForTesting(config: config)
         internalApi.email = "user@example.com"
         
