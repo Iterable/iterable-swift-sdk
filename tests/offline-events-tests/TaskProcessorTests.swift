@@ -49,7 +49,7 @@ class TaskProcessorTests: XCTestCase {
         // process data
         let processor = IterableAPICallTaskProcessor(networkSession: internalAPI.networkSession)
         try processor.process(task: found).onSuccess { _ in
-            let body = networkSession.getRequestBody() as! [String: Any]
+            let body = networkSession.getLastRequestBody() as! [String: Any]
             TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(.dataFields), value: dataFields, inDictionary: body)
             expectation1.fulfill()

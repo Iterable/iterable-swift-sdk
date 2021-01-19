@@ -153,6 +153,27 @@ struct TestUtils {
             &&
             abs(Double(a1) - Double(a2)) < accuracy
     }
+    
+    static func getRequestBody(request: URLRequest) -> [String: Any]? {
+        guard let body = request.httpBody else {
+            return nil
+        }
+        return try? JSONSerialization.jsonObject(with: body, options: []) as? [String: Any]
+    }
+    
+    static func matchingRequest(networkSession: MockNetworkSession, response: URLResponse?, endPoint: String) -> (request: URLRequest, body: [String: Any])? {
+        guard response?.url?.absoluteString.contains(endPoint) == true else {
+            return nil
+        }
+        guard let request = networkSession.getRequest(withEndPoint: endPoint) else {
+            return nil
+        }
+        guard let body = TestUtils.getRequestBody(request: request) else {
+            return nil
+        }
+
+        return (request: request, body: body)
+    }
 
     private static func validateQueryParameters(inUrlComponents urlComponents: URLComponents, queryParams: [(name: String, value: String)]) {
         queryParams.forEach { name, value in

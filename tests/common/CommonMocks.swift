@@ -177,8 +177,7 @@ class MockNetworkSession: NetworkSessionProtocol {
     }
 
     var urlPatternDataMapping: [String: Data?]?
-    var url: URL?
-    var request: URLRequest?
+    var requests = [URLRequest]()
     var callback: ((Data?, URLResponse?, Error?) -> Void)?
     var requestCallback: ((URLRequest) -> Void)?
     
@@ -209,7 +208,7 @@ class MockNetworkSession: NetworkSessionProtocol {
     
     func makeRequest(_ request: URLRequest, completionHandler: @escaping NetworkSessionProtocol.CompletionHandler) {
         DispatchQueue.main.async {
-            self.request = request
+            self.requests.append(request)
             self.requestCallback?(request)
             let response = HTTPURLResponse(url: request.url!, statusCode: self.statusCode, httpVersion: "HTTP/1.1", headerFields: [:])
             let data = self.data(for: request.url?.absoluteString)
@@ -221,7 +220,6 @@ class MockNetworkSession: NetworkSessionProtocol {
     
     func makeDataRequest(with url: URL, completionHandler: @escaping NetworkSessionProtocol.CompletionHandler) {
         DispatchQueue.main.async {
-            self.url = url
             let response = HTTPURLResponse(url: url, statusCode: self.statusCode, httpVersion: "HTTP/1.1", headerFields: [:])
             let data = self.data(for: url.absoluteString)
             completionHandler(data, response, self.error)
@@ -234,9 +232,15 @@ class MockNetworkSession: NetworkSessionProtocol {
         MockDataTask(url: url, completionHandler: completionHandler, parent: self)
     }
 
+    // TODO: tqm: Change this
+    func getLastRequestBody() -> [AnyHashable: Any] {
+        MockNetworkSession.json(fromData: requests[requests.count-1].httpBody!)
+    }
     
-    func getRequestBody() -> [AnyHashable: Any] {
-        MockNetworkSession.json(fromData: request!.httpBody!)
+    func getRequest(withEndPoint endPoint: String) -> URLRequest? {
+        return requests.first { request in
+            request.url?.absoluteString.contains(endPoint) == true
+        }
     }
     
     static func json(fromData data: Data) -> [AnyHashable: Any] {

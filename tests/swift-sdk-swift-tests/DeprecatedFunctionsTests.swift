@@ -24,16 +24,19 @@ class DeprecatedFunctionsTests: XCTestCase {
         let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, networkSession: networkSession)
         internalAPI.email = email
         
-        networkSession.callback = { _, _, _ in
-            TestUtils.validate(request: networkSession.request!,
+        networkSession.callback = { _, response, _ in
+            guard let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
+                                                                  response: response,
+                                                                  endPoint: Const.Path.trackInAppOpen) else {
+                return
+            }
+            TestUtils.validate(request: request,
                                requestType: .post,
                                apiEndPoint: Endpoint.api,
                                path: Const.Path.trackInAppOpen,
                                queryParams: [])
             
-            TestUtils.validateHeader(networkSession.request!, self.apiKey)
-            
-            let body = networkSession.getRequestBody() as! [String: Any]
+            TestUtils.validateHeader(request, self.apiKey)
             
             TestUtils.validateDeprecatedMessageContext(messageId: message.messageId,
                                                        email: self.email,
@@ -68,16 +71,19 @@ class DeprecatedFunctionsTests: XCTestCase {
         let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, networkSession: networkSession)
         internalAPI.userId = userId
         
-        networkSession.callback = { _, _, _ in
-            TestUtils.validate(request: networkSession.request!,
+        networkSession.callback = { _, response, _ in
+            guard let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
+                                                                  response: response,
+                                                                  endPoint: Const.Path.trackInAppClick) else {
+                return
+            }
+            TestUtils.validate(request: request,
                                requestType: .post,
                                apiEndPoint: Endpoint.api,
                                path: Const.Path.trackInAppClick,
                                queryParams: [])
             
-            TestUtils.validateHeader(networkSession.request!, self.apiKey)
-            
-            let body = networkSession.getRequestBody() as! [String: Any]
+            TestUtils.validateHeader(request, self.apiKey)
             
             TestUtils.validateDeprecatedMessageContext(messageId: message.messageId,
                                                        userId: self.userId,

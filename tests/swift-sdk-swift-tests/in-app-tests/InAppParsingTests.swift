@@ -275,13 +275,17 @@ class InAppParsingTests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
         internalAPI.userId = InAppParsingTests.userId
-        networkSession.callback = { _, _, _ in
-            TestUtils.validate(request: networkSession.request!,
+        networkSession.callback = { _, response, _ in
+            guard let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
+                                                                  response: response,
+                                                                  endPoint: Const.Path.trackInAppClick) else {
+                return
+            }
+            TestUtils.validate(request: request,
                                requestType: .post,
                                apiEndPoint: Endpoint.api,
                                path: Const.Path.trackInAppClick,
                                queryParams: [])
-            let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMessageContext(messageId: message.messageId, userId: InAppParsingTests.userId, saveToInbox: false, silentInbox: false, location: .inApp, inBody: body)
             TestUtils.validateDeviceInfo(inBody: body, withDeviceId: internalAPI.deviceId)
             TestUtils.validateMatch(keyPath: KeyPath("clickedUrl"), value: buttonUrl, inDictionary: body)
@@ -306,13 +310,17 @@ class InAppParsingTests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
         internalAPI.email = InAppParsingTests.email
-        networkSession.callback = { _, _, _ in
-            TestUtils.validate(request: networkSession.request!,
+        networkSession.callback = { _, response, _ in
+            guard let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
+                                                                  response: response,
+                                                                  endPoint: Const.Path.trackInAppOpen) else {
+                return
+            }
+            TestUtils.validate(request: request,
                                requestType: .post,
                                apiEndPoint: Endpoint.api,
                                path: Const.Path.trackInAppOpen,
                                queryParams: [])
-            let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMessageContext(messageId: message.messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: .inbox, inBody: body)
             TestUtils.validateDeviceInfo(inBody: body, withDeviceId: internalAPI.deviceId)
             expectation1.fulfill()
@@ -329,14 +337,18 @@ class InAppParsingTests: XCTestCase {
         let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
         internalAPI.email = InAppParsingTests.email
         
-        networkSession.callback = { _, _, _ in
-            TestUtils.validate(request: networkSession.request!,
+        networkSession.callback = { _, response, _ in
+            guard let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
+                                                                  response: response,
+                                                                  endPoint: Const.Path.trackInAppClose) else {
+                return
+            }
+            TestUtils.validate(request: request,
                                requestType: .post,
                                apiEndPoint: Endpoint.api,
                                path: Const.Path.trackInAppClose,
                                queryParams: [])
             
-            let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMessageContext(messageId: messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: .inbox, inBody: body)
             TestUtils.validateDeviceInfo(inBody: body, withDeviceId: internalAPI.deviceId)
             TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.closeAction.jsonKey)"), value: "back", inDictionary: body)
@@ -368,14 +380,18 @@ class InAppParsingTests: XCTestCase {
         let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
         internalAPI.email = InAppParsingTests.email
         
-        networkSession.callback = { _, _, _ in
-            TestUtils.validate(request: networkSession.request!,
+        networkSession.callback = { _, response, _ in
+            guard let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
+                                                                  response: response,
+                                                                  endPoint: Const.Path.trackInAppClose) else {
+                return
+            }
+            TestUtils.validate(request: request,
                                requestType: .post,
                                apiEndPoint: Endpoint.api,
                                path: Const.Path.trackInAppClose,
                                queryParams: [])
             
-            let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMessageContext(messageId: messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: .inbox, inBody: body)
             TestUtils.validateDeviceInfo(inBody: body, withDeviceId: internalAPI.deviceId)
             XCTAssertNil(body[keyPath: KeyPath("\(JsonKey.closeAction.jsonKey)")])
@@ -407,14 +423,18 @@ class InAppParsingTests: XCTestCase {
         let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
         internalAPI.email = InAppParsingTests.email
         
-        networkSession.callback = { _, _, _ in
-            TestUtils.validate(request: networkSession.request!,
+        networkSession.callback = { _, response, _ in
+            guard let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
+                                                                  response: response,
+                                                                  endPoint: Const.Path.trackInAppDelivery) else {
+                return
+            }
+            TestUtils.validate(request: request,
                                requestType: .post,
                                apiEndPoint: Endpoint.api,
                                path: Const.Path.trackInAppDelivery,
                                queryParams: [])
             
-            let body = networkSession.getRequestBody() as! [String: Any]
             TestUtils.validateMessageContext(messageId: messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: nil, inBody: body)
             TestUtils.validateDeviceInfo(inBody: body, withDeviceId: internalAPI.deviceId)
             expectation1.fulfill()
