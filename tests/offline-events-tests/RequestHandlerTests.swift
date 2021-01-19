@@ -636,6 +636,76 @@ class RequestHandlerTests: XCTestCase {
         wait(for: [expectation1], timeout: 5.0)
     }
     
+    func testCreatedAtSentAtForOffline() throws {
+        let expectation1 = expectation(description: #function)
+        let date = Date().addingTimeInterval(-5000)
+        dateProvider.currentDate = date
+
+        let campaignId = 1
+        let templateId = 2
+        let messageId = "message_id"
+        let appAlreadyRunning = true
+        let dataFields: [String: Any] = [
+            "var1": "val1",
+            "var2": "val2",
+        ]
+
+        let networkSession = MockNetworkSession(statusCode: 200)
+        networkSession.requestCallback = { request in
+            let sentAt = request.value(forHTTPHeaderField: "sentAt")
+            let createdAt = TestUtils.getRequestBody(request: request)?["createdAt"] as? Int
+            XCTAssertEqual(createdAt, Int(date.timeIntervalSince1970))
+            XCTAssertEqual(sentAt, "\(Int(date.timeIntervalSince1970))")
+            expectation1.fulfill()
+        }
+        let requestHandler = createRequestHandler(networkSession: networkSession,
+                                                  notificationCenter: MockNotificationCenter(),
+                                                  selectOffline: true)
+        requestHandler.trackPushOpen(NSNumber(value: campaignId),
+                                     templateId: NSNumber(value: templateId),
+                                     messageId: messageId,
+                                     appAlreadyRunning: appAlreadyRunning,
+                                     dataFields: dataFields,
+                                     onSuccess: nil,
+                                     onFailure: nil)
+        wait(for: [expectation1], timeout: 15.0)
+    }
+
+    func testCreatedAtSentAtForOnline() throws {
+        let expectation1 = expectation(description: #function)
+        let date = Date().addingTimeInterval(-5000)
+        dateProvider.currentDate = date
+
+        let campaignId = 1
+        let templateId = 2
+        let messageId = "message_id"
+        let appAlreadyRunning = true
+        let dataFields: [String: Any] = [
+            "var1": "val1",
+            "var2": "val2",
+        ]
+
+        let networkSession = MockNetworkSession(statusCode: 200)
+        networkSession.requestCallback = { request in
+            let sentAt = request.value(forHTTPHeaderField: "sentAt")
+            XCTAssertEqual(sentAt, "\(Int(date.timeIntervalSince1970))")
+            let createdAt = TestUtils.getRequestBody(request: request)?["createdAt"] as? Int
+            XCTAssertEqual(createdAt, Int(date.timeIntervalSince1970))
+            expectation1.fulfill()
+        }
+        let requestHandler = createRequestHandler(networkSession: networkSession,
+                                                  notificationCenter: MockNotificationCenter(),
+                                                  selectOffline: false)
+        requestHandler.trackPushOpen(NSNumber(value: campaignId),
+                                     templateId: NSNumber(value: templateId),
+                                     messageId: messageId,
+                                     appAlreadyRunning: appAlreadyRunning,
+                                     dataFields: dataFields,
+                                     onSuccess: nil,
+                                     onFailure: nil)
+        wait(for: [expectation1], timeout: 15.0)
+    }
+
     private func handleRequestWithSuccessAndFailure(requestGenerator: (RequestHandlerProtocol) -> Future<SendRequestValue, SendRequestError>,
                                                      path: String,
                                                      bodyDict: [AnyHashable: Any]) throws {
@@ -755,7 +825,8 @@ class RequestHandlerTests: XCTestCase {
         let taskRunner = IterableTaskRunner(networkSession: networkSession,
                                             persistenceContextProvider: persistenceContextProvider,
                                             notificationCenter: notificationCenter,
-                                            timeInterval: 0.5)
+                                            timeInterval: 0.5,
+                                            dateProvider: dateProvider)
         
         return RequestHandler(onlineCreator: {
                                 OnlineRequestProcessor(apiKey: "zee-api-key",
@@ -763,7 +834,8 @@ class RequestHandlerTests: XCTestCase {
                                                        authManager: nil,
                                                        endPoint: Endpoint.api,
                                                        networkSession: networkSession,
-                                                       deviceMetadata: Self.deviceMetadata) },
+                                                       deviceMetadata: Self.deviceMetadata,
+                                                       dateProvider: self.dateProvider) },
                               offlineCreator: {
                                 OfflineRequestProcessor(apiKey: "zee-api-key",
                                                         authProvider: self,
