@@ -652,11 +652,13 @@ class RequestHandlerTests: XCTestCase {
 
         let networkSession = MockNetworkSession(statusCode: 200)
         networkSession.requestCallback = { request in
-            let sentAt = request.value(forHTTPHeaderField: "sentAt")
-            let createdAt = TestUtils.getRequestBody(request: request)?["createdAt"] as? Int
-            XCTAssertEqual(createdAt, Int(date.timeIntervalSince1970))
-            XCTAssertEqual(sentAt, "\(Int(date.timeIntervalSince1970))")
-            expectation1.fulfill()
+            if request.url?.absoluteString.contains(Const.Path.trackPushOpen) == true {
+                let sentAt = request.value(forHTTPHeaderField: "sentAt")
+                let createdAt = TestUtils.getRequestBody(request: request)?["createdAt"] as? Int
+                XCTAssertEqual(createdAt, Int(date.timeIntervalSince1970))
+                XCTAssertEqual(sentAt, "\(Int(date.timeIntervalSince1970))")
+                expectation1.fulfill()
+            }
         }
         let requestHandler = createRequestHandler(networkSession: networkSession,
                                                   notificationCenter: MockNotificationCenter(),
@@ -668,7 +670,7 @@ class RequestHandlerTests: XCTestCase {
                                      dataFields: dataFields,
                                      onSuccess: nil,
                                      onFailure: nil)
-        wait(for: [expectation1], timeout: 15.0)
+        waitForTaskRunner(requestHandler: requestHandler, expectation: expectation1)
     }
 
     func testCreatedAtSentAtForOnline() throws {
