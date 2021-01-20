@@ -23,10 +23,10 @@ class InAppPriorityTests: XCTestCase {
         let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: mockInAppFetcher)
         
         mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages).onSuccess { _ in
-            let originalMessagesList = messages.dropFirst()
-            let processedMessagesList = internalAPI.inAppManager.getMessages()
+            let originalMessages = messages.dropFirst()
+            let processedMessages = internalAPI.inAppManager.getMessages()
             
-            XCTAssertEqual(originalMessagesList.map { $0.messageId }, processedMessagesList.map { $0.messageId })
+            XCTAssertEqual(originalMessages.map { $0.messageId }, processedMessages.map { $0.messageId })
             
             condition1.fulfill()
         }
