@@ -195,7 +195,7 @@ public extension Notification.Name {
     }
     
     /// the urgency level of this message (nil will be treated as `unassigned` when displaying this message)
-    public var priorityLevel: Double?
+    public var priorityLevel: Double
     
     // MARK: - Private/Internal
     
@@ -209,7 +209,7 @@ public extension Notification.Name {
          inboxMetadata: IterableInboxMetadata? = nil,
          customPayload: [AnyHashable: Any]? = nil,
          read: Bool = false,
-         priorityLevel: Double? = nil) {
+         priorityLevel: Double = Const.PriorityLevel.unassigned) {
         self.messageId = messageId
         self.campaignId = campaignId
         self.trigger = trigger
