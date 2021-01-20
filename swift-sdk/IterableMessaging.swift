@@ -194,7 +194,7 @@ public extension Notification.Name {
         saveToInbox && trigger.type == .never
     }
     
-    /// the urgency level of this message (nil will default to `unassigned`)
+    /// the urgency level of this message (nil will be treated as `unassigned` when displaying this message)
     public var priorityLevel: Double?
     
     // MARK: - Private/Internal
