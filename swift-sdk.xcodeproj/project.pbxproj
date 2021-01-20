@@ -186,6 +186,10 @@
 		ACC8776D215C23CC0097E29B /* IterableSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2263DF20CF49B8009800EB /* IterableSDK.framework */; };
 		ACC8776E215C23CC0097E29B /* IterableSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AC2263DF20CF49B8009800EB /* IterableSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		ACCF274C24F40C85004862D5 /* RequestHandlerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACCF274B24F40C85004862D5 /* RequestHandlerTests.swift */; };
+		ACD2B83D25B0A74A005D7A90 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD2B83C25B0A74A005D7A90 /* Models.swift */; };
+		ACD2B84F25B15CFA005D7A90 /* RequestSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD2B84E25B15CFA005D7A90 /* RequestSender.swift */; };
+		ACD2B85925B18058005D7A90 /* E2EDependencyContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD2B85825B18058005D7A90 /* E2EDependencyContainer.swift */; };
+		ACD2B86325B18259005D7A90 /* OfflineModeE2ETests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD2B86225B18259005D7A90 /* OfflineModeE2ETests.swift */; };
 		ACD6116C2107D004003E7F6B /* NetworkHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD6116B2107D004003E7F6B /* NetworkHelper.swift */; };
 		ACD6116E21080564003E7F6B /* IterableAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD6116D21080564003E7F6B /* IterableAPITests.swift */; };
 		ACDA975C23159C37004C412E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACDA975B23159C37004C412E /* AppDelegate.swift */; };
@@ -521,6 +525,10 @@
 		ACC87765215C20B50097E29B /* UITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITests.swift; sourceTree = "<group>"; };
 		ACC87767215C20B50097E29B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		ACCF274B24F40C85004862D5 /* RequestHandlerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestHandlerTests.swift; sourceTree = "<group>"; };
+		ACD2B83C25B0A74A005D7A90 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		ACD2B84E25B15CFA005D7A90 /* RequestSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestSender.swift; sourceTree = "<group>"; };
+		ACD2B85825B18058005D7A90 /* E2EDependencyContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = E2EDependencyContainer.swift; sourceTree = "<group>"; };
+		ACD2B86225B18259005D7A90 /* OfflineModeE2ETests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineModeE2ETests.swift; sourceTree = "<group>"; };
 		ACD6116B2107D004003E7F6B /* NetworkHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkHelper.swift; sourceTree = "<group>"; };
 		ACD6116D21080564003E7F6B /* IterableAPITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPITests.swift; sourceTree = "<group>"; };
 		ACDA975923159C36004C412E /* inbox-ui-tests-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "inbox-ui-tests-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -871,9 +879,11 @@
 			children = (
 				AC29D05B24B5A7E000A9E019 /* CI.swift */,
 				AC28480924AA44C600C1FC7F /* EndpointTests.swift */,
+				ACD2B86225B18259005D7A90 /* OfflineModeE2ETests.swift */,
 				AC8A058824AB1FE1002C1103 /* Environment.swift */,
 				AC28480B24AA44C600C1FC7F /* Info.plist */,
 				ACA2A91D24ABB426001DFD17 /* IterableAPISupport.swift */,
+				ACD2B85825B18058005D7A90 /* E2EDependencyContainer.swift */,
 			);
 			path = "endpoint-tests";
 			sourceTree = "<group>";
@@ -946,6 +956,7 @@
 				AC9355D02589F9F90056C903 /* RequestHandlerProtocol.swift */,
 				AC5812F724F3AE8D007E6D36 /* RequestHandler.swift */,
 				AC9355DA2589FC070056C903 /* LegacyRequestHandler.swift */,
+				ACD2B83C25B0A74A005D7A90 /* Models.swift */,
 			);
 			name = "Request Processing";
 			sourceTree = "<group>";
@@ -1055,6 +1066,7 @@
 				AC8E9267246284F800BEB68E /* DataFieldsHelper.swift */,
 				AC84510822910A0C0052BB8F /* RequestCreator.swift */,
 				ACC362B524D16D91002C67BA /* IterableRequest.swift */,
+				ACD2B84E25B15CFA005D7A90 /* RequestSender.swift */,
 			);
 			name = "API Client";
 			sourceTree = "<group>";
@@ -1725,6 +1737,7 @@
 				ACF560E820E55A6B000AAC23 /* IterableActionContext.swift in Sources */,
 				AC5812F824F3AE8D007E6D36 /* RequestHandler.swift in Sources */,
 				AC2C668220D32F2800D46CC9 /* IterableAppIntegrationInternal.swift in Sources */,
+				ACD2B83D25B0A74A005D7A90 /* Models.swift in Sources */,
 				AC1BED9523F1D4C700FDD75F /* MiscInboxClasses.swift in Sources */,
 				556FB1EA244FAF6A00EDF6BD /* InAppPresenter.swift in Sources */,
 				AC2AED4424EBC905000EE5F3 /* IterableTaskScheduler.swift in Sources */,
@@ -1765,6 +1778,7 @@
 				AC81918822713A110014955E /* Dwifft+UIKit.swift in Sources */,
 				AC426226238C27DD00164121 /* IterableInboxCell+Layout.swift in Sources */,
 				AC347B5C20E5A7E1003449CF /* APNSTypeChecker.swift in Sources */,
+				ACD2B84F25B15CFA005D7A90 /* RequestSender.swift in Sources */,
 				AC3A336D24F65579008225BA /* RequestProcessorUtil.swift in Sources */,
 				AC8E7CA524C7555E0039605F /* CoreDataUtil.swift in Sources */,
 				AC1AA1C624EBB2DC00F29C6B /* IterableTaskRunner.swift in Sources */,
@@ -1778,6 +1792,8 @@
 			files = (
 				AC28480A24AA44C600C1FC7F /* EndpointTests.swift in Sources */,
 				ACA2A91724AB25D3001DFD17 /* CommonExtensions.swift in Sources */,
+				ACD2B85925B18058005D7A90 /* E2EDependencyContainer.swift in Sources */,
+				ACD2B86325B18259005D7A90 /* OfflineModeE2ETests.swift in Sources */,
 				ACA2A91E24ABB426001DFD17 /* IterableAPISupport.swift in Sources */,
 				ACA2A91824AB25E3001DFD17 /* CommonMocks.swift in Sources */,
 				ACA2A91924AB25E8001DFD17 /* Common.swift in Sources */,

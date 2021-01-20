@@ -27,7 +27,7 @@ struct IterableAPICallTaskProcessor: IterableTaskProcessor {
         }
         
         let result = Promise<IterableTaskResult, IterableTaskError>()
-        NetworkHelper.sendRequest(urlRequest, usingSession: networkSession)
+        RequestSender.sendRequest(urlRequest, usingSession: networkSession)
             .onSuccess { sendRequestValue in
                 ITBInfo("Task finished successfully")
                 result.resolve(with: .success(detail: sendRequestValue))

@@ -6,6 +6,8 @@ import Foundation
 
 /// `IterableAPIinternal` will delegate all network related calls to this protocol.
 protocol RequestHandlerProtocol {
+    var offlineMode: Bool { get set }
+
     func start()
     
     func stop()
@@ -111,6 +113,8 @@ protocol RequestHandlerProtocol {
 
     func handleLogout() throws
     
+    func getRemoteConfiguration() -> Future<RemoteConfiguration, SendRequestError>
+
     // MARK: DEPRECATED
     
     @discardableResult

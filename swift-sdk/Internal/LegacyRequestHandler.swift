@@ -20,6 +20,8 @@ struct LegacyRequestHandler: RequestHandlerProtocol {
                               deviceMetadata: deviceMetadata)
     }
     
+    var offlineMode = false
+    
     func start() {
         ITBInfo()
     }
@@ -246,6 +248,10 @@ struct LegacyRequestHandler: RequestHandlerProtocol {
     }
     
     func handleLogout() {
+    }
+    
+    func getRemoteConfiguration() -> Future<RemoteConfiguration, SendRequestError> {
+        apiClient.getRemoteConfiguration()
     }
 
     private let apiClient: ApiClientProtocol

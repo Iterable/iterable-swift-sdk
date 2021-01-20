@@ -47,4 +47,6 @@ protocol ApiClientProtocol: AnyObject {
     func track(inboxSession: IterableInboxSession) -> Future<SendRequestValue, SendRequestError>
     
     func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Future<SendRequestValue, SendRequestError>
+
+    func getRemoteConfiguration() -> Future<RemoteConfiguration, SendRequestError>
 }

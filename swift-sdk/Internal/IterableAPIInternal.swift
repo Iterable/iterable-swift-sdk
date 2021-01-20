@@ -557,6 +557,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         
         requestHandler.start()
         
+        checkRemoteConfiguration()
+        
         return inAppManager.start()
     }
     
@@ -610,7 +612,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             return
         }
         
-        NetworkHelper.sendRequest(request, usingSession: networkSession).onSuccess { json in
+        RequestSender.sendRequest(request, usingSession: networkSession).onSuccess { json in
             self.handleDDL(json: json)
         }.onError { sendError in
             ITBError(sendError.reason)
@@ -655,6 +657,15 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         // ....
         // then set new version
         localStorage.sdkVersion = newVersion
+    }
+    
+    private func checkRemoteConfiguration() {
+        ITBInfo()
+        requestHandler.getRemoteConfiguration().onSuccess { remoteConfiguration in
+            self.requestHandler.offlineMode = remoteConfiguration.offlineModeBeta
+        }.onError { error in
+            ITBError("Could not get remote configuration: \(error.localizedDescription)")
+        }
     }
     
     deinit {

@@ -4,43 +4,33 @@
 
 import Foundation
 
-protocol RequestProcessorStrategy {
-    var chooseOfflineProcessor: Bool { get }
-}
-
-struct DefaultRequestProcessorStrategy: RequestProcessorStrategy {
-    let selectOffline: Bool
-    
-    var chooseOfflineProcessor: Bool {
-        selectOffline
-    }
-}
-
 @available(iOS 10.0, *)
 class RequestHandler: RequestHandlerProtocol {
     init(onlineCreator: @escaping () -> OnlineRequestProcessor,
          offlineCreator: @escaping () -> OfflineRequestProcessor?,
-         strategy: RequestProcessorStrategy = DefaultRequestProcessorStrategy(selectOffline: false)) {
+         offlineMode: Bool = true) {
         ITBInfo()
         self.onlineCreator = onlineCreator
         self.offlineCreator = offlineCreator
-        self.strategy = strategy
+        self.offlineMode = offlineMode
     }
     
     deinit {
         ITBInfo()
     }
     
+    var offlineMode: Bool
+    
     func start() {
         ITBInfo()
-        if strategy.chooseOfflineProcessor {
+        if offlineMode {
             offlineProcessor?.start()
         }
     }
     
     func stop() {
         ITBInfo()
-        if strategy.chooseOfflineProcessor {
+        if offlineMode {
             offlineProcessor?.stop()
         }
     }
@@ -251,16 +241,18 @@ class RequestHandler: RequestHandlerProtocol {
                                                  onFailure: onFailure)
     }
     
+    func getRemoteConfiguration() -> Future<RemoteConfiguration, SendRequestError> {
+        onlineProcessor.getRemoteConfiguration()
+    }
+    
     func handleLogout() throws {
-        if strategy.chooseOfflineProcessor {
+        if offlineMode {
             try offlineProcessor?.deleteAllTasks()
         }
     }
 
     private let onlineCreator: () -> OnlineRequestProcessor
     private let offlineCreator: () -> OfflineRequestProcessor?
-    
-    private let strategy: RequestProcessorStrategy
     
     private lazy var offlineProcessor: OfflineRequestProcessor? = {
         offlineCreator()
@@ -271,7 +263,7 @@ class RequestHandler: RequestHandlerProtocol {
     }()
     
     private func chooseRequestProcessor() -> RequestProcessorProtocol {
-        if strategy.chooseOfflineProcessor {
+        if offlineMode {
             if let offlineProcessor = self.offlineProcessor {
                 return offlineProcessor
             }
