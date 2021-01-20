@@ -11,14 +11,18 @@ struct LegacyRequestHandler: RequestHandlerProtocol {
          authManager: IterableInternalAuthManagerProtocol?,
          endPoint: String,
          networkSession: NetworkSessionProtocol,
-         deviceMetadata: DeviceMetadata) {
+         deviceMetadata: DeviceMetadata,
+         dateProvider: DateProviderProtocol) {
         self.authManager = authManager
         apiClient = ApiClient(apiKey: apiKey,
                               authProvider: authProvider,
                               endPoint: endPoint,
                               networkSession: networkSession,
-                              deviceMetadata: deviceMetadata)
+                              deviceMetadata: deviceMetadata,
+                              dateProvider: dateProvider)
     }
+    
+    var offlineMode = false
     
     func start() {
         ITBInfo()
@@ -246,6 +250,10 @@ struct LegacyRequestHandler: RequestHandlerProtocol {
     }
     
     func handleLogout() {
+    }
+    
+    func getRemoteConfiguration() -> Future<RemoteConfiguration, SendRequestError> {
+        apiClient.getRemoteConfiguration()
     }
 
     private let apiClient: ApiClientProtocol

@@ -17,21 +17,29 @@ class ApiClient {
          authProvider: AuthProvider?,
          endPoint: String,
          networkSession: NetworkSessionProtocol,
-         deviceMetadata: DeviceMetadata) {
+         deviceMetadata: DeviceMetadata,
+         dateProvider: DateProviderProtocol) {
         self.apiKey = apiKey
         self.authProvider = authProvider
         self.endPoint = endPoint
         self.networkSession = networkSession
         self.deviceMetadata = deviceMetadata
+        self.dateProvider = dateProvider
     }
     
     func convertToURLRequest(iterableRequest: IterableRequest) -> URLRequest? {
-        switch iterableRequest {
-        case let .get(getRequest):
-            return IterableRequestUtil.createGetRequest(forApiEndPoint: endPoint, path: getRequest.path, headers: createIterableHeaders(), args: getRequest.args)
-        case let .post(postRequest):
-            return IterableRequestUtil.createPostRequest(forApiEndPoint: endPoint, path: postRequest.path, headers: createIterableHeaders(), args: postRequest.args, body: postRequest.body)
+        guard let authProvider = authProvider else {
+            return nil
         }
+        let currentDate = dateProvider.currentDate
+        let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
+                                                    endPoint: endPoint,
+                                                    auth: authProvider.auth,
+                                                    deviceMetadata: deviceMetadata,
+                                                    iterableRequest: iterableRequest)
+            .addingBodyField(key: JsonKey.Body.createdAt,
+                             value: IterableUtil.secondsFromEpoch(for: currentDate))
+        return apiCallRequest.convertToURLRequest(currentDate: currentDate)
     }
     
     func send(iterableRequestResult result: Result<IterableRequest, IterableError>) -> Future<SendRequestValue, SendRequestError> {
@@ -42,13 +50,30 @@ class ApiClient {
             return SendRequestError.createErroredFuture(reason: iterableError.localizedDescription)
         }
     }
-    
+
+    func send<T>(iterableRequestResult result: Result<IterableRequest, IterableError>) -> Future<T, SendRequestError> where T: Decodable {
+        switch result {
+        case let .success(iterableRequest):
+            return send(iterableRequest: iterableRequest)
+        case let .failure(iterableError):
+            return SendRequestError.createErroredFuture(reason: iterableError.localizedDescription)
+        }
+    }
+
     func send(iterableRequest: IterableRequest) -> Future<SendRequestValue, SendRequestError> {
         guard let urlRequest = convertToURLRequest(iterableRequest: iterableRequest) else {
             return SendRequestError.createErroredFuture()
         }
         
-        return NetworkHelper.sendRequest(urlRequest, usingSession: networkSession)
+        return RequestSender.sendRequest(urlRequest, usingSession: networkSession)
+    }
+    
+    func send<T>(iterableRequest: IterableRequest) -> Future<T, SendRequestError> where T: Decodable {
+        guard let urlRequest = convertToURLRequest(iterableRequest: iterableRequest) else {
+            return SendRequestError.createErroredFuture()
+        }
+
+        return RequestSender.sendRequest(urlRequest, usingSession: networkSession)
     }
     
     // MARK: - Private
@@ -61,24 +86,12 @@ class ApiClient {
         return .success(RequestCreator(apiKey: apiKey, auth: authProvider.auth, deviceMetadata: deviceMetadata))
     }
     
-    private func createIterableHeaders() -> [String: String] {
-        var headers = [JsonKey.contentType.jsonKey: JsonValue.applicationJson.jsonStringValue,
-                       JsonKey.Header.sdkPlatform: JsonValue.iOS.jsonStringValue,
-                       JsonKey.Header.sdkVersion: IterableAPI.sdkVersion,
-                       JsonKey.Header.apiKey: apiKey]
-        
-        if let authToken = authProvider?.auth.authToken {
-            headers[JsonKey.Header.authorization] = "Bearer \(authToken)"
-        }
-        
-        return headers
-    }
-    
     private let apiKey: String
     private weak var authProvider: AuthProvider?
     private let endPoint: String
     private let networkSession: NetworkSessionProtocol
     private let deviceMetadata: DeviceMetadata
+    private let dateProvider: DateProviderProtocol
 }
 
 // MARK: - API REQUEST CALLS
@@ -184,6 +197,11 @@ extension ApiClient: ApiClientProtocol {
     func inAppConsume(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource?) -> Future<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createTrackInAppConsumeRequest(inAppMessageContext: inAppMessageContext,
                                                                                          source: source) }
+        return send(iterableRequestResult: result)
+    }
+    
+    func getRemoteConfiguration() -> Future<RemoteConfiguration, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createGetRemoteConfigurationRequest() }
         return send(iterableRequestResult: result)
     }
 }

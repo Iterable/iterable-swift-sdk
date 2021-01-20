@@ -49,7 +49,7 @@ class TaskProcessorTests: XCTestCase {
         // process data
         let processor = IterableAPICallTaskProcessor(networkSession: internalAPI.networkSession)
         try processor.process(task: found).onSuccess { _ in
-            let body = networkSession.getRequestBody() as! [String: Any]
+            let body = networkSession.getLastRequestBody() as! [String: Any]
             TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(.dataFields), value: dataFields, inDictionary: body)
             expectation1.fulfill()
@@ -147,7 +147,7 @@ class TaskProcessorTests: XCTestCase {
         let expectation1 = expectation(description: #function)
         let task = try createSampleTask()!
         let date = Date()
-        let sentAtTime = "\(Int(date.timeIntervalSince1970 * 1000))"
+        let sentAtTime = "\(Int(date.timeIntervalSince1970))"
         let dateProvider = MockDateProvider()
         dateProvider.currentDate = date
         
@@ -183,7 +183,7 @@ class TaskProcessorTests: XCTestCase {
     func testCreatedAtInBody() throws {
         let expectation1 = expectation(description: #function)
         let date = Date()
-        let createdAtTime = Int(date.timeIntervalSince1970 * 1000)
+        let createdAtTime = Int(date.timeIntervalSince1970)
         let task = try createSampleTask(scheduledAt: date)!
         
         let networkSession = MockNetworkSession()

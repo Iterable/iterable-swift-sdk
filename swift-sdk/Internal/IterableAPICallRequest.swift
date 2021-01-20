@@ -62,7 +62,7 @@ struct IterableAPICallRequest {
     }
     
     private static func format(sentAt: Date) -> String {
-        return "\(IterableUtil.int(fromDate: sentAt))"
+        return "\(IterableUtil.secondsFromEpoch(for: sentAt))"
     }
 }
 

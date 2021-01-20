@@ -6,6 +6,9 @@ import XCTest
 
 @testable import IterableSDK
 
+let testExpectationTimeout = 15.0 // How long to wait when we expect to succeed
+let testExpectationTimeoutForInverted = 1.0 // How long to wait when we expect to fail
+
 class RequestHandlerTests: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
@@ -68,7 +71,7 @@ class RequestHandlerTests: XCTestCase {
                                                 path: Const.Path.registerDeviceToken,
                                                 bodyDict: bodyDict)
         
-        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: testExpectationTimeout)
     }
     
     func testDisableUserforCurrentUser() throws {
@@ -90,7 +93,7 @@ class RequestHandlerTests: XCTestCase {
                                                 path: Const.Path.disableDevice,
                                                 bodyDict: bodyDict)
         
-        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: testExpectationTimeout)
     }
     
     func testDisableUserforAllUsers() throws {
@@ -111,7 +114,7 @@ class RequestHandlerTests: XCTestCase {
                                                 path: Const.Path.disableDevice,
                                                 bodyDict: bodyDict)
         
-        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: testExpectationTimeout)
     }
     
     func testUpdateUser() throws {
@@ -135,7 +138,7 @@ class RequestHandlerTests: XCTestCase {
                                                 path: Const.Path.updateUser,
                                                 bodyDict: bodyDict)
         
-        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: testExpectationTimeout)
     }
     
     func testUpdateEmail() throws {
@@ -156,7 +159,7 @@ class RequestHandlerTests: XCTestCase {
                                                 path: Const.Path.updateEmail,
                                                 bodyDict: bodyDict)
         
-        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: testExpectationTimeout)
     }
     
     func testTrackPurchase() throws {
@@ -192,7 +195,7 @@ class RequestHandlerTests: XCTestCase {
                                                 path: Const.Path.trackPurchase,
                                                 bodyDict: bodyDict)
         
-        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: testExpectationTimeout)
     }
     
     func testTrackPushOpen() throws {
@@ -230,7 +233,7 @@ class RequestHandlerTests: XCTestCase {
                                                 path: Const.Path.trackPushOpen,
                                                 bodyDict: bodyDict)
         
-        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: testExpectationTimeout)
     }
     
     func testTrackEvent() throws {
@@ -255,7 +258,7 @@ class RequestHandlerTests: XCTestCase {
                                                 path: Const.Path.trackEvent,
                                                 bodyDict: bodyDict)
         
-        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: testExpectationTimeout)
     }
     
     func testUpdateSubscriptions() throws {
@@ -287,7 +290,7 @@ class RequestHandlerTests: XCTestCase {
                                                 path: Const.Path.updateSubscriptions,
                                                 bodyDict: bodyDict)
         
-        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: testExpectationTimeout)
     }
     
     func testTrackInAppOpen() throws {
@@ -320,7 +323,7 @@ class RequestHandlerTests: XCTestCase {
                                                 path: Const.Path.trackInAppOpen,
                                                 bodyDict: bodyDict)
         
-        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: testExpectationTimeout)
     }
     
     func testTrackInAppClick() throws {
@@ -356,7 +359,7 @@ class RequestHandlerTests: XCTestCase {
                                                 path: Const.Path.trackInAppClick,
                                                 bodyDict: bodyDict)
         
-        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: testExpectationTimeout)
     }
     
     func testTrackInAppClose() throws {
@@ -395,7 +398,7 @@ class RequestHandlerTests: XCTestCase {
                                                 path: Const.Path.trackInAppClose,
                                                 bodyDict: bodyDict)
         
-        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: testExpectationTimeout)
     }
     
     func testTrackInboxSession() throws {
@@ -441,7 +444,7 @@ class RequestHandlerTests: XCTestCase {
                                                 path: Const.Path.trackInboxSession,
                                                 bodyDict: bodyDict)
         
-        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: testExpectationTimeout)
     }
     
     func testTrackInAppDelivery() throws {
@@ -471,7 +474,7 @@ class RequestHandlerTests: XCTestCase {
                                                 path: Const.Path.trackInAppDelivery,
                                                 bodyDict: bodyDict)
         
-        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: testExpectationTimeout)
     }
     
     func testTrackInAppConsume() throws {
@@ -495,7 +498,7 @@ class RequestHandlerTests: XCTestCase {
                                                 path: Const.Path.inAppConsume,
                                                 bodyDict: bodyDict)
         
-        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: testExpectationTimeout)
     }
     
     func testTrackInAppConsume2() throws {
@@ -530,7 +533,7 @@ class RequestHandlerTests: XCTestCase {
                                                 path: Const.Path.inAppConsume,
                                                 bodyDict: bodyDict)
         
-        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: testExpectationTimeout)
     }
     
     func testTrackInAppOpen2() throws {
@@ -558,7 +561,7 @@ class RequestHandlerTests: XCTestCase {
                                                 path: Const.Path.trackInAppOpen,
                                                 bodyDict: bodyDict)
         
-        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: testExpectationTimeout)
     }
     
     func testTrackInAppClick2() throws {
@@ -589,13 +592,11 @@ class RequestHandlerTests: XCTestCase {
                                                 path: Const.Path.trackInAppClick,
                                                 bodyDict: bodyDict)
         
-        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: 15.0)
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: testExpectationTimeout)
     }
     
     func testDeleteAllTasksOnLogout() throws {
-        let config = IterableConfig()
-        config.enableOfflineMode = true
-        let internalApi = IterableAPIInternal.initializeForTesting(config: config)
+        let internalApi = IterableAPIInternal.initializeForTesting(offlineMode: true)
         internalApi.email = "user@example.com"
         
         let taskId = IterableUtil.generateUUID()
@@ -611,6 +612,105 @@ class RequestHandlerTests: XCTestCase {
         XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 0)
     }
     
+    func testGetRemoteConfiguration() throws {
+        let expectation1 = expectation(description: #function)
+        let expectedRemoteConfiguration = RemoteConfiguration(offlineMode: false, offlineModeBeta: true)
+        let data = try JSONEncoder().encode(expectedRemoteConfiguration)
+        let notificationCenter = MockNotificationCenter()
+        let networkSession = MockNetworkSession(statusCode: 200, data: data)
+
+        networkSession.requestCallback = { request in
+            TestUtils.validate(request: request,
+                               requestType: .get,
+                               apiEndPoint: Endpoint.api,
+                               path: Const.Path.getRemoteConfiguration,
+                               queryParams: [("platform", "iOS"),
+                                             ("systemVersion", UIDevice.current.systemVersion),
+                                             ("SDKVersion", IterableAPI.sdkVersion),
+                                             ("packageName", Bundle.main.appPackageName!)])
+        }
+        let requestHandler = createRequestHandler(networkSession: networkSession,
+                                                  notificationCenter: notificationCenter,
+                                                  selectOffline: false)
+        requestHandler.getRemoteConfiguration().onSuccess { remoteConfiguration in
+            XCTAssertEqual(remoteConfiguration, expectedRemoteConfiguration)
+            expectation1.fulfill()
+        }
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+    
+    func testCreatedAtSentAtForOffline() throws {
+        let expectation1 = expectation(description: #function)
+        let date = Date().addingTimeInterval(-5000)
+        dateProvider.currentDate = date
+
+        let campaignId = 1
+        let templateId = 2
+        let messageId = "message_id"
+        let appAlreadyRunning = true
+        let dataFields: [String: Any] = [
+            "var1": "val1",
+            "var2": "val2",
+        ]
+
+        let networkSession = MockNetworkSession(statusCode: 200)
+        networkSession.requestCallback = { request in
+            if request.url?.absoluteString.contains(Const.Path.trackPushOpen) == true {
+                let sentAt = request.value(forHTTPHeaderField: "sentAt")
+                let createdAt = TestUtils.getRequestBody(request: request)?["createdAt"] as? Int
+                XCTAssertEqual(createdAt, Int(date.timeIntervalSince1970))
+                XCTAssertEqual(sentAt, "\(Int(date.timeIntervalSince1970))")
+                expectation1.fulfill()
+            }
+        }
+        let requestHandler = createRequestHandler(networkSession: networkSession,
+                                                  notificationCenter: MockNotificationCenter(),
+                                                  selectOffline: true)
+        requestHandler.trackPushOpen(NSNumber(value: campaignId),
+                                     templateId: NSNumber(value: templateId),
+                                     messageId: messageId,
+                                     appAlreadyRunning: appAlreadyRunning,
+                                     dataFields: dataFields,
+                                     onSuccess: nil,
+                                     onFailure: nil)
+        waitForTaskRunner(requestHandler: requestHandler, expectation: expectation1)
+    }
+
+    func testCreatedAtSentAtForOnline() throws {
+        let expectation1 = expectation(description: #function)
+        let date = Date().addingTimeInterval(-5000)
+        dateProvider.currentDate = date
+
+        let campaignId = 1
+        let templateId = 2
+        let messageId = "message_id"
+        let appAlreadyRunning = true
+        let dataFields: [String: Any] = [
+            "var1": "val1",
+            "var2": "val2",
+        ]
+
+        let networkSession = MockNetworkSession(statusCode: 200)
+        networkSession.requestCallback = { request in
+            let sentAt = request.value(forHTTPHeaderField: "sentAt")
+            XCTAssertEqual(sentAt, "\(Int(date.timeIntervalSince1970))")
+            let createdAt = TestUtils.getRequestBody(request: request)?["createdAt"] as? Int
+            XCTAssertEqual(createdAt, Int(date.timeIntervalSince1970))
+            expectation1.fulfill()
+        }
+        let requestHandler = createRequestHandler(networkSession: networkSession,
+                                                  notificationCenter: MockNotificationCenter(),
+                                                  selectOffline: false)
+        requestHandler.trackPushOpen(NSNumber(value: campaignId),
+                                     templateId: NSNumber(value: templateId),
+                                     messageId: messageId,
+                                     appAlreadyRunning: appAlreadyRunning,
+                                     dataFields: dataFields,
+                                     onSuccess: nil,
+                                     onFailure: nil)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+
     private func handleRequestWithSuccessAndFailure(requestGenerator: (RequestHandlerProtocol) -> Future<SendRequestValue, SendRequestError>,
                                                      path: String,
                                                      bodyDict: [AnyHashable: Any]) throws {
@@ -648,7 +748,7 @@ class RequestHandlerTests: XCTestCase {
                                   path: path,
                                   bodyDict: bodyDict,
                                   expectation: expectation1)
-        wait(for: [expectation1], timeout: 15.0)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
     private func handleOnlineRequestWithFailure(requestGenerator: (RequestHandlerProtocol) -> Future<SendRequestValue, SendRequestError>,
@@ -670,7 +770,7 @@ class RequestHandlerTests: XCTestCase {
                                   path: path,
                                   bodyDict: bodyDict,
                                   expectation: expectation1)
-        wait(for: [expectation1], timeout: 15.0)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
     private func handleOfflineRequestWithSuccess(requestGenerator: (RequestHandlerProtocol) -> Future<SendRequestValue, SendRequestError>,
@@ -730,7 +830,8 @@ class RequestHandlerTests: XCTestCase {
         let taskRunner = IterableTaskRunner(networkSession: networkSession,
                                             persistenceContextProvider: persistenceContextProvider,
                                             notificationCenter: notificationCenter,
-                                            timeInterval: 0.5)
+                                            timeInterval: 0.5,
+                                            dateProvider: dateProvider)
         
         return RequestHandler(onlineCreator: {
                                 OnlineRequestProcessor(apiKey: "zee-api-key",
@@ -738,7 +839,8 @@ class RequestHandlerTests: XCTestCase {
                                                        authManager: nil,
                                                        endPoint: Endpoint.api,
                                                        networkSession: networkSession,
-                                                       deviceMetadata: Self.deviceMetadata) },
+                                                       deviceMetadata: Self.deviceMetadata,
+                                                       dateProvider: self.dateProvider) },
                               offlineCreator: {
                                 OfflineRequestProcessor(apiKey: "zee-api-key",
                                                         authProvider: self,
@@ -748,7 +850,7 @@ class RequestHandlerTests: XCTestCase {
                                                         taskScheduler: taskScheduler,
                                                         taskRunner: taskRunner,
                                                         notificationCenter: notificationCenter) },
-                              strategy: DefaultRequestProcessorStrategy(selectOffline: selectOffline))
+                              offlineMode: selectOffline)
     }
     
     private func handleRequestWithSuccess(request: () -> Future<SendRequestValue, SendRequestError>,
@@ -791,7 +893,7 @@ class RequestHandlerTests: XCTestCase {
     private func waitForTaskRunner(requestHandler: RequestHandlerProtocol,
                                    expectation: XCTestExpectation) {
         requestHandler.start()
-        wait(for: [expectation], timeout: 15.0)
+        wait(for: [expectation], timeout: testExpectationTimeout)
         requestHandler.stop()
     }
     

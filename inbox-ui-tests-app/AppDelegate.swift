@@ -25,8 +25,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         mockInAppFetcher = MockInAppFetcher()
         mockNetworkSession = MockNetworkSession(statusCode: 200, urlPatternDataMapping: createUrlToDataMapper())
-        mockNetworkSession.callback = { _, _, _ in
-            self.logRequest()
+        mockNetworkSession.requestCallback = { request in
+            self.logRequest(request: request)
         }
         
         let config = IterableConfig()
@@ -95,8 +95,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                     inboxMetadata: IterableInboxMetadata(title: "title-\(id)", subtitle: "subTitle-\(id)"))
     }
     
-    private func logRequest() {
-        let request = mockNetworkSession.request!
+    private func logRequest(request: URLRequest) {
         let serializableRequest = request.createSerializableRequest()
         networkTableViewController.requests.append(serializableRequest)
         networkTableViewController.tableView.reloadData()

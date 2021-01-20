@@ -11,6 +11,7 @@ class IterableAPIResponseTests: XCTestCase {
     private let apiKey = "zee_api_key"
     private let email = "user@example.com"
     private let authToken = "asdf"
+    private let dateProvider = MockDateProvider()
     
     func testHeadersInGetRequest() {
         let iterableRequest = IterableRequest.get(GetRequest(path: "", args: ["var1": "value1"]))
@@ -177,7 +178,7 @@ class IterableAPIResponseTests: XCTestCase {
         var urlRequest = apiClient.convertToURLRequest(iterableRequest: iterableRequest)!
         urlRequest.timeoutInterval = timeout
         
-        NetworkHelper.sendRequest(urlRequest, usingSession: networkSession).onError { sendError in
+        RequestSender.sendRequest(urlRequest, usingSession: networkSession).onError { sendError in
             xpectation.fulfill()
             XCTAssert(sendError.reason!.lowercased().contains("timed out"))
         }
@@ -198,10 +199,11 @@ class IterableAPIResponseTests: XCTestCase {
     
     private func createApiClient(networkSession: NetworkSessionProtocol = MockNetworkSession()) -> ApiClient {
         ApiClient(apiKey: apiKey,
-                  authProvider: AuthProviderNoToken(),
+                  authProvider: self,
                   endPoint: Endpoint.api,
                   networkSession: networkSession,
-                  deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata)
+                  deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata,
+                  dateProvider: dateProvider)
     }
     
     private func createApiClientWithAuthToken() -> ApiClient {
@@ -209,7 +211,8 @@ class IterableAPIResponseTests: XCTestCase {
                   authProvider: self,
                   endPoint: Endpoint.api,
                   networkSession: MockNetworkSession(),
-                  deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata)
+                  deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata,
+                  dateProvider: dateProvider)
     }
 }
 

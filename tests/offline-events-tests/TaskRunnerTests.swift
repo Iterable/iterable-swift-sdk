@@ -214,7 +214,7 @@ class TaskRunnerTests: XCTestCase {
     
     func testSentAtInHeader() throws {
         let date = Date()
-        let sentAtTime = "\(Int(date.timeIntervalSince1970 * 1000))"
+        let sentAtTime = "\(Int(date.timeIntervalSince1970))"
         let dateProvider = MockDateProvider()
         dateProvider.currentDate = date
         let expectation1 = expectation(description: #function)
@@ -242,7 +242,7 @@ class TaskRunnerTests: XCTestCase {
     
     func testCreatedAtInBody() throws {
         let date = Date()
-        let createdAtTime = Int(date.timeIntervalSince1970 * 1000)
+        let createdAtTime = Int(date.timeIntervalSince1970)
         let dateProvider = MockDateProvider()
         dateProvider.currentDate = date
         let expectation1 = expectation(description: #function)

@@ -20,14 +20,14 @@ struct IterableAPICallTaskProcessor: IterableTaskProcessor {
         
         let decodedIterableRequest = try JSONDecoder().decode(IterableAPICallRequest.self, from: data)
         let iterableRequest = decodedIterableRequest.addingBodyField(key: JsonKey.Body.createdAt,
-                                                                     value: IterableUtil.int(fromDate: task.scheduledAt))
+                                                                     value: IterableUtil.secondsFromEpoch(for: task.scheduledAt))
         
         guard let urlRequest = iterableRequest.convertToURLRequest(currentDate: dateProvider.currentDate) else {
             return IterableTaskError.createErroredFuture(reason: "could not convert to url request")
         }
         
         let result = Promise<IterableTaskResult, IterableTaskError>()
-        NetworkHelper.sendRequest(urlRequest, usingSession: networkSession)
+        RequestSender.sendRequest(urlRequest, usingSession: networkSession)
             .onSuccess { sendRequestValue in
                 ITBInfo("Task finished successfully")
                 result.resolve(with: .success(detail: sendRequestValue))
