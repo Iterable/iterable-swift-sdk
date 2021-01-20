@@ -403,7 +403,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
                   authProvider: self,
                   endPoint: apiEndPoint,
                   networkSession: networkSession,
-                  deviceMetadata: deviceMetadata)
+                  deviceMetadata: deviceMetadata,
+                  dateProvider: dateProvider)
     }()
     
     private lazy var requestHandler: RequestHandlerProtocol = {

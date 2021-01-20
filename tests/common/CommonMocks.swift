@@ -10,6 +10,10 @@ import WebKit
 
 class MockDateProvider: DateProviderProtocol {
     var currentDate = Date()
+
+    func reset() {
+        currentDate = Date()
+    }
 }
 
 @available(iOS 10.0, *)

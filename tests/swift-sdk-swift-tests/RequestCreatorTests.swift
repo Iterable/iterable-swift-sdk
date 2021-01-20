@@ -358,6 +358,7 @@ class RequestCreatorTests: XCTestCase {
     private let deviceMetadata = DeviceMetadata(deviceId: IterableUtil.generateUUID(),
                                                 platform: JsonValue.iOS.jsonStringValue,
                                                 appPackageName: Bundle.main.appPackageName ?? "")
+    private let dateProvider = MockDateProvider()
     
     private func validateImpressions(_ impressions: [IterableInboxImpression], inBody body: [String: Any]) {
         guard let impressionsFromBody = body["impressions"] as? [[String: Any]] else {
@@ -399,7 +400,8 @@ class RequestCreatorTests: XCTestCase {
                   authProvider: self,
                   endPoint: Endpoint.api,
                   networkSession: networkSession,
-                  deviceMetadata: deviceMetadata)
+                  deviceMetadata: deviceMetadata,
+                  dateProvider: dateProvider)
     }
     
     private func getEmptyInAppContent() -> IterableHtmlInAppContent {

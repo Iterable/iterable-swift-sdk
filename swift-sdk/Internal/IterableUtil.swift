@@ -46,7 +46,12 @@ import UIKit
     static func int(fromDate date: Date) -> Int {
         Int(date.timeIntervalSince1970 * 1000)
     }
-    
+
+    /// seconds since epoch.
+    static func secondsFromEpoch(for date: Date) -> Int {
+        Int(date.timeIntervalSince1970)
+    }
+
     // given "var1", "val1", "var2", "val2" as input
     // this will return "var1: val1, var2: val2"
     // this is useful for description of an object or struct

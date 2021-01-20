@@ -68,7 +68,8 @@ extension DependencyContainerProtocol {
                                                            authManager: authManager,
                                                            endPoint: endPoint,
                                                            networkSession: networkSession,
-                                                           deviceMetadata: deviceMetadata) },
+                                                           deviceMetadata: deviceMetadata,
+                                                           dateProvider: dateProvider) },
                                   offlineCreator: { [weak authProvider] in
                                     guard let persistenceContextProvider = createPersistenceContextProvider() else {
                                         return nil
@@ -90,7 +91,8 @@ extension DependencyContainerProtocol {
                                         authManager: authManager,
                                         endPoint: endPoint,
                                         networkSession: networkSession,
-                                        deviceMetadata: deviceMetadata)
+                                        deviceMetadata: deviceMetadata,
+                                        dateProvider: dateProvider)
         }
     }
     

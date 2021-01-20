@@ -11,13 +11,15 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
          authManager: IterableInternalAuthManagerProtocol?,
          endPoint: String,
          networkSession: NetworkSessionProtocol,
-         deviceMetadata: DeviceMetadata) {
+         deviceMetadata: DeviceMetadata,
+         dateProvider: DateProviderProtocol) {
         self.authManager = authManager
         apiClient = ApiClient(apiKey: apiKey,
                               authProvider: authProvider,
                               endPoint: endPoint,
                               networkSession: networkSession,
-                              deviceMetadata: deviceMetadata)
+                              deviceMetadata: deviceMetadata,
+                              dateProvider: dateProvider)
     }
     
     @discardableResult
