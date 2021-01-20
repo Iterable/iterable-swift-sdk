@@ -7,6 +7,33 @@ import XCTest
 @testable import IterableSDK
 
 class InAppPriorityTests: XCTestCase {
+    func testGetMessagesWithOutOfOrderPriorityLevels() {
+        let condition1 = expectation(description: "in-app messages never fetched")
+        
+        let messages = [
+            getMessageWithPriority("0", Const.PriorityLevel.critical), // a decoy message that will get dropped by the fetcher
+            getMessageWithPriority("1", Const.PriorityLevel.critical),
+            getMessageWithPriority("2", Const.PriorityLevel.low),
+            getMessageWithPriority("3", Const.PriorityLevel.high),
+            getMessageWithPriority("4", Const.PriorityLevel.medium)
+        ]
+        
+        let mockInAppFetcher = MockInAppFetcher()
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: mockInAppFetcher)
+        
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages).onSuccess { _ in
+            let originalMessagesList = messages.dropFirst()
+            let processedMessagesList = internalAPI.inAppManager.getMessages()
+            
+            XCTAssertEqual(originalMessagesList.map { $0.messageId }, processedMessagesList.map { $0.messageId })
+            
+            condition1.fulfill()
+        }
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+    
     func testMessageWithNoPriorityTreatedAsDefaultLevel() {
         let condition1 = expectation(description: "In-App Displayer didn't get called")
         
