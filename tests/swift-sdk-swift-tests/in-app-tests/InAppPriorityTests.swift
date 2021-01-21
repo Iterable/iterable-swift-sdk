@@ -61,7 +61,7 @@ class InAppPriorityTests: XCTestCase {
     
     private let emptyInAppContent = IterableHtmlInAppContent(edgeInsets: .zero, html: "")
     
-    private func getMessageWithPriority(_ id: String = "", _ level: Double?) -> IterableInAppMessage {
+    private func getMessageWithPriority(_ id: String = "", _ level: Double = Const.PriorityLevel.unassigned) -> IterableInAppMessage {
         return IterableInAppMessage(messageId: id, campaignId: nil, content: emptyInAppContent, priorityLevel: level)
     }
     
