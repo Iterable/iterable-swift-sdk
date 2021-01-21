@@ -57,6 +57,23 @@ class InAppPriorityTests: XCTestCase {
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
     
+    func testInAppMessagePriorityPersistence() {
+        let messages = [
+            getMessageWithPriority("1", Const.PriorityLevel.critical),
+            getMessageWithPriority("2", Const.PriorityLevel.low),
+            getMessageWithPriority("3", Const.PriorityLevel.high),
+            getMessageWithPriority("4", Const.PriorityLevel.medium)
+        ]
+        
+        let mockInAppFetcher = MockInAppFetcher(messages: messages)
+        let mockInAppPersister = MockInAppPersister()
+        
+        _ = IterableAPIInternal.initializeForTesting(inAppFetcher: mockInAppFetcher,
+                                                     inAppPersister: mockInAppPersister)
+        
+        XCTAssertEqual(messages.map { $0.priorityLevel }, mockInAppPersister.getMessages().map { $0.priorityLevel })
+    }
+    
     // MARK: - Private
     
     private let emptyInAppContent = IterableHtmlInAppContent(edgeInsets: .zero, html: "")
