@@ -20,7 +20,9 @@ protocol LocalStorageProtocol {
 }
 
 extension LocalStorageProtocol {
+
     func isOfflineModeEnabled() -> Bool {
         RemoteConfiguration.isBeta ? offlineModeBeta  : offlineMode
     }
+    
 }

@@ -14,4 +14,5 @@ struct RemoteConfiguration: Codable, Equatable {
     func isOfflineModeEnabled() -> Bool {
         Self.isBeta ? offlineModeBeta : offlineMode
     }
+    
 }
