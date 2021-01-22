@@ -24,7 +24,7 @@ struct RequestProcessorUtil {
             } else if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.badApiKey {
                 ITBError(error.reason)
             }
-
+            
             if let onFailure = onFailure {
                 onFailure(error.reason, error.data)
             } else {

@@ -103,6 +103,7 @@ struct InAppMessageParser {
         let createdAt = parseTime(withKey: .inboxCreatedAt, fromJson: json)
         let expiresAt = parseTime(withKey: .inboxExpiresAt, fromJson: json)
         let read = json[JsonKey.read.jsonKey] as? Bool ?? false
+        let priorityLevel = json[JsonKey.priorityLevel.jsonKey] as? Double ?? Const.PriorityLevel.unassigned
         
         return .success(IterableInAppMessage(messageId: messageId,
                                              campaignId: campaignId,
@@ -113,7 +114,8 @@ struct InAppMessageParser {
                                              saveToInbox: saveToInbox,
                                              inboxMetadata: inboxMetadata,
                                              customPayload: customPayload,
-                                             read: read))
+                                             read: read,
+                                             priorityLevel: priorityLevel))
     }
     
     private static func parseTime(withKey key: JsonKey, fromJson json: [AnyHashable: Any]) -> Date? {
