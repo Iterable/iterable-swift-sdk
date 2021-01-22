@@ -201,6 +201,9 @@ extension IterableHtmlInAppContent {
         saveToInbox && trigger.type == .never
     }
     
+    /// the urgency level of this message (nil will be treated as `unassigned` when displaying this message)
+    public var priorityLevel: Double
+    
     // MARK: - Private/Internal
     
     init(messageId: String,
@@ -212,7 +215,8 @@ extension IterableHtmlInAppContent {
          saveToInbox: Bool = false,
          inboxMetadata: IterableInboxMetadata? = nil,
          customPayload: [AnyHashable: Any]? = nil,
-         read: Bool = false) {
+         read: Bool = false,
+         priorityLevel: Double = Const.PriorityLevel.unassigned) {
         self.messageId = messageId
         self.campaignId = campaignId
         self.trigger = trigger
@@ -223,5 +227,6 @@ extension IterableHtmlInAppContent {
         self.inboxMetadata = inboxMetadata
         self.customPayload = customPayload
         self.read = read
+        self.priorityLevel = priorityLevel
     }
 }

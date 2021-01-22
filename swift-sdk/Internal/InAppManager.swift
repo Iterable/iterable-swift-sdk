@@ -220,7 +220,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             .map { self.processMergedMessages(appIsReady: appIsReady, mergeMessagesResult: $0) }
     }
     
-    // messages are new messages coming from the server
+    /// `messages` are new messages coming from the server
     private func mergeMessages(_ messages: [IterableInAppMessage]) -> MergeMessagesResult {
         MessagesObtainedHandler(messagesMap: messagesMap, messages: messages).handle()
     }
@@ -232,7 +232,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             messagesMap = mergeMessagesResult.messagesMap
         }
         
-        // track in app delivery
+        // track in-app delivery
         mergeMessagesResult.deliveredMessages.forEach {
             _ = apiClient?.track(inAppDelivery: InAppMessageContext.from(message: $0, location: nil))
         }
