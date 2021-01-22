@@ -19,9 +19,6 @@ class InAppPriorityTests: XCTestCase {
             getMessageWithPriority(messageIdWithCritical, Const.PriorityLevel.critical)
         ]
         
-        let config = IterableConfig()
-        config.inAppDisplayInterval = 0.1
-        
         let mockInAppFetcher = MockInAppFetcher()
         let mockInAppDisplayer = MockInAppDisplayer()
 
@@ -33,13 +30,10 @@ class InAppPriorityTests: XCTestCase {
             condition1.fulfill()
         }
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(config: config,
-                                                                   inAppFetcher: mockInAppFetcher,
+        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: mockInAppFetcher,
                                                                    inAppDisplayer: mockInAppDisplayer)
         
-        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages).onSuccess { _ in
-            print("jay \(internalAPI.inAppManager.getMessages().map {$0.messageId})")
-        }
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages)
         
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
