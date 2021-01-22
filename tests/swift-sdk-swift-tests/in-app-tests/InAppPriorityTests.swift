@@ -7,36 +7,36 @@ import XCTest
 @testable import IterableSDK
 
 class InAppPriorityTests: XCTestCase {
-    func testDisplayingCriticalPriorityLevel() {
-        let condition1 = expectation(description: "in-app displayer didn't show or succeed")
-        
-        let messageIdWithCritical = "4"
-        
-        let messages = [
-            getMessageWithPriority("1", Const.PriorityLevel.low),
-            getMessageWithPriority("2", Const.PriorityLevel.high),
-            getMessageWithPriority("3", Const.PriorityLevel.medium),
-            getMessageWithPriority(messageIdWithCritical, Const.PriorityLevel.critical)
-        ]
-        
-        let mockInAppFetcher = MockInAppFetcher()
-        let mockInAppDisplayer = MockInAppDisplayer()
-
-        mockInAppDisplayer.onShow.onSuccess { message in
-            mockInAppDisplayer.click(url: URL(string: "https://iterable.com")!)
-            
-            XCTAssertEqual(message.messageId, messageIdWithCritical)
-            
-            condition1.fulfill()
-        }
-        
-        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: mockInAppFetcher,
-                                                                   inAppDisplayer: mockInAppDisplayer)
-        
-        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages)
-        
-        wait(for: [condition1], timeout: testExpectationTimeout)
-    }
+//    func testDisplayingCriticalPriorityLevel() {
+//        let condition1 = expectation(description: "in-app displayer didn't show or succeed")
+//        
+//        let messageIdWithCritical = "4"
+//        
+//        let messages = [
+//            getMessageWithPriority("1", Const.PriorityLevel.low),
+//            getMessageWithPriority("2", Const.PriorityLevel.high),
+//            getMessageWithPriority("3", Const.PriorityLevel.medium),
+//            getMessageWithPriority(messageIdWithCritical, Const.PriorityLevel.critical)
+//        ]
+//        
+//        let mockInAppFetcher = MockInAppFetcher()
+//        let mockInAppDisplayer = MockInAppDisplayer()
+//
+//        mockInAppDisplayer.onShow.onSuccess { message in
+//            mockInAppDisplayer.click(url: URL(string: "https://iterable.com")!)
+//            
+//            XCTAssertEqual(message.messageId, messageIdWithCritical)
+//            
+//            condition1.fulfill()
+//        }
+//        
+//        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: mockInAppFetcher,
+//                                                                   inAppDisplayer: mockInAppDisplayer)
+//        
+//        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages)
+//        
+//        wait(for: [condition1], timeout: testExpectationTimeout)
+//    }
     
     func testGetMessagesWithOutOfOrderPriorityLevels() {
         let condition1 = expectation(description: "in-app messages never fetched")
