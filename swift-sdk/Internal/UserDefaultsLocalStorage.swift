@@ -57,6 +57,23 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
         }
     }
     
+    var offlineMode: Bool {
+        get {
+            return bool(withKey: .offlineMode)
+        } set {
+            save(bool: newValue, withKey: .offlineMode)
+        }
+    }
+    
+    var offlineModeBeta: Bool {
+        get {
+            return bool(withKey: .offlineModeBeta)
+        }
+        set {
+            save(bool: newValue, withKey: .offlineModeBeta)
+        }
+    }
+    
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
         (try? codable(withKey: .attributionInfo, currentDate: currentDate)) ?? nil
     }
@@ -185,6 +202,8 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
         static let ddlChecked = LocalStorageKey(value: Const.UserDefaults.ddlChecked)
         static let deviceId = LocalStorageKey(value: Const.UserDefaults.deviceId)
         static let sdkVersion = LocalStorageKey(value: Const.UserDefaults.sdkVersion)
+        static let offlineMode = LocalStorageKey(value: Const.UserDefaults.offlineMode)
+        static let offlineModeBeta = LocalStorageKey(value: Const.UserDefaults.offlineModeBeta)
     }
     
     private struct Envelope: Codable {

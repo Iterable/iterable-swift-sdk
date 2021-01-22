@@ -534,6 +534,10 @@ class MockLocalStorage: LocalStorageProtocol {
     
     var sdkVersion: String? = nil
     
+    var offlineMode: Bool = false
+    
+    var offlineModeBeta: Bool = false
+    
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
         guard !MockLocalStorage.isExpired(expiration: attributionInfoExpiration, currentDate: currentDate) else {
             return nil

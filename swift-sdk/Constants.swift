@@ -52,6 +52,8 @@ public enum Const {
         static let ddlChecked = "itbl_ddl_checked"
         static let deviceId = "itbl_device_id"
         static let sdkVersion = "itbl_sdk_version"
+        static let offlineMode = "itbl_offline_mode"
+        static let offlineModeBeta = "itbl_offline_mode_beta"
         
         static let payloadExpiration = 24
         static let attributionInfoExpiration = 24

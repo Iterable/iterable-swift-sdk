@@ -155,4 +155,39 @@ class LocalStorageTests: XCTestCase {
         localStorage.authToken = nil
         XCTAssertNil(localStorage.authToken)
     }
+    
+    func testOfflineMode() {
+        let saver = { (storage: LocalStorageProtocol, value: Bool) -> Void in
+            var localStorage = storage
+            localStorage.offlineMode = value
+        }
+        let retriever = { (storage: LocalStorageProtocol) -> Bool? in
+            storage.offlineMode
+        }
+        
+        testLocalStorage(saver: saver, retriever: retriever, value: true)
+        testLocalStorage(saver: saver, retriever: retriever, value: false)
+    }
+    
+    func testOfflineModeBeta() {
+        let saver = { (storage: LocalStorageProtocol, value: Bool) -> Void in
+            var localStorage = storage
+            localStorage.offlineModeBeta = value
+        }
+        let retriever = { (storage: LocalStorageProtocol) -> Bool? in
+            storage.offlineModeBeta
+        }
+        
+        testLocalStorage(saver: saver, retriever: retriever, value: true)
+        testLocalStorage(saver: saver, retriever: retriever, value: false)
+    }
+    
+    private func testLocalStorage<T>(saver: (LocalStorageProtocol, T) -> Void,
+                                     retriever: (LocalStorageProtocol) -> T?, value: T) where T: Equatable {
+        let localStorage = UserDefaultsLocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
+        saver(localStorage, value)
+        let retrievedLocalStorage = UserDefaultsLocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
+        let retrieved = retriever(retrievedLocalStorage)
+        XCTAssertEqual(value, retrieved)
+    }
 }

@@ -125,7 +125,7 @@ struct DependencyContainer: DependencyContainerProtocol {
         InAppFetcher(apiClient: apiClient)
     }
     
-    let offlineMode = true
+    let offlineMode = false
     let dateProvider: DateProviderProtocol = SystemDateProvider()
     let networkSession: NetworkSessionProtocol = URLSession(configuration: .default)
     let notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider()
