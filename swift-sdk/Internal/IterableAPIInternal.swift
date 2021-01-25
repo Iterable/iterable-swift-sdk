@@ -663,9 +663,13 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     private func checkRemoteConfiguration() {
         ITBInfo()
         requestHandler.getRemoteConfiguration().onSuccess { remoteConfiguration in
-            self.requestHandler.offlineMode = remoteConfiguration.offlineModeBeta
+            self.localStorage.offlineMode = remoteConfiguration.offlineMode
+            self.localStorage.offlineModeBeta = remoteConfiguration.offlineModeBeta
+            self.requestHandler.offlineMode = remoteConfiguration.isOfflineModeEnabled()
         }.onError { error in
-            ITBError("Could not get remote configuration: \(error.localizedDescription)")
+            let offlineMode = self.localStorage.isOfflineModeEnabled()
+            ITBError("Could not get remote configuration: \(error.localizedDescription), defaulting to saved: \(offlineMode)")
+            self.requestHandler.offlineMode = offlineMode
         }
     }
     
