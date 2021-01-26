@@ -20,7 +20,6 @@ protocol DependencyContainerProtocol {
     
     func createInAppFetcher(apiClient: ApiClientProtocol) -> InAppFetcherProtocol
     func createPersistenceContextProvider() -> IterablePersistenceContextProvider?
-    var offlineMode: Bool { get}
     func createRequestHandler(apiKey: String,
                               config: IterableConfig,
                               endPoint: String,
@@ -33,8 +32,9 @@ protocol DependencyContainerProtocol {
 extension DependencyContainerProtocol {
     func createInAppManager(config: IterableConfig,
                             apiClient: ApiClientProtocol,
+                            requestHandler: RequestHandlerProtocol,
                             deviceMetadata: DeviceMetadata) -> IterableInternalInAppManagerProtocol {
-        InAppManager(apiClient: apiClient,
+        InAppManager(requestHandler: requestHandler,
                      deviceMetadata: deviceMetadata,
                      fetcher: createInAppFetcher(apiClient: apiClient),
                      displayer: inAppDisplayer,
@@ -125,7 +125,6 @@ struct DependencyContainer: DependencyContainerProtocol {
         InAppFetcher(apiClient: apiClient)
     }
     
-    let offlineMode = false
     let dateProvider: DateProviderProtocol = SystemDateProvider()
     let networkSession: NetworkSessionProtocol = URLSession(configuration: .default)
     let notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider()

@@ -22,8 +22,10 @@ class OfflineModeEndpointTests: XCTestCase {
 
     func test01TrackPurchase() throws {
         let expectation1 = expectation(description: #function)
+        let localStorage = MockLocalStorage()
+        localStorage.offlineModeBeta = true
         let api = IterableAPIInternal.initializeForE2E(apiKey: Self.apiKey,
-                                                       offlineMode: true)
+                                                       localStorage: localStorage)
         api.email = "user@example.com"
         
         let items = [
@@ -43,8 +45,10 @@ class OfflineModeEndpointTests: XCTestCase {
     
     func test02TrackPushOpen() throws {
         let expectation1 = expectation(description: #function)
+        let localStorage = MockLocalStorage()
+        localStorage.offlineModeBeta = true
         let api = IterableAPIInternal.initializeForE2E(apiKey: Self.apiKey,
-                                                       offlineMode: true)
+                                                       localStorage: localStorage)
         api.email = "user@example.com"
         
         api.trackPushOpen(Self.pushCampaignId,
@@ -63,8 +67,10 @@ class OfflineModeEndpointTests: XCTestCase {
     
     func test03TrackPushOpenWithPushPayload() throws {
         let expectation1 = expectation(description: #function)
+        let localStorage = MockLocalStorage()
+        localStorage.offlineModeBeta = true
         let api = IterableAPIInternal.initializeForE2E(apiKey: Self.apiKey,
-                                                       offlineMode: true)
+                                                       localStorage: localStorage)
         api.email = "user@example.com"
         
         let pushPayload = [
@@ -88,8 +94,10 @@ class OfflineModeEndpointTests: XCTestCase {
     
     func test04TrackEvent() throws {
         let expectation1 = expectation(description: #function)
+        let localStorage = MockLocalStorage()
+        localStorage.offlineModeBeta = true
         let api = IterableAPIInternal.initializeForE2E(apiKey: Self.apiKey,
-                                                       offlineMode: true)
+                                                       localStorage: localStorage)
         api.email = "user@example.com"
         
         api.track("event1",

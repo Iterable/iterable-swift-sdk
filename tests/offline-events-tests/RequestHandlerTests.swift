@@ -596,15 +596,18 @@ class RequestHandlerTests: XCTestCase {
     }
     
     func testDeleteAllTasksOnLogout() throws {
-        let internalApi = IterableAPIInternal.initializeForTesting(offlineMode: true)
+        let localStorage = MockLocalStorage()
+        localStorage.offlineModeBeta = true
+        let internalApi = IterableAPIInternal.initializeForTesting(networkSession: MockNetworkSession(),
+                                                                   localStorage: localStorage)
         internalApi.email = "user@example.com"
         
         let taskId = IterableUtil.generateUUID()
         try persistenceContextProvider.mainQueueContext().create(task: IterableTask(id: taskId,
-                                                                             type: .apiCall,
-                                                                             scheduledAt: Date(),
-                                                                             data: nil,
-                                                                             requestedAt: Date()))
+                                                                                    type: .apiCall,
+                                                                                    scheduledAt: Date(),
+                                                                                    data: nil,
+                                                                                    requestedAt: Date()))
         try persistenceContextProvider.mainQueueContext().save()
 
         internalApi.logoutUser()
