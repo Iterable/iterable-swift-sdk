@@ -20,20 +20,21 @@ protocol DependencyContainerProtocol {
     
     func createInAppFetcher(apiClient: ApiClientProtocol) -> InAppFetcherProtocol
     func createPersistenceContextProvider() -> IterablePersistenceContextProvider?
-    var offlineMode: Bool { get}
     func createRequestHandler(apiKey: String,
                               config: IterableConfig,
                               endPoint: String,
                               authProvider: AuthProvider?,
                               authManager: IterableInternalAuthManagerProtocol,
-                              deviceMetadata: DeviceMetadata) -> RequestHandlerProtocol
+                              deviceMetadata: DeviceMetadata,
+                              offlineMode: Bool) -> RequestHandlerProtocol
 }
 
 extension DependencyContainerProtocol {
     func createInAppManager(config: IterableConfig,
                             apiClient: ApiClientProtocol,
+                            requestHandler: RequestHandlerProtocol,
                             deviceMetadata: DeviceMetadata) -> IterableInternalInAppManagerProtocol {
-        InAppManager(apiClient: apiClient,
+        InAppManager(requestHandler: requestHandler,
                      deviceMetadata: deviceMetadata,
                      fetcher: createInAppFetcher(apiClient: apiClient),
                      displayer: inAppDisplayer,
@@ -60,31 +61,30 @@ extension DependencyContainerProtocol {
                               endPoint: String,
                               authProvider: AuthProvider?,
                               authManager: IterableInternalAuthManagerProtocol,
-                              deviceMetadata: DeviceMetadata) -> RequestHandlerProtocol {
+                              deviceMetadata: DeviceMetadata,
+                              offlineMode: Bool) -> RequestHandlerProtocol {
         if #available(iOS 10.0, *) {
-            return RequestHandler(onlineCreator: { [weak authProvider] in
-                                    OnlineRequestProcessor(apiKey: apiKey,
+            let onlineProcessor = OnlineRequestProcessor(apiKey: apiKey,
+                                                         authProvider: authProvider,
+                                                         authManager: authManager,
+                                                         endPoint: endPoint,
+                                                         networkSession: networkSession,
+                                                         deviceMetadata: deviceMetadata,
+                                                         dateProvider: dateProvider)
+            let offlineProcessor: OfflineRequestProcessor?
+            if let persistenceContextProvider = createPersistenceContextProvider() {
+                offlineProcessor = OfflineRequestProcessor(apiKey: apiKey,
                                                            authProvider: authProvider,
                                                            authManager: authManager,
                                                            endPoint: endPoint,
-                                                           networkSession: networkSession,
                                                            deviceMetadata: deviceMetadata,
-                                                           dateProvider: dateProvider) },
-                                  offlineCreator: { [weak authProvider] in
-                                    guard let persistenceContextProvider = createPersistenceContextProvider() else {
-                                        return nil
-                                    }
-                                    
-                                    return OfflineRequestProcessor(apiKey: apiKey,
-                                                                   authProvider: authProvider,
-                                                                   authManager: authManager,
-                                                                   endPoint: endPoint,
-                                                                   deviceMetadata: deviceMetadata,
-                                                                   taskScheduler: createTaskScheduler(persistenceContextProvider: persistenceContextProvider),
-                                                                   taskRunner: createTaskRunner(persistenceContextProvider: persistenceContextProvider),
-                                                                   notificationCenter: notificationCenter)
-                                  },
-                                  offlineMode: offlineMode)
+                                                           taskScheduler: createTaskScheduler(persistenceContextProvider: persistenceContextProvider),
+                                                           taskRunner: createTaskRunner(persistenceContextProvider: persistenceContextProvider),
+                                                           notificationCenter: notificationCenter)
+            } else {
+                offlineProcessor = nil
+            }
+            return RequestHandler(onlineProcessor: onlineProcessor, offlineProcessor: offlineProcessor, offlineMode: offlineMode)
         } else {
             return LegacyRequestHandler(apiKey: apiKey,
                                         authProvider: authProvider,
@@ -125,7 +125,6 @@ struct DependencyContainer: DependencyContainerProtocol {
         InAppFetcher(apiClient: apiClient)
     }
     
-    let offlineMode = false
     let dateProvider: DateProviderProtocol = SystemDateProvider()
     let networkSession: NetworkSessionProtocol = URLSession(configuration: .default)
     let notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider()

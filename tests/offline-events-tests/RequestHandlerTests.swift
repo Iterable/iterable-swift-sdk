@@ -596,15 +596,18 @@ class RequestHandlerTests: XCTestCase {
     }
     
     func testDeleteAllTasksOnLogout() throws {
-        let internalApi = IterableAPIInternal.initializeForTesting(offlineMode: true)
+        let localStorage = MockLocalStorage()
+        localStorage.offlineModeBeta = true
+        let internalApi = IterableAPIInternal.initializeForTesting(networkSession: MockNetworkSession(),
+                                                                   localStorage: localStorage)
         internalApi.email = "user@example.com"
         
         let taskId = IterableUtil.generateUUID()
         try persistenceContextProvider.mainQueueContext().create(task: IterableTask(id: taskId,
-                                                                             type: .apiCall,
-                                                                             scheduledAt: Date(),
-                                                                             data: nil,
-                                                                             requestedAt: Date()))
+                                                                                    type: .apiCall,
+                                                                                    scheduledAt: Date(),
+                                                                                    data: nil,
+                                                                                    requestedAt: Date()))
         try persistenceContextProvider.mainQueueContext().save()
 
         internalApi.logoutUser()
@@ -833,23 +836,23 @@ class RequestHandlerTests: XCTestCase {
                                             timeInterval: 0.5,
                                             dateProvider: dateProvider)
         
-        return RequestHandler(onlineCreator: {
-                                OnlineRequestProcessor(apiKey: "zee-api-key",
+        let onlineProcessor = OnlineRequestProcessor(apiKey: "zee-api-key",
+                                                     authProvider: self,
+                                                     authManager: nil,
+                                                     endPoint: Endpoint.api,
+                                                     networkSession: networkSession,
+                                                     deviceMetadata: Self.deviceMetadata,
+                                                     dateProvider: self.dateProvider)
+        let offlineProcessor = OfflineRequestProcessor(apiKey: "zee-api-key",
                                                        authProvider: self,
                                                        authManager: nil,
                                                        endPoint: Endpoint.api,
-                                                       networkSession: networkSession,
                                                        deviceMetadata: Self.deviceMetadata,
-                                                       dateProvider: self.dateProvider) },
-                              offlineCreator: {
-                                OfflineRequestProcessor(apiKey: "zee-api-key",
-                                                        authProvider: self,
-                                                        authManager: nil,
-                                                        endPoint: Endpoint.api,
-                                                        deviceMetadata: Self.deviceMetadata,
-                                                        taskScheduler: taskScheduler,
-                                                        taskRunner: taskRunner,
-                                                        notificationCenter: notificationCenter) },
+                                                       taskScheduler: taskScheduler,
+                                                       taskRunner: taskRunner,
+                                                       notificationCenter: notificationCenter)
+        return RequestHandler(onlineProcessor: onlineProcessor,
+                              offlineProcessor: offlineProcessor,
                               offlineMode: selectOffline)
     }
     

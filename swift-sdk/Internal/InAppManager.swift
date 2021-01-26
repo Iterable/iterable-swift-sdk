@@ -27,7 +27,7 @@ protocol IterableInternalInAppManagerProtocol: IterableInAppManagerProtocol, InA
 }
 
 class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
-    init(apiClient: ApiClientProtocol,
+    init(requestHandler: RequestHandlerProtocol,
          deviceMetadata: DeviceMetadata,
          fetcher: InAppFetcherProtocol,
          displayer: InAppDisplayerProtocol,
@@ -42,7 +42,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
          retryInterval: Double) {
         ITBInfo()
         
-        self.apiClient = apiClient
+        self.requestHandler = requestHandler
         self.deviceMetadata = deviceMetadata
         self.fetcher = fetcher
         self.displayer = displayer
@@ -233,7 +233,9 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         
         // track in-app delivery
         mergeMessagesResult.deliveredMessages.forEach {
-            _ = apiClient?.track(inAppDelivery: InAppMessageContext.from(message: $0, location: nil))
+            requestHandler?.track(inAppDelivery: $0,
+                                  onSuccess: nil,
+                                  onFailure: nil)
         }
         
         finishSync(inboxChanged: mergeMessagesResult.inboxChanged)
@@ -318,7 +320,9 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
                 self.scheduleNextInAppMessage()
                 
                 if consume {
-                    self.apiClient?.inAppConsume(messageId: message.messageId)
+                    self.requestHandler?.inAppConsume(message.messageId,
+                                                      onSuccess: nil,
+                                                      onFailure: nil)
                 }
             }
         }
@@ -481,9 +485,11 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         ITBInfo()
         
         updateMessage(message, didProcessTrigger: true, consumed: true)
-        let messageContext = InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId)
-        apiClient?.inAppConsume(inAppMessageContext: messageContext, source: source)
-        
+        requestHandler?.inAppConsume(message: message,
+                                     location: location,
+                                     source: source,
+                                     onSuccess: nil,
+                                     onFailure: nil)
         callbackQueue.async {
             self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
         }
@@ -518,7 +524,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         }
     }
     
-    private weak var apiClient: ApiClientProtocol?
+    private weak var requestHandler: RequestHandlerProtocol?
     private let deviceMetadata: DeviceMetadata
     private let fetcher: InAppFetcherProtocol
     private let displayer: InAppDisplayerProtocol

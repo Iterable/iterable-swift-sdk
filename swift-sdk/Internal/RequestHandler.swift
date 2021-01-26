@@ -6,12 +6,12 @@ import Foundation
 
 @available(iOS 10.0, *)
 class RequestHandler: RequestHandlerProtocol {
-    init(onlineCreator: @escaping () -> OnlineRequestProcessor,
-         offlineCreator: @escaping () -> OfflineRequestProcessor?,
+    init(onlineProcessor: OnlineRequestProcessor,
+         offlineProcessor: OfflineRequestProcessor?,
          offlineMode: Bool = true) {
         ITBInfo()
-        self.onlineCreator = onlineCreator
-        self.offlineCreator = offlineCreator
+        self.onlineProcessor = onlineProcessor
+        self.offlineProcessor = offlineProcessor
         self.offlineMode = offlineMode
     }
     
@@ -251,16 +251,8 @@ class RequestHandler: RequestHandlerProtocol {
         }
     }
 
-    private let onlineCreator: () -> OnlineRequestProcessor
-    private let offlineCreator: () -> OfflineRequestProcessor?
-    
-    private lazy var offlineProcessor: OfflineRequestProcessor? = {
-        offlineCreator()
-    }()
-    
-    private lazy var onlineProcessor: OnlineRequestProcessor = {
-        onlineCreator()
-    }()
+    private let offlineProcessor: OfflineRequestProcessor?
+    private let onlineProcessor: OnlineRequestProcessor
     
     private func chooseRequestProcessor() -> RequestProcessorProtocol {
         if offlineMode {

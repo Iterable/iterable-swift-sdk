@@ -5,7 +5,7 @@
 import Foundation
 
 /// Request handling pre iOS 10.0
-struct LegacyRequestHandler: RequestHandlerProtocol {
+class LegacyRequestHandler: RequestHandlerProtocol {
     init(apiKey: String,
          authProvider: AuthProvider?,
          authManager: IterableInternalAuthManagerProtocol?,

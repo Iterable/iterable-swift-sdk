@@ -16,7 +16,6 @@ class E2EDependencyContainer: DependencyContainerProtocol {
     let applicationStateProvider: ApplicationStateProviderProtocol
     let notificationCenter: NotificationCenterProtocol
     let apnsTypeChecker: APNSTypeCheckerProtocol
-    let offlineMode: Bool
 
     func createInAppFetcher(apiClient: ApiClientProtocol) -> InAppFetcherProtocol {
         InAppFetcher(apiClient: apiClient)
@@ -31,8 +30,7 @@ class E2EDependencyContainer: DependencyContainerProtocol {
          urlOpener: UrlOpenerProtocol = AppUrlOpener(),
          applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
          notificationCenter: NotificationCenterProtocol = NotificationCenter.default,
-         apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker(),
-         offlineMode: Bool = false) {
+         apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker()) {
         self.dateProvider = dateProvider
         self.networkSession = networkSession
         self.notificationStateProvider = notificationStateProvider
@@ -43,7 +41,6 @@ class E2EDependencyContainer: DependencyContainerProtocol {
         self.applicationStateProvider = applicationStateProvider
         self.notificationCenter = notificationCenter
         self.apnsTypeChecker = apnsTypeChecker
-        self.offlineMode = offlineMode
     }
 }
 
@@ -51,8 +48,8 @@ extension IterableAPIInternal {
     @discardableResult static func initializeForE2E(apiKey: String,
                                                     launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
                                                     config: IterableConfig = IterableConfig(),
-                                                    offlineMode: Bool = false) -> IterableAPIInternal {
-        let e2eDependencyContainer = E2EDependencyContainer(offlineMode: offlineMode)
+                                                    localStorage: LocalStorageProtocol = MockLocalStorage()) -> IterableAPIInternal {
+        let e2eDependencyContainer = E2EDependencyContainer()
         let internalImplementation = IterableAPIInternal(apiKey: apiKey,
                                                          launchOptions: launchOptions,
                                                          config: config,
