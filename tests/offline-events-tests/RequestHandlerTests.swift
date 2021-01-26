@@ -659,7 +659,7 @@ class RequestHandlerTests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         networkSession.requestCallback = { request in
             if request.url?.absoluteString.contains(Const.Path.trackPushOpen) == true {
-                let sentAt = request.value(forHTTPHeaderField: "sentAt")
+                let sentAt = request.value(forHTTPHeaderField: "Sent-At")
                 let createdAt = TestUtils.getRequestBody(request: request)?["createdAt"] as? Int
                 XCTAssertEqual(createdAt, Int(date.timeIntervalSince1970))
                 XCTAssertEqual(sentAt, "\(Int(date.timeIntervalSince1970))")
@@ -695,7 +695,7 @@ class RequestHandlerTests: XCTestCase {
 
         let networkSession = MockNetworkSession(statusCode: 200)
         networkSession.requestCallback = { request in
-            let sentAt = request.value(forHTTPHeaderField: "sentAt")
+            let sentAt = request.value(forHTTPHeaderField: "Sent-At")
             XCTAssertEqual(sentAt, "\(Int(date.timeIntervalSince1970))")
             let createdAt = TestUtils.getRequestBody(request: request)?["createdAt"] as? Int
             XCTAssertEqual(createdAt, Int(date.timeIntervalSince1970))
