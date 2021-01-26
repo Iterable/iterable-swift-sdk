@@ -67,6 +67,11 @@ public enum Const {
         
         static let unassigned = 300.5
     }
+    
+    enum ProcessorTypeName {
+        static let online = "Online"
+        static let offline = "Offline"
+    }
 }
 
 public protocol JsonKeyValueRepresentable {
@@ -186,6 +191,7 @@ public enum JsonKey: String, JsonKeyRepresentable {
         static let sdkPlatform = "SDK-Platform"
         static let authorization = "Authorization"
         static let sentAt = "sentAt"
+        static let requestProcessor = "SDK-Request-Processor"
     }
     
     public enum Body {
