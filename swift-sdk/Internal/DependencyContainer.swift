@@ -26,7 +26,8 @@ protocol DependencyContainerProtocol {
                               endPoint: String,
                               authProvider: AuthProvider?,
                               authManager: IterableInternalAuthManagerProtocol,
-                              deviceMetadata: DeviceMetadata) -> RequestHandlerProtocol
+                              deviceMetadata: DeviceMetadata,
+                              offlineMode: Bool) -> RequestHandlerProtocol
 }
 
 extension DependencyContainerProtocol {
@@ -60,7 +61,8 @@ extension DependencyContainerProtocol {
                               endPoint: String,
                               authProvider: AuthProvider?,
                               authManager: IterableInternalAuthManagerProtocol,
-                              deviceMetadata: DeviceMetadata) -> RequestHandlerProtocol {
+                              deviceMetadata: DeviceMetadata,
+                              offlineMode: Bool) -> RequestHandlerProtocol {
         if #available(iOS 10.0, *) {
             let onlineProcessor = OnlineRequestProcessor(apiKey: apiKey,
                                                          authProvider: authProvider,
@@ -82,7 +84,7 @@ extension DependencyContainerProtocol {
             } else {
                 offlineProcessor = nil
             }
-            return RequestHandler(onlineProcessor: onlineProcessor, offlineProcessor: offlineProcessor)
+            return RequestHandler(onlineProcessor: onlineProcessor, offlineProcessor: offlineProcessor, offlineMode: offlineMode)
         } else {
             return LegacyRequestHandler(apiKey: apiKey,
                                         authProvider: authProvider,

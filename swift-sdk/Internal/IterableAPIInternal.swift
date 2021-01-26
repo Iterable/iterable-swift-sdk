@@ -408,12 +408,14 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
     }()
     
     private lazy var requestHandler: RequestHandlerProtocol = {
-        dependencyContainer.createRequestHandler(apiKey: apiKey,
-                                                 config: config,
-                                                 endPoint: apiEndPoint,
-                                                 authProvider: self,
-                                                 authManager: authManager,
-                                                 deviceMetadata: deviceMetadata)
+        let offlineMode = self.localStorage.isOfflineModeEnabled()
+        return dependencyContainer.createRequestHandler(apiKey: apiKey,
+                                                        config: config,
+                                                        endPoint: apiEndPoint,
+                                                        authProvider: self,
+                                                        authManager: authManager,
+                                                        deviceMetadata: deviceMetadata,
+                                                        offlineMode: offlineMode)
     }()
     
     private var deviceAttributes = [String: String]()
@@ -668,9 +670,8 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             self.requestHandler.offlineMode = remoteConfiguration.isOfflineModeEnabled()
             ITBInfo("setting offlineMode: \(self.requestHandler.offlineMode)")
         }.onError { error in
-            let offlineMode = self.localStorage.isOfflineModeEnabled()
-            ITBError("Could not get remote configuration: \(error.localizedDescription), defaulting to saved: \(offlineMode)")
-            self.requestHandler.offlineMode = offlineMode
+            let offlineMode = self.requestHandler.offlineMode
+            ITBError("Could not get remote configuration: \(error.localizedDescription), using saved value: \(offlineMode)")
         }
     }
     
