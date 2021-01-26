@@ -345,6 +345,26 @@ class RequestCreatorTests: XCTestCase {
         TestUtils.validateMatch(keyPath: KeyPath(JsonKey.preferUserId), value: true, inDictionary: body)
     }
     
+    func testProcessorTypeOfflineInHeader() throws {
+        let eventName = "dsfsdf"
+        
+        let iterableRequest = try createRequestCreator().createTrackEventRequest(eventName, dataFields: nil).get()
+        let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
+                                                    endPoint: Endpoint.api,
+                                                    auth: Auth(userId: nil, email: "user@example.com", authToken: nil),
+                                                    deviceMetadata: deviceMetadata,
+                                                    iterableRequest: iterableRequest)
+        
+        let request = apiCallRequest.convertToURLRequest(currentDate: dateProvider.currentDate, processorType: .offline)!
+        
+        TestUtils.validateHeader(request, apiKey, processorType: .offline)
+        TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackEvent)
+        
+        let body = request.bodyDict
+        TestUtils.validateMatch(keyPath: KeyPath(.eventName), value: eventName, inDictionary: body)
+        TestUtils.validateNil(keyPath: KeyPath(.dataFields), inDictionary: body)
+    }
+
     private let apiKey = "zee-api-key"
     
     private let email = "user@example.com"

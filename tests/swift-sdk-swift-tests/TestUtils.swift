@@ -68,7 +68,7 @@ struct TestUtils {
         }
     }
     
-    static func validateHeader(_ request: URLRequest, _ apiKey: String) {
+    static func validateHeader(_ request: URLRequest, _ apiKey: String, processorType: IterableAPICallRequest.ProcessorType = .online) {
         guard let header = request.allHTTPHeaderFields else {
             XCTFail("no header for request")
             return
@@ -78,6 +78,7 @@ struct TestUtils {
         XCTAssertEqual(header[JsonKey.Header.sdkPlatform], JsonValue.iOS.jsonStringValue)
         XCTAssertEqual(header[JsonKey.Header.sdkVersion], IterableAPI.sdkVersion)
         XCTAssertEqual(header[JsonKey.Header.apiKey], apiKey)
+        XCTAssertEqual(header[JsonKey.Header.requestProcessor], processorType == .online ? "Online" : "Offline")
     }
     
     static func validateEmailOrUserId(email: String? = nil, userId: String? = nil, inBody body: [String: Any]) {
