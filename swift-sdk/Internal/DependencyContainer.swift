@@ -62,29 +62,27 @@ extension DependencyContainerProtocol {
                               authManager: IterableInternalAuthManagerProtocol,
                               deviceMetadata: DeviceMetadata) -> RequestHandlerProtocol {
         if #available(iOS 10.0, *) {
-            return RequestHandler(onlineCreator: { [weak authProvider] in
-                                    OnlineRequestProcessor(apiKey: apiKey,
+            let onlineProcessor = OnlineRequestProcessor(apiKey: apiKey,
+                                                         authProvider: authProvider,
+                                                         authManager: authManager,
+                                                         endPoint: endPoint,
+                                                         networkSession: networkSession,
+                                                         deviceMetadata: deviceMetadata,
+                                                         dateProvider: dateProvider)
+            let offlineProcessor: OfflineRequestProcessor?
+            if let persistenceContextProvider = createPersistenceContextProvider() {
+                offlineProcessor = OfflineRequestProcessor(apiKey: apiKey,
                                                            authProvider: authProvider,
                                                            authManager: authManager,
                                                            endPoint: endPoint,
-                                                           networkSession: networkSession,
                                                            deviceMetadata: deviceMetadata,
-                                                           dateProvider: dateProvider) },
-                                  offlineCreator: { [weak authProvider] in
-                                    guard let persistenceContextProvider = createPersistenceContextProvider() else {
-                                        return nil
-                                    }
-                                    
-                                    return OfflineRequestProcessor(apiKey: apiKey,
-                                                                   authProvider: authProvider,
-                                                                   authManager: authManager,
-                                                                   endPoint: endPoint,
-                                                                   deviceMetadata: deviceMetadata,
-                                                                   taskScheduler: createTaskScheduler(persistenceContextProvider: persistenceContextProvider),
-                                                                   taskRunner: createTaskRunner(persistenceContextProvider: persistenceContextProvider),
-                                                                   notificationCenter: notificationCenter)
-                                  },
-                                  offlineMode: offlineMode)
+                                                           taskScheduler: createTaskScheduler(persistenceContextProvider: persistenceContextProvider),
+                                                           taskRunner: createTaskRunner(persistenceContextProvider: persistenceContextProvider),
+                                                           notificationCenter: notificationCenter)
+            } else {
+                offlineProcessor = nil
+            }
+            return RequestHandler(onlineProcessor: onlineProcessor, offlineProcessor: offlineProcessor)
         } else {
             return LegacyRequestHandler(apiKey: apiKey,
                                         authProvider: authProvider,

@@ -833,23 +833,23 @@ class RequestHandlerTests: XCTestCase {
                                             timeInterval: 0.5,
                                             dateProvider: dateProvider)
         
-        return RequestHandler(onlineCreator: {
-                                OnlineRequestProcessor(apiKey: "zee-api-key",
+        let onlineProcessor = OnlineRequestProcessor(apiKey: "zee-api-key",
+                                                     authProvider: self,
+                                                     authManager: nil,
+                                                     endPoint: Endpoint.api,
+                                                     networkSession: networkSession,
+                                                     deviceMetadata: Self.deviceMetadata,
+                                                     dateProvider: self.dateProvider)
+        let offlineProcessor = OfflineRequestProcessor(apiKey: "zee-api-key",
                                                        authProvider: self,
                                                        authManager: nil,
                                                        endPoint: Endpoint.api,
-                                                       networkSession: networkSession,
                                                        deviceMetadata: Self.deviceMetadata,
-                                                       dateProvider: self.dateProvider) },
-                              offlineCreator: {
-                                OfflineRequestProcessor(apiKey: "zee-api-key",
-                                                        authProvider: self,
-                                                        authManager: nil,
-                                                        endPoint: Endpoint.api,
-                                                        deviceMetadata: Self.deviceMetadata,
-                                                        taskScheduler: taskScheduler,
-                                                        taskRunner: taskRunner,
-                                                        notificationCenter: notificationCenter) },
+                                                       taskScheduler: taskScheduler,
+                                                       taskRunner: taskRunner,
+                                                       notificationCenter: notificationCenter)
+        return RequestHandler(onlineProcessor: onlineProcessor,
+                              offlineProcessor: offlineProcessor,
                               offlineMode: selectOffline)
     }
     

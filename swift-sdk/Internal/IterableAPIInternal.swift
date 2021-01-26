@@ -666,6 +666,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
             self.localStorage.offlineMode = remoteConfiguration.offlineMode
             self.localStorage.offlineModeBeta = remoteConfiguration.offlineModeBeta
             self.requestHandler.offlineMode = remoteConfiguration.isOfflineModeEnabled()
+            ITBInfo("setting offlineMode: \(self.requestHandler.offlineMode)")
         }.onError { error in
             let offlineMode = self.localStorage.isOfflineModeEnabled()
             ITBError("Could not get remote configuration: \(error.localizedDescription), defaulting to saved: \(offlineMode)")
