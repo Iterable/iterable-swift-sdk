@@ -153,7 +153,7 @@ class TaskProcessorTests: XCTestCase {
         
         let networkSession = MockNetworkSession()
         networkSession.requestCallback = { request in
-            if request.allHTTPHeaderFields!.contains(where: { $0.key == "sentAt" && $0.value == sentAtTime }) {
+            if request.allHTTPHeaderFields!.contains(where: { $0.key == "Sent-At" && $0.value == sentAtTime }) {
                 expectation1.fulfill()
             }
         }
