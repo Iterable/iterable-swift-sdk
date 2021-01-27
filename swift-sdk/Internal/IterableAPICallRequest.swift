@@ -13,17 +13,24 @@ struct IterableAPICallRequest {
     let deviceMetadata: DeviceMetadata
     let iterableRequest: IterableRequest
     
-    func convertToURLRequest(currentDate: Date) -> URLRequest? {
+    enum ProcessorType {
+        case offline
+        case online
+    }
+    
+    func convertToURLRequest(currentDate: Date, processorType: ProcessorType = .online) -> URLRequest? {
         switch iterableRequest {
         case let .get(getRequest):
             return IterableRequestUtil.createGetRequest(forApiEndPoint: endPoint,
                                                         path: getRequest.path,
-                                                        headers: createIterableHeaders(currentDate: currentDate),
+                                                        headers: createIterableHeaders(currentDate: currentDate,
+                                                                                       processorType: processorType),
                                                         args: getRequest.args)
         case let .post(postRequest):
             return IterableRequestUtil.createPostRequest(forApiEndPoint: endPoint,
                                                          path: postRequest.path,
-                                                         headers: createIterableHeaders(currentDate: currentDate),
+                                                         headers: createIterableHeaders(currentDate: currentDate,
+                                                                                        processorType: processorType),
                                                          args: postRequest.args,
                                                          body: postRequest.body)
         }
@@ -46,12 +53,13 @@ struct IterableAPICallRequest {
                                iterableRequest: iterableRequest.addingBodyField(key: key, value: value))
     }
     
-    private func createIterableHeaders(currentDate: Date) -> [String: String] {
+    private func createIterableHeaders(currentDate: Date, processorType: ProcessorType) -> [String: String] {
         var headers = [JsonKey.contentType.jsonKey: JsonValue.applicationJson.jsonStringValue,
                        JsonKey.Header.sdkPlatform: JsonValue.iOS.jsonStringValue,
                        JsonKey.Header.sdkVersion: IterableAPI.sdkVersion,
                        JsonKey.Header.apiKey: apiKey,
                        JsonKey.Header.sentAt: Self.format(sentAt: currentDate),
+                       JsonKey.Header.requestProcessor: Self.name(for: processorType)
         ]
         
         if let authToken = auth.authToken {
@@ -63,6 +71,15 @@ struct IterableAPICallRequest {
     
     private static func format(sentAt: Date) -> String {
         return "\(IterableUtil.secondsFromEpoch(for: sentAt))"
+    }
+    
+    private static func name(for processorType: ProcessorType) -> String {
+        switch processorType {
+        case .online:
+            return Const.ProcessorTypeName.online
+        case .offline:
+            return Const.ProcessorTypeName.offline
+        }
     }
 }
 

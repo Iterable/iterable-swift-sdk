@@ -22,7 +22,7 @@ struct IterableAPICallTaskProcessor: IterableTaskProcessor {
         let iterableRequest = decodedIterableRequest.addingBodyField(key: JsonKey.Body.createdAt,
                                                                      value: IterableUtil.secondsFromEpoch(for: task.scheduledAt))
         
-        guard let urlRequest = iterableRequest.convertToURLRequest(currentDate: dateProvider.currentDate) else {
+        guard let urlRequest = iterableRequest.convertToURLRequest(currentDate: dateProvider.currentDate, processorType: .offline) else {
             return IterableTaskError.createErroredFuture(reason: "could not convert to url request")
         }
         
