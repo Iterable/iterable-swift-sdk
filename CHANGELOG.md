@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.3.0-beta1
+#### Added
+- This beta SDK release includes support for two new Iterable features (both of which are in beta):
+    - Offline events processing - Capturing engagement events when a device is offline and sending them to Iterable when a network connection is reestablished
+    - In-app message prioritization - Ordering the display of in-app messages based on a priority you select in Iterable when creating in-app campaigns
+
+If you'd like to try out these beta features, talk with your Iterable customer success manager.
+
 ## 6.2.19
 #### Added
 - When using the inbox feature in popup mode, the method of modal transition can now be specified through  `popupModalPresentationStyle`
