@@ -103,13 +103,18 @@ public final class IterableAPI: NSObject {
                                    launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
                                    config: IterableConfig = IterableConfig(),
                                    apiEndPointOverride: String? = nil,
-                                   linksEndPointOverride: String? = nil) {
+                                   linksEndPointOverride: String? = nil,
+                                   callback: ((Bool) -> Void)? = nil) {
         internalImplementation = IterableAPIInternal(apiKey: apiKey,
                                                      launchOptions: launchOptions,
                                                      config: config,
                                                      apiEndPointOverride: apiEndPointOverride,
                                                      linksEndPointOverride: linksEndPointOverride)
-        _ = internalImplementation?.start()
+        _ = internalImplementation?.start().onSuccess { _ in
+            callback?(true)
+        }.onError { _ in
+            callback?(false)
+        }
     }
 
     // MARK: - SDK
