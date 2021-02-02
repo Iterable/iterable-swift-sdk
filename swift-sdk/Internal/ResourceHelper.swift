@@ -19,7 +19,7 @@ struct ResourceHelper {
     
     private static let spmPackageName = "IterableSDK"
     private static let spmLibraryName = "IterableSDK"
-    private static let cocoaPodsResourceBundleName = "Iterable-iOS-SDK"
+    private static let cocoaPodsResourceBundleName = "Resources"
 
     private static let possibleSubBundleNames = [
         "\(spmPackageName)_\(spmLibraryName)",
