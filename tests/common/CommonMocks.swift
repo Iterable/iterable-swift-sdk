@@ -236,11 +236,6 @@ class MockNetworkSession: NetworkSessionProtocol {
         MockDataTask(url: url, completionHandler: completionHandler, parent: self)
     }
 
-    // TODO: tqm: Change this
-    func getLastRequestBody() -> [AnyHashable: Any] {
-        MockNetworkSession.json(fromData: requests[requests.count-1].httpBody!)
-    }
-    
     func getRequest(withEndPoint endPoint: String) -> URLRequest? {
         return requests.first { request in
             request.url?.absoluteString.contains(endPoint) == true

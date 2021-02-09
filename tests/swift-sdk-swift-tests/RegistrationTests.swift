@@ -33,7 +33,8 @@ class RegistrationTests: XCTestCase {
         internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         internalAPI.register(token: token, onSuccess: { _ in
-            let body = networkSession.getLastRequestBody() as! [String: Any]
+            let request = networkSession.getRequest(withEndPoint: Const.Path.registerDeviceToken)!
+            let body = request.httpBody!.json() as! [String: Any]
             TestUtils.validateMatch(keyPath: KeyPath(.email), value: "user@example.com", inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(.device, .applicationName), value: "my-push-integration", inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(.device, .platform), value: JsonValue.apnsProduction.jsonValue as! String, inDictionary: body)
@@ -82,7 +83,8 @@ class RegistrationTests: XCTestCase {
         internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         internalAPI.register(token: token, onSuccess: { _ in
-            let body = networkSession.getLastRequestBody() as! [String: Any]
+            let request = networkSession.getRequest(withEndPoint: Const.Path.registerDeviceToken)!
+            let body = request.httpBody!.json() as! [String: Any]
             TestUtils.validateMatch(keyPath: KeyPath(.device, .applicationName), value: config.sandboxPushIntegrationName, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(.device, .platform), value: JsonValue.apnsSandbox.jsonValue as! String, inDictionary: body)
             expectation.fulfill()
@@ -111,7 +113,8 @@ class RegistrationTests: XCTestCase {
         internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         internalAPI.register(token: token, onSuccess: { _ in
-            let body = networkSession.getLastRequestBody() as! [String: Any]
+            let request = networkSession.getRequest(withEndPoint: Const.Path.registerDeviceToken)!
+            let body = request.httpBody!.json() as! [String: Any]
             TestUtils.validateMatch(keyPath: KeyPath(.device, .applicationName), value: config.sandboxPushIntegrationName, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(.device, .platform), value: JsonValue.apnsSandbox.jsonValue as! String, inDictionary: body)
             expectation.fulfill()
@@ -140,7 +143,8 @@ class RegistrationTests: XCTestCase {
         internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         internalAPI.register(token: token, onSuccess: { _ in
-            let body = networkSession.getLastRequestBody() as! [String: Any]
+            let request = networkSession.getRequest(withEndPoint: Const.Path.registerDeviceToken)!
+            let body = request.httpBody!.json() as! [String: Any]
             TestUtils.validateMatch(keyPath: KeyPath(.device, .applicationName), value: config.pushIntegrationName, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(.device, .platform), value: JsonValue.apnsProduction.jsonValue as! String, inDictionary: body)
             expectation.fulfill()
@@ -167,7 +171,8 @@ class RegistrationTests: XCTestCase {
         internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         internalAPI.register(token: token, onSuccess: { _ in
-            let body = networkSession.getLastRequestBody() as! [String: Any]
+            let request = networkSession.getRequest(withEndPoint: Const.Path.registerDeviceToken)!
+            let body = request.httpBody!.json() as! [String: Any]
             TestUtils.validateMatch(keyPath: KeyPath(.device, .applicationName), value: TestUtils.appPackageName, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(.device, .platform), value: JsonValue.apnsSandbox.jsonValue as! String, inDictionary: body)
             expectation.fulfill()
@@ -194,7 +199,8 @@ class RegistrationTests: XCTestCase {
         internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         internalAPI.register(token: token, onSuccess: { _ in
-            let body = networkSession.getLastRequestBody() as! [String: Any]
+            let request = networkSession.getRequest(withEndPoint: Const.Path.registerDeviceToken)!
+            let body = request.httpBody!.json() as! [String: Any]
             TestUtils.validateMatch(keyPath: KeyPath(.device, .applicationName), value: TestUtils.appPackageName, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(.device, .platform), value: JsonValue.apnsProduction.jsonValue as! String, inDictionary: body)
             expectation.fulfill()

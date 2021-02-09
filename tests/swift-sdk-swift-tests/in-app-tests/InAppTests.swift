@@ -1081,7 +1081,7 @@ class InAppTests: XCTestCase {
                 return
             }
             TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.inAppConsume)
-            let body = mockNetworkSession.getLastRequestBody() as! [String: Any]
+            let body = urlRequest.httpBody!.json() as! [String: Any]
             TestUtils.validateMessageContext(messageId: "message1", saveToInbox: true, silentInbox: true, location: location, inBody: body)
             if let deleteAction = source {
                 TestUtils.validateMatch(keyPath: KeyPath(.deleteAction), value: deleteAction.jsonValue as! String, inDictionary: body, message: "deleteAction should be nil")
