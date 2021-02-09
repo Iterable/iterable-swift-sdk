@@ -110,6 +110,17 @@ open class IterableInboxViewController: UITableViewController {
         }
     }
     
+    /// We default, we don't show any message when inbox is empty.
+    /// If you want to show a message, such as, "There are no messages", you will
+    /// have to set the `noMessagesTitle` and  `noMessagesText` properties below.
+
+    /// Use this to set the title to show when there are no message in the inbox.
+    @IBInspectable public var noMessagesTitle: String? = nil
+
+    /// Use this to set the message to show when there are no message in the inbox.
+    @IBInspectable public var noMessagesBody: String? = nil
+
+    
     /// when in popup mode, specify here if you'd like to change the presentation style
     public var popupModalPresentationStyle: UIModalPresentationStyle? = nil
     
@@ -233,10 +244,12 @@ open class IterableInboxViewController: UITableViewController {
     // MARK: - UITableViewDataSource (Optional Functions)
     
     override open func numberOfSections(in _: UITableView) -> Int {
-        if viewModel.isEmpty() {
-            tableView.setEmptyView(title: "No messages", message: "There are no messages in your inbox.")
-        } else {
-            tableView.restore()
+        if noMessagesTitle != nil || noMessagesBody != nil {
+            if viewModel.isEmpty() {
+                tableView.setEmptyView(title: noMessagesTitle, message: noMessagesBody)
+            } else {
+                tableView.restore()
+            }
         }
         return viewModel.numSections
     }
@@ -543,28 +556,39 @@ private struct CellLoader {
 }
 
 extension UITableView {
-    func setEmptyView(title: String, message: String) {
+    func setEmptyView(title: String?, message: String?) {
         let emptyView = UIView(frame: self.bounds)
-        let titleLabel = UILabel()
-        emptyView.addSubview(titleLabel)
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.textColor = UIColor.black
-        titleLabel.font = UIFont(name: "HelveticaNeue-Bold", size: 20)
-        titleLabel.text = title
+        let titleLabel: UILabel?
+        if let title = title {
+            titleLabel = UILabel()
+            emptyView.addSubview(titleLabel!)
+            titleLabel?.translatesAutoresizingMaskIntoConstraints = false
+            titleLabel?.textColor = UIColor.black
+            titleLabel?.font = UIFont(name: "HelveticaNeue-Bold", size: 20)
+            titleLabel?.text = title
+            titleLabel?.centerXAnchor.constraint(equalTo: emptyView.centerXAnchor).isActive = true
+            titleLabel?.centerYAnchor.constraint(equalTo: emptyView.centerYAnchor).isActive = true
+        } else {
+            titleLabel = nil
+        }
 
-        let messageLabel = UILabel()
-        emptyView.addSubview(messageLabel)
-        messageLabel.translatesAutoresizingMaskIntoConstraints = false
-        messageLabel.textColor = UIColor.lightGray
-        messageLabel.font = UIFont(name: "HelveticaNeue-Regular", size: 18)
-        messageLabel.text = message
-        messageLabel.numberOfLines = 0
-        messageLabel.textAlignment = .center
+        if let message = message {
+            let messageLabel = UILabel()
+            emptyView.addSubview(messageLabel)
+            messageLabel.translatesAutoresizingMaskIntoConstraints = false
+            messageLabel.textColor = UIColor.lightGray
+            messageLabel.font = UIFont(name: "HelveticaNeue-Regular", size: 18)
+            messageLabel.text = message
+            messageLabel.numberOfLines = 0
+            messageLabel.textAlignment = .center
 
-        titleLabel.centerXAnchor.constraint(equalTo: emptyView.centerXAnchor).isActive = true
-        titleLabel.centerYAnchor.constraint(equalTo: emptyView.centerYAnchor).isActive = true
-        messageLabel.centerXAnchor.constraint(equalTo: emptyView.centerXAnchor).isActive = true
-        messageLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 25).isActive = true
+            messageLabel.centerXAnchor.constraint(equalTo: emptyView.centerXAnchor).isActive = true
+            if let titleLabel = titleLabel {
+                messageLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 25).isActive = true
+            } else {
+                messageLabel.centerYAnchor.constraint(equalTo: emptyView.centerYAnchor).isActive = true
+            }
+        }
 
         self.backgroundView = emptyView
         self.separatorStyle = .none
