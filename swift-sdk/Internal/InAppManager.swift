@@ -172,7 +172,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         }
         
         let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
-                                                                      padding: content.edgeInsets,
+                                                                      padding: content.padding,
                                                                       messageMetadata: IterableInAppMessageMetadata(message: message, location: .inbox),
                                                                       isModal: inboxMode == .popup,
                                                                       inboxSessionId: inboxSessionId)

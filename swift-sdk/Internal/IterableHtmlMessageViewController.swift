@@ -15,7 +15,7 @@ enum IterableMessageLocation: Int {
 class IterableHtmlMessageViewController: UIViewController {
     struct Parameters {
         let html: String
-        let padding: UIEdgeInsets
+        let padding: Padding
         let messageMetadata: IterableInAppMessageMetadata?
         let isModal: Bool
         
@@ -23,13 +23,13 @@ class IterableHtmlMessageViewController: UIViewController {
         let animationDuration = 0.67
 
         init(html: String,
-             padding: UIEdgeInsets = .zero,
+             padding: Padding = .zero,
              messageMetadata: IterableInAppMessageMetadata? = nil,
              isModal: Bool,
              inboxSessionId: String? = nil) {
             ITBInfo()
             self.html = html
-            self.padding = InAppCalculations.adjustedPadding(from: padding)
+            self.padding = padding.adjusted()
             self.messageMetadata = messageMetadata
             self.isModal = isModal
             self.inboxSessionId = inboxSessionId
@@ -173,8 +173,8 @@ class IterableHtmlMessageViewController: UIViewController {
         IterableHtmlMessageViewController.calculateWebViewPosition(webView: webView,
                                                                    safeAreaInsets: InAppCalculations.safeAreaInsets(for: view),
                                                                    parentPosition: parentPosition,
-                                                                   paddingLeft: parameters.padding.left,
-                                                                   paddingRight: parameters.padding.right,
+                                                                   paddingLeft: CGFloat(parameters.padding.left),
+                                                                   paddingRight: CGFloat(parameters.padding.right),
                                                                    location: location)
             .onSuccess { [weak self] position in
                 if animate {

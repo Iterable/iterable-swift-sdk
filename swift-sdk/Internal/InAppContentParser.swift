@@ -7,6 +7,9 @@
 import Foundation
 import UIKit
 
+typealias PaddingParser = HtmlContentParser.InAppDisplaySettingsParser.PaddingParser
+typealias Padding = PaddingParser.Padding
+
 enum InAppContentParseResult {
     case success(content: IterableInAppContent)
     case failure(reason: String)
@@ -40,7 +43,7 @@ private protocol ContentFromJsonParser {
 }
 
 struct HtmlContentParser {
-    static func getPadding(fromInAppSettings settings: [AnyHashable: Any]?) -> UIEdgeInsets {
+    static func getPadding(fromInAppSettings settings: [AnyHashable: Any]?) -> Padding {
         InAppDisplaySettingsParser.PaddingParser.getPadding(fromInAppSettings: settings)
     }
     
@@ -100,6 +103,65 @@ struct HtmlContentParser {
                 case bottom
             }
             
+            enum PaddingValue: Equatable {
+                case percent(value: Int)
+                case autoExpand
+                
+                func toCGFloat() -> CGFloat {
+                    switch self {
+                    case .percent(value: let value):
+                        return CGFloat(value)
+                    case .autoExpand:
+                        return CGFloat(-1)
+                    }
+                }
+                
+                static func from(cgFloat: CGFloat) -> PaddingValue {
+                    switch cgFloat {
+                    case -1:
+                        return .autoExpand
+                    default:
+                        return .percent(value: Int(cgFloat))
+                    }
+                }
+            }
+            
+            struct Padding: Equatable {
+                static let zero = Padding(top: .percent(value: 0),
+                                          left: 0,
+                                          bottom: .percent(value: 0),
+                                          right: 0)
+                let top: PaddingValue
+                let left: Int
+                let bottom: PaddingValue
+                let right: Int
+                
+                func adjusted() -> Padding {
+                    if left + right >= 100 {
+                        return Padding(top: top,
+                                       left: 0,
+                                       bottom: bottom,
+                                       right: 0)
+                    } else {
+                        return self
+                    }
+                }
+                
+                func toEdgeInsets() -> UIEdgeInsets {
+                    UIEdgeInsets(top: top.toCGFloat(),
+                                 left: CGFloat(left),
+                                 bottom: bottom.toCGFloat(),
+                                 right: CGFloat(right))
+                }
+                
+                static func from(edgeInsets: UIEdgeInsets) -> Padding {
+                    Padding(top: PaddingValue.from(cgFloat: edgeInsets.top),
+                            left: Int(edgeInsets.left),
+                            bottom: PaddingValue.from(cgFloat: edgeInsets.bottom),
+                            right: Int(edgeInsets.right))
+                }
+            }
+            
             enum PaddingKey: String, JsonKeyRepresentable {
                 var jsonKey: String {
                     rawValue
@@ -113,50 +175,75 @@ struct HtmlContentParser {
 
             /// `settings` json looks like the following
             /// {"bottom": {"displayOption": "AutoExpand"}, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}
-            static func getPadding(fromInAppSettings settings: [AnyHashable: Any]?) -> UIEdgeInsets {
-                UIEdgeInsets(top: getEdgePadding(fromInAppSettings: settings, edge: .top),
-                             left: getEdgePadding(fromInAppSettings: settings, edge: .left),
-                             bottom: getEdgePadding(fromInAppSettings: settings, edge: .bottom),
-                             right: getEdgePadding(fromInAppSettings: settings, edge: .right))
+            static func getPadding(fromInAppSettings settings: [AnyHashable: Any]?) -> Padding {
+                Padding(top: getEdgePaddingValue(fromInAppSettings: settings, edge: .top),
+                        left: getEdgePadding(fromInAppSettings: settings, edge: .left),
+                        bottom: getEdgePaddingValue(fromInAppSettings: settings, edge: .bottom),
+                        right: getEdgePadding(fromInAppSettings: settings, edge: .right))
             }
             
             /// json comes in as
             /// `{"displayOption": "AutoExpand"}`
             /// or `{"percentage": 60}`
-            /// returns `-1` for `AutoExpand` type
+            static func decodePaddingValue(_ value: Any?) -> PaddingValue {
+                guard let dict = value as? [AnyHashable: Any] else {
+                    return .percent(value: 0)
+                }
+                
+                if let displayOption = dict.getValue(for: PaddingKey.displayOption) as? String, displayOption == Self.displayOptionAutoExpand {
+                    return .autoExpand
+                } else {
+                    if let percentage = dict.getValue(for: PaddingKey.percentage) as? NSNumber {
+                        return .percent(value: Int(truncating: percentage))
+                    }
+                    
+                    return .percent(value: 0)
+                }
+            }
+
+            /// json comes in as
+            /// `{"percentage": 60}`
             static func decodePadding(_ value: Any?) -> Int {
                 guard let dict = value as? [AnyHashable: Any] else {
                     return 0
                 }
                 
-                if let displayOption = dict.getValue(for: PaddingKey.displayOption) as? String, displayOption == Self.displayOptionAutoExpand {
-                    return -1
-                } else {
-                    if let percentage = dict.getValue(for: PaddingKey.percentage) as? NSNumber {
-                        return percentage.intValue
-                    }
-                    
-                    return 0
+                if let percentage = dict.getValue(for: PaddingKey.percentage) as? NSNumber {
+                    return Int(truncating: percentage)
                 }
+                
+                return 0
             }
-            
-            static func location(fromPadding padding: UIEdgeInsets) -> IterableMessageLocation {
-                if padding.top == 0, padding.bottom == 0 {
+
+            static func location(fromPadding padding: Padding) -> IterableMessageLocation {
+                if case .percent(let topPadding) = padding.top,
+                   case .percent(let bottomPadding) = padding.bottom,
+                   topPadding == 0,
+                   bottomPadding == 0 {
                     return .full
-                } else if padding.top == 0, padding.bottom < 0 {
+                } else if case .autoExpand = padding.bottom,
+                          case .percent(let topPadding) = padding.top,
+                          topPadding == 0 {
                     return .top
-                } else if padding.top < 0, padding.bottom == 0 {
+                } else if case .autoExpand = padding.top,
+                          case .percent(let bottomPadding) = padding.bottom,
+                          bottomPadding == 0 {
                     return .bottom
                 } else {
                     return .center
                 }
             }
-            
-            private static func getEdgePadding(fromInAppSettings settings: [AnyHashable: Any]?,
-                                               edge: PaddingEdge) -> CGFloat {
+
+            private static func getEdgePaddingValue(fromInAppSettings settings: [AnyHashable: Any]?,
+                                               edge: PaddingEdge) -> PaddingValue {
                 settings?.getValue(for: edge)
-                    .map(decodePadding(_:))
-                    .map { CGFloat($0) } ?? .zero
+                    .map(decodePaddingValue(_:)) ?? .percent(value: 0)
+            }
+
+            private static func getEdgePadding(fromInAppSettings settings: [AnyHashable: Any]?,
+                                               edge: PaddingEdge) -> Int {
+                settings?.getValue(for: edge)
+                    .map(decodePadding(_:)) ?? 0
             }
         }
     }
@@ -173,12 +260,12 @@ extension HtmlContentParser: ContentFromJsonParser {
         }
         
         let inAppDisplaySettings = json[JsonKey.InApp.inAppDisplaySettings] as? [AnyHashable: Any]
-        let edgeInsets = getPadding(fromInAppSettings: inAppDisplaySettings)
+        let padding = getPadding(fromInAppSettings: inAppDisplaySettings)
         
         let shouldAnimate = inAppDisplaySettings.map(Self.parseShouldAnimate(fromInAppSettings:)) ?? false
         let backgroundColor = inAppDisplaySettings.flatMap(Self.parseBackgroundColor(fromInAppSettings:))
         
-        return .success(content: IterableHtmlInAppContent(edgeInsets: edgeInsets,
+        return .success(content: IterableHtmlInAppContent(edgeInsets: padding.toEdgeInsets(),
                                                           html: html,
                                                           shouldAnimate: shouldAnimate,
                                                           backgroundColor: backgroundColor))
