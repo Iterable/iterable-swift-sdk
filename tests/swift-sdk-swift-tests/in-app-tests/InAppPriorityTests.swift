@@ -7,36 +7,39 @@ import XCTest
 @testable import IterableSDK
 
 class InAppPriorityTests: XCTestCase {
-//    func testDisplayingCriticalPriorityLevel() {
-//        let condition1 = expectation(description: "in-app displayer didn't show or succeed")
-//        
-//        let messageIdWithCritical = "4"
-//        
-//        let messages = [
-//            getMessageWithPriority("1", Const.PriorityLevel.low),
-//            getMessageWithPriority("2", Const.PriorityLevel.high),
-//            getMessageWithPriority("3", Const.PriorityLevel.medium),
-//            getMessageWithPriority(messageIdWithCritical, Const.PriorityLevel.critical)
-//        ]
-//        
-//        let mockInAppFetcher = MockInAppFetcher()
-//        let mockInAppDisplayer = MockInAppDisplayer()
-//
-//        mockInAppDisplayer.onShow.onSuccess { message in
-//            mockInAppDisplayer.click(url: URL(string: "https://iterable.com")!)
-//            
-//            XCTAssertEqual(message.messageId, messageIdWithCritical)
-//            
-//            condition1.fulfill()
-//        }
-//        
-//        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: mockInAppFetcher,
-//                                                                   inAppDisplayer: mockInAppDisplayer)
-//        
-//        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages)
-//        
-//        wait(for: [condition1], timeout: testExpectationTimeout)
-//    }
+    override func setUpWithError() throws {
+        try super.setUpWithError()
+        IterableLogUtil.sharedInstance = IterableLogUtil(dateProvider: SystemDateProvider(),
+                                                         logDelegate: DefaultLogDelegate())
+    }
+    
+    func testDisplayingCriticalPriorityLevel() {
+        let condition1 = expectation(description: "in-app displayer didn't show or succeed")
+        
+        let messageIdWithCritical = "4"
+        
+        let messages = [
+            getMessageWithPriority("1", Const.PriorityLevel.low),
+            getMessageWithPriority("2", Const.PriorityLevel.high),
+            getMessageWithPriority("3", Const.PriorityLevel.medium),
+            getMessageWithPriority(messageIdWithCritical, Const.PriorityLevel.critical)
+        ]
+        
+        let mockInAppFetcher = MockInAppFetcher()
+        let mockInAppDisplayer = MockInAppDisplayer()
+
+        mockInAppDisplayer.onShow.onSuccess { [weak mockInAppDisplayer = mockInAppDisplayer] message in
+            mockInAppDisplayer?.click(url: URL(string: "https://iterable.com")!)
+            XCTAssertEqual(message.messageId, messageIdWithCritical)
+            condition1.fulfill()
+        }
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: mockInAppFetcher,
+                                                                   inAppDisplayer: mockInAppDisplayer)
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages)
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
     
     func testGetMessagesWithOutOfOrderPriorityLevels() {
         let condition1 = expectation(description: "in-app messages never fetched")
@@ -53,13 +56,13 @@ class InAppPriorityTests: XCTestCase {
         
         let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: mockInAppFetcher)
         
-        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages).onSuccess { _ in
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages).onSuccess { [weak internalAPI = internalAPI] _ in
             let originalMessages = messages.dropFirst()
-            let processedMessages = internalAPI.inAppManager.getMessages()
-            
-            XCTAssertEqual(originalMessages.map { $0.messageId }, processedMessages.map { $0.messageId })
-            
-            condition1.fulfill()
+            if let processedMessages = internalAPI?.inAppManager.getMessages() {
+                XCTAssertEqual(originalMessages.map { $0.messageId }, processedMessages.map { $0.messageId })
+                
+                condition1.fulfill()
+            }
         }
         
         wait(for: [condition1], timeout: testExpectationTimeout)
@@ -81,10 +84,11 @@ class InAppPriorityTests: XCTestCase {
             
             condition1.fulfill()
         }
-        
-        _ = IterableAPIInternal.initializeForTesting(inAppFetcher: mockInAppFetcher,
-                                                     inAppDisplayer: mockInAppDisplayer)
-        
+
+        // Test will fail without assigning to internalAPI because InAppManager will be deallocated
+        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: mockInAppFetcher,
+                                                                   inAppDisplayer: mockInAppDisplayer)
+        XCTAssertNotNil(internalAPI)
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
     
