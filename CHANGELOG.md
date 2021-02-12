@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.3.0-beta2
+#### Added
+- Added callback for initialize method that is used by our React Native SDK.
+
+#### Fixed
+- Fixed how we look up `Resources` folder for Cocoapods.
+
 ## 6.3.0-beta1
 #### Added
 - This beta SDK release includes support for two new Iterable features (both of which are in beta):
