@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.2.20
+#### Added
+- Added callback to initialize method needed for React Native. This change should have no effect for iOS SDK.
+
 ## 6.2.19
 #### Added
 - When using the inbox feature in popup mode, the method of modal transition can now be specified through  `popupModalPresentationStyle`
