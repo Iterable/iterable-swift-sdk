@@ -101,17 +101,6 @@ struct InAppCalculations {
         }
     }
     
-    static func adjustedPadding(from padding: UIEdgeInsets) -> UIEdgeInsets {
-        var insetPadding = padding
-        if insetPadding.left + insetPadding.right >= 100 {
-            ITBError("Can't display an in-app with padding > 100%. Defaulting to 0 for padding left/right")
-            insetPadding.left = 0
-            insetPadding.right = 0
-        }
-        
-        return insetPadding
-    }
-    
     static func calculateWebViewPosition(safeAreaInsets: UIEdgeInsets,
                                          parentPosition: ViewPosition,
                                          paddingLeft: CGFloat,
