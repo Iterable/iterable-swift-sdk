@@ -110,9 +110,11 @@ class IterableAPITests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
         internalAPI.email = IterableAPITests.email
+
         internalAPI.track(eventName, dataFields: nil, onSuccess: { _ in
-            TestUtils.validate(request: networkSession.getRequest(withEndPoint: Const.Path.trackEvent)!, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackEvent, queryParams: [])
-            let body = networkSession.getLastRequestBody()
+            let request = networkSession.getRequest(withEndPoint: Const.Path.trackEvent)!
+            TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackEvent, queryParams: [])
+            let body = request.httpBody!.json() as! [String: Any]
             TestUtils.validateElementPresent(withName: JsonKey.eventName.jsonKey, andValue: eventName, inDictionary: body)
             TestUtils.validateElementPresent(withName: JsonKey.email.jsonKey, andValue: IterableAPITests.email, inDictionary: body)
             expectation.fulfill()
@@ -383,7 +385,9 @@ class IterableAPITests: XCTestCase {
         internalAPI.setDeviceAttribute(name: attributeToAddAndRemove, value: "valueToAdd")
         internalAPI.removeDeviceAttribute(name: attributeToAddAndRemove)
         internalAPI.register(token: token, onSuccess: { _ in
-            let body = networkSession.getLastRequestBody() as! [String: Any]
+            let request = networkSession.getRequest(withEndPoint: Const.Path.registerDeviceToken)!
+            let body = request.httpBody!.json() as! [String: Any]
+            
             TestUtils.validateElementPresent(withName: "email", andValue: "user@example.com", inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath("device.applicationName"), value: "my-push-integration", inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath("device.platform"), value: JsonValue.apnsSandbox.jsonStringValue, inDictionary: body)

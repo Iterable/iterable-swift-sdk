@@ -14,6 +14,11 @@ extension String {
     }
 }
 
+extension Data {
+    func json() -> [AnyHashable: Any] {
+        try! JSONSerialization.jsonObject(with: self, options: []) as! [AnyHashable: Any]
+    }
+}
 extension Dictionary where Key == AnyHashable {
     func toJsonData() -> Data {
         try! JSONSerialization.data(withJSONObject: self, options: [])
