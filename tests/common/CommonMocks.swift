@@ -296,6 +296,10 @@ class MockInAppFetcher: InAppFetcherProtocol {
         }
     }
     
+    deinit {
+        ITBInfo()
+    }
+    
     func fetch() -> Future<[IterableInAppMessage], Error> {
         ITBInfo()
         
@@ -316,7 +320,7 @@ class MockInAppFetcher: InAppFetcherProtocol {
         let result = Promise<Int, Error>()
         
         let inAppManager = internalApi?.inAppManager
-        inAppManager?.scheduleSync().onSuccess { _ in
+        inAppManager?.scheduleSync().onSuccess { [weak inAppManager = inAppManager] _ in
             result.resolve(with: inAppManager?.getMessages().count ?? 0)
         }
         
@@ -390,6 +394,14 @@ class MockInAppDelegate: IterableInAppDelegate {
 }
 
 class MockNotificationCenter: NotificationCenterProtocol {
+    init() {
+        ITBInfo()
+    }
+    
+    deinit {
+        ITBInfo()
+    }
+    
     func addObserver(_ observer: Any, selector: Selector, name: Notification.Name?, object _: Any?) {
         observers.append(Observer(observer: observer as! NSObject,
                                   notificationName: name!,
@@ -401,12 +413,22 @@ class MockNotificationCenter: NotificationCenterProtocol {
     func post(name: Notification.Name, object: Any?, userInfo: [AnyHashable: Any]?) {
         _ = observers.filter { $0.notificationName == name }.map {
             let notification = Notification(name: name, object: object, userInfo: userInfo)
-            _ = $0.observer.perform($0.selector, with: notification)
+            _ = $0.observer?.perform($0.selector, with: notification)
         }
     }
     
-    @discardableResult
-    func addCallback(forNotification notification: Notification.Name, callback: @escaping (Notification) -> Void) -> String {
+    class CallbackReference {
+        init(callbackId: String,
+             callbackClass: NSObject) {
+            self.callbackId = callbackId
+            self.callbackClass = callbackClass
+        }
+
+        let callbackId: String
+        private let callbackClass: NSObject
+    }
+    
+    func addCallback(forNotification notification: Notification.Name, callback: @escaping (Notification) -> Void) -> CallbackReference {
         class CallbackClass: NSObject {
             let callback: (Notification) -> Void
             
@@ -426,7 +448,7 @@ class MockNotificationCenter: NotificationCenterProtocol {
                                   observer: callbackClass,
                                   notificationName: notification,
                                   selector: #selector(callbackClass.onNotification(notification:))))
-        return id
+        return CallbackReference(callbackId: id, callbackClass: callbackClass)
     }
 
     func removeCallbacks(withIds ids: String...) {
@@ -435,7 +457,7 @@ class MockNotificationCenter: NotificationCenterProtocol {
     
     private class Observer: NSObject {
         let id: String
-        let observer: NSObject
+        weak var observer: NSObject?
         let notificationName: Notification.Name
         let selector: Selector
         

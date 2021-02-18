@@ -27,9 +27,10 @@ class TaskSchedulerTests: XCTestCase {
         let dataFields = ["var1": "val1", "var2": "val2"]
         
         let notificationCenter = MockNotificationCenter()
-        notificationCenter.addCallback(forNotification: .iterableTaskScheduled) { _ in
+        let reference = notificationCenter.addCallback(forNotification: .iterableTaskScheduled) { _ in
             expectation1.fulfill()
         }
+        XCTAssertNotNil(reference)
         let requestCreator = RequestCreator(apiKey: apiKey, auth: auth, deviceMetadata: deviceMetadata)
         guard case let Result.success(trackEventRequest) = requestCreator.createTrackEventRequest(eventName, dataFields: dataFields) else {
             throw IterableError.general(description: "Could not create trackEvent request")

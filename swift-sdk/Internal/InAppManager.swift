@@ -114,8 +114,8 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         ITBInfo()
         
         // This is public (via public protocol implementation), so make sure we call from Main Thread
-        DispatchQueue.main.async {
-            self.showInternal(message: message, consume: consume, callback: callback)
+        DispatchQueue.main.async {[weak self] in
+            self?.showInternal(message: message, consume: consume, callback: callback)
         }
     }
     
@@ -138,9 +138,9 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     }
     
     func set(read: Bool, forMessage message: IterableInAppMessage) {
-        updateMessage(message, read: read).onSuccess { _ in
-            self.callbackQueue.async {
-                self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
+        updateMessage(message, read: read).onSuccess { [weak self] _ in
+            self?.callbackQueue.async { [weak self] in
+                self?.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
             }
         }
     }
@@ -155,8 +155,8 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         ITBInfo()
         
         if messagesMap.values.filter({ $0.saveToInbox }).count > 0 {
-            callbackQueue.async {
-                self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
+            callbackQueue.async { [weak self] in
+                self?.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
             }
         }
         
@@ -179,11 +179,11 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         let createResult = IterableHtmlMessageViewController.create(parameters: parameters)
         let viewController = createResult.viewController
         
-        createResult.futureClickedURL.onSuccess { url in
+        createResult.futureClickedURL.onSuccess { [weak self] url in
             ITBInfo()
             
             // in addition perform action or url delegate task
-            self.handle(clickedUrl: url, forMessage: message, location: .inbox)
+            self?.handle(clickedUrl: url, forMessage: message, location: .inbox)
         }
         
         viewController.navigationItem.title = message.inboxMetadata?.title
@@ -215,8 +215,12 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         ITBInfo()
         
         return fetcher.fetch()
-            .map { self.mergeMessages($0) }
-            .map { self.processMergedMessages(appIsReady: appIsReady, mergeMessagesResult: $0) }
+            .map { [weak self] in
+                self?.mergeMessages($0) ?? MergeMessagesResult(inboxChanged: false, messagesMap: [:], deliveredMessages: [])
+            }
+            .map { [weak self] in
+                self?.processMergedMessages(appIsReady: appIsReady, mergeMessagesResult: $0) ?? true
+            }
     }
     
     /// `messages` are new messages coming from the server
@@ -247,8 +251,8 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         ITBInfo()
         
         if inboxChanged {
-            callbackQueue.async {
-                self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
+            callbackQueue.async { [weak self] in
+                self?.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
             }
         }
         
@@ -271,7 +275,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             lastDisplayTime = dateProvider.currentDate
             ITBDebug("Setting last display time: \(String(describing: lastDisplayTime))")
             
-            self.show(message: message, consume: !message.saveToInbox)
+            show(message: message, consume: !message.saveToInbox)
         }
     }
     
@@ -303,24 +307,24 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             
             updateMessage(message, didProcessTrigger: true, consumed: consume)
             
-            futureClickedURL.onSuccess { url in
+            futureClickedURL.onSuccess { [weak self] url in
                 ITBDebug("in-app clicked")
                 
                 // call the client callback, if present
                 _ = callback?(url)
                 
                 // in addition perform action or url delegate task
-                self.handle(clickedUrl: url, forMessage: message, location: .inApp)
+                self?.handle(clickedUrl: url, forMessage: message, location: .inApp)
                 
                 // set the dismiss time
-                self.lastDismissedTime = self.dateProvider.currentDate
-                ITBDebug("Setting last dismissed time: \(String(describing: self.lastDismissedTime))")
+                self?.lastDismissedTime = self?.dateProvider.currentDate
+                ITBDebug("Setting last dismissed time: \(String(describing: self?.lastDismissedTime))")
                 
                 // check if we need to process more in-apps
-                self.scheduleNextInAppMessage()
+                self?.scheduleNextInAppMessage()
                 
                 if consume {
-                    self.requestHandler?.inAppConsume(message.messageId,
+                    self?.requestHandler?.inAppConsume(message.messageId,
                                                       onSuccess: nil,
                                                       onFailure: nil)
                 }
@@ -336,14 +340,16 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         
         if waitTimeInterval > 0 {
             ITBDebug("Need to wait for: \(waitTimeInterval)")
-            scheduleQueue.asyncAfter(deadline: .now() + waitTimeInterval) {
-                self.scheduleNextInAppMessage()
+            scheduleQueue.asyncAfter(deadline: .now() + waitTimeInterval) { [weak self] in
+                self?.scheduleNextInAppMessage()
             }
         } else {
-            _ = InAppManager.getAppIsReady(applicationStateProvider: applicationStateProvider, displayer: displayer).map { appIsActive in
+            _ = InAppManager.getAppIsReady(applicationStateProvider: applicationStateProvider, displayer: displayer).map { [weak self] appIsActive in
                 if appIsActive {
-                    self.processAndShowMessage(messagesMap: self.messagesMap)
-                    self.persister.persist(self.messagesMap.values)
+                    if let messagesMap = self?.messagesMap {
+                        self?.processAndShowMessage(messagesMap: messagesMap)
+                        self?.persister.persist(messagesMap.values)
+                    }
                 }
             }
         }
@@ -358,8 +364,8 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         
         let result = Promise<Bool, IterableError>()
         
-        updateQueue.async {
-            self.updateMessageSync(message, read: read, didProcessTrigger: didProcessTrigger, consumed: consumed)
+        updateQueue.async { [weak self] in
+            self?.updateMessageSync(message, read: read, didProcessTrigger: didProcessTrigger, consumed: consumed)
             result.resolve(with: true)
         }
         
@@ -452,12 +458,12 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         }
         
         let context = IterableActionContext(action: action, source: .inApp)
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
             IterableActionRunner.execute(action: action,
                                          context: context,
-                                         urlHandler: IterableUtil.urlHandler(fromUrlDelegate: self.urlDelegate, inContext: context),
-                                         customActionHandler: IterableUtil.customActionHandler(fromCustomActionDelegate: self.customActionDelegate, inContext: context),
-                                         urlOpener: self.urlOpener)
+                                         urlHandler: IterableUtil.urlHandler(fromUrlDelegate: self?.urlDelegate, inContext: context),
+                                         customActionHandler: IterableUtil.customActionHandler(fromCustomActionDelegate: self?.customActionDelegate, inContext: context),
+                                         urlOpener: self?.urlOpener)
         }
     }
     
@@ -490,8 +496,8 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
                                      source: source,
                                      onSuccess: nil,
                                      onFailure: nil)
-        callbackQueue.async {
-            self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
+        callbackQueue.async { [weak self] in
+            self?.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
         }
     }
     
@@ -567,17 +573,17 @@ extension InAppManager: InAppNotifiable {
         
         let result = Promise<Bool, Error>()
         
-        syncQueue.async {
-            if let syncResult = self.syncResult {
+        syncQueue.async { [weak self] in
+            if let syncResult = self?.syncResult {
                 if syncResult.isResolved() {
-                    self.syncResult = self.synchronize(appIsReady: appIsReady)
+                    self?.syncResult = self?.synchronize(appIsReady: appIsReady)
                 } else {
-                    self.syncResult = syncResult.flatMap { _ in self.synchronize(appIsReady: appIsReady) }
+                    self?.syncResult = syncResult.flatMap { _ in self?.synchronize(appIsReady: appIsReady) ?? Promise<Bool, Error>(value: true) }
                 }
             } else {
-                self.syncResult = self.synchronize(appIsReady: appIsReady)
+                self?.syncResult = self?.synchronize(appIsReady: appIsReady)
             }
-            self.syncResult?.onSuccess { success in
+            self?.syncResult?.onSuccess { success in
                 result.resolve(with: success)
             }.onError { error in
                 result.reject(with: error)
@@ -591,15 +597,17 @@ extension InAppManager: InAppNotifiable {
     func onInAppRemoved(messageId: String) {
         ITBInfo()
         
-        updateQueue.async {
-            if let _ = self.messagesMap.filter({ $0.key == messageId }).first {
-                self.messagesMap.removeValue(forKey: messageId)
-                self.persister.persist(self.messagesMap.values)
+        updateQueue.async { [weak self] in
+            if let _ = self?.messagesMap.filter({ $0.key == messageId }).first {
+                if let messagesMap = self?.messagesMap {
+                    self?.messagesMap.removeValue(forKey: messageId)
+                    self?.persister.persist(messagesMap.values)
+                }
             }
         }
         
-        callbackQueue.async {
-            self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
+        callbackQueue.async { [weak self] in
+            self?.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
         }
     }
     
@@ -608,12 +616,14 @@ extension InAppManager: InAppNotifiable {
         
         let result = Promise<Bool, Error>()
         
-        syncQueue.async {
-            self.messagesMap.reset()
-            self.persister.persist(self.messagesMap.values)
+        syncQueue.async { [weak self] in
+            self?.messagesMap.reset()
+            if let messagesMap = self?.messagesMap {
+                self?.persister.persist(messagesMap.values)
+            }
             
-            self.callbackQueue.async {
-                self.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
+            self?.callbackQueue.async {
+                self?.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
                 result.resolve(with: true)
             }
         }

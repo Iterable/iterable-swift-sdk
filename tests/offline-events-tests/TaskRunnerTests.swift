@@ -27,11 +27,12 @@ class TaskRunnerTests: XCTestCase {
         var scheduledTaskIds = [String]()
         var taskIds = [String]()
         let notificationCenter = MockNotificationCenter()
-        notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithSuccess) { notification in
+        let reference = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithSuccess) { notification in
             let taskSendRequestValue = IterableNotificationUtil.notificationToTaskSendRequestValue(notification)!
             taskIds.append(taskSendRequestValue.taskId)
             expectation1.fulfill()
         }
+        XCTAssertNotNil(reference)
 
         let taskRunner = IterableTaskRunner(networkSession: MockNetworkSession(),
                                             persistenceContextProvider: persistenceContextProvider,
@@ -46,10 +47,11 @@ class TaskRunnerTests: XCTestCase {
         wait(for: [expectation1], timeout: 15.0)
         XCTAssertEqual(taskIds, scheduledTaskIds)
 
-        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 0)
+        waitForZeroTasks()
+        
         taskRunner.stop()
     }
-
+    
     func testFailureWithRetry() throws {
         let networkError = IterableError.general(description: "The Internet connection appears to be offline.")
         let networkSession = MockNetworkSession(statusCode: 0, data: nil, error: networkError)
@@ -57,12 +59,13 @@ class TaskRunnerTests: XCTestCase {
         var scheduledTaskIds = [String]()
         var retryTaskIds = [String]()
         let notificationCenter = MockNotificationCenter()
-        notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithRetry) { notification in
+        let reference = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithRetry) { notification in
             let taskSendRequestError = IterableNotificationUtil.notificationToTaskSendRequestError(notification)!
             if !retryTaskIds.contains(taskSendRequestError.taskId) {
                 retryTaskIds.append(taskSendRequestError.taskId)
             }
         }
+        XCTAssertNotNil(reference)
 
         let taskRunner = IterableTaskRunner(networkSession: networkSession,
                                             persistenceContextProvider: persistenceContextProvider,
@@ -94,11 +97,12 @@ class TaskRunnerTests: XCTestCase {
         var scheduledTaskIds = [String]()
         var failedTaskIds = [String]()
         let notificationCenter = MockNotificationCenter()
-        notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithNoRetry) { notification in
+        let reference = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithNoRetry) { notification in
             let taskSendRequestError = IterableNotificationUtil.notificationToTaskSendRequestError(notification)!
             failedTaskIds.append(taskSendRequestError.taskId)
             expectation1.fulfill()
         }
+        XCTAssertNotNil(reference)
 
         let taskRunner = IterableTaskRunner(networkSession: networkSession,
                                             persistenceContextProvider: persistenceContextProvider,
@@ -113,7 +117,8 @@ class TaskRunnerTests: XCTestCase {
         wait(for: [expectation1], timeout: 15.0)
         XCTAssertEqual(failedTaskIds, scheduledTaskIds)
 
-        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 0)
+        waitForZeroTasks()
+        
         taskRunner.stop()
     }
 
@@ -173,7 +178,8 @@ class TaskRunnerTests: XCTestCase {
         
         verifyTaskIsExecuted(notificationCenter, withinInterval: 10.0)
 
-        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 0)
+        waitForZeroTasks()
+
         taskRunner.stop()
     }
     
@@ -267,6 +273,15 @@ class TaskRunnerTests: XCTestCase {
         wait(for: [expectation1], timeout: 5.0)
     }
     
+    private func waitForZeroTasks() {
+        let predicate = NSPredicate { (_, _) -> Bool in
+            try! self.persistenceContextProvider.mainQueueContext().findAllTasks().count == 0
+        }
+        
+        let expectation1 = expectation(for: predicate, evaluatedWith: nil, handler: nil)
+        wait(for: [expectation1], timeout: 5.0)
+    }
+
     private func scheduleSampleTask(notificationCenter: NotificationCenterProtocol, dateProvider: DateProviderProtocol = SystemDateProvider()) throws -> String {
         let apiKey = "zee-api-key"
         let eventName = "CustomEvent1"
@@ -292,26 +307,26 @@ class TaskRunnerTests: XCTestCase {
         let expectation1 = expectation(description: "Wait for task complete notification.")
         expectation1.isInverted = true
         
-        let id1 = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithRetry) { _ in
+        let reference1 = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithRetry) { _ in
             XCTFail()
         }
-        let id2 = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithNoRetry) { _ in
+        let reference2 = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithNoRetry) { _ in
             XCTFail()
         }
-        let id3 = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithSuccess) { _ in
+        let reference3 = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithSuccess) { _ in
             XCTFail()
         }
         wait(for: [expectation1], timeout: interval)
-        notificationCenter.removeCallbacks(withIds: id1, id2, id3)
+        notificationCenter.removeCallbacks(withIds: reference1.callbackId, reference2.callbackId, reference3.callbackId)
     }
 
     private func verifyTaskIsExecuted(_ notificationCenter: MockNotificationCenter, withinInterval interval: TimeInterval) {
         let expectation1 = expectation(description: "Wait for task complete notification.")
-        let id1 = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithSuccess) { _ in
+        let reference = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithSuccess) { _ in
             expectation1.fulfill()
         }
         wait(for: [expectation1], timeout: interval)
-        notificationCenter.removeCallbacks(withIds: id1)
+        notificationCenter.removeCallbacks(withIds: reference.callbackId)
     }
 
     private let deviceMetadata = DeviceMetadata(deviceId: IterableUtil.generateUUID(),

@@ -97,6 +97,7 @@ class MockDependencyContainer: DependencyContainerProtocol {
          applicationStateProvider: ApplicationStateProviderProtocol,
          notificationCenter: NotificationCenterProtocol,
          apnsTypeChecker: APNSTypeCheckerProtocol) {
+        ITBInfo()
         self.dateProvider = dateProvider
         self.networkSession = networkSession
         self.notificationStateProvider = notificationStateProvider
@@ -108,6 +109,10 @@ class MockDependencyContainer: DependencyContainerProtocol {
         self.applicationStateProvider = applicationStateProvider
         self.notificationCenter = notificationCenter
         self.apnsTypeChecker = apnsTypeChecker
+    }
+    
+    deinit {
+        ITBInfo()
     }
     
     func createInAppFetcher(apiClient _: ApiClientProtocol) -> InAppFetcherProtocol {

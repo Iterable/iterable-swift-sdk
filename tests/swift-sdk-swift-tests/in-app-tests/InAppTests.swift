@@ -1148,9 +1148,11 @@ class InAppTests: XCTestCase {
         """.toJsonDict()
         
         let mockNotificationCenter = MockNotificationCenter()
-        mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) { _ in
+        let reference = mockNotificationCenter.addCallback(forNotification: .iterableInboxChanged) { _ in
             expectation1.fulfill()
         }
+        
+        XCTAssertNotNil(reference)
         
         let config = IterableConfig()
         let internalApi = IterableAPIInternal.initializeForTesting(config: config, notificationCenter: mockNotificationCenter)
