@@ -35,6 +35,24 @@ open class IterableInboxNavigationViewController: UINavigationController {
         }
     }
     
+    /// We default, we don't show any message when inbox is empty.
+    /// If you want to show a message, such as, "There are no messages", you will
+    /// have to set the `noMessagesTitle` and  `noMessagesText` properties below.
+
+    /// Use this to set the title to show when there are no message in the inbox.
+    @IBInspectable public var noMessagesTitle: String? = nil {
+        didSet {
+            inboxViewController?.noMessagesTitle = noMessagesTitle
+        }
+    }
+
+    /// Use this to set the message to show when there are no message in the inbox.
+    @IBInspectable public var noMessagesBody: String? = nil {
+        didSet {
+            inboxViewController?.noMessagesBody = noMessagesBody
+        }
+    }
+
     /// Set this property to override default inbox display behavior. You should set either this property
     /// or `viewDelegateClassName`property but not both.
     public var viewDelegate: IterableInboxViewControllerViewDelegate? {
