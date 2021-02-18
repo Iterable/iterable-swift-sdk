@@ -42,7 +42,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
      */
     @discardableResult static func showIterableHtmlMessage(_ htmlString: String,
                                                            messageMetadata: IterableInAppMessageMetadata? = nil,
-                                                           padding: UIEdgeInsets = .zero) -> ShowResult {
+                                                           padding: Padding = .zero) -> ShowResult {
         guard !InAppPresenter.isPresenting else {
             return .notShown("In-app notification is being presented.")
         }
@@ -131,7 +131,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
         
         return showIterableHtmlMessage(content.html,
                                        messageMetadata: metadata,
-                                       padding: content.edgeInsets)
+                                       padding: content.padding)
     }
     
     // deprecated - will be removed in version 6.3.x or above

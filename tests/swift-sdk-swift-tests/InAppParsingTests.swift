@@ -12,8 +12,8 @@ class InAppParsingTests: XCTestCase {
     }
     
     func testGetPaddingInvalid() {
-        let insets = HtmlContentParser.getPadding(fromInAppSettings: [:])
-        XCTAssertEqual(insets, UIEdgeInsets.zero)
+        let padding = HtmlContentParser.getPadding(fromInAppSettings: [:])
+        XCTAssertEqual(padding, Padding.zero)
     }
     
     func testGetPaddingFull() {
@@ -24,15 +24,17 @@ class InAppParsingTests: XCTestCase {
             "right": ["right": "0"],
         ]
         
-        let insets = HtmlContentParser.getPadding(fromInAppSettings: payload)
-        XCTAssertEqual(insets, UIEdgeInsets.zero)
+        let padding = HtmlContentParser.getPadding(fromInAppSettings: payload)
+        XCTAssertEqual(padding, Padding.zero)
         
-        var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["top"]))
-        padding.left = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["right"]))
-        XCTAssertEqual(padding, UIEdgeInsets.zero)
+        let top = PaddingParser.decodePaddingValue(payload["top"])
+        let left = PaddingParser.decodePadding(payload["left"])
+        let bottom = PaddingParser.decodePaddingValue(payload["bottom"])
+        let right = PaddingParser.decodePadding(payload["right"])
+        XCTAssertEqual(Padding(top: top,
+                               left: left,
+                               bottom: bottom,
+                               right: right), Padding.zero)
     }
     
     func testGetPaddingCenter() {
@@ -42,16 +44,22 @@ class InAppParsingTests: XCTestCase {
             "bottom": ["displayOption": "AutoExpand"],
             "right": ["right": "0"],
         ]
-        
-        let insets = HtmlContentParser.getPadding(fromInAppSettings: payload)
-        XCTAssertEqual(insets, UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
-        
-        var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["top"]))
-        padding.left = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["right"]))
-        XCTAssertEqual(padding, UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
+        let expected = Padding(top: .autoExpand,
+                               left: 0,
+                               bottom: .autoExpand,
+                               right: 0)
+
+        let padding = HtmlContentParser.getPadding(fromInAppSettings: payload)
+        XCTAssertEqual(padding, expected)
+
+        let top = PaddingParser.decodePaddingValue(payload["top"])
+        let left = PaddingParser.decodePadding(payload["left"])
+        let bottom = PaddingParser.decodePaddingValue(payload["bottom"])
+        let right = PaddingParser.decodePadding(payload["right"])
+        XCTAssertEqual(Padding(top: top,
+                               left: left,
+                               bottom: bottom,
+                               right: right), expected)
     }
     
     func testGetPaddingTop() {
@@ -61,16 +69,22 @@ class InAppParsingTests: XCTestCase {
             "bottom": ["displayOption": "AutoExpand"],
             "right": ["right": "0"],
         ]
+        let expected = Padding(top: .percent(value: 0),
+                               left: 0,
+                               bottom: .autoExpand,
+                               right: 0)
         
-        let insets = HtmlContentParser.getPadding(fromInAppSettings: payload)
-        XCTAssertEqual(insets, UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
-        
-        var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["top"]))
-        padding.left = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["right"]))
-        XCTAssertEqual(padding, UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
+        let padding = HtmlContentParser.getPadding(fromInAppSettings: payload)
+        XCTAssertEqual(padding, expected)
+
+        let top = PaddingParser.decodePaddingValue(payload["top"])
+        let left = PaddingParser.decodePadding(payload["left"])
+        let bottom = PaddingParser.decodePaddingValue(payload["bottom"])
+        let right = PaddingParser.decodePadding(payload["right"])
+        XCTAssertEqual(Padding(top: top,
+                               left: left,
+                               bottom: bottom,
+                               right: right), expected)
     }
     
     func testGetPaddingBottom() {
@@ -80,16 +94,22 @@ class InAppParsingTests: XCTestCase {
             "bottom": ["percentage": "0"],
             "right": ["right": "0"],
         ]
+        let expected = Padding(top: .autoExpand,
+                               left: 0,
+                               bottom: .percent(value: 0),
+                               right: 0)
         
-        let insets = HtmlContentParser.getPadding(fromInAppSettings: payload)
-        XCTAssertEqual(insets, UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
-        
-        var padding = UIEdgeInsets.zero
-        padding.top = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["top"]))
-        padding.left = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["left"]))
-        padding.bottom = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["bottom"]))
-        padding.right = CGFloat(HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.decodePadding(payload["right"]))
-        XCTAssertEqual(padding, UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
+        let padding = HtmlContentParser.getPadding(fromInAppSettings: payload)
+        XCTAssertEqual(padding, expected)
+
+        let top = PaddingParser.decodePaddingValue(payload["top"])
+        let left = PaddingParser.decodePadding(payload["left"])
+        let bottom = PaddingParser.decodePaddingValue(payload["bottom"])
+        let right = PaddingParser.decodePadding(payload["right"])
+        XCTAssertEqual(Padding(top: top,
+                               left: left,
+                               bottom: bottom,
+                               right: right), expected)
     }
 
     func testParseShouldAnimate1() {
@@ -225,27 +245,47 @@ class InAppParsingTests: XCTestCase {
     }
 
     func testNotificationPaddingFull() {
-        let notificationType = HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.location(fromPadding: UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0))
+        let padding = Padding(top: .percent(value: 0),
+                              left: 0,
+                              bottom: .percent(value: 0),
+                              right: 0)
+        let notificationType = HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.location(fromPadding: padding)
         XCTAssertEqual(notificationType, .full)
     }
     
     func testNotificationPaddingTop() {
-        let notificationType = HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.location(fromPadding: UIEdgeInsets(top: 0, left: 0, bottom: -1, right: 0))
+        let padding = Padding(top: .percent(value: 0),
+                              left: 0,
+                              bottom: .autoExpand,
+                              right: 0)
+        let notificationType = HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.location(fromPadding: padding)
         XCTAssertEqual(notificationType, .top)
     }
     
     func testNotificationPaddingBottom() {
-        let notificationType = HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.location(fromPadding: UIEdgeInsets(top: -1, left: 0, bottom: 0, right: 0))
+        let padding = Padding(top: .autoExpand,
+                              left: 0,
+                              bottom: .percent(value: 0),
+                              right: 0)
+        let notificationType = HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.location(fromPadding: padding)
         XCTAssertEqual(notificationType, .bottom)
     }
     
     func testNotificationPaddingCenter() {
-        let notificationType = HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.location(fromPadding: UIEdgeInsets(top: -1, left: 0, bottom: -1, right: 0))
+        let padding = Padding(top: .autoExpand,
+                              left: 0,
+                              bottom: .autoExpand,
+                              right: 0)
+        let notificationType = HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.location(fromPadding: padding)
         XCTAssertEqual(notificationType, .center)
     }
     
     func testNotificationPaddingDefault() {
-        let notificationType = HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.location(fromPadding: UIEdgeInsets(top: 10, left: 0, bottom: 20, right: 0))
+        let padding = Padding(top: .percent(value: 10),
+                              left: 0,
+                              bottom: .percent(value: 20),
+                              right: 0)
+        let notificationType = HtmlContentParser.InAppDisplaySettingsParser.PaddingParser.location(fromPadding: padding)
         XCTAssertEqual(notificationType, .center)
     }
     
