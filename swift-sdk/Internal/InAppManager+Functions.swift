@@ -52,19 +52,19 @@ struct MessagesProcessor {
         
         ITBDebug("processing message with id: \(message.messageId)")
         
-        if inAppDisplayChecker.isOkToShowNow(message: message) {
-            ITBDebug("isOkToShowNow")
-            if inAppDelegate.onNew(message: message) == .show {
-                ITBDebug("delegate returned show")
-                return .show(message)
-            } else {
-                ITBDebug("delegate returned skip")
-                return .skip(message)
-            }
-        } else {
+        guard inAppDisplayChecker.isOkToShowNow(message: message) else {
             ITBDebug("Not ok to show now")
-            
             return .wait
+        }
+        
+        ITBDebug("isOkToShowNow")
+        
+        if inAppDelegate.onNew(message: message) == .show {
+            ITBDebug("delegate returned show")
+            return .show(message)
+        } else {
+            ITBDebug("delegate returned skip")
+            return .skip(message)
         }
     }
     
