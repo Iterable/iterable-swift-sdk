@@ -71,6 +71,7 @@ struct MessagesProcessor {
     private func getFirstProcessableTriggeredMessage() -> IterableInAppMessage? {
         messagesMap.values
             .filter(MessagesProcessor.isProcessableTriggeredMessage)
+            .filter({ !$0.read })
             .sorted { $0.priorityLevel < $1.priorityLevel }
             .first
     }
