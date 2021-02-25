@@ -59,7 +59,8 @@ class TaskSchedulerTests: XCTestCase {
                                                 appPackageName: Bundle.main.appPackageName ?? "")
 
     private lazy var persistenceContextProvider: IterablePersistenceContextProvider = {
-        let provider = CoreDataPersistenceContextProvider(dateProvider: dateProvider)!
+        let provider = CoreDataPersistenceContextProvider(dateProvider: dateProvider,
+                                                          fromBundle: Bundle(for: PersistentContainer.self))!
         return provider
     }()
 

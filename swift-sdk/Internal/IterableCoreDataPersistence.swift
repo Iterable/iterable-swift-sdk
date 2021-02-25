@@ -23,17 +23,27 @@ enum PersistenceConst {
 
 @available(iOS 10.0, *)
 class PersistentContainer: NSPersistentContainer {
-    static let shared: PersistentContainer? = {
-        guard let url = ResourceHelper.url(forResource: PersistenceConst.dataModelFileName, withExtension: PersistenceConst.dataModelExtension, fromBundle: Bundle.main) else {
-            ITBError("Could not find \(PersistenceConst.dataModelFileName) in bundle")
-            return nil
+    static var shared: PersistentContainer?
+    
+    static func initialize(fromBundle bundle: Bundle) -> PersistentContainer? {
+        if shared == nil {
+            shared = create(fromBundle: bundle)
         }
-        ITBInfo("DB Bundle url: \(url)")
-        guard let managedObjectModel = NSManagedObjectModel(contentsOf: url) else {
+        return shared
+    }
+    
+    override func newBackgroundContext() -> NSManagedObjectContext {
+        let backgroundContext = super.newBackgroundContext()
+        backgroundContext.automaticallyMergesChangesFromParent = true
+        backgroundContext.mergePolicy = NSMergePolicy(merge: NSMergePolicyType.mergeByPropertyStoreTrumpMergePolicyType)
+        return backgroundContext
+    }
+
+    private static func create(fromBundle bundle: Bundle) -> PersistentContainer? {
+        guard let managedObjectModel = createManagedObjectModel(fromBundle: bundle) else {
             ITBError("Could not initialize managed object model")
             return nil
         }
-        
         let container = PersistentContainer(name: PersistenceConst.dataModelFileName, managedObjectModel: managedObjectModel)
         container.loadPersistentStores { desc, error in
             if let error = error {
@@ -47,20 +57,29 @@ class PersistentContainer: NSPersistentContainer {
         container.viewContext.mergePolicy = NSMergePolicy(merge: NSMergePolicyType.mergeByPropertyStoreTrumpMergePolicyType)
         
         return container
-    }()
+    }
     
-    override func newBackgroundContext() -> NSManagedObjectContext {
-        let backgroundContext = super.newBackgroundContext()
-        backgroundContext.automaticallyMergesChangesFromParent = true
-        backgroundContext.mergePolicy = NSMergePolicy(merge: NSMergePolicyType.mergeByPropertyStoreTrumpMergePolicyType)
-        return backgroundContext
+    private static func createManagedObjectModel(fromBundle bundle: Bundle) -> NSManagedObjectModel? {
+        guard let url = managedObjectUrl(fromBundle: bundle) else {
+            ITBError("Could not find \(PersistenceConst.dataModelFileName).\(PersistenceConst.dataModelExtension) in bundle")
+            return nil
+        }
+        ITBInfo("DB Bundle url: \(url)")
+        return NSManagedObjectModel(contentsOf: url)
+    }
+    
+    private static func managedObjectUrl(fromBundle bundle: Bundle) -> URL? {
+        ResourceHelper.url(forResource: PersistenceConst.dataModelFileName,
+                           withExtension: PersistenceConst.dataModelExtension,
+                           fromBundle: bundle)
     }
 }
 
 @available(iOS 10.0, *)
 struct CoreDataPersistenceContextProvider: IterablePersistenceContextProvider {
-    init?(dateProvider: DateProviderProtocol = SystemDateProvider()) {
-        guard let persistentContainer = PersistentContainer.shared else {
+    init?(dateProvider: DateProviderProtocol = SystemDateProvider(),
+          fromBundle bundle: Bundle = Bundle.main) {
+        guard let persistentContainer = PersistentContainer.initialize(fromBundle: bundle) else {
             return nil
         }
         self.persistentContainer = persistentContainer
