@@ -71,13 +71,12 @@ struct MessagesProcessor {
     private func getFirstProcessableTriggeredMessage() -> IterableInAppMessage? {
         messagesMap.values
             .filter(MessagesProcessor.isProcessableTriggeredMessage)
-            .filter({ !$0.read })
             .sorted { $0.priorityLevel < $1.priorityLevel }
             .first
     }
     
     private static func isProcessableTriggeredMessage(_ message: IterableInAppMessage) -> Bool {
-        message.didProcessTrigger == false && message.trigger.type == .immediate
+        !message.didProcessTrigger && message.trigger.type == .immediate && !message.read
     }
     
     private mutating func updateMessage(_ message: IterableInAppMessage, didProcessTrigger: Bool? = nil, consumed: Bool? = nil) {
