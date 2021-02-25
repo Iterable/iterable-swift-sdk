@@ -24,7 +24,7 @@ enum PersistenceConst {
 @available(iOS 10.0, *)
 class PersistentContainer: NSPersistentContainer {
     static let shared: PersistentContainer? = {
-        guard let url = ResourceHelper.url(forResource: PersistenceConst.dataModelFileName, withExtension: PersistenceConst.dataModelExtension, fromBundle: Bundle(for: PersistentContainer.self)) else {
+        guard let url = ResourceHelper.url(forResource: PersistenceConst.dataModelFileName, withExtension: PersistenceConst.dataModelExtension, fromBundle: Bundle.main) else {
             ITBError("Could not find \(PersistenceConst.dataModelFileName) in bundle")
             return nil
         }
