@@ -1285,7 +1285,10 @@ class InAppTests: XCTestCase {
             condition1.fulfill()
         }
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: mockInAppFetcher,
+        let config = IterableConfig()
+        config.inAppDisplayInterval = 1.0
+        let internalAPI = IterableAPIInternal.initializeForTesting(config: config,
+                                                                   inAppFetcher: mockInAppFetcher,
                                                                    inAppDisplayer: mockInAppDisplayer)
         
         // TODO: have this test go through the whole list inside messages
