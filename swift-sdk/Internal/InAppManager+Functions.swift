@@ -123,11 +123,16 @@ struct MessagesObtainedHandler {
         let addedInboxCount = addedMessages.reduce(0) { $1.saveToInbox ? $0 + 1 : $0 }
         
         var newMessagesMap = OrderedDictionary<String, IterableInAppMessage>()
-        messages.forEach {
-            if let existingMessage = messagesMap[$0.messageId] {
-                newMessagesMap[$0.messageId] = existingMessage
+        messages.forEach { serverMessage in
+            let messageId = serverMessage.messageId
+            if let existingMessage = messagesMap[messageId] {
+                if Self.shouldOverwrite(clientMessage: existingMessage, withServerMessage: serverMessage) {
+                    newMessagesMap[messageId] = serverMessage
+                } else {
+                    newMessagesMap[messageId] = existingMessage
+                }
             } else {
-                newMessagesMap[$0.messageId] = $0
+                newMessagesMap[messageId] = serverMessage
             }
         }
         
@@ -138,4 +143,11 @@ struct MessagesObtainedHandler {
     
     private let messagesMap: OrderedDictionary<String, IterableInAppMessage>
     private let messages: [IterableInAppMessage]
+
+    // We should only overwrite if the server is read and client is not read.
+    // This is because some client changes may not have propagated to server yet.
+    private static func shouldOverwrite(clientMessage: IterableInAppMessage,
+                                        withServerMessage serverMessage: IterableInAppMessage) -> Bool {
+        serverMessage.read && !clientMessage.read
+    }
 }
