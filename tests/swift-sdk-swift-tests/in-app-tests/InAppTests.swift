@@ -1260,7 +1260,7 @@ class InAppTests: XCTestCase {
     }
     
     func testIgnoreReadMessagesOnProcessing() {
-        let condition1 = expectation(description: "")
+        let condition1 = expectation(description: "\(#function) - missing message getting showed")
         condition1.expectedFulfillmentCount = 3
         
         let idWithRead = "2"
@@ -1278,8 +1278,6 @@ class InAppTests: XCTestCase {
         mockInAppDisplayer.onShow.onSuccess { [weak mockInAppDisplayer = mockInAppDisplayer] message in
             mockInAppDisplayer?.click(url: URL(string: "https://iterable.com")!)
             
-            print("jay \(message.messageId)")
-            
             XCTAssertFalse(message.read, "\(#function): message with ID: \(message.messageId) had read: true")
             
             condition1.fulfill()
@@ -1287,11 +1285,11 @@ class InAppTests: XCTestCase {
         
         let config = IterableConfig()
         config.inAppDisplayInterval = 1.0
+        
         let internalAPI = IterableAPIInternal.initializeForTesting(config: config,
                                                                    inAppFetcher: mockInAppFetcher,
                                                                    inAppDisplayer: mockInAppDisplayer)
         
-        // TODO: have this test go through the whole list inside messages
         mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages)
         
         wait(for: [condition1], timeout: testExpectationTimeout)
