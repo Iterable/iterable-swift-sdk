@@ -1259,8 +1259,47 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
     }
     
-    private func getEmptyInAppMessage() -> IterableInAppMessage {
-        IterableInAppMessage(messageId: "", campaignId: 0, content: getEmptyInAppContent())
+    func testIgnoreReadMessagesOnProcessing() {
+        let condition1 = expectation(description: "")
+        condition1.expectedFulfillmentCount = 3
+        
+        let idWithRead = "2"
+        
+        let messages = [
+            getEmptyInAppMessage(id: "1"),
+            getInAppMessage(id: idWithRead, read: true),
+            getEmptyInAppMessage(id: "3"),
+            getInAppMessage(id: "4", read: false)
+        ]
+        
+        let mockInAppFetcher = MockInAppFetcher(messages: messages)
+        let mockInAppDisplayer = MockInAppDisplayer()
+        
+        mockInAppDisplayer.onShow.onSuccess { [weak mockInAppDisplayer = mockInAppDisplayer] message in
+            mockInAppDisplayer?.click(url: URL(string: "https://iterable.com")!)
+            
+            print("jay \(message.messageId)")
+            
+            XCTAssertFalse(message.read, "\(#function): message with ID: \(message.messageId) had read: true")
+            
+            condition1.fulfill()
+        }
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: mockInAppFetcher,
+                                                                   inAppDisplayer: mockInAppDisplayer)
+        
+        // TODO: have this test go through the whole list inside messages
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages)
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+    
+    private func getInAppMessage(id: String = "", read: Bool) -> IterableInAppMessage {
+        IterableInAppMessage(messageId: id, campaignId: 0, content: getEmptyInAppContent(), read: read)
+    }
+    
+    private func getEmptyInAppMessage(id: String = "") -> IterableInAppMessage {
+        IterableInAppMessage(messageId: id, campaignId: 0, content: getEmptyInAppContent())
     }
     
     private func getEmptyInAppContent() -> IterableInAppContent {
