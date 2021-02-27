@@ -255,7 +255,7 @@ class TaskProcessorTests: XCTestCase {
                                                 appPackageName: Bundle.main.appPackageName ?? "")
 
     private lazy var persistenceProvider: IterablePersistenceContextProvider = {
-        let provider = CoreDataPersistenceContextProvider()!
+        let provider = CoreDataPersistenceContextProvider(fromBundle: Bundle(for: PersistentContainer.self))!
         try! provider.mainQueueContext().deleteAllTasks()
         try! provider.mainQueueContext().save()
         return provider
