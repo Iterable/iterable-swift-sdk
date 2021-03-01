@@ -122,12 +122,14 @@ struct MessagesObtainedHandler {
         let removedInboxCount = removedMessages.reduce(0) { $1.saveToInbox ? $0 + 1 : $0 }
         let addedInboxCount = addedMessages.reduce(0) { $1.saveToInbox ? $0 + 1 : $0 }
         
+        var messagesOverwritten = 0
         var newMessagesMap = OrderedDictionary<String, IterableInAppMessage>()
         messages.forEach { serverMessage in
             let messageId = serverMessage.messageId
             if let existingMessage = messagesMap[messageId] {
                 if Self.shouldOverwrite(clientMessage: existingMessage, withServerMessage: serverMessage) {
                     newMessagesMap[messageId] = serverMessage
+                    messagesOverwritten += 1
                 } else {
                     newMessagesMap[messageId] = existingMessage
                 }
@@ -136,7 +138,7 @@ struct MessagesObtainedHandler {
             }
         }
         
-        return MergeMessagesResult(inboxChanged: removedInboxCount + addedInboxCount > 0,
+        return MergeMessagesResult(inboxChanged: removedInboxCount + addedInboxCount + messagesOverwritten > 0,
                                    messagesMap: newMessagesMap,
                                    deliveredMessages: addedMessages)
     }
