@@ -60,24 +60,26 @@ class InAppPersistenceTests: XCTestCase {
     
     func testPersistentReadStateAfterLogout() {
         let id = "1"
-        let messages = [getInboxMessage(id, false)]
         
-        let mockInAppPersister = MockInAppPersister()
-        mockInAppPersister.persist(messages)
+        let mockInAppFetcher = MockInAppFetcher(messages: [getInboxMessage(id, false)])
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(inAppPersister: mockInAppPersister)
-        
-        print("jay \(internalAPI.inAppManager.getMessages())")
+        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: mockInAppFetcher)
+        let inboxModel = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
         
         internalAPI.email = InAppPersistenceTests.email
         
-        internalAPI.trackInAppOpen(messages.first!, location: .inbox)
+        guard let firstMsg = mockInAppFetcher.messages.first else {
+            XCTFail("could not get the first message")
+            return
+        }
+        
+        inboxModel.set(read: true, forMessage: inboxModel.message(atIndexPath: IndexPath(row: 0, section: 0)))
         
         internalAPI.email = nil
         
         internalAPI.email = InAppPersistenceTests.email
         
-//        XCTAssertTrue(internalAPI.inAppManager.getMessages().first!.read)
+        XCTAssertTrue(firstMsg.read)
     }
     
     func testPersistentReadStateFromServerPayload() {
