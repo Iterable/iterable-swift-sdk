@@ -57,4 +57,68 @@ class InAppPersistenceTests: XCTestCase {
             XCTFail("conversion to string failed")
         }
     }
+    
+    func testPersistentReadStateAfterLogout() {
+        let id = "1"
+        let messages = [getInboxMessage(id, false)]
+        
+        let mockInAppPersister = MockInAppPersister()
+        mockInAppPersister.persist(messages)
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(inAppPersister: mockInAppPersister)
+        
+        print("jay \(internalAPI.inAppManager.getMessages())")
+        
+        internalAPI.email = InAppPersistenceTests.email
+        
+        internalAPI.trackInAppOpen(messages.first!, location: .inbox)
+        
+        internalAPI.email = nil
+        
+        internalAPI.email = InAppPersistenceTests.email
+        
+//        XCTAssertTrue(internalAPI.inAppManager.getMessages().first!.read)
+    }
+    
+    func testPersistentReadStateFromServerPayload() {
+        let messages = [getInboxMessage("", true)]
+        
+        let mockInAppFetcher = MockInAppFetcher()
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: mockInAppFetcher)
+        
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages)
+            .onSuccess { [weak internalAPI = internalAPI] count in
+                guard let firstMessage = internalAPI?.inAppManager.getMessages().first else {
+                    XCTFail("could not get in-app message for test")
+                    return
+                }
+                
+                XCTAssertTrue(firstMessage.read)
+        }
+    }
+    
+    func testPersistentReadStateForMultipleUsers() {
+//        let secondUser = "another@email.com"
+        
+        
+    }
+    
+    private static let email = "user@example.com"
+    
+    private let emptyInAppContent = IterableHtmlInAppContent(edgeInsets: .zero, html: "")
+    
+    private func getInboxMessage(_ id: String = "", _ read: Bool) -> IterableInAppMessage {
+        return IterableInAppMessage(messageId: id,
+                                    campaignId: nil,
+                                    trigger: .defaultTrigger,
+                                    createdAt: nil,
+                                    expiresAt: nil,
+                                    content: emptyInAppContent,
+                                    saveToInbox: true,
+                                    inboxMetadata: nil,
+                                    customPayload: nil,
+                                    read: read,
+                                    priorityLevel: Const.PriorityLevel.unassigned)
+    }
 }
