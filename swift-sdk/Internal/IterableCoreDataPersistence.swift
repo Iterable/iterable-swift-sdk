@@ -47,7 +47,7 @@ class PersistentContainer: NSPersistentContainer {
         let container = PersistentContainer(name: PersistenceConst.dataModelFileName, managedObjectModel: managedObjectModel)
         container.loadPersistentStores { desc, error in
             if let error = error {
-                fatalError("Unresolved error \(error)")
+                ITBError("Unresolved error when creating PersistentContainer: \(error)")
             }
             
             ITBInfo("Successfully loaded persistent store at: \(desc.url?.description ?? "nil")")
