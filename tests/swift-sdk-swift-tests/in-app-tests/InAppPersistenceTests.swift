@@ -69,7 +69,7 @@ class InAppPersistenceTests: XCTestCase {
         internalAPI.email = InAppPersistenceTests.email
         
         guard let firstMsg = mockInAppFetcher.messages.first else {
-            XCTFail("could not get the first message")
+            XCTFail("could not get the first message from fetcher")
             return
         }
         
