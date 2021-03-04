@@ -58,39 +58,24 @@ class InAppPersistenceTests: XCTestCase {
         }
     }
     
-    func testPersistentReadStateAfterLogout() {
-        let id = "1"
-        
-        let mockInAppFetcher = MockInAppFetcher(messages: [getInboxMessage(id, false)])
-        
-        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: mockInAppFetcher)
-        let inboxModel = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
-        
-        internalAPI.email = InAppPersistenceTests.email
-        
-        guard let firstMsg = mockInAppFetcher.messages.first else {
-            XCTFail("could not get the first message from fetcher")
-            return
-        }
-        
-        inboxModel.set(read: true, forMessage: inboxModel.message(atIndexPath: IndexPath(row: 0, section: 0)))
-        
-        internalAPI.email = nil
-        
-        internalAPI.email = InAppPersistenceTests.email
-        
-        XCTAssertTrue(firstMsg.read)
-    }
-    
     func testPersistentReadStateFromServerPayload() {
-        let messages = [getInboxMessage("", true)]
+        let messages = [getInboxMessage("1", false)]
         
         let mockInAppFetcher = MockInAppFetcher()
         
         let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: mockInAppFetcher)
         
+        let inboxVCModel = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
+        
         mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages)
-            .onSuccess { [weak internalAPI = internalAPI] count in
+            .onSuccess { [weak internalAPI = internalAPI, weak inboxVCModel = inboxVCModel] count in
+                guard let inboxMessage = inboxVCModel?.message(atIndexPath: IndexPath(row: 0, section: 0)) else {
+                    XCTFail("")
+                    return
+                }
+                
+                inboxVCModel?.set(read: true, forMessage: inboxMessage)
+                
                 guard let firstMessage = internalAPI?.inAppManager.getMessages().first else {
                     XCTFail("could not get in-app message for test")
                     return
