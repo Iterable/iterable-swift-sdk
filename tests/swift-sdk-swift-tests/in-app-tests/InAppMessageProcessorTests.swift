@@ -19,18 +19,18 @@ class InAppMessageProcessorTests: XCTestCase {
         let newMessages = [serverMessage]
         
         let result = MessagesObtainedHandler(messagesMap: messagesMap,
-                                              messages: newMessages).handle()
+                                             messages: newMessages).handle()
         
         XCTAssertTrue(result.inboxChanged)
     }
     
-    private let emptyInAppContent = IterableHtmlInAppContent(edgeInsets: .zero, html: "")
+    private static let emptyInAppContent = IterableHtmlInAppContent(edgeInsets: .zero, html: "")
     
     private func makeEmptyMessage() -> IterableInAppMessage {
-        IterableInAppMessage(messageId: "", campaignId: nil, content: emptyInAppContent)
+        IterableInAppMessage(messageId: "", campaignId: nil, content: InAppMessageProcessorTests.emptyInAppContent)
     }
     
     private func makeEmptyInboxMessage(_ messageId: String = "") -> IterableInAppMessage {
-        IterableInAppMessage(messageId: messageId, campaignId: nil, content: emptyInAppContent, saveToInbox: true, read: false)
+        IterableInAppMessage(messageId: messageId, campaignId: nil, content: InAppMessageProcessorTests.emptyInAppContent, saveToInbox: true, read: false)
     }
 }

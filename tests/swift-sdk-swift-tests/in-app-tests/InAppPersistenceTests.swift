@@ -100,15 +100,9 @@ class InAppPersistenceTests: XCTestCase {
         }
     }
     
-    func testPersistentReadStateForMultipleUsers() {
-//        let secondUser = "another@email.com"
-        
-        
-    }
-    
     private static let email = "user@example.com"
     
-    private let emptyInAppContent = IterableHtmlInAppContent(edgeInsets: .zero, html: "")
+    private static let emptyInAppContent = IterableHtmlInAppContent(edgeInsets: .zero, html: "")
     
     private func getInboxMessage(_ id: String = "", _ read: Bool) -> IterableInAppMessage {
         return IterableInAppMessage(messageId: id,
@@ -116,7 +110,7 @@ class InAppPersistenceTests: XCTestCase {
                                     trigger: .defaultTrigger,
                                     createdAt: nil,
                                     expiresAt: nil,
-                                    content: emptyInAppContent,
+                                    content: InAppPersistenceTests.emptyInAppContent,
                                     saveToInbox: true,
                                     inboxMetadata: nil,
                                     customPayload: nil,
