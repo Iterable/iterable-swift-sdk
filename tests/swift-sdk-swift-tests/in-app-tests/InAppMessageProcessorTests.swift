@@ -10,9 +10,9 @@ class InAppMessageProcessorTests: XCTestCase {
     func testMessagesObtainedShouldOverwriteForReadState() {
         let messageId = "1"
         
-        let localMessage = makeEmptyInboxMessage(messageId)
+        let localMessage = Self.makeEmptyInboxMessage(messageId)
         
-        let serverMessage = makeEmptyInboxMessage(messageId)
+        let serverMessage = Self.makeEmptyInboxMessage(messageId)
         serverMessage.read = true
         
         let messagesMap: OrderedDictionary<String, IterableInAppMessage> = [messageId: localMessage]
@@ -26,11 +26,11 @@ class InAppMessageProcessorTests: XCTestCase {
     
     private static let emptyInAppContent = IterableHtmlInAppContent(edgeInsets: .zero, html: "")
     
-    private func makeEmptyMessage() -> IterableInAppMessage {
-        IterableInAppMessage(messageId: "", campaignId: nil, content: InAppMessageProcessorTests.emptyInAppContent)
+    private static func makeEmptyMessage() -> IterableInAppMessage {
+        IterableInAppMessage(messageId: "", campaignId: nil, content: emptyInAppContent)
     }
     
-    private func makeEmptyInboxMessage(_ messageId: String = "") -> IterableInAppMessage {
-        IterableInAppMessage(messageId: messageId, campaignId: nil, content: InAppMessageProcessorTests.emptyInAppContent, saveToInbox: true, read: false)
+    private static func makeEmptyInboxMessage(_ messageId: String = "") -> IterableInAppMessage {
+        IterableInAppMessage(messageId: messageId, campaignId: nil, content: emptyInAppContent, saveToInbox: true, read: false)
     }
 }
