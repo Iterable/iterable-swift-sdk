@@ -109,7 +109,7 @@ open class IterableInboxNavigationViewController: UINavigationController {
     }
     
     override open func viewDidLoad() {
-        ITBInfo()
+        ITBDebug()
         
         super.viewDidLoad()
         
@@ -131,7 +131,7 @@ open class IterableInboxNavigationViewController: UINavigationController {
     }
     
     override open func viewWillAppear(_ animated: Bool) {
-        ITBInfo()
+        ITBDebug()
         
         super.viewWillAppear(animated)
         
@@ -139,7 +139,7 @@ open class IterableInboxNavigationViewController: UINavigationController {
     }
     
     override open func viewWillDisappear(_ animated: Bool) {
-        ITBInfo()
+        ITBDebug()
         
         super.viewWillDisappear(animated)
         
