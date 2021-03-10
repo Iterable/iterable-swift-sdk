@@ -23,7 +23,7 @@ class InAppTests: XCTestCase {
             }
             expectation1.fulfill()
         }
-        let internalApi = IterableAPIInternal.initializeForTesting(networkSession: mockNetworkSession, inAppFetcher: mockInAppFetcher)
+        let internalApi = InternalIterableAPI.initializeForTesting(networkSession: mockNetworkSession, inAppFetcher: mockInAppFetcher)
         internalApi.email = "user@example.com"
         
         let payloadFromServer = """
@@ -74,7 +74,7 @@ class InAppTests: XCTestCase {
         }
         config.urlDelegate = mockUrlDelegate
         
-        let internalApi = IterableAPIInternal.initializeForTesting(
+        let internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer
@@ -107,7 +107,7 @@ class InAppTests: XCTestCase {
         let config = IterableConfig()
         config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
         
-        let internalApi = IterableAPIInternal.initializeForTesting(
+        let internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer
@@ -161,7 +161,7 @@ class InAppTests: XCTestCase {
         config.urlDelegate = urlDelegate
         config.inAppDisplayInterval = 1.0
         
-        let internalApi = IterableAPIInternal.initializeForTesting(
+        let internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer
@@ -196,7 +196,7 @@ class InAppTests: XCTestCase {
         config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
         config.inAppDisplayInterval = 0.5
         
-        let internalApi = IterableAPIInternal.initializeForTesting(
+        let internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer
@@ -233,7 +233,7 @@ class InAppTests: XCTestCase {
             mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: 1))
         }
         
-        let internalApi = IterableAPIInternal.initializeForTesting(
+        let internalApi = InternalIterableAPI.initializeForTesting(
             inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer,
             urlOpener: mockUrlOpener
@@ -263,7 +263,7 @@ class InAppTests: XCTestCase {
         let mockUrlDelegate = MockUrlDelegate(returnValue: true)
         let config = IterableConfig()
         config.urlDelegate = mockUrlDelegate
-        let internalApi = IterableAPIInternal.initializeForTesting(
+        let internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer,
@@ -280,7 +280,7 @@ class InAppTests: XCTestCase {
         
         let mockInAppFetcher = MockInAppFetcher()
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(
+        let internalAPI = InternalIterableAPI.initializeForTesting(
             config: IterableConfig(),
             inAppFetcher: mockInAppFetcher
         )
@@ -309,7 +309,7 @@ class InAppTests: XCTestCase {
         
         let mockInAppFetcher = MockInAppFetcher()
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(
+        let internalAPI = InternalIterableAPI.initializeForTesting(
             config: IterableConfig(),
             inAppFetcher: mockInAppFetcher
         )
@@ -354,7 +354,7 @@ class InAppTests: XCTestCase {
         let config = IterableConfig()
         config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
         
-        let internalApi = IterableAPIInternal.initializeForTesting(
+        let internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer,
@@ -399,7 +399,7 @@ class InAppTests: XCTestCase {
         let config = IterableConfig()
         config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
         
-        let internalApi = IterableAPIInternal.initializeForTesting(
+        let internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer,
@@ -447,7 +447,7 @@ class InAppTests: XCTestCase {
         config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
         config.customActionDelegate = mockCustomActionDelegate
         
-        let internalApi = IterableAPIInternal.initializeForTesting(
+        let internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer
@@ -486,7 +486,7 @@ class InAppTests: XCTestCase {
         config.inAppDelegate = MockInAppDelegate(showInApp: .show)
         config.logDelegate = AllLogDelegate()
         
-        let internalApi = IterableAPIInternal.initializeForTesting(
+        let internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer
@@ -529,7 +529,7 @@ class InAppTests: XCTestCase {
         config.inAppDelegate = MockInAppDelegate(showInApp: .show)
         config.logDelegate = AllLogDelegate()
         
-        let internalApi = IterableAPIInternal.initializeForTesting(
+        let internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer
@@ -592,7 +592,7 @@ class InAppTests: XCTestCase {
         let config = IterableConfig()
         config.inAppDelegate = mockInAppDelegate
         
-        let internalApi = IterableAPIInternal.initializeForTesting(
+        let internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher
         )
@@ -614,7 +614,7 @@ class InAppTests: XCTestCase {
         let config = IterableConfig()
         config.inAppDelegate = mockInAppDelegate
         
-        let internalApi = IterableAPIInternal.initializeForTesting(
+        let internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher
         )
@@ -658,7 +658,7 @@ class InAppTests: XCTestCase {
         let mockApplicationStateProvider = MockApplicationStateProvider(applicationState: .background)
         let mockNotificationCenter = MockNotificationCenter()
         
-        let internalApi = IterableAPIInternal.initializeForTesting(
+        let internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer,
@@ -693,7 +693,7 @@ class InAppTests: XCTestCase {
         let mockApplicationStateProvider = MockApplicationStateProvider(applicationState: .background)
         let mockNotificationCenter = MockNotificationCenter()
         
-        let internalApi = IterableAPIInternal.initializeForTesting(
+        let internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             dateProvider: mockDateProvider,
             inAppFetcher: mockInAppFetcher,
@@ -740,7 +740,7 @@ class InAppTests: XCTestCase {
         let mockApplicationStateProvider = MockApplicationStateProvider(applicationState: .background)
         let mockNotificationCenter = MockNotificationCenter()
         
-        let internalApi = IterableAPIInternal.initializeForTesting(
+        let internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             dateProvider: mockDateProvider,
             inAppFetcher: mockInAppFetcher,
@@ -811,7 +811,7 @@ class InAppTests: XCTestCase {
         let config = IterableConfig()
         config.inAppDisplayInterval = retryInterval
         
-        let internalApi = IterableAPIInternal.initializeForTesting(
+        let internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             dateProvider: mockDateProvider,
             inAppFetcher: mockInAppFetcher,
@@ -847,7 +847,7 @@ class InAppTests: XCTestCase {
             mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: 1))
         }
         
-        let internalApi = IterableAPIInternal.initializeForTesting(
+        let internalApi = InternalIterableAPI.initializeForTesting(
             inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer
         )
@@ -918,7 +918,7 @@ class InAppTests: XCTestCase {
         config.urlDelegate = urlDelegate
         config.inAppDisplayInterval = interval
         
-        let internalApi = IterableAPIInternal.initializeForTesting(
+        let internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer
@@ -1009,7 +1009,7 @@ class InAppTests: XCTestCase {
         let config = IterableConfig()
         config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
         
-        let internalApi = IterableAPIInternal.initializeForTesting(
+        let internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher
         )
@@ -1072,7 +1072,7 @@ class InAppTests: XCTestCase {
         checkInAppRemoveMessagePayload(location: .inbox, source: .deleteButton, removeFunction: { $0.inAppManager.remove(message: $1, location: .inbox, source: .deleteButton) })
     }
     
-    private func checkInAppRemoveMessagePayload(location: InAppLocation, source: InAppDeleteSource?, removeFunction: @escaping (IterableAPIInternal, IterableInAppMessage) -> Void) {
+    private func checkInAppRemoveMessagePayload(location: InAppLocation, source: InAppDeleteSource?, removeFunction: @escaping (InternalIterableAPI, IterableInAppMessage) -> Void) {
         let expectation1 = expectation(description: "checkInAppRemoveMessagePayload")
         let mockInAppFetcher = MockInAppFetcher()
         let mockNetworkSession = MockNetworkSession()
@@ -1090,7 +1090,7 @@ class InAppTests: XCTestCase {
             }
             expectation1.fulfill()
         }
-        let internalApi = IterableAPIInternal.initializeForTesting(
+        let internalApi = InternalIterableAPI.initializeForTesting(
             networkSession: mockNetworkSession,
             inAppFetcher: mockInAppFetcher
         )
@@ -1155,7 +1155,7 @@ class InAppTests: XCTestCase {
         XCTAssertNotNil(reference)
         
         let config = IterableConfig()
-        let internalApi = IterableAPIInternal.initializeForTesting(config: config, notificationCenter: mockNotificationCenter)
+        let internalApi = InternalIterableAPI.initializeForTesting(config: config, notificationCenter: mockNotificationCenter)
         
         let appIntegrationInternal = IterableAppIntegrationInternal(tracker: internalApi,
                                                                     urlDelegate: config.urlDelegate,
@@ -1180,7 +1180,7 @@ class InAppTests: XCTestCase {
         let config = IterableConfig()
         config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
         
-        let internalApi = IterableAPIInternal.initializeForTesting(
+        let internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher
         )
@@ -1223,7 +1223,7 @@ class InAppTests: XCTestCase {
         config.inAppDelegate = mockInAppDelegate
         config.logDelegate = AllLogDelegate()
         
-        let internalApi = IterableAPIInternal.initializeForTesting(config: config,
+        let internalApi = InternalIterableAPI.initializeForTesting(config: config,
                                                                    inAppFetcher: mockInAppFetcher)
         
         mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, payload)
@@ -1242,7 +1242,7 @@ class InAppTests: XCTestCase {
         config.logDelegate = AllLogDelegate()
         config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
         
-        let internalApi = IterableAPIInternal.initializeForTesting(config: config,
+        let internalApi = InternalIterableAPI.initializeForTesting(config: config,
                                                                    dateProvider: mockDateProvider,
                                                                    inAppFetcher: mockInAppFetcher)
         
@@ -1349,7 +1349,7 @@ class InAppTests: XCTestCase {
         config.inAppDelegate = MockInAppDelegate(showInApp: .show)
         config.customActionDelegate = mockCustomActionDelegate
         
-        let internalApi = IterableAPIInternal.initializeForTesting(
+        let internalApi = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer

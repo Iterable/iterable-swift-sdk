@@ -44,13 +44,13 @@ class E2EDependencyContainer: DependencyContainerProtocol {
     }
 }
 
-extension IterableAPIInternal {
+extension InternalIterableAPI {
     @discardableResult static func initializeForE2E(apiKey: String,
                                                     launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
                                                     config: IterableConfig = IterableConfig(),
-                                                    localStorage: LocalStorageProtocol = MockLocalStorage()) -> IterableAPIInternal {
+                                                    localStorage: LocalStorageProtocol = MockLocalStorage()) -> InternalIterableAPI {
         let e2eDependencyContainer = E2EDependencyContainer()
-        let internalImplementation = IterableAPIInternal(apiKey: apiKey,
+        let internalImplementation = InternalIterableAPI(apiKey: apiKey,
                                                          launchOptions: launchOptions,
                                                          config: config,
                                                          dependencyContainer: e2eDependencyContainer)

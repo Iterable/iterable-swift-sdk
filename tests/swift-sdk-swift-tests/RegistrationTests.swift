@@ -26,7 +26,7 @@ class RegistrationTests: XCTestCase {
         config.pushIntegrationName = "my-push-integration"
         config.sandboxPushIntegrationName = "my-sandbox-push-integration"
         config.pushPlatform = .production
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey,
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: apiKey,
                                                                    config: config,
                                                                    networkSession: networkSession,
                                                                    notificationStateProvider: MockNotificationStateProvider(enabled: true))
@@ -79,7 +79,7 @@ class RegistrationTests: XCTestCase {
         config.pushIntegrationName = "my-push-integration"
         config.sandboxPushIntegrationName = "my-sandbox-push-integration"
         config.pushPlatform = .sandbox
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession)
         internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         internalAPI.register(token: token, onSuccess: { _ in
@@ -109,7 +109,7 @@ class RegistrationTests: XCTestCase {
         config.pushIntegrationName = "my-push-integration"
         config.sandboxPushIntegrationName = "my-sandbox-push-integration"
         config.pushPlatform = .auto
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession, apnsTypeChecker: MockAPNSTypeChecker(apnsType: .sandbox))
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession, apnsTypeChecker: MockAPNSTypeChecker(apnsType: .sandbox))
         internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         internalAPI.register(token: token, onSuccess: { _ in
@@ -139,7 +139,7 @@ class RegistrationTests: XCTestCase {
         config.pushIntegrationName = "my-push-integration"
         config.sandboxPushIntegrationName = "my-sandbox-push-integration"
         config.pushPlatform = .auto
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession, apnsTypeChecker: MockAPNSTypeChecker(apnsType: .production))
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession, apnsTypeChecker: MockAPNSTypeChecker(apnsType: .production))
         internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         internalAPI.register(token: token, onSuccess: { _ in
@@ -167,7 +167,7 @@ class RegistrationTests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
         config.pushPlatform = .auto
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession)
         internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         internalAPI.register(token: token, onSuccess: { _ in
@@ -195,7 +195,7 @@ class RegistrationTests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
         config.pushPlatform = .auto
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession, apnsTypeChecker: MockAPNSTypeChecker(apnsType: .production))
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession, apnsTypeChecker: MockAPNSTypeChecker(apnsType: .production))
         internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         internalAPI.register(token: token, onSuccess: { _ in

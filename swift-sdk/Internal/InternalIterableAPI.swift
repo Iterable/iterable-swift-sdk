@@ -6,7 +6,7 @@ import Foundation
 import UIKit
 import UserNotifications
 
-final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
+final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     var apiKey: String
     
     var email: String? {
@@ -684,7 +684,7 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
 
 // MARK: - DEPRECATED
 
-extension IterableAPIInternal {
+extension InternalIterableAPI {
     // deprecated - will be removed in version 6.3.x or above
     @discardableResult
     func trackInAppOpen(_ messageId: String,

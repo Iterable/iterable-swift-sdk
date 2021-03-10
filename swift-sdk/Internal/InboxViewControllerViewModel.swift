@@ -45,7 +45,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         sectionedMessages = sortAndFilter(messages: allMessagesInSections())
     }
     
-    init(internalAPIProvider: @escaping @autoclosure () -> IterableAPIInternal? = IterableAPI.internalImplementation) {
+    init(internalAPIProvider: @escaping @autoclosure () -> InternalIterableAPI? = IterableAPI.internalImplementation) {
         ITBInfo()
         
         self.internalAPIProvider = internalAPIProvider
@@ -302,7 +302,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         sectionedMessages.values
     }
     
-    private var internalAPI: IterableAPIInternal? {
+    private var internalAPI: InternalIterableAPI? {
         internalAPIProvider()
     }
     
@@ -313,7 +313,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     private var sectionedMessages = SectionedValues<Int, InboxMessageViewModel>()
     private var newSectionedMessages = SectionedValues<Int, InboxMessageViewModel>()
     private var sessionManager = InboxSessionManager()
-    private var internalAPIProvider: () -> IterableAPIInternal?
+    private var internalAPIProvider: () -> InternalIterableAPI?
     
     private var internalInAppManager: IterableInternalInAppManagerProtocol? {
         internalAPI?.inAppManager

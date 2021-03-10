@@ -202,7 +202,7 @@ class IterableAPIResponseTests: XCTestCase {
                   authProvider: self,
                   endPoint: Endpoint.api,
                   networkSession: networkSession,
-                  deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata,
+                  deviceMetadata: InternalIterableAPI.initializeForTesting().deviceMetadata,
                   dateProvider: dateProvider)
     }
     
@@ -211,7 +211,7 @@ class IterableAPIResponseTests: XCTestCase {
                   authProvider: self,
                   endPoint: Endpoint.api,
                   networkSession: MockNetworkSession(),
-                  deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata,
+                  deviceMetadata: InternalIterableAPI.initializeForTesting().deviceMetadata,
                   dateProvider: dateProvider)
     }
 }

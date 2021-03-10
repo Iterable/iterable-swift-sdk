@@ -9,7 +9,7 @@ import XCTest
 class EndpointTests: XCTestCase {
     func test01UpdateUser() throws {
         let expectation1 = expectation(description: #function)
-        let api = IterableAPIInternal.initializeForTesting(apiKey: EndpointTests.apiKey,
+        let api = InternalIterableAPI.initializeForTesting(apiKey: EndpointTests.apiKey,
                                                            networkSession: URLSession(configuration: .default),
                                                            notificationStateProvider: MockNotificationStateProvider(enabled: true))
         api.email = "user@example.com"
@@ -31,7 +31,7 @@ class EndpointTests: XCTestCase {
         
         let email = "user@example.com"
         let newEmail = IterableUtil.generateUUID() + "@example.com"
-        let api = IterableAPIInternal.initializeForTesting(apiKey: EndpointTests.apiKey,
+        let api = InternalIterableAPI.initializeForTesting(apiKey: EndpointTests.apiKey,
                                                            networkSession: URLSession(configuration: .default),
                                                            notificationStateProvider: MockNotificationStateProvider(enabled: true))
         api.email = email
@@ -49,7 +49,7 @@ class EndpointTests: XCTestCase {
     
     func test03TrackPurchase() throws {
         let expectation1 = expectation(description: #function)
-        let api = IterableAPIInternal.initializeForTesting(apiKey: EndpointTests.apiKey,
+        let api = InternalIterableAPI.initializeForTesting(apiKey: EndpointTests.apiKey,
                                                            networkSession: URLSession(configuration: .default),
                                                            notificationStateProvider: MockNotificationStateProvider(enabled: true))
         api.email = "user@example.com"
@@ -71,7 +71,7 @@ class EndpointTests: XCTestCase {
     
     func test04TrackPushOpen() throws {
         let expectation1 = expectation(description: #function)
-        let api = IterableAPIInternal.initializeForTesting(apiKey: EndpointTests.apiKey,
+        let api = InternalIterableAPI.initializeForTesting(apiKey: EndpointTests.apiKey,
                                                            networkSession: URLSession(configuration: .default),
                                                            notificationStateProvider: MockNotificationStateProvider(enabled: true))
         api.email = "user@example.com"
@@ -92,7 +92,7 @@ class EndpointTests: XCTestCase {
     
     func test05TrackPushOpenWithPushPayload() throws {
         let expectation1 = expectation(description: #function)
-        let api = IterableAPIInternal.initializeForTesting(apiKey: EndpointTests.apiKey,
+        let api = InternalIterableAPI.initializeForTesting(apiKey: EndpointTests.apiKey,
                                                            networkSession: URLSession(configuration: .default),
                                                            notificationStateProvider: MockNotificationStateProvider(enabled: true))
         api.email = "user@example.com"
@@ -118,7 +118,7 @@ class EndpointTests: XCTestCase {
     
     func test06TrackEvent() throws {
         let expectation1 = expectation(description: #function)
-        let api = IterableAPIInternal.initializeForTesting(apiKey: EndpointTests.apiKey,
+        let api = InternalIterableAPI.initializeForTesting(apiKey: EndpointTests.apiKey,
                                                            networkSession: URLSession(configuration: .default),
                                                            notificationStateProvider: MockNotificationStateProvider(enabled: true))
         api.email = "user@example.com"
@@ -136,7 +136,7 @@ class EndpointTests: XCTestCase {
     
     func test07UpdateSubscriptions() throws {
         let expectation1 = expectation(description: #function)
-        let api = IterableAPIInternal.initializeForTesting(apiKey: EndpointTests.apiKey,
+        let api = InternalIterableAPI.initializeForTesting(apiKey: EndpointTests.apiKey,
                                                            networkSession: URLSession(configuration: .default),
                                                            notificationStateProvider: MockNotificationStateProvider(enabled: true))
         api.email = "user@example.com"
@@ -158,7 +158,7 @@ class EndpointTests: XCTestCase {
     
     func test08DisableDeviceForCurrentUserFail() throws {
         let expectation1 = expectation(description: #function)
-        let api = IterableAPIInternal.initializeForTesting(apiKey: EndpointTests.apiKey,
+        let api = InternalIterableAPI.initializeForTesting(apiKey: EndpointTests.apiKey,
                                                            networkSession: URLSession(configuration: .default),
                                                            notificationStateProvider: MockNotificationStateProvider(enabled: true))
         api.email = "user@example.com"
@@ -175,7 +175,7 @@ class EndpointTests: XCTestCase {
     
     func test09DisableDeviceForAllUsersFail() throws {
         let expectation1 = expectation(description: #function)
-        let api = IterableAPIInternal.initializeForTesting(apiKey: EndpointTests.apiKey,
+        let api = InternalIterableAPI.initializeForTesting(apiKey: EndpointTests.apiKey,
                                                            networkSession: URLSession(configuration: .default),
                                                            notificationStateProvider: MockNotificationStateProvider(enabled: true))
         api.email = "user@example.com"
@@ -193,7 +193,7 @@ class EndpointTests: XCTestCase {
     func test10GetInAppMessages() throws {
         let config = IterableConfig()
         config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
-        let api = IterableAPIInternal.initializeForE2E(apiKey: EndpointTests.apiKey, config: config)
+        let api = InternalIterableAPI.initializeForE2E(apiKey: EndpointTests.apiKey, config: config)
         let email = "user@example.com"
         api.email = email
         
@@ -205,7 +205,7 @@ class EndpointTests: XCTestCase {
     func test11InAppConsume() throws {
         let config = IterableConfig()
         config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
-        let api = IterableAPIInternal.initializeForE2E(apiKey: EndpointTests.apiKey, config: config)
+        let api = InternalIterableAPI.initializeForE2E(apiKey: EndpointTests.apiKey, config: config)
         let email = "user@example.com"
         api.email = email
         
@@ -248,7 +248,7 @@ class EndpointTests: XCTestCase {
         let expectation1 = expectation(description: #function)
         let config = IterableConfig()
         config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
-        let api = IterableAPIInternal.initializeForE2E(apiKey: EndpointTests.apiKey, config: config)
+        let api = InternalIterableAPI.initializeForE2E(apiKey: EndpointTests.apiKey, config: config)
         let email = "user@example.com"
         api.email = email
         
@@ -287,10 +287,10 @@ class EndpointTests: XCTestCase {
         clearAllInAppMessages(api: api)
     }
     
-    private func verifyTrackInAppRequest(expectation: XCTestExpectation, method: (IterableAPIInternal, IterableInAppMessage) -> Future<SendRequestValue, SendRequestError>) {
+    private func verifyTrackInAppRequest(expectation: XCTestExpectation, method: (InternalIterableAPI, IterableInAppMessage) -> Future<SendRequestValue, SendRequestError>) {
         let config = IterableConfig()
         config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
-        let api = IterableAPIInternal.initializeForE2E(apiKey: EndpointTests.apiKey, config: config)
+        let api = InternalIterableAPI.initializeForE2E(apiKey: EndpointTests.apiKey, config: config)
         let email = "user@example.com"
         api.email = email
         
@@ -319,7 +319,7 @@ class EndpointTests: XCTestCase {
     private static let inAppCampaignId = Environment.inAppCampaignId!
     private static let inAppTemplateId = Environment.inAppTemplateId!
     
-    fileprivate func ensureInAppMessages(api: IterableAPIInternal, email: String) {
+    fileprivate func ensureInAppMessages(api: InternalIterableAPI, email: String) {
         IterableAPISupport.sendInApp(to: email, withCampaignId: EndpointTests.inAppCampaignId.intValue).wait()
         
         let predicate = NSPredicate { (_, _) -> Bool in
@@ -331,7 +331,7 @@ class EndpointTests: XCTestCase {
         wait(for: [expectation1], timeout: 60)
     }
     
-    private func clearAllInAppMessages(api: IterableAPIInternal) {
+    private func clearAllInAppMessages(api: InternalIterableAPI) {
         api.apiClient.getInAppMessages(100).flatMap {
             self.chainCallConsume(json: $0, apiClient: api.apiClient)
         }.wait()

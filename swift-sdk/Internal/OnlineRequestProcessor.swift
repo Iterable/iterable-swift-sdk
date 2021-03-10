@@ -4,7 +4,7 @@
 
 import Foundation
 
-/// `IterableAPIinternal` will delegate all network related calls to this struct.
+/// `InternalIterableAPI` will delegate all network related calls to this struct.
 struct OnlineRequestProcessor: RequestProcessorProtocol {
     init(apiKey: String,
          authProvider: AuthProvider?,

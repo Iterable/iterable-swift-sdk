@@ -53,7 +53,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         
         let notificationStateProvider = MockNotificationStateProvider(enabled: false, expectation: expectation2)
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey,
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey,
                                                                    config: config,
                                                                    networkSession: networkSession,
                                                                    notificationStateProvider: notificationStateProvider)
@@ -94,7 +94,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         // notifications are enabled
         let notificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: expectation1)
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey,
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey,
                                                                    config: config, networkSession: networkSession,
                                                                    notificationStateProvider: notificationStateProvider)
         let email = "user1@example.com"
@@ -136,7 +136,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         config.autoPushRegistration = false
         let notificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: expectation1)
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey,
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey,
                                                                    config: config,
                                                                    networkSession: networkSession,
                                                                    notificationStateProvider: notificationStateProvider)
@@ -159,7 +159,7 @@ class IterableAutoRegistrationTests: XCTestCase {
         
         let localStorage = MockLocalStorage()
         localStorage.email = "user1@example.com"
-        IterableAPIInternal.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey,
+        InternalIterableAPI.initializeForTesting(apiKey: IterableAutoRegistrationTests.apiKey,
                                                  config: config,
                                                  networkSession: networkSession,
                                                  notificationStateProvider: notificationStateProvider,

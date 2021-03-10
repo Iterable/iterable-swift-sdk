@@ -34,7 +34,7 @@ class InAppPriorityTests: XCTestCase {
             condition1.fulfill()
         }
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: mockInAppFetcher,
+        let internalAPI = InternalIterableAPI.initializeForTesting(inAppFetcher: mockInAppFetcher,
                                                                    inAppDisplayer: mockInAppDisplayer)
         mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages)
         
@@ -54,7 +54,7 @@ class InAppPriorityTests: XCTestCase {
         
         let mockInAppFetcher = MockInAppFetcher()
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: mockInAppFetcher)
+        let internalAPI = InternalIterableAPI.initializeForTesting(inAppFetcher: mockInAppFetcher)
         
         mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages).onSuccess { [weak internalAPI = internalAPI] _ in
             let originalMessages = messages.dropFirst()
@@ -86,7 +86,7 @@ class InAppPriorityTests: XCTestCase {
         }
 
         // Test will fail without assigning to internalAPI because InAppManager will be deallocated
-        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: mockInAppFetcher,
+        let internalAPI = InternalIterableAPI.initializeForTesting(inAppFetcher: mockInAppFetcher,
                                                                    inAppDisplayer: mockInAppDisplayer)
         XCTAssertNotNil(internalAPI)
         wait(for: [condition1], timeout: testExpectationTimeout)
@@ -103,7 +103,7 @@ class InAppPriorityTests: XCTestCase {
         let mockInAppFetcher = MockInAppFetcher(messages: messages)
         let mockInAppPersister = MockInAppPersister()
         
-        _ = IterableAPIInternal.initializeForTesting(inAppFetcher: mockInAppFetcher,
+        _ = InternalIterableAPI.initializeForTesting(inAppFetcher: mockInAppFetcher,
                                                      inAppPersister: mockInAppPersister)
         
         XCTAssertEqual(messages.map { $0.priorityLevel }, mockInAppPersister.getMessages().map { $0.priorityLevel })

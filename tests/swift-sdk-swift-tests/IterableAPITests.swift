@@ -17,7 +17,7 @@ class IterableAPITests: XCTestCase {
     }
     
     func testInitialize() {
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey)
         
         XCTAssertEqual(internalAPI.apiKey, IterableAPITests.apiKey)
     }
@@ -29,7 +29,7 @@ class IterableAPITests: XCTestCase {
         config.pushIntegrationName = prodIntegrationName
         config.inAppDisplayInterval = 1.0
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config)
         
         XCTAssertEqual(internalAPI.apiKey, IterableAPITests.apiKey)
     }
@@ -51,7 +51,7 @@ class IterableAPITests: XCTestCase {
         
         let config = IterableConfig()
         config.checkForDeferredDeeplink = true
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: mockNetworkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: mockNetworkSession)
         internalAPI.email = IterableAPITests.email
         internalAPI.track("Some Event")
         
@@ -80,7 +80,7 @@ class IterableAPITests: XCTestCase {
         
         let config = IterableConfig()
         config.checkForDeferredDeeplink = true
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey,
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
                                                                    config: config,
                                                                    apiEndPointOverride: newApiEndpoint,
                                                                    linksEndPointOverride: newLinksEndpoint,
@@ -96,7 +96,7 @@ class IterableAPITests: XCTestCase {
     func testTrackEventWithNoEmailOrUser() {
         let eventName = "MyCustomEvent"
         let networkSession = MockNetworkSession(statusCode: 200)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
         internalAPI.email = nil
         internalAPI.userId = nil
         internalAPI.track(eventName)
@@ -108,7 +108,7 @@ class IterableAPITests: XCTestCase {
         
         let eventName = "MyCustomEvent"
         let networkSession = MockNetworkSession(statusCode: 200)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
         internalAPI.email = IterableAPITests.email
 
         internalAPI.track(eventName, dataFields: nil, onSuccess: { _ in
@@ -135,7 +135,7 @@ class IterableAPITests: XCTestCase {
         let expectation = XCTestExpectation(description: "testTrackEventWithEmail using no callback")
         let eventName = "MyCustomEvent"
         let networkSession = MockNetworkSession(statusCode: 200)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
         internalAPI.email = IterableAPITests.email
         internalAPI.track(eventName, dataFields: ["key1": "value1", "key2": "value2"])
         
@@ -160,7 +160,7 @@ class IterableAPITests: XCTestCase {
         
         let eventName = "MyCustomEvent"
         let networkSession = MockNetworkSession(statusCode: 502)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
         internalAPI.email = "user@example.com"
         internalAPI.track(
             eventName,
@@ -177,7 +177,7 @@ class IterableAPITests: XCTestCase {
     }
     
     func testEmailPersistence() {
-        let internalAPI = IterableAPIInternal.initializeForTesting()
+        let internalAPI = InternalIterableAPI.initializeForTesting()
         
         internalAPI.email = IterableAPITests.email
         XCTAssertEqual(internalAPI.email, IterableAPITests.email)
@@ -185,7 +185,7 @@ class IterableAPITests: XCTestCase {
     }
     
     func testUserIdPersistence() {
-        let internalAPI = IterableAPIInternal.initializeForTesting()
+        let internalAPI = InternalIterableAPI.initializeForTesting()
         
         internalAPI.userId = IterableAPITests.userId
         XCTAssertEqual(internalAPI.userId, IterableAPITests.userId)
@@ -196,7 +196,7 @@ class IterableAPITests: XCTestCase {
         let expectation = XCTestExpectation(description: "testUpdateUserWithEmail")
         
         let networkSession = MockNetworkSession()
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
         internalAPI.email = IterableAPITests.email
         let dataFields: [String: String] = ["var1": "val1", "var2": "val2"]
         internalAPI.updateUser(dataFields, mergeNestedObjects: true, onSuccess: { _ in
@@ -228,7 +228,7 @@ class IterableAPITests: XCTestCase {
         
         let userId = UUID().uuidString
         let networkSession = MockNetworkSession()
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
         internalAPI.userId = userId
         let dataFields: [String: String] = ["var1": "val1", "var2": "val2"]
         internalAPI.updateUser(dataFields, mergeNestedObjects: true, onSuccess: { _ in
@@ -261,7 +261,7 @@ class IterableAPITests: XCTestCase {
         
         let newEmail = "new_user@example.com"
         let networkSession = MockNetworkSession(statusCode: 200)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
         internalAPI.email = IterableAPITests.email
         internalAPI.updateEmail(newEmail,
                                 onSuccess: { _ in
@@ -299,7 +299,7 @@ class IterableAPITests: XCTestCase {
         let currentUserId = IterableUtil.generateUUID()
         let newEmail = "new_user@example.com"
         let networkSession = MockNetworkSession(statusCode: 200)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
         internalAPI.userId = currentUserId
         internalAPI.updateEmail(newEmail,
                                 onSuccess: { _ in
@@ -339,7 +339,7 @@ class IterableAPITests: XCTestCase {
         config.pushIntegrationName = nil
         config.sandboxPushIntegrationName = nil
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey,
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
                                                                    config: config,
                                                                    networkSession: MockNetworkSession(statusCode: 200))
         
@@ -358,7 +358,7 @@ class IterableAPITests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
         config.pushIntegrationName = "my-push-integration"
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         internalAPI.email = nil
         internalAPI.userId = nil
         
@@ -377,7 +377,7 @@ class IterableAPITests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
         config.pushIntegrationName = "my-push-integration"
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         internalAPI.setDeviceAttribute(name: "reactNativeSDKVersion", value: "x.xx.xxx")
@@ -425,7 +425,7 @@ class IterableAPITests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
         config.pushIntegrationName = "my-push-integration"
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         internalAPI.email = "user@example.com"
         
         internalAPI.disableDeviceForCurrentUser(withOnSuccess: { _ in
@@ -444,7 +444,7 @@ class IterableAPITests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
         config.pushIntegrationName = "my-push-integration"
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         internalAPI.register(token: token)
@@ -484,7 +484,7 @@ class IterableAPITests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
         config.pushIntegrationName = "my-push-integration"
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         internalAPI.register(token: token)
@@ -519,7 +519,7 @@ class IterableAPITests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
         config.pushIntegrationName = "my-push-integration"
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         
@@ -560,7 +560,7 @@ class IterableAPITests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
         config.pushIntegrationName = "my-push-integration"
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         networkSession.callback = { _, _, _ in
@@ -597,7 +597,7 @@ class IterableAPITests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
         config.pushIntegrationName = "my-push-integration"
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         
         internalAPI.trackPurchase(10.0, items: [], dataFields: nil, onSuccess: { _ in
             // no userid or email should fail
@@ -616,7 +616,7 @@ class IterableAPITests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
         config.pushIntegrationName = "my-push-integration"
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         internalAPI.userId = "zeeUserId"
         
         internalAPI.trackPurchase(10.55, items: [], dataFields: nil, onSuccess: { _ in
@@ -654,7 +654,7 @@ class IterableAPITests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
         config.pushIntegrationName = "my-push-integration"
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         internalAPI.email = "user@example.com"
         let total = NSNumber(value: 15.32)
         let items = [CommerceItem(id: "id1", name: "myCommerceItem", price: 5.0, quantity: 2)]
@@ -700,7 +700,7 @@ class IterableAPITests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
         config.pushIntegrationName = "my-push-integration"
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         internalAPI.email = "user@example.com"
         let total = NSNumber(value: 15.32)
         let items = [CommerceItem(id: "id1", name: "myCommerceItem", price: 5.0, quantity: 2)]
@@ -735,7 +735,7 @@ class IterableAPITests: XCTestCase {
         let config = IterableConfig()
         config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(config: config, inAppFetcher: mockInAppFetcher)
+        let internalAPI = InternalIterableAPI.initializeForTesting(config: config, inAppFetcher: mockInAppFetcher)
         internalAPI.email = "user@example.com"
         
         let inAppMsg1 = IterableInAppMessage(messageId: "aswefwdf",
@@ -768,7 +768,7 @@ class IterableAPITests: XCTestCase {
         
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         internalAPI.email = "user@example.com"
         networkSession.callback = { _, response, _ in
             guard let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
@@ -803,7 +803,7 @@ class IterableAPITests: XCTestCase {
         let expectation1 = expectation(description: "testTrackInAppConsumeWithSource")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, networkSession: networkSession)
         internalAPI.email = IterableAPITests.email
         
         networkSession.callback = { _, response, _ in
@@ -870,7 +870,7 @@ class IterableAPITests: XCTestCase {
         let config = IterableConfig()
         let localStorage = MockLocalStorage()
         localStorage.email = "user1@example.com"
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey,
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
                                                                    config: config,
                                                                    networkSession: networkSession,
                                                                    localStorage: localStorage)
@@ -904,7 +904,7 @@ class IterableAPITests: XCTestCase {
         }
         let config = IterableConfig()
         config.customActionDelegate = customActionDelegate
-        IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey,
+        InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
                                                  launchOptions: launchOptions,
                                                  config: config)
         
@@ -933,7 +933,7 @@ class IterableAPITests: XCTestCase {
         }
         let config = IterableConfig()
         config.urlDelegate = urlDelegate
-        IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey,
+        InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
                                                  launchOptions: launchOptions,
                                                  config: config)
         
@@ -958,7 +958,7 @@ class IterableAPITests: XCTestCase {
         
         let networkSession = MockNetworkSession(statusCode: 200)
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey,
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
                                                                    networkSession: networkSession)
         networkSession.callback = { _, response, _ in
             guard let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
@@ -991,7 +991,7 @@ class IterableAPITests: XCTestCase {
         
         let networkSession = MockNetworkSession(statusCode: 200)
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey,
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
                                                                    networkSession: networkSession)
         networkSession.callback = { _, response, _ in
             guard let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
@@ -1026,7 +1026,7 @@ class IterableAPITests: XCTestCase {
         
         let networkSession = MockNetworkSession(statusCode: 200)
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey,
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
                                                                    networkSession: networkSession)
         internalAPI.trackPushOpen(userInfo, dataFields: ["key1": "value1"], onSuccess: { _ in
             guard let request = networkSession.getRequest(withEndPoint: Const.Path.trackEvent) else {
@@ -1053,7 +1053,7 @@ class IterableAPITests: XCTestCase {
         
         let networkSession = MockNetworkSession(statusCode: 200)
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey,
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
                                                                    networkSession: networkSession)
         networkSession.callback = { _, response, _ in
             guard let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
@@ -1080,7 +1080,7 @@ class IterableAPITests: XCTestCase {
         
         let networkSession = MockNetworkSession(statusCode: 200)
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: IterableAPITests.apiKey,
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
                                                                    networkSession: networkSession)
         internalAPI.trackPushOpen(1234,
                                   templateId: 4321,

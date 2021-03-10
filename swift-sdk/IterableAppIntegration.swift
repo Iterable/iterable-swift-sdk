@@ -49,7 +49,7 @@ import UserNotifications
                                                   didReceive: UserNotificationResponse(response: response),
                                                   withCompletionHandler: completionHandler)
         } else {
-            IterableAPIInternal.pendingNotificationResponse = UserNotificationResponse(response: response)
+            InternalIterableAPI.pendingNotificationResponse = UserNotificationResponse(response: response)
         }
     }
     

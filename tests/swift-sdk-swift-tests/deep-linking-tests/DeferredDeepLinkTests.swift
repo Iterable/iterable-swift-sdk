@@ -40,7 +40,7 @@ class DeferredDeepLinkTests: XCTestCase {
         
         config.urlDelegate = urlDelegate
         let localStorage = MockLocalStorage()
-        IterableAPIInternal.initializeForTesting(apiKey: DeferredDeepLinkTests.apiKey,
+        InternalIterableAPI.initializeForTesting(apiKey: DeferredDeepLinkTests.apiKey,
                                                  config: config,
                                                  networkSession: networkSession,
                                                  localStorage: localStorage)
@@ -57,7 +57,7 @@ class DeferredDeepLinkTests: XCTestCase {
             expectation2.fulfill()
         }
         config2.urlDelegate = urlDelegate2
-        IterableAPIInternal.initializeForTesting(apiKey: DeferredDeepLinkTests.apiKey,
+        InternalIterableAPI.initializeForTesting(apiKey: DeferredDeepLinkTests.apiKey,
                                                  config: config2,
                                                  networkSession: networkSession,
                                                  localStorage: localStorage)
@@ -81,7 +81,7 @@ class DeferredDeepLinkTests: XCTestCase {
             expectation.fulfill()
         }
         config.urlDelegate = urlDelegate
-        IterableAPIInternal.initializeForTesting(apiKey: DeferredDeepLinkTests.apiKey, config: config, networkSession: networkSession)
+        InternalIterableAPI.initializeForTesting(apiKey: DeferredDeepLinkTests.apiKey, config: config, networkSession: networkSession)
         
         wait(for: [expectation], timeout: 1.0)
     }
@@ -106,7 +106,7 @@ class DeferredDeepLinkTests: XCTestCase {
             expectation.fulfill()
         }
         config.urlDelegate = urlDelegate
-        IterableAPIInternal.initializeForTesting(apiKey: DeferredDeepLinkTests.apiKey, config: config, networkSession: networkSession)
+        InternalIterableAPI.initializeForTesting(apiKey: DeferredDeepLinkTests.apiKey, config: config, networkSession: networkSession)
         
         wait(for: [expectation], timeout: 1.0)
     }

@@ -313,7 +313,7 @@ class InAppParsingTests: XCTestCase {
         let expectation1 = expectation(description: "track in app click")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
         internalAPI.userId = InAppParsingTests.userId
         networkSession.callback = { _, response, _ in
             guard let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
@@ -348,7 +348,7 @@ class InAppParsingTests: XCTestCase {
         let expectation1 = expectation(description: "track in app open")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
         internalAPI.email = InAppParsingTests.email
         networkSession.callback = { _, response, _ in
             guard let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
@@ -374,7 +374,7 @@ class InAppParsingTests: XCTestCase {
         let expectation1 = expectation(description: "track inAppClose event")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
         internalAPI.email = InAppParsingTests.email
         
         networkSession.callback = { _, response, _ in
@@ -417,7 +417,7 @@ class InAppParsingTests: XCTestCase {
         let expectation1 = expectation(description: "track inAppClose event")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
         internalAPI.email = InAppParsingTests.email
         
         networkSession.callback = { _, response, _ in
@@ -460,7 +460,7 @@ class InAppParsingTests: XCTestCase {
         let expectation1 = expectation(description: "track inAppDelivery event")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
         internalAPI.email = InAppParsingTests.email
         
         networkSession.callback = { _, response, _ in

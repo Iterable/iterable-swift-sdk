@@ -105,7 +105,7 @@ public final class IterableAPI: NSObject {
                                    apiEndPointOverride: String? = nil,
                                    linksEndPointOverride: String? = nil,
                                    callback: ((Bool) -> Void)? = nil) {
-        internalImplementation = IterableAPIInternal(apiKey: apiKey,
+        internalImplementation = InternalIterableAPI(apiKey: apiKey,
                                                      launchOptions: launchOptions,
                                                      config: config,
                                                      apiEndPointOverride: apiEndPointOverride,
@@ -135,7 +135,7 @@ public final class IterableAPI: NSObject {
         if let internalImplementation = internalImplementation {
             return internalImplementation.handleUniversalLink(url)
         } else {
-            IterableAPIInternal.pendingUniversalLink = url
+            InternalIterableAPI.pendingUniversalLink = url
             return false
         }
     }
@@ -616,7 +616,7 @@ public final class IterableAPI: NSObject {
     
     // MARK: - Private/Internal
     
-    static var internalImplementation: IterableAPIInternal?
+    static var internalImplementation: InternalIterableAPI?
     
     override private init() { super.init() }
 }

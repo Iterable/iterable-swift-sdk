@@ -21,7 +21,7 @@ class DeprecatedFunctionsTests: XCTestCase {
         let expectation1 = expectation(description: "track in app open (DEPRECATED VERSION)")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: apiKey, networkSession: networkSession)
         internalAPI.email = email
         
         networkSession.callback = { _, response, _ in
@@ -68,7 +68,7 @@ class DeprecatedFunctionsTests: XCTestCase {
         let expectation1 = expectation(description: "track in app click (DEPRECATED VERSION)")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: apiKey, networkSession: networkSession)
         internalAPI.userId = userId
         
         networkSession.callback = { _, response, _ in
