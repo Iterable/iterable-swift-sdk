@@ -46,7 +46,7 @@ public enum Const {
     public enum UserDefault {
         static let payloadKey = "itbl_payload_key"
         static let attributionInfoKey = "itbl_attribution_info_key"
-        public static let emailKey = "itbl_email"
+        static let emailKey = "itbl_email"
         static let userIdKey = "itbl_userid"
         static let authTokenKey = "itbl_auth_token"
         static let ddlChecked = "itbl_ddl_checked"
@@ -72,16 +72,6 @@ public enum Const {
         static let online = "Online"
         static let offline = "Offline"
     }
-}
-
-public protocol JsonKeyValueRepresentable {
-    var key: JsonKeyRepresentable { get }
-    var value: JsonValueRepresentable { get }
-}
-
-public struct JsonKeyValue: JsonKeyValueRepresentable {
-    public let key: JsonKeyRepresentable
-    public let value: JsonValueRepresentable
 }
 
 public protocol JsonKeyRepresentable {
