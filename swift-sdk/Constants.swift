@@ -43,7 +43,7 @@ public enum Const {
         static let getRemoteConfiguration = "mobile/getRemoteConfiguration"
     }
     
-    public enum UserDefaults {
+    public enum UserDefault {
         static let payloadKey = "itbl_payload_key"
         static let attributionInfoKey = "itbl_attribution_info_key"
         public static let emailKey = "itbl_email"
