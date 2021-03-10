@@ -83,6 +83,7 @@ import UserNotifications
     
     private func lastAttemptCalled() {
         attachmentDownloadTask?.cancel()
+        attachmentDownloadTask = nil
         
         if let contentHandler = contentHandler, let bestAttemptContent = bestAttemptContent {
             contentHandler(bestAttemptContent)
