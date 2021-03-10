@@ -62,7 +62,8 @@ struct CoreDataUtil {
         } else if let boolValue = columnValue as? Bool {
             return NSPredicate(format: "%K == %@", columnName, NSNumber(value: boolValue))
         } else {
-            fatalError("unsuppored value: \(columnValue)")
+            ITBError("unsuppored value: \(columnValue) for columnPredicate")
+            return NSPredicate()
         }
     }
 }

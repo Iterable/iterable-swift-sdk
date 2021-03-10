@@ -532,7 +532,8 @@ private struct CellLoader {
                 let nib = UINib(nibName: cellNibName, bundle: Bundle.main)
                 tableView.register(nib, forCellReuseIdentifier: defaultCellReuseIdentifier)
             } else {
-                fatalError("Cannot find nib: \(cellNibName) in main bundle.")
+                ITBError("Cannot find nib: \(cellNibName) in main bundle. Using default.")
+                tableView.register(IterableInboxCell.self, forCellReuseIdentifier: defaultCellReuseIdentifier)
             }
         } else {
             tableView.register(IterableInboxCell.self, forCellReuseIdentifier: defaultCellReuseIdentifier)
