@@ -16,63 +16,77 @@ import UserNotifications
         bestAttemptContent?.categoryIdentifier = getCategory(fromContent: request.content)
         
         guard let itblDictionary = request.content.userInfo[JsonKey.Payload.metadata] as? [AnyHashable: Any] else {
-            if let bestAttemptContent = bestAttemptContent {
-                contentHandler(bestAttemptContent)
-            }
-            
+            lastAttemptCalled()
             return
         }
         
-        var contentHandlerCalled = false
-        contentHandlerCalled = loadAttachment(itblDictionary: itblDictionary)
-        
-        if !contentHandlerCalled {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                if let bestAttemptContent = self.bestAttemptContent {
-                    contentHandler(bestAttemptContent)
-                }
-            }
-        }
+        retrieveAttachment(itblDictionary: itblDictionary, onFailureHandler: {
+            self.lastAttemptCalled()
+        })
     }
     
     @objc override open func serviceExtensionTimeWillExpire() {
         // Called just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
-        if let contentHandler = contentHandler, let bestAttemptContent = bestAttemptContent {
-            contentHandler(bestAttemptContent)
+        
+        lastAttemptCalled()
+    }
+    
+    // MARK: - Private
+    
+    private func retrieveAttachment(itblDictionary: [AnyHashable: Any], onFailureHandler: @escaping () -> Void) {
+        guard let attachmentUrlString = itblDictionary[JsonKey.Payload.attachmentUrl] as? String else { return }
+        guard let url = URL(string: attachmentUrlString) else { return }
+        
+        attachmentDownloadTask = createAttachmentDownloadTask(url: url, onFailureHandler: onFailureHandler)
+        
+        attachmentDownloadTask?.resume()
+    }
+    
+    private func createAttachmentDownloadTask(url: URL, onFailureHandler: @escaping () -> Void) -> URLSessionDownloadTask {
+        return URLSession.shared.downloadTask(with: url) { [weak self] location, response, error in
+            guard let strongSelf = self, error == nil, let response = response, let responseUrl = response.url, let location = location else {
+                onFailureHandler()
+                return
+            }
+            
+            let attachmentId = UUID().uuidString + strongSelf.getAttachmentIdSuffix(response: response, responseUrl: responseUrl)
+            let tempFileUrl = FileManager.default.temporaryDirectory.appendingPathComponent(attachmentId)
+            
+            var attachment: UNNotificationAttachment?
+            
+            do {
+                try FileManager.default.moveItem(at: location, to: tempFileUrl)
+                attachment = try UNNotificationAttachment(identifier: attachmentId, url: tempFileUrl, options: nil)
+            } catch {
+                onFailureHandler()
+                return
+            }
+            
+            if let attachment = attachment, let content = strongSelf.bestAttemptContent, let handler = strongSelf.contentHandler {
+                content.attachments.append(attachment)
+                handler(content)
+            } else {
+                onFailureHandler()
+                return
+            }
         }
     }
     
-    private func loadAttachment(itblDictionary: [AnyHashable: Any]) -> Bool {
-        guard let attachmentUrlString = itblDictionary[JsonKey.Payload.attachmentUrl] as? String else { return false }
-        guard let url = URL(string: attachmentUrlString) else { return false }
+    private func getAttachmentIdSuffix(response: URLResponse, responseUrl: URL) -> String {
+        if let suggestedFilename = response.suggestedFilename {
+            return suggestedFilename
+        }
         
-        let downloadTask = URLSession.shared.downloadTask(with: url, completionHandler: { [weak self] location, response, error in
-            guard let strongSelf = self else { return }
-            
-            if error == nil, let response = response, let responseUrl = response.url, let location = location {
-                let tempDirectoryUrl = FileManager.default.temporaryDirectory
-                var attachmentIdString = UUID().uuidString + responseUrl.lastPathComponent
-                if let suggestedFilename = response.suggestedFilename {
-                    attachmentIdString = UUID().uuidString + suggestedFilename
-                }
-                
-                var attachment: UNNotificationAttachment?
-                let tempFileUrl = tempDirectoryUrl.appendingPathComponent(attachmentIdString)
-                do {
-                    try FileManager.default.moveItem(at: location, to: tempFileUrl)
-                    attachment = try UNNotificationAttachment(identifier: attachmentIdString, url: tempFileUrl, options: nil)
-                } catch { /* TODO: FileManager or attachment error */ }
-                
-                if let attachment = attachment, let bestAttemptContent = strongSelf.bestAttemptContent, let contentHandler = strongSelf.contentHandler {
-                    bestAttemptContent.attachments.append(attachment)
-                    contentHandler(bestAttemptContent)
-                }
-            } else { /* TODO: handle download error */ }
-        })
+        return responseUrl.lastPathComponent
+    }
+    
+    private func lastAttemptCalled() {
+        attachmentDownloadTask?.cancel()
         
-        downloadTask.resume()
-        return true
+        if let contentHandler = contentHandler, let bestAttemptContent = bestAttemptContent {
+            contentHandler(bestAttemptContent)
+        }
     }
     
     private func getCategory(fromContent content: UNNotificationContent) -> String {
@@ -178,6 +192,7 @@ import UserNotifications
     }
     
     private var messageCategory: UNNotificationCategory?
+    private var attachmentDownloadTask: URLSessionDownloadTask?
     private let IterableButtonTypeDefault = "default"
     private let IterableButtonTypeDestructive = "destructive"
     private let IterableButtonTypeTextInput = "textInput"
