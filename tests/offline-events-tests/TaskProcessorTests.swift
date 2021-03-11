@@ -17,7 +17,7 @@ class TaskProcessorTests: XCTestCase {
         let auth = Auth(userId: nil, email: email, authToken: nil)
         let config = IterableConfig()
         let networkSession = MockNetworkSession()
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession)
         
         let requestCreator = RequestCreator(apiKey: apiKey,
                                             auth: auth,

@@ -102,7 +102,7 @@
 		AC72A0C820CF4CE2004D7997 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0BE20CF4CB8004D7997 /* Constants.swift */; };
 		AC72A0C920CF4CE2004D7997 /* IterableAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0BF20CF4CB8004D7997 /* IterableAction.swift */; };
 		AC72A0CA20CF4CE2004D7997 /* IterableActionRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */; };
-		AC72A0CB20CF4CE2004D7997 /* IterableAPIInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C520CF4CB9004D7997 /* IterableAPIInternal.swift */; };
+		AC72A0CB20CF4CE2004D7997 /* InternalIterableAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C520CF4CB9004D7997 /* InternalIterableAPI.swift */; };
 		AC72A0CD20CF4CE2004D7997 /* IterableAppIntegration.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C620CF4CB9004D7997 /* IterableAppIntegration.swift */; };
 		AC72A0CE20CF4CE2004D7997 /* IterableAttributionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */; };
 		AC72A0D120CF4D0B004D7997 /* InAppHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0AA20CF4BEB004D7997 /* InAppHelper.swift */; };
@@ -458,7 +458,7 @@
 		AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAttributionInfo.swift; sourceTree = "<group>"; };
 		AC72A0C120CF4CB8004D7997 /* CommerceItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommerceItem.swift; sourceTree = "<group>"; };
 		AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableActionRunner.swift; sourceTree = "<group>"; };
-		AC72A0C520CF4CB9004D7997 /* IterableAPIInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPIInternal.swift; sourceTree = "<group>"; };
+		AC72A0C520CF4CB9004D7997 /* InternalIterableAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternalIterableAPI.swift; sourceTree = "<group>"; };
 		AC72A0C620CF4CB9004D7997 /* IterableAppIntegration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAppIntegration.swift; sourceTree = "<group>"; };
 		AC738CE92315A8B200B96B2D /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		AC74FE1E23A8C0DB004AC442 /* image.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = image.jpg; sourceTree = "<group>"; };
@@ -1001,7 +1001,7 @@
 				55298B222501A5AB00190BAE /* AuthManager.swift */,
 				AC2C667D20D3111900D46CC9 /* DateProvider.swift */,
 				AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */,
-				AC72A0C520CF4CB9004D7997 /* IterableAPIInternal.swift */,
+				AC72A0C520CF4CB9004D7997 /* InternalIterableAPI.swift */,
 				AC2C668120D32F2800D46CC9 /* IterableAppIntegrationInternal.swift */,
 				AC72A0BD20CF4C98004D7997 /* IterableDeepLinkManager.swift */,
 				AC2B79F621E6A38900A59080 /* NotificationHelper.swift */,
@@ -1770,7 +1770,7 @@
 				ACC362BA24D20BBB002C67BA /* IterableAPICallRequest.swift in Sources */,
 				AC776DA22118B86600C27C27 /* DeviceInfo.swift in Sources */,
 				55B3119B251015CF0056E4FC /* AuthManager.swift in Sources */,
-				AC72A0CB20CF4CE2004D7997 /* IterableAPIInternal.swift in Sources */,
+				AC72A0CB20CF4CE2004D7997 /* InternalIterableAPI.swift in Sources */,
 				AC72A0C720CF4CE2004D7997 /* CommerceItem.swift in Sources */,
 				AC31B040232AB42100BE25EB /* InboxSessionManager.swift in Sources */,
 				ACE34AB321376B1000691224 /* UserDefaultsLocalStorage.swift in Sources */,

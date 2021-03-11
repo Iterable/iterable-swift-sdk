@@ -38,7 +38,7 @@ class LoggingTests: XCTestCase {
         }
         let config = IterableConfig()
         config.logDelegate = logDelegate
-        IterableAPIInternal.initializeForTesting(apiKey: "apiKey", config: config)
+        InternalIterableAPI.initializeForTesting(apiKey: "apiKey", config: config)
         
         ITBDebug(debugMessage)
         

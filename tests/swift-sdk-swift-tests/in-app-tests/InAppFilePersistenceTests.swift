@@ -177,7 +177,7 @@ class InAppFilePersistenceTests: XCTestCase {
         let config = IterableConfig()
         config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
         
-        let internalApi1 = IterableAPIInternal.initializeForTesting(
+        let internalApi1 = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
             inAppPersister: InAppFilePersister()
@@ -194,7 +194,7 @@ class InAppFilePersistenceTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
         
-        let internalApi2 = IterableAPIInternal.initializeForTesting(
+        let internalApi2 = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
             inAppPersister: InAppFilePersister()

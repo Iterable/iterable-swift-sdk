@@ -598,7 +598,7 @@ class RequestHandlerTests: XCTestCase {
     func testDeleteAllTasksOnLogout() throws {
         let localStorage = MockLocalStorage()
         localStorage.offlineModeBeta = true
-        let internalApi = IterableAPIInternal.initializeForTesting(networkSession: MockNetworkSession(),
+        let internalApi = InternalIterableAPI.initializeForTesting(networkSession: MockNetworkSession(),
                                                                    localStorage: localStorage)
         internalApi.email = "user@example.com"
         

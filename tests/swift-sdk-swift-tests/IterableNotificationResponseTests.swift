@@ -169,7 +169,7 @@ class IterableNotificationResponseTests: XCTestCase {
         
         // call track push open
         let mockDateProvider = MockDateProvider()
-        let internalAPI = IterableAPIInternal.initializeForTesting(dateProvider: mockDateProvider)
+        let internalAPI = InternalIterableAPI.initializeForTesting(dateProvider: mockDateProvider)
         internalAPI.trackPushOpen(userInfo)
         
         // check the push payload for messageId
@@ -205,7 +205,7 @@ class IterableNotificationResponseTests: XCTestCase {
         
         // call track push open
         let mockDateProvider = MockDateProvider()
-        let internalAPI = IterableAPIInternal.initializeForTesting(dateProvider: mockDateProvider)
+        let internalAPI = InternalIterableAPI.initializeForTesting(dateProvider: mockDateProvider)
         internalAPI.trackPushOpen(userInfo)
         
         // check attribution info

@@ -17,7 +17,7 @@ class InboxTests: XCTestCase {
         let config = IterableConfig()
         config.logDelegate = AllLogDelegate()
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(
+        let internalAPI = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher
         )
@@ -77,7 +77,7 @@ class InboxTests: XCTestCase {
         let config = IterableConfig()
         config.logDelegate = AllLogDelegate()
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(
+        let internalAPI = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher
         )
@@ -130,7 +130,7 @@ class InboxTests: XCTestCase {
         let expectation1 = expectation(description: "testReceiveReadMessage")
         let mockInAppFetcher = MockInAppFetcher()
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: mockInAppFetcher)
+        let internalAPI = InternalIterableAPI.initializeForTesting(inAppFetcher: mockInAppFetcher)
         
         let payload = """
             {"inAppMessages": [{
@@ -163,7 +163,7 @@ class InboxTests: XCTestCase {
         let config = IterableConfig()
         config.logDelegate = AllLogDelegate()
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(
+        let internalAPI = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher
         )
@@ -212,7 +212,7 @@ class InboxTests: XCTestCase {
         let expectation3 = expectation(description: "Right url callback")
         let expectation4 = expectation(description: "wait for messages")
         
-        var internalAPI: IterableAPIInternal!
+        var internalAPI: InternalIterableAPI!
         let mockInAppFetcher = MockInAppFetcher()
         
         let mockInAppDisplayer = MockInAppDisplayer()
@@ -234,7 +234,7 @@ class InboxTests: XCTestCase {
         config.urlDelegate = mockUrlDelegate
         config.logDelegate = AllLogDelegate()
         
-        internalAPI = IterableAPIInternal.initializeForTesting(
+        internalAPI = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer
@@ -283,7 +283,7 @@ class InboxTests: XCTestCase {
         expectation1.expectedFulfillmentCount = 2
         let expectation2 = expectation(description: "testInboxNewMessagesCallback: finish payload processing")
         
-        var internalAPI: IterableAPIInternal!
+        var internalAPI: InternalIterableAPI!
         let mockInAppFetcher = MockInAppFetcher()
         
         var callbackCount = 0
@@ -307,7 +307,7 @@ class InboxTests: XCTestCase {
         config.inAppDelegate = mockInAppDelegate
         config.logDelegate = AllLogDelegate()
         
-        internalAPI = IterableAPIInternal.initializeForTesting(
+        internalAPI = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
             notificationCenter: mockNotificationCenter
@@ -383,7 +383,7 @@ class InboxTests: XCTestCase {
         persister.clear()
         persister.persist(messages)
         
-        var internalAPI: IterableAPIInternal!
+        var internalAPI: InternalIterableAPI!
         let config = IterableConfig()
         let mockInAppDelegate = MockInAppDelegate(showInApp: .skip)
         
@@ -402,7 +402,7 @@ class InboxTests: XCTestCase {
         
         let mockInAppFetcher = MockInAppFetcher(messages: messages)
         
-        internalAPI = IterableAPIInternal.initializeForTesting(
+        internalAPI = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
             inAppPersister: persister,
@@ -421,7 +421,7 @@ class InboxTests: XCTestCase {
         let expectation3 = expectation(description: "payload 1 processed")
         let expectation4 = expectation(description: "payload 2 processed")
         
-        var internalAPI: IterableAPIInternal!
+        var internalAPI: InternalIterableAPI!
         let mockInAppFetcher = MockInAppFetcher()
         
         var inAppCallbackCount = 0
@@ -458,7 +458,7 @@ class InboxTests: XCTestCase {
         config.inAppDelegate = mockInAppDelegate
         config.logDelegate = AllLogDelegate()
         
-        internalAPI = IterableAPIInternal.initializeForTesting(
+        internalAPI = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
             notificationCenter: mockNotificationCenter
@@ -543,7 +543,7 @@ class InboxTests: XCTestCase {
         let expectation2 = expectation(description: "Unread count decrements after showing")
         let expectation3 = expectation(description: "testShowNowAndInboxMessage: wait for processing")
         
-        var internalAPI: IterableAPIInternal!
+        var internalAPI: InternalIterableAPI!
         let mockInAppFetcher = MockInAppFetcher()
         
         let mockInAppDisplayer = MockInAppDisplayer()
@@ -566,7 +566,7 @@ class InboxTests: XCTestCase {
         config.urlDelegate = mockUrlDelegate
         config.logDelegate = AllLogDelegate()
         
-        internalAPI = IterableAPIInternal.initializeForTesting(
+        internalAPI = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
             inAppDisplayer: mockInAppDisplayer
@@ -605,11 +605,11 @@ class InboxTests: XCTestCase {
         let expectation1 = expectation(description: "initial messages sent")
         let expectation2 = expectation(description: "inbox change notification is fired on logout")
         
-        var internalAPI: IterableAPIInternal!
+        var internalAPI: InternalIterableAPI!
         let mockInAppFetcher = MockInAppFetcher()
         let mockNotificationCenter = MockNotificationCenter()
         
-        internalAPI = IterableAPIInternal.initializeForTesting(
+        internalAPI = InternalIterableAPI.initializeForTesting(
             config: IterableConfig(),
             inAppFetcher: mockInAppFetcher,
             notificationCenter: mockNotificationCenter

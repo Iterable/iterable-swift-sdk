@@ -55,7 +55,7 @@ class IterableHtmlMessageViewController: UIViewController {
     weak var presenter: InAppPresenter?
     
     init(parameters: Parameters,
-         internalAPIProvider: @escaping @autoclosure () -> IterableAPIInternal? = IterableAPI.internalImplementation,
+         internalAPIProvider: @escaping @autoclosure () -> InternalIterableAPI? = IterableAPI.internalImplementation,
          webViewProvider: @escaping @autoclosure () -> WebViewProtocol = IterableHtmlMessageViewController.createWebView()) {
         ITBInfo()
         self.internalAPIProvider = internalAPIProvider
@@ -144,7 +144,7 @@ class IterableHtmlMessageViewController: UIViewController {
         ITBInfo()
     }
     
-    private var internalAPIProvider: () -> IterableAPIInternal?
+    private var internalAPIProvider: () -> InternalIterableAPI?
     private var webViewProvider: () -> WebViewProtocol
     private var parameters: Parameters
     private let futureClickedURL: Promise<URL, IterableError>
@@ -153,7 +153,7 @@ class IterableHtmlMessageViewController: UIViewController {
     private var clickedLink: String?
     
     private lazy var webView = webViewProvider()
-    private var internalAPI: IterableAPIInternal? {
+    private var internalAPI: InternalIterableAPI? {
         internalAPIProvider()
     }
     
@@ -296,7 +296,7 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
         decisionHandler(.cancel)
     }
 
-    private static func trackClickOnDismiss(internalAPI: IterableAPIInternal?,
+    private static func trackClickOnDismiss(internalAPI: InternalIterableAPI?,
                                             params: Parameters,
                                             futureClickedURL: Promise<URL, IterableError>,
                                             withURL url: URL,

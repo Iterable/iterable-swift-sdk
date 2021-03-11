@@ -32,7 +32,7 @@ class DeepLinkTests: XCTestCase {
         
         setupRedirectStubResponse(location: redirectLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
         
-        let internalAPI = IterableAPIInternal.initializeForTesting()
+        let internalAPI = InternalIterableAPI.initializeForTesting()
         
         internalAPI.getAndTrack(deepLink: URL(string: iterableRewriteURL)!) { redirectUrl in
             XCTAssertEqual(redirectUrl, redirectLocation)
@@ -48,7 +48,7 @@ class DeepLinkTests: XCTestCase {
         
         setupStubResponse()
         
-        let internalAPI = IterableAPIInternal.initializeForTesting()
+        let internalAPI = InternalIterableAPI.initializeForTesting()
         internalAPI.getAndTrack(deepLink: URL(string: iterableNoRewriteURL)!) { redirectUrl in
             XCTAssertEqual(redirectUrl, self.iterableNoRewriteURL)
             XCTAssertTrue(Thread.isMainThread)
@@ -77,7 +77,7 @@ class DeepLinkTests: XCTestCase {
         
         let config = IterableConfig()
         config.urlDelegate = mockUrlDelegate
-        let internalAPI = IterableAPIInternal.initializeForTesting(config: config)
+        let internalAPI = InternalIterableAPI.initializeForTesting(config: config)
         
         internalAPI.handleUniversalLink(URL(string: iterableRewriteURL)!)
         
@@ -94,7 +94,7 @@ class DeepLinkTests: XCTestCase {
         
         setupRedirectStubResponse(location: redirectLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
         
-        let internalAPI = IterableAPIInternal.initializeForTesting()
+        let internalAPI = InternalIterableAPI.initializeForTesting()
         internalAPI.getAndTrack(deepLink: URL(string: iterableRewriteURL)!) { resolvedURL in
             XCTAssertEqual(resolvedURL, redirectLocation)
         }?.onSuccess(block: { _ in
@@ -117,7 +117,7 @@ class DeepLinkTests: XCTestCase {
         
         setupRedirectStubResponse(location: redirectLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
         
-        let internalAPI = IterableAPIInternal.initializeForTesting()
+        let internalAPI = InternalIterableAPI.initializeForTesting()
         internalAPI.handleUniversalLink(URL(string: iterableRewriteURL)!)
         internalAPI.attributionInfo = nil
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -137,7 +137,7 @@ class DeepLinkTests: XCTestCase {
         
         setupStubResponse()
         
-        let internalAPI = IterableAPIInternal.initializeForTesting()
+        let internalAPI = InternalIterableAPI.initializeForTesting()
         internalAPI.getAndTrack(deepLink: URL(string: redirectRequest)!) { redirectUrl in
             XCTAssertNotEqual(redirectUrl, self.exampleUrl)
             XCTAssertEqual(redirectUrl, self.redirectRequest)
