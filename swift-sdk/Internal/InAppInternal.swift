@@ -82,11 +82,11 @@ struct InAppMessageContext {
     func toMessageContextDictionary() -> [AnyHashable: Any] {
         var context = [AnyHashable: Any]()
         
-        context.setValue(for: .saveToInbox, value: saveToInbox)
-        context.setValue(for: .silentInbox, value: silentInbox)
+        context.setValue(for: JsonKey.saveToInbox, value: saveToInbox)
+        context.setValue(for: JsonKey.silentInbox, value: silentInbox)
         
         if let location = location {
-            context.setValue(for: .inAppLocation, value: location)
+            context.setValue(for: JsonKey.inAppLocation, value: location)
         }
         
         return context

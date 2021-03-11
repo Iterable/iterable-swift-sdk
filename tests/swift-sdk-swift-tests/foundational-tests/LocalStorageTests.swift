@@ -59,7 +59,7 @@ class LocalStorageTests: XCTestCase {
         XCTAssertNil(fromLocalStorage2)
         
         XCTAssertEqual(attributionInfo.description,
-                       "\(JsonKey.campaignId.jsonKey): \(attributionInfo.campaignId), \(JsonKey.templateId.jsonKey): \(attributionInfo.templateId), \(JsonKey.messageId.jsonKey): \(attributionInfo.messageId)")
+                       "\(JsonKey.campaignId): \(attributionInfo.campaignId), \(JsonKey.templateId): \(attributionInfo.templateId), \(JsonKey.messageId): \(attributionInfo.messageId)")
     }
     
     func testPayload() throws {

@@ -93,7 +93,7 @@ class DeprecatedFunctionsTests: XCTestCase {
             
             TestUtils.validateDeviceInfo(inBody: body, withDeviceId: internalAPI.deviceId)
             
-            TestUtils.validateMatch(keyPath: KeyPath(.clickedUrl), value: buttonUrl, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.clickedUrl), value: buttonUrl, inDictionary: body)
             
             expectation1.fulfill()
         }
@@ -110,12 +110,12 @@ class DeprecatedFunctionsTests: XCTestCase {
 
 extension TestUtils {
     static func validateDeprecatedMessageContext(messageId: String, email: String? = nil, userId: String? = nil, saveToInbox: Bool, silentInbox: Bool, inBody body: [String: Any]) {
-        validateMatch(keyPath: KeyPath(JsonKey.messageId), value: messageId, inDictionary: body)
+        validateMatch(keyPath: KeyPath(keys: JsonKey.messageId), value: messageId, inDictionary: body)
         
         validateEmailOrUserId(email: email, userId: userId, inBody: body)
         
-        let contextKey = "\(JsonKey.inAppMessageContext.jsonKey)"
-        validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.saveToInbox.jsonKey)"), value: saveToInbox, inDictionary: body)
-        validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.silentInbox.jsonKey)"), value: silentInbox, inDictionary: body)
+        let contextKey = "\(JsonKey.inAppMessageContext)"
+        validateMatch(keyPath: KeyPath(string: "\(contextKey).\(JsonKey.saveToInbox)"), value: saveToInbox, inDictionary: body)
+        validateMatch(keyPath: KeyPath(string: "\(contextKey).\(JsonKey.silentInbox)"), value: silentInbox, inDictionary: body)
     }
 }

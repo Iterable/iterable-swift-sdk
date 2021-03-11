@@ -72,10 +72,10 @@ struct TestInAppPayloadGenerator {
             dict["trigger"] = trigger.dict
         }
         if saveToInbox {
-            dict[JsonKey.saveToInbox.jsonKey] = true
-            dict[JsonKey.inboxMetadata.jsonKey] = [
-                JsonKey.inboxTitle.jsonKey: "title\(index)",
-                JsonKey.inboxSubtitle.jsonKey: "subTitle\(index)",
+            dict[JsonKey.saveToInbox] = true
+            dict[JsonKey.inboxMetadata] = [
+                JsonKey.inboxTitle: "title\(index)",
+                JsonKey.inboxSubtitle: "subTitle\(index)",
             ]
         }
         return dict

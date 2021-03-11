@@ -223,7 +223,7 @@ struct IterableAppIntegrationInternal {
         let action = IterableAppIntegrationInternal.createIterableAction(actionIdentifier: response.actionIdentifier, userText: response.userText, userInfo: userInfo, iterableElement: itbl)
         
         // Track push open
-        if let _ = dataFields[JsonKey.actionIdentifier.jsonKey] { // i.e., if action is not dismiss
+        if let _ = dataFields[JsonKey.actionIdentifier] { // i.e., if action is not dismiss
             tracker?.trackPushOpen(userInfo, dataFields: dataFields)
         }
         
@@ -294,15 +294,15 @@ struct IterableAppIntegrationInternal {
         var dataFields = [AnyHashable: Any]()
         
         if actionIdentifier == UNNotificationDefaultActionIdentifier {
-            dataFields[JsonKey.actionIdentifier.jsonKey] = JsonValue.ActionIdentifier.pushOpenDefault
+            dataFields[JsonKey.actionIdentifier] = JsonValue.ActionIdentifier.pushOpenDefault
         } else if actionIdentifier == UNNotificationDismissActionIdentifier {
             // We don't track dismiss actions yet
         } else {
-            dataFields[JsonKey.actionIdentifier.jsonKey] = actionIdentifier
+            dataFields[JsonKey.actionIdentifier] = actionIdentifier
         }
         
         if let userText = userText {
-            dataFields[JsonKey.userText.jsonKey] = userText
+            dataFields[JsonKey.userText] = userText
         }
         
         return dataFields
@@ -315,7 +315,7 @@ struct IterableAppIntegrationInternal {
         }
         
         // Track push open
-        let dataFields = [JsonKey.actionIdentifier.jsonKey: JsonValue.ActionIdentifier.pushOpenDefault]
+        let dataFields = [JsonKey.actionIdentifier: JsonValue.ActionIdentifier.pushOpenDefault]
         tracker?.trackPushOpen(userInfo, dataFields: dataFields)
         
         guard let itbl = IterableAppIntegrationInternal.itblValue(fromUserInfo: userInfo) else {
@@ -363,7 +363,7 @@ struct IterableAppIntegrationInternal {
     // Normally default action would be stored in key "itbl/"defaultAction"
     // In legacy templates it gets saved in the key "url"
     private static func legacyDefaultActionFromPayload(userInfo: [AnyHashable: Any]) -> IterableAction? {
-        if let deepLinkUrl = userInfo[JsonKey.url.jsonKey] as? String {
+        if let deepLinkUrl = userInfo[JsonKey.url] as? String {
             return IterableAction.actionOpenUrl(fromUrlString: deepLinkUrl)
         }
         

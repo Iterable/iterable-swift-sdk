@@ -135,7 +135,7 @@ class InAppFilePersistenceTests: XCTestCase {
         
         XCTAssertEqual(obtained[3].trigger.type, IterableInAppTriggerType.never)
         let dict = obtained[3].trigger.dict as! [String: Any]
-        TestUtils.validateMatch(keyPath: KeyPath("nested.var1"), value: "val1", inDictionary: dict, message: "Expected to find val1 in persisted dictionary")
+        TestUtils.validateMatch(keyPath: KeyPath(string: "nested.var1"), value: "val1", inDictionary: dict, message: "Expected to find val1 in persisted dictionary")
         
         persister.clear()
     }

@@ -190,7 +190,7 @@ class IterableAPIResponseTests: XCTestCase {
         XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.sdkPlatform), JsonValue.iOS.jsonStringValue)
         XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.sdkVersion), IterableAPI.sdkVersion)
         XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.apiKey), apiKey)
-        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.contentType.jsonKey), JsonValue.applicationJson.jsonStringValue)
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.contentType), JsonValue.applicationJson.jsonStringValue)
     }
     
     private func verifyAuthTokenInHeader(_ urlRequest: URLRequest, _ authToken: String) {

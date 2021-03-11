@@ -328,7 +328,7 @@ class InAppParsingTests: XCTestCase {
                                queryParams: [])
             TestUtils.validateMessageContext(messageId: message.messageId, userId: InAppParsingTests.userId, saveToInbox: false, silentInbox: false, location: .inApp, inBody: body)
             TestUtils.validateDeviceInfo(inBody: body, withDeviceId: internalAPI.deviceId)
-            TestUtils.validateMatch(keyPath: KeyPath("clickedUrl"), value: buttonUrl, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(string: "clickedUrl"), value: buttonUrl, inDictionary: body)
             expectation1.fulfill()
         }
         internalAPI.trackInAppClick(message, clickedUrl: buttonUrl)
@@ -391,8 +391,8 @@ class InAppParsingTests: XCTestCase {
             
             TestUtils.validateMessageContext(messageId: messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: .inbox, inBody: body)
             TestUtils.validateDeviceInfo(inBody: body, withDeviceId: internalAPI.deviceId)
-            TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.closeAction.jsonKey)"), value: "back", inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.clickedUrl.jsonKey)"), value: "https://somewhere.com", inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(string: "\(JsonKey.closeAction)"), value: "back", inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(string: "\(JsonKey.clickedUrl)"), value: "https://somewhere.com", inDictionary: body)
             
             expectation1.fulfill()
         }
@@ -434,8 +434,8 @@ class InAppParsingTests: XCTestCase {
             
             TestUtils.validateMessageContext(messageId: messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: .inbox, inBody: body)
             TestUtils.validateDeviceInfo(inBody: body, withDeviceId: internalAPI.deviceId)
-            XCTAssertNil(body[keyPath: KeyPath("\(JsonKey.closeAction.jsonKey)")])
-            TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.clickedUrl.jsonKey)"), value: "https://somewhere.com", inDictionary: body)
+            XCTAssertNil(body[keyPath: KeyPath(string: "\(JsonKey.closeAction)")])
+            TestUtils.validateMatch(keyPath: KeyPath(string: "\(JsonKey.clickedUrl)"), value: "https://somewhere.com", inDictionary: body)
             
             expectation1.fulfill()
         }
@@ -573,7 +573,7 @@ class InAppParsingTests: XCTestCase {
         let messages = InAppTestHelper.inAppMessages(fromPayload: payload)
         XCTAssertEqual(messages[0].trigger.type, IterableInAppTriggerType.never)
         let dict = messages[0].trigger.dict as! [String: Any]
-        TestUtils.validateMatch(keyPath: KeyPath("myPayload.var1"), value: "val1", inDictionary: dict, message: "Expected to find val1")
+        TestUtils.validateMatch(keyPath: KeyPath(string: "myPayload.var1"), value: "val1", inDictionary: dict, message: "Expected to find val1")
     }
     
     // Remove this test when backend is fixed

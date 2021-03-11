@@ -16,12 +16,12 @@ struct RequestCreator {
     // MARK: - API REQUEST CALLS
     
     func createUpdateEmailRequest(newEmail: String) -> Result<IterableRequest, IterableError> {
-        var body: [String: Any] = [JsonKey.newEmail.jsonKey: newEmail]
+        var body: [String: Any] = [JsonKey.newEmail: newEmail]
         
         if let email = auth.email {
-            body[JsonKey.currentEmail.jsonKey] = email
+            body[JsonKey.currentEmail] = email
         } else if let userId = auth.userId {
-            body[JsonKey.currentUserId.jsonKey] = userId
+            body[JsonKey.currentUserId] = userId
         } else {
             ITBError("Both email and userId are nil")
             return .failure(IterableError.general(description: "Both email and userId are nil"))
@@ -45,21 +45,21 @@ struct RequestCreator {
                                                            deviceAttributes: registerTokenInfo.deviceAttributes)
         
         let deviceDictionary: [String: Any] = [
-            JsonKey.token.jsonKey: registerTokenInfo.hexToken,
-            JsonKey.platform.jsonKey: RequestCreator.pushServicePlatformToString(registerTokenInfo.pushServicePlatform,
+            JsonKey.token: registerTokenInfo.hexToken,
+            JsonKey.platform: RequestCreator.pushServicePlatformToString(registerTokenInfo.pushServicePlatform,
                                                                                  apnsType: registerTokenInfo.apnsType),
-            JsonKey.applicationName.jsonKey: registerTokenInfo.appName,
-            JsonKey.dataFields.jsonKey: dataFields,
+            JsonKey.applicationName: registerTokenInfo.appName,
+            JsonKey.dataFields: dataFields,
         ]
         
         var body = [AnyHashable: Any]()
         
-        body[JsonKey.device.jsonKey] = deviceDictionary
+        body[JsonKey.device] = deviceDictionary
         
         setCurrentUser(inDict: &body)
         
         if auth.email == nil, auth.userId != nil {
-            body[JsonKey.preferUserId.jsonKey] = true
+            body[JsonKey.preferUserId] = true
         }
         
         return .success(.post(createPostRequest(path: Const.Path.registerDeviceToken, body: body)))
@@ -73,12 +73,12 @@ struct RequestCreator {
 
         var body = [AnyHashable: Any]()
         
-        body[JsonKey.dataFields.jsonKey] = dataFields
-        body[JsonKey.mergeNestedObjects.jsonKey] = NSNumber(value: mergeNestedObjects)
+        body[JsonKey.dataFields] = dataFields
+        body[JsonKey.mergeNestedObjects] = NSNumber(value: mergeNestedObjects)
         setCurrentUser(inDict: &body)
         
         if auth.email == nil, auth.userId != nil {
-            body[JsonKey.preferUserId.jsonKey] = true
+            body[JsonKey.preferUserId] = true
         }
         
         return .success(.post(createPostRequest(path: Const.Path.updateUser, body: body)))
@@ -105,7 +105,7 @@ struct RequestCreator {
                                    JsonKey.Commerce.total: total]
         
         if let dataFields = dataFields {
-            body[JsonKey.dataFields.jsonKey] = dataFields
+            body[JsonKey.dataFields] = dataFields
         }
         
         return .success(.post(createPostRequest(path: Const.Path.trackPurchase, body: body)))
@@ -119,18 +119,18 @@ struct RequestCreator {
             reqDataFields = dataFields
         }
         
-        reqDataFields[JsonKey.appAlreadyRunning.jsonKey] = appAlreadyRunning
-        body[JsonKey.dataFields.jsonKey] = reqDataFields
+        reqDataFields[JsonKey.appAlreadyRunning] = appAlreadyRunning
+        body[JsonKey.dataFields] = reqDataFields
         
         setCurrentUser(inDict: &body)
         
-        body[JsonKey.campaignId.jsonKey] = campaignId
+        body[JsonKey.campaignId] = campaignId
         
         if let templateId = templateId {
-            body[JsonKey.templateId.jsonKey] = templateId
+            body[JsonKey.templateId] = templateId
         }
         
-        body.setValue(for: .messageId, value: messageId)
+        body.setValue(for: JsonKey.messageId, value: messageId)
         
         return .success(.post(createPostRequest(path: Const.Path.trackPushOpen, body: body)))
     }
@@ -145,10 +145,10 @@ struct RequestCreator {
         
         setCurrentUser(inDict: &body)
 
-        body.setValue(for: .eventName, value: eventName)
+        body.setValue(for: JsonKey.eventName, value: eventName)
         
         if let dataFields = dataFields {
-            body[JsonKey.dataFields.jsonKey] = dataFields
+            body[JsonKey.dataFields] = dataFields
         }
         
         return .success(.post(createPostRequest(path: Const.Path.trackEvent, body: body)))
@@ -170,27 +170,27 @@ struct RequestCreator {
         setCurrentUser(inDict: &body)
         
         if let emailListIds = emailListIds {
-            body[JsonKey.emailListIds.jsonKey] = emailListIds
+            body[JsonKey.emailListIds] = emailListIds
         }
         
         if let unsubscribedChannelIds = unsubscribedChannelIds {
-            body[JsonKey.unsubscribedChannelIds.jsonKey] = unsubscribedChannelIds
+            body[JsonKey.unsubscribedChannelIds] = unsubscribedChannelIds
         }
         
         if let unsubscribedMessageTypeIds = unsubscribedMessageTypeIds {
-            body[JsonKey.unsubscribedMessageTypeIds.jsonKey] = unsubscribedMessageTypeIds
+            body[JsonKey.unsubscribedMessageTypeIds] = unsubscribedMessageTypeIds
         }
         
         if let subscribedMessageTypeIds = subscribedMessageTypeIds {
-            body[JsonKey.subscribedMessageTypeIds.jsonKey] = subscribedMessageTypeIds
+            body[JsonKey.subscribedMessageTypeIds] = subscribedMessageTypeIds
         }
         
         if let campaignId = campaignId?.intValue {
-            body[JsonKey.campaignId.jsonKey] = campaignId
+            body[JsonKey.campaignId] = campaignId
         }
         
         if let templateId = templateId?.intValue {
-            body[JsonKey.templateId.jsonKey] = templateId
+            body[JsonKey.templateId] = templateId
         }
         
         return .success(.post(createPostRequest(path: Const.Path.updateSubscriptions, body: body)))
@@ -203,8 +203,8 @@ struct RequestCreator {
         }
 
         var args: [AnyHashable: Any] = [JsonKey.InApp.count: count.description,
-                                        JsonKey.platform.jsonKey: JsonValue.iOS.jsonStringValue,
-                                        JsonKey.systemVersion.jsonKey: UIDevice.current.systemVersion,
+                                        JsonKey.platform: JsonValue.iOS.jsonStringValue,
+                                        JsonKey.systemVersion: UIDevice.current.systemVersion,
                                         JsonKey.InApp.sdkVersion: IterableAPI.sdkVersion]
         
         if let packageName = Bundle.main.appPackageName {
@@ -224,15 +224,15 @@ struct RequestCreator {
 
         var body = [AnyHashable: Any]()
         
-        body.setValue(for: .messageId, value: inAppMessageContext.messageId)
+        body.setValue(for: JsonKey.messageId, value: inAppMessageContext.messageId)
         
         setCurrentUser(inDict: &body)
         
-        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
-        body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
+        body.setValue(for: JsonKey.inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
+        body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
         
         if let inboxSessionId = inAppMessageContext.inboxSessionId {
-            body.setValue(for: .inboxSessionId, value: inboxSessionId)
+            body.setValue(for: JsonKey.inboxSessionId, value: inboxSessionId)
         }
         
         return .success(.post(createPostRequest(path: Const.Path.trackInAppOpen, body: body)))
@@ -246,17 +246,17 @@ struct RequestCreator {
 
         var body = [AnyHashable: Any]()
         
-        body.setValue(for: .messageId, value: inAppMessageContext.messageId)
+        body.setValue(for: JsonKey.messageId, value: inAppMessageContext.messageId)
         
         setCurrentUser(inDict: &body)
         
-        body.setValue(for: .clickedUrl, value: clickedUrl)
+        body.setValue(for: JsonKey.clickedUrl, value: clickedUrl)
         
-        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
-        body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
+        body.setValue(for: JsonKey.inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
+        body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
         
         if let inboxSessionId = inAppMessageContext.inboxSessionId {
-            body.setValue(for: .inboxSessionId, value: inboxSessionId)
+            body.setValue(for: JsonKey.inboxSessionId, value: inboxSessionId)
         }
         
         return .success(.post(createPostRequest(path: Const.Path.trackInAppClick, body: body)))
@@ -270,21 +270,21 @@ struct RequestCreator {
 
         var body = [AnyHashable: Any]()
         
-        body.setValue(for: .messageId, value: inAppMessageContext.messageId)
+        body.setValue(for: JsonKey.messageId, value: inAppMessageContext.messageId)
         
         if let source = source {
-            body.setValue(for: .closeAction, value: source)
+            body.setValue(for: JsonKey.closeAction, value: source)
         }
         
         if let clickedUrl = clickedUrl {
-            body.setValue(for: .clickedUrl, value: clickedUrl)
+            body.setValue(for: JsonKey.clickedUrl, value: clickedUrl)
         }
         
-        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
-        body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
+        body.setValue(for: JsonKey.inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
+        body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
         
         if let inboxSessionId = inAppMessageContext.inboxSessionId {
-            body.setValue(for: .inboxSessionId, value: inboxSessionId)
+            body.setValue(for: JsonKey.inboxSessionId, value: inboxSessionId)
         }
         
         setCurrentUser(inDict: &body)
@@ -300,12 +300,12 @@ struct RequestCreator {
 
         var body = [AnyHashable: Any]()
         
-        body.setValue(for: .messageId, value: inAppMessageContext.messageId)
+        body.setValue(for: JsonKey.messageId, value: inAppMessageContext.messageId)
         
         setCurrentUser(inDict: &body)
         
-        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
-        body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
+        body.setValue(for: JsonKey.inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
+        body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
         
         return .success(.post(createPostRequest(path: Const.Path.trackInAppDelivery, body: body)))
     }
@@ -318,7 +318,7 @@ struct RequestCreator {
 
         var body = [AnyHashable: Any]()
         
-        body.setValue(for: .messageId, value: messageId)
+        body.setValue(for: JsonKey.messageId, value: messageId)
         
         setCurrentUser(inDict: &body)
         
@@ -333,17 +333,17 @@ struct RequestCreator {
 
         var body = [AnyHashable: Any]()
         
-        body.setValue(for: .messageId, value: inAppMessageContext.messageId)
+        body.setValue(for: JsonKey.messageId, value: inAppMessageContext.messageId)
         
         if let source = source {
-            body.setValue(for: .deleteAction, value: source)
+            body.setValue(for: JsonKey.deleteAction, value: source)
         }
         
-        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
-        body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
+        body.setValue(for: JsonKey.inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
+        body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
         
         if let inboxSessionId = inAppMessageContext.inboxSessionId {
-            body.setValue(for: .inboxSessionId, value: inboxSessionId)
+            body.setValue(for: JsonKey.inboxSessionId, value: inboxSessionId)
         }
         
         setCurrentUser(inDict: &body)
@@ -373,16 +373,16 @@ struct RequestCreator {
 
         setCurrentUser(inDict: &body)
         
-        body.setValue(for: .inboxSessionId, value: inboxSessionId)
-        body.setValue(for: .inboxSessionStart, value: IterableUtil.int(fromDate: sessionStartTime))
-        body.setValue(for: .inboxSessionEnd, value: IterableUtil.int(fromDate: sessionEndTime))
-        body.setValue(for: .startTotalMessageCount, value: inboxSession.startTotalMessageCount)
-        body.setValue(for: .endTotalMessageCount, value: inboxSession.endTotalMessageCount)
-        body.setValue(for: .startUnreadMessageCount, value: inboxSession.startUnreadMessageCount)
-        body.setValue(for: .endUnreadMessageCount, value: inboxSession.endUnreadMessageCount)
-        body.setValue(for: .impressions, value: inboxSession.impressions.compactMap { $0.asDictionary() })
+        body.setValue(for: JsonKey.inboxSessionId, value: inboxSessionId)
+        body.setValue(for: JsonKey.inboxSessionStart, value: IterableUtil.int(fromDate: sessionStartTime))
+        body.setValue(for: JsonKey.inboxSessionEnd, value: IterableUtil.int(fromDate: sessionEndTime))
+        body.setValue(for: JsonKey.startTotalMessageCount, value: inboxSession.startTotalMessageCount)
+        body.setValue(for: JsonKey.endTotalMessageCount, value: inboxSession.endTotalMessageCount)
+        body.setValue(for: JsonKey.startUnreadMessageCount, value: inboxSession.startUnreadMessageCount)
+        body.setValue(for: JsonKey.endUnreadMessageCount, value: inboxSession.endUnreadMessageCount)
+        body.setValue(for: JsonKey.impressions, value: inboxSession.impressions.compactMap { $0.asDictionary() })
         
-        body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
+        body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
         
         return .success(.post(createPostRequest(path: Const.Path.trackInboxSession, body: body)))
     }
@@ -390,7 +390,7 @@ struct RequestCreator {
     func createDisableDeviceRequest(forAllUsers allUsers: Bool, hexToken: String) -> Result<IterableRequest, IterableError> {
         var body = [AnyHashable: Any]()
         
-        body.setValue(for: .token, value: hexToken)
+        body.setValue(for: JsonKey.token, value: hexToken)
         
         if !allUsers {
             setCurrentUser(inDict: &body)
@@ -400,8 +400,8 @@ struct RequestCreator {
     }
     
     func createGetRemoteConfigurationRequest() -> Result<IterableRequest, IterableError> {
-        var args: [AnyHashable: Any] = [JsonKey.platform.jsonKey: JsonValue.iOS.jsonStringValue,
-                                        JsonKey.systemVersion.jsonKey: UIDevice.current.systemVersion,
+        var args: [AnyHashable: Any] = [JsonKey.platform: JsonValue.iOS.jsonStringValue,
+                                        JsonKey.systemVersion: UIDevice.current.systemVersion,
                                         JsonKey.InApp.sdkVersion: IterableAPI.sdkVersion]
         
         if let packageName = Bundle.main.appPackageName {
@@ -438,9 +438,9 @@ struct RequestCreator {
     private func setCurrentUser(inDict dict: inout [AnyHashable: Any]) {
         switch auth.emailOrUserId {
         case let .email(email):
-            dict.setValue(for: .email, value: email)
+            dict.setValue(for: JsonKey.email, value: email)
         case let .userId(userId):
-            dict.setValue(for: .userId, value: userId)
+            dict.setValue(for: JsonKey.userId, value: userId)
         case .none:
             ITBInfo("Current user is unavailable")
         }
@@ -460,13 +460,13 @@ extension RequestCreator {
         
         var body = [AnyHashable: Any]()
         
-        body.setValue(for: .messageId, value: messageId)
+        body.setValue(for: JsonKey.messageId, value: messageId)
         
         setCurrentUser(inDict: &body)
         
         let inAppMessageContext = InAppMessageContext.from(messageId: messageId, deviceMetadata: deviceMetadata)
-        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
-        body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
+        body.setValue(for: JsonKey.inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
+        body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
         
         return .success(.post(createPostRequest(path: Const.Path.trackInAppOpen, body: body)))
     }
@@ -480,14 +480,14 @@ extension RequestCreator {
 
         var body = [AnyHashable: Any]()
         
-        body.setValue(for: .messageId, value: messageId)
-        body.setValue(for: .clickedUrl, value: clickedUrl)
+        body.setValue(for: JsonKey.messageId, value: messageId)
+        body.setValue(for: JsonKey.clickedUrl, value: clickedUrl)
         
         setCurrentUser(inDict: &body)
         
         let inAppMessageContext = InAppMessageContext.from(messageId: messageId, deviceMetadata: deviceMetadata)
-        body.setValue(for: .inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
-        body.setValue(for: .deviceInfo, value: deviceMetadata.asDictionary())
+        body.setValue(for: JsonKey.inAppMessageContext, value: inAppMessageContext.toMessageContextDictionary())
+        body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
         
         return .success(.post(createPostRequest(path: Const.Path.trackInAppClick, body: body)))
     }

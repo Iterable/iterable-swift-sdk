@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import IterableSDK
+@testable import IterableSDK
 import XCTest
 
 enum TabName: String {
