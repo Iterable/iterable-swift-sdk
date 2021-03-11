@@ -380,7 +380,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let firstMessageDate = Date()
         let secondMessageDate = firstMessageDate.addingTimeInterval(-5.0)
         let fetcher = MockInAppFetcher()
-        let internalAPI = InternalIterableAPI.initializeForTesting(inAppFetcher: fetcher)
+        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: fetcher)
         let model = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
         let mockView = MockViewModelView(model: model)
         mockView.onViewModelChangedCallback = { diffs in
