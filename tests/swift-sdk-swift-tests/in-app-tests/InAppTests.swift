@@ -1072,67 +1072,6 @@ class InAppTests: XCTestCase {
         checkInAppRemoveMessagePayload(location: .inbox, source: .deleteButton, removeFunction: { $0.inAppManager.remove(message: $1, location: .inbox, source: .deleteButton) })
     }
     
-    private func checkInAppRemoveMessagePayload(location: InAppLocation, source: InAppDeleteSource?, removeFunction: @escaping (InternalIterableAPI, IterableInAppMessage) -> Void) {
-        let expectation1 = expectation(description: "checkInAppRemoveMessagePayload")
-        let mockInAppFetcher = MockInAppFetcher()
-        let mockNetworkSession = MockNetworkSession()
-        mockNetworkSession.requestCallback = { urlRequest in
-            guard urlRequest.url!.absoluteString.contains(Const.Path.inAppConsume) else {
-                return
-            }
-            TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.inAppConsume)
-            let body = urlRequest.httpBody!.json() as! [String: Any]
-            TestUtils.validateMessageContext(messageId: "message1", saveToInbox: true, silentInbox: true, location: location, inBody: body)
-            if let deleteAction = source {
-                TestUtils.validateMatch(keyPath: KeyPath(.deleteAction), value: deleteAction.jsonValue as! String, inDictionary: body, message: "deleteAction should be nil")
-            } else {
-                TestUtils.validateNil(keyPath: KeyPath(.deleteAction), inDictionary: body, message: "deleteAction should be nil")
-            }
-            expectation1.fulfill()
-        }
-        let internalApi = InternalIterableAPI.initializeForTesting(
-            networkSession: mockNetworkSession,
-            inAppFetcher: mockInAppFetcher
-        )
-        internalApi.email = "user@example.com"
-        
-        let payloadFromServer = """
-        {"inAppMessages":
-        [
-            {
-                "saveToInbox": true,
-                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
-                "trigger": {"type": "never"},
-                "messageId": "message1",
-                "campaignId": 1,
-                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
-            },
-            {
-                "saveToInbox": true,
-                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
-                "trigger": {"type": "never"},
-                "messageId": "message2",
-                "campaignId": 2,
-                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
-            },
-        ]
-        }
-        """.toJsonDict()
-        
-        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, payloadFromServer).onSuccess { [weak internalApi] _ in
-            guard let internalApi = internalApi else {
-                XCTFail("Expected internalApi to be not nil")
-                return
-            }
-            let messages = internalApi.inAppManager.getInboxMessages()
-            XCTAssertEqual(messages.count, 2)
-            
-            removeFunction(internalApi, messages[0])
-        }
-        
-        wait(for: [expectation1], timeout: testExpectationTimeout)
-    }
-    
     func testInboxChangedIsCalledWhenInAppIsRemovedInServer() {
         let expectation1 = expectation(description: "testInboxChangedIsCalledWhenInAppIsRemovedInServer")
         
@@ -1320,12 +1259,113 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
     }
     
-    private func getEmptyInAppMessage() -> IterableInAppMessage {
-        IterableInAppMessage(messageId: "", campaignId: 0, content: getEmptyInAppContent())
+    func testIgnoreReadMessagesOnProcessing() {
+        let condition1 = expectation(description: "\(#function) - missing message getting showed")
+        condition1.expectedFulfillmentCount = 3
+        
+        let idWithRead = "2"
+        
+        let messages = [
+            getEmptyInAppMessage(id: "1"),
+            getInAppMessage(id: idWithRead, read: true),
+            getEmptyInAppMessage(id: "3"),
+            getInAppMessage(id: "4", read: false)
+        ]
+        
+        let mockInAppFetcher = MockInAppFetcher(messages: messages)
+        let mockInAppDisplayer = MockInAppDisplayer()
+        
+        mockInAppDisplayer.onShow.onSuccess { [weak mockInAppDisplayer = mockInAppDisplayer] message in
+            mockInAppDisplayer?.click(url: URL(string: "https://iterable.com")!)
+            
+            XCTAssertFalse(message.read, "\(#function): message with ID: \(message.messageId) had read: true")
+            
+            condition1.fulfill()
+        }
+        
+        let config = IterableConfig()
+        config.inAppDisplayInterval = 1.0
+        
+        let internalAPI = InternalIterableAPI.initializeForTesting(config: config,
+                                                                   inAppFetcher: mockInAppFetcher,
+                                                                   inAppDisplayer: mockInAppDisplayer)
+        
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages)
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+    
+    private func getInAppMessage(id: String = "", read: Bool) -> IterableInAppMessage {
+        IterableInAppMessage(messageId: id, campaignId: 0, content: getEmptyInAppContent(), read: read)
+    }
+    
+    private func getEmptyInAppMessage(id: String = "") -> IterableInAppMessage {
+        IterableInAppMessage(messageId: id, campaignId: 0, content: getEmptyInAppContent())
     }
     
     private func getEmptyInAppContent() -> IterableInAppContent {
         IterableHtmlInAppContent(edgeInsets: .zero, html: "")
+    }
+    
+    private func checkInAppRemoveMessagePayload(location: InAppLocation, source: InAppDeleteSource?, removeFunction: @escaping (InternalIterableAPI, IterableInAppMessage) -> Void) {
+        let expectation1 = expectation(description: "checkInAppRemoveMessagePayload")
+        let mockInAppFetcher = MockInAppFetcher()
+        let mockNetworkSession = MockNetworkSession()
+        mockNetworkSession.requestCallback = { urlRequest in
+            guard urlRequest.url!.absoluteString.contains(Const.Path.inAppConsume) else {
+                return
+            }
+            TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.inAppConsume)
+            let body = urlRequest.httpBody!.json() as! [String: Any]
+            TestUtils.validateMessageContext(messageId: "message1", saveToInbox: true, silentInbox: true, location: location, inBody: body)
+            if let deleteAction = source {
+                TestUtils.validateMatch(keyPath: KeyPath(.deleteAction), value: deleteAction.jsonValue as! String, inDictionary: body, message: "deleteAction should be nil")
+            } else {
+                TestUtils.validateNil(keyPath: KeyPath(.deleteAction), inDictionary: body, message: "deleteAction should be nil")
+            }
+            expectation1.fulfill()
+        }
+        let internalApi = InternalIterableAPI.initializeForTesting(
+            networkSession: mockNetworkSession,
+            inAppFetcher: mockInAppFetcher
+        )
+        internalApi.email = "user@example.com"
+        
+        let payloadFromServer = """
+        {"inAppMessages":
+        [
+            {
+                "saveToInbox": true,
+                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "trigger": {"type": "never"},
+                "messageId": "message1",
+                "campaignId": 1,
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+            {
+                "saveToInbox": true,
+                "content": {"contentType": "html", "inAppDisplaySettings": {"bottom": {"displayOption": "AutoExpand"}, "backgroundAlpha": 0.5, "left": {"percentage": 60}, "right": {"percentage": 60}, "top": {"displayOption": "AutoExpand"}}, "html": "<a href=\'https://www.site2.com\'>Click Here</a>"},
+                "trigger": {"type": "never"},
+                "messageId": "message2",
+                "campaignId": 2,
+                "customPayload": {"title": "Product 1 Available", "date": "2018-11-14T14:00:00:00.32Z"}
+            },
+        ]
+        }
+        """.toJsonDict()
+        
+        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, payloadFromServer).onSuccess { [weak internalApi] _ in
+            guard let internalApi = internalApi else {
+                XCTFail("Expected internalApi to be not nil")
+                return
+            }
+            let messages = internalApi.inAppManager.getInboxMessages()
+            XCTAssertEqual(messages.count, 2)
+            
+            removeFunction(internalApi, messages[0])
+        }
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
     fileprivate func verifyCustomActionIsCalled(expectation1: XCTestExpectation, customActionScheme: String, customActionName: String) {

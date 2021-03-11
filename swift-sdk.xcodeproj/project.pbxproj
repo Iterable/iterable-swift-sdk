@@ -19,6 +19,7 @@
 		55705A6925A78BF3009BDEE2 /* InAppPriorityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55705A6825A78BF3009BDEE2 /* InAppPriorityTests.swift */; };
 		557AE6BF24A56E5E00B57750 /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557AE6BE24A56E5E00B57750 /* Auth.swift */; };
 		5585DF8F22A73390000A32B9 /* IterableInboxViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5585DF8E22A73390000A32B9 /* IterableInboxViewControllerTests.swift */; };
+		55AEA95925F05B7D00B38CED /* InAppMessageProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55AEA95825F05B7D00B38CED /* InAppMessageProcessorTests.swift */; };
 		55B3119B251015CF0056E4FC /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55298B222501A5AB00190BAE /* AuthManager.swift */; };
 		55B37FC1229620D20042F13A /* CommerceItemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B37FC0229620D20042F13A /* CommerceItemTests.swift */; };
 		55B37FC42297135F0042F13A /* NotificationMetadataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B37FC32297135F0042F13A /* NotificationMetadataTests.swift */; };
@@ -372,6 +373,7 @@
 		557AE6BE24A56E5E00B57750 /* Auth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Auth.swift; sourceTree = "<group>"; };
 		5585DF8E22A73390000A32B9 /* IterableInboxViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxViewControllerTests.swift; sourceTree = "<group>"; };
 		5585DF9022A877E6000A32B9 /* IterableInboxViewControllerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxViewControllerUITests.swift; sourceTree = "<group>"; };
+		55AEA95825F05B7D00B38CED /* InAppMessageProcessorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppMessageProcessorTests.swift; sourceTree = "<group>"; };
 		55B37FC0229620D20042F13A /* CommerceItemTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommerceItemTests.swift; sourceTree = "<group>"; };
 		55B37FC32297135F0042F13A /* NotificationMetadataTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationMetadataTests.swift; sourceTree = "<group>"; };
 		55B37FC5229752DD0042F13A /* OrderedDictionaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderedDictionaryTests.swift; sourceTree = "<group>"; };
@@ -691,6 +693,7 @@
 			children = (
 				ACC3FD9D2536D7A30004A2E0 /* InAppFilePersistenceTests.swift */,
 				AC750A49234CD67900561902 /* InAppHelperTests.swift */,
+				55AEA95825F05B7D00B38CED /* InAppMessageProcessorTests.swift */,
 				AC6FDD8B20F56309005D811E /* InAppParsingTests.swift */,
 				55B37FED229F59290042F13A /* InAppPersistenceTests.swift */,
 				55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */,
@@ -703,12 +706,12 @@
 		557059BC25A69352009BDEE2 /* inbox-tests */ = {
 			isa = PBXGroup;
 			children = (
-				5585DF8E22A73390000A32B9 /* IterableInboxViewControllerTests.swift */,
 				55B549852397462300243E87 /* InboxImpressionTrackerTests.swift */,
 				55B37FC722975A840042F13A /* InboxMessageViewModelTests.swift */,
 				55B5498323973B5C00243E87 /* InboxSessionManagerTests.swift */,
 				AC1670CC2230A91C00989F8E /* InboxTests.swift */,
 				AC8F35A1239806B500302994 /* InboxViewControllerViewModelTests.swift */,
+				5585DF8E22A73390000A32B9 /* IterableInboxViewControllerTests.swift */,
 			);
 			path = "inbox-tests";
 			sourceTree = "<group>";
@@ -1811,6 +1814,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ACA8D1A62196309C001B1332 /* Common.swift in Sources */,
+				55AEA95925F05B7D00B38CED /* InAppMessageProcessorTests.swift in Sources */,
 				ACC362B824D17005002C67BA /* IterableRequestTests.swift in Sources */,
 				AC2C668720D3435700D46CC9 /* IterableActionRunnerTests.swift in Sources */,
 				00CB31B621096129004ACDEC /* TestUtils.swift in Sources */,

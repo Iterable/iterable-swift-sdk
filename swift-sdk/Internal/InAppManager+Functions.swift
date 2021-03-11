@@ -52,19 +52,19 @@ struct MessagesProcessor {
         
         ITBDebug("processing message with id: \(message.messageId)")
         
-        if inAppDisplayChecker.isOkToShowNow(message: message) {
-            ITBDebug("isOkToShowNow")
-            if inAppDelegate.onNew(message: message) == .show {
-                ITBDebug("delegate returned show")
-                return .show(message)
-            } else {
-                ITBDebug("delegate returned skip")
-                return .skip(message)
-            }
-        } else {
+        guard inAppDisplayChecker.isOkToShowNow(message: message) else {
             ITBDebug("Not ok to show now")
-            
             return .wait
+        }
+        
+        ITBDebug("isOkToShowNow")
+        
+        if inAppDelegate.onNew(message: message) == .show {
+            ITBDebug("delegate returned show")
+            return .show(message)
+        } else {
+            ITBDebug("delegate returned skip")
+            return .skip(message)
         }
     }
     
@@ -76,7 +76,7 @@ struct MessagesProcessor {
     }
     
     private static func isProcessableTriggeredMessage(_ message: IterableInAppMessage) -> Bool {
-        message.didProcessTrigger == false && message.trigger.type == .immediate
+        !message.didProcessTrigger && message.trigger.type == .immediate && !message.read
     }
     
     private mutating func updateMessage(_ message: IterableInAppMessage, didProcessTrigger: Bool? = nil, consumed: Bool? = nil) {
@@ -122,20 +122,34 @@ struct MessagesObtainedHandler {
         let removedInboxCount = removedMessages.reduce(0) { $1.saveToInbox ? $0 + 1 : $0 }
         let addedInboxCount = addedMessages.reduce(0) { $1.saveToInbox ? $0 + 1 : $0 }
         
+        var messagesOverwritten = 0
         var newMessagesMap = OrderedDictionary<String, IterableInAppMessage>()
-        messages.forEach {
-            if let existingMessage = messagesMap[$0.messageId] {
-                newMessagesMap[$0.messageId] = existingMessage
+        messages.forEach { serverMessage in
+            let messageId = serverMessage.messageId
+            if let existingMessage = messagesMap[messageId] {
+                if Self.shouldOverwrite(clientMessage: existingMessage, withServerMessage: serverMessage) {
+                    newMessagesMap[messageId] = serverMessage
+                    messagesOverwritten += 1
+                } else {
+                    newMessagesMap[messageId] = existingMessage
+                }
             } else {
-                newMessagesMap[$0.messageId] = $0
+                newMessagesMap[messageId] = serverMessage
             }
         }
         
-        return MergeMessagesResult(inboxChanged: removedInboxCount + addedInboxCount > 0,
+        return MergeMessagesResult(inboxChanged: removedInboxCount + addedInboxCount + messagesOverwritten > 0,
                                    messagesMap: newMessagesMap,
                                    deliveredMessages: addedMessages)
     }
     
     private let messagesMap: OrderedDictionary<String, IterableInAppMessage>
     private let messages: [IterableInAppMessage]
+
+    // We should only overwrite if the server is read and client is not read.
+    // This is because some client changes may not have propagated to server yet.
+    private static func shouldOverwrite(clientMessage: IterableInAppMessage,
+                                        withServerMessage serverMessage: IterableInAppMessage) -> Bool {
+        serverMessage.read && !clientMessage.read
+    }
 }
