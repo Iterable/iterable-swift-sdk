@@ -203,7 +203,7 @@ struct RequestCreator {
         }
 
         var args: [AnyHashable: Any] = [JsonKey.InApp.count: count.description,
-                                        JsonKey.platform: JsonValue.iOS.jsonStringValue,
+                                        JsonKey.platform: JsonValue.iOS,
                                         JsonKey.systemVersion: UIDevice.current.systemVersion,
                                         JsonKey.InApp.sdkVersion: IterableAPI.sdkVersion]
         
@@ -400,7 +400,7 @@ struct RequestCreator {
     }
     
     func createGetRemoteConfigurationRequest() -> Result<IterableRequest, IterableError> {
-        var args: [AnyHashable: Any] = [JsonKey.platform: JsonValue.iOS.jsonStringValue,
+        var args: [AnyHashable: Any] = [JsonKey.platform: JsonValue.iOS,
                                         JsonKey.systemVersion: UIDevice.current.systemVersion,
                                         JsonKey.InApp.sdkVersion: IterableAPI.sdkVersion]
         
@@ -427,11 +427,11 @@ struct RequestCreator {
     private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform, apnsType: APNSType) -> String {
         switch pushServicePlatform {
         case .production:
-            return JsonValue.apnsProduction.jsonStringValue
+            return JsonValue.apnsProduction
         case .sandbox:
-            return JsonValue.apnsSandbox.jsonStringValue
+            return JsonValue.apnsSandbox
         case .auto:
-            return apnsType == .sandbox ? JsonValue.apnsSandbox.jsonStringValue : JsonValue.apnsProduction.jsonStringValue
+            return apnsType == .sandbox ? JsonValue.apnsSandbox : JsonValue.apnsProduction
         }
     }
     

@@ -54,8 +54,8 @@ struct IterableAPISupport {
     }
     
     private static func createIterableHeaders() -> [String: String] {
-        [JsonKey.contentType.jsonKey: JsonValue.applicationJson.jsonStringValue,
-         JsonKey.Header.sdkPlatform: JsonValue.iOS.jsonStringValue,
+        [JsonKey.contentType.jsonKey: JsonValue.applicationJson,
+         JsonKey.Header.sdkPlatform: JsonValue.iOS,
          JsonKey.Header.sdkVersion: IterableAPI.sdkVersion,
          JsonKey.Header.apiKey: apiKey]
     }

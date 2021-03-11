@@ -37,7 +37,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     var deviceMetadata: DeviceMetadata {
         DeviceMetadata(deviceId: deviceId,
-                       platform: JsonValue.iOS.jsonStringValue,
+                       platform: JsonValue.iOS,
                        appPackageName: Bundle.main.appPackageName ?? "")
     }
     

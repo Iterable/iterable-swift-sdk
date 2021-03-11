@@ -213,22 +213,18 @@ enum JsonKey {
     }
 }
 
-public protocol JsonValueRepresentable {
-    var jsonValue: Any { get }
-}
+enum JsonValue {
+    static let applicationJson = "application/json"
+    static let apnsSandbox = "APNS_SANDBOX"
+    static let apnsProduction = "APNS"
+    static let iOS = "iOS"
+    static let bearer = "Bearer"
 
-public enum JsonValue: String, JsonValueRepresentable {
-    case applicationJson = "application/json"
-    case apnsSandbox = "APNS_SANDBOX"
-    case apnsProduction = "APNS"
-    case iOS
-    case bearer = "Bearer"
-    
-    public enum ActionIdentifier {
+    enum ActionIdentifier {
         static let pushOpenDefault = "default"
     }
     
-    public enum DeviceIdiom {
+    enum DeviceIdiom {
         static let pad = "Pad"
         static let phone = "Phone"
         static let carPlay = "CarPlay"
@@ -236,18 +232,14 @@ public enum JsonValue: String, JsonValueRepresentable {
         static let unspecified = "Unspecified"
     }
     
-    public enum Code {
+    enum Code {
         static let badApiKey = "BadApiKey"
         static let invalidJwtPayload = "InvalidJwtPayload"
     }
-    
-    public var jsonStringValue: String {
-        rawValue
-    }
-    
-    public var jsonValue: Any {
-        rawValue
-    }
+}
+
+public protocol JsonValueRepresentable {
+    var jsonValue: Any { get }
 }
 
 @objc public enum InAppLocation: Int, JsonValueRepresentable {

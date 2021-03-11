@@ -74,8 +74,8 @@ struct TestUtils {
             return
         }
         
-        XCTAssertEqual(header[JsonKey.contentType], JsonValue.applicationJson.jsonStringValue)
-        XCTAssertEqual(header[JsonKey.Header.sdkPlatform], JsonValue.iOS.jsonStringValue)
+        XCTAssertEqual(header[JsonKey.contentType], JsonValue.applicationJson)
+        XCTAssertEqual(header[JsonKey.Header.sdkPlatform], JsonValue.iOS)
         XCTAssertEqual(header[JsonKey.Header.sdkVersion], IterableAPI.sdkVersion)
         XCTAssertEqual(header[JsonKey.Header.apiKey], apiKey)
         XCTAssertEqual(header[JsonKey.Header.requestProcessor], processorType == .online ? "Online" : "Offline")
@@ -108,7 +108,7 @@ struct TestUtils {
     
     static func validateDeviceInfo(inBody body: [String: Any], withDeviceId deviceId: String) {
         validateMatch(keyPath: KeyPath(keys: JsonKey.deviceInfo, JsonKey.deviceId), value: deviceId, inDictionary: body)
-        validateMatch(keyPath: KeyPath(keys: JsonKey.deviceInfo, JsonKey.platform), value: JsonValue.iOS.jsonStringValue, inDictionary: body)
+        validateMatch(keyPath: KeyPath(keys: JsonKey.deviceInfo, JsonKey.platform), value: JsonValue.iOS, inDictionary: body)
         validateMatch(keyPath: KeyPath(keys: JsonKey.deviceInfo, JsonKey.appPackageName), value: Bundle.main.appPackageName, inDictionary: body)
     }
 

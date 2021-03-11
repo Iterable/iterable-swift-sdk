@@ -935,7 +935,7 @@ class RequestHandlerTests: XCTestCase {
     }
     
     private static let deviceMetadata = DeviceMetadata(deviceId: IterableUtil.generateUUID(),
-                                                       platform: JsonValue.iOS.jsonStringValue,
+                                                       platform: JsonValue.iOS,
                                                        appPackageName: Bundle.main.appPackageName ?? "")
     
     private let dateProvider = MockDateProvider()

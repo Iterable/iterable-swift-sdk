@@ -376,7 +376,7 @@ class RequestCreatorTests: XCTestCase {
     private let userIdAuth = Auth(userId: "ein", email: nil, authToken: nil)
     
     private let deviceMetadata = DeviceMetadata(deviceId: IterableUtil.generateUUID(),
-                                                platform: JsonValue.iOS.jsonStringValue,
+                                                platform: JsonValue.iOS,
                                                 appPackageName: Bundle.main.appPackageName ?? "")
     private let dateProvider = MockDateProvider()
     

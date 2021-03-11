@@ -54,8 +54,8 @@ struct IterableAPICallRequest {
     }
     
     private func createIterableHeaders(currentDate: Date, processorType: ProcessorType) -> [String: String] {
-        var headers = [JsonKey.contentType: JsonValue.applicationJson.jsonStringValue,
-                       JsonKey.Header.sdkPlatform: JsonValue.iOS.jsonStringValue,
+        var headers = [JsonKey.contentType: JsonValue.applicationJson,
+                       JsonKey.Header.sdkPlatform: JsonValue.iOS,
                        JsonKey.Header.sdkVersion: IterableAPI.sdkVersion,
                        JsonKey.Header.apiKey: apiKey,
                        JsonKey.Header.sentAt: Self.format(sentAt: currentDate),

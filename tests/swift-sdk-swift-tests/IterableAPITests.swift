@@ -390,7 +390,7 @@ class IterableAPITests: XCTestCase {
             
             TestUtils.validateElementPresent(withName: "email", andValue: "user@example.com", inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(string: "device.applicationName"), value: "my-push-integration", inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath(string: "device.platform"), value: JsonValue.apnsSandbox.jsonStringValue, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(string: "device.platform"), value: JsonValue.apnsSandbox, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(string: "device.token"), value: token.hexString(), inDictionary: body)
             
             // more device fields
