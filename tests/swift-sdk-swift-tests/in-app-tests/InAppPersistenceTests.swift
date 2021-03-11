@@ -62,7 +62,7 @@ class InAppPersistenceTests: XCTestCase {
         let expectation1 = expectation(description: #function)
         let mockInAppFetcher = MockInAppFetcher()
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: mockInAppFetcher)
+        let internalAPI = InternalIterableAPI.initializeForTesting(inAppFetcher: mockInAppFetcher)
         
         mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: [Self.getInboxMessage(id: "1", read: false)])
             .flatMap { _ in
