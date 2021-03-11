@@ -91,69 +91,69 @@ import UserNotifications
     }
     
     private func getCategory(fromContent content: UNNotificationContent) -> String {
-        if content.categoryIdentifier.count == 0 {
-            guard let itblDictionary = content.userInfo[JsonKey.Payload.metadata] as? [AnyHashable: Any] else {
-                return ""
-            }
-            
-            guard let messageId = itblDictionary[JsonKey.Payload.messageId] as? String else {
-                return ""
-            }
-            
-            var actionButtons: [[AnyHashable: Any]] = []
-            if let actionButtonsFromITBLPayload = itblDictionary[JsonKey.Payload.actionButtons] as? [[AnyHashable: Any]] {
-                actionButtons = actionButtonsFromITBLPayload
-            } else {
-                #if DEBUG
-                    if let actionButtonsFromUserInfo = content.userInfo[JsonKey.Payload.actionButtons] as? [[AnyHashable: Any]] {
-                        actionButtons = actionButtonsFromUserInfo
-                    }
-                #endif
-            }
-            
-            var notificationActions = [UNNotificationAction]()
-            for actionButton in actionButtons {
-                if let notificationAction = createNotificationActionButton(buttonDictionary: actionButton) {
-                    notificationActions.append(notificationAction)
-                }
-            }
-            
-            messageCategory = UNNotificationCategory(identifier: messageId, actions: notificationActions, intentIdentifiers: [], options: [])
-            if let messageCategory = messageCategory {
-                UNUserNotificationCenter.current().getNotificationCategories { categories in
-                    var newCategories = categories
-                    newCategories.insert(messageCategory)
-                    UNUserNotificationCenter.current().setNotificationCategories(newCategories)
-                }
-            }
-            
-            return messageId
-        } else {
+        guard content.categoryIdentifier.count == 0 else {
             return content.categoryIdentifier
         }
+        
+        guard let itblDictionary = content.userInfo[JsonKey.Payload.metadata] as? [AnyHashable: Any],
+              let messageId = itblDictionary[JsonKey.Payload.messageId] as? String else {
+            return ""
+        }
+        
+        var actionButtons: [[AnyHashable: Any]] = []
+        
+        if let actionButtonsFromITBLPayload = itblDictionary[JsonKey.Payload.actionButtons] as? [[AnyHashable: Any]] {
+            actionButtons = actionButtonsFromITBLPayload
+        } else {
+            #if DEBUG
+            if let actionButtonsFromUserInfo = content.userInfo[JsonKey.Payload.actionButtons] as? [[AnyHashable: Any]] {
+                actionButtons = actionButtonsFromUserInfo
+            }
+            #endif
+        }
+        
+        var notificationActions = [UNNotificationAction]()
+
+        for actionButton in actionButtons {
+            if let notificationAction = createNotificationActionButton(buttonDictionary: actionButton) {
+                notificationActions.append(notificationAction)
+            }
+        }
+        
+        messageCategory = UNNotificationCategory(identifier: messageId, actions: notificationActions, intentIdentifiers: [], options: [])
+        
+        if let messageCategory = messageCategory {
+            UNUserNotificationCenter.current().getNotificationCategories { categories in
+                var newCategories = categories
+                newCategories.insert(messageCategory)
+                UNUserNotificationCenter.current().setNotificationCategories(newCategories)
+            }
+        }
+        
+        return messageId
     }
     
     private func createNotificationActionButton(buttonDictionary: [AnyHashable: Any]) -> UNNotificationAction? {
-        guard let identifier = buttonDictionary[JsonKey.ActionButton.identifier] as? String else {
-            return nil
-        }
-        
-        guard let title = buttonDictionary[JsonKey.ActionButton.title] as? String else {
+        guard let identifier = buttonDictionary[JsonKey.ActionButton.identifier] as? String,
+              let title = buttonDictionary[JsonKey.ActionButton.title] as? String else {
             return nil
         }
         
         let buttonType = getButtonType(buttonDictionary: buttonDictionary)
         var openApp = true
+        
         if let openAppFromDict = buttonDictionary[JsonKey.ActionButton.openApp] as? NSNumber {
             openApp = openAppFromDict.boolValue
         }
         
         var requiresUnlock = false
+        
         if let requiresUnlockFromDict = buttonDictionary[JsonKey.ActionButton.requiresUnlock] as? NSNumber {
             requiresUnlock = requiresUnlockFromDict.boolValue
         }
         
         var actionOptions: UNNotificationActionOptions = []
+        
         if buttonType == IterableButtonTypeDestructive {
             actionOptions.insert(.destructive)
         }
@@ -187,9 +187,9 @@ import UserNotifications
         
         if buttonType == IterableButtonTypeTextInput || buttonType == IterableButtonTypeDestructive {
             return buttonType
-        } else {
-            return IterableButtonTypeDefault
         }
+        
+        return IterableButtonTypeDefault
     }
     
     private var messageCategory: UNNotificationCategory?
