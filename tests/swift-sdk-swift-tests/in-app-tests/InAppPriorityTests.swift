@@ -48,7 +48,7 @@ class InAppPriorityTests: XCTestCase {
         let config = IterableConfig()
         config.inAppDisplayInterval = 1.0
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(config: config,
+        let internalAPI = InternalIterableAPI.initializeForTesting(config: config,
                                                                    inAppFetcher: mockInAppFetcher,
                                                                    inAppDisplayer: mockInAppDisplayer)
         
