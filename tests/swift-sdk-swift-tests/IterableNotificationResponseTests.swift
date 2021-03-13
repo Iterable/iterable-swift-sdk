@@ -64,7 +64,7 @@ class IterableNotificationResponseTests: XCTestCase {
         XCTAssertEqual(pushTracker.messageId, messageId)
         XCTAssertFalse(pushTracker.appAlreadyRunnnig)
         
-        XCTAssertEqual(pushTracker.dataFields?[JsonKey.actionIdentifier.jsonKey] as? String, JsonValue.ActionIdentifier.pushOpenDefault)
+        XCTAssertEqual(pushTracker.dataFields?[JsonKey.actionIdentifier] as? String, JsonValue.ActionIdentifier.pushOpenDefault)
     }
     
     func testActionButtonDismiss() {
@@ -111,7 +111,7 @@ class IterableNotificationResponseTests: XCTestCase {
         XCTAssertEqual(pushTracker.templateId, 4321)
         XCTAssertEqual(pushTracker.messageId, messageId)
         
-        XCTAssertEqual(pushTracker.dataFields?[JsonKey.actionIdentifier.jsonKey] as? String, "buttonIdentifier")
+        XCTAssertEqual(pushTracker.dataFields?[JsonKey.actionIdentifier] as? String, "buttonIdentifier")
     }
     
     func testForegroundPushActionBeforeiOS10() {

@@ -36,8 +36,8 @@ struct InAppMessageParser {
             return result
         }
         
-        moveValue(withSourceKey: JsonKey.saveToInbox.jsonKey,
-                  andDestinationKey: JsonKey.saveToInbox.jsonKey,
+        moveValue(withSourceKey: JsonKey.saveToInbox,
+                  andDestinationKey: JsonKey.saveToInbox,
                   from: &customPayloadDict,
                   to: &result)
         
@@ -46,9 +46,9 @@ struct InAppMessageParser {
             customPayloadDict[JsonKey.InApp.trigger] = nil
         }
         
-        if let inboxMetadataDict = customPayloadDict[JsonKey.inboxMetadata.jsonKey] as? [AnyHashable: Any] {
-            result[JsonKey.inboxMetadata.jsonKey] = inboxMetadataDict
-            customPayloadDict[JsonKey.inboxMetadata.jsonKey] = nil
+        if let inboxMetadataDict = customPayloadDict[JsonKey.inboxMetadata] as? [AnyHashable: Any] {
+            result[JsonKey.inboxMetadata] = inboxMetadataDict
+            customPayloadDict[JsonKey.inboxMetadata] = nil
         }
         
         if var contentDict = json[JsonKey.InApp.content] as? [AnyHashable: Any] {
@@ -77,7 +77,7 @@ struct InAppMessageParser {
     }
     
     private static func parseOneMessage(fromJson json: [AnyHashable: Any]) -> Result<IterableInAppMessage, ParseError> {
-        guard let messageId = json[JsonKey.messageId.jsonKey] as? String else {
+        guard let messageId = json[JsonKey.messageId] as? String else {
             return .failure(.parseFailed(reason: "no messageId", messageId: nil))
         }
         
@@ -94,16 +94,16 @@ struct InAppMessageParser {
             return .failure(.parseFailed(reason: reason, messageId: messageId))
         }
         
-        let campaignId = json[JsonKey.campaignId.jsonKey] as? NSNumber
+        let campaignId = json[JsonKey.campaignId] as? NSNumber
         
-        let saveToInbox = json[JsonKey.saveToInbox.jsonKey] as? Bool ?? false
+        let saveToInbox = json[JsonKey.saveToInbox] as? Bool ?? false
         let inboxMetadata = parseInboxMetadata(fromPayload: json)
         let trigger = parseTrigger(fromTriggerElement: json[JsonKey.InApp.trigger] as? [AnyHashable: Any])
         let customPayload = parseCustomPayload(fromPayload: json)
-        let createdAt = parseTime(withKey: .inboxCreatedAt, fromJson: json)
-        let expiresAt = parseTime(withKey: .inboxExpiresAt, fromJson: json)
-        let read = json[JsonKey.read.jsonKey] as? Bool ?? false
-        let priorityLevel = json[JsonKey.priorityLevel.jsonKey] as? Double ?? Const.PriorityLevel.unassigned
+        let createdAt = parseTime(withKey: JsonKey.inboxCreatedAt, fromJson: json)
+        let expiresAt = parseTime(withKey: JsonKey.inboxExpiresAt, fromJson: json)
+        let read = json[JsonKey.read] as? Bool ?? false
+        let priorityLevel = json[JsonKey.priorityLevel] as? Double ?? Const.PriorityLevel.unassigned
         
         return .success(IterableInAppMessage(messageId: messageId,
                                              campaignId: campaignId,
@@ -118,8 +118,8 @@ struct InAppMessageParser {
                                              priorityLevel: priorityLevel))
     }
     
-    private static func parseTime(withKey key: JsonKey, fromJson json: [AnyHashable: Any]) -> Date? {
-        json.getIntValue(for: key).map(IterableUtil.date(fromInt:))
+    private static func parseTime(withKey key: AnyHashable, fromJson json: [AnyHashable: Any]) -> Date? {
+        (json[key] as? Int).map(IterableUtil.date(fromInt:))
     }
     
     private static func parseTrigger(fromTriggerElement element: [AnyHashable: Any]?) -> IterableInAppTrigger {
@@ -135,13 +135,13 @@ struct InAppMessageParser {
     }
     
     private static func parseInboxMetadata(fromPayload payload: [AnyHashable: Any]) -> IterableInboxMetadata? {
-        guard let inboxMetadataDict = payload[JsonKey.inboxMetadata.jsonKey] as? [AnyHashable: Any] else {
+        guard let inboxMetadataDict = payload[JsonKey.inboxMetadata] as? [AnyHashable: Any] else {
             return nil
         }
         
-        let title = inboxMetadataDict.getStringValue(for: .inboxTitle)
-        let subtitle = inboxMetadataDict.getStringValue(for: .inboxSubtitle)
-        let icon = inboxMetadataDict.getStringValue(for: .inboxIcon)
+        let title = inboxMetadataDict.getStringValue(for: JsonKey.inboxTitle)
+        let subtitle = inboxMetadataDict.getStringValue(for: JsonKey.inboxSubtitle)
+        let icon = inboxMetadataDict.getStringValue(for: JsonKey.inboxIcon)
         
         return IterableInboxMetadata(title: title, subtitle: subtitle, icon: icon)
     }

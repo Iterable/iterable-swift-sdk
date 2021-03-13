@@ -74,8 +74,8 @@ struct TestUtils {
             return
         }
         
-        XCTAssertEqual(header[JsonKey.contentType.jsonKey], JsonValue.applicationJson.jsonStringValue)
-        XCTAssertEqual(header[JsonKey.Header.sdkPlatform], JsonValue.iOS.jsonStringValue)
+        XCTAssertEqual(header[JsonKey.contentType], JsonValue.applicationJson)
+        XCTAssertEqual(header[JsonKey.Header.sdkPlatform], JsonValue.iOS)
         XCTAssertEqual(header[JsonKey.Header.sdkVersion], IterableAPI.sdkVersion)
         XCTAssertEqual(header[JsonKey.Header.apiKey], apiKey)
         XCTAssertEqual(header[JsonKey.Header.requestProcessor], processorType == .online ? "Online" : "Offline")
@@ -83,33 +83,33 @@ struct TestUtils {
     
     static func validateEmailOrUserId(email: String? = nil, userId: String? = nil, inBody body: [String: Any]) {
         if let email = email {
-            validateMatch(keyPath: KeyPath(JsonKey.email), value: email, inDictionary: body)
+            validateMatch(keyPath: KeyPath(keys: JsonKey.email), value: email, inDictionary: body)
         }
         
         if let userId = userId {
-            validateMatch(keyPath: KeyPath(JsonKey.userId), value: userId, inDictionary: body)
+            validateMatch(keyPath: KeyPath(keys: JsonKey.userId), value: userId, inDictionary: body)
         }
     }
     
     static func validateMessageContext(messageId: String, email: String? = nil, userId: String? = nil, saveToInbox: Bool, silentInbox: Bool, location: InAppLocation?, inBody body: [String: Any]) {
-        validateMatch(keyPath: KeyPath(JsonKey.messageId), value: messageId, inDictionary: body)
+        validateMatch(keyPath: KeyPath(keys: JsonKey.messageId), value: messageId, inDictionary: body)
         
         validateEmailOrUserId(email: email, userId: userId, inBody: body)
         
-        let contextKey = "\(JsonKey.inAppMessageContext.jsonKey)"
-        validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.saveToInbox.jsonKey)"), value: saveToInbox, inDictionary: body)
-        validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.silentInbox.jsonKey)"), value: silentInbox, inDictionary: body)
+        let contextKey = "\(JsonKey.inAppMessageContext)"
+        validateMatch(keyPath: KeyPath(string: "\(contextKey).\(JsonKey.saveToInbox)"), value: saveToInbox, inDictionary: body)
+        validateMatch(keyPath: KeyPath(string: "\(contextKey).\(JsonKey.silentInbox)"), value: silentInbox, inDictionary: body)
         if let location = location {
-            validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.inAppLocation.jsonKey)"), value: location.jsonValue as! String, inDictionary: body)
+            validateMatch(keyPath: KeyPath(string: "\(contextKey).\(JsonKey.inAppLocation)"), value: location.jsonValue as! String, inDictionary: body)
         } else {
-            XCTAssertNil(body[keyPath: KeyPath("\(contextKey).\(JsonKey.inAppLocation.jsonKey)")])
+            XCTAssertNil(body[keyPath: KeyPath(string: "\(contextKey).\(JsonKey.inAppLocation)")])
         }
     }
     
     static func validateDeviceInfo(inBody body: [String: Any], withDeviceId deviceId: String) {
-        validateMatch(keyPath: KeyPath(.deviceInfo, .deviceId), value: deviceId, inDictionary: body)
-        validateMatch(keyPath: KeyPath(.deviceInfo, .platform), value: JsonValue.iOS.jsonStringValue, inDictionary: body)
-        validateMatch(keyPath: KeyPath(.deviceInfo, .appPackageName), value: Bundle.main.appPackageName, inDictionary: body)
+        validateMatch(keyPath: KeyPath(keys: JsonKey.deviceInfo, JsonKey.deviceId), value: deviceId, inDictionary: body)
+        validateMatch(keyPath: KeyPath(keys: JsonKey.deviceInfo, JsonKey.platform), value: JsonValue.iOS, inDictionary: body)
+        validateMatch(keyPath: KeyPath(keys: JsonKey.deviceInfo, JsonKey.appPackageName), value: Bundle.main.appPackageName, inDictionary: body)
     }
 
     static func areEqual(dict1: [AnyHashable: Any], dict2: [AnyHashable: Any]) -> Bool {
@@ -197,15 +197,15 @@ struct TestUtils {
 struct KeyPath {
     let segments: [String]
     
-    init(_ string: String) {
+    init(string: String) {
         segments = string.components(separatedBy: ".")
     }
-    
-    init(_ jsonKeys: JsonKey...) {
-        segments = jsonKeys.map { $0.jsonKey }
+
+    init(keys: String...) {
+        segments = keys.map { $0 }
     }
-    
-    init(segments: [String]) {
+
+    private init(segments: [String]) {
         self.segments = segments
     }
     
@@ -221,33 +221,16 @@ struct KeyPath {
     }
 }
 
-protocol StringKey {
-    init(string: String)
-}
-
-extension String: StringKey {
-    init(string: String) {
-        self = string
-    }
-}
-
-extension JsonKey: StringKey {
-    init(string: String) {
-        self = JsonKey(rawValue: string)!
-    }
-}
-
-extension Dictionary where Key: StringKey {
+extension Dictionary where Key == String {
     subscript(keyPath keyPath: KeyPath) -> Any? {
         switch keyPath.firstAndRest() {
         case nil:
             return nil
         case let (first, rest)? where rest.isEmpty:
             // nothing else left
-            return self[Key(string: first)]
+            return self[first]
         case let (first, rest)?:
-            let key = Key(string: first)
-            if let value = self[key] as? [Key: Any] {
+            if let value = self[first] as? [Key: Any] {
                 return value[keyPath: rest]
             } else {
                 return nil

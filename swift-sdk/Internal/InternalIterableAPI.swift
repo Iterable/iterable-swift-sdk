@@ -37,7 +37,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     var deviceMetadata: DeviceMetadata {
         DeviceMetadata(deviceId: deviceId,
-                       platform: JsonValue.iOS.jsonStringValue,
+                       platform: JsonValue.iOS,
                        appPackageName: Bundle.main.appPackageName ?? "")
     }
     
@@ -50,7 +50,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             localStorage.getAttributionInfo(currentDate: dateProvider.currentDate)
         } set {
             let expiration = Calendar.current.date(byAdding: .hour,
-                                                   value: Const.UserDefaults.attributionInfoExpiration,
+                                                   value: Const.UserDefault.attributionInfoExpiration,
                                                    to: dateProvider.currentDate)
             localStorage.save(attributionInfo: newValue, withExpiration: expiration)
         }
@@ -497,7 +497,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     private func save(pushPayload payload: [AnyHashable: Any]) {
         let expiration = Calendar.current.date(byAdding: .hour,
-                                               value: Const.UserDefaults.payloadExpiration,
+                                               value: Const.UserDefault.payloadExpiration,
                                                to: dateProvider.currentDate)
         localStorage.save(payload: payload, withExpiration: expiration)
         

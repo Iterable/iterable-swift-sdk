@@ -55,7 +55,7 @@ class TaskSchedulerTests: XCTestCase {
     }
     
     private let deviceMetadata = DeviceMetadata(deviceId: IterableUtil.generateUUID(),
-                                                platform: JsonValue.iOS.jsonStringValue,
+                                                platform: JsonValue.iOS,
                                                 appPackageName: Bundle.main.appPackageName ?? "")
 
     private lazy var persistenceContextProvider: IterablePersistenceContextProvider = {

@@ -33,7 +33,7 @@ class IterableAutoRegistrationTests: XCTestCase {
                 // First call, API call to register endpoint
                 expectation1.fulfill()
                 TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.registerDeviceToken, queryParams: [])
-                TestUtils.validateMatch(keyPath: KeyPath("device.dataFields.notificationsEnabled"), value: false, inDictionary: body)
+                TestUtils.validateMatch(keyPath: KeyPath(string: "device.dataFields.notificationsEnabled"), value: false, inDictionary: body)
             }
 
             if let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
@@ -42,8 +42,8 @@ class IterableAutoRegistrationTests: XCTestCase {
                 // Second call, API call to disable endpoint
                 expectation3.fulfill()
                 TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.disableDevice, queryParams: [])
-                TestUtils.validateElementPresent(withName: JsonKey.token.jsonKey, andValue: token.hexString(), inDictionary: body)
-                TestUtils.validateElementPresent(withName: JsonKey.email.jsonKey, andValue: "user1@example.com", inDictionary: body)
+                TestUtils.validateElementPresent(withName: JsonKey.token, andValue: token.hexString(), inDictionary: body)
+                TestUtils.validateElementPresent(withName: JsonKey.email, andValue: "user1@example.com", inDictionary: body)
             }
         }
 

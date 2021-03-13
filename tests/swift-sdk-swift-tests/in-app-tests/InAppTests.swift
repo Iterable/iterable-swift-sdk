@@ -1319,9 +1319,9 @@ class InAppTests: XCTestCase {
             let body = urlRequest.httpBody!.json() as! [String: Any]
             TestUtils.validateMessageContext(messageId: "message1", saveToInbox: true, silentInbox: true, location: location, inBody: body)
             if let deleteAction = source {
-                TestUtils.validateMatch(keyPath: KeyPath(.deleteAction), value: deleteAction.jsonValue as! String, inDictionary: body, message: "deleteAction should be nil")
+                TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.deleteAction), value: deleteAction.jsonValue as! String, inDictionary: body, message: "deleteAction should be nil")
             } else {
-                TestUtils.validateNil(keyPath: KeyPath(.deleteAction), inDictionary: body, message: "deleteAction should be nil")
+                TestUtils.validateNil(keyPath: KeyPath(keys: JsonKey.deleteAction), inDictionary: body, message: "deleteAction should be nil")
             }
             expectation1.fulfill()
         }

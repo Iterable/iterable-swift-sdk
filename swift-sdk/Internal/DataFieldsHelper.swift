@@ -21,13 +21,13 @@ struct DataFieldsHelper {
             dataFields[deviceAttribute.key] = deviceAttribute.value
         }
         
-        dataFields[JsonKey.deviceId.jsonKey] = deviceId
+        dataFields[JsonKey.deviceId] = deviceId
         
         if let sdkVersion = sdkVersion {
-            dataFields[JsonKey.iterableSdkVersion.jsonKey] = sdkVersion
+            dataFields[JsonKey.iterableSdkVersion] = sdkVersion
         }
         
-        dataFields[JsonKey.notificationsEnabled.jsonKey] = notificationsEnabled
+        dataFields[JsonKey.notificationsEnabled] = notificationsEnabled
         
         dataFields.addAll(other: createBundleFields(bundle: bundle))
         
@@ -40,13 +40,13 @@ struct DataFieldsHelper {
         var fields = [String: Any]()
         
         if let appPackageName = bundle.appPackageName {
-            fields[JsonKey.appPackageName.jsonKey] = appPackageName
+            fields[JsonKey.appPackageName] = appPackageName
         }
         if let appVersion = bundle.appVersion {
-            fields[JsonKey.appVersion.jsonKey] = appVersion
+            fields[JsonKey.appVersion] = appVersion
         }
         if let appBuild = bundle.appBuild {
-            fields[JsonKey.appBuild.jsonKey] = appBuild
+            fields[JsonKey.appBuild] = appBuild
         }
         
         return fields
