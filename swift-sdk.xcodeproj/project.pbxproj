@@ -30,11 +30,15 @@
 		55B549862397462300243E87 /* InboxImpressionTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B549852397462300243E87 /* InboxImpressionTrackerTests.swift */; };
 		55B9F15124B3D33700E8198A /* AuthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B9F15024B3D33700E8198A /* AuthTests.swift */; };
 		55B9F15324B6625D00E8198A /* ApiClientProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B9F15224B6625D00E8198A /* ApiClientProtocol.swift */; };
+		55BCDB4E2601658700123C7F /* IterableCardStreamViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BCDB4D2601658700123C7F /* IterableCardStreamViewController.swift */; };
+		55BCDB6126016EC800123C7F /* CardStreamViewControllerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55BCDB6026016EC800123C7F /* CardStreamViewControllerViewModel.swift */; };
 		55CC257B2462064F00A77FD5 /* InAppPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */; };
 		55D54656239AE5750093ED1E /* LoggingInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D54655239AE5750093ED1E /* LoggingInternal.swift */; };
 		55E02D39253F8D86009DB8BC /* WebViewProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */; };
 		55E6F460238E066400808BCE /* DeferredDeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6F45D238E066400808BCE /* DeferredDeepLinkTests.swift */; };
 		55E6F462238E066400808BCE /* DeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6F45E238E066400808BCE /* DeepLinkTests.swift */; };
+		55EFCC752602B3F300F8FD76 /* IterableCardStreamCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55EFCC732602B3F300F8FD76 /* IterableCardStreamCell.swift */; };
+		55EFCC762602B3F300F8FD76 /* IterableCardStreamCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 55EFCC742602B3F300F8FD76 /* IterableCardStreamCell.xib */; };
 		AC02480822791E2100495FB9 /* IterableInboxNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */; };
 		AC02CAA6234E50B5006617E0 /* RegistrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */; };
 		AC03094B21E532470003A288 /* InAppPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC03094A21E532470003A288 /* InAppPersistence.swift */; };
@@ -383,11 +387,15 @@
 		55B549852397462300243E87 /* InboxImpressionTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxImpressionTrackerTests.swift; sourceTree = "<group>"; };
 		55B9F15024B3D33700E8198A /* AuthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTests.swift; sourceTree = "<group>"; };
 		55B9F15224B6625D00E8198A /* ApiClientProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiClientProtocol.swift; sourceTree = "<group>"; };
+		55BCDB4D2601658700123C7F /* IterableCardStreamViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableCardStreamViewController.swift; sourceTree = "<group>"; };
+		55BCDB6026016EC800123C7F /* CardStreamViewControllerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardStreamViewControllerViewModel.swift; sourceTree = "<group>"; };
 		55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPresenterTests.swift; sourceTree = "<group>"; };
 		55D54655239AE5750093ED1E /* LoggingInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingInternal.swift; sourceTree = "<group>"; };
 		55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewProtocolTests.swift; sourceTree = "<group>"; };
 		55E6F45D238E066400808BCE /* DeferredDeepLinkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeferredDeepLinkTests.swift; sourceTree = "<group>"; };
 		55E6F45E238E066400808BCE /* DeepLinkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepLinkTests.swift; sourceTree = "<group>"; };
+		55EFCC732602B3F300F8FD76 /* IterableCardStreamCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableCardStreamCell.swift; sourceTree = "<group>"; };
+		55EFCC742602B3F300F8FD76 /* IterableCardStreamCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = IterableCardStreamCell.xib; sourceTree = "<group>"; };
 		AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxNavigationViewController.swift; sourceTree = "<group>"; };
 		AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTests.swift; sourceTree = "<group>"; };
 		AC03094A21E532470003A288 /* InAppPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPersistence.swift; sourceTree = "<group>"; };
@@ -845,6 +853,7 @@
 				AC3C10F8213F46A900A9B839 /* IterableLogging.swift */,
 				ACA8D1A221910C66001B1332 /* IterableMessaging.swift */,
 				AC78F0E6253D7F09006378A5 /* IterablePushNotificationMetadata.swift */,
+				55BCDB4D2601658700123C7F /* IterableCardStreamViewController.swift */,
 			);
 			path = "swift-sdk";
 			sourceTree = "<group>";
@@ -982,6 +991,9 @@
 		AC72A0BB20CF4C8C004D7997 /* Internal */ = {
 			isa = PBXGroup;
 			children = (
+				55BCDB6026016EC800123C7F /* CardStreamViewControllerViewModel.swift */,
+				55EFCC732602B3F300F8FD76 /* IterableCardStreamCell.swift */,
+				55EFCC742602B3F300F8FD76 /* IterableCardStreamCell.xib */,
 				ACF4061F25078186005FD775 /* Network */,
 				AC1AA1C724EBB39500F29C6B /* Notification Center */,
 				AC5E888724E1B7AD00752321 /* Request Processing */,
@@ -1601,6 +1613,7 @@
 			files = (
 				AC219C532260006600B98631 /* Assets.xcassets in Resources */,
 				AC219C51225FEDBD00B98631 /* SampleInboxCell.xib in Resources */,
+				55EFCC762602B3F300F8FD76 /* IterableCardStreamCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1749,6 +1762,7 @@
 				AC2AED4424EBC905000EE5F3 /* IterableTaskScheduler.swift in Sources */,
 				55B9F15324B6625D00E8198A /* ApiClientProtocol.swift in Sources */,
 				AC219C4D225FE4C000B98631 /* InboxMessageViewModel.swift in Sources */,
+				55EFCC752602B3F300F8FD76 /* IterableCardStreamCell.swift in Sources */,
 				AC50865A24C60572001DC132 /* IterableCoreDataPersistence.swift in Sources */,
 				AC72A0C820CF4CE2004D7997 /* Constants.swift in Sources */,
 				AC50865824C60426001DC132 /* IterableTask.swift in Sources */,
@@ -1763,6 +1777,7 @@
 				557AE6BF24A56E5E00B57750 /* Auth.swift in Sources */,
 				AC819184227138EF0014955E /* Dwifft.swift in Sources */,
 				AC02480822791E2100495FB9 /* IterableInboxNavigationViewController.swift in Sources */,
+				55BCDB6126016EC800123C7F /* CardStreamViewControllerViewModel.swift in Sources */,
 				AC845107228DF54E0052BB8F /* ApiClient.swift in Sources */,
 				AC72A0D120CF4D0B004D7997 /* InAppHelper.swift in Sources */,
 				AC8874AA22178BD80075B54B /* InAppContentParser.swift in Sources */,
@@ -1788,6 +1803,7 @@
 				AC3A336D24F65579008225BA /* RequestProcessorUtil.swift in Sources */,
 				AC8E7CA524C7555E0039605F /* CoreDataUtil.swift in Sources */,
 				AC1AA1C624EBB2DC00F29C6B /* IterableTaskRunner.swift in Sources */,
+				55BCDB4E2601658700123C7F /* IterableCardStreamViewController.swift in Sources */,
 				ACFD5AC824C8290E008E497A /* IterableTaskManagedObject.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
