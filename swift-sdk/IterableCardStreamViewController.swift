@@ -3,7 +3,6 @@
 //
 
 import UIKit
-import WebKit
 
 private let reuseIdentifier = "Cell"
 
@@ -18,14 +17,10 @@ class IterableCardStreamViewController: UICollectionViewController {
         self.collectionView!.register(UICollectionViewCell.self, forCellWithReuseIdentifier: reuseIdentifier)
         
         // Do any additional setup after loading the view.
-//        if #available(iOS 14.0, *) {
-//            let layoutConfig = UICollectionLayoutListConfiguration(appearance: .grouped)
-//            let listLayout = UICollectionViewCompositionalLayout.list(using: layoutConfig)
-//
-//            self.collectionView!.collectionViewLayout = listLayout
-//        } else {
-//            // Fallback on earlier versions
-//        }
+        
+        self.collectionView.backgroundColor = .blue
+        
+        self.title = "Card Stream"
     }
     
     // MARK: - UICollectionViewDataSource
@@ -41,13 +36,11 @@ class IterableCardStreamViewController: UICollectionViewController {
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath)
         
-        let htmlString = viewModel.getHtmlForMessage(index: indexPath.row)
+        let webView = viewModel.getWebViewForMessage(index: indexPath.row)
         
-        let webView = IterableCardStreamViewController.createWebView()
         webView.set(position: ViewPosition(width: cell.contentView.frame.width,
                                            height: cell.contentView.frame.height,
                                            center: cell.contentView.center))
-        webView.loadHTMLString(htmlString, baseURL: URL(string: ""))
         
         cell.contentView.addSubview(webView.view)
         
@@ -62,19 +55,28 @@ class IterableCardStreamViewController: UICollectionViewController {
     
     // MARK: - Private/Internal
     
-    private static func createWebView() -> WebViewProtocol {
-        let webView = WKWebView(frame: .zero)
-        webView.scrollView.bounces = false
-        webView.isOpaque = false
-        webView.backgroundColor = UIColor.clear
-        return webView as WebViewProtocol
-    }
-    
-    private var viewModel = CardStreamViewControllerViewModel()
+    private let viewModel = CardStreamViewControllerViewModel()
 }
 
 extension IterableCardStreamViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        CGSize(width: collectionView.frame.width, height: 500)
+        let size = CGSize(width: collectionView.frame.width - 40, height: 450)
+        let size2 = viewModel.getSizeForMessage(index: indexPath.row, frame: collectionView.frame)
+        
+        print("jay sizeForItemAt: \(indexPath.row) \(size) \(size2)")
+        
+        return size
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 20
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 20
     }
 }
