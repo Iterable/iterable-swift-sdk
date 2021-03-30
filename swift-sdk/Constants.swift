@@ -12,8 +12,8 @@ enum Endpoint {
     static let links = linksHostName + "/"
 }
 
-public enum Const {
-    public static let apiPath = "/api/"
+enum Const {
+    static let apiPath = "/api/"
     
     static let deepLinkRegex = "/a/[a-zA-Z0-9]+"
     static let href = "href"
@@ -43,10 +43,10 @@ public enum Const {
         static let getRemoteConfiguration = "mobile/getRemoteConfiguration"
     }
     
-    public enum UserDefaults {
+    public enum UserDefault {
         static let payloadKey = "itbl_payload_key"
         static let attributionInfoKey = "itbl_attribution_info_key"
-        public static let emailKey = "itbl_email"
+        static let emailKey = "itbl_email"
         static let userIdKey = "itbl_userid"
         static let authTokenKey = "itbl_auth_token"
         static let ddlChecked = "itbl_ddl_checked"
@@ -74,109 +74,95 @@ public enum Const {
     }
 }
 
-public protocol JsonKeyValueRepresentable {
-    var key: JsonKeyRepresentable { get }
-    var value: JsonValueRepresentable { get }
-}
-
-public struct JsonKeyValue: JsonKeyValueRepresentable {
-    public let key: JsonKeyRepresentable
-    public let value: JsonValueRepresentable
-}
-
-public protocol JsonKeyRepresentable {
-    var jsonKey: String { get }
-}
-
-public enum JsonKey: String, JsonKeyRepresentable {
-    case email
-    case userId
-    case currentEmail
-    case currentUserId
-    case newEmail
-    case emailListIds
-    case unsubscribedChannelIds
-    case unsubscribedMessageTypeIds
-    case subscribedMessageTypeIds
-    case preferUserId
+enum JsonKey {
+    static let email = "email"
+    static let userId = "userId"
+    static let currentEmail = "currentEmail"
+    static let currentUserId = "currentUserId"
+    static let newEmail = "newEmail"
+    static let emailListIds = "emailListIds"
+    static let unsubscribedChannelIds = "unsubscribedChannelIds"
+    static let unsubscribedMessageTypeIds = "unsubscribedMessageTypeIds"
+    static let subscribedMessageTypeIds = "subscribedMessageTypeIds"
+    static let preferUserId = "preferUserId"
     
-    case mergeNestedObjects
+    static let mergeNestedObjects = "mergeNestedObjects"
     
-    case inboxMetadata
-    case inboxTitle = "title"
-    case inboxSubtitle = "subtitle"
-    case inboxIcon = "icon"
+    static let inboxMetadata = "inboxMetadata"
+    static let inboxTitle = "title"
+    static let inboxSubtitle = "subtitle"
+    static let inboxIcon = "icon"
     
-    case inboxExpiresAt = "expiresAt"
-    case inboxCreatedAt = "createdAt"
+    static let inboxExpiresAt = "expiresAt"
+    static let inboxCreatedAt = "createdAt"
     
-    case inAppMessageContext = "messageContext"
+    static let inAppMessageContext = "messageContext"
     
-    case campaignId
-    case templateId
-    case messageId
-    case inboxSessionId
+    static let campaignId = "campaignId"
+    static let templateId = "templateId"
+    static let messageId = "messageId"
+    static let inboxSessionId = "inboxSessionId"
     
-    case saveToInbox
-    case silentInbox
-    case inAppLocation = "location"
-    case clickedUrl
-    case read
-    case priorityLevel
+    static let saveToInbox = "saveToInbox"
+    static let silentInbox = "silentInbox"
+    static let inAppLocation = "location"
+    static let clickedUrl = "clickedUrl"
+    static let read = "read"
+    static let priorityLevel = "priorityLevel"
     
-    case inboxSessionStart
-    case inboxSessionEnd
-    case startTotalMessageCount
-    case startUnreadMessageCount
-    case endTotalMessageCount
-    case endUnreadMessageCount
-    case impressions
-    case closeAction
-    case deleteAction
+    static let inboxSessionStart = "inboxSessionStart"
+    static let inboxSessionEnd = "inboxSessionEnd"
+    static let startTotalMessageCount = "startTotalMessageCount"
+    static let startUnreadMessageCount = "startUnreadMessageCount"
+    static let endTotalMessageCount = "endTotalMessageCount"
+    static let endUnreadMessageCount = "endUnreadMessageCount"
+    static let impressions = "impressions"
+    static let closeAction = "closeAction"
+    static let deleteAction = "deleteAction"
     
-    case url
+    static let url = "url"
     
-    case device
-    case token
-    case dataFields
-    case deviceInfo
-    case identifierForVendor
-    case deviceId
-    case localizedModel
-    case model
-    case userInterfaceIdiom
-    case systemName
-    case systemVersion
-    case platform
-    case appPackageName
-    case appVersion
-    case appBuild
-    case applicationName
-    case eventName
-    case actionIdentifier
-    case userText
-    case appAlreadyRunning
+    static let device = "device"
+    static let token = "token"
+    static let dataFields = "dataFields"
+    static let deviceInfo = "deviceInfo"
+    static let identifierForVendor = "identifierForVendor"
+    static let deviceId = "deviceId"
+    static let localizedModel = "localizedModel"
+    static let model = "model"
+    static let userInterfaceIdiom = "userInterfaceIdiom"
+    static let systemName = "systemName"
+    static let systemVersion = "systemVersion"
+    static let platform = "platform"
+    static let appPackageName = "appPackageName"
+    static let appVersion = "appVersion"
+    static let appBuild = "appBuild"
+    static let applicationName = "applicationName"
+    static let eventName = "eventName"
+    static let actionIdentifier = "actionIdentifier"
+    static let userText = "userText"
+    static let appAlreadyRunning = "appAlreadyRunning"
     
-    case html
+    static let html = "html"
     
-    case iterableSdkVersion
+    static let iterableSdkVersion = "iterableSdkVersion"
     
-    case notificationsEnabled
+    static let notificationsEnabled = "notificationsEnabled"
     
-    case contentType = "Content-Type"
+    static let contentType = "Content-Type"
     
-    public enum ActionButton {
+    enum ActionButton {
         static let identifier = "identifier"
         static let action = "action"
     }
     
-    public enum Commerce {
+    enum Commerce {
         static let items = "items"
         static let total = "total"
         static let user = "user"
     }
     
-    public enum Device {
+    enum Device {
         static let localizedModel = "localizedModel"
         static let vendorId = "identifierForVendor"
         static let model = "model"
@@ -185,7 +171,7 @@ public enum JsonKey: String, JsonKeyRepresentable {
         static let userInterfaceIdiom = "userInterfaceIdiom"
     }
     
-    public enum Header {
+    enum Header {
         static let apiKey = "Api-Key"
         static let sdkVersion = "SDK-Version"
         static let sdkPlatform = "SDK-Platform"
@@ -194,11 +180,11 @@ public enum JsonKey: String, JsonKeyRepresentable {
         static let requestProcessor = "SDK-Request-Processor"
     }
     
-    public enum Body {
+    enum Body {
         static let createdAt = "createdAt"
     }
     
-    public enum InApp {
+    enum InApp {
         static let trigger = "trigger"
         static let type = "type"
         static let contentType = "contentType"
@@ -212,41 +198,33 @@ public enum JsonKey: String, JsonKeyRepresentable {
         static let content = "content"
     }
     
-    public enum Payload {
+    enum Payload {
         static let metadata = "itbl"
         static let actionButtons = "actionButtons"
         static let defaultAction = "defaultAction"
     }
     
-    public enum Response {
+    enum Response {
         static let iterableCode = "code"
     }
     
-    public enum JWT {
+    enum JWT {
         static let exp = "exp"
     }
-    
-    public var jsonKey: String {
-        rawValue
-    }
 }
 
-public protocol JsonValueRepresentable {
-    var jsonValue: Any { get }
-}
+enum JsonValue {
+    static let applicationJson = "application/json"
+    static let apnsSandbox = "APNS_SANDBOX"
+    static let apnsProduction = "APNS"
+    static let iOS = "iOS"
+    static let bearer = "Bearer"
 
-public enum JsonValue: String, JsonValueRepresentable {
-    case applicationJson = "application/json"
-    case apnsSandbox = "APNS_SANDBOX"
-    case apnsProduction = "APNS"
-    case iOS
-    case bearer = "Bearer"
-    
-    public enum ActionIdentifier {
+    enum ActionIdentifier {
         static let pushOpenDefault = "default"
     }
     
-    public enum DeviceIdiom {
+    enum DeviceIdiom {
         static let pad = "Pad"
         static let phone = "Phone"
         static let carPlay = "CarPlay"
@@ -254,18 +232,14 @@ public enum JsonValue: String, JsonValueRepresentable {
         static let unspecified = "Unspecified"
     }
     
-    public enum Code {
+    enum Code {
         static let badApiKey = "BadApiKey"
         static let invalidJwtPayload = "InvalidJwtPayload"
     }
-    
-    public var jsonStringValue: String {
-        rawValue
-    }
-    
-    public var jsonValue: Any {
-        rawValue
-    }
+}
+
+public protocol JsonValueRepresentable {
+    var jsonValue: Any { get }
 }
 
 @objc public enum InAppLocation: Int, JsonValueRepresentable {

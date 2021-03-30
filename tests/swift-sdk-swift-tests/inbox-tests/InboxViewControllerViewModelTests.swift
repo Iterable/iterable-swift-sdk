@@ -20,7 +20,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let expectation1 = expectation(description: "testDescendingSorting")
         
         let fetcher = MockInAppFetcher()
-        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: fetcher)
+        let internalAPI = InternalIterableAPI.initializeForTesting(inAppFetcher: fetcher)
         let model = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
         model.comparator = IterableInboxViewController.DefaultComparator.descending
         
@@ -60,7 +60,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let expectation1 = expectation(description: "testAscendingSorting")
         
         let fetcher = MockInAppFetcher()
-        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: fetcher)
+        let internalAPI = InternalIterableAPI.initializeForTesting(inAppFetcher: fetcher)
         let model = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
         model.comparator = IterableInboxViewController.DefaultComparator.ascending
         
@@ -101,7 +101,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let expectation1 = expectation(description: "testNoSorting")
         
         let fetcher = MockInAppFetcher()
-        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: fetcher)
+        let internalAPI = InternalIterableAPI.initializeForTesting(inAppFetcher: fetcher)
         let model = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
         
         let date1 = Date()
@@ -140,7 +140,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let expectation1 = expectation(description: "testWithNoFiltering")
         
         let fetcher = MockInAppFetcher()
-        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: fetcher)
+        let internalAPI = InternalIterableAPI.initializeForTesting(inAppFetcher: fetcher)
         let model = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
         
         let date1 = Date()
@@ -180,7 +180,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let expectation1 = expectation(description: "testCustomFiltering")
         
         let fetcher = MockInAppFetcher()
-        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: fetcher)
+        let internalAPI = InternalIterableAPI.initializeForTesting(inAppFetcher: fetcher)
         let model = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
         model.filter = { $0.messageId == "message1" }
         
@@ -220,7 +220,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let expectation1 = expectation(description: "testSampleFilter")
         
         let fetcher = MockInAppFetcher()
-        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: fetcher)
+        let internalAPI = InternalIterableAPI.initializeForTesting(inAppFetcher: fetcher)
         let model = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
         model.filter = SampleInboxViewDelegateImplementations.Filter.usingCustomPayloadMessageType(in: "promotional")
         
@@ -261,7 +261,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         
         let mockNetworkSession = MockNetworkSession(statusCode: 200, data: Data(repeating: 0, count: 100))
         let fetcher = MockInAppFetcher()
-        let internalAPI = IterableAPIInternal.initializeForTesting(networkSession: mockNetworkSession, inAppFetcher: fetcher)
+        let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: mockNetworkSession, inAppFetcher: fetcher)
         let model = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
         
         let mockView = MockViewModelView()
@@ -299,7 +299,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         
         let mockNetworkSession = MockNetworkSession(statusCode: 404, data: nil)
         let fetcher = MockInAppFetcher()
-        let internalAPI = IterableAPIInternal.initializeForTesting(networkSession: mockNetworkSession, inAppFetcher: fetcher)
+        let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: mockNetworkSession, inAppFetcher: fetcher)
         let model = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
         
         let mockView = MockViewModelView()
@@ -335,7 +335,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let expectation1 = expectation(description: "testSampleSectionMapper")
         
         let fetcher = MockInAppFetcher()
-        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: fetcher)
+        let internalAPI = InternalIterableAPI.initializeForTesting(inAppFetcher: fetcher)
         let model = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
         model.sectionMapper = SampleInboxViewDelegateImplementations.SectionMapper.usingCustomPayloadMessageSection
         

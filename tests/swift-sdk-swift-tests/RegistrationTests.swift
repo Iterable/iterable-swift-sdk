@@ -26,7 +26,7 @@ class RegistrationTests: XCTestCase {
         config.pushIntegrationName = "my-push-integration"
         config.sandboxPushIntegrationName = "my-sandbox-push-integration"
         config.pushPlatform = .production
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey,
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: apiKey,
                                                                    config: config,
                                                                    networkSession: networkSession,
                                                                    notificationStateProvider: MockNotificationStateProvider(enabled: true))
@@ -35,28 +35,28 @@ class RegistrationTests: XCTestCase {
         internalAPI.register(token: token, onSuccess: { _ in
             let request = networkSession.getRequest(withEndPoint: Const.Path.registerDeviceToken)!
             let body = request.httpBody!.json() as! [String: Any]
-            TestUtils.validateMatch(keyPath: KeyPath(.email), value: "user@example.com", inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath(.device, .applicationName), value: "my-push-integration", inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath(.device, .platform), value: JsonValue.apnsProduction.jsonValue as! String, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath(.device, .token), value: token.hexString(), inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.email), value: "user@example.com", inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.device, JsonKey.applicationName), value: "my-push-integration", inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.device, JsonKey.platform), value: JsonValue.apnsProduction.jsonValue as! String, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.device, JsonKey.token), value: token.hexString(), inDictionary: body)
             
             // device dictionary
             let appPackageName = TestUtils.appPackageName
             let appVersion = TestUtils.appVersion
             let appBuild = TestUtils.appBuild
-            TestUtils.validateExists(keyPath: KeyPath(.device, .dataFields, .identifierForVendor), type: String.self, inDictionary: body)
-            TestUtils.validateExists(keyPath: KeyPath(.device, .dataFields, .deviceId), type: String.self, inDictionary: body)
-            TestUtils.validateExists(keyPath: KeyPath(.device, .dataFields, .localizedModel), type: String.self, inDictionary: body)
-            TestUtils.validateExists(keyPath: KeyPath(.device, .dataFields, .userInterfaceIdiom), type: String.self, inDictionary: body)
-            TestUtils.validateExists(keyPath: KeyPath(.device, .dataFields, .systemName), type: String.self, inDictionary: body)
-            TestUtils.validateExists(keyPath: KeyPath(.device, .dataFields, .systemVersion), type: String.self, inDictionary: body)
-            TestUtils.validateExists(keyPath: KeyPath(.device, .dataFields, .model), type: String.self, inDictionary: body)
+            TestUtils.validateExists(keyPath: KeyPath(keys: JsonKey.device, JsonKey.dataFields, JsonKey.identifierForVendor), type: String.self, inDictionary: body)
+            TestUtils.validateExists(keyPath: KeyPath(keys: JsonKey.device, JsonKey.dataFields, JsonKey.deviceId), type: String.self, inDictionary: body)
+            TestUtils.validateExists(keyPath: KeyPath(keys: JsonKey.device, JsonKey.dataFields, JsonKey.localizedModel), type: String.self, inDictionary: body)
+            TestUtils.validateExists(keyPath: KeyPath(keys: JsonKey.device, JsonKey.dataFields, JsonKey.userInterfaceIdiom), type: String.self, inDictionary: body)
+            TestUtils.validateExists(keyPath: KeyPath(keys: JsonKey.device, JsonKey.dataFields, JsonKey.systemName), type: String.self, inDictionary: body)
+            TestUtils.validateExists(keyPath: KeyPath(keys: JsonKey.device, JsonKey.dataFields, JsonKey.systemVersion), type: String.self, inDictionary: body)
+            TestUtils.validateExists(keyPath: KeyPath(keys: JsonKey.device, JsonKey.dataFields, JsonKey.model), type: String.self, inDictionary: body)
             
-            TestUtils.validateMatch(keyPath: KeyPath(.device, .dataFields, .iterableSdkVersion), value: IterableAPI.sdkVersion, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath(.device, .dataFields, .appPackageName), value: appPackageName, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath(.device, .dataFields, .appVersion), value: appVersion, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath(.device, .dataFields, .appBuild), value: appBuild, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath(.device, .dataFields, .notificationsEnabled), value: true, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.device, JsonKey.dataFields, JsonKey.iterableSdkVersion), value: IterableAPI.sdkVersion, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.device, JsonKey.dataFields, JsonKey.appPackageName), value: appPackageName, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.device, JsonKey.dataFields, JsonKey.appVersion), value: appVersion, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.device, JsonKey.dataFields, JsonKey.appBuild), value: appBuild, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.device, JsonKey.dataFields, JsonKey.notificationsEnabled), value: true, inDictionary: body)
             expectation.fulfill()
         }) { reason, _ in
             // failure
@@ -79,14 +79,14 @@ class RegistrationTests: XCTestCase {
         config.pushIntegrationName = "my-push-integration"
         config.sandboxPushIntegrationName = "my-sandbox-push-integration"
         config.pushPlatform = .sandbox
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession)
         internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         internalAPI.register(token: token, onSuccess: { _ in
             let request = networkSession.getRequest(withEndPoint: Const.Path.registerDeviceToken)!
             let body = request.httpBody!.json() as! [String: Any]
-            TestUtils.validateMatch(keyPath: KeyPath(.device, .applicationName), value: config.sandboxPushIntegrationName, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath(.device, .platform), value: JsonValue.apnsSandbox.jsonValue as! String, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.device, JsonKey.applicationName), value: config.sandboxPushIntegrationName, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.device, JsonKey.platform), value: JsonValue.apnsSandbox.jsonValue as! String, inDictionary: body)
             expectation.fulfill()
         }) { reason, _ in
             // failure
@@ -109,14 +109,14 @@ class RegistrationTests: XCTestCase {
         config.pushIntegrationName = "my-push-integration"
         config.sandboxPushIntegrationName = "my-sandbox-push-integration"
         config.pushPlatform = .auto
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession, apnsTypeChecker: MockAPNSTypeChecker(apnsType: .sandbox))
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession, apnsTypeChecker: MockAPNSTypeChecker(apnsType: .sandbox))
         internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         internalAPI.register(token: token, onSuccess: { _ in
             let request = networkSession.getRequest(withEndPoint: Const.Path.registerDeviceToken)!
             let body = request.httpBody!.json() as! [String: Any]
-            TestUtils.validateMatch(keyPath: KeyPath(.device, .applicationName), value: config.sandboxPushIntegrationName, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath(.device, .platform), value: JsonValue.apnsSandbox.jsonValue as! String, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.device, JsonKey.applicationName), value: config.sandboxPushIntegrationName, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.device, JsonKey.platform), value: JsonValue.apnsSandbox.jsonValue as! String, inDictionary: body)
             expectation.fulfill()
         }) { reason, _ in
             // failure
@@ -139,14 +139,14 @@ class RegistrationTests: XCTestCase {
         config.pushIntegrationName = "my-push-integration"
         config.sandboxPushIntegrationName = "my-sandbox-push-integration"
         config.pushPlatform = .auto
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession, apnsTypeChecker: MockAPNSTypeChecker(apnsType: .production))
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession, apnsTypeChecker: MockAPNSTypeChecker(apnsType: .production))
         internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         internalAPI.register(token: token, onSuccess: { _ in
             let request = networkSession.getRequest(withEndPoint: Const.Path.registerDeviceToken)!
             let body = request.httpBody!.json() as! [String: Any]
-            TestUtils.validateMatch(keyPath: KeyPath(.device, .applicationName), value: config.pushIntegrationName, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath(.device, .platform), value: JsonValue.apnsProduction.jsonValue as! String, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.device, JsonKey.applicationName), value: config.pushIntegrationName, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.device, JsonKey.platform), value: JsonValue.apnsProduction.jsonValue as! String, inDictionary: body)
             expectation.fulfill()
         }) { reason, _ in
             // failure
@@ -167,14 +167,14 @@ class RegistrationTests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
         config.pushPlatform = .auto
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession)
         internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         internalAPI.register(token: token, onSuccess: { _ in
             let request = networkSession.getRequest(withEndPoint: Const.Path.registerDeviceToken)!
             let body = request.httpBody!.json() as! [String: Any]
-            TestUtils.validateMatch(keyPath: KeyPath(.device, .applicationName), value: TestUtils.appPackageName, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath(.device, .platform), value: JsonValue.apnsSandbox.jsonValue as! String, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.device, JsonKey.applicationName), value: TestUtils.appPackageName, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.device, JsonKey.platform), value: JsonValue.apnsSandbox.jsonValue as! String, inDictionary: body)
             expectation.fulfill()
         }) { reason, _ in
             // failure
@@ -195,14 +195,14 @@ class RegistrationTests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let config = IterableConfig()
         config.pushPlatform = .auto
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession, apnsTypeChecker: MockAPNSTypeChecker(apnsType: .production))
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession, apnsTypeChecker: MockAPNSTypeChecker(apnsType: .production))
         internalAPI.email = "user@example.com"
         let token = "zeeToken".data(using: .utf8)!
         internalAPI.register(token: token, onSuccess: { _ in
             let request = networkSession.getRequest(withEndPoint: Const.Path.registerDeviceToken)!
             let body = request.httpBody!.json() as! [String: Any]
-            TestUtils.validateMatch(keyPath: KeyPath(.device, .applicationName), value: TestUtils.appPackageName, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath(.device, .platform), value: JsonValue.apnsProduction.jsonValue as! String, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.device, JsonKey.applicationName), value: TestUtils.appPackageName, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.device, JsonKey.platform), value: JsonValue.apnsProduction.jsonValue as! String, inDictionary: body)
             expectation.fulfill()
         }) { reason, _ in
             // failure

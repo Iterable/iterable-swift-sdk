@@ -52,13 +52,13 @@ class Future<Value, Failure> where Failure: Error {
     }
     
     public func wait() {
-        ITBInfo()
+        ITBDebug()
         guard !isResolved() else {
-            ITBInfo("isResolved")
+            ITBDebug("isResolved")
             return
         }
         
-        ITBInfo("waiting....")
+        ITBDebug("waiting....")
         Thread.sleep(forTimeInterval: 0.1)
         wait()
     }
@@ -150,7 +150,7 @@ extension Future {
 // This class takes the responsibility of setting value for Future
 class Promise<Value, Failure>: Future<Value, Failure> where Failure: Error {
     public init(value: Value? = nil) {
-        ITBInfo()
+        ITBDebug()
         super.init()
         if let value = value {
             result = Result.success(value)
@@ -160,13 +160,13 @@ class Promise<Value, Failure>: Future<Value, Failure> where Failure: Error {
     }
     
     public init(error: Failure) {
-        ITBInfo()
+        ITBDebug()
         super.init()
         result = Result.failure(error)
     }
 
     deinit {
-        ITBInfo()
+        ITBDebug()
     }
     
     public func resolve(with value: Value) {

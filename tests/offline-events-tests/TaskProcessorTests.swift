@@ -17,7 +17,7 @@ class TaskProcessorTests: XCTestCase {
         let auth = Auth(userId: nil, email: email, authToken: nil)
         let config = IterableConfig()
         let networkSession = MockNetworkSession()
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession)
         
         let requestCreator = RequestCreator(apiKey: apiKey,
                                             auth: auth,
@@ -51,8 +51,8 @@ class TaskProcessorTests: XCTestCase {
         try processor.process(task: found).onSuccess { _ in
             let request = networkSession.getRequest(withEndPoint: Const.Path.trackEvent)!
             let body = request.httpBody!.json() as! [String: Any]
-            TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath(.dataFields), value: dataFields, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.email), value: email, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.dataFields), value: dataFields, inDictionary: body)
             expectation1.fulfill()
         }
         
@@ -251,7 +251,7 @@ class TaskProcessorTests: XCTestCase {
     }
 
     private let deviceMetadata = DeviceMetadata(deviceId: IterableUtil.generateUUID(),
-                                                platform: JsonValue.iOS.jsonStringValue,
+                                                platform: JsonValue.iOS,
                                                 appPackageName: Bundle.main.appPackageName ?? "")
 
     private lazy var persistenceProvider: IterablePersistenceContextProvider = {

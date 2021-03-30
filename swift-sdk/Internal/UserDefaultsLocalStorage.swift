@@ -194,16 +194,16 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
             self.value = value
         }
         
-        static let payload = LocalStorageKey(value: Const.UserDefaults.payloadKey)
-        static let attributionInfo = LocalStorageKey(value: Const.UserDefaults.attributionInfoKey)
-        static let email = LocalStorageKey(value: Const.UserDefaults.emailKey)
-        static let userId = LocalStorageKey(value: Const.UserDefaults.userIdKey)
-        static let authToken = LocalStorageKey(value: Const.UserDefaults.authTokenKey)
-        static let ddlChecked = LocalStorageKey(value: Const.UserDefaults.ddlChecked)
-        static let deviceId = LocalStorageKey(value: Const.UserDefaults.deviceId)
-        static let sdkVersion = LocalStorageKey(value: Const.UserDefaults.sdkVersion)
-        static let offlineMode = LocalStorageKey(value: Const.UserDefaults.offlineMode)
-        static let offlineModeBeta = LocalStorageKey(value: Const.UserDefaults.offlineModeBeta)
+        static let payload = LocalStorageKey(value: Const.UserDefault.payloadKey)
+        static let attributionInfo = LocalStorageKey(value: Const.UserDefault.attributionInfoKey)
+        static let email = LocalStorageKey(value: Const.UserDefault.emailKey)
+        static let userId = LocalStorageKey(value: Const.UserDefault.userIdKey)
+        static let authToken = LocalStorageKey(value: Const.UserDefault.authTokenKey)
+        static let ddlChecked = LocalStorageKey(value: Const.UserDefault.ddlChecked)
+        static let deviceId = LocalStorageKey(value: Const.UserDefault.deviceId)
+        static let sdkVersion = LocalStorageKey(value: Const.UserDefault.sdkVersion)
+        static let offlineMode = LocalStorageKey(value: Const.UserDefault.offlineMode)
+        static let offlineModeBeta = LocalStorageKey(value: Const.UserDefault.offlineModeBeta)
     }
     
     private struct Envelope: Codable {

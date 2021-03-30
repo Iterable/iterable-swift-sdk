@@ -4,7 +4,7 @@
 
 import Foundation
 
-/// `IterableAPIinternal` will delegate all network related calls to this protocol.
+/// `InternalIterableAPI` will delegate all network related calls to this protocol.
 protocol RequestHandlerProtocol: class {
     var offlineMode: Bool { get set }
 

@@ -28,14 +28,14 @@ class RequestCreatorTests: XCTestCase {
         TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackInboxSession)
         
         let body = urlRequest.bodyDict
-        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.email), value: auth.email, inDictionary: body)
-        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.inboxSessionId), value: inboxSession.id, inDictionary: body)
-        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.inboxSessionStart), value: IterableUtil.int(fromDate: startDate), inDictionary: body)
-        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.inboxSessionEnd), value: IterableUtil.int(fromDate: endDate), inDictionary: body)
-        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.startTotalMessageCount), value: inboxSession.startTotalMessageCount, inDictionary: body)
-        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.startUnreadMessageCount), value: inboxSession.startUnreadMessageCount, inDictionary: body)
-        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.endTotalMessageCount), value: inboxSession.endTotalMessageCount, inDictionary: body)
-        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.endUnreadMessageCount), value: inboxSession.endUnreadMessageCount, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.email), value: auth.email, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.inboxSessionId), value: inboxSession.id, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.inboxSessionStart), value: IterableUtil.int(fromDate: startDate), inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.inboxSessionEnd), value: IterableUtil.int(fromDate: endDate), inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.startTotalMessageCount), value: inboxSession.startTotalMessageCount, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.startUnreadMessageCount), value: inboxSession.startUnreadMessageCount, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.endTotalMessageCount), value: inboxSession.endTotalMessageCount, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.endUnreadMessageCount), value: inboxSession.endUnreadMessageCount, inDictionary: body)
         
         TestUtils.validateDeviceInfo(inBody: body, withDeviceId: deviceMetadata.deviceId)
         
@@ -57,10 +57,10 @@ class RequestCreatorTests: XCTestCase {
         TestUtils.validate(request: request1, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackInAppOpen)
         
         let body1 = request1.bodyDict
-        TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body1)
-        TestUtils.validateMatch(keyPath: KeyPath(.messageId), value: messageId, inDictionary: body1)
-        TestUtils.validateMatch(keyPath: KeyPath(.inboxSessionId), value: inboxSessionId, inDictionary: body1)
-        TestUtils.validateMatch(keyPath: KeyPath(locationKeyPath), value: locValue, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.email), value: email, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.messageId), value: messageId, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.inboxSessionId), value: inboxSessionId, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(string: locationKeyPath), value: locValue, inDictionary: body1)
         
         let messageContext2 = InAppMessageContext.from(message: message, location: location)
         let request2 = convertToUrlRequest(createRequestCreator().createTrackInAppOpenRequest(inAppMessageContext: messageContext2))
@@ -68,10 +68,10 @@ class RequestCreatorTests: XCTestCase {
         TestUtils.validate(request: request2, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackInAppOpen)
         
         let body2 = request2.bodyDict
-        TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body2)
-        TestUtils.validateMatch(keyPath: KeyPath(.messageId), value: messageId, inDictionary: body2)
-        TestUtils.validateNil(keyPath: KeyPath(.inboxSessionId), inDictionary: body2)
-        TestUtils.validateMatch(keyPath: KeyPath(locationKeyPath), value: locValue, inDictionary: body2)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.email), value: email, inDictionary: body2)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.messageId), value: messageId, inDictionary: body2)
+        TestUtils.validateNil(keyPath: KeyPath(keys: JsonKey.inboxSessionId), inDictionary: body2)
+        TestUtils.validateMatch(keyPath: KeyPath(string: locationKeyPath), value: locValue, inDictionary: body2)
     }
     
     func testTrackInAppClickRequest() {
@@ -90,11 +90,11 @@ class RequestCreatorTests: XCTestCase {
         TestUtils.validate(request: request1, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackInAppClick)
         
         let body1 = request1.bodyDict
-        TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body1)
-        TestUtils.validateMatch(keyPath: KeyPath(.messageId), value: messageId, inDictionary: body1)
-        TestUtils.validateMatch(keyPath: KeyPath(.inboxSessionId), value: inboxSessionId, inDictionary: body1)
-        TestUtils.validateMatch(keyPath: KeyPath(.clickedUrl), value: clickedUrl, inDictionary: body1)
-        TestUtils.validateMatch(keyPath: KeyPath(locationKeyPath), value: inboxLocValue, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.email), value: email, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.messageId), value: messageId, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.inboxSessionId), value: inboxSessionId, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.clickedUrl), value: clickedUrl, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(string: locationKeyPath), value: inboxLocValue, inDictionary: body1)
         
         let messageContext2 = InAppMessageContext.from(message: message, location: inboxLoc)
         let request2 = convertToUrlRequest(createRequestCreator().createTrackInAppClickRequest(inAppMessageContext: messageContext2, clickedUrl: clickedUrl))
@@ -102,11 +102,11 @@ class RequestCreatorTests: XCTestCase {
         TestUtils.validate(request: request2, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackInAppClick)
         
         let body2 = request2.bodyDict
-        TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body2)
-        TestUtils.validateMatch(keyPath: KeyPath(.messageId), value: messageId, inDictionary: body2)
-        TestUtils.validateNil(keyPath: KeyPath(.inboxSessionId), inDictionary: body2)
-        TestUtils.validateMatch(keyPath: KeyPath(.clickedUrl), value: clickedUrl, inDictionary: body2)
-        TestUtils.validateMatch(keyPath: KeyPath(locationKeyPath), value: inboxLocValue, inDictionary: body2)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.email), value: email, inDictionary: body2)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.messageId), value: messageId, inDictionary: body2)
+        TestUtils.validateNil(keyPath: KeyPath(keys: JsonKey.inboxSessionId), inDictionary: body2)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.clickedUrl), value: clickedUrl, inDictionary: body2)
+        TestUtils.validateMatch(keyPath: KeyPath(string: locationKeyPath), value: inboxLocValue, inDictionary: body2)
     }
     
     func testTrackInAppCloseRequest() {
@@ -128,11 +128,11 @@ class RequestCreatorTests: XCTestCase {
         TestUtils.validate(request: request1, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackInAppClose)
         
         let body1 = request1.bodyDict
-        TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body1)
-        TestUtils.validateMatch(keyPath: KeyPath(.messageId), value: messageId, inDictionary: body1)
-        TestUtils.validateMatch(keyPath: KeyPath(.inboxSessionId), value: inboxSessionId, inDictionary: body1)
-        TestUtils.validateMatch(keyPath: KeyPath(.clickedUrl), value: clickedUrl, inDictionary: body1)
-        TestUtils.validateMatch(keyPath: KeyPath(locationKeyPath), value: inboxLocValue, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.email), value: email, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.messageId), value: messageId, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.inboxSessionId), value: inboxSessionId, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.clickedUrl), value: clickedUrl, inDictionary: body1)
+        TestUtils.validateMatch(keyPath: KeyPath(string: locationKeyPath), value: inboxLocValue, inDictionary: body1)
         
         let messageContext2 = InAppMessageContext.from(message: message, location: inAppLoc)
         let request2 = convertToUrlRequest(createRequestCreator().createTrackInAppCloseRequest(inAppMessageContext: messageContext2, source: .link, clickedUrl: nil))
@@ -140,11 +140,11 @@ class RequestCreatorTests: XCTestCase {
         TestUtils.validate(request: request2, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackInAppClose)
         
         let body2 = request2.bodyDict
-        TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body2)
-        TestUtils.validateMatch(keyPath: KeyPath(.messageId), value: messageId, inDictionary: body2)
-        TestUtils.validateNil(keyPath: KeyPath(.inboxSessionId), inDictionary: body2)
-        TestUtils.validateNil(keyPath: KeyPath(.clickedUrl), inDictionary: body2)
-        TestUtils.validateMatch(keyPath: KeyPath(locationKeyPath), value: inAppLocValue, inDictionary: body2)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.email), value: email, inDictionary: body2)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.messageId), value: messageId, inDictionary: body2)
+        TestUtils.validateNil(keyPath: KeyPath(keys: JsonKey.inboxSessionId), inDictionary: body2)
+        TestUtils.validateNil(keyPath: KeyPath(keys: JsonKey.clickedUrl), inDictionary: body2)
+        TestUtils.validateMatch(keyPath: KeyPath(string: locationKeyPath), value: inAppLocValue, inDictionary: body2)
     }
     
     func testGetInAppMessagesRequestFailure() {
@@ -172,10 +172,10 @@ class RequestCreatorTests: XCTestCase {
             return
         }
         
-        XCTAssertEqual(args[JsonKey.email.jsonKey], auth.email)
+        XCTAssertEqual(args[JsonKey.email], auth.email)
         XCTAssertEqual(args[JsonKey.InApp.packageName], Bundle.main.appPackageName)
         XCTAssertEqual(args[JsonKey.InApp.count], inAppMessageRequestCount.stringValue)
-        XCTAssertEqual(args[JsonKey.systemVersion.jsonKey], UIDevice.current.systemVersion)
+        XCTAssertEqual(args[JsonKey.systemVersion], UIDevice.current.systemVersion)
     }
     
     func testTrackEventRequest() {
@@ -187,8 +187,8 @@ class RequestCreatorTests: XCTestCase {
         TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackEvent)
         
         let body = request.bodyDict
-        TestUtils.validateMatch(keyPath: KeyPath(.eventName), value: eventName, inDictionary: body)
-        TestUtils.validateNil(keyPath: KeyPath(.dataFields), inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.eventName), value: eventName, inDictionary: body)
+        TestUtils.validateNil(keyPath: KeyPath(keys: JsonKey.dataFields), inDictionary: body)
     }
     
     func testTrackInAppDeliveryRequest() {
@@ -203,8 +203,8 @@ class RequestCreatorTests: XCTestCase {
         TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackInAppDelivery)
         
         let body = request.bodyDict
-        TestUtils.validateMatch(keyPath: KeyPath(.email), value: email, inDictionary: body)
-        TestUtils.validateMatch(keyPath: KeyPath(.messageId), value: messageId, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.email), value: email, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.messageId), value: messageId, inDictionary: body)
         TestUtils.validateDeviceInfo(inBody: body, withDeviceId: deviceMetadata.deviceId)
     }
     
@@ -216,7 +216,7 @@ class RequestCreatorTests: XCTestCase {
         TestUtils.validateHeader(request, apiKey)
         TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.inAppConsume)
         
-        TestUtils.validateMatch(keyPath: KeyPath(.messageId), value: messageId, inDictionary: request.bodyDict)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.messageId), value: messageId, inDictionary: request.bodyDict)
     }
     
     func testUpdateSubscriptionsRequest() {
@@ -238,12 +238,12 @@ class RequestCreatorTests: XCTestCase {
         TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.updateSubscriptions)
         
         let body = request.bodyDict
-        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.emailListIds.jsonKey), value: emailListIds, inDictionary: body)
-        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.unsubscribedChannelIds.jsonKey), value: unsubscriptedChannelIds, inDictionary: body)
-        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.unsubscribedMessageTypeIds.jsonKey), value: unsubscribedMessageTypeIds, inDictionary: body)
-        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.subscribedMessageTypeIds.jsonKey), value: subscribedMessageTypeIds, inDictionary: body)
-        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.campaignId.jsonKey), value: campaignId, inDictionary: body)
-        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.templateId.jsonKey), value: templateId, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.emailListIds), value: emailListIds, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.unsubscribedChannelIds), value: unsubscriptedChannelIds, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.unsubscribedMessageTypeIds), value: unsubscribedMessageTypeIds, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.subscribedMessageTypeIds), value: subscribedMessageTypeIds, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.campaignId), value: campaignId, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.templateId), value: templateId, inDictionary: body)
     }
     
     func testUserlessUpdateUserRequest() {
@@ -341,8 +341,8 @@ class RequestCreatorTests: XCTestCase {
         TestUtils.validate(request: urlRequest, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.registerDeviceToken)
         
         let body = urlRequest.bodyDict
-        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.userId), value: userIdAuth.userId, inDictionary: body)
-        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.preferUserId), value: true, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.userId), value: userIdAuth.userId, inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.preferUserId), value: true, inDictionary: body)
     }
     
     func testProcessorTypeOfflineInHeader() throws {
@@ -361,22 +361,22 @@ class RequestCreatorTests: XCTestCase {
         TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackEvent)
         
         let body = request.bodyDict
-        TestUtils.validateMatch(keyPath: KeyPath(.eventName), value: eventName, inDictionary: body)
-        TestUtils.validateNil(keyPath: KeyPath(.dataFields), inDictionary: body)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.eventName), value: eventName, inDictionary: body)
+        TestUtils.validateNil(keyPath: KeyPath(keys: JsonKey.dataFields), inDictionary: body)
     }
 
     private let apiKey = "zee-api-key"
     
     private let email = "user@example.com"
     
-    private let locationKeyPath = "\(JsonKey.inAppMessageContext.jsonKey).\(JsonKey.inAppLocation.jsonKey)"
+    private let locationKeyPath = "\(JsonKey.inAppMessageContext).\(JsonKey.inAppLocation)"
     
     private let userlessAuth = Auth(userId: nil, email: nil, authToken: nil)
     
     private let userIdAuth = Auth(userId: "ein", email: nil, authToken: nil)
     
     private let deviceMetadata = DeviceMetadata(deviceId: IterableUtil.generateUUID(),
-                                                platform: JsonValue.iOS.jsonStringValue,
+                                                platform: JsonValue.iOS,
                                                 appPackageName: Bundle.main.appPackageName ?? "")
     private let dateProvider = MockDateProvider()
     

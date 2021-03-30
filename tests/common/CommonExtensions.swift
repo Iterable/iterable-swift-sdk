@@ -150,7 +150,7 @@ extension IterableAPI {
                                                               notificationCenter: notificationCenter,
                                                               apnsTypeChecker: apnsTypeChecker)
         
-        internalImplementation = IterableAPIInternal(apiKey: apiKey,
+        internalImplementation = InternalIterableAPI(apiKey: apiKey,
                                                      launchOptions: launchOptions,
                                                      config: config,
                                                      apiEndPointOverride: apiEndPointOverride,
@@ -161,7 +161,7 @@ extension IterableAPI {
     }
 }
 
-extension IterableAPIInternal {
+extension InternalIterableAPI {
     // Internal Only used in unit tests.
     @discardableResult static func initializeForTesting(apiKey: String = "zeeApiKey",
                                                         launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
@@ -178,7 +178,7 @@ extension IterableAPIInternal {
                                                         urlOpener: UrlOpenerProtocol = MockUrlOpener(),
                                                         applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
                                                         notificationCenter: NotificationCenterProtocol = NotificationCenter.default,
-                                                        apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker()) -> IterableAPIInternal {
+                                                        apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker()) -> InternalIterableAPI {
         let mockDependencyContainer = MockDependencyContainer(dateProvider: dateProvider,
                                                               networkSession: networkSession,
                                                               notificationStateProvider: notificationStateProvider,
@@ -191,7 +191,7 @@ extension IterableAPIInternal {
                                                               notificationCenter: notificationCenter,
                                                               apnsTypeChecker: apnsTypeChecker)
         
-        let internalImplementation = IterableAPIInternal(apiKey: apiKey,
+        let internalImplementation = InternalIterableAPI(apiKey: apiKey,
                                                          launchOptions: launchOptions,
                                                          config: config,
                                                          apiEndPointOverride: apiEndPointOverride,

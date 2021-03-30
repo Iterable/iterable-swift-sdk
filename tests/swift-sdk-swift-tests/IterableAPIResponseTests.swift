@@ -187,14 +187,14 @@ class IterableAPIResponseTests: XCTestCase {
     }
     
     private func verifyIterableHeaders(_ urlRequest: URLRequest) {
-        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.sdkPlatform), JsonValue.iOS.jsonStringValue)
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.sdkPlatform), JsonValue.iOS)
         XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.sdkVersion), IterableAPI.sdkVersion)
         XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.apiKey), apiKey)
-        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.contentType.jsonKey), JsonValue.applicationJson.jsonStringValue)
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.contentType), JsonValue.applicationJson)
     }
     
     private func verifyAuthTokenInHeader(_ urlRequest: URLRequest, _ authToken: String) {
-        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.authorization), "\(JsonValue.bearer.rawValue) \(authToken)")
+        XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.authorization), "\(JsonValue.bearer) \(authToken)")
     }
     
     private func createApiClient(networkSession: NetworkSessionProtocol = MockNetworkSession()) -> ApiClient {
@@ -202,7 +202,7 @@ class IterableAPIResponseTests: XCTestCase {
                   authProvider: self,
                   endPoint: Endpoint.api,
                   networkSession: networkSession,
-                  deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata,
+                  deviceMetadata: InternalIterableAPI.initializeForTesting().deviceMetadata,
                   dateProvider: dateProvider)
     }
     
@@ -211,7 +211,7 @@ class IterableAPIResponseTests: XCTestCase {
                   authProvider: self,
                   endPoint: Endpoint.api,
                   networkSession: MockNetworkSession(),
-                  deviceMetadata: IterableAPIInternal.initializeForTesting().deviceMetadata,
+                  deviceMetadata: InternalIterableAPI.initializeForTesting().deviceMetadata,
                   dateProvider: dateProvider)
     }
 }

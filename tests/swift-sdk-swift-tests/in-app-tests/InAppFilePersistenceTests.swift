@@ -135,7 +135,7 @@ class InAppFilePersistenceTests: XCTestCase {
         
         XCTAssertEqual(obtained[3].trigger.type, IterableInAppTriggerType.never)
         let dict = obtained[3].trigger.dict as! [String: Any]
-        TestUtils.validateMatch(keyPath: KeyPath("nested.var1"), value: "val1", inDictionary: dict, message: "Expected to find val1 in persisted dictionary")
+        TestUtils.validateMatch(keyPath: KeyPath(string: "nested.var1"), value: "val1", inDictionary: dict, message: "Expected to find val1 in persisted dictionary")
         
         persister.clear()
     }
@@ -177,7 +177,7 @@ class InAppFilePersistenceTests: XCTestCase {
         let config = IterableConfig()
         config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
         
-        let internalApi1 = IterableAPIInternal.initializeForTesting(
+        let internalApi1 = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
             inAppPersister: InAppFilePersister()
@@ -194,7 +194,7 @@ class InAppFilePersistenceTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
         
-        let internalApi2 = IterableAPIInternal.initializeForTesting(
+        let internalApi2 = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher,
             inAppPersister: InAppFilePersister()

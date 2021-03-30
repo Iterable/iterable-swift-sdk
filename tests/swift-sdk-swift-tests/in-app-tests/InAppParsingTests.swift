@@ -313,7 +313,7 @@ class InAppParsingTests: XCTestCase {
         let expectation1 = expectation(description: "track in app click")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
         internalAPI.userId = InAppParsingTests.userId
         networkSession.callback = { _, response, _ in
             guard let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
@@ -328,7 +328,7 @@ class InAppParsingTests: XCTestCase {
                                queryParams: [])
             TestUtils.validateMessageContext(messageId: message.messageId, userId: InAppParsingTests.userId, saveToInbox: false, silentInbox: false, location: .inApp, inBody: body)
             TestUtils.validateDeviceInfo(inBody: body, withDeviceId: internalAPI.deviceId)
-            TestUtils.validateMatch(keyPath: KeyPath("clickedUrl"), value: buttonUrl, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(string: "clickedUrl"), value: buttonUrl, inDictionary: body)
             expectation1.fulfill()
         }
         internalAPI.trackInAppClick(message, clickedUrl: buttonUrl)
@@ -348,7 +348,7 @@ class InAppParsingTests: XCTestCase {
         let expectation1 = expectation(description: "track in app open")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
         internalAPI.email = InAppParsingTests.email
         networkSession.callback = { _, response, _ in
             guard let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
@@ -374,7 +374,7 @@ class InAppParsingTests: XCTestCase {
         let expectation1 = expectation(description: "track inAppClose event")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
         internalAPI.email = InAppParsingTests.email
         
         networkSession.callback = { _, response, _ in
@@ -391,8 +391,8 @@ class InAppParsingTests: XCTestCase {
             
             TestUtils.validateMessageContext(messageId: messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: .inbox, inBody: body)
             TestUtils.validateDeviceInfo(inBody: body, withDeviceId: internalAPI.deviceId)
-            TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.closeAction.jsonKey)"), value: "back", inDictionary: body)
-            TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.clickedUrl.jsonKey)"), value: "https://somewhere.com", inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(string: "\(JsonKey.closeAction)"), value: "back", inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(string: "\(JsonKey.clickedUrl)"), value: "https://somewhere.com", inDictionary: body)
             
             expectation1.fulfill()
         }
@@ -417,7 +417,7 @@ class InAppParsingTests: XCTestCase {
         let expectation1 = expectation(description: "track inAppClose event")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
         internalAPI.email = InAppParsingTests.email
         
         networkSession.callback = { _, response, _ in
@@ -434,8 +434,8 @@ class InAppParsingTests: XCTestCase {
             
             TestUtils.validateMessageContext(messageId: messageId, email: InAppParsingTests.email, saveToInbox: true, silentInbox: true, location: .inbox, inBody: body)
             TestUtils.validateDeviceInfo(inBody: body, withDeviceId: internalAPI.deviceId)
-            XCTAssertNil(body[keyPath: KeyPath("\(JsonKey.closeAction.jsonKey)")])
-            TestUtils.validateMatch(keyPath: KeyPath("\(JsonKey.clickedUrl.jsonKey)"), value: "https://somewhere.com", inDictionary: body)
+            XCTAssertNil(body[keyPath: KeyPath(string: "\(JsonKey.closeAction)")])
+            TestUtils.validateMatch(keyPath: KeyPath(string: "\(JsonKey.clickedUrl)"), value: "https://somewhere.com", inDictionary: body)
             
             expectation1.fulfill()
         }
@@ -460,7 +460,7 @@ class InAppParsingTests: XCTestCase {
         let expectation1 = expectation(description: "track inAppDelivery event")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: InAppParsingTests.apiKey, networkSession: networkSession)
         internalAPI.email = InAppParsingTests.email
         
         networkSession.callback = { _, response, _ in
@@ -573,7 +573,7 @@ class InAppParsingTests: XCTestCase {
         let messages = InAppTestHelper.inAppMessages(fromPayload: payload)
         XCTAssertEqual(messages[0].trigger.type, IterableInAppTriggerType.never)
         let dict = messages[0].trigger.dict as! [String: Any]
-        TestUtils.validateMatch(keyPath: KeyPath("myPayload.var1"), value: "val1", inDictionary: dict, message: "Expected to find val1")
+        TestUtils.validateMatch(keyPath: KeyPath(string: "myPayload.var1"), value: "val1", inDictionary: dict, message: "Expected to find val1")
     }
     
     // Remove this test when backend is fixed

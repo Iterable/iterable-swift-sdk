@@ -64,7 +64,7 @@ class IterableNotificationResponseTests: XCTestCase {
         XCTAssertEqual(pushTracker.messageId, messageId)
         XCTAssertFalse(pushTracker.appAlreadyRunnnig)
         
-        XCTAssertEqual(pushTracker.dataFields?[JsonKey.actionIdentifier.jsonKey] as? String, JsonValue.ActionIdentifier.pushOpenDefault)
+        XCTAssertEqual(pushTracker.dataFields?[JsonKey.actionIdentifier] as? String, JsonValue.ActionIdentifier.pushOpenDefault)
     }
     
     func testActionButtonDismiss() {
@@ -111,7 +111,7 @@ class IterableNotificationResponseTests: XCTestCase {
         XCTAssertEqual(pushTracker.templateId, 4321)
         XCTAssertEqual(pushTracker.messageId, messageId)
         
-        XCTAssertEqual(pushTracker.dataFields?[JsonKey.actionIdentifier.jsonKey] as? String, "buttonIdentifier")
+        XCTAssertEqual(pushTracker.dataFields?[JsonKey.actionIdentifier] as? String, "buttonIdentifier")
     }
     
     func testForegroundPushActionBeforeiOS10() {
@@ -169,7 +169,7 @@ class IterableNotificationResponseTests: XCTestCase {
         
         // call track push open
         let mockDateProvider = MockDateProvider()
-        let internalAPI = IterableAPIInternal.initializeForTesting(dateProvider: mockDateProvider)
+        let internalAPI = InternalIterableAPI.initializeForTesting(dateProvider: mockDateProvider)
         internalAPI.trackPushOpen(userInfo)
         
         // check the push payload for messageId
@@ -205,7 +205,7 @@ class IterableNotificationResponseTests: XCTestCase {
         
         // call track push open
         let mockDateProvider = MockDateProvider()
-        let internalAPI = IterableAPIInternal.initializeForTesting(dateProvider: mockDateProvider)
+        let internalAPI = InternalIterableAPI.initializeForTesting(dateProvider: mockDateProvider)
         internalAPI.trackPushOpen(userInfo)
         
         // check attribution info

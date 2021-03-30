@@ -178,7 +178,7 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     override open func viewDidLoad() {
-        ITBInfo()
+        ITBDebug()
         
         super.viewDidLoad()
         
@@ -197,7 +197,7 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     override open func viewWillAppear(_ animated: Bool) {
-        ITBInfo()
+        ITBDebug()
         
         super.viewWillAppear(animated)
         
@@ -215,7 +215,7 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     override open func viewWillDisappear(_ animated: Bool) {
-        ITBInfo()
+        ITBDebug()
         
         super.viewWillDisappear(animated)
         
@@ -531,7 +531,8 @@ private struct CellLoader {
                 let nib = UINib(nibName: cellNibName, bundle: Bundle.main)
                 tableView.register(nib, forCellReuseIdentifier: defaultCellReuseIdentifier)
             } else {
-                fatalError("Cannot find nib: \(cellNibName) in main bundle.")
+                ITBError("Cannot find nib: \(cellNibName) in main bundle. Using default.")
+                tableView.register(IterableInboxCell.self, forCellReuseIdentifier: defaultCellReuseIdentifier)
             }
         } else {
             tableView.register(IterableInboxCell.self, forCellReuseIdentifier: defaultCellReuseIdentifier)

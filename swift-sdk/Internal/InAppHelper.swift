@@ -2,12 +2,11 @@
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
+import UIKit
+
 /// Utility Methods for in-app
 /// All classes/structs are internal.
 
-import UIKit
-
-// This is Internal Struct, no public methods
 struct InAppHelper {
     static func getInAppMessagesFromServer(apiClient: ApiClientProtocol, number: Int) -> Future<[IterableInAppMessage], SendRequestError> {
         apiClient.getInAppMessages(NSNumber(value: number)).map {

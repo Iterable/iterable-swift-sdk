@@ -21,7 +21,7 @@ class DeprecatedFunctionsTests: XCTestCase {
         let expectation1 = expectation(description: "track in app open (DEPRECATED VERSION)")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: apiKey, networkSession: networkSession)
         internalAPI.email = email
         
         networkSession.callback = { _, response, _ in
@@ -68,7 +68,7 @@ class DeprecatedFunctionsTests: XCTestCase {
         let expectation1 = expectation(description: "track in app click (DEPRECATED VERSION)")
         
         let networkSession = MockNetworkSession(statusCode: 200)
-        let internalAPI = IterableAPIInternal.initializeForTesting(apiKey: apiKey, networkSession: networkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: apiKey, networkSession: networkSession)
         internalAPI.userId = userId
         
         networkSession.callback = { _, response, _ in
@@ -93,7 +93,7 @@ class DeprecatedFunctionsTests: XCTestCase {
             
             TestUtils.validateDeviceInfo(inBody: body, withDeviceId: internalAPI.deviceId)
             
-            TestUtils.validateMatch(keyPath: KeyPath(.clickedUrl), value: buttonUrl, inDictionary: body)
+            TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.clickedUrl), value: buttonUrl, inDictionary: body)
             
             expectation1.fulfill()
         }
@@ -110,12 +110,12 @@ class DeprecatedFunctionsTests: XCTestCase {
 
 extension TestUtils {
     static func validateDeprecatedMessageContext(messageId: String, email: String? = nil, userId: String? = nil, saveToInbox: Bool, silentInbox: Bool, inBody body: [String: Any]) {
-        validateMatch(keyPath: KeyPath(JsonKey.messageId), value: messageId, inDictionary: body)
+        validateMatch(keyPath: KeyPath(keys: JsonKey.messageId), value: messageId, inDictionary: body)
         
         validateEmailOrUserId(email: email, userId: userId, inBody: body)
         
-        let contextKey = "\(JsonKey.inAppMessageContext.jsonKey)"
-        validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.saveToInbox.jsonKey)"), value: saveToInbox, inDictionary: body)
-        validateMatch(keyPath: KeyPath("\(contextKey).\(JsonKey.silentInbox.jsonKey)"), value: silentInbox, inDictionary: body)
+        let contextKey = "\(JsonKey.inAppMessageContext)"
+        validateMatch(keyPath: KeyPath(string: "\(contextKey).\(JsonKey.saveToInbox)"), value: saveToInbox, inDictionary: body)
+        validateMatch(keyPath: KeyPath(string: "\(contextKey).\(JsonKey.silentInbox)"), value: silentInbox, inDictionary: body)
     }
 }

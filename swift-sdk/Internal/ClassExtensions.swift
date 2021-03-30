@@ -24,52 +24,24 @@ extension Array where Element: Comparable {
 }
 
 extension Dictionary where Key == AnyHashable, Value == Any {
-    func getValue(for key: JsonKey) -> Any? {
-        self[key.jsonKey]
-    }
-    
-    func getValue(for key: JsonKeyRepresentable) -> Any? {
-        self[key.jsonKey]
-    }
-    
-    func getStringValue(for key: JsonKey, withDefault default: String? = nil) -> String? {
-        getValue(for: key) as? String ?? `default`
+    func getStringValue(for key: AnyHashable, withDefault default: String? = nil) -> String? {
+        self[key] as? String ?? `default`
     }
 
-    func getStringValue(for key: JsonKeyRepresentable, withDefault default: String? = nil) -> String? {
-        getValue(for: key) as? String ?? `default`
+    func getIntValue(for key: AnyHashable) -> Int? {
+        self[key] as? Int
     }
 
-    func getIntValue(for key: JsonKey) -> Int? {
-        getValue(for: key) as? Int
+    func getDoubleValue(for key: AnyHashable) -> Double? {
+        self[key] as? Double
     }
 
-    func getIntValue(for key: JsonKeyRepresentable) -> Int? {
-        getValue(for: key) as? Int
+    func getBoolValue(for key: AnyHashable) -> Bool? {
+        self[key].flatMap ( Self.parseBool(_:) )
     }
 
-    func getDoubleValue(for key: JsonKey) -> Double? {
-        getValue(for: key) as? Double
-    }
-
-    func getDoubleValue(for key: JsonKeyRepresentable) -> Double? {
-        getValue(for: key) as? Double
-    }
-
-    func getBoolValue(for key: JsonKey) -> Bool? {
-        getValue(for: key).flatMap ( Self.parseBool(_:) )
-    }
-
-    func getBoolValue(for key: JsonKeyRepresentable) -> Bool? {
-        getValue(for: key).flatMap ( Self.parseBool(_:) )
-    }
-    
-    mutating func setValue(for key: JsonKey, value: JsonValueRepresentable?) {
-        self[key.jsonKey] = value?.jsonValue
-    }
-    
-    mutating func setValue(for key: JsonKeyRepresentable, value: JsonValueRepresentable?) {
-        self[key.jsonKey] = value?.jsonValue
+    mutating func setValue(for key: AnyHashable, value: JsonValueRepresentable?) {
+        self[key] = value?.jsonValue
     }
 
     private static func parseBool(_ any: Any?) -> Bool? {

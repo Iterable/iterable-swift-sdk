@@ -598,7 +598,7 @@ class RequestHandlerTests: XCTestCase {
     func testDeleteAllTasksOnLogout() throws {
         let localStorage = MockLocalStorage()
         localStorage.offlineModeBeta = true
-        let internalApi = IterableAPIInternal.initializeForTesting(networkSession: MockNetworkSession(),
+        let internalApi = InternalIterableAPI.initializeForTesting(networkSession: MockNetworkSession(),
                                                                    localStorage: localStorage)
         internalApi.email = "user@example.com"
         
@@ -935,7 +935,7 @@ class RequestHandlerTests: XCTestCase {
     }
     
     private static let deviceMetadata = DeviceMetadata(deviceId: IterableUtil.generateUUID(),
-                                                       platform: JsonValue.iOS.jsonStringValue,
+                                                       platform: JsonValue.iOS,
                                                        appPackageName: Bundle.main.appPackageName ?? "")
     
     private let dateProvider = MockDateProvider()

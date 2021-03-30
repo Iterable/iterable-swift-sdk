@@ -17,7 +17,7 @@ class AuthTests: XCTestCase {
     }
     
     func testEmailPersistence() {
-        let internalAPI = IterableAPIInternal.initializeForTesting()
+        let internalAPI = InternalIterableAPI.initializeForTesting()
         
         internalAPI.email = AuthTests.email
         
@@ -27,7 +27,7 @@ class AuthTests: XCTestCase {
     }
     
     func testUserIdPersistence() {
-        let internalAPI = IterableAPIInternal.initializeForTesting()
+        let internalAPI = InternalIterableAPI.initializeForTesting()
         
         internalAPI.userId = AuthTests.userId
         
@@ -46,7 +46,7 @@ class AuthTests: XCTestCase {
         let config = IterableConfig()
         config.authDelegate = authDelegate
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(config: config)
+        let internalAPI = InternalIterableAPI.initializeForTesting(config: config)
         
         internalAPI.email = "previous.user@example.com"
         
@@ -67,7 +67,7 @@ class AuthTests: XCTestCase {
         let config = IterableConfig()
         config.authDelegate = authDelegate
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(config: config)
+        let internalAPI = InternalIterableAPI.initializeForTesting(config: config)
         
         internalAPI.userId = "previousUserId"
         
@@ -79,7 +79,7 @@ class AuthTests: XCTestCase {
     }
     
     func testUserLoginAndLogout() {
-        let internalAPI = IterableAPIInternal.initializeForTesting()
+        let internalAPI = InternalIterableAPI.initializeForTesting()
         
         internalAPI.setEmail(AuthTests.email)
         
@@ -95,7 +95,7 @@ class AuthTests: XCTestCase {
     }
     
     func testNewEmailWithTokenChange() {
-        var internalAPI: IterableAPIInternal?
+        var internalAPI: InternalIterableAPI?
         
         let originalEmail = "first@example.com"
         let originalToken = "fdsa"
@@ -111,7 +111,7 @@ class AuthTests: XCTestCase {
         let config = IterableConfig()
         config.authDelegate = authDelegate
         
-        internalAPI = IterableAPIInternal.initializeForTesting(config: config)
+        internalAPI = InternalIterableAPI.initializeForTesting(config: config)
         
         guard let API = internalAPI else {
             XCTFail()
@@ -132,7 +132,7 @@ class AuthTests: XCTestCase {
     }
     
     func testNewUserIdWithTokenChange() {
-        var internalAPI: IterableAPIInternal?
+        var internalAPI: InternalIterableAPI?
         
         let originalUserId = "firstUserId"
         let originalToken = "nen"
@@ -148,7 +148,7 @@ class AuthTests: XCTestCase {
         let config = IterableConfig()
         config.authDelegate = authDelegate
         
-        internalAPI = IterableAPIInternal.initializeForTesting(config: config)
+        internalAPI = InternalIterableAPI.initializeForTesting(config: config)
         
         guard let API = internalAPI else {
             XCTFail()
@@ -171,7 +171,7 @@ class AuthTests: XCTestCase {
     func testUpdateEmailWithToken() {
         let condition1 = expectation(description: "update email with auth token")
         
-        var internalAPI: IterableAPIInternal?
+        var internalAPI: InternalIterableAPI?
         
         let originalEmail = "first@example.com"
         let originalToken = "fdsa"
@@ -187,7 +187,7 @@ class AuthTests: XCTestCase {
         let config = IterableConfig()
         config.authDelegate = authDelegate
         
-        internalAPI = IterableAPIInternal.initializeForTesting(config: config)
+        internalAPI = InternalIterableAPI.initializeForTesting(config: config)
         
         guard let API = internalAPI else {
             XCTFail()
@@ -220,7 +220,7 @@ class AuthTests: XCTestCase {
         
         let localStorage = MockLocalStorage()
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(config: config,
+        let internalAPI = InternalIterableAPI.initializeForTesting(config: config,
                                                                    localStorage: localStorage)
         
         XCTAssertNil(localStorage.email)
@@ -251,7 +251,7 @@ class AuthTests: XCTestCase {
     func testAuthTokenChangeWithSameEmail() {
         var authTokenChanged = false
         
-        var internalAPI: IterableAPIInternal?
+        var internalAPI: InternalIterableAPI?
         
         let newAuthToken = AuthTests.authToken + "3984ru398gj893"
         
@@ -267,7 +267,7 @@ class AuthTests: XCTestCase {
         let config = IterableConfig()
         config.authDelegate = authDelegate
         
-        internalAPI = IterableAPIInternal.initializeForTesting(config: config)
+        internalAPI = InternalIterableAPI.initializeForTesting(config: config)
         
         guard let API = internalAPI else {
             XCTFail()
@@ -289,7 +289,7 @@ class AuthTests: XCTestCase {
     func testAuthTokenChangeWithSameUserId() {
         var authTokenChanged = false
         
-        var internalAPI: IterableAPIInternal?
+        var internalAPI: InternalIterableAPI?
         
         let newAuthToken = AuthTests.authToken + "3984ru398gj893"
         
@@ -305,7 +305,7 @@ class AuthTests: XCTestCase {
         let config = IterableConfig()
         config.authDelegate = authDelegate
         
-        internalAPI = IterableAPIInternal.initializeForTesting(config: config)
+        internalAPI = InternalIterableAPI.initializeForTesting(config: config)
         
         guard let API = internalAPI else {
             XCTFail()
@@ -340,7 +340,7 @@ class AuthTests: XCTestCase {
         let mockNetworkSession = MockNetworkSession(statusCode: 401,
                                                     json: [JsonKey.Response.iterableCode: JsonValue.Code.invalidJwtPayload])
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(config: config,
+        let internalAPI = InternalIterableAPI.initializeForTesting(config: config,
                                                                    networkSession: mockNetworkSession)
         
         internalAPI.email = AuthTests.email
@@ -436,7 +436,7 @@ class AuthTests: XCTestCase {
         let config = IterableConfig()
         config.authDelegate = authDelegate
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(config: config)
+        let internalAPI = InternalIterableAPI.initializeForTesting(config: config)
         
         internalAPI.setEmail(AuthTests.email)
         
@@ -456,7 +456,7 @@ class AuthTests: XCTestCase {
         let config = IterableConfig()
         config.authDelegate = authDelegate
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(config: config)
+        let internalAPI = InternalIterableAPI.initializeForTesting(config: config)
         
         internalAPI.setUserId(AuthTests.userId)
         
@@ -473,7 +473,7 @@ class AuthTests: XCTestCase {
         let config = IterableConfig()
         config.authDelegate = authDelegate
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(config: config)
+        let internalAPI = InternalIterableAPI.initializeForTesting(config: config)
         
         internalAPI.email = AuthTests.email
         
@@ -499,7 +499,7 @@ class AuthTests: XCTestCase {
         let mockNetworkSession = MockNetworkSession(statusCode: 401,
                                                     json: [JsonKey.Response.iterableCode: JsonValue.Code.invalidJwtPayload])
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(config: config,
+        let internalAPI = InternalIterableAPI.initializeForTesting(config: config,
                                                                    networkSession: mockNetworkSession)
         
         internalAPI.email = AuthTests.email
@@ -581,7 +581,7 @@ class AuthTests: XCTestCase {
         let config = IterableConfig()
         config.authDelegate = authDelegate
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(config: config,
+        let internalAPI = InternalIterableAPI.initializeForTesting(config: config,
                                                                    notificationStateProvider: mockNotificationStateProvider)
         
         internalAPI.email = AuthTests.email
@@ -635,7 +635,7 @@ class AuthTests: XCTestCase {
         let config = IterableConfig()
         config.authDelegate = authDelegate
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(config: config)
+        let internalAPI = InternalIterableAPI.initializeForTesting(config: config)
         
         // setEmail calls gets the new auth token successfully
         internalAPI.email = AuthTests.email
@@ -715,7 +715,7 @@ class AuthTests: XCTestCase {
         let config = IterableConfig()
         config.authDelegate = authDelegate
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(config: config,
+        let internalAPI = InternalIterableAPI.initializeForTesting(config: config,
                                                                    localStorage: localStorage)
         
         XCTAssertNotNil(internalAPI.email)
@@ -740,7 +740,7 @@ class AuthTests: XCTestCase {
         let config = IterableConfig()
         config.authDelegate = authDelegate
         
-        let internalAPI = IterableAPIInternal.initializeForTesting(config: config,
+        let internalAPI = InternalIterableAPI.initializeForTesting(config: config,
                                                                    localStorage: localStorage)
         
         XCTAssertNotNil(internalAPI.email)

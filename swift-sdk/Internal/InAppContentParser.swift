@@ -56,21 +56,13 @@ struct HtmlContentParser {
     }
     
     struct InAppDisplaySettingsParser {
-        enum Key: String, JsonKeyRepresentable {
-            case shouldAnimate
-            case bgColor
+        private enum Key {
+            static let shouldAnimate = "shouldAnimate"
+            static let bgColor = "bgColor"
             
-            enum BGColor: String, JsonKeyRepresentable {
-                case hex
-                case alpha
-
-                var jsonKey: String {
-                    rawValue
-                }
-            }
-
-            var jsonKey: String {
-                rawValue
+            enum BGColor {
+                static let hex = "hex"
+                static let alpha = "alpha"
             }
         }
         
@@ -79,8 +71,8 @@ struct HtmlContentParser {
         }
         
         static func parseBackgroundColor(fromInAppSettings settings: [AnyHashable: Any]) -> UIColor? {
-            guard let bgColorSettings = settings.getValue(for: Key.bgColor) as? [AnyHashable: Any],
-                  let hexString = bgColorSettings.getValue(for: Key.BGColor.hex) as? String else {
+            guard let bgColorSettings = settings[Key.bgColor] as? [AnyHashable: Any],
+                  let hexString = bgColorSettings[Key.BGColor.hex] as? String else {
                 return nil
             }
             
@@ -92,15 +84,11 @@ struct HtmlContentParser {
         }
         
         struct PaddingParser {
-            enum PaddingEdge: String, JsonKeyRepresentable {
-                var jsonKey: String {
-                    rawValue
-                }
-
-                case top
-                case left
-                case right
-                case bottom
+            private enum PaddingEdge: String {
+                case top = "top"
+                case left = "left"
+                case right = "right"
+                case bottom = "bottom"
             }
             
             enum PaddingValue: Equatable {
@@ -162,13 +150,9 @@ struct HtmlContentParser {
                 }
             }
             
-            enum PaddingKey: String, JsonKeyRepresentable {
-                var jsonKey: String {
-                    rawValue
-                }
-                
-                case displayOption
-                case percentage
+            private enum PaddingKey {
+                static let displayOption = "displayOption"
+                static let percentage = "percentage"
             }
 
             static let displayOptionAutoExpand = "AutoExpand"
@@ -190,10 +174,10 @@ struct HtmlContentParser {
                     return .percent(value: 0)
                 }
                 
-                if let displayOption = dict.getValue(for: PaddingKey.displayOption) as? String, displayOption == Self.displayOptionAutoExpand {
+                if let displayOption = dict[PaddingKey.displayOption] as? String, displayOption == Self.displayOptionAutoExpand {
                     return .autoExpand
                 } else {
-                    if let percentage = dict.getValue(for: PaddingKey.percentage) as? NSNumber {
+                    if let percentage = dict[PaddingKey.percentage] as? NSNumber {
                         return .percent(value: Int(truncating: percentage))
                     }
                     
@@ -208,7 +192,7 @@ struct HtmlContentParser {
                     return 0
                 }
                 
-                if let percentage = dict.getValue(for: PaddingKey.percentage) as? NSNumber {
+                if let percentage = dict[PaddingKey.percentage] as? NSNumber {
                     return Int(truncating: percentage)
                 }
                 
@@ -236,13 +220,13 @@ struct HtmlContentParser {
 
             private static func getEdgePaddingValue(fromInAppSettings settings: [AnyHashable: Any]?,
                                                edge: PaddingEdge) -> PaddingValue {
-                settings?.getValue(for: edge)
+                settings?[edge.rawValue]
                     .map(decodePaddingValue(_:)) ?? .percent(value: 0)
             }
 
             private static func getEdgePadding(fromInAppSettings settings: [AnyHashable: Any]?,
                                                edge: PaddingEdge) -> Int {
-                settings?.getValue(for: edge)
+                settings?[edge.rawValue]
                     .map(decodePadding(_:)) ?? 0
             }
         }
@@ -251,7 +235,7 @@ struct HtmlContentParser {
 
 extension HtmlContentParser: ContentFromJsonParser {
     fileprivate static func tryCreate(from json: [AnyHashable: Any]) -> InAppContentParseResult {
-        guard let html = json[JsonKey.html.jsonKey] as? String else {
+        guard let html = json[JsonKey.html] as? String else {
             return .failure(reason: "no html")
         }
         

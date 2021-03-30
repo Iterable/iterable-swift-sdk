@@ -60,8 +60,9 @@ class InboxUITests: XCTestCase, IterableInboxUITestsProtocol {
         sleep(2)
         gotoTab(.network)
         
+        
         let dict = body(forEvent: Const.Path.trackInboxSession)
-        let impressions = dict[keyPath: KeyPath(JsonKey.impressions)] as! [[String: Any]]
+        let impressions = dict[keyPath: KeyPath(keys: JsonKey.impressions)] as! [[String: Any]]
         XCTAssertEqual(impressions.count, 3)
     }
     
@@ -80,7 +81,7 @@ class InboxUITests: XCTestCase, IterableInboxUITestsProtocol {
         
         gotoTab(.network)
         let dict = body(forEvent: Const.Path.inAppConsume)
-        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.deleteAction), value: InAppDeleteSource.inboxSwipe.jsonValue as! String, inDictionary: dict)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.deleteAction), value: InAppDeleteSource.inboxSwipe.jsonValue as! String, inDictionary: dict)
     }
     
     func testDeleteActionDeleteButton() {
@@ -105,7 +106,7 @@ class InboxUITests: XCTestCase, IterableInboxUITestsProtocol {
         
         gotoTab(.network)
         let dict = body(forEvent: Const.Path.inAppConsume)
-        TestUtils.validateMatch(keyPath: KeyPath(JsonKey.deleteAction), value: InAppDeleteSource.deleteButton.jsonValue as! String, inDictionary: dict)
+        TestUtils.validateMatch(keyPath: KeyPath(keys: JsonKey.deleteAction), value: InAppDeleteSource.deleteButton.jsonValue as! String, inDictionary: dict)
     }
     
     func testPullToRefresh() {
