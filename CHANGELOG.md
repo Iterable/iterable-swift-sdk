@@ -2,6 +2,25 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.3.0-beta3
+### Added
+- Support for syncing in-app message read state across multiple devices:
+  - When the SDK fetches in-app messages from Iterable, it examines each
+    message's `read` field to determine if it has already been read.
+  - The SDK's default implementation no longer automatically displays in-app
+    messages that have already been seen on another device (even if those
+    messages were _not_ configured to go directly to the inbox).
+  - When you view a message, the SDK calls [`POST /api/events/trackInAppOpen`](https://api.iterable.com/api/docs#events_trackInAppOpen)
+    to create an `inAppOpen` event on the user's Iterable profile. Previous
+    versions of the SDK made this same API call, but the call now also causes
+    Iterable to set the message's `read` field to `true`.
+  - Previous versions of the SDK will correctly sync a message's read / unread
+    indicator for the default implementation of a mobile inbox. However, these
+    older SDK versions will not automatically suppress messages that have
+    already been seen on another device (as this version of the SDK will).
+- Support for the display of a custom message (title and body) in an empty
+  mobile inbox. For more details, see [Customizing Mobile Inbox on iOS](https://support.iterable.com/hc/articles/360039091471#empty-state)
+
 ## 6.3.0-beta2
 #### Added
 - Added callback for initialize method that is used by our React Native SDK.
