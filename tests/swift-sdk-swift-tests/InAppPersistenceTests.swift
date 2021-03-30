@@ -90,7 +90,6 @@ class InAppPersistenceTests: XCTestCase {
                                     saveToInbox: true,
                                     inboxMetadata: nil,
                                     customPayload: nil,
-                                    read: read,
-                                    priorityLevel: Const.PriorityLevel.unassigned)
+                                    read: read)
     }
 }
