@@ -35,18 +35,13 @@ import UserNotifications
     // MARK: - Private
     
     private func retrieveAttachment(itblDictionary: [AnyHashable: Any], onFailureHandler: @escaping () -> Void) {
-        guard let attachmentUrlString = itblDictionary[JsonKey.Payload.attachmentUrl] as? String else {
-            lastAttemptCalled()
-            return
-        }
-        
-        guard let url = URL(string: attachmentUrlString) else {
+        guard let attachmentUrlString = itblDictionary[JsonKey.Payload.attachmentUrl] as? String,
+              let url = URL(string: attachmentUrlString) else {
             lastAttemptCalled()
             return
         }
         
         attachmentDownloadTask = createAttachmentDownloadTask(url: url, onFailureHandler: onFailureHandler)
-        
         attachmentDownloadTask?.resume()
     }
     
@@ -57,7 +52,7 @@ import UserNotifications
                 return
             }
             
-            let attachmentId = UUID().uuidString + strongSelf.getAttachmentIdSuffix(response: response, responseUrl: responseUrl)
+            let attachmentId = UUID().uuidString + ITBNotificationServiceExtension.getAttachmentIdSuffix(response: response, responseUrl: responseUrl)
             let tempFileUrl = FileManager.default.temporaryDirectory.appendingPathComponent(attachmentId)
             
             var attachment: UNNotificationAttachment?
@@ -78,14 +73,6 @@ import UserNotifications
                 return
             }
         }
-    }
-    
-    private func getAttachmentIdSuffix(response: URLResponse, responseUrl: URL) -> String {
-        if let suggestedFilename = response.suggestedFilename {
-            return suggestedFilename
-        }
-        
-        return responseUrl.lastPathComponent
     }
     
     private func lastAttemptCalled() {
@@ -197,6 +184,14 @@ import UserNotifications
         }
         
         return IterableButtonTypeDefault
+    }
+    
+    private static func getAttachmentIdSuffix(response: URLResponse, responseUrl: URL) -> String {
+        if let suggestedFilename = response.suggestedFilename {
+            return suggestedFilename
+        }
+        
+        return responseUrl.lastPathComponent
     }
     
     private var messageCategory: UNNotificationCategory?
