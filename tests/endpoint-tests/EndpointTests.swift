@@ -7,46 +7,6 @@ import XCTest
 @testable import IterableSDK
 
 class EndpointTests: XCTestCase {
-    func test01UpdateUser() throws {
-        let expectation1 = expectation(description: #function)
-        let api = InternalIterableAPI.initializeForTesting(apiKey: EndpointTests.apiKey,
-                                                           networkSession: URLSession(configuration: .default),
-                                                           notificationStateProvider: MockNotificationStateProvider(enabled: true))
-        api.email = "user@example.com"
-        
-        api.updateUser(["field1": "value1"],
-                       mergeNestedObjects: true,
-                       onSuccess: { _ in
-                           expectation1.fulfill()
-        }) { _, _ in
-            XCTFail()
-        }
-        
-        wait(for: [expectation1], timeout: 60)
-    }
-    
-    func test02UpdateEmail() throws {
-        let expectation1 = expectation(description: #function)
-        let expectation2 = expectation(description: "New email is deleted")
-        
-        let email = "user@example.com"
-        let newEmail = IterableUtil.generateUUID() + "@example.com"
-        let api = InternalIterableAPI.initializeForTesting(apiKey: EndpointTests.apiKey,
-                                                           networkSession: URLSession(configuration: .default),
-                                                           notificationStateProvider: MockNotificationStateProvider(enabled: true))
-        api.email = email
-        
-        api.updateEmail(newEmail, onSuccess: { _ in
-            expectation1.fulfill()
-            IterableAPISupport.sendDeleteUserRequest(email: newEmail).onSuccess { _ in
-                expectation2.fulfill()
-            }
-        }) { _, _ in
-            XCTFail()
-        }
-        wait(for: [expectation1, expectation2], timeout: 60)
-    }
-    
     func test03TrackPurchase() throws {
         let expectation1 = expectation(description: #function)
         let api = InternalIterableAPI.initializeForTesting(apiKey: EndpointTests.apiKey,
