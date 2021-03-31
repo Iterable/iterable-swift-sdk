@@ -107,6 +107,12 @@ public extension Notification.Name {
     }
 }
 
+extension IterableHtmlInAppContent {
+    var padding: Padding {
+        Padding.from(edgeInsets: edgeInsets)
+    }
+}
+
 @objcMembers public final class IterableInboxMetadata: NSObject {
     public let title: String?
     public let subtitle: String?

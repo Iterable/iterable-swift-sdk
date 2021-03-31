@@ -21,6 +21,7 @@ protocol InboxViewControllerViewModelProtocol {
     var numSections: Int { get }
     func numRows(in section: Int) -> Int
     var unreadCount: Int { get }
+    func isEmpty() -> Bool
     func message(atIndexPath indexPath: IndexPath) -> InboxMessageViewModel
     func remove(atIndexPath indexPath: IndexPath)
     func set(read: Bool, forMessage message: InboxMessageViewModel)
@@ -74,6 +75,13 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     var unreadCount: Int {
         allMessagesInSections().filter { $0.read == false }.count
+    }
+    
+    func isEmpty() -> Bool {
+        return
+            sectionedMessages.sectionsAndValues.reduce(0) { count, sectionAndValue in
+                count + sectionAndValue.1.count
+            } == 0
     }
     
     func message(atIndexPath indexPath: IndexPath) -> InboxMessageViewModel {

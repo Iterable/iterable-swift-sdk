@@ -268,7 +268,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                                      failureHandler onFailure: OnFailureHandler?,
                                      identifier: String) -> Future<SendRequestValue, SendRequestError> {
         guard let authProvider = authProvider else {
-            fatalError("authProvider is missing")
+            return SendRequestError.createErroredFuture(reason: "AuthProvider is missing")
         }
         
         let requestCreator = createRequestCreator(authProvider: authProvider)

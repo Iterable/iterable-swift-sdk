@@ -57,4 +57,39 @@ class InAppPersistenceTests: XCTestCase {
             XCTFail("conversion to string failed")
         }
     }
+    
+    func testPersistentReadStateFromServerPayload() {
+        let expectation1 = expectation(description: #function)
+        let mockInAppFetcher = MockInAppFetcher()
+        
+        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: mockInAppFetcher)
+        
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: [Self.getInboxMessage(id: "1", read: false)])
+            .flatMap { _ in
+                return mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: [Self.getInboxMessage(id: "1", read: true)])
+            }
+            .onSuccess { [weak internalAPI = internalAPI] count in
+                guard let firstMessage = internalAPI?.inAppManager.getMessages().first else {
+                    XCTFail("could not get in-app message for test")
+                    return
+                }
+                XCTAssertTrue(firstMessage.read)
+                expectation1.fulfill()
+        }
+
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
+
+    private static func getInboxMessage(id: String = "", read: Bool) -> IterableInAppMessage {
+        return IterableInAppMessage(messageId: id,
+                                    campaignId: nil,
+                                    trigger: .neverTrigger,
+                                    createdAt: nil,
+                                    expiresAt: nil,
+                                    content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
+                                    saveToInbox: true,
+                                    inboxMetadata: nil,
+                                    customPayload: nil,
+                                    read: read)
+    }
 }
