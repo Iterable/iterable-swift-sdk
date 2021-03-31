@@ -35,8 +35,15 @@ import UserNotifications
     // MARK: - Private
     
     private func retrieveAttachment(itblDictionary: [AnyHashable: Any], onFailureHandler: @escaping () -> Void) {
-        guard let attachmentUrlString = itblDictionary[JsonKey.Payload.attachmentUrl] as? String else { return }
-        guard let url = URL(string: attachmentUrlString) else { return }
+        guard let attachmentUrlString = itblDictionary[JsonKey.Payload.attachmentUrl] as? String else {
+            lastAttemptCalled()
+            return
+        }
+        
+        guard let url = URL(string: attachmentUrlString) else {
+            lastAttemptCalled()
+            return
+        }
         
         attachmentDownloadTask = createAttachmentDownloadTask(url: url, onFailureHandler: onFailureHandler)
         
