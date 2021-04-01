@@ -16,7 +16,7 @@ import UserNotifications
         bestAttemptContent?.categoryIdentifier = getCategory(fromContent: request.content)
         
         guard let itblDictionary = request.content.userInfo[JsonKey.Payload.metadata] as? [AnyHashable: Any] else {
-            lastAttemptCalled()
+            callContentHandler()
             return
         }
         
@@ -27,7 +27,7 @@ import UserNotifications
         // Called just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
         
-        lastAttemptCalled()
+        callContentHandler()
     }
     
     // MARK: - Private
@@ -35,7 +35,7 @@ import UserNotifications
     private func retrieveAttachment(itblDictionary: [AnyHashable: Any]) {
         guard let attachmentUrlString = itblDictionary[JsonKey.Payload.attachmentUrl] as? String,
               let url = URL(string: attachmentUrlString) else {
-            lastAttemptCalled()
+            callContentHandler()
             return
         }
         
@@ -46,7 +46,7 @@ import UserNotifications
     private func createAttachmentDownloadTask(url: URL) -> URLSessionDownloadTask {
         return URLSession.shared.downloadTask(with: url) { [weak self] location, response, error in
             guard let strongSelf = self, error == nil, let response = response, let responseUrl = response.url, let location = location else {
-                self?.lastAttemptCalled()
+                self?.callContentHandler()
                 return
             }
             
@@ -59,7 +59,7 @@ import UserNotifications
                 try FileManager.default.moveItem(at: location, to: tempFileUrl)
                 attachment = try UNNotificationAttachment(identifier: attachmentId, url: tempFileUrl, options: nil)
             } catch {
-                self?.lastAttemptCalled()
+                self?.callContentHandler()
                 return
             }
             
@@ -67,13 +67,13 @@ import UserNotifications
                 content.attachments.append(attachment)
                 handler(content)
             } else {
-                self?.lastAttemptCalled()
+                self?.callContentHandler()
                 return
             }
         }
     }
     
-    private func lastAttemptCalled() {
+    private func callContentHandler() {
         attachmentDownloadTask?.cancel()
         attachmentDownloadTask = nil
         
