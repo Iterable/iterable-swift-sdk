@@ -568,6 +568,7 @@ extension UITableView {
             titleLabel?.textColor = UIColor.black
             titleLabel?.font = UIFont(name: "HelveticaNeue-Bold", size: 20)
             titleLabel?.text = title
+            titleLabel?.widthAnchor.constraint(equalTo: emptyView.widthAnchor, multiplier: 1.0, constant: -20).isActive = true
             titleLabel?.centerXAnchor.constraint(equalTo: emptyView.centerXAnchor).isActive = true
             titleLabel?.centerYAnchor.constraint(equalTo: emptyView.centerYAnchor).isActive = true
         } else {
@@ -585,6 +586,7 @@ extension UITableView {
             messageLabel.textAlignment = .center
 
             messageLabel.centerXAnchor.constraint(equalTo: emptyView.centerXAnchor).isActive = true
+            messageLabel.widthAnchor.constraint(equalTo: emptyView.widthAnchor, multiplier: 1.0, constant: -20).isActive = true
             if let titleLabel = titleLabel {
                 messageLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 25).isActive = true
             } else {
