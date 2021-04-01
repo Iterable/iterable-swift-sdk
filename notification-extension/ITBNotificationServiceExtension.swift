@@ -20,9 +20,7 @@ import UserNotifications
             return
         }
         
-        retrieveAttachment(itblDictionary: itblDictionary, onFailureHandler: {
-            self.lastAttemptCalled()
-        })
+        retrieveAttachment(itblDictionary: itblDictionary)
     }
     
     @objc override open func serviceExtensionTimeWillExpire() {
@@ -34,21 +32,21 @@ import UserNotifications
     
     // MARK: - Private
     
-    private func retrieveAttachment(itblDictionary: [AnyHashable: Any], onFailureHandler: @escaping () -> Void) {
+    private func retrieveAttachment(itblDictionary: [AnyHashable: Any]) {
         guard let attachmentUrlString = itblDictionary[JsonKey.Payload.attachmentUrl] as? String,
               let url = URL(string: attachmentUrlString) else {
             lastAttemptCalled()
             return
         }
         
-        attachmentDownloadTask = createAttachmentDownloadTask(url: url, onFailureHandler: onFailureHandler)
+        attachmentDownloadTask = createAttachmentDownloadTask(url: url)
         attachmentDownloadTask?.resume()
     }
     
-    private func createAttachmentDownloadTask(url: URL, onFailureHandler: @escaping () -> Void) -> URLSessionDownloadTask {
+    private func createAttachmentDownloadTask(url: URL) -> URLSessionDownloadTask {
         return URLSession.shared.downloadTask(with: url) { [weak self] location, response, error in
             guard let strongSelf = self, error == nil, let response = response, let responseUrl = response.url, let location = location else {
-                onFailureHandler()
+                self?.lastAttemptCalled()
                 return
             }
             
@@ -61,7 +59,7 @@ import UserNotifications
                 try FileManager.default.moveItem(at: location, to: tempFileUrl)
                 attachment = try UNNotificationAttachment(identifier: attachmentId, url: tempFileUrl, options: nil)
             } catch {
-                onFailureHandler()
+                self?.lastAttemptCalled()
                 return
             }
             
@@ -69,7 +67,7 @@ import UserNotifications
                 content.attachments.append(attachment)
                 handler(content)
             } else {
-                onFailureHandler()
+                self?.lastAttemptCalled()
                 return
             }
         }
