@@ -441,17 +441,66 @@ extension IterableInboxViewController: InboxViewControllerViewModelView {
         tableView.beginUpdates()
         viewModel.beganUpdates()
         
-        for result in diff {
-            switch result {
-            case let .delete(section, row, _): tableView.deleteRows(at: [IndexPath(row: row, section: section)], with: deletionAnimation)
-            case let .insert(section, row, _): tableView.insertRows(at: [IndexPath(row: row, section: section)], with: insertionAnimation)
-            case let .sectionDelete(section, _): tableView.deleteSections(IndexSet(integer: section), with: deletionAnimation)
-            case let .sectionInsert(section, _): tableView.insertSections(IndexSet(integer: section), with: insertionAnimation)
+        let diffs = Self.dwifftDiffsToDiffs(dwifftDiffs: diff)
+        for diff in diffs {
+            switch diff {
+            case .delete(let indexPath): tableView.deleteRows(at: [indexPath], with: deletionAnimation)
+            case .insert(let indexPath): tableView.insertRows(at: [indexPath], with: insertionAnimation)
+            case .update(let indexPath): tableView.reloadRows(at: [indexPath], with: .automatic)
+            case .sectionDelete(let indexSet): tableView.deleteSections(indexSet, with: deletionAnimation)
+            case .sectionInsert(let indexSet): tableView.insertSections(indexSet, with: insertionAnimation)
+            case .sectionUpdate(let indexSet): tableView.reloadSections(indexSet, with: .automatic)
+            }
+        }
+
+        tableView.endUpdates()
+        viewModel.endedUpdates()
+    }
+
+    private static func dwifftDiffsToDiffs(dwifftDiffs: [SectionedDiffStep<Int, InboxMessageViewModel>]) -> [Diff] {
+        var result = [Diff]()
+        var rowDeletes = [IndexPath: Int]()
+        var sectionDeletes = [Int: Int]()
+        
+        for (pos, dwiffDiff) in dwifftDiffs.enumerated() {
+            switch dwiffDiff {
+            case let .delete(section, row, _):
+                let indexPath = IndexPath(row: row, section: section)
+                result.append(.delete(indexPath))
+                rowDeletes[indexPath] = pos
+            case let .insert(section, row, _):
+                let indexPath = IndexPath(row: row, section: section)
+                if let pos = rowDeletes[indexPath] {
+                    result.remove(at: pos)
+                    rowDeletes.removeValue(forKey: indexPath)
+                    result.append(.update(indexPath))
+                } else {
+                    result.append(.insert(indexPath))
+                }
+            case let .sectionDelete(section, _):
+                result.append(.sectionDelete(IndexSet(integer: section)))
+                sectionDeletes[section] = pos
+            case let .sectionInsert(section, _):
+                if let pos = sectionDeletes[section] {
+                    result.remove(at: pos)
+                    sectionDeletes.removeValue(forKey: section)
+                    result.append(.sectionUpdate(IndexSet(integer: section)))
+                } else {
+                    result.append(.sectionInsert(IndexSet(integer: section)))
+                }
             }
         }
         
-        tableView.endUpdates()
-        viewModel.endedUpdates()
+        return result
+    }
+    
+    private enum Diff {
+        case insert(IndexPath)
+        case delete(IndexPath)
+        case update(IndexPath)
+        case sectionInsert(IndexSet)
+        case sectionDelete(IndexSet)
+        case sectionUpdate(IndexSet)
     }
     
     private func isRowVisible(atIndexPath indexPath: IndexPath) -> IndexPath? {
