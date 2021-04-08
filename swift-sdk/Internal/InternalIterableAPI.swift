@@ -94,13 +94,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func setEmail(_ email: String?) {
         ITBInfo()
         
-        if email == nil {
-            logoutPreviousUser()
-            return
-        }
-        
         if _email == email {
-            requestNewAuthToken()
             return
         }
         
@@ -111,20 +105,17 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         storeIdentifierData()
         
-        requestNewAuthToken()
-        loginNewUser()
+        if email != nil {
+            requestNewAuthToken()
+        } else {
+            loginNewUser()
+        }
     }
     
     func setUserId(_ userId: String?) {
         ITBInfo()
         
-        if userId == nil {
-            logoutPreviousUser()
-            return
-        }
-        
         if _userId == userId {
-            requestNewAuthToken()
             return
         }
         
@@ -135,8 +126,11 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         storeIdentifierData()
         
-        requestNewAuthToken()
-        loginNewUser()
+        if userId != nil {
+            requestNewAuthToken()
+        } else {
+            loginNewUser()
+        }
     }
     
     func logoutUser() {
@@ -444,7 +438,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     private func requestNewAuthToken() {
         authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: { [weak self] authToken in
-            _ = self?.inAppManager.scheduleSync()
+            self?.loginNewUser()
         })
     }
     

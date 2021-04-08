@@ -101,11 +101,11 @@ class AuthManager: IterableInternalAuthManagerProtocol {
         
         storeAuthToken()
         
+        queueAuthTokenExpirationRefresh(authToken)
+        
         if authToken != nil {
             onSuccess?(authToken)
         }
-        
-        queueAuthTokenExpirationRefresh(authToken)
     }
     
     private func queueAuthTokenExpirationRefresh(_ authToken: String?) {
