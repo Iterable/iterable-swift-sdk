@@ -405,7 +405,7 @@ open class IterableInboxViewController: UITableViewController {
 }
 
 extension IterableInboxViewController: InboxViewControllerViewModelView {
-    func onViewModelChanged(diff: [SectionedDiffStep<Int, InboxMessageViewModel>]) {
+    func onViewModelChanged(diffs: [RowDiff]) {
         ITBInfo()
         
         guard Thread.isMainThread else {
@@ -413,7 +413,7 @@ extension IterableInboxViewController: InboxViewControllerViewModelView {
             return
         }
         
-        updateTableView(diff: diff)
+        updateTableView(diffs: diffs)
         updateUnreadBadgeCount()
     }
     
@@ -437,23 +437,25 @@ extension IterableInboxViewController: InboxViewControllerViewModelView {
         navigationController?.tabBarItem?.badgeValue = badgeValue
     }
     
-    private func updateTableView(diff: [SectionedDiffStep<Int, InboxMessageViewModel>]) {
+    private func updateTableView(diffs: [RowDiff]) {
         tableView.beginUpdates()
         viewModel.beganUpdates()
         
-        for result in diff {
-            switch result {
-            case let .delete(section, row, _): tableView.deleteRows(at: [IndexPath(row: row, section: section)], with: deletionAnimation)
-            case let .insert(section, row, _): tableView.insertRows(at: [IndexPath(row: row, section: section)], with: insertionAnimation)
-            case let .sectionDelete(section, _): tableView.deleteSections(IndexSet(integer: section), with: deletionAnimation)
-            case let .sectionInsert(section, _): tableView.insertSections(IndexSet(integer: section), with: insertionAnimation)
+        for diff in diffs {
+            switch diff {
+            case .delete(let indexPath): tableView.deleteRows(at: [indexPath], with: deletionAnimation)
+            case .insert(let indexPath): tableView.insertRows(at: [indexPath], with: insertionAnimation)
+            case .update(let indexPath): tableView.reloadRows(at: [indexPath], with: .automatic)
+            case .sectionDelete(let indexSet): tableView.deleteSections(indexSet, with: deletionAnimation)
+            case .sectionInsert(let indexSet): tableView.insertSections(indexSet, with: insertionAnimation)
+            case .sectionUpdate(let indexSet): tableView.reloadSections(indexSet, with: .automatic)
             }
         }
-        
+
         tableView.endUpdates()
         viewModel.endedUpdates()
     }
-    
+
     private func isRowVisible(atIndexPath indexPath: IndexPath) -> IndexPath? {
         let topMargin = CGFloat(10.0)
         let bottomMargin = CGFloat(10.0)
