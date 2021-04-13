@@ -105,11 +105,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         storeIdentifierData()
         
-        if email != nil {
-            requestNewAuthToken()
-        } else {
-            loginNewUser()
-        }
+        postIdentifierActions()
     }
     
     func setUserId(_ userId: String?) {
@@ -126,11 +122,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         storeIdentifierData()
         
-        if userId != nil {
-            requestNewAuthToken()
-        } else {
-            loginNewUser()
-        }
+        postIdentifierActions()
     }
     
     func logoutUser() {
@@ -463,6 +455,17 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         _ = inAppManager.reset()
         
         try? requestHandler.handleLogout()
+    }
+    
+    
+    private func postIdentifierActions() {
+        ITBInfo()
+        
+        if isEitherUserIdOrEmailSet() && config.authDelegate != nil {
+            requestNewAuthToken()
+        } else {
+            loginNewUser()
+        }
     }
     
     private func loginNewUser() {
