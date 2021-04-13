@@ -573,7 +573,7 @@ class AuthTests: XCTestCase {
         condition1.expectedFulfillmentCount = 2
         
         let authDelegate = createAuthDelegate({ completion in
-            completion(nil)
+            completion(AuthTests.authToken)
         })
         
         let mockNotificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: condition1)
@@ -702,8 +702,9 @@ class AuthTests: XCTestCase {
         wait(for: [condition2], timeout: 3)
     }
     
-    func testAuthTokenRequestingForAlreadyExistingEmail() {
-        let condition1 = expectation(description: "auth handler didn't get called")
+    func testAuthTokenNotRequestingForAlreadyExistingEmail() {
+        let condition1 = expectation(description: "auth handler got called when it should not")
+        condition1.isInverted = true
         
         let localStorage = MockLocalStorage()
         localStorage.email = AuthTests.email
