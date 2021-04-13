@@ -71,6 +71,42 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.dependencyContainer.createAuthManager(config: self.config)
     }()
     
+    // MARK: - Initializer
+    
+    func start() -> Future<Bool, Error> {
+        ITBInfo()
+        
+        updateSDKVersion()
+        
+        checkForDeferredDeepLink()
+        
+        // get email and userId from UserDefaults if present
+        retrieveIdentifierData()
+        
+        if config.autoPushRegistration, isEitherUserIdOrEmailSet() {
+            notificationStateProvider.registerForRemoteNotifications()
+        }
+        
+        IterableAppIntegration.implementation = IterableAppIntegrationInternal(tracker: self,
+                                                                               urlDelegate: config.urlDelegate,
+                                                                               customActionDelegate: config.customActionDelegate,
+                                                                               urlOpener: urlOpener,
+                                                                               inAppNotifiable: inAppManager)
+        
+        handle(launchOptions: launchOptions)
+        
+        
+        handlePendingNotification()
+        
+        handlePendingUniversalLink()
+        
+        requestHandler.start()
+        
+        checkRemoteConfiguration()
+        
+        return inAppManager.start()
+    }
+    
     // MARK: - SDK Functions
     
     @discardableResult func handleUniversalLink(_ url: URL) -> Bool {
@@ -428,12 +464,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         IterableUtil.isNotNullOrEmpty(string: _email) || IterableUtil.isNotNullOrEmpty(string: _userId)
     }
     
-    private func requestNewAuthToken() {
-        authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: { [weak self] authToken in
-            self?.loginNewUser()
-        })
-    }
-    
     private func logoutPreviousUser() {
         ITBInfo()
         
@@ -457,6 +487,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         try? requestHandler.handleLogout()
     }
     
+    private func storeIdentifierData() {
+        localStorage.email = _email
+        localStorage.userId = _userId
+    }
     
     private func postIdentifierActions() {
         ITBInfo()
@@ -466,6 +500,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         } else {
             loginNewUser()
         }
+    }
+    
+    private func requestNewAuthToken() {
+        authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: { [weak self] authToken in
+            self?.loginNewUser()
+        })
     }
     
     private func loginNewUser() {
@@ -480,11 +520,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
         
         _ = inAppManager.scheduleSync()
-    }
-    
-    private func storeIdentifierData() {
-        localStorage.email = _email
-        localStorage.userId = _userId
     }
     
     private func retrieveIdentifierData() {
@@ -527,40 +562,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         inAppDisplayer = dependencyContainer.inAppDisplayer
         urlOpener = dependencyContainer.urlOpener
         deepLinkManager = IterableDeepLinkManager()
-    }
-    
-    func start() -> Future<Bool, Error> {
-        ITBInfo()
-        
-        updateSDKVersion()
-        
-        checkForDeferredDeepLink()
-        
-        // get email and userId from UserDefaults if present
-        retrieveIdentifierData()
-        
-        if config.autoPushRegistration, isEitherUserIdOrEmailSet() {
-            notificationStateProvider.registerForRemoteNotifications()
-        }
-        
-        IterableAppIntegration.implementation = IterableAppIntegrationInternal(tracker: self,
-                                                                               urlDelegate: config.urlDelegate,
-                                                                               customActionDelegate: config.customActionDelegate,
-                                                                               urlOpener: urlOpener,
-                                                                               inAppNotifiable: inAppManager)
-        
-        handle(launchOptions: launchOptions)
-        
-        
-        handlePendingNotification()
-        
-        handlePendingUniversalLink()
-        
-        requestHandler.start()
-        
-        checkRemoteConfiguration()
-        
-        return inAppManager.start()
     }
     
     private func handle(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
