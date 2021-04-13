@@ -6,9 +6,18 @@
 import Foundation
 import UIKit
 
+enum RowDiff {
+    case insert(IndexPath)
+    case delete(IndexPath)
+    case update(IndexPath)
+    case sectionInsert(IndexSet)
+    case sectionDelete(IndexSet)
+    case sectionUpdate(IndexSet)
+}
+
 protocol InboxViewControllerViewModelView: AnyObject {
     // All these methods should be called on the main thread
-    func onViewModelChanged(diff: [SectionedDiffStep<Int, InboxMessageViewModel>])
+    func onViewModelChanged(diffs: [RowDiff])
     func onImageLoaded(for indexPath: IndexPath)
     var currentlyVisibleRowIndexPaths: [IndexPath] { get }
 }
@@ -239,11 +248,49 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         ITBInfo()
         newSectionedMessages = sortAndFilter(messages: getMessages())
         
-        let diff = Dwifft.diff(lhs: sectionedMessages, rhs: newSectionedMessages)
-        if diff.count > 0 {
-            view?.onViewModelChanged(diff: diff)
+        let dwifftDiffs = Dwifft.diff(lhs: sectionedMessages, rhs: newSectionedMessages)
+        if dwifftDiffs.count > 0 {
+            let rowDiffs = Self.dwifftDiffsToRowDiffs(dwifftDiffs: dwifftDiffs)
+            view?.onViewModelChanged(diffs: rowDiffs)
             updateVisibleRows()
         }
+    }
+    
+    private static func dwifftDiffsToRowDiffs(dwifftDiffs: [SectionedDiffStep<Int, InboxMessageViewModel>]) -> [RowDiff] {
+        var result = [RowDiff]()
+        var rowDeletes = [IndexPath: Int]()
+        var sectionDeletes = [Int: Int]()
+        
+        for (pos, dwiffDiff) in dwifftDiffs.enumerated() {
+            switch dwiffDiff {
+            case let .delete(section, row, _):
+                let indexPath = IndexPath(row: row, section: section)
+                result.append(.delete(indexPath))
+                rowDeletes[indexPath] = pos
+            case let .insert(section, row, _):
+                let indexPath = IndexPath(row: row, section: section)
+                if let pos = rowDeletes[indexPath] {
+                    result.remove(at: pos)
+                    rowDeletes.removeValue(forKey: indexPath)
+                    result.append(.update(indexPath))
+                } else {
+                    result.append(.insert(indexPath))
+                }
+            case let .sectionDelete(section, _):
+                result.append(.sectionDelete(IndexSet(integer: section)))
+                sectionDeletes[section] = pos
+            case let .sectionInsert(section, _):
+                if let pos = sectionDeletes[section] {
+                    result.remove(at: pos)
+                    sectionDeletes.removeValue(forKey: section)
+                    result.append(.sectionUpdate(IndexSet(integer: section)))
+                } else {
+                    result.append(.sectionInsert(IndexSet(integer: section)))
+                }
+            }
+        }
+        
+        return result
     }
     
     @objc private func onAppWillEnterForeground(notification _: NSNotification) {
