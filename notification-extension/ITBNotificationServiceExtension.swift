@@ -33,11 +33,8 @@ import UserNotifications
     // MARK: - Private
     
     private func retrieveAttachment(itblDictionary: [AnyHashable: Any]) {
-        guard let attachmentUrlString = itblDictionary[JsonKey.Payload.attachmentUrl] as? String,
-              let url = URL(string: attachmentUrlString) else {
-            callContentHandler()
-            return
-        }
+        guard let attachmentUrlString = itblDictionary[JsonKey.Payload.attachmentUrl] as? String else { return }
+        guard let url = URL(string: attachmentUrlString) else { return }
         
         attachmentDownloadTask = createAttachmentDownloadTask(url: url)
         attachmentDownloadTask?.resume()
