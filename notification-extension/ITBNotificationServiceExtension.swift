@@ -36,6 +36,8 @@ import UserNotifications
         guard let attachmentUrlString = itblDictionary[JsonKey.Payload.attachmentUrl] as? String else { return }
         guard let url = URL(string: attachmentUrlString) else { return }
         
+        stopCurrentAttachmentDownloadTask()
+        
         attachmentDownloadTask = createAttachmentDownloadTask(url: url)
         attachmentDownloadTask?.resume()
     }
@@ -70,9 +72,13 @@ import UserNotifications
         }
     }
     
-    private func callContentHandler() {
+    private func stopCurrentAttachmentDownloadTask() {
         attachmentDownloadTask?.cancel()
         attachmentDownloadTask = nil
+    }
+    
+    private func callContentHandler() {
+        stopCurrentAttachmentDownloadTask()
         
         if let contentHandler = contentHandler, let bestAttemptContent = bestAttemptContent {
             contentHandler(bestAttemptContent)
