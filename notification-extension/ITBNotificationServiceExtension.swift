@@ -129,12 +129,11 @@ import UserNotifications
     }
     
     private func createNotificationActionButton(buttonDictionary: [AnyHashable: Any]) -> UNNotificationAction? {
-        guard let identifier = buttonDictionary[JsonKey.ActionButton.identifier] as? String,
-              let title = buttonDictionary[JsonKey.ActionButton.title] as? String else {
-            return nil
-        }
+        guard let identifier = buttonDictionary[JsonKey.ActionButton.identifier] as? String else { return nil }
+        guard let title = buttonDictionary[JsonKey.ActionButton.title] as? String else { return nil }
         
         let buttonType = getButtonType(buttonDictionary: buttonDictionary)
+        
         var openApp = true
         
         if let openAppFromDict = buttonDictionary[JsonKey.ActionButton.openApp] as? NSNumber {
@@ -176,12 +175,10 @@ import UserNotifications
     }
     
     private func getButtonType(buttonDictionary: [AnyHashable: Any]) -> String {
-        guard let buttonType = buttonDictionary[JsonKey.ActionButton.buttonType] as? String else {
-            return IterableButtonTypeDefault
-        }
-        
-        if buttonType == IterableButtonTypeTextInput || buttonType == IterableButtonTypeDestructive {
-            return buttonType
+        if let buttonType = buttonDictionary[JsonKey.ActionButton.buttonType] as? String {
+            if buttonType == IterableButtonTypeTextInput || buttonType == IterableButtonTypeDestructive {
+                return buttonType
+            }
         }
         
         return IterableButtonTypeDefault
