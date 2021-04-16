@@ -31,7 +31,7 @@ static CGFloat const IterableNotificationCenterExpectationTimeout = 15.0;
     [super tearDown];
 }
 
-- (void)testPushIncorrectAttachemnt {
+- (void)testPushIncorrectAttachment {
     UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
     content.userInfo = @{
                          @"itbl" : @{
