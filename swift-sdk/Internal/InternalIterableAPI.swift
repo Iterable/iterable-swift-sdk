@@ -467,7 +467,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     private func requestNewAuthToken() {
-        authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: { [weak self] authToken in
+        authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: { [weak self] _ in
             self?.loginNewUser()
         })
     }

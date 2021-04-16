@@ -569,11 +569,15 @@ class AuthTests: XCTestCase {
     }
     
     func testPushRegistrationAfterAuthTokenRetrieval() {
-        let condition1 = expectation(description: "\(#function) - notification state provider not fulfilled")
+        let condition1 = expectation(description: "\(#function) - push registration not fulfilled")
         condition1.expectedFulfillmentCount = 2
+        
+        let condition2 = expectation(description: "\(#function) - auth handler not fulfilled")
+        condition2.expectedFulfillmentCount = 2
         
         let authDelegate = createAuthDelegate({ completion in
             completion(AuthTests.authToken)
+            condition2.fulfill()
         })
         
         let mockNotificationStateProvider = MockNotificationStateProvider(enabled: true, expectation: condition1)
@@ -588,7 +592,7 @@ class AuthTests: XCTestCase {
         
         internalAPI.email = "different@email.com"
         
-        wait(for: [condition1], timeout: testExpectationTimeout)
+        wait(for: [condition1, condition2], timeout: testExpectationTimeout)
     }
     
     func testAsyncAuthTokenRetrieval() {
@@ -724,7 +728,7 @@ class AuthTests: XCTestCase {
         
         internalAPI.email = AuthTests.email
         
-        wait(for: [condition1], timeout: testExpectationTimeout)
+        wait(for: [condition1], timeout: testExpectationTimeoutForInverted)
     }
     
     func testLoggedOutAuthTokenRequest() {
