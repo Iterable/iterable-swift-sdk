@@ -800,7 +800,6 @@
 			children = (
 				AC2263E120CF49B8009800EB /* swift-sdk */,
 				AC90C4C520D8632E00EECA5D /* notification-extension */,
-				ACF560D420E443BF000AAC23 /* host-app */,
 				ACFF42A224656C6200FDF10D /* ui-tests-app */,
 				ACDA975A23159C37004C412E /* inbox-ui-tests-app */,
 				ACFCA72920EB02DB00BFB277 /* tests */,
@@ -1227,6 +1226,7 @@
 		ACFCA72920EB02DB00BFB277 /* tests */ = {
 			isa = PBXGroup;
 			children = (
+				ACF560D420E443BF000AAC23 /* host-app */,
 				AC995F932166EC310099A184 /* common */,
 				AC28480824AA44C600C1FC7F /* endpoint-tests */,
 				ACDA976F23159C39004C412E /* inbox-ui-tests-app-ui-tests */,
@@ -2314,6 +2314,7 @@
 		AC7B143320D02CE200877BFE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "Tests/swift-sdk-swift-tests/Info.plist";
@@ -2333,6 +2334,7 @@
 		AC7B143420D02CE200877BFE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "Tests/swift-sdk-swift-tests/Info.plist";
@@ -2591,11 +2593,11 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = "host-app/host-app.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "tests/host-app/host-app.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				ENABLE_TESTABILITY = YES;
-				INFOPLIST_FILE = "host-app/Info.plist";
+				INFOPLIST_FILE = "tests/host-app/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2612,11 +2614,11 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = "host-app/host-app.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "tests/host-app/host-app.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				ENABLE_TESTABILITY = YES;
-				INFOPLIST_FILE = "host-app/Info.plist";
+				INFOPLIST_FILE = "tests/host-app/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
