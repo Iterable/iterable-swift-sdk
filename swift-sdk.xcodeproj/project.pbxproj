@@ -1561,6 +1561,9 @@
 							};
 						};
 					};
+					ACFD5AB724C8200C008E497A = {
+						TestTargetID = ACF560D220E443BF000AAC23;
+					};
 				};
 			};
 			buildConfigurationList = AC2263D920CF49B8009800EB /* Build configuration list for PBXProject "swift-sdk" */;
@@ -2633,6 +2636,7 @@
 		ACFD5AC024C8200C008E497A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "tests/offline-events-tests/Info.plist";
@@ -2655,6 +2659,7 @@
 		ACFD5AC124C8200C008E497A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "tests/offline-events-tests/Info.plist";
