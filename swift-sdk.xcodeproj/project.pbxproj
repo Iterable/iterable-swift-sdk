@@ -1223,10 +1223,18 @@
 			path = "host-app";
 			sourceTree = "<group>";
 		};
-		ACFCA72920EB02DB00BFB277 /* tests */ = {
+		ACFBEA15262DC68C000935DD /* hosting-apps */ = {
 			isa = PBXGroup;
 			children = (
 				ACF560D420E443BF000AAC23 /* host-app */,
+			);
+			path = "hosting-apps";
+			sourceTree = "<group>";
+		};
+		ACFCA72920EB02DB00BFB277 /* tests */ = {
+			isa = PBXGroup;
+			children = (
+				ACFBEA15262DC68C000935DD /* hosting-apps */,
 				AC995F932166EC310099A184 /* common */,
 				AC28480824AA44C600C1FC7F /* endpoint-tests */,
 				ACDA976F23159C39004C412E /* inbox-ui-tests-app-ui-tests */,
@@ -2596,11 +2604,11 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = "tests/host-app/host-app.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "tests/hosting-apps/host-app/host-app.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				ENABLE_TESTABILITY = YES;
-				INFOPLIST_FILE = "tests/host-app/Info.plist";
+				INFOPLIST_FILE = "tests/hosting-apps/host-app/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2617,11 +2625,11 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = "tests/host-app/host-app.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "tests/hosting-apps/host-app/host-app.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				ENABLE_TESTABILITY = YES;
-				INFOPLIST_FILE = "tests/host-app/Info.plist";
+				INFOPLIST_FILE = "tests/hosting-apps/host-app/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
