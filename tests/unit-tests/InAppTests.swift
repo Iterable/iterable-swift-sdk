@@ -560,21 +560,15 @@ class InAppTests: XCTestCase {
     func testShowInAppWithCustomActionBackwardCompatibility() {
         let customActionScheme = "itbl"
         let customActionName = "my_custom_action"
-        let expectation1 = expectation(description: "verify custom action is called, customActionScheme: \(customActionScheme), customActionName: \(customActionName)")
-        verifyCustomActionIsCalled(expectation1: expectation1,
-                                   customActionScheme: customActionScheme,
+        verifyCustomActionIsCalled(customActionScheme: customActionScheme,
                                    customActionName: customActionName)
-        wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
     func testShowInAppWithCustomAction1() {
         let customActionScheme = "action"
         let customActionName = "my_custom_action"
-        let expectation1 = expectation(description: "verify custom action is called, customActionScheme: \(customActionScheme), customActionName: \(customActionName)")
-        verifyCustomActionIsCalled(expectation1: expectation1,
-                                   customActionScheme: customActionScheme,
+        verifyCustomActionIsCalled(customActionScheme: customActionScheme,
                                    customActionName: customActionName)
-        wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
     // Check that onNew is called just once if the messageId is same.
@@ -1368,8 +1362,9 @@ class InAppTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
-    fileprivate func verifyCustomActionIsCalled(expectation1: XCTestExpectation, customActionScheme: String, customActionName: String) {
-        let expectation2 = expectation(description: "correct number of messages")
+    fileprivate func verifyCustomActionIsCalled(customActionScheme: String, customActionName: String) {
+        let expectation1 = expectation(description: "ensure correct number of messages")
+        let expectation2 = expectation(description: "verify custom action is called, customActionScheme: \(customActionScheme), customActionName: \(customActionName)")
         
         let mockInAppFetcher = MockInAppFetcher()
         
@@ -1382,7 +1377,7 @@ class InAppTests: XCTestCase {
         let mockCustomActionDelegate = MockCustomActionDelegate(returnValue: true)
         mockCustomActionDelegate.callback = { actionName, _ in
             XCTAssertEqual(actionName, customActionName)
-            expectation1.fulfill()
+            expectation2.fulfill()
         }
         
         let config = IterableConfig()
@@ -1416,10 +1411,10 @@ class InAppTests: XCTestCase {
             }
             let messages = internalApi.inAppManager.getMessages()
             XCTAssertEqual(messages.count, 1)
-            expectation2.fulfill()
+            expectation1.fulfill()
         }
         
-        wait(for: [expectation2], timeout: testExpectationTimeout)
+        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout, enforceOrder: true)
     }
 }
 
