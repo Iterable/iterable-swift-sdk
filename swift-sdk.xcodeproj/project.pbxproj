@@ -541,7 +541,7 @@
 		ACDA976223159C39004C412E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		ACDA976523159C39004C412E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		ACDA976723159C39004C412E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		ACDA976C23159C39004C412E /* inbox-ui-tests-app-ui-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "inbox-ui-tests-app-ui-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		ACDA976C23159C39004C412E /* inbox-ui-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "inbox-ui-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ACDA977023159C39004C412E /* InboxUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxUITests.swift; sourceTree = "<group>"; };
 		ACDA977223159C39004C412E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		ACDBB33A239582450036BB38 /* NotificationExtensionConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationExtensionConstants.swift; sourceTree = "<group>"; };
@@ -815,7 +815,7 @@
 				ACF560D320E443BF000AAC23 /* host-app.app */,
 				ACC87763215C20B50097E29B /* ui-tests.xctest */,
 				ACDA975923159C36004C412E /* inbox-ui-tests-app.app */,
-				ACDA976C23159C39004C412E /* inbox-ui-tests-app-ui-tests.xctest */,
+				ACDA976C23159C39004C412E /* inbox-ui-tests.xctest */,
 				ACFF429E24656BDF00FDF10D /* ui-tests-app.app */,
 				AC28480724AA44C600C1FC7F /* endpoint-tests.xctest */,
 				ACFD5AB824C8200C008E497A /* offline-events-tests.xctest */,
@@ -1177,7 +1177,7 @@
 			path = "inbox-ui-tests-app";
 			sourceTree = "<group>";
 		};
-		ACDA976F23159C39004C412E /* inbox-ui-tests-app-ui-tests */ = {
+		ACDA976F23159C39004C412E /* inbox-ui-tests */ = {
 			isa = PBXGroup;
 			children = (
 				ACBDDE5B23C4EDEC0008CC4D /* InboxCustomizationTests.swift */,
@@ -1185,7 +1185,7 @@
 				ACC6A851232407B5003CC4BE /* InboxUITestsHelper.swift */,
 				ACDA977223159C39004C412E /* Info.plist */,
 			);
-			path = "inbox-ui-tests-app-ui-tests";
+			path = "inbox-ui-tests";
 			sourceTree = "<group>";
 		};
 		ACE34AB121376ACB00691224 /* Local Storage */ = {
@@ -1238,7 +1238,7 @@
 				ACFBEA15262DC68C000935DD /* hosting-apps */,
 				AC7B142C20D02CE200877BFE /* unit-tests */,
 				AC28480824AA44C600C1FC7F /* endpoint-tests */,
-				ACDA976F23159C39004C412E /* inbox-ui-tests-app-ui-tests */,
+				ACDA976F23159C39004C412E /* inbox-ui-tests */,
 				AC90C4D220D8632E00EECA5D /* notification-extension-tests */,
 				ACC87764215C20B50097E29B /* ui-tests */,
 				ACFD5AB924C8200C008E497A /* offline-events-tests */,
@@ -1440,9 +1440,9 @@
 			productReference = ACDA975923159C36004C412E /* inbox-ui-tests-app.app */;
 			productType = "com.apple.product-type.application";
 		};
-		ACDA976B23159C39004C412E /* inbox-ui-tests-app-ui-tests */ = {
+		ACDA976B23159C39004C412E /* inbox-ui-tests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = ACDA977823159C39004C412E /* Build configuration list for PBXNativeTarget "inbox-ui-tests-app-ui-tests" */;
+			buildConfigurationList = ACDA977823159C39004C412E /* Build configuration list for PBXNativeTarget "inbox-ui-tests" */;
 			buildPhases = (
 				ACDA976823159C39004C412E /* Sources */,
 				ACDA976923159C39004C412E /* Frameworks */,
@@ -1453,9 +1453,9 @@
 			dependencies = (
 				ACDA976E23159C39004C412E /* PBXTargetDependency */,
 			);
-			name = "inbox-ui-tests-app-ui-tests";
+			name = "inbox-ui-tests";
 			productName = "inbox-ui-tests-appUITests";
-			productReference = ACDA976C23159C39004C412E /* inbox-ui-tests-app-ui-tests.xctest */;
+			productReference = ACDA976C23159C39004C412E /* inbox-ui-tests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 		ACF560D220E443BF000AAC23 /* host-app */ = {
@@ -1598,7 +1598,7 @@
 				AC7B142A20D02CE200877BFE /* unit-tests */,
 				AC90C4CB20D8632E00EECA5D /* notification-extension-tests */,
 				ACC87762215C20B50097E29B /* ui-tests */,
-				ACDA976B23159C39004C412E /* inbox-ui-tests-app-ui-tests */,
+				ACDA976B23159C39004C412E /* inbox-ui-tests */,
 				AC28480624AA44C600C1FC7F /* endpoint-tests */,
 				ACFD5AB724C8200C008E497A /* offline-events-tests */,
 			);
@@ -2560,7 +2560,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
-				INFOPLIST_FILE = "Tests/inbox-ui-tests-app-ui-tests/Info.plist";
+				INFOPLIST_FILE = "Tests/inbox-ui-tests/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2569,7 +2569,7 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "iterable.inbox-ui-tests-appUITests";
+				PRODUCT_BUNDLE_IDENTIFIER = "iterable.inbox-ui-tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2583,7 +2583,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
-				INFOPLIST_FILE = "Tests/inbox-ui-tests-app-ui-tests/Info.plist";
+				INFOPLIST_FILE = "Tests/inbox-ui-tests/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2591,7 +2591,7 @@
 					"@loader_path/Frameworks",
 				);
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "iterable.inbox-ui-tests-appUITests";
+				PRODUCT_BUNDLE_IDENTIFIER = "iterable.inbox-ui-tests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -2803,7 +2803,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		ACDA977823159C39004C412E /* Build configuration list for PBXNativeTarget "inbox-ui-tests-app-ui-tests" */ = {
+		ACDA977823159C39004C412E /* Build configuration list for PBXNativeTarget "inbox-ui-tests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				ACDA977523159C39004C412E /* Debug */,

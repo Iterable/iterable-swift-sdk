@@ -136,8 +136,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "ACDA976B23159C39004C412E"
-               BuildableName = "inbox-ui-tests-app-ui-tests.xctest"
-               BlueprintName = "inbox-ui-tests-app-ui-tests"
+               BuildableName = "inbox-ui-tests.xctest"
+               BlueprintName = "inbox-ui-tests"
                ReferencedContainer = "container:swift-sdk.xcodeproj">
             </BuildableReference>
          </TestableReference>
