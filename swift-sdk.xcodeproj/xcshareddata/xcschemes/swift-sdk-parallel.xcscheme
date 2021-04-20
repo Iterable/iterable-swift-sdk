@@ -103,8 +103,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "AC7B142A20D02CE200877BFE"
-               BuildableName = "swift-sdk-swift-tests.xctest"
-               BlueprintName = "swift-sdk-swift-tests"
+               BuildableName = "unit-tests.xctest"
+               BlueprintName = "unit-tests"
                ReferencedContainer = "container:swift-sdk.xcodeproj">
             </BuildableReference>
          </TestableReference>
