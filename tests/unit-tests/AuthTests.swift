@@ -39,7 +39,7 @@ class AuthTests: XCTestCase {
     func testEmailWithTokenPersistence() {
         let emailToken = "asdf"
         
-        let authDelegate = createAuthDelegate2({ emailToken })
+        let authDelegate = createAuthDelegate({ emailToken })
         
         let config = IterableConfig()
         config.authDelegate = authDelegate
@@ -58,7 +58,7 @@ class AuthTests: XCTestCase {
     func testUserIdWithTokenPersistence() {
         let userIdToken = "qwer"
         
-        let authDelegate = createAuthDelegate2 { userIdToken }
+        let authDelegate = createAuthDelegate { userIdToken }
         
         let config = IterableConfig()
         config.authDelegate = authDelegate
@@ -99,7 +99,7 @@ class AuthTests: XCTestCase {
         let newEmail = "second@example.com"
         let newToken = "jay"
         
-        let authDelegate = createAuthDelegate2({
+        let authDelegate = createAuthDelegate({
             if internalAPI?.email == originalEmail { return originalToken }
             else if internalAPI?.email == newEmail { return newToken }
             else { return nil }
@@ -137,7 +137,7 @@ class AuthTests: XCTestCase {
         let newUserId = "secondUserId"
         let newToken = "greedIsland"
         
-        let authDelegate = createAuthDelegate2({
+        let authDelegate = createAuthDelegate({
             if internalAPI?.userId == originalUserId { return originalToken }
             else if internalAPI?.userId == newUserId { return newToken }
             else { return nil }
@@ -212,7 +212,7 @@ class AuthTests: XCTestCase {
     }
     
     func testLogoutUser() {
-        let authDelegate = createStockAuthDelegate2()
+        let authDelegate = createStockAuthDelegate()
         
         let config = IterableConfig()
         config.authDelegate = authDelegate
@@ -254,7 +254,7 @@ class AuthTests: XCTestCase {
         
         let newAuthToken = AuthTests.authToken + "3984ru398gj893"
         
-        let authDelegate = createAuthDelegate2({
+        let authDelegate = createAuthDelegate({
             guard internalAPI?.email == AuthTests.email else {
                 return nil
             }
@@ -291,7 +291,7 @@ class AuthTests: XCTestCase {
         
         let newAuthToken = AuthTests.authToken + "3984ru398gj893"
         
-        let authDelegate = createAuthDelegate2({
+        let authDelegate = createAuthDelegate({
             guard internalAPI?.userId == AuthTests.userId else {
                 return nil
             }
@@ -326,7 +326,7 @@ class AuthTests: XCTestCase {
         
         var callbackCalled = false
         
-        let authDelegate = createAuthDelegate2({
+        let authDelegate = createAuthDelegate({
             callbackCalled = true
             return nil
         })
@@ -372,7 +372,7 @@ class AuthTests: XCTestCase {
     func testAuthTokenRefreshQueued() {
         let condition1 = expectation(description: "\(#function) - callback didn't get called when refresh was fired")
         
-        let authDelegate = createAuthDelegate2({
+        let authDelegate = createAuthDelegate({
             condition1.fulfill()
             return nil
         })
@@ -399,7 +399,7 @@ class AuthTests: XCTestCase {
     func testAuthTokenRefreshOnInit() {
         let condition1 = expectation(description: "\(#function) - callback didn't get called when refresh was fired")
         
-        let authDelegate = createAuthDelegate2({
+        let authDelegate = createAuthDelegate({
             condition1.fulfill()
             return nil
         })
@@ -425,7 +425,7 @@ class AuthTests: XCTestCase {
     func testAuthTokenCallbackOnSetEmail() {
         let condition1 = expectation(description: "\(#function) - callback didn't get called after setEmail")
         
-        let authDelegate = createAuthDelegate2({
+        let authDelegate = createAuthDelegate({
             condition1.fulfill()
             return nil
         })
@@ -445,7 +445,7 @@ class AuthTests: XCTestCase {
     func testAuthTokenCallbackOnSetUserId() {
         let condition1 = expectation(description: "\(#function) - callback didn't get called after setEmail")
         
-        let authDelegate = createAuthDelegate2({
+        let authDelegate = createAuthDelegate({
             condition1.fulfill()
             return nil
         })
@@ -463,7 +463,7 @@ class AuthTests: XCTestCase {
     }
     
     func testAuthTokenDeletedOnLogout() {
-        let authDelegate = createAuthDelegate2({ AuthTests.authToken })
+        let authDelegate = createAuthDelegate({ AuthTests.authToken })
         
         let config = IterableConfig()
         config.authDelegate = authDelegate
@@ -483,7 +483,7 @@ class AuthTests: XCTestCase {
         let condition1 = expectation(description: "\(#function) - callback not called correctly in some form")
         condition1.expectedFulfillmentCount = 2
         
-        let authDelegate = createAuthDelegate2({
+        let authDelegate = createAuthDelegate({
             condition1.fulfill()
             return AuthTests.authToken
         })
@@ -510,7 +510,7 @@ class AuthTests: XCTestCase {
         let condition1 = expectation(description: "\(#function) - incorrect number of retry calls")
         condition1.expectedFulfillmentCount = 2
         
-        let authDelegate = createAuthDelegate2({
+        let authDelegate = createAuthDelegate({
             condition1.fulfill()
             return nil
         })
@@ -537,7 +537,7 @@ class AuthTests: XCTestCase {
         let condition1 = expectation(description: "\(#function) - incorrect number of retry calls")
         condition1.expectedFulfillmentCount = 3
         
-        let authDelegate = createAuthDelegate2({
+        let authDelegate = createAuthDelegate({
             condition1.fulfill()
             return nil
         })
@@ -570,7 +570,7 @@ class AuthTests: XCTestCase {
         let condition2 = expectation(description: "\(#function) - auth handler not fulfilled")
         condition2.expectedFulfillmentCount = 2
         
-        let authDelegate = createAuthDelegate2({
+        let authDelegate = createAuthDelegate({
             condition2.fulfill()
             return AuthTests.authToken
         })
@@ -708,7 +708,7 @@ class AuthTests: XCTestCase {
         let localStorage = MockLocalStorage()
         localStorage.email = AuthTests.email
         
-        let authDelegate = createAuthDelegate2({
+        let authDelegate = createAuthDelegate({
             condition1.fulfill()
             return nil
         })
@@ -734,7 +734,7 @@ class AuthTests: XCTestCase {
         let localStorage = MockLocalStorage()
         localStorage.email = AuthTests.email
         
-        let authDelegate = createAuthDelegate2({
+        let authDelegate = createAuthDelegate({
             condition1.fulfill()
             return nil
         })
@@ -755,29 +755,7 @@ class AuthTests: XCTestCase {
     
     // MARK: - Private
     
-//    class DefaultAuthDelegate: IterableAuthDelegate {
-//        var requestedCallback: ((AuthTokenRetrievalHandler) -> Void)?
-//
-//        init(_ requestedCallback: ((AuthTokenRetrievalHandler) -> Void)?) {
-//            self.requestedCallback = requestedCallback
-//        }
-//
-//        func onAuthTokenRequested(completion: AuthTokenRetrievalHandler) {
-//            requestedCallback?(completion)
-//        }
-//    }
-//
-//    private func createAuthDelegate(_ requestedCallback: @escaping (AuthTokenRetrievalHandler) -> Void) -> IterableAuthDelegate {
-//        return DefaultAuthDelegate(requestedCallback)
-//    }
-//
-//    private func createStockAuthDelegate() -> IterableAuthDelegate {
-//        return DefaultAuthDelegate({ completion in
-//            completion(AuthTests.authToken)
-//        })
-//    }
-    
-    class DefaultAuthDelegate2: IterableAuthDelegate {
+    class DefaultAuthDelegate: IterableAuthDelegate {
         var authTokenGenerator: (() -> String?)
         
         init(_ authTokenGenerator: @escaping () -> String?) {
@@ -789,12 +767,12 @@ class AuthTests: XCTestCase {
         }
     }
 
-    private func createAuthDelegate2(_ authTokenGenerator: @escaping () -> String?) -> IterableAuthDelegate {
-        return DefaultAuthDelegate2(authTokenGenerator)
+    private func createAuthDelegate(_ authTokenGenerator: @escaping () -> String?) -> IterableAuthDelegate {
+        return DefaultAuthDelegate(authTokenGenerator)
     }
 
-    private func createStockAuthDelegate2() -> IterableAuthDelegate {
-        return DefaultAuthDelegate2({ AuthTests.authToken })
+    private func createStockAuthDelegate() -> IterableAuthDelegate {
+        return DefaultAuthDelegate({ AuthTests.authToken })
     }
 
     private func createMockEncodedPayload(exp: Int) -> String {
