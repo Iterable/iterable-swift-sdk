@@ -177,7 +177,7 @@ class AuthTests: XCTestCase {
         let updatedEmail = "second@example.com"
         let updatedToken = "jay"
         
-        let authDelegate = DefaultAuthDelegate2 {
+        let authDelegate = DefaultAuthDelegate {
             if internalAPI?.email == originalEmail { return originalToken }
             else if internalAPI?.email == updatedEmail { return updatedToken }
             else { return nil }
