@@ -800,7 +800,6 @@
 			children = (
 				AC2263E120CF49B8009800EB /* swift-sdk */,
 				AC90C4C520D8632E00EECA5D /* notification-extension */,
-				ACDA975A23159C37004C412E /* inbox-ui-tests-app */,
 				ACFCA72920EB02DB00BFB277 /* tests */,
 				5550F22324217CFC0014456A /* misc */,
 			);
@@ -1227,6 +1226,7 @@
 			children = (
 				ACF560D420E443BF000AAC23 /* host-app */,
 				ACFF42A224656C6200FDF10D /* ui-tests-app */,
+				ACDA975A23159C37004C412E /* inbox-ui-tests-app */,
 			);
 			path = "hosting-apps";
 			sourceTree = "<group>";
@@ -1234,8 +1234,8 @@
 		ACFCA72920EB02DB00BFB277 /* tests */ = {
 			isa = PBXGroup;
 			children = (
-				ACFBEA15262DC68C000935DD /* hosting-apps */,
 				AC995F932166EC310099A184 /* common */,
+				ACFBEA15262DC68C000935DD /* hosting-apps */,
 				AC28480824AA44C600C1FC7F /* endpoint-tests */,
 				ACDA976F23159C39004C412E /* inbox-ui-tests-app-ui-tests */,
 				AC90C4D220D8632E00EECA5D /* notification-extension-tests */,
@@ -1593,11 +1593,11 @@
 				AC2263DE20CF49B8009800EB /* swift-sdk */,
 				AC90C4C320D8632D00EECA5D /* notification-extension */,
 				ACF560D220E443BF000AAC23 /* host-app */,
+				ACFF428924656BDF00FDF10D /* ui-tests-app */,
+				ACDA975823159C36004C412E /* inbox-ui-tests-app */,
 				AC7B142A20D02CE200877BFE /* swift-sdk-swift-tests */,
 				AC90C4CB20D8632E00EECA5D /* notification-extension-tests */,
-				ACFF428924656BDF00FDF10D /* ui-tests-app */,
 				ACC87762215C20B50097E29B /* ui-tests */,
-				ACDA975823159C36004C412E /* inbox-ui-tests-app */,
 				ACDA976B23159C39004C412E /* inbox-ui-tests-app-ui-tests */,
 				AC28480624AA44C600C1FC7F /* endpoint-tests */,
 				ACFD5AB724C8200C008E497A /* offline-events-tests */,
@@ -2518,7 +2518,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
-				INFOPLIST_FILE = "inbox-ui-tests-app/Info.plist";
+				INFOPLIST_FILE = "tests/hosting-apps/inbox-ui-tests-app/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2540,7 +2540,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
-				INFOPLIST_FILE = "inbox-ui-tests-app/Info.plist";
+				INFOPLIST_FILE = "tests/hosting-apps/inbox-ui-tests-app/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
