@@ -688,67 +688,6 @@
 			path = "swift-sdk/misc";
 			sourceTree = "<group>";
 		};
-		557059B125A691D1009BDEE2 /* in-app-tests */ = {
-			isa = PBXGroup;
-			children = (
-				AC3A2FEF262EDD4C00425435 /* InAppPriorityTests.swift */,
-				ACC3FD9D2536D7A30004A2E0 /* InAppFilePersistenceTests.swift */,
-				AC750A49234CD67900561902 /* InAppHelperTests.swift */,
-				55AEA95825F05B7D00B38CED /* InAppMessageProcessorTests.swift */,
-				AC6FDD8B20F56309005D811E /* InAppParsingTests.swift */,
-				55B37FED229F59290042F13A /* InAppPersistenceTests.swift */,
-				55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */,
-				ACA8D1A821965B7D001B1332 /* InAppTests.swift */,
-			);
-			path = "in-app-tests";
-			sourceTree = "<group>";
-		};
-		557059BC25A69352009BDEE2 /* inbox-tests */ = {
-			isa = PBXGroup;
-			children = (
-				55B549852397462300243E87 /* InboxImpressionTrackerTests.swift */,
-				55B37FC722975A840042F13A /* InboxMessageViewModelTests.swift */,
-				55B5498323973B5C00243E87 /* InboxSessionManagerTests.swift */,
-				AC1670CC2230A91C00989F8E /* InboxTests.swift */,
-				AC8F35A1239806B500302994 /* InboxViewControllerViewModelTests.swift */,
-				5585DF8E22A73390000A32B9 /* IterableInboxViewControllerTests.swift */,
-			);
-			path = "inbox-tests";
-			sourceTree = "<group>";
-		};
-		557059C525A6938B009BDEE2 /* foundational-tests */ = {
-			isa = PBXGroup;
-			children = (
-				00B6FACB210E8484007535CF /* APNSTypeCheckerTests.swift */,
-				5531CDAD22A9C992000D05E2 /* ClassExtensionsTests.swift */,
-				55B37FC0229620D20042F13A /* CommerceItemTests.swift */,
-				5536781E2576FF9000DB3652 /* IterableUtilTests.swift */,
-				ACE34AB4213776CB00691224 /* LocalStorageTests.swift */,
-				ACED4C00213F50B30055A497 /* LoggingTests.swift */,
-				55B37FC5229752DD0042F13A /* OrderedDictionaryTests.swift */,
-				ACEDF41E2183C436000B9BFE /* PromiseTests.swift */,
-			);
-			path = "foundational-tests";
-			sourceTree = "<group>";
-		};
-		557059EE25A69752009BDEE2 /* deep-linking-tests */ = {
-			isa = PBXGroup;
-			children = (
-				55E6F45E238E066400808BCE /* DeepLinkTests.swift */,
-				55E6F45D238E066400808BCE /* DeferredDeepLinkTests.swift */,
-			);
-			path = "deep-linking-tests";
-			sourceTree = "<group>";
-		};
-		557059FF25A69780009BDEE2 /* request-tests */ = {
-			isa = PBXGroup;
-			children = (
-				ACC362B724D17005002C67BA /* IterableRequestTests.swift */,
-				AC776DA3211A17C700C27C27 /* IterableRequestUtilTests.swift */,
-			);
-			path = "request-tests";
-			sourceTree = "<group>";
-		};
 		AC0248062279132400495FB9 /* Dwifft */ = {
 			isa = PBXGroup;
 			children = (
@@ -910,6 +849,67 @@
 			name = ViewModel;
 			sourceTree = "<group>";
 		};
+		AC3A3029262EE04400425435 /* deep-linking-tests */ = {
+			isa = PBXGroup;
+			children = (
+				55E6F45E238E066400808BCE /* DeepLinkTests.swift */,
+				55E6F45D238E066400808BCE /* DeferredDeepLinkTests.swift */,
+			);
+			name = "deep-linking-tests";
+			sourceTree = "<group>";
+		};
+		AC3A3032262EE15C00425435 /* foundational-tests */ = {
+			isa = PBXGroup;
+			children = (
+				00B6FACB210E8484007535CF /* APNSTypeCheckerTests.swift */,
+				5531CDAD22A9C992000D05E2 /* ClassExtensionsTests.swift */,
+				55B37FC0229620D20042F13A /* CommerceItemTests.swift */,
+				5536781E2576FF9000DB3652 /* IterableUtilTests.swift */,
+				ACE34AB4213776CB00691224 /* LocalStorageTests.swift */,
+				ACED4C00213F50B30055A497 /* LoggingTests.swift */,
+				55B37FC5229752DD0042F13A /* OrderedDictionaryTests.swift */,
+				ACEDF41E2183C436000B9BFE /* PromiseTests.swift */,
+			);
+			name = "foundational-tests";
+			sourceTree = "<group>";
+		};
+		AC3A3053262EE1B500425435 /* in-app-tests */ = {
+			isa = PBXGroup;
+			children = (
+				AC3A2FEF262EDD4C00425435 /* InAppPriorityTests.swift */,
+				ACC3FD9D2536D7A30004A2E0 /* InAppFilePersistenceTests.swift */,
+				AC750A49234CD67900561902 /* InAppHelperTests.swift */,
+				55AEA95825F05B7D00B38CED /* InAppMessageProcessorTests.swift */,
+				AC6FDD8B20F56309005D811E /* InAppParsingTests.swift */,
+				55B37FED229F59290042F13A /* InAppPersistenceTests.swift */,
+				55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */,
+				ACA8D1A821965B7D001B1332 /* InAppTests.swift */,
+			);
+			name = "in-app-tests";
+			sourceTree = "<group>";
+		};
+		AC3A305C262EE24100425435 /* inbox-tests */ = {
+			isa = PBXGroup;
+			children = (
+				55B549852397462300243E87 /* InboxImpressionTrackerTests.swift */,
+				55B37FC722975A840042F13A /* InboxMessageViewModelTests.swift */,
+				55B5498323973B5C00243E87 /* InboxSessionManagerTests.swift */,
+				AC1670CC2230A91C00989F8E /* InboxTests.swift */,
+				AC8F35A1239806B500302994 /* InboxViewControllerViewModelTests.swift */,
+				5585DF8E22A73390000A32B9 /* IterableInboxViewControllerTests.swift */,
+			);
+			name = "inbox-tests";
+			sourceTree = "<group>";
+		};
+		AC3A3075262EE26D00425435 /* request-tests */ = {
+			isa = PBXGroup;
+			children = (
+				ACC362B724D17005002C67BA /* IterableRequestTests.swift */,
+				AC776DA3211A17C700C27C27 /* IterableRequestUtilTests.swift */,
+			);
+			name = "request-tests";
+			sourceTree = "<group>";
+		};
 		AC3C10F7213F43AC00A9B839 /* Logging */ = {
 			isa = PBXGroup;
 			children = (
@@ -1020,11 +1020,11 @@
 			children = (
 				AC87172421A4E3FF00FEA369 /* Helper Classes */,
 				00B6FACF210E8B10007535CF /* Test Files */,
-				557059EE25A69752009BDEE2 /* deep-linking-tests */,
-				557059C525A6938B009BDEE2 /* foundational-tests */,
-				557059B125A691D1009BDEE2 /* in-app-tests */,
-				557059BC25A69352009BDEE2 /* inbox-tests */,
-				557059FF25A69780009BDEE2 /* request-tests */,
+				AC3A3029262EE04400425435 /* deep-linking-tests */,
+				AC3A3032262EE15C00425435 /* foundational-tests */,
+				AC3A3053262EE1B500425435 /* in-app-tests */,
+				AC3A305C262EE24100425435 /* inbox-tests */,
+				AC3A3075262EE26D00425435 /* request-tests */,
 				55B9F15024B3D33700E8198A /* AuthTests.swift */,
 				551E5C0F234D485A005FEE9E /* DeprecatedFunctionsTests.swift */,
 				AC2C668620D3435700D46CC9 /* IterableActionRunnerTests.swift */,
