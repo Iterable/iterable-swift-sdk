@@ -105,7 +105,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         storeIdentifierData()
         
-        postLoginActions()
+        onLogin()
     }
     
     func setUserId(_ userId: String?) {
@@ -122,7 +122,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         storeIdentifierData()
         
-        postLoginActions()
+        onLogin()
     }
     
     func logoutUser() {
@@ -456,7 +456,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         localStorage.userId = _userId
     }
     
-    private func postLoginActions() {
+    private func onLogin() {
         ITBInfo()
         
         if isEitherUserIdOrEmailSet() && config.authDelegate != nil {
