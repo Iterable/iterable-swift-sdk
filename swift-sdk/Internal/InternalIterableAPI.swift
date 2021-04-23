@@ -462,17 +462,17 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         if isEitherUserIdOrEmailSet() && config.authDelegate != nil {
             requestNewAuthToken()
         } else {
-            loginNewUser()
+            completeUserLogin()
         }
     }
     
     private func requestNewAuthToken() {
         authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: { [weak self] _ in
-            self?.loginNewUser()
+            self?.completeUserLogin()
         })
     }
     
-    private func loginNewUser() {
+    private func completeUserLogin() {
         ITBInfo()
         
         guard isEitherUserIdOrEmailSet() else {
