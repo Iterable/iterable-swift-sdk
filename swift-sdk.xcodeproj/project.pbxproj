@@ -32,7 +32,6 @@
 		55CC257B2462064F00A77FD5 /* InAppPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */; };
 		55D54656239AE5750093ED1E /* LoggingInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D54655239AE5750093ED1E /* LoggingInternal.swift */; };
 		55E02D39253F8D86009DB8BC /* WebViewProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */; };
-		55E6F460238E066400808BCE /* DeferredDeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6F45D238E066400808BCE /* DeferredDeepLinkTests.swift */; };
 		55E6F462238E066400808BCE /* DeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6F45E238E066400808BCE /* DeepLinkTests.swift */; };
 		AC02480822791E2100495FB9 /* IterableInboxNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */; };
 		AC02CAA6234E50B5006617E0 /* RegistrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */; };
@@ -113,7 +112,6 @@
 		AC738CE82315A5B600B96B2D /* CommonExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F9C2167E9FD0099A184 /* CommonExtensions.swift */; };
 		AC738CEA2315A8B200B96B2D /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC738CE92315A8B200B96B2D /* MainViewController.swift */; };
 		AC750A4A234CD67900561902 /* InAppHelperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC750A49234CD67900561902 /* InAppHelperTests.swift */; };
-		AC776DA22118B86600C27C27 /* DeviceInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC776DA12118B86600C27C27 /* DeviceInfo.swift */; };
 		AC776DA4211A17C700C27C27 /* IterableRequestUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC776DA3211A17C700C27C27 /* IterableRequestUtilTests.swift */; };
 		AC776DA6211A1B8A00C27C27 /* IterableRequestUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC776DA5211A1B8A00C27C27 /* IterableRequestUtil.swift */; };
 		AC78F0E7253D7F09006378A5 /* IterablePushNotificationMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC78F0E6253D7F09006378A5 /* IterablePushNotificationMetadata.swift */; };
@@ -385,7 +383,6 @@
 		55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPresenterTests.swift; sourceTree = "<group>"; };
 		55D54655239AE5750093ED1E /* LoggingInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingInternal.swift; sourceTree = "<group>"; };
 		55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewProtocolTests.swift; sourceTree = "<group>"; };
-		55E6F45D238E066400808BCE /* DeferredDeepLinkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeferredDeepLinkTests.swift; sourceTree = "<group>"; };
 		55E6F45E238E066400808BCE /* DeepLinkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepLinkTests.swift; sourceTree = "<group>"; };
 		AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxNavigationViewController.swift; sourceTree = "<group>"; };
 		AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTests.swift; sourceTree = "<group>"; };
@@ -463,7 +460,6 @@
 		AC738CE92315A8B200B96B2D /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		AC74FE1E23A8C0DB004AC442 /* image.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = image.jpg; sourceTree = "<group>"; };
 		AC750A49234CD67900561902 /* InAppHelperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppHelperTests.swift; sourceTree = "<group>"; };
-		AC776DA12118B86600C27C27 /* DeviceInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceInfo.swift; sourceTree = "<group>"; };
 		AC776DA3211A17C700C27C27 /* IterableRequestUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableRequestUtilTests.swift; sourceTree = "<group>"; };
 		AC776DA5211A1B8A00C27C27 /* IterableRequestUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableRequestUtil.swift; sourceTree = "<group>"; };
 		AC78F0E6253D7F09006378A5 /* IterablePushNotificationMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterablePushNotificationMetadata.swift; sourceTree = "<group>"; };
@@ -853,7 +849,6 @@
 			isa = PBXGroup;
 			children = (
 				55E6F45E238E066400808BCE /* DeepLinkTests.swift */,
-				55E6F45D238E066400808BCE /* DeferredDeepLinkTests.swift */,
 			);
 			name = "deep-linking-tests";
 			sourceTree = "<group>";
@@ -921,7 +916,6 @@
 		AC426CC5211B5527002EDBE8 /* Fp */ = {
 			isa = PBXGroup;
 			children = (
-				AC776DA12118B86600C27C27 /* DeviceInfo.swift */,
 				AC426CC3211B5497002EDBE8 /* ServerResponse.swift */,
 			);
 			name = Fp;
@@ -1779,7 +1773,6 @@
 				AC8874AA22178BD80075B54B /* InAppContentParser.swift in Sources */,
 				AC50865624C603AC001DC132 /* IterablePersistence.swift in Sources */,
 				ACC362BA24D20BBB002C67BA /* IterableAPICallRequest.swift in Sources */,
-				AC776DA22118B86600C27C27 /* DeviceInfo.swift in Sources */,
 				55B3119B251015CF0056E4FC /* AuthManager.swift in Sources */,
 				AC72A0CB20CF4CE2004D7997 /* InternalIterableAPI.swift in Sources */,
 				AC72A0C720CF4CE2004D7997 /* CommerceItem.swift in Sources */,
@@ -1829,7 +1822,6 @@
 				ACC362B824D17005002C67BA /* IterableRequestTests.swift in Sources */,
 				AC2C668720D3435700D46CC9 /* IterableActionRunnerTests.swift in Sources */,
 				00CB31B621096129004ACDEC /* TestUtils.swift in Sources */,
-				55E6F460238E066400808BCE /* DeferredDeepLinkTests.swift in Sources */,
 				AC89661E2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift in Sources */,
 				ACA8D1A921965B7D001B1332 /* InAppTests.swift in Sources */,
 				00B6FACC210E8484007535CF /* APNSTypeCheckerTests.swift in Sources */,

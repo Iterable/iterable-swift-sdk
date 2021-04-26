@@ -361,7 +361,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     private var config: IterableConfig
     private var apiEndPoint: String
-    private var linksEndPoint: String
     
     // Following are needed for handling pending notification and deep link.
     static var pendingNotificationResponse: NotificationResponseProtocol?
@@ -509,7 +508,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
          launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
          config: IterableConfig = IterableConfig(),
          apiEndPointOverride: String? = nil,
-         linksEndPointOverride: String? = nil,
          dependencyContainer: DependencyContainerProtocol = DependencyContainer()) {
         IterableLogUtil.sharedInstance = IterableLogUtil(dateProvider: dependencyContainer.dateProvider, logDelegate: config.logDelegate)
         ITBInfo()
@@ -517,7 +515,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.launchOptions = launchOptions
         self.config = config
         apiEndPoint = apiEndPointOverride ?? Endpoint.api
-        linksEndPoint = linksEndPointOverride ?? Endpoint.links
         self.dependencyContainer = dependencyContainer
         dateProvider = dependencyContainer.dateProvider
         networkSession = dependencyContainer.networkSession
@@ -532,8 +529,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         ITBInfo()
         
         updateSDKVersion()
-        
-        checkForDeferredDeepLink()
         
         // get email and userId from UserDefaults if present
         retrieveIdentifierData()
@@ -592,33 +587,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         if let pendingUniversalLink = Self.pendingUniversalLink {
             handleUniversalLink(pendingUniversalLink)
             Self.pendingUniversalLink = nil
-        }
-    }
-    
-    private func checkForDeferredDeepLink() {
-        guard config.checkForDeferredDeeplink else {
-            return
-        }
-        guard localStorage.ddlChecked == false else {
-            return
-        }
-        
-        guard let request = IterableRequestUtil.createPostRequest(forApiEndPoint: linksEndPoint,
-                                                                  path: Const.Path.ddlMatch,
-                                                                  headers: [
-                                                                    JsonKey.Header.apiKey: apiKey,
-                                                                    JsonKey.contentType: JsonValue.applicationJson,
-                                                                  ],
-                                                                  args: nil,
-                                                                  body: DeviceInfo.createDeviceInfo()) else {
-            ITBError("Could not create request")
-            return
-        }
-        
-        RequestSender.sendRequest(request, usingSession: networkSession).onSuccess { json in
-            self.handleDDL(json: json)
-        }.onError { sendError in
-            ITBError(sendError.reason)
         }
     }
     
