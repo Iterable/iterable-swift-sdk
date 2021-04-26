@@ -38,15 +38,41 @@ class HealthMonitorTests: XCTestCase {
         try context.deleteAllTasks()
         try context.save()
     }
-    
-    func testDoNotExceedNumTasks() throws {
+
+    func testUseOfflineProcessorByDefault() throws {
         let expectation1 = expectation(description: #function)
         expectation1.expectedFulfillmentCount = 3
-        let networkSession = MockNetworkSession(statusCode: 200, delay: 2.0)
+        let networkSession = MockNetworkSession(statusCode: 200, delay: 1.0)
+        var processors = [String]()
         networkSession.requestCallback = { request in
             if request.url!.absoluteString.contains(Const.Path.trackEvent) {
                 let processor = request.allHTTPHeaderFields?[JsonKey.Header.requestProcessor]!
-//                XCTAssertEqual(processor, Const.ProcessorTypeName.online)
+                processors.append(processor!)
+                expectation1.fulfill()
+            }
+        }
+        let localStorage = MockLocalStorage()
+        localStorage.email = "user@example.com"
+        localStorage.offlineModeBeta = true
+        let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: networkSession,
+                                                                   localStorage: localStorage)
+
+        internalAPI.track("myEvent")
+        internalAPI.track("myEvent2")
+        internalAPI.track("myEvent3")
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+        XCTAssertEqual(processors, ["Offline", "Offline", "Offline"])
+    }
+
+    func testSwitchProcessorsWhenNumTasksExceedsMaxTasks() throws {
+        let expectation1 = expectation(description: #function)
+        expectation1.expectedFulfillmentCount = 3
+        let networkSession = MockNetworkSession(statusCode: 200, delay: 1.0)
+        var processors = [String]()
+        networkSession.requestCallback = { request in
+            if request.url!.absoluteString.contains(Const.Path.trackEvent) {
+                let processor = request.allHTTPHeaderFields?[JsonKey.Header.requestProcessor]!
+                processors.append(processor!)
                 expectation1.fulfill()
             }
         }
@@ -61,6 +87,7 @@ class HealthMonitorTests: XCTestCase {
         internalAPI.track("myEvent2")
         internalAPI.track("myEvent3")
         wait(for: [expectation1], timeout: testExpectationTimeout)
+        XCTAssertEqual(processors, ["Offline", "Online", "Offline"])
     }
 
     
