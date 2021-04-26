@@ -151,6 +151,25 @@ class TasksCRUDTests: XCTestCase {
         try context.save()
     }
     
+    func testCountTasks() throws {
+        let context = persistenceProvider.newBackgroundContext()
+        try context.deleteAllTasks()
+        try context.save()
+        
+        let tasks = try context.findAllTasks()
+        XCTAssertEqual(tasks.count, 0)
+        
+        try createTask(context: context, id: IterableUtil.generateUUID(), type: .apiCall)
+        try createTask(context: context, id: IterableUtil.generateUUID(), type: .apiCall)
+        try context.save()
+        
+        let count = try context.countTasks()
+        XCTAssertEqual(count, 2)
+        
+        try context.deleteAllTasks()
+        try context.save()
+    }
+    
     @discardableResult
     private func createTask(context: IterablePersistenceContext,
                             id: String,

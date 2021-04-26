@@ -39,6 +39,8 @@ protocol IterablePersistenceContext {
     
     func deleteAllTasks() throws
     
+    func countTasks() throws -> Int
+    
     func save() throws
 
     func perform(_ block: @escaping () -> Void)
