@@ -20,25 +20,6 @@ class HealthMonitorTests: XCTestCase {
         try super.tearDownWithError()
     }
 
-    func testCountTasks() throws {
-        let context = persistenceProvider.newBackgroundContext()
-        try context.deleteAllTasks()
-        try context.save()
-        
-        let tasks = try context.findAllTasks()
-        XCTAssertEqual(tasks.count, 0)
-        
-        try createTask(context: context, id: IterableUtil.generateUUID(), type: .apiCall)
-        try createTask(context: context, id: IterableUtil.generateUUID(), type: .apiCall)
-        try context.save()
-        
-        let count = try context.countTasks()
-        XCTAssertEqual(count, 2)
-        
-        try context.deleteAllTasks()
-        try context.save()
-    }
-
     func testUseOfflineProcessorByDefault() throws {
         let expectation1 = expectation(description: #function)
         expectation1.expectedFulfillmentCount = 3
