@@ -1363,8 +1363,7 @@ class InAppTests: XCTestCase {
     }
     
     fileprivate func verifyCustomActionIsCalled(customActionScheme: String, customActionName: String) {
-        let expectation1 = expectation(description: "ensure correct number of messages")
-        let expectation2 = expectation(description: "verify custom action is called, customActionScheme: \(customActionScheme), customActionName: \(customActionName)")
+        let expectation1 = expectation(description: "verify custom action is called, customActionScheme: \(customActionScheme), customActionName: \(customActionName)")
         
         let mockInAppFetcher = MockInAppFetcher()
         
@@ -1377,7 +1376,7 @@ class InAppTests: XCTestCase {
         let mockCustomActionDelegate = MockCustomActionDelegate(returnValue: true)
         mockCustomActionDelegate.callback = { actionName, _ in
             XCTAssertEqual(actionName, customActionName)
-            expectation2.fulfill()
+            expectation1.fulfill()
         }
         
         let config = IterableConfig()
@@ -1404,17 +1403,9 @@ class InAppTests: XCTestCase {
         }
         """.toJsonDict()
         
-        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, payload).onSuccess { [weak internalApi] _ in
-            guard let internalApi = internalApi else {
-                XCTFail("Expected internalApi to be not nil")
-                return
-            }
-            let messages = internalApi.inAppManager.getMessages()
-            XCTAssertEqual(messages.count, 1)
-            expectation1.fulfill()
-        }
+        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, payload)
         
-        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout, enforceOrder: true)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 }
 
