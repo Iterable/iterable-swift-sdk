@@ -1001,8 +1001,11 @@ class RequestHandlerTests: XCTestCase {
                                                        taskScheduler: taskScheduler,
                                                        taskRunner: taskRunner,
                                                        notificationCenter: notificationCenter)
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000, persistenceContextProvider: persistenceContextProvider))
+        
         return RequestHandler(onlineProcessor: onlineProcessor,
                               offlineProcessor: offlineProcessor,
+                              healthMonitor: healthMonitor,
                               offlineMode: selectOffline)
     }
     

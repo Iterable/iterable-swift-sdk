@@ -160,6 +160,8 @@
 		ACA8D1A921965B7D001B1332 /* InAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA8D1A821965B7D001B1332 /* InAppTests.swift */; };
 		ACA8D1AB21966555001B1332 /* InAppManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA8D1AA21966555001B1332 /* InAppManager.swift */; };
 		ACAA816E231163660035C743 /* RequestCreatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACAA816D231163660035C743 /* RequestCreatorTests.swift */; };
+		ACB1DFD126369CC300A31597 /* HealthMonitorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB1DFD026369CC300A31597 /* HealthMonitorTests.swift */; };
+		ACB1DFDB26369D2F00A31597 /* HealthMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB1DFDA26369D2F00A31597 /* HealthMonitor.swift */; };
 		ACB37AB0240268A60093A8EA /* SampleInboxViewDelegateImplementations.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB37AAF240268A60093A8EA /* SampleInboxViewDelegateImplementations.swift */; };
 		ACB37AB124026C1E0093A8EA /* SampleInboxViewDelegateImplementations.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB37AAF240268A60093A8EA /* SampleInboxViewDelegateImplementations.swift */; };
 		ACB8273F22372A5C00DB17D3 /* IterableHtmlMessageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACB8273E22372A5C00DB17D3 /* IterableHtmlMessageViewController.swift */; };
@@ -506,6 +508,8 @@
 		ACA8D1A821965B7D001B1332 /* InAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppTests.swift; sourceTree = "<group>"; };
 		ACA8D1AA21966555001B1332 /* InAppManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppManager.swift; sourceTree = "<group>"; };
 		ACAA816D231163660035C743 /* RequestCreatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestCreatorTests.swift; sourceTree = "<group>"; };
+		ACB1DFD026369CC300A31597 /* HealthMonitorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthMonitorTests.swift; sourceTree = "<group>"; };
+		ACB1DFDA26369D2F00A31597 /* HealthMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthMonitor.swift; sourceTree = "<group>"; };
 		ACB37AAF240268A60093A8EA /* SampleInboxViewDelegateImplementations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleInboxViewDelegateImplementations.swift; sourceTree = "<group>"; };
 		ACB8273E22372A5C00DB17D3 /* IterableHtmlMessageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableHtmlMessageViewController.swift; sourceTree = "<group>"; };
 		ACBDDE5B23C4EDEC0008CC4D /* InboxCustomizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxCustomizationTests.swift; sourceTree = "<group>"; };
@@ -939,6 +943,7 @@
 				AC8E7CA424C7555E0039605F /* CoreDataUtil.swift */,
 				ACFD5AB224C8179D008E497A /* PersistenceHelper.swift */,
 				ACFD5AC724C8290E008E497A /* IterableTaskManagedObject.swift */,
+				ACB1DFDA26369D2F00A31597 /* HealthMonitor.swift */,
 			);
 			name = Persistence;
 			sourceTree = "<group>";
@@ -1251,6 +1256,7 @@
 				AC2AED4124EBC60C000EE5F3 /* TaskRunnerTests.swift */,
 				AC3EFFEF2510B8FB007F1330 /* TaskSchedulerTests.swift */,
 				ACFD5AC524C8216A008E497A /* TasksCRUDTests.swift */,
+				ACB1DFD026369CC300A31597 /* HealthMonitorTests.swift */,
 			);
 			path = "offline-events-tests";
 			sourceTree = "<group>";
@@ -1731,6 +1737,7 @@
 				ACC3FDB1253724DB0004A2E0 /* InAppCalculations.swift in Sources */,
 				ACD6116C2107D004003E7F6B /* NetworkHelper.swift in Sources */,
 				ACC362B624D16D91002C67BA /* IterableRequest.swift in Sources */,
+				ACB1DFDB26369D2F00A31597 /* HealthMonitor.swift in Sources */,
 				ACC362BD24D21172002C67BA /* IterableAPICallTaskProcessor.swift in Sources */,
 				AC84510922910A0C0052BB8F /* RequestCreator.swift in Sources */,
 				ACB8273F22372A5C00DB17D3 /* IterableHtmlMessageViewController.swift in Sources */,
@@ -1942,6 +1949,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ACB1DFD126369CC300A31597 /* HealthMonitorTests.swift in Sources */,
 				AC3EFFF02510B8FB007F1330 /* TaskSchedulerTests.swift in Sources */,
 				AC67AF982507481200C1E974 /* NetworkConnectivityCheckerTests.swift in Sources */,
 				ACFD5AC624C8216A008E497A /* TasksCRUDTests.swift in Sources */,

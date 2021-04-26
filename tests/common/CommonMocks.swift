@@ -181,6 +181,7 @@ class MockNetworkSession: NetworkSessionProtocol {
     }
 
     var urlPatternDataMapping: [String: Data?]?
+    var delay: TimeInterval
     var requests = [URLRequest]()
     var callback: ((Data?, URLResponse?, Error?) -> Void)?
     var requestCallback: ((URLRequest) -> Void)?
@@ -188,30 +189,36 @@ class MockNetworkSession: NetworkSessionProtocol {
     var statusCode: Int
     var error: Error?
     
-    convenience init(statusCode: Int = 200) {
+    convenience init(statusCode: Int = 200, delay: TimeInterval = 0.0) {
         self.init(statusCode: statusCode,
                   data: [:].toJsonData(),
+                  delay: delay,
                   error: nil)
     }
     
-    convenience init(statusCode: Int, json: [AnyHashable: Any], error: Error? = nil) {
+    convenience init(statusCode: Int, json: [AnyHashable: Any], delay: TimeInterval = 0.0, error: Error? = nil) {
         self.init(statusCode: statusCode,
                   data: json.toJsonData(),
+                  delay: delay,
                   error: error)
     }
     
-    convenience init(statusCode: Int, data: Data?, error: Error? = nil) {
-        self.init(statusCode: statusCode, urlPatternDataMapping: [".*": data], error: error)
+    convenience init(statusCode: Int, data: Data?, delay: TimeInterval = 0.0, error: Error? = nil) {
+        self.init(statusCode: statusCode, urlPatternDataMapping: [".*": data], delay: delay, error: error)
     }
     
-    init(statusCode: Int, urlPatternDataMapping: [String: Data?]?, error: Error? = nil) {
+    init(statusCode: Int,
+         urlPatternDataMapping: [String: Data?]?,
+         delay: TimeInterval = 0.0,
+         error: Error? = nil) {
         self.statusCode = statusCode
         self.urlPatternDataMapping = urlPatternDataMapping
+        self.delay = delay
         self.error = error
     }
     
     func makeRequest(_ request: URLRequest, completionHandler: @escaping NetworkSessionProtocol.CompletionHandler) {
-        DispatchQueue.main.async {
+        let block = {
             self.requests.append(request)
             self.requestCallback?(request)
             let response = HTTPURLResponse(url: request.url!, statusCode: self.statusCode, httpVersion: "HTTP/1.1", headerFields: [:])
@@ -220,6 +227,27 @@ class MockNetworkSession: NetworkSessionProtocol {
             
             self.callback?(data, response, self.error)
         }
+
+        if delay == 0 {
+            DispatchQueue.main.async {
+                block()
+            }
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                block()
+            }
+        }
+//
+//
+//        DispatchQueue.main.async {
+//            self.requests.append(request)
+//            self.requestCallback?(request)
+//            let response = HTTPURLResponse(url: request.url!, statusCode: self.statusCode, httpVersion: "HTTP/1.1", headerFields: [:])
+//            let data = self.data(for: request.url?.absoluteString)
+//            completionHandler(data, response, self.error)
+//
+//            self.callback?(data, response, self.error)
+//        }
     }
     
     func makeDataRequest(with url: URL, completionHandler: @escaping NetworkSessionProtocol.CompletionHandler) {

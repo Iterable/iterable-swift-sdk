@@ -8,10 +8,12 @@ import Foundation
 class RequestHandler: RequestHandlerProtocol {
     init(onlineProcessor: OnlineRequestProcessor,
          offlineProcessor: OfflineRequestProcessor?,
+         healthMonitor: HealthMonitor?,
          offlineMode: Bool = true) {
         ITBInfo()
         self.onlineProcessor = onlineProcessor
         self.offlineProcessor = offlineProcessor
+        self.healthMonitor = healthMonitor
         self.offlineMode = offlineMode
     }
     
@@ -252,16 +254,20 @@ class RequestHandler: RequestHandlerProtocol {
     }
 
     private let offlineProcessor: OfflineRequestProcessor?
+    private let healthMonitor: HealthMonitor?
     private let onlineProcessor: OnlineRequestProcessor
     
     private func chooseRequestProcessor() -> RequestProcessorProtocol {
-        if offlineMode {
-            if let offlineProcessor = self.offlineProcessor {
-                return offlineProcessor
-            }
-            return onlineProcessor
-        } else {
+        guard offlineMode else {
             return onlineProcessor
         }
+        guard
+            let offlineProcessor = offlineProcessor,
+            let healthMonitor = healthMonitor
+        else {
+            return onlineProcessor
+        }
+
+        return healthMonitor.canSchedule() ? offlineProcessor : onlineProcessor
     }
 }

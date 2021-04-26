@@ -84,6 +84,7 @@ class MockDependencyContainer: DependencyContainerProtocol {
     let urlOpener: UrlOpenerProtocol
     let applicationStateProvider: ApplicationStateProviderProtocol
     let notificationCenter: NotificationCenterProtocol
+    let maxTasks: Int
     let apnsTypeChecker: APNSTypeCheckerProtocol
     
     init(dateProvider: DateProviderProtocol,
@@ -96,6 +97,7 @@ class MockDependencyContainer: DependencyContainerProtocol {
          urlOpener: UrlOpenerProtocol,
          applicationStateProvider: ApplicationStateProviderProtocol,
          notificationCenter: NotificationCenterProtocol,
+         maxTasks: Int,
          apnsTypeChecker: APNSTypeCheckerProtocol) {
         ITBInfo()
         self.dateProvider = dateProvider
@@ -108,6 +110,7 @@ class MockDependencyContainer: DependencyContainerProtocol {
         self.urlOpener = urlOpener
         self.applicationStateProvider = applicationStateProvider
         self.notificationCenter = notificationCenter
+        self.maxTasks = maxTasks
         self.apnsTypeChecker = apnsTypeChecker
     }
     
@@ -117,6 +120,10 @@ class MockDependencyContainer: DependencyContainerProtocol {
     
     func createInAppFetcher(apiClient _: ApiClientProtocol) -> InAppFetcherProtocol {
         inAppFetcher
+    }
+    
+    func createHealthMonitorDataProvider(persistenceContextProvider: IterablePersistenceContextProvider) -> HealthMonitorDataProviderProtocol {
+        HealthMonitorDataProvider(maxTasks: maxTasks, persistenceContextProvider: persistenceContextProvider)
     }
 }
 
@@ -136,6 +143,7 @@ extension IterableAPI {
                                      urlOpener: UrlOpenerProtocol = MockUrlOpener(),
                                      applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
                                      notificationCenter: NotificationCenterProtocol = NotificationCenter.default,
+                                     maxTasks: Int = 1000,
                                      apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker()) {
         let mockDependencyContainer = MockDependencyContainer(dateProvider: dateProvider,
                                                               networkSession: networkSession,
@@ -147,6 +155,7 @@ extension IterableAPI {
                                                               urlOpener: urlOpener,
                                                               applicationStateProvider: applicationStateProvider,
                                                               notificationCenter: notificationCenter,
+                                                              maxTasks: maxTasks,
                                                               apnsTypeChecker: apnsTypeChecker)
         
         internalImplementation = InternalIterableAPI(apiKey: apiKey,
@@ -175,6 +184,7 @@ extension InternalIterableAPI {
                                                         urlOpener: UrlOpenerProtocol = MockUrlOpener(),
                                                         applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
                                                         notificationCenter: NotificationCenterProtocol = NotificationCenter.default,
+                                                        maxTasks: Int = 1000,
                                                         apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker()) -> InternalIterableAPI {
         let mockDependencyContainer = MockDependencyContainer(dateProvider: dateProvider,
                                                               networkSession: networkSession,
@@ -186,6 +196,7 @@ extension InternalIterableAPI {
                                                               urlOpener: urlOpener,
                                                               applicationStateProvider: applicationStateProvider,
                                                               notificationCenter: notificationCenter,
+                                                              maxTasks: maxTasks,
                                                               apnsTypeChecker: apnsTypeChecker)
         
         let internalImplementation = InternalIterableAPI(apiKey: apiKey,
