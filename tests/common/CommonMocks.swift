@@ -237,26 +237,25 @@ class MockNetworkSession: NetworkSessionProtocol {
                 block()
             }
         }
-//
-//
-//        DispatchQueue.main.async {
-//            self.requests.append(request)
-//            self.requestCallback?(request)
-//            let response = HTTPURLResponse(url: request.url!, statusCode: self.statusCode, httpVersion: "HTTP/1.1", headerFields: [:])
-//            let data = self.data(for: request.url?.absoluteString)
-//            completionHandler(data, response, self.error)
-//
-//            self.callback?(data, response, self.error)
-//        }
     }
     
     func makeDataRequest(with url: URL, completionHandler: @escaping NetworkSessionProtocol.CompletionHandler) {
-        DispatchQueue.main.async {
+        let block = {
             let response = HTTPURLResponse(url: url, statusCode: self.statusCode, httpVersion: "HTTP/1.1", headerFields: [:])
             let data = self.data(for: url.absoluteString)
             completionHandler(data, response, self.error)
             
             self.callback?(data, response, self.error)
+        }
+        
+        if delay == 0 {
+            DispatchQueue.main.async {
+                block()
+            }
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                block()
+            }
         }
     }
     
