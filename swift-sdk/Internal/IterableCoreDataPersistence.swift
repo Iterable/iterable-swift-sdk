@@ -164,7 +164,7 @@ struct CoreDataPersistenceContext: IterablePersistenceContext {
     }
     
     func countTasks() throws -> Int {
-        return 0
+        return try CoreDataUtil.count(context: managedObjectContext, entity: PersistenceConst.Entity.Task.name)
     }
     
     func save() throws {
