@@ -126,7 +126,6 @@ extension IterableAPI {
                                      launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
                                      config: IterableConfig = IterableConfig(),
                                      apiEndPointOverride: String? = nil,
-                                     linksEndPointOverride: String? = nil,
                                      dateProvider: DateProviderProtocol = SystemDateProvider(),
                                      networkSession: NetworkSessionProtocol = MockNetworkSession(),
                                      notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
@@ -154,7 +153,6 @@ extension IterableAPI {
                                                      launchOptions: launchOptions,
                                                      config: config,
                                                      apiEndPointOverride: apiEndPointOverride,
-                                                     linksEndPointOverride: linksEndPointOverride,
                                                      dependencyContainer: mockDependencyContainer)
         
         internalImplementation?.start().wait()
@@ -167,7 +165,6 @@ extension InternalIterableAPI {
                                                         launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
                                                         config: IterableConfig = IterableConfig(),
                                                         apiEndPointOverride: String? = nil,
-                                                        linksEndPointOverride: String? = nil,
                                                         dateProvider: DateProviderProtocol = SystemDateProvider(),
                                                         networkSession: NetworkSessionProtocol = MockNetworkSession(),
                                                         notificationStateProvider: NotificationStateProviderProtocol = SystemNotificationStateProvider(),
@@ -195,7 +192,6 @@ extension InternalIterableAPI {
                                                          launchOptions: launchOptions,
                                                          config: config,
                                                          apiEndPointOverride: apiEndPointOverride,
-                                                         linksEndPointOverride: linksEndPointOverride,
                                                          dependencyContainer: mockDependencyContainer)
         
         internalImplementation.start().wait()

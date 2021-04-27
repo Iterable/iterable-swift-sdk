@@ -6,10 +6,8 @@ import Foundation
 
 enum Endpoint {
     private static let apiHostName = "https://api.iterable.com"
-    private static let linksHostName = "https://links.iterable.com"
     
     static let api = Endpoint.apiHostName + Const.apiPath
-    static let links = linksHostName + "/"
 }
 
 enum Const {
@@ -39,7 +37,6 @@ enum Const {
         static let updateUser = "users/update"
         static let updateEmail = "users/updateEmail"
         static let updateSubscriptions = "users/updateSubscriptions"
-        static let ddlMatch = "a/matchFp" // DDL = Deferred Deep Linking
         static let getRemoteConfiguration = "mobile/getRemoteConfiguration"
     }
     

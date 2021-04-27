@@ -104,6 +104,7 @@ public class IterableConfig: NSObject {
     
     /// When set to true, it will check for deferred deep links on first time app launch
     /// after installation from the App Store.
+    @available(*, deprecated, message: "This flag is no longer supported and will be removed in the next version.")
     public var checkForDeferredDeeplink = false
     
     /// Implement the protocol IterableLogDelegate and set it here to change logging.
