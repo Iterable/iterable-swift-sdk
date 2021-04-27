@@ -36,6 +36,7 @@
 		AC02480822791E2100495FB9 /* IterableInboxNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */; };
 		AC02CAA6234E50B5006617E0 /* RegistrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */; };
 		AC03094B21E532470003A288 /* InAppPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC03094A21E532470003A288 /* InAppPersistence.swift */; };
+		AC05644B26387B54001FB810 /* MockPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC05644A26387B54001FB810 /* MockPersistence.swift */; };
 		AC0674E620D8766600C2806D /* NotificationExtensionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AC0674E520D8766600C2806D /* NotificationExtensionTests.m */; };
 		AC1670CD2230A91C00989F8E /* InboxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1670CC2230A91C00989F8E /* InboxTests.swift */; };
 		AC1712892416AEF400F2BB0E /* WebViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1712882416AEF400F2BB0E /* WebViewProtocol.swift */; };
@@ -389,6 +390,7 @@
 		AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxNavigationViewController.swift; sourceTree = "<group>"; };
 		AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTests.swift; sourceTree = "<group>"; };
 		AC03094A21E532470003A288 /* InAppPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPersistence.swift; sourceTree = "<group>"; };
+		AC05644A26387B54001FB810 /* MockPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPersistence.swift; sourceTree = "<group>"; };
 		AC0674E420D8766600C2806D /* notification-extensionTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "notification-extensionTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		AC0674E520D8766600C2806D /* NotificationExtensionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationExtensionTests.m; sourceTree = "<group>"; };
 		AC0A45372179300D0040394F /* host-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "host-app.entitlements"; sourceTree = "<group>"; };
@@ -1257,6 +1259,7 @@
 				AC3EFFEF2510B8FB007F1330 /* TaskSchedulerTests.swift */,
 				ACFD5AC524C8216A008E497A /* TasksCRUDTests.swift */,
 				ACB1DFD026369CC300A31597 /* HealthMonitorTests.swift */,
+				AC05644A26387B54001FB810 /* MockPersistence.swift */,
 			);
 			path = "offline-events-tests";
 			sourceTree = "<group>";
@@ -1955,6 +1958,7 @@
 				ACFD5AC624C8216A008E497A /* TasksCRUDTests.swift in Sources */,
 				ACC362C624D2C334002C67BA /* CommonExtensions.swift in Sources */,
 				ACF406252507F90F005FD775 /* NetworkConnectivityManagerTests.swift in Sources */,
+				AC05644B26387B54001FB810 /* MockPersistence.swift in Sources */,
 				ACCF274C24F40C85004862D5 /* RequestHandlerTests.swift in Sources */,
 				ACC362C724D2C647002C67BA /* CommonMocks.swift in Sources */,
 				ACC362C824D2C7C9002C67BA /* TestUtils.swift in Sources */,
