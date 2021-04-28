@@ -18,6 +18,7 @@ class IterableTaskRunner: NSObject {
         ITBInfo()
         self.networkSession = networkSession
         self.persistenceContextProvider = persistenceContextProvider
+        self.healthMonitor = healthMonitor
         self.notificationCenter = notificationCenter
         self.timeInterval = timeInterval
         self.dateProvider = dateProvider
@@ -239,6 +240,7 @@ class IterableTaskRunner: NSObject {
             try persistenceContext.save()
         } catch let error {
             ITBError(error.localizedDescription)
+            healthMonitor.onDeleteError(task: task)
         }
     }
     
@@ -253,6 +255,7 @@ class IterableTaskRunner: NSObject {
     private var paused = false
     private let networkSession: NetworkSessionProtocol
     private let persistenceContextProvider: IterablePersistenceContextProvider
+    private let healthMonitor: HealthMonitor
     private let notificationCenter: NotificationCenterProtocol
     private let timeInterval: TimeInterval
     private let dateProvider: DateProviderProtocol

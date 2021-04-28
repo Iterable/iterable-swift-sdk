@@ -46,6 +46,12 @@ class HealthMonitor {
     weak var delegate: HealthMonitorDelegate?
     
     func canSchedule() -> Bool {
+        ITBInfo()
+        // do not schedule further on error
+        guard errored == false else {
+            return false
+        }
+
         do {
             let count = try dataProvider.countTasks()
             return count <= dataProvider.maxTasks
@@ -56,14 +62,23 @@ class HealthMonitor {
     }
     
     func onScheduleError(apiCallRequest: IterableAPICallRequest) {
+        ITBInfo()
         let currentDate = dateProvider.currentDate
         let apiCallRequest = apiCallRequest.addingCreatedAt(currentDate)
         if let urlRequest = apiCallRequest.convertToURLRequest(sentAt: currentDate) {
             _ = RequestSender.sendRequest(urlRequest, usingSession: networkSession)
         }
+        errored = true
         delegate?.onDBError()
     }
     
+    func onDeleteError(task: IterableTask) {
+        ITBInfo()
+        errored = true
+        delegate?.onDBError()
+    }
+    
+    private var errored = false
     private let dataProvider: HealthMonitorDataProviderProtocol
     private let dateProvider: DateProviderProtocol
     private let networkSession: NetworkSessionProtocol

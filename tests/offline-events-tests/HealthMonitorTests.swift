@@ -137,6 +137,39 @@ class HealthMonitorTests: XCTestCase {
         XCTAssertFalse(internalAPI.requestHandler.offlineMode)
     }
 
+    func testDeleteTaskException() throws {
+        let expectation1 = expectation(description: #function)
+        expectation1.expectedFulfillmentCount = 3
+        let networkSession = MockNetworkSession(statusCode: 200, delay: 1.0)
+        var processors = [String]()
+        networkSession.requestCallback = { request in
+            if request.url!.absoluteString.contains(Const.Path.trackEvent) {
+                let processor = request.allHTTPHeaderFields?[JsonKey.Header.requestProcessor]!
+                processors.append(processor!)
+                expectation1.fulfill()
+            }
+        }
+        let localStorage = MockLocalStorage()
+        localStorage.email = "user@example.com"
+        localStorage.offlineModeBeta = true
+        var input = MockPersistenceContext.Input()
+        input.deleteCallback = {
+            throw IterableDBError.general("error deleting task")
+        }
+        let context = MockPersistenceContext(input: input)
+        let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: networkSession,
+                                                                   localStorage: localStorage,
+                                                                   maxTasks: 1,
+                                                                   persistenceContextProvider: MockPersistenceContextProvider(context: context))
+
+        XCTAssertTrue(internalAPI.requestHandler.offlineMode)
+        internalAPI.track("myEvent")
+        internalAPI.track("myEvent2")
+        internalAPI.track("myEvent3")
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+        XCTAssertFalse(internalAPI.requestHandler.offlineMode)
+    }
+
     func testDBError() throws {
         let expectation1 = expectation(description: #function)
         expectation1.expectedFulfillmentCount = 2
