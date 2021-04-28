@@ -54,7 +54,7 @@ class HealthMonitor {
 
         do {
             let count = try dataProvider.countTasks()
-            return count <= dataProvider.maxTasks
+            return count < dataProvider.maxTasks
         } catch let error {
             ITBError("DBError: " + error.localizedDescription)
             onError()
