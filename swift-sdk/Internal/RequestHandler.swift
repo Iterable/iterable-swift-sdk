@@ -15,6 +15,7 @@ class RequestHandler: RequestHandlerProtocol {
         self.offlineProcessor = offlineProcessor
         self.healthMonitor = healthMonitor
         self.offlineMode = offlineMode
+        self.healthMonitor?.delegate = self
     }
     
     deinit {
@@ -269,5 +270,12 @@ class RequestHandler: RequestHandlerProtocol {
         }
 
         return healthMonitor.canSchedule() ? offlineProcessor : onlineProcessor
+    }
+}
+
+@available(iOS 10.0, *)
+extension RequestHandler: HealthMonitorDelegate {
+    func onDBError() {
+        self.offlineMode = false
     }
 }

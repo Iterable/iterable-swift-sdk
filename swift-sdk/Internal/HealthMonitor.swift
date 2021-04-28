@@ -25,10 +25,25 @@ struct HealthMonitorDataProvider: HealthMonitorDataProviderProtocol {
     private let persistenceContextProvider: IterablePersistenceContextProvider
 }
 
-struct HealthMonitor {
-    init(dataProvider: HealthMonitorDataProviderProtocol) {
+protocol HealthMonitorDelegate: AnyObject {
+    func onDBError()
+}
+
+class HealthMonitor {
+    init(dataProvider: HealthMonitorDataProviderProtocol,
+         dateProvider: DateProviderProtocol,
+         networkSession: NetworkSessionProtocol) {
+        ITBInfo()
         self.dataProvider = dataProvider
+        self.dateProvider = dateProvider
+        self.networkSession = networkSession
     }
+    
+    deinit {
+        ITBInfo()
+    }
+    
+    weak var delegate: HealthMonitorDelegate?
     
     func canSchedule() -> Bool {
         do {
@@ -40,9 +55,16 @@ struct HealthMonitor {
         }
     }
     
-    func onDBError() {
-        
+    func onScheduleError(apiCallRequest: IterableAPICallRequest) {
+        let currentDate = dateProvider.currentDate
+        let apiCallRequest = apiCallRequest.addingCreatedAt(currentDate)
+        if let urlRequest = apiCallRequest.convertToURLRequest(sentAt: currentDate) {
+            _ = RequestSender.sendRequest(urlRequest, usingSession: networkSession)
+        }
+        delegate?.onDBError()
     }
     
     private let dataProvider: HealthMonitorDataProviderProtocol
+    private let dateProvider: DateProviderProtocol
+    private let networkSession: NetworkSessionProtocol
 }

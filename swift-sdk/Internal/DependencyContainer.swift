@@ -72,27 +72,30 @@ extension DependencyContainerProtocol {
                                                          networkSession: networkSession,
                                                          deviceMetadata: deviceMetadata,
                                                          dateProvider: dateProvider)
-            let offlineProcessor: OfflineRequestProcessor?
-            let healthMonitor: HealthMonitor?
             if let persistenceContextProvider = createPersistenceContextProvider() {
                 let healthMonitorDataProvider = createHealthMonitorDataProvider(persistenceContextProvider: persistenceContextProvider)
-                healthMonitor = HealthMonitor(dataProvider: healthMonitorDataProvider)
-                offlineProcessor = OfflineRequestProcessor(apiKey: apiKey,
-                                                           authProvider: authProvider,
-                                                           authManager: authManager,
-                                                           endPoint: endPoint,
-                                                           deviceMetadata: deviceMetadata,
-                                                           taskScheduler: createTaskScheduler(persistenceContextProvider: persistenceContextProvider),
-                                                           taskRunner: createTaskRunner(persistenceContextProvider: persistenceContextProvider),
-                                                           notificationCenter: notificationCenter)
+                let healthMonitor = HealthMonitor(dataProvider: healthMonitorDataProvider,
+                                                  dateProvider: dateProvider,
+                                                  networkSession: networkSession)
+                let offlineProcessor = OfflineRequestProcessor(apiKey: apiKey,
+                                                               authProvider: authProvider,
+                                                               authManager: authManager,
+                                                               endPoint: endPoint,
+                                                               deviceMetadata: deviceMetadata,
+                                                               taskScheduler: createTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                                                                                  healthMonitor: healthMonitor),
+                                                               taskRunner: createTaskRunner(persistenceContextProvider: persistenceContextProvider),
+                                                               notificationCenter: notificationCenter)
+                return RequestHandler(onlineProcessor: onlineProcessor,
+                                      offlineProcessor: offlineProcessor,
+                                      healthMonitor: healthMonitor,
+                                      offlineMode: offlineMode)
             } else {
-                healthMonitor = nil
-                offlineProcessor = nil
+                return RequestHandler(onlineProcessor: onlineProcessor,
+                                      offlineProcessor: nil,
+                                      healthMonitor: nil,
+                                      offlineMode: offlineMode)
             }
-            return RequestHandler(onlineProcessor: onlineProcessor,
-                                  offlineProcessor: offlineProcessor,
-                                  healthMonitor: healthMonitor,
-                                  offlineMode: offlineMode)
         } else {
             return LegacyRequestHandler(apiKey: apiKey,
                                         authProvider: authProvider,
@@ -117,9 +120,11 @@ extension DependencyContainerProtocol {
     }
     
     @available(iOS 10.0, *)
-    private func createTaskScheduler(persistenceContextProvider: IterablePersistenceContextProvider) -> IterableTaskScheduler {
+    private func createTaskScheduler(persistenceContextProvider: IterablePersistenceContextProvider,
+                                     healthMonitor: HealthMonitor) -> IterableTaskScheduler {
         IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
                               notificationCenter: notificationCenter,
+                              healthMonitor: healthMonitor,
                               dateProvider: dateProvider)
     }
     

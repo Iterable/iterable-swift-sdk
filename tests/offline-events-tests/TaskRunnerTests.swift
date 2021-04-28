@@ -33,16 +33,16 @@ class TaskRunnerTests: XCTestCase {
             expectation1.fulfill()
         }
         XCTAssertNotNil(reference)
-
-        let taskRunner = IterableTaskRunner(networkSession: MockNetworkSession(),
+        let networkSession = MockNetworkSession()
+        let taskRunner = IterableTaskRunner(networkSession: networkSession,
                                             persistenceContextProvider: persistenceContextProvider,
                                             notificationCenter: notificationCenter,
                                             timeInterval: 0.5)
         taskRunner.start()
 
-        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter))
-        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter))
-        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter))
+        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter, networkSession: networkSession))
+        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter, networkSession: networkSession))
+        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter, networkSession: networkSession))
 
         wait(for: [expectation1], timeout: 15.0)
         XCTAssertEqual(taskIds, scheduledTaskIds)
@@ -73,9 +73,9 @@ class TaskRunnerTests: XCTestCase {
                                             timeInterval: 1.0)
         taskRunner.start()
 
-        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter))
-        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter))
-        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter))
+        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter, networkSession: networkSession))
+        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter, networkSession: networkSession))
+        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter, networkSession: networkSession))
 
         let predicate = NSPredicate { _, _ in
             return retryTaskIds.count == 1
@@ -110,9 +110,9 @@ class TaskRunnerTests: XCTestCase {
                                             timeInterval: 0.5)
         taskRunner.start()
 
-        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter))
-        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter))
-        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter))
+        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter, networkSession: networkSession))
+        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter, networkSession: networkSession))
+        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter, networkSession: networkSession))
 
         wait(for: [expectation1], timeout: 15.0)
         XCTAssertEqual(failedTaskIds, scheduledTaskIds)
@@ -140,7 +140,7 @@ class TaskRunnerTests: XCTestCase {
         // Now schedule a task, giving it some time for task runner to be updated with
         // offliine network status
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            let _ = try! self.scheduleSampleTask(notificationCenter: notificationCenter)
+            let _ = try! self.scheduleSampleTask(notificationCenter: notificationCenter, networkSession: networkSession)
         }
 
         verifyNoTaskIsExecuted(notificationCenter, forInterval: 1.0)
@@ -167,7 +167,7 @@ class TaskRunnerTests: XCTestCase {
         // Now schedule a task, giving it some time for task runner to be updated with
         // offliine network status
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            let _ = try! self.scheduleSampleTask(notificationCenter: notificationCenter)
+            let _ = try! self.scheduleSampleTask(notificationCenter: notificationCenter, networkSession: networkSession)
         }
 
         verifyNoTaskIsExecuted(notificationCenter, forInterval: 1.0)
@@ -199,7 +199,7 @@ class TaskRunnerTests: XCTestCase {
                                             connectivityManager: manager)
         taskRunner.start()
         
-        let _ = try! self.scheduleSampleTask(notificationCenter: notificationCenter)
+        let _ = try! self.scheduleSampleTask(notificationCenter: notificationCenter, networkSession: networkSession)
         verifyTaskIsExecuted(notificationCenter, withinInterval: 1.0)
 
         // Now move app to background
@@ -207,7 +207,7 @@ class TaskRunnerTests: XCTestCase {
         // Now schedule a task, giving it some time for task runner to be updated with
         // app background status
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            let _ = try! self.scheduleSampleTask(notificationCenter: notificationCenter)
+            let _ = try! self.scheduleSampleTask(notificationCenter: notificationCenter, networkSession: networkSession)
         }
 
         verifyNoTaskIsExecuted(notificationCenter, forInterval: 1.0)
@@ -239,7 +239,7 @@ class TaskRunnerTests: XCTestCase {
                            dateProvider: dateProvider)
         taskRunner.start()
 
-        let _ = try! self.scheduleSampleTask(notificationCenter: notificationCenter)
+        let _ = try! self.scheduleSampleTask(notificationCenter: notificationCenter, networkSession: networkSession)
         verifyTaskIsExecuted(notificationCenter, withinInterval: 1.0)
 
         taskRunner.stop()
@@ -266,7 +266,7 @@ class TaskRunnerTests: XCTestCase {
                            timeInterval: 0.5)
         taskRunner.start()
 
-        let _ = try! self.scheduleSampleTask(notificationCenter: notificationCenter, dateProvider: dateProvider)
+        let _ = try! self.scheduleSampleTask(notificationCenter: notificationCenter, dateProvider: dateProvider, networkSession: networkSession)
         verifyTaskIsExecuted(notificationCenter, withinInterval: 1.0)
 
         taskRunner.stop()
@@ -282,7 +282,9 @@ class TaskRunnerTests: XCTestCase {
         wait(for: [expectation1], timeout: 5.0)
     }
 
-    private func scheduleSampleTask(notificationCenter: NotificationCenterProtocol, dateProvider: DateProviderProtocol = SystemDateProvider()) throws -> String {
+    private func scheduleSampleTask(notificationCenter: NotificationCenterProtocol,
+                                    dateProvider: DateProviderProtocol = SystemDateProvider(),
+                                    networkSession: NetworkSessionProtocol) throws -> String {
         let apiKey = "zee-api-key"
         let eventName = "CustomEvent1"
         let dataFields = ["var1": "val1", "var2": "val2"]
@@ -298,8 +300,13 @@ class TaskRunnerTests: XCTestCase {
                                                     deviceMetadata: deviceMetadata,
                                                     iterableRequest: trackEventRequest)
         
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                  persistenceContextProvider: persistenceContextProvider),
+                                          dateProvider: dateProvider,
+                                          networkSession: networkSession)
         return try IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
                                          notificationCenter: notificationCenter,
+                                         healthMonitor: healthMonitor,
                                          dateProvider: dateProvider).schedule(apiCallRequest: apiCallRequest).get()
     }
 

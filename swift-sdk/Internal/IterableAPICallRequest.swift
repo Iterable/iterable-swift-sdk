@@ -18,18 +18,18 @@ struct IterableAPICallRequest {
         case online
     }
     
-    func convertToURLRequest(currentDate: Date, processorType: ProcessorType = .online) -> URLRequest? {
+    func convertToURLRequest(sentAt: Date, processorType: ProcessorType = .online) -> URLRequest? {
         switch iterableRequest {
         case let .get(getRequest):
             return IterableRequestUtil.createGetRequest(forApiEndPoint: endPoint,
                                                         path: getRequest.path,
-                                                        headers: createIterableHeaders(currentDate: currentDate,
+                                                        headers: createIterableHeaders(sentAt: sentAt,
                                                                                        processorType: processorType),
                                                         args: getRequest.args)
         case let .post(postRequest):
             return IterableRequestUtil.createPostRequest(forApiEndPoint: endPoint,
                                                          path: postRequest.path,
-                                                         headers: createIterableHeaders(currentDate: currentDate,
+                                                         headers: createIterableHeaders(sentAt: sentAt,
                                                                                         processorType: processorType),
                                                          args: postRequest.args,
                                                          body: postRequest.body)
@@ -45,7 +45,12 @@ struct IterableAPICallRequest {
         }
     }
     
-    func addingBodyField(key: AnyHashable, value: Any) -> IterableAPICallRequest {
+    func addingCreatedAt(_ createdAt: Date) -> IterableAPICallRequest {
+        addingBodyField(key: JsonKey.Body.createdAt,
+                        value: IterableUtil.secondsFromEpoch(for: createdAt))
+    }
+    
+    private func addingBodyField(key: AnyHashable, value: Any) -> IterableAPICallRequest {
         IterableAPICallRequest(apiKey: apiKey,
                                endPoint: endPoint,
                                auth: auth,
@@ -53,12 +58,12 @@ struct IterableAPICallRequest {
                                iterableRequest: iterableRequest.addingBodyField(key: key, value: value))
     }
     
-    private func createIterableHeaders(currentDate: Date, processorType: ProcessorType) -> [String: String] {
+    private func createIterableHeaders(sentAt: Date, processorType: ProcessorType) -> [String: String] {
         var headers = [JsonKey.contentType: JsonValue.applicationJson,
                        JsonKey.Header.sdkPlatform: JsonValue.iOS,
                        JsonKey.Header.sdkVersion: IterableAPI.sdkVersion,
                        JsonKey.Header.apiKey: apiKey,
-                       JsonKey.Header.sentAt: Self.format(sentAt: currentDate),
+                       JsonKey.Header.sentAt: Self.format(sentAt: sentAt),
                        JsonKey.Header.requestProcessor: Self.name(for: processorType)
         ]
         

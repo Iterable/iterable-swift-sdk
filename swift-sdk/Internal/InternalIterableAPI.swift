@@ -393,7 +393,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                   dateProvider: dateProvider)
     }()
     
-    private lazy var requestHandler: RequestHandlerProtocol = {
+    lazy var requestHandler: RequestHandlerProtocol = {
         let offlineMode = self.localStorage.isOfflineModeEnabled()
         return dependencyContainer.createRequestHandler(apiKey: apiKey,
                                                         config: config,

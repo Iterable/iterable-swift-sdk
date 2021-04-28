@@ -977,8 +977,13 @@ class RequestHandlerTests: XCTestCase {
     private func createRequestHandler(networkSession: NetworkSessionProtocol,
                                       notificationCenter: NotificationCenterProtocol,
                                       selectOffline: Bool) -> RequestHandlerProtocol {
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                  persistenceContextProvider: persistenceContextProvider),
+                                          dateProvider: dateProvider,
+                                          networkSession: networkSession)
         let taskScheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
                                                   notificationCenter: notificationCenter,
+                                                  healthMonitor: healthMonitor,
                                                   dateProvider: dateProvider)
         let taskRunner = IterableTaskRunner(networkSession: networkSession,
                                             persistenceContextProvider: persistenceContextProvider,
@@ -1001,7 +1006,6 @@ class RequestHandlerTests: XCTestCase {
                                                        taskScheduler: taskScheduler,
                                                        taskRunner: taskRunner,
                                                        notificationCenter: notificationCenter)
-        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000, persistenceContextProvider: persistenceContextProvider))
         
         return RequestHandler(onlineProcessor: onlineProcessor,
                               offlineProcessor: offlineProcessor,
