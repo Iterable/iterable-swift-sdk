@@ -156,18 +156,24 @@ class IterableTaskRunner: NSObject {
             return Promise<Void, Never>(value: ())
         }
 
-        if let task = try? persistenceContext.nextTask() {
-            return execute(task: task).flatMap { executionResult in
-                switch executionResult {
-                case .success, .failure, .error:
-                    self.deleteTask(task: task)
-                    return self.processTasks()
-                case .processing, .retry:
-                    return Promise<Void, Never>(value: ())
+        do {
+            if let task = try persistenceContext.nextTask() {
+                return execute(task: task).flatMap { executionResult in
+                    switch executionResult {
+                    case .success, .failure, .error:
+                        self.deleteTask(task: task)
+                        return self.processTasks()
+                    case .processing, .retry:
+                        return Promise<Void, Never>(value: ())
+                    }
                 }
+            } else {
+                ITBInfo("No tasks to execute")
+                return Promise<Void, Never>(value: ())
             }
-        } else {
-            ITBInfo("No tasks to execute")
+        } catch let error {
+            ITBError("Next task error: \(error.localizedDescription)")
+            healthMonitor.onNextTaskError()
             return Promise<Void, Never>(value: ())
         }
     }

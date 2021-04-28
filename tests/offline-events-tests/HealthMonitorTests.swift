@@ -23,7 +23,7 @@ class HealthMonitorTests: XCTestCase {
     func testUseOfflineProcessorByDefault() throws {
         let expectation1 = expectation(description: #function)
         expectation1.expectedFulfillmentCount = 3
-        let networkSession = MockNetworkSession(statusCode: 200, delay: 1.0)
+        let networkSession = MockNetworkSession(statusCode: 200)
         var processors = [String]()
         networkSession.requestCallback = { request in
             if request.url!.absoluteString.contains(Const.Path.trackEvent) {
@@ -48,7 +48,7 @@ class HealthMonitorTests: XCTestCase {
     func testSwitchProcessorsWhenNumTasksExceedsMaxTasks() throws {
         let expectation1 = expectation(description: #function)
         expectation1.expectedFulfillmentCount = 3
-        let networkSession = MockNetworkSession(statusCode: 200, delay: 1.0)
+        let networkSession = MockNetworkSession(statusCode: 200)
         var processors = [String]()
         networkSession.requestCallback = { request in
             if request.url!.absoluteString.contains(Const.Path.trackEvent) {
@@ -74,7 +74,7 @@ class HealthMonitorTests: XCTestCase {
     func testCountTasksException() throws {
         let expectation1 = expectation(description: #function)
         expectation1.expectedFulfillmentCount = 3
-        let networkSession = MockNetworkSession(statusCode: 200, delay: 1.0)
+        let networkSession = MockNetworkSession(statusCode: 200)
         var processors = [String]()
         networkSession.requestCallback = { request in
             if request.url!.absoluteString.contains(Const.Path.trackEvent) {
@@ -93,7 +93,6 @@ class HealthMonitorTests: XCTestCase {
         let context = MockPersistenceContext(input: input)
         let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: networkSession,
                                                                    localStorage: localStorage,
-                                                                   maxTasks: 1,
                                                                    persistenceContextProvider: MockPersistenceContextProvider(context: context))
 
         internalAPI.track("myEvent")
@@ -106,7 +105,7 @@ class HealthMonitorTests: XCTestCase {
     func testScheduleTaskException() throws {
         let expectation1 = expectation(description: #function)
         expectation1.expectedFulfillmentCount = 3
-        let networkSession = MockNetworkSession(statusCode: 200, delay: 1.0)
+        let networkSession = MockNetworkSession(statusCode: 200)
         var processors = [String]()
         networkSession.requestCallback = { request in
             if request.url!.absoluteString.contains(Const.Path.trackEvent) {
@@ -125,7 +124,6 @@ class HealthMonitorTests: XCTestCase {
         let context = MockPersistenceContext(input: input)
         let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: networkSession,
                                                                    localStorage: localStorage,
-                                                                   maxTasks: 1,
                                                                    persistenceContextProvider: MockPersistenceContextProvider(context: context))
 
         XCTAssertTrue(internalAPI.requestHandler.offlineMode)
@@ -137,10 +135,10 @@ class HealthMonitorTests: XCTestCase {
         XCTAssertFalse(internalAPI.requestHandler.offlineMode)
     }
 
-    func testDeleteTaskException() throws {
+    func testNextTaskException() throws {
         let expectation1 = expectation(description: #function)
-        expectation1.expectedFulfillmentCount = 2
-        let networkSession = MockNetworkSession(statusCode: 200, delay: 1.0)
+        expectation1.expectedFulfillmentCount = 3
+        let networkSession = MockNetworkSession(statusCode: 200)
         var processors = [String]()
         networkSession.requestCallback = { request in
             if request.url!.absoluteString.contains(Const.Path.trackEvent) {
@@ -153,16 +151,13 @@ class HealthMonitorTests: XCTestCase {
         localStorage.email = "user@example.com"
         localStorage.offlineModeBeta = true
         var input = MockPersistenceContext.Input()
-        input.deleteCallback = {
-            throw IterableDBError.general("error deleting task")
+        input.nextTaskCallback = {
+            throw IterableDBError.general("error getting next task")
         }
         let context = MockPersistenceContext(input: input)
         let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: networkSession,
                                                                    localStorage: localStorage,
-                                                                   maxTasks: 1,
                                                                    persistenceContextProvider: MockPersistenceContextProvider(context: context))
-
-        XCTAssertTrue(internalAPI.requestHandler.offlineMode)
         internalAPI.track("myEvent")
         internalAPI.track("myEvent2")
         internalAPI.track("myEvent3")

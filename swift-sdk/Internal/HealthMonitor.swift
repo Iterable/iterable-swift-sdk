@@ -73,12 +73,20 @@ class HealthMonitor {
         if let urlRequest = apiCallRequest.convertToURLRequest(sentAt: currentDate) {
             _ = RequestSender.sendRequest(urlRequest, usingSession: networkSession)
         }
-        errored = true
-        delegate?.onDBError()
+        onError()
     }
     
     func onDeleteError(task: IterableTask) {
         ITBInfo()
+        onError()
+    }
+    
+    func onNextTaskError() {
+        ITBInfo()
+        onError()
+    }
+    
+    private func onError() {
         errored = true
         delegate?.onDBError()
     }
