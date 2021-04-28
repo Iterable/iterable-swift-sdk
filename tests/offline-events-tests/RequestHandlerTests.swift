@@ -987,6 +987,7 @@ class RequestHandlerTests: XCTestCase {
                                                   dateProvider: dateProvider)
         let taskRunner = IterableTaskRunner(networkSession: networkSession,
                                             persistenceContextProvider: persistenceContextProvider,
+                                            healthMonitor: healthMonitor,
                                             notificationCenter: notificationCenter,
                                             timeInterval: 0.5,
                                             dateProvider: dateProvider)

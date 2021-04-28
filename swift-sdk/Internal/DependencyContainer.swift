@@ -84,7 +84,8 @@ extension DependencyContainerProtocol {
                                                                deviceMetadata: deviceMetadata,
                                                                taskScheduler: createTaskScheduler(persistenceContextProvider: persistenceContextProvider,
                                                                                                   healthMonitor: healthMonitor),
-                                                               taskRunner: createTaskRunner(persistenceContextProvider: persistenceContextProvider),
+                                                               taskRunner: createTaskRunner(persistenceContextProvider: persistenceContextProvider,
+                                                                                            healthMonitor: healthMonitor),
                                                                notificationCenter: notificationCenter)
                 return RequestHandler(onlineProcessor: onlineProcessor,
                                       offlineProcessor: offlineProcessor,
@@ -129,9 +130,11 @@ extension DependencyContainerProtocol {
     }
     
     @available(iOS 10.0, *)
-    private func createTaskRunner(persistenceContextProvider: IterablePersistenceContextProvider) -> IterableTaskRunner {
+    private func createTaskRunner(persistenceContextProvider: IterablePersistenceContextProvider,
+                                  healthMonitor: HealthMonitor) -> IterableTaskRunner {
         IterableTaskRunner(networkSession: networkSession,
                            persistenceContextProvider: persistenceContextProvider,
+                           healthMonitor: healthMonitor,
                            notificationCenter: notificationCenter,
                            connectivityManager: NetworkConnectivityManager())
     }
