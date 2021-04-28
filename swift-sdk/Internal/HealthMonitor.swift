@@ -57,6 +57,7 @@ class HealthMonitor {
             return count <= dataProvider.maxTasks
         } catch let error {
             ITBError("DBError: " + error.localizedDescription)
+            onError()
             return false
         }
     }

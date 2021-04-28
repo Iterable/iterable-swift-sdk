@@ -100,6 +100,7 @@ class HealthMonitorTests: XCTestCase {
         internalAPI.track("myEvent3")
         wait(for: [expectation1], timeout: testExpectationTimeout)
         XCTAssertEqual(processors, ["Online", "Online", "Online"])
+        XCTAssertFalse(internalAPI.requestHandler.offlineMode)
     }
 
     func testScheduleTaskException() throws {
