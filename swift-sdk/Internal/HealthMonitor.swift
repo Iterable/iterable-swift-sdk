@@ -61,6 +61,11 @@ class HealthMonitor {
         }
     }
     
+    func canProcess() -> Bool {
+        ITBInfo()
+        return !errored
+    }
+    
     func onScheduleError(apiCallRequest: IterableAPICallRequest) {
         ITBInfo()
         let currentDate = dateProvider.currentDate

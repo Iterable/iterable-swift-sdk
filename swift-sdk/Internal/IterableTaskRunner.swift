@@ -151,6 +151,10 @@ class IterableTaskRunner: NSObject {
             ITBInfo("Tasks paused before finishing processTasks()")
             return Promise<Void, Never>(value: ())
         }
+        guard healthMonitor.canProcess() else {
+            ITBInfo("Health monitor stopped processing")
+            return Promise<Void, Never>(value: ())
+        }
 
         if let task = try? persistenceContext.nextTask() {
             return execute(task: task).flatMap { executionResult in
