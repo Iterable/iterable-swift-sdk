@@ -49,11 +49,12 @@ class HealthMonitorTests: XCTestCase {
         let expectation1 = expectation(description: #function)
         expectation1.expectedFulfillmentCount = 3
         let networkSession = MockNetworkSession(statusCode: 200)
-        var processors = [String]()
+        var processorMap = [String: String]()
         networkSession.requestCallback = { request in
             if request.url!.absoluteString.contains(Const.Path.trackEvent) {
+                let eventName = request.bodyDict["eventName"] as! String
                 let processor = request.allHTTPHeaderFields?[JsonKey.Header.requestProcessor]!
-                processors.append(processor!)
+                processorMap[eventName] = processor!
                 expectation1.fulfill()
             }
         }
@@ -65,10 +66,15 @@ class HealthMonitorTests: XCTestCase {
                                                                    maxTasks: 1)
 
         internalAPI.track("myEvent")
-        internalAPI.track("myEvent2")
-        internalAPI.track("myEvent3")
+        internalAPI.track("myEvent2").onSuccess { _ in
+            DispatchQueue.main.async {
+                internalAPI.track("myEvent3")
+            }
+        }
         wait(for: [expectation1], timeout: testExpectationTimeout)
-        XCTAssertEqual(processors, ["Offline", "Online", "Offline"])
+        XCTAssertEqual(processorMap["myEvent"], "Offline")
+        XCTAssertEqual(processorMap["myEvent2"], "Online")
+        XCTAssertEqual(processorMap["myEvent3"], "Offline")
     }
 
     func testCountTasksException() throws {
