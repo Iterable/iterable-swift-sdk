@@ -86,6 +86,11 @@ class HealthMonitor {
         onError()
     }
     
+    func onDeleteAllTasksError() {
+        ITBInfo()
+        onError()
+    }
+    
     private func onError() {
         errored = true
         delegate?.onDBError()

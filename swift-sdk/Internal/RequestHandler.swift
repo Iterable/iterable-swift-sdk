@@ -250,7 +250,7 @@ class RequestHandler: RequestHandlerProtocol {
     
     func handleLogout() throws {
         if offlineMode {
-            try offlineProcessor?.deleteAllTasks()
+            offlineProcessor?.deleteAllTasks()
         }
     }
 

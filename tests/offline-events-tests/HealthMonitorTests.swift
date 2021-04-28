@@ -165,6 +165,24 @@ class HealthMonitorTests: XCTestCase {
         XCTAssertFalse(internalAPI.requestHandler.offlineMode)
     }
 
+    func testDeleteAllTasksException() throws {
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let localStorage = MockLocalStorage()
+        localStorage.email = "user@example.com"
+        localStorage.offlineModeBeta = true
+        var input = MockPersistenceContext.Input()
+        input.deleteAllTasksCallback = {
+            throw IterableDBError.general("error deleting all tasks")
+        }
+        let context = MockPersistenceContext(input: input)
+        let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: networkSession,
+                                                                   localStorage: localStorage,
+                                                                   persistenceContextProvider: MockPersistenceContextProvider(context: context))
+        XCTAssertTrue(internalAPI.requestHandler.offlineMode)
+        internalAPI.email = "user2@example.com"
+        XCTAssertFalse(internalAPI.requestHandler.offlineMode)
+    }
+
     private let dateProvider = MockDateProvider()
     
     private lazy var persistenceProvider: IterablePersistenceContextProvider = {

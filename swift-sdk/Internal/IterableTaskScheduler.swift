@@ -40,9 +40,14 @@ class IterableTaskScheduler {
         return Result.success(taskId)
     }
     
-    func deleteAllTasks() throws {
+    func deleteAllTasks() {
         ITBInfo()
-        try persistenceContextProvider.mainQueueContext().deleteAllTasks()
+        do {
+            try persistenceContextProvider.mainQueueContext().deleteAllTasks()
+        } catch let error {
+            ITBError("deleteAllTasks: \(error.localizedDescription)")
+            healthMonitor.onDeleteAllTasksError()
+        }
     }
     
     private let persistenceContextProvider: IterablePersistenceContextProvider

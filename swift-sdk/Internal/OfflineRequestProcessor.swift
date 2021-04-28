@@ -244,9 +244,9 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                                    identifier: #function)
     }
     
-    func deleteAllTasks() throws {
+    func deleteAllTasks() {
         ITBInfo()
-        try taskScheduler.deleteAllTasks()
+        taskScheduler.deleteAllTasks()
     }
     
     private let apiKey: String
