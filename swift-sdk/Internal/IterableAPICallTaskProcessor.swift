@@ -19,10 +19,9 @@ struct IterableAPICallTaskProcessor: IterableTaskProcessor {
         }
         
         let decodedIterableRequest = try JSONDecoder().decode(IterableAPICallRequest.self, from: data)
-        let iterableRequest = decodedIterableRequest.addingBodyField(key: JsonKey.Body.createdAt,
-                                                                     value: IterableUtil.secondsFromEpoch(for: task.scheduledAt))
+        let iterableRequest = decodedIterableRequest.addingCreatedAt(task.scheduledAt)
         
-        guard let urlRequest = iterableRequest.convertToURLRequest(currentDate: dateProvider.currentDate, processorType: .offline) else {
+        guard let urlRequest = iterableRequest.convertToURLRequest(sentAt: dateProvider.currentDate, processorType: .offline) else {
             return IterableTaskError.createErroredFuture(reason: "could not convert to url request")
         }
         

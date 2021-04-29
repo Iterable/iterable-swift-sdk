@@ -27,6 +27,7 @@ protocol DependencyContainerProtocol {
                               authManager: IterableInternalAuthManagerProtocol,
                               deviceMetadata: DeviceMetadata,
                               offlineMode: Bool) -> RequestHandlerProtocol
+    func createHealthMonitorDataProvider(persistenceContextProvider: IterablePersistenceContextProvider) -> HealthMonitorDataProviderProtocol
 }
 
 extension DependencyContainerProtocol {
@@ -71,20 +72,31 @@ extension DependencyContainerProtocol {
                                                          networkSession: networkSession,
                                                          deviceMetadata: deviceMetadata,
                                                          dateProvider: dateProvider)
-            let offlineProcessor: OfflineRequestProcessor?
             if let persistenceContextProvider = createPersistenceContextProvider() {
-                offlineProcessor = OfflineRequestProcessor(apiKey: apiKey,
-                                                           authProvider: authProvider,
-                                                           authManager: authManager,
-                                                           endPoint: endPoint,
-                                                           deviceMetadata: deviceMetadata,
-                                                           taskScheduler: createTaskScheduler(persistenceContextProvider: persistenceContextProvider),
-                                                           taskRunner: createTaskRunner(persistenceContextProvider: persistenceContextProvider),
-                                                           notificationCenter: notificationCenter)
+                let healthMonitorDataProvider = createHealthMonitorDataProvider(persistenceContextProvider: persistenceContextProvider)
+                let healthMonitor = HealthMonitor(dataProvider: healthMonitorDataProvider,
+                                                  dateProvider: dateProvider,
+                                                  networkSession: networkSession)
+                let offlineProcessor = OfflineRequestProcessor(apiKey: apiKey,
+                                                               authProvider: authProvider,
+                                                               authManager: authManager,
+                                                               endPoint: endPoint,
+                                                               deviceMetadata: deviceMetadata,
+                                                               taskScheduler: createTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                                                                                  healthMonitor: healthMonitor),
+                                                               taskRunner: createTaskRunner(persistenceContextProvider: persistenceContextProvider,
+                                                                                            healthMonitor: healthMonitor),
+                                                               notificationCenter: notificationCenter)
+                return RequestHandler(onlineProcessor: onlineProcessor,
+                                      offlineProcessor: offlineProcessor,
+                                      healthMonitor: healthMonitor,
+                                      offlineMode: offlineMode)
             } else {
-                offlineProcessor = nil
+                return RequestHandler(onlineProcessor: onlineProcessor,
+                                      offlineProcessor: nil,
+                                      healthMonitor: nil,
+                                      offlineMode: offlineMode)
             }
-            return RequestHandler(onlineProcessor: onlineProcessor, offlineProcessor: offlineProcessor, offlineMode: offlineMode)
         } else {
             return LegacyRequestHandler(apiKey: apiKey,
                                         authProvider: authProvider,
@@ -96,6 +108,10 @@ extension DependencyContainerProtocol {
         }
     }
     
+    func createHealthMonitorDataProvider(persistenceContextProvider: IterablePersistenceContextProvider) -> HealthMonitorDataProviderProtocol {
+        HealthMonitorDataProvider(maxTasks: 1000, persistenceContextProvider: persistenceContextProvider)
+    }
+    
     func createPersistenceContextProvider() -> IterablePersistenceContextProvider? {
         if #available(iOS 10.0, *) {
             return CoreDataPersistenceContextProvider(dateProvider: dateProvider)
@@ -105,16 +121,20 @@ extension DependencyContainerProtocol {
     }
     
     @available(iOS 10.0, *)
-    private func createTaskScheduler(persistenceContextProvider: IterablePersistenceContextProvider) -> IterableTaskScheduler {
+    private func createTaskScheduler(persistenceContextProvider: IterablePersistenceContextProvider,
+                                     healthMonitor: HealthMonitor) -> IterableTaskScheduler {
         IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
                               notificationCenter: notificationCenter,
+                              healthMonitor: healthMonitor,
                               dateProvider: dateProvider)
     }
     
     @available(iOS 10.0, *)
-    private func createTaskRunner(persistenceContextProvider: IterablePersistenceContextProvider) -> IterableTaskRunner {
+    private func createTaskRunner(persistenceContextProvider: IterablePersistenceContextProvider,
+                                  healthMonitor: HealthMonitor) -> IterableTaskRunner {
         IterableTaskRunner(networkSession: networkSession,
                            persistenceContextProvider: persistenceContextProvider,
+                           healthMonitor: healthMonitor,
                            notificationCenter: notificationCenter,
                            connectivityManager: NetworkConnectivityManager())
     }

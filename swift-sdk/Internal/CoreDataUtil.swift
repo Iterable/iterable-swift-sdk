@@ -24,7 +24,12 @@ struct CoreDataUtil {
         let request = NSFetchRequest<T>(entityName: entity)
         return try context.fetch(request)
     }
-    
+
+    static func count(context: NSManagedObjectContext, entity: String) throws -> Int {
+        let request = NSFetchRequest<NSFetchRequestResult>(entityName: entity)
+        return try context.count(for: request)
+    }
+
     static func findEntitiesByColumns<T: NSFetchRequestResult>(context: NSManagedObjectContext, entity: String, columns: [String: Any]) throws -> [T] {
         let request = NSFetchRequest<T>(entityName: entity)
         request.predicate = createColumnsPredicate(columns: columns)

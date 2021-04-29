@@ -36,10 +36,8 @@ class ApiClient {
                                                     endPoint: endPoint,
                                                     auth: authProvider.auth,
                                                     deviceMetadata: deviceMetadata,
-                                                    iterableRequest: iterableRequest)
-            .addingBodyField(key: JsonKey.Body.createdAt,
-                             value: IterableUtil.secondsFromEpoch(for: currentDate))
-        return apiCallRequest.convertToURLRequest(currentDate: currentDate)
+                                                    iterableRequest: iterableRequest).addingCreatedAt(currentDate)
+        return apiCallRequest.convertToURLRequest(sentAt: currentDate)
     }
     
     func send(iterableRequestResult result: Result<IterableRequest, IterableError>) -> Future<SendRequestValue, SendRequestError> {

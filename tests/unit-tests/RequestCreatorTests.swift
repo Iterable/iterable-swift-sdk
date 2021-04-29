@@ -355,7 +355,7 @@ class RequestCreatorTests: XCTestCase {
                                                     deviceMetadata: deviceMetadata,
                                                     iterableRequest: iterableRequest)
         
-        let request = apiCallRequest.convertToURLRequest(currentDate: dateProvider.currentDate, processorType: .offline)!
+        let request = apiCallRequest.convertToURLRequest(sentAt: dateProvider.currentDate, processorType: .offline)!
         
         TestUtils.validateHeader(request, apiKey, processorType: .offline)
         TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackEvent)

@@ -163,6 +163,10 @@ struct CoreDataPersistenceContext: IterablePersistenceContext {
         taskManagedObjects.forEach { managedObjectContext.delete($0) }
     }
     
+    func countTasks() throws -> Int {
+        return try CoreDataUtil.count(context: managedObjectContext, entity: PersistenceConst.Entity.Task.name)
+    }
+    
     func save() throws {
         try managedObjectContext.save()
     }

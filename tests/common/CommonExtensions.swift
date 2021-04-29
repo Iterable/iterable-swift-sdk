@@ -84,7 +84,9 @@ class MockDependencyContainer: DependencyContainerProtocol {
     let urlOpener: UrlOpenerProtocol
     let applicationStateProvider: ApplicationStateProviderProtocol
     let notificationCenter: NotificationCenterProtocol
+    let maxTasks: Int
     let apnsTypeChecker: APNSTypeCheckerProtocol
+    let persistenceContextProvider: IterablePersistenceContextProvider?
     
     init(dateProvider: DateProviderProtocol,
          networkSession: NetworkSessionProtocol,
@@ -96,7 +98,9 @@ class MockDependencyContainer: DependencyContainerProtocol {
          urlOpener: UrlOpenerProtocol,
          applicationStateProvider: ApplicationStateProviderProtocol,
          notificationCenter: NotificationCenterProtocol,
-         apnsTypeChecker: APNSTypeCheckerProtocol) {
+         maxTasks: Int,
+         apnsTypeChecker: APNSTypeCheckerProtocol,
+         persistenceContextProvider: IterablePersistenceContextProvider?) {
         ITBInfo()
         self.dateProvider = dateProvider
         self.networkSession = networkSession
@@ -108,7 +112,9 @@ class MockDependencyContainer: DependencyContainerProtocol {
         self.urlOpener = urlOpener
         self.applicationStateProvider = applicationStateProvider
         self.notificationCenter = notificationCenter
+        self.maxTasks = maxTasks
         self.apnsTypeChecker = apnsTypeChecker
+        self.persistenceContextProvider = persistenceContextProvider
     }
     
     deinit {
@@ -117,6 +123,18 @@ class MockDependencyContainer: DependencyContainerProtocol {
     
     func createInAppFetcher(apiClient _: ApiClientProtocol) -> InAppFetcherProtocol {
         inAppFetcher
+    }
+    
+    func createHealthMonitorDataProvider(persistenceContextProvider: IterablePersistenceContextProvider) -> HealthMonitorDataProviderProtocol {
+        HealthMonitorDataProvider(maxTasks: maxTasks, persistenceContextProvider: persistenceContextProvider)
+    }
+    
+    func createPersistenceContextProvider() -> IterablePersistenceContextProvider? {
+        if let persistenceContextProvider = persistenceContextProvider {
+            return persistenceContextProvider
+        } else {
+            return CoreDataPersistenceContextProvider(dateProvider: dateProvider)
+        }
     }
 }
 
@@ -136,7 +154,9 @@ extension IterableAPI {
                                      urlOpener: UrlOpenerProtocol = MockUrlOpener(),
                                      applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
                                      notificationCenter: NotificationCenterProtocol = NotificationCenter.default,
-                                     apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker()) {
+                                     maxTasks: Int = 1000,
+                                     apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker(),
+                                     persistenceContextProvider: IterablePersistenceContextProvider? = nil) {
         let mockDependencyContainer = MockDependencyContainer(dateProvider: dateProvider,
                                                               networkSession: networkSession,
                                                               notificationStateProvider: notificationStateProvider,
@@ -147,7 +167,9 @@ extension IterableAPI {
                                                               urlOpener: urlOpener,
                                                               applicationStateProvider: applicationStateProvider,
                                                               notificationCenter: notificationCenter,
-                                                              apnsTypeChecker: apnsTypeChecker)
+                                                              maxTasks: maxTasks,
+                                                              apnsTypeChecker: apnsTypeChecker,
+                                                              persistenceContextProvider: persistenceContextProvider)
         
         internalImplementation = InternalIterableAPI(apiKey: apiKey,
                                                      launchOptions: launchOptions,
@@ -175,7 +197,9 @@ extension InternalIterableAPI {
                                                         urlOpener: UrlOpenerProtocol = MockUrlOpener(),
                                                         applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared,
                                                         notificationCenter: NotificationCenterProtocol = NotificationCenter.default,
-                                                        apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker()) -> InternalIterableAPI {
+                                                        maxTasks: Int = 1000,
+                                                        apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker(),
+                                                        persistenceContextProvider: IterablePersistenceContextProvider? = nil) -> InternalIterableAPI {
         let mockDependencyContainer = MockDependencyContainer(dateProvider: dateProvider,
                                                               networkSession: networkSession,
                                                               notificationStateProvider: notificationStateProvider,
@@ -186,7 +210,9 @@ extension InternalIterableAPI {
                                                               urlOpener: urlOpener,
                                                               applicationStateProvider: applicationStateProvider,
                                                               notificationCenter: notificationCenter,
-                                                              apnsTypeChecker: apnsTypeChecker)
+                                                              maxTasks: maxTasks,
+                                                              apnsTypeChecker: apnsTypeChecker,
+                                                              persistenceContextProvider: persistenceContextProvider)
         
         let internalImplementation = InternalIterableAPI(apiKey: apiKey,
                                                          launchOptions: launchOptions,
