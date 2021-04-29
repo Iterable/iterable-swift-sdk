@@ -530,8 +530,6 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         
         updateSDKVersion()
         
-        checkForDeferredDeepLink()
-        
         // get email and userId from UserDefaults if present
         retrieveIdentifierData()
         
@@ -587,33 +585,6 @@ final class IterableAPIInternal: NSObject, PushTrackerProtocol, AuthProvider {
         if let pendingUniversalLink = Self.pendingUniversalLink {
             handleUniversalLink(pendingUniversalLink)
             Self.pendingUniversalLink = nil
-        }
-    }
-    
-    private func checkForDeferredDeepLink() {
-        guard config.checkForDeferredDeeplink else {
-            return
-        }
-        guard localStorage.ddlChecked == false else {
-            return
-        }
-        
-        guard let request = IterableRequestUtil.createPostRequest(forApiEndPoint: linksEndPoint,
-                                                                  path: Const.Path.ddlMatch,
-                                                                  headers: [
-                                                                    JsonKey.Header.apiKey: apiKey,
-                                                                    JsonKey.contentType: JsonValue.applicationJson,
-                                                                  ],
-                                                                  args: nil,
-                                                                  body: DeviceInfo.createDeviceInfo()) else {
-            ITBError("Could not create request")
-            return
-        }
-        
-        NetworkHelper.sendRequest(request, usingSession: networkSession).onSuccess { json in
-            self.handleDDL(json: json)
-        }.onError { sendError in
-            ITBError(sendError.reason)
         }
     }
     
