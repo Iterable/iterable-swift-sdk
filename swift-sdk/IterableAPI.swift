@@ -10,7 +10,7 @@ import UIKit
 @objcMembers
 public final class IterableAPI: NSObject {
     /// The current SDK version
-    public static let sdkVersion = "6.2.21"
+    public static let sdkVersion = "6.2.22"
     
     /// The email of the logged in user that this IterableAPI is using
     public static var email: String? {
