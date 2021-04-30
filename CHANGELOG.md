@@ -2,6 +2,19 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.2.22
+#### Added
+- In-app message prioritization - Ordering the display of in-app messages based on a priority you select in Iterable when creating in-app campaigns
+
+#### Fixed
+- The authentication flow, with JWT, now does the proper order of operations to avoid a false negative when setting the user (with `setEmail` or `setUser`)
+- The empty inbox message will now properly wraparound
+- An inbox message that has its read state changed will now only animate the unread dot
+
+#### Removed
+- Removed device fingerprinting as a cautionary measure for iOS 14.5 policy updates - note: we still keep the system generated UUID
+- Removed deferred deep linking feature
+
 ## 6.2.21
 #### Added
 - Support for syncing in-app message read state across multiple devices:

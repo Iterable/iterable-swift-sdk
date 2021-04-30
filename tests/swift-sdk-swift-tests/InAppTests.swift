@@ -127,7 +127,7 @@ class InAppTests: XCTestCase {
     
     func testAutoShowInAppMultipleWithOrdering() {
         let expectation0 = expectation(description: "testAutoShowInAppMultiple")
-        expectation0.expectedFulfillmentCount = 3 // three times
+        expectation0.expectedFulfillmentCount = 3
         let expectation1 = expectation(description: "testAutoShowInAppMultiple, first")
         let expectation2 = expectation(description: "testAutoShowInAppMultiple, second")
         let expectation3 = expectation(description: "testAutoShowInAppMultiple, third")
@@ -379,7 +379,7 @@ class InAppTests: XCTestCase {
         
         XCTAssertEqual(internalApi.inAppManager.getMessages().count, 0)
     }
-
+    
     func testShowInAppWithNoConsume() {
         let expectation1 = expectation(description: "testShowInAppWithConsume")
         let expectation2 = expectation(description: "url opened")
@@ -467,7 +467,7 @@ class InAppTests: XCTestCase {
             }
         }
         
-        wait(for: [expectation1, expectation2/*, expectation3*/], timeout: testExpectationTimeout)
+        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
         XCTAssertEqual(internalApi.inAppManager.getMessages().count, 0)
     }
     

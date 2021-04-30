@@ -235,6 +235,7 @@ extension IterableInAppMessage: Codable {
         case read
         case trigger
         case content
+        case priorityLevel
     }
     
     enum ContentCodingKeys: String, CodingKey {
@@ -266,6 +267,7 @@ extension IterableInAppMessage: Codable {
         
         let trigger = (try? container.decode(IterableInAppTrigger.self, forKey: .trigger)) ?? .undefinedTrigger
         let content = IterableInAppMessage.decodeContent(from: container)
+        let priorityLevel = (try? container.decode(Double.self, forKey: .priorityLevel)) ?? Const.PriorityLevel.unassigned
         
         self.init(messageId: messageId,
                   campaignId: campaignId,
@@ -276,7 +278,8 @@ extension IterableInAppMessage: Codable {
                   saveToInbox: saveToInbox,
                   inboxMetadata: inboxMetadata,
                   customPayload: customPayload,
-                  read: read)
+                  read: read,
+                  priorityLevel: priorityLevel)
         
         self.didProcessTrigger = didProcessTrigger
         self.consumed = consumed
@@ -295,6 +298,7 @@ extension IterableInAppMessage: Codable {
         try? container.encode(didProcessTrigger, forKey: .didProcessTrigger)
         try? container.encode(consumed, forKey: .consumed)
         try? container.encode(read, forKey: .read)
+        try? container.encode(priorityLevel, forKey: .priorityLevel)
         
         if let inboxMetadata = inboxMetadata {
             try? container.encode(inboxMetadata, forKey: .inboxMetadata)

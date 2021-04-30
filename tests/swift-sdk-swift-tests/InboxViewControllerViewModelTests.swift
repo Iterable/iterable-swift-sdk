@@ -264,7 +264,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let internalAPI = IterableAPIInternal.initializeForTesting(networkSession: mockNetworkSession, inAppFetcher: fetcher)
         let model = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
         
-        let mockView = MockViewModelView()
+        let mockView = MockViewModelView(model: model)
         mockView.onImageLoadedCallback = { indexPath in
             XCTAssertNotNil(model.message(atIndexPath: indexPath).imageData)
             expectation1.fulfill()
@@ -302,7 +302,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let internalAPI = IterableAPIInternal.initializeForTesting(networkSession: mockNetworkSession, inAppFetcher: fetcher)
         let model = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
         
-        let mockView = MockViewModelView()
+        let mockView = MockViewModelView(model: model)
         mockView.onImageLoadedCallback = { indexPath in
             XCTAssertNotNil(model.message(atIndexPath: indexPath).imageData)
             expectation1.fulfill()
@@ -373,15 +373,91 @@ class InboxViewControllerViewModelTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
+    func testRowDiff() {
+        let expectation1 = expectation(description: "add one section and two rows")
+        let expectation2 = expectation(description: "update first row")
+        
+        let firstMessageDate = Date()
+        let secondMessageDate = firstMessageDate.addingTimeInterval(-5.0)
+        let fetcher = MockInAppFetcher()
+        let internalAPI = IterableAPIInternal.initializeForTesting(inAppFetcher: fetcher)
+        let model = InboxViewControllerViewModel(internalAPIProvider: internalAPI)
+        let mockView = MockViewModelView(model: model)
+        mockView.onViewModelChangedCallback = { diffs in
+            if diffs.count == 3 {
+                expectation1.fulfill()
+                let messages = [
+                    IterableInAppMessage(messageId: "message1",
+                                         campaignId: 1,
+                                         trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
+                                         createdAt: firstMessageDate,
+                                         content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
+                                         saveToInbox: true,
+                                         inboxMetadata: nil,
+                                         customPayload: ["messageSection": 1],
+                                         read: true),
+                    IterableInAppMessage(messageId: "message2",
+                                         campaignId: 1,
+                                         trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
+                                         createdAt: secondMessageDate,
+                                         content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
+                                         saveToInbox: true,
+                                         inboxMetadata: nil,
+                                         customPayload: nil),
+                ]
+                fetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages)
+            } else {
+                if diffs.count == 1 {
+                    if case RowDiff.update(let indexPath) = diffs[0] {
+                        XCTAssertEqual(indexPath, IndexPath(row: 0, section: 0))
+                        expectation2.fulfill()
+                    }
+                }
+            }
+        }
+        model.view = mockView
+        
+        let messages = [
+            IterableInAppMessage(messageId: "message1",
+                                 campaignId: 1,
+                                 trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
+                                 createdAt: firstMessageDate,
+                                 content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
+                                 saveToInbox: true,
+                                 inboxMetadata: nil,
+                                 customPayload: ["messageSection": 1]),
+            IterableInAppMessage(messageId: "message2",
+                                 campaignId: 1,
+                                 trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
+                                 createdAt: secondMessageDate,
+                                 content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
+                                 saveToInbox: true,
+                                 inboxMetadata: nil,
+                                 customPayload: nil),
+        ]
+        fetcher.mockMessagesAvailableFromServer(internalApi: internalAPI, messages: messages)
+        
+        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout, enforceOrder: true)
+    }
+
     private class MockViewModelView: InboxViewControllerViewModelView {
+        init(model: InboxViewControllerViewModel) {
+            self.model = model
+        }
+        
         let currentlyVisibleRowIndexPaths: [IndexPath] = []
-        
         var onImageLoadedCallback: ((IndexPath) -> Void)?
+        var onViewModelChangedCallback: (([RowDiff]) -> Void)?
         
-        func onViewModelChanged(diff _: [SectionedDiffStep<Int, InboxMessageViewModel>]) {}
+        func onViewModelChanged(diffs: [RowDiff]) {
+            model.beganUpdates()
+            onViewModelChangedCallback?(diffs)
+        }
         
         func onImageLoaded(for indexPath: IndexPath) {
             onImageLoadedCallback?(indexPath)
         }
+        
+        private let model: InboxViewControllerViewModel
     }
 }
