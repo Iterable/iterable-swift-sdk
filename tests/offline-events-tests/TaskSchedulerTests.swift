@@ -42,8 +42,13 @@ class TaskSchedulerTests: XCTestCase {
                                                     deviceMetadata: deviceMetadata,
                                                     iterableRequest: trackEventRequest)
         
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                  persistenceContextProvider: persistenceContextProvider),
+                                          dateProvider: dateProvider,
+                                          networkSession: MockNetworkSession())
         let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
                                               notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor,
                                               dateProvider: dateProvider)
         let taskId = try scheduler.schedule(apiCallRequest: apiCallRequest).get()
 

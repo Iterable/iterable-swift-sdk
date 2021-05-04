@@ -714,6 +714,156 @@ class RequestHandlerTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
 
+    func testNoRemoteConfigurationUsesOnline() throws {
+        let expectation1 = expectation(description: "getRemoteConfiguration is called")
+        var mapper = [String: Data?]()
+        mapper["getRemoteConfiguration"] = nil
+        let networkSession = MockNetworkSession(statusCode: 200, urlPatternDataMapping: mapper)
+        networkSession.requestCallback = { request in
+            if request.url!.absoluteString.contains(Const.Path.getRemoteConfiguration) {
+                expectation1.fulfill()
+            }
+        }
+        let localStorage = MockLocalStorage()
+        localStorage.email = "user@example.com"
+        let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: networkSession, localStorage: localStorage)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+
+        let expectation2 = expectation(description: #function)
+        networkSession.requestCallback = { request in
+            if request.url!.absoluteString.contains("track") {
+                let processor = request.allHTTPHeaderFields?[JsonKey.Header.requestProcessor]!
+                XCTAssertEqual(processor, Const.ProcessorTypeName.online)
+                expectation2.fulfill()
+            }
+        }
+        internalAPI.track("myEvent")
+        wait(for: [expectation2], timeout: testExpectationTimeout)
+    }
+
+    func testDefaultRemoteConfigurationUsesOnlineMode() throws {
+        let expectation1 = expectation(description: "getRemoteConfiguration is called")
+        let remoteConfigurationData = """
+        {
+            "offlineMode": false,
+            "offlineModeBeta": false
+        }
+        """.data(using: .utf8)!
+        var mapper = [String: Data?]()
+        mapper["getRemoteConfiguration"] = remoteConfigurationData
+        let networkSession = MockNetworkSession(statusCode: 200, urlPatternDataMapping: mapper)
+        networkSession.requestCallback = { request in
+            if request.url!.absoluteString.contains(Const.Path.getRemoteConfiguration) {
+                expectation1.fulfill()
+            }
+        }
+        let localStorage = MockLocalStorage()
+        localStorage.email = "user@example.com"
+        let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: networkSession, localStorage: localStorage)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+
+        let expectation2 = expectation(description: #function)
+        networkSession.requestCallback = { request in
+            if request.url!.absoluteString.contains("track") {
+                let processor = request.allHTTPHeaderFields?[JsonKey.Header.requestProcessor]!
+                XCTAssertEqual(processor, Const.ProcessorTypeName.online)
+                expectation2.fulfill()
+            }
+        }
+        internalAPI.track("myEvent")
+        wait(for: [expectation2], timeout: testExpectationTimeout)
+    }
+
+    func testFeatureFlagTurnOnOfflineMode() throws {
+        let expectation1 = expectation(description: "getRemoteConfiguration is called")
+        let remoteConfigurationData = """
+        {
+            "offlineMode": false,
+            "offlineModeBeta": true
+        }
+        """.data(using: .utf8)!
+        var mapper = [String: Data?]()
+        mapper["getRemoteConfiguration"] = remoteConfigurationData
+        let networkSession = MockNetworkSession(statusCode: 200, urlPatternDataMapping: mapper)
+        networkSession.requestCallback = { request in
+            if request.url!.absoluteString.contains(Const.Path.getRemoteConfiguration) {
+                expectation1.fulfill()
+            }
+        }
+        let localStorage = MockLocalStorage()
+        localStorage.email = "user@example.com"
+        let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: networkSession, localStorage: localStorage)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+
+        let expectation2 = expectation(description: #function)
+        networkSession.requestCallback = { request in
+            if request.url!.absoluteString.contains("track") {
+                let processor = request.allHTTPHeaderFields?[JsonKey.Header.requestProcessor]!
+                XCTAssertEqual(processor, Const.ProcessorTypeName.offline)
+                expectation2.fulfill()
+            }
+        }
+        internalAPI.track("myEvent")
+        wait(for: [expectation2], timeout: testExpectationTimeout)
+    }
+
+    func testLoadOfflineModeEnabledFromLocalStorage() throws {
+        let expectation1 = expectation(description: "getRemoteConfiguration is called")
+        var mapper = [String: Data?]()
+        mapper["getRemoteConfiguration"] = nil
+        let networkSession = MockNetworkSession(statusCode: 200, urlPatternDataMapping: mapper)
+        networkSession.requestCallback = { request in
+            if request.url!.absoluteString.contains(Const.Path.getRemoteConfiguration) {
+                expectation1.fulfill()
+            }
+        }
+        let localStorage = MockLocalStorage()
+        localStorage.email = "user@example.com"
+        localStorage.offlineModeBeta = true
+        let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: networkSession, localStorage: localStorage)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+
+        let expectation2 = expectation(description: #function)
+        networkSession.requestCallback = { request in
+            if request.url!.absoluteString.contains("track") {
+                let processor = request.allHTTPHeaderFields?[JsonKey.Header.requestProcessor]!
+                XCTAssertEqual(processor, Const.ProcessorTypeName.offline)
+                expectation2.fulfill()
+            }
+        }
+        internalAPI.track("myEvent")
+        wait(for: [expectation2], timeout: testExpectationTimeout)
+    }
+
+    func testLoadOfflineModeDisabledFromLocalStorage() throws {
+        let expectation1 = expectation(description: "getRemoteConfiguration is called")
+        var mapper = [String: Data?]()
+        mapper["getRemoteConfiguration"] = nil
+        let networkSession = MockNetworkSession(statusCode: 200, urlPatternDataMapping: mapper)
+        networkSession.requestCallback = { request in
+            if request.url!.absoluteString.contains(Const.Path.getRemoteConfiguration) {
+                expectation1.fulfill()
+            }
+        }
+        let localStorage = MockLocalStorage()
+        localStorage.email = "user@example.com"
+        localStorage.offlineModeBeta = false
+        let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: networkSession, localStorage: localStorage)
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+
+        let expectation2 = expectation(description: #function)
+        networkSession.requestCallback = { request in
+            if request.url!.absoluteString.contains("track") {
+                let processor = request.allHTTPHeaderFields?[JsonKey.Header.requestProcessor]!
+                XCTAssertEqual(processor, Const.ProcessorTypeName.online)
+                expectation2.fulfill()
+            }
+        }
+        internalAPI.track("myEvent")
+        wait(for: [expectation2], timeout: testExpectationTimeout)
+    }
+
+    
     private func handleRequestWithSuccessAndFailure(requestGenerator: (RequestHandlerProtocol) -> Future<SendRequestValue, SendRequestError>,
                                                      path: String,
                                                      bodyDict: [AnyHashable: Any]) throws {
@@ -827,11 +977,17 @@ class RequestHandlerTests: XCTestCase {
     private func createRequestHandler(networkSession: NetworkSessionProtocol,
                                       notificationCenter: NotificationCenterProtocol,
                                       selectOffline: Bool) -> RequestHandlerProtocol {
+        let healthMonitor = HealthMonitor(dataProvider: HealthMonitorDataProvider(maxTasks: 1000,
+                                                                                  persistenceContextProvider: persistenceContextProvider),
+                                          dateProvider: dateProvider,
+                                          networkSession: networkSession)
         let taskScheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
                                                   notificationCenter: notificationCenter,
+                                                  healthMonitor: healthMonitor,
                                                   dateProvider: dateProvider)
         let taskRunner = IterableTaskRunner(networkSession: networkSession,
                                             persistenceContextProvider: persistenceContextProvider,
+                                            healthMonitor: healthMonitor,
                                             notificationCenter: notificationCenter,
                                             timeInterval: 0.5,
                                             dateProvider: dateProvider)
@@ -851,8 +1007,10 @@ class RequestHandlerTests: XCTestCase {
                                                        taskScheduler: taskScheduler,
                                                        taskRunner: taskRunner,
                                                        notificationCenter: notificationCenter)
+        
         return RequestHandler(onlineProcessor: onlineProcessor,
                               offlineProcessor: offlineProcessor,
+                              healthMonitor: healthMonitor,
                               offlineMode: selectOffline)
     }
     

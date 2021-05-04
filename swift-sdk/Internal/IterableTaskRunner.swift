@@ -10,6 +10,7 @@ import UIKit
 class IterableTaskRunner: NSObject {
     init(networkSession: NetworkSessionProtocol = URLSession(configuration: .default),
          persistenceContextProvider: IterablePersistenceContextProvider,
+         healthMonitor: HealthMonitor,
          notificationCenter: NotificationCenterProtocol = NotificationCenter.default,
          timeInterval: TimeInterval = 1.0 * 60,
          connectivityManager: NetworkConnectivityManager = NetworkConnectivityManager(),
@@ -17,6 +18,7 @@ class IterableTaskRunner: NSObject {
         ITBInfo()
         self.networkSession = networkSession
         self.persistenceContextProvider = persistenceContextProvider
+        self.healthMonitor = healthMonitor
         self.notificationCenter = notificationCenter
         self.timeInterval = timeInterval
         self.dateProvider = dateProvider
@@ -149,19 +151,29 @@ class IterableTaskRunner: NSObject {
             ITBInfo("Tasks paused before finishing processTasks()")
             return Promise<Void, Never>(value: ())
         }
+        guard healthMonitor.canProcess() else {
+            ITBInfo("Health monitor stopped processing")
+            return Promise<Void, Never>(value: ())
+        }
 
-        if let task = try? persistenceContext.nextTask() {
-            return execute(task: task).flatMap { executionResult in
-                switch executionResult {
-                case .success, .failure, .error:
-                    self.deleteTask(task: task)
-                    return self.processTasks()
-                case .processing, .retry:
-                    return Promise<Void, Never>(value: ())
+        do {
+            if let task = try persistenceContext.nextTask() {
+                return execute(task: task).flatMap { executionResult in
+                    switch executionResult {
+                    case .success, .failure, .error:
+                        self.deleteTask(task: task)
+                        return self.processTasks()
+                    case .processing, .retry:
+                        return Promise<Void, Never>(value: ())
+                    }
                 }
+            } else {
+                ITBInfo("No tasks to execute")
+                return Promise<Void, Never>(value: ())
             }
-        } else {
-            ITBInfo("No tasks to execute")
+        } catch let error {
+            ITBError("Next task error: \(error.localizedDescription)")
+            healthMonitor.onNextTaskError()
             return Promise<Void, Never>(value: ())
         }
     }
@@ -238,6 +250,7 @@ class IterableTaskRunner: NSObject {
             try persistenceContext.save()
         } catch let error {
             ITBError(error.localizedDescription)
+            healthMonitor.onDeleteError(task: task)
         }
     }
     
@@ -252,6 +265,7 @@ class IterableTaskRunner: NSObject {
     private var paused = false
     private let networkSession: NetworkSessionProtocol
     private let persistenceContextProvider: IterablePersistenceContextProvider
+    private let healthMonitor: HealthMonitor
     private let notificationCenter: NotificationCenterProtocol
     private let timeInterval: TimeInterval
     private let dateProvider: DateProviderProtocol

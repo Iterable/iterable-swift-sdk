@@ -94,13 +94,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func setEmail(_ email: String?) {
         ITBInfo()
         
-        if email == nil {
-            logoutPreviousUser()
-            return
-        }
-        
         if _email == email {
-            requestNewAuthToken()
             return
         }
         
@@ -111,20 +105,13 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         storeIdentifierData()
         
-        requestNewAuthToken()
-        loginNewUser()
+        onLogin()
     }
     
     func setUserId(_ userId: String?) {
         ITBInfo()
         
-        if userId == nil {
-            logoutPreviousUser()
-            return
-        }
-        
         if _userId == userId {
-            requestNewAuthToken()
             return
         }
         
@@ -135,8 +122,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         storeIdentifierData()
         
-        requestNewAuthToken()
-        loginNewUser()
+        onLogin()
     }
     
     func logoutUser() {
@@ -375,7 +361,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     private var config: IterableConfig
     private var apiEndPoint: String
-    private var linksEndPoint: String
     
     // Following are needed for handling pending notification and deep link.
     static var pendingNotificationResponse: NotificationResponseProtocol?
@@ -408,7 +393,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                   dateProvider: dateProvider)
     }()
     
-    private lazy var requestHandler: RequestHandlerProtocol = {
+    lazy var requestHandler: RequestHandlerProtocol = {
         let offlineMode = self.localStorage.isOfflineModeEnabled()
         return dependencyContainer.createRequestHandler(apiKey: apiKey,
                                                         config: config,
@@ -442,12 +427,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         IterableUtil.isNotNullOrEmpty(string: _email) || IterableUtil.isNotNullOrEmpty(string: _userId)
     }
     
-    private func requestNewAuthToken() {
-        authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: { [weak self] authToken in
-            _ = self?.inAppManager.scheduleSync()
-        })
-    }
-    
     private func logoutPreviousUser() {
         ITBInfo()
         
@@ -471,7 +450,28 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         try? requestHandler.handleLogout()
     }
     
-    private func loginNewUser() {
+    private func storeIdentifierData() {
+        localStorage.email = _email
+        localStorage.userId = _userId
+    }
+    
+    private func onLogin() {
+        ITBInfo()
+        
+        if isEitherUserIdOrEmailSet() && config.authDelegate != nil {
+            requestNewAuthToken()
+        } else {
+            completeUserLogin()
+        }
+    }
+    
+    private func requestNewAuthToken() {
+        authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: { [weak self] _ in
+            self?.completeUserLogin()
+        })
+    }
+    
+    private func completeUserLogin() {
         ITBInfo()
         
         guard isEitherUserIdOrEmailSet() else {
@@ -483,11 +483,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
         
         _ = inAppManager.scheduleSync()
-    }
-    
-    private func storeIdentifierData() {
-        localStorage.email = _email
-        localStorage.userId = _userId
     }
     
     private func retrieveIdentifierData() {
@@ -513,7 +508,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
          launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
          config: IterableConfig = IterableConfig(),
          apiEndPointOverride: String? = nil,
-         linksEndPointOverride: String? = nil,
          dependencyContainer: DependencyContainerProtocol = DependencyContainer()) {
         IterableLogUtil.sharedInstance = IterableLogUtil(dateProvider: dependencyContainer.dateProvider, logDelegate: config.logDelegate)
         ITBInfo()
@@ -521,7 +515,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.launchOptions = launchOptions
         self.config = config
         apiEndPoint = apiEndPointOverride ?? Endpoint.api
-        linksEndPoint = linksEndPointOverride ?? Endpoint.links
         self.dependencyContainer = dependencyContainer
         dateProvider = dependencyContainer.dateProvider
         networkSession = dependencyContainer.networkSession
@@ -536,8 +529,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         ITBInfo()
         
         updateSDKVersion()
-        
-        checkForDeferredDeepLink()
         
         // get email and userId from UserDefaults if present
         retrieveIdentifierData()
@@ -596,30 +587,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         if let pendingUniversalLink = Self.pendingUniversalLink {
             handleUniversalLink(pendingUniversalLink)
             Self.pendingUniversalLink = nil
-        }
-    }
-    
-    private func checkForDeferredDeepLink() {
-        guard config.checkForDeferredDeeplink else {
-            return
-        }
-        guard localStorage.ddlChecked == false else {
-            return
-        }
-        
-        guard let request = IterableRequestUtil.createPostRequest(forApiEndPoint: linksEndPoint,
-                                                                  path: Const.Path.ddlMatch,
-                                                                  headers: [JsonKey.Header.apiKey: apiKey],
-                                                                  args: nil,
-                                                                  body: DeviceInfo.createDeviceInfo()) else {
-            ITBError("Could not create request")
-            return
-        }
-        
-        RequestSender.sendRequest(request, usingSession: networkSession).onSuccess { json in
-            self.handleDDL(json: json)
-        }.onError { sendError in
-            ITBError(sendError.reason)
         }
     }
     
