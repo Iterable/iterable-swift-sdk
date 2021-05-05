@@ -14,7 +14,7 @@ import UserNotifications
         
         bestAttemptContent?.categoryIdentifier = getCategoryId(from: request.content) // IMPORTANT: need to add this to the documentation
         
-        retrieveAttachment(from request.content)
+        retrieveAttachment(from: request.content)
     }
     
     @objc override open func serviceExtensionTimeWillExpire() {
@@ -27,7 +27,7 @@ import UserNotifications
     // MARK: - Private
     
     private func retrieveAttachment(from content: UNNotificationContent) {
-        guard let itblDictionary = request.content.userInfo[JsonKey.Payload.metadata] as? [AnyHashable: Any],
+        guard let itblDictionary = content.userInfo[JsonKey.Payload.metadata] as? [AnyHashable: Any],
               let attachmentUrlString = itblDictionary[JsonKey.Payload.attachmentUrl] as? String,
               let url = URL(string: attachmentUrlString) else {
             callContentHandler()
