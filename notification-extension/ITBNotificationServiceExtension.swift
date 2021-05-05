@@ -12,9 +12,10 @@ import UserNotifications
         self.contentHandler = contentHandler
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
-        bestAttemptContent?.categoryIdentifier = getCategoryId(from: request.content) // IMPORTANT: need to add this to the documentation
-        
+        setCategoryId(from: request.content)
         retrieveAttachment(from: request.content)
+        
+        checkPushCreationCompletion()
     }
     
     @objc override open func serviceExtensionTimeWillExpire() {
@@ -30,7 +31,7 @@ import UserNotifications
         guard let itblDictionary = content.userInfo[JsonKey.Payload.metadata] as? [AnyHashable: Any],
               let attachmentUrlString = itblDictionary[JsonKey.Payload.attachmentUrl] as? String,
               let url = URL(string: attachmentUrlString) else {
-            callContentHandler()
+            attachmentRetrievalFinished = true
             return
         }
         
@@ -43,7 +44,7 @@ import UserNotifications
     private func createAttachmentDownloadTask(url: URL) -> URLSessionDownloadTask {
         return URLSession.shared.downloadTask(with: url) { [weak self] location, response, error in
             guard let strongSelf = self, error == nil, let response = response, let responseUrl = response.url, let location = location else {
-                self?.callContentHandler()
+                self?.attachmentRetrievalFinished = true
                 return
             }
             
@@ -56,7 +57,7 @@ import UserNotifications
                 try FileManager.default.moveItem(at: location, to: tempFileUrl)
                 attachment = try UNNotificationAttachment(identifier: attachmentId, url: tempFileUrl, options: nil)
             } catch {
-                self?.callContentHandler()
+                self?.attachmentRetrievalFinished = true
                 return
             }
             
@@ -64,7 +65,7 @@ import UserNotifications
                 content.attachments.append(attachment)
                 handler(content)
             } else {
-                self?.callContentHandler()
+                self?.attachmentRetrievalFinished = true
                 return
             }
         }
@@ -75,12 +76,11 @@ import UserNotifications
         attachmentDownloadTask = nil
     }
     
-    private func callContentHandler() {
-        stopCurrentAttachmentDownloadTask()
+    private func setCategoryId(from content: UNNotificationContent) {
+        // IMPORTANT: need to add this to the documentation
+        bestAttemptContent?.categoryIdentifier = getCategoryId(from: content)
         
-        if let contentHandler = contentHandler, let bestAttemptContent = bestAttemptContent {
-            contentHandler(bestAttemptContent)
-        }
+        getCategoryIdFinished = true
     }
     
     private func getCategoryId(from content: UNNotificationContent) -> String {
@@ -188,6 +188,32 @@ import UserNotifications
         }
         
         return responseUrl.lastPathComponent
+    }
+    
+    private func checkPushCreationCompletion() {
+        if getCategoryIdFinished && attachmentRetrievalFinished {
+            callContentHandler()
+        }
+    }
+    
+    private func callContentHandler() {
+        stopCurrentAttachmentDownloadTask()
+        
+        if let contentHandler = contentHandler, let bestAttemptContent = bestAttemptContent {
+            contentHandler(bestAttemptContent)
+        }
+    }
+    
+    private var getCategoryIdFinished: Bool = false {
+        didSet {
+            checkPushCreationCompletion()
+        }
+    }
+    
+    private var attachmentRetrievalFinished: Bool = false {
+        didSet {
+            checkPushCreationCompletion()
+        }
     }
     
     private var messageCategory: UNNotificationCategory?
