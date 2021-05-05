@@ -2,8 +2,25 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.2.22
+#### Added
+- In-app message prioritization - Ordering the display of in-app messages based on a priority you select in Iterable when creating in-app campaigns
+
+#### Fixed
+- The authentication flow, with JWT, now does the proper order of operations to avoid a false negative when setting the user (with `setEmail` or `setUser`)
+- The empty inbox message will now properly wraparound
+- An inbox message that has its read state changed will now only animate the unread dot
+
+#### Removed
+- Removed device fingerprinting as a cautionary measure for iOS 14.5 policy updates - note: we still keep the system generated UUID
+- Removed deferred deep linking feature
+
 ## 6.3.0-beta3
-### Added
+#### Changed
+- This is rebuilt beta based off of 6.2.21
+
+## 6.2.21
+#### Added
 - Support for syncing in-app message read state across multiple devices:
   - When the SDK fetches in-app messages from Iterable, it examines each
     message's `read` field to determine if it has already been read.
@@ -27,6 +44,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 #### Fixed
 - Fixed how we look up `Resources` folder for Cocoapods.
+
+## 6.2.20
+#### Added
+- Added callback to initialize method needed for React Native. This change should have no effect for iOS SDK.
 
 ## 6.3.0-beta1
 #### Added
