@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.3.0-beta4
+#### Changed
+- This beta is rebuilt from version 6.2.22
+
+#### Added
+- A health monitor now checks to make sure offline events don't get written when there are already a maximum amount of events in the database, or if an error is returned from the database
+
 ## 6.2.22
 #### Added
 - In-app message prioritization - Ordering the display of in-app messages based on a priority you select in Iterable when creating in-app campaigns
@@ -17,7 +24,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 6.3.0-beta3
 #### Changed
-- This is rebuilt beta based off of 6.2.21
+- This beta is rebuilt from version 6.2.21
 
 ## 6.2.21
 #### Added
