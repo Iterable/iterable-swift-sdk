@@ -62,71 +62,72 @@ class NotificationExtensionSwiftTests: XCTestCase {
         wait(for: [condition1], timeout: timeout)
     }
     
-    func testPushImageAttachment() {
-        let condition1 = expectation(description: "image attachment didn't function as expected")
-        
-        let content = UNMutableNotificationContent()
-        let messageId = UUID().uuidString
-        
-        content.userInfo = [
-            "itbl": [
-                "messageId": messageId,
-                "attachment-url": "https://github.com/Iterable/swift-sdk/raw/master/images/Iterable-Logo.png"
-            ]
-        ]
-        
-        let request = UNNotificationRequest(identifier: "request", content: content, trigger: nil)
-        
-        appExtension.didReceive(request) { content in
-            XCTAssertEqual(content.attachments.count, 1)
-            
-            guard let firstAttachment = content.attachments.first else {
-                XCTFail("attachment doesn't exist")
-                return
-            }
-            
-            XCTAssertNotNil(firstAttachment.url)
-            XCTAssertEqual(firstAttachment.url.scheme, "file")
-            
-            // at some point, fix this to use proper typing through the UniformTypeIdentifiers framework
-            XCTAssertEqual(firstAttachment.type, "public.png")
-            
-            condition1.fulfill()
-        }
-        
-        wait(for: [condition1], timeout: timeout)
-    }
-    
-    func testPushVideoAttachment() {
-        let condition1 = expectation(description: "video attachment didn't function as expected")
-        
-        let content = UNMutableNotificationContent()
-        let messageId = UUID().uuidString
-        
-        content.userInfo = [
-            "itbl": [
-                "messageId": messageId,
-                "attachment-url": "https://github.com/Iterable/swift-sdk/raw/master/tests/notification-extension-tests/swirl.mp4"
-            ]
-        ]
-        
-        let request = UNNotificationRequest(identifier: "request", content: content, trigger: nil)
-        
-        appExtension.didReceive(request) { content in
-            guard let firstAttachment = content.attachments.first else {
-                XCTFail("attachment doesn't exist")
-                return
-            }
-            
-            XCTAssertNotNil(firstAttachment.url)
-            XCTAssertEqual(firstAttachment.url.scheme, "file")
-            
-            // at some point, fix this to use proper typing through the UniformTypeIdentifiers framework
-            XCTAssertEqual(firstAttachment.type, "public.mpeg-4")
-            
-            condition1.fulfill()
-        }
-        
-        wait(for: [condition1], timeout: timeout)
-    }
+//    func testPushImageAttachment() {
+//        let condition1 = expectation(description: "image attachment didn't function as expected")
+//
+//        let content = UNMutableNotificationContent()
+//        let messageId = UUID().uuidString
+//
+//        content.userInfo = [
+//            "itbl": [
+//                "messageId": messageId,
+//                "attachment-url": "https://github.com/Iterable/swift-sdk/raw/master/images/Iterable-Logo.png"
+//            ]
+//        ]
+//
+//        let request = UNNotificationRequest(identifier: "request", content: content, trigger: nil)
+//
+//        appExtension.didReceive(request) { content in
+//            XCTAssertEqual(content.attachments.count, 1)
+//
+//            guard let firstAttachment = content.attachments.first else {
+//                XCTFail("attachment doesn't exist")
+//                return
+//            }
+//
+//            XCTAssertNotNil(firstAttachment.url)
+//            XCTAssertEqual(firstAttachment.url.scheme, "file")
+//
+//            // at some point, fix this to use proper typing through the UniformTypeIdentifiers framework
+//            XCTAssertEqual(firstAttachment.type, "public.png")
+//
+//            condition1.fulfill()
+//        }
+//
+//        wait(for: [condition1], timeout: timeout)
+//    }
+//
+//    func testPushVideoAttachment() {
+//        let condition1 = expectation(description: "video attachment didn't function as expected")
+//
+//        let content = UNMutableNotificationContent()
+//        let messageId = UUID().uuidString
+//
+//        content.userInfo = [
+//            "itbl": [
+//                "messageId": messageId,
+//                "attachment-url": "https://github.com/Iterable/swift-sdk/raw/master/tests/notification-extension-tests/swirl.mp4"
+//            ]
+//        ]
+//
+//        let request = UNNotificationRequest(identifier: "request", content: content, trigger: nil)
+//
+//        appExtension.didReceive(request) { content in
+//            guard let firstAttachment = content.attachments.first else {
+//                XCTFail("attachment doesn't exist")
+//                return
+//            }
+//
+//            XCTAssertNotNil(firstAttachment.url)
+//            XCTAssertEqual(firstAttachment.url.scheme, "file")
+//
+//            // at some point, fix this to use proper typing through the UniformTypeIdentifiers framework
+//            XCTAssertEqual(firstAttachment.type, "public.mpeg-4")
+//
+//            condition1.fulfill()
+//        }
+//
+//        wait(for: [condition1], timeout: timeout)
+//    }
 }
+
