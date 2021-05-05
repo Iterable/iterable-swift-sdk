@@ -12,15 +12,9 @@ import UserNotifications
         self.contentHandler = contentHandler
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
-        // IMPORTANT: need to add this to the documentation
-        bestAttemptContent?.categoryIdentifier = getCategory(fromContent: request.content)
+        bestAttemptContent?.categoryIdentifier = getCategoryId(from: request.content) // IMPORTANT: need to add this to the documentation
         
-        guard let itblDictionary = request.content.userInfo[JsonKey.Payload.metadata] as? [AnyHashable: Any] else {
-            callContentHandler()
-            return
-        }
-        
-        retrieveAttachment(itblDictionary: itblDictionary)
+        retrieveAttachment(from request.content)
     }
     
     @objc override open func serviceExtensionTimeWillExpire() {
@@ -32,9 +26,13 @@ import UserNotifications
     
     // MARK: - Private
     
-    private func retrieveAttachment(itblDictionary: [AnyHashable: Any]) {
-        guard let attachmentUrlString = itblDictionary[JsonKey.Payload.attachmentUrl] as? String else { return }
-        guard let url = URL(string: attachmentUrlString) else { return }
+    private func retrieveAttachment(from content: UNNotificationContent) {
+        guard let itblDictionary = request.content.userInfo[JsonKey.Payload.metadata] as? [AnyHashable: Any],
+              let attachmentUrlString = itblDictionary[JsonKey.Payload.attachmentUrl] as? String,
+              let url = URL(string: attachmentUrlString) else {
+            callContentHandler()
+            return
+        }
         
         stopCurrentAttachmentDownloadTask()
         
@@ -85,7 +83,7 @@ import UserNotifications
         }
     }
     
-    private func getCategory(fromContent content: UNNotificationContent) -> String {
+    private func getCategoryId(from content: UNNotificationContent) -> String {
         guard content.categoryIdentifier.count == 0 else {
             return content.categoryIdentifier
         }
