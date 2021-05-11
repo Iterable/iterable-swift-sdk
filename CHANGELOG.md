@@ -19,7 +19,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - An inbox message that has its read state changed will now only animate the unread dot
 
 #### Removed
-- Removed device fingerprinting as a cautionary measure for iOS 14.5 policy updates - note: we still keep the system generated UUID
+- Removed deferred deep linking related code as a cautionary measure for iOS 14.5 policy updates - note: we still keep the system generated UUID
 - Removed deferred deep linking feature
 
 ## 6.3.0-beta3
