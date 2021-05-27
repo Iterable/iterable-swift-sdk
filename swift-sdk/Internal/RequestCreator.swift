@@ -89,12 +89,8 @@ struct RequestCreator {
             ITBError("Both email and userId are nil")
             return .failure(IterableError.general(description: "Both email and userId are nil"))
         }
-
-        var itemsToSerialize = [[AnyHashable: Any]]()
         
-        for item in items {
-            itemsToSerialize.append(item.toDictionary())
-        }
+        let itemsToSerialize = items.map { $0.toDictionary() }
         
         var apiUserDict = [AnyHashable: Any]()
         

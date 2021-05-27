@@ -159,6 +159,18 @@ enum JsonKey {
         static let user = "user"
     }
     
+    enum CommerceItem {
+        static let id = "id"
+        static let name = "name"
+        static let price = "price"
+        static let quantity = "quantity"
+        static let sku = "sku"
+        static let description = "description"
+        static let imageUrl = "imageUrl"
+        static let url = "url"
+        static let categories = "categories"
+    }
+    
     enum Device {
         static let localizedModel = "localizedModel"
         static let vendorId = "identifierForVendor"

@@ -7,7 +7,7 @@ import XCTest
 @testable import IterableSDK
 
 class CommerceItemTests: XCTestCase {
-    func testToDictionary() {
+    func testToDictionaryWithRequiredFields() {
         let commerceItemDictionary = CommerceItem(id: "commerceItemId", name: "commerceItemName", price: 6, quantity: 9000).toDictionary()
         
         let expected: [AnyHashable: Any] = ["id": "commerceItemId",
@@ -16,5 +16,31 @@ class CommerceItemTests: XCTestCase {
                                             "quantity": 9000]
         
         XCTAssertEqual(NSDictionary(dictionary: commerceItemDictionary), NSDictionary(dictionary: expected))
+    }
+    
+    func testToDictionaryWithAllFields() {
+        let itemDictionary = CommerceItem(id: "THINKTANK",
+                                          name: "Tachikoma",
+                                          price: 7.62,
+                                          quantity: 9,
+                                          sku: "kusanagi",
+                                          itemDescription: "spider type multi leg/multi ped combat vehicle equipped with AI",
+                                          url: "stand-alone-complex",
+                                          imageUrl: "laughing-man",
+                                          categories: ["section 9",
+                                                       "personnel transport"]).toDictionary()
+        
+        let expected: [AnyHashable: Any] = ["id": "THINKTANK",
+                                            "name": "Tachikoma",
+                                            "price": 7.62,
+                                            "quantity": 9,
+                                            "sku": "kusanagi",
+                                            "description": "spider type multi leg/multi ped combat vehicle equipped with AI",
+                                            "url": "stand-alone-complex",
+                                            "imageUrl": "laughing-man",
+                                            "categories": ["section 9",
+                                                           "personnel transport"]]
+        
+        XCTAssertEqual(NSDictionary(dictionary: itemDictionary), NSDictionary(dictionary: expected))
     }
 }
