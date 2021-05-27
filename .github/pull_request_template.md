@@ -1,4 +1,4 @@
-## 🔹 JIRA Ticket(s) if any
+## 🔹 Jira Ticket(s)
 
 * [MOB-XXXX](https://iterable.atlassian.net/browse/MOB-XXXX)
 
