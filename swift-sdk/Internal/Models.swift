@@ -6,7 +6,7 @@
 import Foundation
 
 struct RemoteConfiguration: Codable, Equatable {
-    static let isBeta = true
+    static let isBeta = false
     
     let offlineMode: Bool
     let offlineModeBeta: Bool
