@@ -13,7 +13,7 @@ you to create better experiences for—and deeper relationships with—your
 customers. Use it to send customized email, SMS, push notification, in-app
 message, web push notification campaigns to your customers.
 
-This SDK helps you integrate your iOS apps with Iterable. It supports iOS 9.0+.
+This SDK helps you integrate your iOS apps with Iterable.
 
 ## Installation
 
@@ -33,7 +33,6 @@ To learn more about various SDK features, read:
 - [Customizing Mobile Inbox on iOS](https://support.iterable.com/hc/articles/360039091471)
 - [iOS Universal Links](https://support.iterable.com/hc/articles/360035496511)
 - [Deep Links in Push Notifications](https://support.iterable.com/hc/articles/360035453971)
-- [Deferred Deep Linking](https://support.iterable.com/hc/articles/360035165872)
 
 ## Sample projects
 
