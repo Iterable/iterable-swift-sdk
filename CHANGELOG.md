@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.3.0
+#### Added
+- **Offline events processing** - This feature saves a local copy of events triggered in your app while the device is offline (up to 1000 events). When a connection is re-established and your app is in the foreground, the events will be sent to Iterable.
+This feature is off by default, and we're rolling it out on a customer-by-customer basis. After you start using this version of the SDK, we'll send you a message before we enable the feature on your account (unfortunately, we can't give you an exact timeline for when this will happen). If you have any questions, talk to your Iterable customer success manager.
+
 ## 6.3.0-beta4
 #### Changed
 - This beta is rebuilt from version 6.2.22
@@ -19,7 +24,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - An inbox message that has its read state changed will now only animate the unread dot
 
 #### Removed
-- Removed device fingerprinting as a cautionary measure for iOS 14.5 policy updates - note: we still keep the system generated UUID
+- Removed deferred deep linking related code as a cautionary measure for iOS 14.5 policy updates - note: we still keep the system generated UUID
 - Removed deferred deep linking feature
 
 ## 6.3.0-beta3
