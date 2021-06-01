@@ -109,7 +109,9 @@ import UserNotifications
         // IMPORTANT: need to add this to the documentation
         bestAttemptContent?.categoryIdentifier = id
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+        // for some reason, the check needs to be put into this dispatch
+        // to function properly for rich pushes with buttons but no image
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
             self.getCategoryIdFinished = true
         }
     }
