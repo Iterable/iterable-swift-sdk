@@ -12,7 +12,7 @@ import UserNotifications
         self.contentHandler = contentHandler
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
-        setCategoryId(from: request.content)
+        getCategoryId(from: request.content)
         retrieveAttachment(from: request.content)
         
         checkPushCreationCompletion()
@@ -76,54 +76,42 @@ import UserNotifications
         attachmentDownloadTask = nil
     }
     
-    private func setCategoryId(from content: UNNotificationContent) {
-        // IMPORTANT: need to add this to the documentation
-        bestAttemptContent?.categoryIdentifier = getCategoryId(from: content)
-        
-        getCategoryIdFinished = true
-    }
-    
-    private func getCategoryId(from content: UNNotificationContent) -> String {
+    private func getCategoryId(from content: UNNotificationContent) {
         guard content.categoryIdentifier.count == 0 else {
-            return content.categoryIdentifier
+            setCategoryId(id: content.categoryIdentifier)
+            return
         }
         
-        guard let itblDictionary = content.userInfo[JsonKey.Payload.metadata] as? [AnyHashable: Any],
-              let messageId = itblDictionary[JsonKey.Payload.messageId] as? String else {
-            return ""
+        guard let itblPayload = content.userInfo[JsonKey.Payload.metadata] as? [AnyHashable: Any],
+              let messageId = itblPayload[JsonKey.Payload.messageId] as? String else {
+            setCategoryId(id: "")
+            return
         }
         
-        var actionButtons: [[AnyHashable: Any]] = []
-        
-        if let actionButtonsFromITBLPayload = itblDictionary[JsonKey.Payload.actionButtons] as? [[AnyHashable: Any]] {
-            actionButtons = actionButtonsFromITBLPayload
-        } else {
-            #if DEBUG
-            if let actionButtonsFromUserInfo = content.userInfo[JsonKey.Payload.actionButtons] as? [[AnyHashable: Any]] {
-                actionButtons = actionButtonsFromUserInfo
-            }
-            #endif
-        }
-        
-        var notificationActions = [UNNotificationAction]()
-
-        for actionButton in actionButtons {
-            if let notificationAction = createNotificationActionButton(buttonDictionary: actionButton) {
-                notificationActions.append(notificationAction)
-            }
-        }
-        
-        messageCategory = UNNotificationCategory(identifier: messageId, actions: notificationActions, intentIdentifiers: [], options: [])
+        messageCategory = UNNotificationCategory(identifier: messageId,
+                                                 actions: getNotificationActions(payload: itblPayload, content: content),
+                                                 intentIdentifiers: [],
+                                                 options: [])
         
         if let messageCategory = messageCategory {
-            UNUserNotificationCenter.current().getNotificationCategories { categories in
+            UNUserNotificationCenter.current().getNotificationCategories { [weak self] categories in
                 var newCategories = categories
                 newCategories.insert(messageCategory)
                 UNUserNotificationCenter.current().setNotificationCategories(newCategories)
+                self?.setCategoryId(id: messageId)
             }
+        } else {
+            setCategoryId(id: messageId)
         }
+    }
+    
+    private func setCategoryId(id: String) {
+        // IMPORTANT: need to add this to the documentation
+        bestAttemptContent?.categoryIdentifier = id
         
-        return messageId
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            self.getCategoryIdFinished = true
+        }
     }
     
     private func createNotificationActionButton(buttonDictionary: [AnyHashable: Any]) -> UNNotificationAction? {
@@ -182,12 +170,20 @@ import UserNotifications
         return IterableButtonTypeDefault
     }
     
-    private static func getAttachmentIdSuffix(response: URLResponse, responseUrl: URL) -> String {
-        if let suggestedFilename = response.suggestedFilename {
-            return suggestedFilename
+    private func getNotificationActions(payload: [AnyHashable: Any], content: UNNotificationContent) -> [UNNotificationAction] {
+        var actionButtons: [[AnyHashable: Any]] = []
+        
+        if let actionButtonsFromItblPayload = payload[JsonKey.Payload.actionButtons] as? [[AnyHashable: Any]] {
+            actionButtons = actionButtonsFromItblPayload
+        } else {
+            #if DEBUG
+            if let actionButtonsFromUserInfo = content.userInfo[JsonKey.Payload.actionButtons] as? [[AnyHashable: Any]] {
+                actionButtons = actionButtonsFromUserInfo
+            }
+            #endif
         }
         
-        return responseUrl.lastPathComponent
+        return actionButtons.compactMap { createNotificationActionButton(buttonDictionary: $0) }
     }
     
     private func checkPushCreationCompletion() {
@@ -202,6 +198,14 @@ import UserNotifications
         if let contentHandler = contentHandler, let bestAttemptContent = bestAttemptContent {
             contentHandler(bestAttemptContent)
         }
+    }
+    
+    private static func getAttachmentIdSuffix(response: URLResponse, responseUrl: URL) -> String {
+        if let suggestedFilename = response.suggestedFilename {
+            return suggestedFilename
+        }
+        
+        return responseUrl.lastPathComponent
     }
     
     private var getCategoryIdFinished: Bool = false {
