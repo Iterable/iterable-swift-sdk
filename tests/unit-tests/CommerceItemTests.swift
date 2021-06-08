@@ -24,7 +24,7 @@ class CommerceItemTests: XCTestCase {
                                           price: 7.62,
                                           quantity: 9,
                                           sku: "kusanagi",
-                                          itemDescription: "spider type multi leg/multi ped combat vehicle equipped with AI",
+                                          description: "spider type multi leg/multi ped combat vehicle equipped with AI",
                                           url: "stand-alone-complex",
                                           imageUrl: "laughing-man",
                                           categories: ["section 9",

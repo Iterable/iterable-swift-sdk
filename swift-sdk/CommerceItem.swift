@@ -23,6 +23,7 @@ import UIKit
     public var sku: String?
     
     /// description of the product
+    /// the class field is named `itemDescription` to avoid iOS namespace (`description`)
     public var itemDescription: String?
     
     /// URL of the product
@@ -54,7 +55,7 @@ import UIKit
                 price: NSNumber,
                 quantity: UInt,
                 sku: String? = nil,
-                itemDescription: String? = nil,
+                description: String? = nil,
                 url: String? = nil,
                 imageUrl: String? = nil,
                 categories: [String]? = nil) {
@@ -63,7 +64,7 @@ import UIKit
         self.price = price
         self.quantity = quantity
         self.sku = sku
-        self.itemDescription = itemDescription
+        self.itemDescription = description
         self.url = url
         self.imageUrl = imageUrl
         self.categories = categories
