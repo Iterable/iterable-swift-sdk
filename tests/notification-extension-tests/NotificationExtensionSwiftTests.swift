@@ -5,6 +5,7 @@
 import XCTest
 
 import UserNotifications
+import UniformTypeIdentifiers
 
 @testable import IterableAppExtensions
 
@@ -27,8 +28,11 @@ class NotificationExtensionSwiftTests: XCTestCase {
     }
     
     func testPushButtonWithNoType() {
+        let condition1 = expectation(description: "contentHandler is called")
+        
         let content = UNMutableNotificationContent()
         let messageId = UUID().uuidString
+        
         content.userInfo = [
             "itbl": [
                 "messageId": messageId,
@@ -41,20 +45,88 @@ class NotificationExtensionSwiftTests: XCTestCase {
         ]
         
         let request = UNNotificationRequest(identifier: "request", content: content, trigger: nil)
-        let expectation1 = expectation(description: "contentHandler is called")
         
         appExtension.didReceive(request) { _ in
             DispatchQueue.main.asyncAfter(deadline: .now() + self.delay) {
                 UNUserNotificationCenter.current().getNotificationCategories(completionHandler: { categories in
                     let createdCategory = categories.first(where: { $0.identifier == messageId })
+                    
                     XCTAssertNotNil(createdCategory)
                     XCTAssertEqual(createdCategory!.actions.count, 1, "Number of buttons matched")
                     XCTAssertTrue(createdCategory!.actions.first!.options.contains(.foreground), "Action is foreground")
-                    expectation1.fulfill()
+                    
+                    condition1.fulfill()
                 })
             }
         }
         
-        wait(for: [expectation1], timeout: timeout)
+        wait(for: [condition1], timeout: timeout)
+    }
+    
+    @available(iOS 14.0, *)
+    func testPushImageAttachment() {
+        let condition1 = expectation(description: "image attachment didn't function as expected")
+
+        let content = UNMutableNotificationContent()
+        let messageId = UUID().uuidString
+
+        content.userInfo = [
+            "itbl": [
+                "messageId": messageId,
+                "attachment-url": "https://github.com/Iterable/swift-sdk/raw/master/images/Iterable-Logo.png"
+            ]
+        ]
+
+        let request = UNNotificationRequest(identifier: "request", content: content, trigger: nil)
+
+        appExtension.didReceive(request) { content in
+            XCTAssertEqual(content.attachments.count, 1)
+
+            guard let firstAttachment = content.attachments.first else {
+                XCTFail("attachment doesn't exist")
+                return
+            }
+
+            XCTAssertNotNil(firstAttachment.url)
+            XCTAssertEqual(firstAttachment.url.scheme, "file")
+            XCTAssertEqual(firstAttachment.type, UTType.png.identifier)
+
+            condition1.fulfill()
+        }
+
+        wait(for: [condition1], timeout: timeout)
+    }
+    
+    @available(iOS 14.0, *)
+    func testPushVideoAttachment() {
+        let condition1 = expectation(description: "video attachment didn't function as expected")
+
+        let content = UNMutableNotificationContent()
+        let messageId = UUID().uuidString
+
+        content.userInfo = [
+            "itbl": [
+                "messageId": messageId,
+                "attachment-url": "https://github.com/Iterable/swift-sdk/raw/master/tests/notification-extension-tests/swirl.mp4"
+            ]
+        ]
+
+        let request = UNNotificationRequest(identifier: "request", content: content, trigger: nil)
+
+        appExtension.didReceive(request) { content in
+            guard let firstAttachment = content.attachments.first else {
+                XCTFail("attachment doesn't exist")
+                return
+            }
+
+            XCTAssertNotNil(firstAttachment.url)
+            XCTAssertEqual(firstAttachment.url.scheme, "file")
+
+            XCTAssertEqual(firstAttachment.type, UTType.mpeg4Movie.identifier)
+
+            condition1.fulfill()
+        }
+
+        wait(for: [condition1], timeout: timeout)
     }
 }

@@ -31,7 +31,7 @@ static CGFloat const IterableNotificationCenterExpectationTimeout = 15.0;
     [super tearDown];
 }
 
-- (void)testPushIncorrectAttachemnt {
+- (void)testPushIncorrectAttachment {
     UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
     content.userInfo = @{
                          @"itbl" : @{
@@ -45,52 +45,6 @@ static CGFloat const IterableNotificationCenterExpectationTimeout = 15.0;
     
     [self.extension didReceiveNotificationRequest:request withContentHandler:^(UNNotificationContent *contentToDeliver) {
         XCTAssertEqual(contentToDeliver.attachments.count, 0);
-        [expectation fulfill];
-    }];
-    
-    [self waitForExpectations:@[expectation] timeout:IterableNotificationCenterExpectationTimeout];
-}
-
-- (void)testPushImageAttachemnt {
-    UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
-    content.userInfo = @{
-                         @"itbl" : @{
-                                 @"messageId": @"12345",
-                                 @"attachment-url": @"https://iterable.com/wp-content/uploads/2016/12/Iterable_Logo_transparent-tight.png"
-                                 }
-                         };
-    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:@"request" content:content trigger:nil];
-    
-    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"contentHandler is called"];
-    
-    [self.extension didReceiveNotificationRequest:request withContentHandler:^(UNNotificationContent *contentToDeliver) {
-        XCTAssertEqual(contentToDeliver.attachments.count, 1);
-        XCTAssertNotNil(contentToDeliver.attachments.firstObject.URL);
-        XCTAssertEqualObjects(contentToDeliver.attachments.firstObject.URL.scheme, @"file");
-        XCTAssertEqualObjects(contentToDeliver.attachments.firstObject.type, (NSString *)kUTTypePNG);
-        [expectation fulfill];
-    }];
-    
-    [self waitForExpectations:@[expectation] timeout:IterableNotificationCenterExpectationTimeout];
-}
-
-- (void)testPushVideoAttachment {
-    UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
-    content.userInfo = @{
-                         @"itbl" : @{
-                                 @"messageId": @"12345",
-                                 @"attachment-url": @"https://github.com/Iterable/swift-sdk/raw/master/tests/notification-extension-tests/swirl.mp4"
-                                 }
-                         };
-    UNNotificationRequest *request = [UNNotificationRequest requestWithIdentifier:@"request" content:content trigger:nil];
-    
-    XCTestExpectation *expectation = [[XCTestExpectation alloc] initWithDescription:@"contentHandler is called"];
-    
-    [self.extension didReceiveNotificationRequest:request withContentHandler:^(UNNotificationContent *contentToDeliver) {
-        XCTAssertEqual(contentToDeliver.attachments.count, 1);
-        XCTAssertNotNil(contentToDeliver.attachments.firstObject.URL);
-        XCTAssertEqualObjects(contentToDeliver.attachments.firstObject.URL.scheme, @"file");
-        XCTAssertEqualObjects(contentToDeliver.attachments.firstObject.type, (NSString *)kUTTypeMPEG4);
         [expectation fulfill];
     }];
     
