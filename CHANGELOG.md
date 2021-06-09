@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.3.1
+#### Added
+- The optional fields from the `trackPurchase` API have been added to the SDK's methods
+
+#### Fixed
+- The notification service extension has been re-architected for better reliability
+
 ## 6.3.0
 #### Added
 - **Offline events processing** - This feature saves a local copy of events triggered in your app while the device is offline (up to 1000 events). When a connection is re-established and your app is in the foreground, the events will be sent to Iterable.
