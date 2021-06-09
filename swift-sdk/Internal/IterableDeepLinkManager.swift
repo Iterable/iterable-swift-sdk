@@ -5,23 +5,6 @@
 import Foundation
 
 class IterableDeepLinkManager: NSObject {
-    /**
-     Tracks a link click and passes the redirected URL to the callback
-     
-     - parameter webpageURL:      the URL that was clicked
-     - parameter callbackBlock:   the callback to send after the webpageURL is called
-     
-     - remark:            passes the string of the redirected URL to the callback
-     */
-    
-    // deprecated - will be removed in version 6.3.x or above
-    func getAndTrack(deepLink: URL, callbackBlock: @escaping ITEActionBlock) -> Future<IterableAttributionInfo?, Error> {
-        resolve(appLinkURL: deepLink).map { resolvedURL, attributionInfo in
-            callbackBlock(resolvedURL?.absoluteString)
-            return attributionInfo
-        }
-    }
-    
     /// Handles a Universal Link
     /// For Iterable links, it will track the click and retrieve the original URL,
     /// pass it to `IterableURLDelegate` for handling

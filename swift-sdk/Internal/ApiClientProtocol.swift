@@ -26,13 +26,7 @@ protocol ApiClientProtocol: AnyObject {
     
     func getInAppMessages(_ count: NSNumber) -> Future<SendRequestValue, SendRequestError>
     
-    // deprecated - will be removed in version 6.3.x or above
-    func track(inAppOpen messageId: String) -> Future<SendRequestValue, SendRequestError>
-    
     func track(inAppOpen inAppMessageContext: InAppMessageContext) -> Future<SendRequestValue, SendRequestError>
-    
-    // deprecated - will be removed in version 6.3.x or above
-    func track(inAppClick messageId: String, clickedUrl: String) -> Future<SendRequestValue, SendRequestError>
     
     func track(inAppClick inAppMessageContext: InAppMessageContext, clickedUrl: String) -> Future<SendRequestValue, SendRequestError>
     

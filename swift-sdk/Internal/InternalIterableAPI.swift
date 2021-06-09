@@ -648,38 +648,3 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         requestHandler.stop()
     }
 }
-
-// MARK: - DEPRECATED
-
-extension InternalIterableAPI {
-    // deprecated - will be removed in version 6.3.x or above
-    @discardableResult
-    func trackInAppOpen(_ messageId: String,
-                        onSuccess: OnSuccessHandler? = nil,
-                        onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        requestHandler.trackInAppOpen(messageId, onSuccess: onSuccess, onFailure: onFailure)
-    }
-    
-    // deprecated - will be removed in version 6.3.x or above
-    @discardableResult
-    func trackInAppClick(_ messageId: String,
-                         clickedUrl: String,
-                         onSuccess: OnSuccessHandler? = nil,
-                         onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        requestHandler.trackInAppClick(messageId, clickedUrl: clickedUrl, onSuccess: onSuccess, onFailure: onFailure)
-    }
-    
-    // deprecated - will be removed in version 6.3.x or above
-    func showSystemNotification(withTitle title: String, body: String, buttonLeft: String? = nil, buttonRight: String? = nil, callbackBlock: ITEActionBlock?) {
-        InAppDisplayer.showSystemNotification(withTitle: title, body: body, buttonLeft: buttonLeft, buttonRight: buttonRight, callbackBlock: callbackBlock)
-    }
-    
-    // deprecated - will be removed in version 6.3.x or above
-    @discardableResult func getAndTrack(deepLink: URL, callbackBlock: @escaping ITEActionBlock) -> Future<IterableAttributionInfo?, Error>? {
-        deepLinkManager.getAndTrack(deepLink: deepLink, callbackBlock: callbackBlock).onSuccess { attributionInfo in
-            if let attributionInfo = attributionInfo {
-                self.attributionInfo = attributionInfo
-            }
-        }
-    }
-}
