@@ -12,7 +12,7 @@ Pods/
 
 dev.config
 
-Build/
+build/
 build2/
 
 # needed integration testing
