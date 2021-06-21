@@ -114,17 +114,4 @@ protocol RequestHandlerProtocol: AnyObject {
     func handleLogout() throws
     
     func getRemoteConfiguration() -> Future<RemoteConfiguration, SendRequestError>
-
-    // MARK: DEPRECATED
-    
-    @discardableResult
-    func trackInAppOpen(_ messageId: String,
-                        onSuccess: OnSuccessHandler?,
-                        onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
-    
-    @discardableResult
-    func trackInAppClick(_ messageId: String,
-                         clickedUrl: String,
-                         onSuccess: OnSuccessHandler?,
-                         onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
 }

@@ -203,20 +203,3 @@ extension ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: result)
     }
 }
-
-// MARK: - DEPRECATED
-
-extension ApiClient {
-    // deprecated - will be removed in version 6.3.x or above
-    func track(inAppOpen messageId: String) -> Future<SendRequestValue, SendRequestError> {
-        let value = createRequestCreator().flatMap { $0.createTrackInAppOpenRequest(messageId) }
-        return send(iterableRequestResult: value)
-    }
-    
-    // deprecated - will be removed in version 6.3.x or above
-    func track(inAppClick messageId: String, clickedUrl: String) -> Future<SendRequestValue, SendRequestError> {
-        let result = createRequestCreator().flatMap { $0.createTrackInAppClickRequest(messageId,
-                                                                                       clickedUrl: clickedUrl) }
-        return send(iterableRequestResult: result)
-    }
-}

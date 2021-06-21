@@ -551,8 +551,14 @@ class RequestHandlerTests: XCTestCase {
         
         let expectations = createExpectations(description: #function)
         
-        let requestGenerator = { (requestHandler: RequestHandlerProtocol) in
-            requestHandler.trackInAppOpen(messageId,
+        let requestGenerator = { (requestHandler: RequestHandlerProtocol) -> Future<SendRequestValue, SendRequestError> in
+            let message = IterableInAppMessage(messageId: messageId,
+                                               campaignId: nil,
+                                               content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""))
+            
+            return requestHandler.trackInAppOpen(message,
+                                          location: .inApp,
+                                          inboxSessionId: nil,
                                           onSuccess: expectations.onSuccess,
                                           onFailure: expectations.onFailure)
         }
@@ -581,8 +587,14 @@ class RequestHandlerTests: XCTestCase {
         
         let expectations = createExpectations(description: #function)
         
-        let requestGenerator = { (requestHandler: RequestHandlerProtocol) in
-            requestHandler.trackInAppClick(messageId,
+        let requestGenerator = { (requestHandler: RequestHandlerProtocol) -> Future<SendRequestValue, SendRequestError> in
+            let message = IterableInAppMessage(messageId: messageId,
+                                               campaignId: nil,
+                                               content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""))
+            
+            return requestHandler.trackInAppClick(message,
+                                           location: .inApp,
+                                           inboxSessionId: nil,
                                            clickedUrl: clickedUrl,
                                            onSuccess: expectations.onSuccess,
                                            onFailure: expectations.onFailure)

@@ -213,37 +213,6 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                                    identifier: #function)
     }
     
-    // MARK: DEPRECATED
-    
-    @discardableResult
-    func trackInAppOpen(_ messageId: String,
-                        onSuccess: OnSuccessHandler?,
-                        onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        let requestGenerator = { (requestCreator: RequestCreator) in
-            requestCreator.createTrackInAppOpenRequest(messageId)
-        }
-
-        return sendIterableRequest(requestGenerator: requestGenerator,
-                                   successHandler: onSuccess,
-                                   failureHandler: onFailure,
-                                   identifier: #function)
-    }
-    
-    @discardableResult
-    func trackInAppClick(_ messageId: String,
-                         clickedUrl: String,
-                         onSuccess: OnSuccessHandler?,
-                         onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
-        let requestGenerator = { (requestCreator: RequestCreator) in
-            requestCreator.createTrackInAppClickRequest(messageId, clickedUrl: clickedUrl)
-        }
-
-        return sendIterableRequest(requestGenerator: requestGenerator,
-                                   successHandler: onSuccess,
-                                   failureHandler: onFailure,
-                                   identifier: #function)
-    }
-    
     func deleteAllTasks() {
         ITBInfo()
         taskScheduler.deleteAllTasks()

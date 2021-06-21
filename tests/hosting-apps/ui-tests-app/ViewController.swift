@@ -31,24 +31,6 @@ class ViewController: UIViewController {
         }
     }
     
-    // deprecated - will be removed in version 6.3.x or above
-    @IBAction func showSystemNotificationTap(_: UIButton) {
-        ITBInfo()
-        
-        IterableAPI.internalImplementation?.showSystemNotification(withTitle: "Zee Title", body: "Zee Body", buttonLeft: "Left Button", buttonRight: "Right Button") { str in
-            self.statusLbl.text = str
-        }
-    }
-    
-    // deprecated - will be removed in version 6.3.x or above
-    @IBAction func showSystemNotification2Tap(_: UIButton) {
-        ITBInfo()
-        
-        IterableAPI.internalImplementation?.showSystemNotification(withTitle: "Zee Title", body: "Zee Body", buttonLeft: "Zee Button") { str in
-            self.statusLbl.text = str
-        }
-    }
-    
     @IBAction func showInAppTap(_: UIButton) {
         ITBInfo()
         
