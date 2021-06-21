@@ -219,30 +219,6 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
         apiClient.getRemoteConfiguration()
     }
     
-    // MARK: DEPRECATED
-    
-    @discardableResult
-    func trackInAppOpen(_ messageId: String,
-                        onSuccess: OnSuccessHandler? = nil,
-                        onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        let result = apiClient.track(inAppOpen: messageId)
-        return applyCallbacks(successHandler: onSuccess,
-                              andFailureHandler: onFailure,
-                              withIdentifier: "trackInAppOpen",
-                              forResult: result)
-    }
-    
-    @discardableResult
-    func trackInAppClick(_ messageId: String,
-                         clickedUrl: String,
-                         onSuccess: OnSuccessHandler? = nil,
-                         onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        applyCallbacks(successHandler: onSuccess,
-                       andFailureHandler: onFailure,
-                       withIdentifier: "trackInAppClick",
-                       forResult: apiClient.track(inAppClick: messageId, clickedUrl: clickedUrl))
-    }
-    
     private let apiClient: ApiClientProtocol
     private weak var authManager: IterableInternalAuthManagerProtocol?
     

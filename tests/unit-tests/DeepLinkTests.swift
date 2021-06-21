@@ -32,13 +32,19 @@ class DeepLinkTests: XCTestCase {
         
         setupRedirectStubResponse(location: redirectLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
         
-        let internalAPI = InternalIterableAPI.initializeForTesting()
-        
-        internalAPI.getAndTrack(deepLink: URL(string: iterableRewriteURL)!) { redirectUrl in
-            XCTAssertEqual(redirectUrl, redirectLocation)
+        let mockUrlDelegate = MockUrlDelegate(returnValue: true)
+        mockUrlDelegate.callback = { url, context in
+            XCTAssertEqual(url.absoluteString, redirectLocation)
             XCTAssertTrue(Thread.isMainThread)
+            XCTAssertEqual(context.action.type, IterableAction.actionTypeOpenUrl)
             expectation1.fulfill()
         }
+        
+        let deepLinkManager = IterableDeepLinkManager()
+        
+        _ = deepLinkManager.handleUniversalLink(URL(string: iterableRewriteURL)!,
+                                                urlDelegate: mockUrlDelegate,
+                                            urlOpener: MockUrlOpener())
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
@@ -47,14 +53,21 @@ class DeepLinkTests: XCTestCase {
         let expectation1 = expectation(description: "testUniversalDeepLinkNoRewrite")
         
         setupStubResponse()
-        
-        let internalAPI = InternalIterableAPI.initializeForTesting()
-        internalAPI.getAndTrack(deepLink: URL(string: iterableNoRewriteURL)!) { redirectUrl in
-            XCTAssertEqual(redirectUrl, self.iterableNoRewriteURL)
+
+        let mockUrlDelegate = MockUrlDelegate(returnValue: true)
+        mockUrlDelegate.callback = { url, context in
+            XCTAssertEqual(url.absoluteString, self.iterableNoRewriteURL)
             XCTAssertTrue(Thread.isMainThread)
+            XCTAssertEqual(context.action.type, IterableAction.actionTypeOpenUrl)
             expectation1.fulfill()
         }
         
+        let deepLinkManager = IterableDeepLinkManager()
+        
+        _ = deepLinkManager.handleUniversalLink(URL(string: iterableNoRewriteURL)!,
+                                                urlDelegate: mockUrlDelegate,
+                                                urlOpener: MockUrlOpener())
+
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
@@ -84,31 +97,8 @@ class DeepLinkTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
-    func testDeeplinkAttributionInfo() {
-        let expectation1 = expectation(description: "testDeeplinkAttributionInfo")
-        
-        let redirectLocation = "https://links.iterable.com/api/docs#!/email"
-        let campaignId = 83306
-        let templateId = 124_348
-        let messageId = "93125f33ba814b13a882358f8e0852e0"
-        
-        setupRedirectStubResponse(location: redirectLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
-        
-        let internalAPI = InternalIterableAPI.initializeForTesting()
-        internalAPI.getAndTrack(deepLink: URL(string: iterableRewriteURL)!) { resolvedURL in
-            XCTAssertEqual(resolvedURL, redirectLocation)
-        }?.onSuccess(block: { _ in
-            XCTAssertEqual(internalAPI.attributionInfo?.campaignId, NSNumber(value: campaignId))
-            XCTAssertEqual(internalAPI.attributionInfo?.templateId, NSNumber(value: templateId))
-            XCTAssertEqual(internalAPI.attributionInfo?.messageId, messageId)
-            expectation1.fulfill()
-        })
-        
-        wait(for: [expectation1], timeout: testExpectationTimeout)
-    }
-    
     func testHandleUniversalLinkAttributionInfo() {
-        let expectation1 = expectation(description: "testDeeplinkAttributionInfo")
+        let expectation1 = expectation(description: "testHandleUniversalLinkAttributionInfo")
         
         let redirectLocation = "https://links.iterable.com/api/docs#!/email"
         let campaignId = 83306
@@ -130,19 +120,25 @@ class DeepLinkTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
-    // this is a service that automatically redirects if that url is hit, make sure we are not actually hitting the url
-    // but our servers
+    /// this is a service that automatically redirects if that url is hit, make sure we are not actually hitting the url but our servers
     func testNoURLRedirect() {
         let expectation1 = expectation(description: "testNoURLRedirect")
         
         setupStubResponse()
         
-        let internalAPI = InternalIterableAPI.initializeForTesting()
-        internalAPI.getAndTrack(deepLink: URL(string: redirectRequest)!) { redirectUrl in
-            XCTAssertNotEqual(redirectUrl, self.exampleUrl)
-            XCTAssertEqual(redirectUrl, self.redirectRequest)
+        let mockUrlDelegate = MockUrlDelegate(returnValue: false)
+        mockUrlDelegate.callback = { redirectUrl, context in
+            XCTAssertNotEqual(redirectUrl.absoluteString, self.exampleUrl)
+            XCTAssertEqual(redirectUrl.absoluteString, self.redirectRequest)
+            
             expectation1.fulfill()
         }
+        
+        let deepLinkManager = IterableDeepLinkManager()
+        
+        _ = deepLinkManager.handleUniversalLink(URL(string: redirectRequest)!,
+                                                urlDelegate: mockUrlDelegate,
+                                                urlOpener: MockUrlOpener())
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }

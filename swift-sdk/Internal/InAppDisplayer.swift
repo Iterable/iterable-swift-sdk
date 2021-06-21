@@ -71,29 +71,6 @@ class InAppDisplayer: InAppDisplayerProtocol {
         return .shown(createResult.futureClickedURL)
     }
     
-    // deprecated - will be removed in version 6.3.x or above
-    static func showSystemNotification(withTitle title: String,
-                                       body: String,
-                                       buttonLeft: String?,
-                                       buttonRight: String?,
-                                       callbackBlock: ITEActionBlock?) {
-        guard let topViewController = getTopViewController() else {
-            return
-        }
-        
-        let alertController = UIAlertController(title: title, message: body, preferredStyle: .alert)
-        
-        if let buttonLeft = buttonLeft {
-            addAlertActionButton(alertController: alertController, keyString: buttonLeft, callbackBlock: callbackBlock)
-        }
-        
-        if let buttonRight = buttonRight {
-            addAlertActionButton(alertController: alertController, keyString: buttonRight, callbackBlock: callbackBlock)
-        }
-        
-        topViewController.show(alertController, sender: self)
-    }
-    
     fileprivate static func isShowingIterableMessage() -> Bool {
         guard Thread.isMainThread else {
             ITBError("Must be called from main thread")
@@ -131,24 +108,5 @@ class InAppDisplayer: InAppDisplayerProtocol {
         return showIterableHtmlMessage(content.html,
                                        messageMetadata: metadata,
                                        padding: content.padding)
-    }
-    
-    // deprecated - will be removed in version 6.3.x or above
-    /**
-     Creates and adds an alert action button to an alertController
-     
-     - parameter alertController:  The alert controller to add the button to
-     - parameter keyString:        the text of the button
-     - parameter callbackBlock:    the callback to send after a button on the notification is clicked
-     
-     - remarks:            passes the string of the button clicked to the callbackBlock
-     */
-    private static func addAlertActionButton(alertController: UIAlertController, keyString: String, callbackBlock: ITEActionBlock?) {
-        let button = UIAlertAction(title: keyString, style: .default) { _ in
-            alertController.dismiss(animated: false)
-            callbackBlock?(keyString)
-        }
-        
-        alertController.addAction(button)
     }
 }
