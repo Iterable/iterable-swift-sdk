@@ -4,7 +4,6 @@
 
 import Foundation
 import UIKit
-import UserNotifications
 
 final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     var apiKey: String
@@ -362,7 +361,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     private var config: IterableConfig
     private var apiEndPoint: String
     
-    // Following are needed for handling pending notification and deep link.
+    /// Following are needed for handling pending notification and deep link.
     static var pendingNotificationResponse: NotificationResponseProtocol?
     static var pendingUniversalLink: URL?
     
@@ -379,7 +378,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     private var _email: String?
     private var _userId: String?
     
-    // the hex representation of this device token
+    /// the hex representation of this device token
     private var hexToken: String?
     
     private var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -503,7 +502,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    // package private method. Do not call this directly.
     init(apiKey: String,
          launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
          config: IterableConfig = IterableConfig(),
