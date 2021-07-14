@@ -30,6 +30,8 @@
 		55B9F15324B6625D00E8198A /* ApiClientProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B9F15224B6625D00E8198A /* ApiClientProtocol.swift */; };
 		55CC257B2462064F00A77FD5 /* InAppPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */; };
 		55D54656239AE5750093ED1E /* LoggingInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D54655239AE5750093ED1E /* LoggingInternal.swift */; };
+		55DD2015269E5A4200773CC7 /* IterableInboxViewControllerViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD2014269E5A4200773CC7 /* IterableInboxViewControllerViewDelegate.swift */; };
+		55DD2027269E5EA300773CC7 /* InboxViewControllerViewModelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD2026269E5EA300773CC7 /* InboxViewControllerViewModelView.swift */; };
 		55E02D39253F8D86009DB8BC /* WebViewProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */; };
 		55E6F462238E066400808BCE /* DeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6F45E238E066400808BCE /* DeepLinkTests.swift */; };
 		AC02480822791E2100495FB9 /* IterableInboxNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */; };
@@ -383,6 +385,8 @@
 		55B9F15224B6625D00E8198A /* ApiClientProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiClientProtocol.swift; sourceTree = "<group>"; };
 		55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPresenterTests.swift; sourceTree = "<group>"; };
 		55D54655239AE5750093ED1E /* LoggingInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingInternal.swift; sourceTree = "<group>"; };
+		55DD2014269E5A4200773CC7 /* IterableInboxViewControllerViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxViewControllerViewDelegate.swift; sourceTree = "<group>"; };
+		55DD2026269E5EA300773CC7 /* InboxViewControllerViewModelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewControllerViewModelView.swift; sourceTree = "<group>"; };
 		55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewProtocolTests.swift; sourceTree = "<group>"; };
 		55E6F45E238E066400808BCE /* DeepLinkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepLinkTests.swift; sourceTree = "<group>"; };
 		AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxNavigationViewController.swift; sourceTree = "<group>"; };
@@ -722,16 +726,9 @@
 				AC219C4E225FEDBD00B98631 /* IterableInboxCell.swift */,
 				AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */,
 				AC219C48225FD7EB00B98631 /* IterableInboxViewController.swift */,
+				55DD2014269E5A4200773CC7 /* IterableInboxViewControllerViewDelegate.swift */,
 			);
 			name = "Inbox UI";
-			sourceTree = "<group>";
-		};
-		AC219C4B225FE2B300B98631 /* UI */ = {
-			isa = PBXGroup;
-			children = (
-				AC31B03D232AB37C00BE25EB /* Inbox */,
-			);
-			name = UI;
 			sourceTree = "<group>";
 		};
 		AC2263D520CF49B8009800EB = {
@@ -833,20 +830,13 @@
 		AC31B03D232AB37C00BE25EB /* Inbox */ = {
 			isa = PBXGroup;
 			children = (
-				AC31B03E232AB3E800BE25EB /* ViewModel */,
+				AC31B041232AB53500BE25EB /* InboxImpressionTracker.swift */,
+				AC219C4C225FE4C000B98631 /* InboxMessageViewModel.swift */,
+				AC31B03F232AB42100BE25EB /* InboxSessionManager.swift */,
+				AC4095A322B18B9D006EF67C /* InboxViewControllerViewModel.swift */,
+				55DD2026269E5EA300773CC7 /* InboxViewControllerViewModelView.swift */,
 			);
 			name = Inbox;
-			sourceTree = "<group>";
-		};
-		AC31B03E232AB3E800BE25EB /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-				AC219C4C225FE4C000B98631 /* InboxMessageViewModel.swift */,
-				AC4095A322B18B9D006EF67C /* InboxViewControllerViewModel.swift */,
-				AC31B03F232AB42100BE25EB /* InboxSessionManager.swift */,
-				AC31B041232AB53500BE25EB /* InboxImpressionTracker.swift */,
-			);
-			name = ViewModel;
 			sourceTree = "<group>";
 		};
 		AC3A3029262EE04400425435 /* deep-linking-tests */ = {
@@ -978,26 +968,26 @@
 		AC72A0BB20CF4C8C004D7997 /* Internal */ = {
 			isa = PBXGroup;
 			children = (
-				ACF4061F25078186005FD775 /* Network */,
-				AC1AA1C724EBB39500F29C6B /* Notification Center */,
-				AC5E888724E1B7AD00752321 /* Request Processing */,
-				ACC362BB24D21153002C67BA /* Task Processing */,
-				AC942BC42539DEB4002988C9 /* Resource Loading */,
-				AC50865124C60133001DC132 /* Persistence */,
 				AC845105228DF5360052BB8F /* API Client */,
 				AC0248062279132400495FB9 /* Dwifft */,
 				AC426CC5211B5527002EDBE8 /* Fp */,
 				AC2263FA20CF4B84009800EB /* In-app */,
+				AC31B03D232AB37C00BE25EB /* Inbox */,
 				AC7A525F227BB9B80064D67E /* Initialization */,
 				ACE34AB121376ACB00691224 /* Local Storage */,
 				AC3C10F7213F43AC00A9B839 /* Logging */,
-				AC219C4B225FE2B300B98631 /* UI */,
+				ACF4061F25078186005FD775 /* Network */,
+				AC1AA1C724EBB39500F29C6B /* Notification Center */,
+				AC50865124C60133001DC132 /* Persistence */,
+				AC5E888724E1B7AD00752321 /* Request Processing */,
+				AC942BC42539DEB4002988C9 /* Resource Loading */,
+				ACC362BB24D21153002C67BA /* Task Processing */,
 				AC72A0AC20CF4C08004D7997 /* Util */,
 				557AE6BE24A56E5E00B57750 /* Auth.swift */,
 				55298B222501A5AB00190BAE /* AuthManager.swift */,
 				AC2C667D20D3111900D46CC9 /* DateProvider.swift */,
-				AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */,
 				AC72A0C520CF4CB9004D7997 /* InternalIterableAPI.swift */,
+				AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */,
 				AC2C668120D32F2800D46CC9 /* IterableAppIntegrationInternal.swift */,
 				AC72A0BD20CF4C98004D7997 /* IterableDeepLinkManager.swift */,
 				AC2B79F621E6A38900A59080 /* NotificationHelper.swift */,
@@ -1754,8 +1744,10 @@
 				AC6FDD8820F4372E005D811E /* IterableAPI.swift in Sources */,
 				ACF560E820E55A6B000AAC23 /* IterableActionContext.swift in Sources */,
 				AC5812F824F3AE8D007E6D36 /* RequestHandler.swift in Sources */,
+				55DD2015269E5A4200773CC7 /* IterableInboxViewControllerViewDelegate.swift in Sources */,
 				AC2C668220D32F2800D46CC9 /* IterableAppIntegrationInternal.swift in Sources */,
 				ACD2B83D25B0A74A005D7A90 /* Models.swift in Sources */,
+				55DD2027269E5EA300773CC7 /* InboxViewControllerViewModelView.swift in Sources */,
 				AC1BED9523F1D4C700FDD75F /* MiscInboxClasses.swift in Sources */,
 				556FB1EA244FAF6A00EDF6BD /* InAppPresenter.swift in Sources */,
 				AC2AED4424EBC905000EE5F3 /* IterableTaskScheduler.swift in Sources */,

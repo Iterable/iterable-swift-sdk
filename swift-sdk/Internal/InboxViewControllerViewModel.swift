@@ -14,13 +14,6 @@ enum RowDiff {
     case sectionUpdate(IndexSet)
 }
 
-protocol InboxViewControllerViewModelView: AnyObject {
-    // All these methods should be called on the main thread
-    func onViewModelChanged(diffs: [RowDiff])
-    func onImageLoaded(for indexPath: IndexPath)
-    var currentlyVisibleRowIndexPaths: [IndexPath] { get }
-}
-
 protocol InboxViewControllerViewModelProtocol {
     var view: InboxViewControllerViewModelView? { get set }
     func set(comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)?,
