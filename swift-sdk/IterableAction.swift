@@ -4,13 +4,10 @@
 
 import Foundation
 
-/**
- `IterableAction` represents an action defined as a response to user events.
- It is currently used in push notification actions (open push & action buttons).
- */
-@objcMembers
-public class IterableAction: NSObject {
-    /** Open the URL or deep link */
+///`IterableAction` represents an action defined as a response to user events.
+/// It is currently used in push notification actions (open push & action buttons).
+@objcMembers public class IterableAction: NSObject {
+    /// Open the URL or deep link
     public static let actionTypeOpenUrl = "openUrl"
     
     /**
@@ -23,12 +20,10 @@ public class IterableAction: NSObject {
      */
     public var type: String
     
-    /**
-     * Additional data, its content depends on the action type
-     */
+    /// Additional data, its content depends on the action type
     public var data: String?
     
-    /** The text response typed by the user */
+    /// The text response typed by the user
     public var userInput: String?
     
     public func isOpenUrl() -> Bool {
@@ -50,7 +45,8 @@ public class IterableAction: NSObject {
         IterableAction(withDictionary: ["type": IterableAction.actionTypeOpenUrl, "data": fromUrlString])
     }
     
-    // Private
+    // MARK: - Private
+    
     private init?(withDictionary dictionary: [AnyHashable: Any]) {
         guard let typeFromDict = dictionary["type"] as? String else {
             return nil
