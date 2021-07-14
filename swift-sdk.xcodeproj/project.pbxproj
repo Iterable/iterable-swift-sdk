@@ -32,6 +32,8 @@
 		55D54656239AE5750093ED1E /* LoggingInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D54655239AE5750093ED1E /* LoggingInternal.swift */; };
 		55DD2015269E5A4200773CC7 /* IterableInboxViewControllerViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD2014269E5A4200773CC7 /* IterableInboxViewControllerViewDelegate.swift */; };
 		55DD2027269E5EA300773CC7 /* InboxViewControllerViewModelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD2026269E5EA300773CC7 /* InboxViewControllerViewModelView.swift */; };
+		55DD2041269FA24400773CC7 /* IterableInAppMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD2040269FA24400773CC7 /* IterableInAppMessage.swift */; };
+		55DD2053269FA28200773CC7 /* IterableInAppManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD2052269FA28200773CC7 /* IterableInAppManagerProtocol.swift */; };
 		55E02D39253F8D86009DB8BC /* WebViewProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */; };
 		55E6F462238E066400808BCE /* DeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6F45E238E066400808BCE /* DeepLinkTests.swift */; };
 		AC02480822791E2100495FB9 /* IterableInboxNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */; };
@@ -387,6 +389,8 @@
 		55D54655239AE5750093ED1E /* LoggingInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingInternal.swift; sourceTree = "<group>"; };
 		55DD2014269E5A4200773CC7 /* IterableInboxViewControllerViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxViewControllerViewDelegate.swift; sourceTree = "<group>"; };
 		55DD2026269E5EA300773CC7 /* InboxViewControllerViewModelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewControllerViewModelView.swift; sourceTree = "<group>"; };
+		55DD2040269FA24400773CC7 /* IterableInAppMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInAppMessage.swift; sourceTree = "<group>"; };
+		55DD2052269FA28200773CC7 /* IterableInAppManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInAppManagerProtocol.swift; sourceTree = "<group>"; };
 		55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewProtocolTests.swift; sourceTree = "<group>"; };
 		55E6F45E238E066400808BCE /* DeepLinkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepLinkTests.swift; sourceTree = "<group>"; };
 		AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxNavigationViewController.swift; sourceTree = "<group>"; };
@@ -775,6 +779,8 @@
 				AC72A0C620CF4CB9004D7997 /* IterableAppIntegration.swift */,
 				AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */,
 				AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */,
+				55DD2052269FA28200773CC7 /* IterableInAppManagerProtocol.swift */,
+				55DD2040269FA24400773CC7 /* IterableInAppMessage.swift */,
 				AC3C10F8213F46A900A9B839 /* IterableLogging.swift */,
 				ACA8D1A221910C66001B1332 /* IterableMessaging.swift */,
 				AC78F0E6253D7F09006378A5 /* IterablePushNotificationMetadata.swift */,
@@ -1760,6 +1766,7 @@
 				AC4095A422B18B9D006EF67C /* InboxViewControllerViewModel.swift in Sources */,
 				AC7A5261227BB9D10064D67E /* DependencyContainer.swift in Sources */,
 				AC776DA6211A1B8A00C27C27 /* IterableRequestUtil.swift in Sources */,
+				55DD2053269FA28200773CC7 /* IterableInAppManagerProtocol.swift in Sources */,
 				ACEDF41D2183C2EC000B9BFE /* Promise.swift in Sources */,
 				AC78F0E7253D7F09006378A5 /* IterablePushNotificationMetadata.swift in Sources */,
 				AC7125EF20D4579E0043BBC1 /* IterableConfig.swift in Sources */,
@@ -1789,6 +1796,7 @@
 				AC347B5C20E5A7E1003449CF /* APNSTypeChecker.swift in Sources */,
 				ACD2B84F25B15CFA005D7A90 /* RequestSender.swift in Sources */,
 				AC3A336D24F65579008225BA /* RequestProcessorUtil.swift in Sources */,
+				55DD2041269FA24400773CC7 /* IterableInAppMessage.swift in Sources */,
 				AC8E7CA524C7555E0039605F /* CoreDataUtil.swift in Sources */,
 				AC1AA1C624EBB2DC00F29C6B /* IterableTaskRunner.swift in Sources */,
 				ACFD5AC824C8290E008E497A /* IterableTaskManagedObject.swift in Sources */,
