@@ -23,7 +23,7 @@ protocol DependencyContainerProtocol {
                               config: IterableConfig,
                               endPoint: String,
                               authProvider: AuthProvider?,
-                              authManager: IterableInternalAuthManagerProtocol,
+                              authManager: IterableAuthManagerProtocol,
                               deviceMetadata: DeviceMetadata,
                               offlineMode: Bool) -> RequestHandlerProtocol
     func createHealthMonitorDataProvider(persistenceContextProvider: IterablePersistenceContextProvider) -> HealthMonitorDataProviderProtocol
@@ -49,7 +49,7 @@ extension DependencyContainerProtocol {
                      retryInterval: config.inAppDisplayInterval)
     }
     
-    func createAuthManager(config: IterableConfig) -> IterableInternalAuthManagerProtocol {
+    func createAuthManager(config: IterableConfig) -> IterableAuthManagerProtocol {
         AuthManager(delegate: config.authDelegate,
                     expirationRefreshPeriod: config.expiringAuthTokenRefreshPeriod,
                     localStorage: localStorage,
@@ -60,7 +60,7 @@ extension DependencyContainerProtocol {
                               config: IterableConfig,
                               endPoint: String,
                               authProvider: AuthProvider?,
-                              authManager: IterableInternalAuthManagerProtocol,
+                              authManager: IterableAuthManagerProtocol,
                               deviceMetadata: DeviceMetadata,
                               offlineMode: Bool) -> RequestHandlerProtocol {
         if #available(iOS 10.0, *) {

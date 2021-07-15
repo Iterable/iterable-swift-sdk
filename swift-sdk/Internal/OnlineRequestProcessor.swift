@@ -8,7 +8,7 @@ import Foundation
 struct OnlineRequestProcessor: RequestProcessorProtocol {
     init(apiKey: String,
          authProvider: AuthProvider?,
-         authManager: IterableInternalAuthManagerProtocol?,
+         authManager: IterableAuthManagerProtocol?,
          endPoint: String,
          networkSession: NetworkSessionProtocol,
          deviceMetadata: DeviceMetadata,
@@ -220,7 +220,7 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     }
     
     private let apiClient: ApiClientProtocol
-    private weak var authManager: IterableInternalAuthManagerProtocol?
+    private weak var authManager: IterableAuthManagerProtocol?
     
     @discardableResult
     private func register(registerTokenInfo: RegisterTokenInfo,

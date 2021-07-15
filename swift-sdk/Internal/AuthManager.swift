@@ -4,14 +4,7 @@
 
 import Foundation
 
-@objc public protocol IterableInternalAuthManagerProtocol {
-    func getAuthToken() -> String?
-    func resetFailedAuthCount()
-    func requestNewAuthToken(hasFailedPriorAuth: Bool, onSuccess: ((String?) -> Void)?)
-    func logoutUser()
-}
-
-class AuthManager: IterableInternalAuthManagerProtocol {
+class AuthManager: IterableAuthManagerProtocol {
     init(delegate: IterableAuthDelegate?,
          expirationRefreshPeriod: TimeInterval,
          localStorage: LocalStorageProtocol,

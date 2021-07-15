@@ -35,6 +35,7 @@
 		55DD2041269FA24400773CC7 /* IterableInAppMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD2040269FA24400773CC7 /* IterableInAppMessage.swift */; };
 		55DD2053269FA28200773CC7 /* IterableInAppManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD2052269FA28200773CC7 /* IterableInAppManagerProtocol.swift */; };
 		55DD2065269FB1FC00773CC7 /* InboxViewControllerViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD2064269FB1FC00773CC7 /* InboxViewControllerViewModelProtocol.swift */; };
+		55DD207F26A0D83800773CC7 /* IterableAuthManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD207E26A0D83800773CC7 /* IterableAuthManagerProtocol.swift */; };
 		55E02D39253F8D86009DB8BC /* WebViewProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */; };
 		55E6F462238E066400808BCE /* DeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6F45E238E066400808BCE /* DeepLinkTests.swift */; };
 		AC02480822791E2100495FB9 /* IterableInboxNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */; };
@@ -392,6 +393,7 @@
 		55DD2040269FA24400773CC7 /* IterableInAppMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInAppMessage.swift; sourceTree = "<group>"; };
 		55DD2052269FA28200773CC7 /* IterableInAppManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInAppManagerProtocol.swift; sourceTree = "<group>"; };
 		55DD2064269FB1FC00773CC7 /* InboxViewControllerViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewControllerViewModelProtocol.swift; sourceTree = "<group>"; };
+		55DD207E26A0D83800773CC7 /* IterableAuthManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAuthManagerProtocol.swift; sourceTree = "<group>"; };
 		55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewProtocolTests.swift; sourceTree = "<group>"; };
 		55E6F45E238E066400808BCE /* DeepLinkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepLinkTests.swift; sourceTree = "<group>"; };
 		AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxNavigationViewController.swift; sourceTree = "<group>"; };
@@ -773,6 +775,7 @@
 				AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */,
 				AC219C48225FD7EB00B98631 /* IterableInboxViewController.swift */,
 				55DD2014269E5A4200773CC7 /* IterableInboxViewControllerViewDelegate.swift */,
+				55DD207E26A0D83800773CC7 /* IterableAuthManagerProtocol.swift */,
 				AC3C10F8213F46A900A9B839 /* IterableLogging.swift */,
 				ACA8D1A221910C66001B1332 /* IterableMessaging.swift */,
 				AC78F0E6253D7F09006378A5 /* IterablePushNotificationMetadata.swift */,
@@ -1729,6 +1732,7 @@
 				ACF406232507BC72005FD775 /* NetworkMonitor.swift in Sources */,
 				AC1712892416AEF400F2BB0E /* WebViewProtocol.swift in Sources */,
 				AC3C10F9213F46A900A9B839 /* IterableLogging.swift in Sources */,
+				55DD207F26A0D83800773CC7 /* IterableAuthManagerProtocol.swift in Sources */,
 				ACE34AB72139D70B00691224 /* LocalStorageProtocol.swift in Sources */,
 				AC819186227139230014955E /* SectionedValues.swift in Sources */,
 				AC6FDD8820F4372E005D811E /* IterableAPI.swift in Sources */,
