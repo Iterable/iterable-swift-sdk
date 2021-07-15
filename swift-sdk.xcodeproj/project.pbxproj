@@ -29,7 +29,7 @@
 		55B9F15124B3D33700E8198A /* AuthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B9F15024B3D33700E8198A /* AuthTests.swift */; };
 		55B9F15324B6625D00E8198A /* ApiClientProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B9F15224B6625D00E8198A /* ApiClientProtocol.swift */; };
 		55CC257B2462064F00A77FD5 /* InAppPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */; };
-		55D54656239AE5750093ED1E /* LoggingInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D54655239AE5750093ED1E /* LoggingInternal.swift */; };
+		55D54656239AE5750093ED1E /* IterableLogUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D54655239AE5750093ED1E /* IterableLogUtil.swift */; };
 		55DD2015269E5A4200773CC7 /* IterableInboxViewControllerViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD2014269E5A4200773CC7 /* IterableInboxViewControllerViewDelegate.swift */; };
 		55DD2027269E5EA300773CC7 /* InboxViewControllerViewModelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD2026269E5EA300773CC7 /* InboxViewControllerViewModelView.swift */; };
 		55DD2041269FA24400773CC7 /* IterableInAppMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD2040269FA24400773CC7 /* IterableInAppMessage.swift */; };
@@ -386,7 +386,7 @@
 		55B9F15024B3D33700E8198A /* AuthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTests.swift; sourceTree = "<group>"; };
 		55B9F15224B6625D00E8198A /* ApiClientProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiClientProtocol.swift; sourceTree = "<group>"; };
 		55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPresenterTests.swift; sourceTree = "<group>"; };
-		55D54655239AE5750093ED1E /* LoggingInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingInternal.swift; sourceTree = "<group>"; };
+		55D54655239AE5750093ED1E /* IterableLogUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableLogUtil.swift; sourceTree = "<group>"; };
 		55DD2014269E5A4200773CC7 /* IterableInboxViewControllerViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxViewControllerViewDelegate.swift; sourceTree = "<group>"; };
 		55DD2026269E5EA300773CC7 /* InboxViewControllerViewModelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewControllerViewModelView.swift; sourceTree = "<group>"; };
 		55DD2040269FA24400773CC7 /* IterableInAppMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInAppMessage.swift; sourceTree = "<group>"; };
@@ -801,6 +801,7 @@
 			isa = PBXGroup;
 			children = (
 				AC4B039122A8743F0043185B /* EmptyInAppManager.swift */,
+				ACC3FDB0253724DB0004A2E0 /* InAppCalculations.swift */,
 				AC8874A922178BD80075B54B /* InAppContentParser.swift */,
 				AC684A87222F4FDD00F29749 /* InAppDisplayer.swift */,
 				AC72A0AA20CF4BEB004D7997 /* InAppHelper.swift */,
@@ -811,7 +812,6 @@
 				AC03094A21E532470003A288 /* InAppPersistence.swift */,
 				556FB1E9244FAF6A00EDF6BD /* InAppPresenter.swift */,
 				ACB8273E22372A5C00DB17D3 /* IterableHtmlMessageViewController.swift */,
-				ACC3FDB0253724DB0004A2E0 /* InAppCalculations.swift */,
 				AC426225238C27DD00164121 /* IterableInboxCell+Layout.swift */,
 				AC1BED9423F1D4C700FDD75F /* MiscInboxClasses.swift */,
 				AC1712882416AEF400F2BB0E /* WebViewProtocol.swift */,
@@ -909,7 +909,7 @@
 		AC3C10F7213F43AC00A9B839 /* Logging */ = {
 			isa = PBXGroup;
 			children = (
-				55D54655239AE5750093ED1E /* LoggingInternal.swift */,
+				55D54655239AE5750093ED1E /* IterableLogUtil.swift */,
 			);
 			name = Logging;
 			sourceTree = "<group>";
@@ -927,12 +927,12 @@
 		AC50865124C60133001DC132 /* Persistence */ = {
 			isa = PBXGroup;
 			children = (
-				AC50865524C603AC001DC132 /* IterablePersistence.swift */,
-				AC50865924C60572001DC132 /* IterableCoreDataPersistence.swift */,
 				AC8E7CA424C7555E0039605F /* CoreDataUtil.swift */,
-				ACFD5AB224C8179D008E497A /* PersistenceHelper.swift */,
-				ACFD5AC724C8290E008E497A /* IterableTaskManagedObject.swift */,
 				ACB1DFDA26369D2F00A31597 /* HealthMonitor.swift */,
+				AC50865924C60572001DC132 /* IterableCoreDataPersistence.swift */,
+				AC50865524C603AC001DC132 /* IterablePersistence.swift */,
+				ACFD5AC724C8290E008E497A /* IterableTaskManagedObject.swift */,
+				ACFD5AB224C8179D008E497A /* PersistenceHelper.swift */,
 			);
 			name = Persistence;
 			sourceTree = "<group>";
@@ -940,14 +940,14 @@
 		AC5E888724E1B7AD00752321 /* Request Processing */ = {
 			isa = PBXGroup;
 			children = (
-				ACF32BDA24E3EA7C0072E2CC /* RequestProcessorProtocol.swift */,
-				AC5E888824E1B7CE00752321 /* OnlineRequestProcessor.swift */,
-				AC5812F524F3A90F007E6D36 /* OfflineRequestProcessor.swift */,
-				AC3A336C24F65579008225BA /* RequestProcessorUtil.swift */,
-				AC9355D02589F9F90056C903 /* RequestHandlerProtocol.swift */,
-				AC5812F724F3AE8D007E6D36 /* RequestHandler.swift */,
 				AC9355DA2589FC070056C903 /* LegacyRequestHandler.swift */,
 				ACD2B83C25B0A74A005D7A90 /* Models.swift */,
+				AC5812F524F3A90F007E6D36 /* OfflineRequestProcessor.swift */,
+				AC5E888824E1B7CE00752321 /* OnlineRequestProcessor.swift */,
+				AC5812F724F3AE8D007E6D36 /* RequestHandler.swift */,
+				AC9355D02589F9F90056C903 /* RequestHandlerProtocol.swift */,
+				ACF32BDA24E3EA7C0072E2CC /* RequestProcessorProtocol.swift */,
+				AC3A336C24F65579008225BA /* RequestProcessorUtil.swift */,
 			);
 			name = "Request Processing";
 			sourceTree = "<group>";
@@ -1053,8 +1053,8 @@
 				AC845106228DF54E0052BB8F /* ApiClient.swift */,
 				55B9F15224B6625D00E8198A /* ApiClientProtocol.swift */,
 				AC8E9267246284F800BEB68E /* DataFieldsHelper.swift */,
-				AC84510822910A0C0052BB8F /* RequestCreator.swift */,
 				ACC362B524D16D91002C67BA /* IterableRequest.swift */,
+				AC84510822910A0C0052BB8F /* RequestCreator.swift */,
 				ACD2B84E25B15CFA005D7A90 /* RequestSender.swift */,
 			);
 			name = "API Client";
@@ -1123,11 +1123,11 @@
 			isa = PBXGroup;
 			children = (
 				ACC362B924D20BBB002C67BA /* IterableAPICallRequest.swift */,
-				ACC362BE24D21192002C67BA /* IterableTaskProcessor.swift */,
 				ACC362BC24D21172002C67BA /* IterableAPICallTaskProcessor.swift */,
 				AC50865724C60426001DC132 /* IterableTask.swift */,
-				ACC362C024D21272002C67BA /* IterableTaskResult.swift */,
 				ACC362C224D21332002C67BA /* IterableTaskError.swift */,
+				ACC362BE24D21192002C67BA /* IterableTaskProcessor.swift */,
+				ACC362C024D21272002C67BA /* IterableTaskResult.swift */,
 				AC1AA1C524EBB2DC00F29C6B /* IterableTaskRunner.swift */,
 				AC2AED4324EBC905000EE5F3 /* IterableTaskScheduler.swift */,
 			);
@@ -1186,9 +1186,9 @@
 		ACF4061F25078186005FD775 /* Network */ = {
 			isa = PBXGroup;
 			children = (
-				ACD6116B2107D004003E7F6B /* NetworkHelper.swift */,
 				AC978D3D24FF953C00372B8C /* NetworkConnectivityChecker.swift */,
 				ACF40620250781F1005FD775 /* NetworkConnectivityManager.swift */,
+				ACD6116B2107D004003E7F6B /* NetworkHelper.swift */,
 				ACF406222507BC72005FD775 /* NetworkMonitor.swift */,
 			);
 			name = Network;
@@ -1698,7 +1698,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC31B042232AB53500BE25EB /* InboxImpressionTracker.swift in Sources */,
-				55D54656239AE5750093ED1E /* LoggingInternal.swift in Sources */,
+				55D54656239AE5750093ED1E /* IterableLogUtil.swift in Sources */,
 				55DD2065269FB1FC00773CC7 /* InboxViewControllerViewModelProtocol.swift in Sources */,
 				ACF32BDB24E3EA7C0072E2CC /* RequestProcessorProtocol.swift in Sources */,
 				AC219C49225FD7EB00B98631 /* IterableInboxViewController.swift in Sources */,
