@@ -63,17 +63,18 @@ struct InAppCalculations {
                                                 location: IterableMessageLocation,
                                                 safeAreaInsets: UIEdgeInsets) -> ViewPosition {
         let startPosition: ViewPosition
+        
         switch location {
         case .top:
             startPosition = ViewPosition(width: position.width,
                                          height: position.height,
                                          center: CGPoint(x: position.center.x,
-                                                         y:  position.center.y - position.height - safeAreaInsets.top))
+                                                         y: position.center.y - position.height - safeAreaInsets.top))
         case .bottom:
             startPosition = ViewPosition(width: position.width,
                                          height: position.height,
                                          center: CGPoint(x: position.center.x,
-                                                         y:  position.center.y + position.height + safeAreaInsets.bottom))
+                                                         y: position.center.y + position.height + safeAreaInsets.bottom))
         case .center, .full:
             startPosition = position
         }
