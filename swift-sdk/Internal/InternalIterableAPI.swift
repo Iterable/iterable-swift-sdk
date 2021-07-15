@@ -588,16 +588,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    private func handleDDL(json: [AnyHashable: Any]) {
-        if let serverResponse = try? JSONDecoder().decode(ServerResponse.self, from: JSONSerialization.data(withJSONObject: json, options: [])),
-            serverResponse.isMatch,
-            let destinationUrlString = serverResponse.destinationUrl {
-            handleUrl(urlString: destinationUrlString, fromSource: .universalLink)
-        }
-        
-        localStorage.ddlChecked = true
-    }
-    
     private func handleUrl(urlString: String, fromSource source: IterableActionSource) {
         guard let action = IterableAction.actionOpenUrl(fromUrlString: urlString) else {
             ITBError("Could not create action from: \(urlString)")
