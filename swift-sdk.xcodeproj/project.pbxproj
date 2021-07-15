@@ -34,6 +34,7 @@
 		55DD2027269E5EA300773CC7 /* InboxViewControllerViewModelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD2026269E5EA300773CC7 /* InboxViewControllerViewModelView.swift */; };
 		55DD2041269FA24400773CC7 /* IterableInAppMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD2040269FA24400773CC7 /* IterableInAppMessage.swift */; };
 		55DD2053269FA28200773CC7 /* IterableInAppManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD2052269FA28200773CC7 /* IterableInAppManagerProtocol.swift */; };
+		55DD2065269FB1FC00773CC7 /* InboxViewControllerViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD2064269FB1FC00773CC7 /* InboxViewControllerViewModelProtocol.swift */; };
 		55E02D39253F8D86009DB8BC /* WebViewProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */; };
 		55E6F462238E066400808BCE /* DeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6F45E238E066400808BCE /* DeepLinkTests.swift */; };
 		AC02480822791E2100495FB9 /* IterableInboxNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */; };
@@ -391,6 +392,7 @@
 		55DD2026269E5EA300773CC7 /* InboxViewControllerViewModelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewControllerViewModelView.swift; sourceTree = "<group>"; };
 		55DD2040269FA24400773CC7 /* IterableInAppMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInAppMessage.swift; sourceTree = "<group>"; };
 		55DD2052269FA28200773CC7 /* IterableInAppManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInAppManagerProtocol.swift; sourceTree = "<group>"; };
+		55DD2064269FB1FC00773CC7 /* InboxViewControllerViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewControllerViewModelProtocol.swift; sourceTree = "<group>"; };
 		55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewProtocolTests.swift; sourceTree = "<group>"; };
 		55E6F45E238E066400808BCE /* DeepLinkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepLinkTests.swift; sourceTree = "<group>"; };
 		AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxNavigationViewController.swift; sourceTree = "<group>"; };
@@ -840,6 +842,7 @@
 				AC219C4C225FE4C000B98631 /* InboxMessageViewModel.swift */,
 				AC31B03F232AB42100BE25EB /* InboxSessionManager.swift */,
 				AC4095A322B18B9D006EF67C /* InboxViewControllerViewModel.swift */,
+				55DD2064269FB1FC00773CC7 /* InboxViewControllerViewModelProtocol.swift */,
 				55DD2026269E5EA300773CC7 /* InboxViewControllerViewModelView.swift */,
 			);
 			name = Inbox;
@@ -1707,6 +1710,7 @@
 			files = (
 				AC31B042232AB53500BE25EB /* InboxImpressionTracker.swift in Sources */,
 				55D54656239AE5750093ED1E /* LoggingInternal.swift in Sources */,
+				55DD2065269FB1FC00773CC7 /* InboxViewControllerViewModelProtocol.swift in Sources */,
 				ACF32BDB24E3EA7C0072E2CC /* RequestProcessorProtocol.swift in Sources */,
 				AC426CC4211B5497002EDBE8 /* ServerResponse.swift in Sources */,
 				AC219C49225FD7EB00B98631 /* IterableInboxViewController.swift in Sources */,
