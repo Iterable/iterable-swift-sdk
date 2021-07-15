@@ -724,17 +724,6 @@
 			name = "Notification Center";
 			sourceTree = "<group>";
 		};
-		AC219C4A225FD7F900B98631 /* Inbox UI */ = {
-			isa = PBXGroup;
-			children = (
-				AC219C4E225FEDBD00B98631 /* IterableInboxCell.swift */,
-				AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */,
-				AC219C48225FD7EB00B98631 /* IterableInboxViewController.swift */,
-				55DD2014269E5A4200773CC7 /* IterableInboxViewControllerViewDelegate.swift */,
-			);
-			name = "Inbox UI";
-			sourceTree = "<group>";
-		};
 		AC2263D520CF49B8009800EB = {
 			isa = PBXGroup;
 			children = (
@@ -770,7 +759,6 @@
 				AC72A0BB20CF4C8C004D7997 /* Internal */,
 				AC44C0EB22615F8100E0641D /* Resources */,
 				AC2263F920CF4B63009800EB /* Supporting Files */,
-				AC219C4A225FD7F900B98631 /* Inbox UI */,
 				AC72A0C120CF4CB8004D7997 /* CommerceItem.swift */,
 				AC72A0BE20CF4CB8004D7997 /* Constants.swift */,
 				AC72A0BF20CF4CB8004D7997 /* IterableAction.swift */,
@@ -781,6 +769,10 @@
 				AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */,
 				55DD2052269FA28200773CC7 /* IterableInAppManagerProtocol.swift */,
 				55DD2040269FA24400773CC7 /* IterableInAppMessage.swift */,
+				AC219C4E225FEDBD00B98631 /* IterableInboxCell.swift */,
+				AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */,
+				AC219C48225FD7EB00B98631 /* IterableInboxViewController.swift */,
+				55DD2014269E5A4200773CC7 /* IterableInboxViewControllerViewDelegate.swift */,
 				AC3C10F8213F46A900A9B839 /* IterableLogging.swift */,
 				ACA8D1A221910C66001B1332 /* IterableMessaging.swift */,
 				AC78F0E6253D7F09006378A5 /* IterablePushNotificationMetadata.swift */,
@@ -918,8 +910,8 @@
 			isa = PBXGroup;
 			children = (
 				AC219C522260006600B98631 /* Assets.xcassets */,
-				AC219C4F225FEDBD00B98631 /* SampleInboxCell.xib */,
 				AC50865224C60172001DC132 /* IterableDataModel.xcdatamodeld */,
+				AC219C4F225FEDBD00B98631 /* SampleInboxCell.xib */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
