@@ -66,7 +66,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                                     deviceMetadata: deviceMetadata)
     }()
     
-    lazy var authManager: IterableInternalAuthManagerProtocol = {
+    lazy var authManager: IterableAuthManagerProtocol = {
         self.dependencyContainer.createAuthManager(config: self.config)
     }()
     
@@ -586,16 +586,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             handleUniversalLink(pendingUniversalLink)
             Self.pendingUniversalLink = nil
         }
-    }
-    
-    private func handleDDL(json: [AnyHashable: Any]) {
-        if let serverResponse = try? JSONDecoder().decode(ServerResponse.self, from: JSONSerialization.data(withJSONObject: json, options: [])),
-            serverResponse.isMatch,
-            let destinationUrlString = serverResponse.destinationUrl {
-            handleUrl(urlString: destinationUrlString, fromSource: .universalLink)
-        }
-        
-        localStorage.ddlChecked = true
     }
     
     private func handleUrl(urlString: String, fromSource source: IterableActionSource) {

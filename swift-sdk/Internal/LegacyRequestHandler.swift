@@ -8,7 +8,7 @@ import Foundation
 class LegacyRequestHandler: RequestHandlerProtocol {
     init(apiKey: String,
          authProvider: AuthProvider?,
-         authManager: IterableInternalAuthManagerProtocol?,
+         authManager: IterableAuthManagerProtocol?,
          endPoint: String,
          networkSession: NetworkSessionProtocol,
          deviceMetadata: DeviceMetadata,
@@ -233,7 +233,7 @@ class LegacyRequestHandler: RequestHandlerProtocol {
     }
 
     private let apiClient: ApiClientProtocol
-    private weak var authManager: IterableInternalAuthManagerProtocol?
+    private weak var authManager: IterableAuthManagerProtocol?
     
     @discardableResult
     private func register(registerTokenInfo: RegisterTokenInfo,

@@ -8,7 +8,7 @@ struct RequestProcessorUtil {
     @discardableResult
     static func apply(successHandler onSuccess: OnSuccessHandler? = nil,
                       andFailureHandler onFailure: OnFailureHandler? = nil,
-                      andAuthManager authManager: IterableInternalAuthManagerProtocol? = nil,
+                      andAuthManager authManager: IterableAuthManagerProtocol? = nil,
                       toResult result: Future<SendRequestValue, SendRequestError>,
                       withIdentifier identifier: String) -> Future<SendRequestValue, SendRequestError> {
         result.onSuccess { json in
