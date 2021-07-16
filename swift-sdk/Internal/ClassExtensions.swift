@@ -115,7 +115,6 @@ extension UIColor {
         
         return (red, green, blue, alpha)
     }
-    
 }
 
 extension Data {

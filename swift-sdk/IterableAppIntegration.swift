@@ -28,15 +28,12 @@ import UserNotifications
                                     fetchCompletionHandler: completionHandler)
     }
     
-    /**
-     * This method handles user actions on incoming Iterable notifications
-     * Call it from your notification center delegate's userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:.
-     *
-     * - parameter center: `UNUserNotificationCenter` singleton object
-     * - parameter response: Notification response containing the user action and notification data. Passed from the original call.
-     * - parameter completionHandler: Completion handler passed from the original call. Iterable will call the completion handler
-     * automatically if you pass one. If you handle completionHandler in the app code, pass a nil value to this argument.
-     */
+    /// This method handles user actions on incoming Iterable notifications
+    /// Call it from your notification center delegate's `userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:`.
+    /// - Parameters:
+    ///     - center: `UNUserNotificationCenter` singleton object
+    ///     - response: Notification response containing the user action and notification data. Passed from the original call.
+    ///     - completionHandler: Completion handler passed from the original call. Iterable will call the completion handler automatically if you pass one. If you handle `completionHandler` in the app code, pass a `nil` value to this argument.
     @available(iOS 10.0, *)
     @objc(userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:)
     public static func userNotificationCenter(_ center: UNUserNotificationCenter?,
@@ -53,9 +50,8 @@ import UserNotifications
         }
     }
     
-    // MARK: Private
+    // MARK: - Private/Internal
     
-    // This class is a utility facade. Don't initialize this class
     override private init() {
         super.init()
     }

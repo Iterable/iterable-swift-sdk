@@ -29,7 +29,13 @@
 		55B9F15124B3D33700E8198A /* AuthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B9F15024B3D33700E8198A /* AuthTests.swift */; };
 		55B9F15324B6625D00E8198A /* ApiClientProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B9F15224B6625D00E8198A /* ApiClientProtocol.swift */; };
 		55CC257B2462064F00A77FD5 /* InAppPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */; };
-		55D54656239AE5750093ED1E /* LoggingInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D54655239AE5750093ED1E /* LoggingInternal.swift */; };
+		55D54656239AE5750093ED1E /* IterableLogUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D54655239AE5750093ED1E /* IterableLogUtil.swift */; };
+		55DD2015269E5A4200773CC7 /* IterableInboxViewControllerViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD2014269E5A4200773CC7 /* IterableInboxViewControllerViewDelegate.swift */; };
+		55DD2027269E5EA300773CC7 /* InboxViewControllerViewModelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD2026269E5EA300773CC7 /* InboxViewControllerViewModelView.swift */; };
+		55DD2041269FA24400773CC7 /* IterableInAppMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD2040269FA24400773CC7 /* IterableInAppMessage.swift */; };
+		55DD2053269FA28200773CC7 /* IterableInAppManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD2052269FA28200773CC7 /* IterableInAppManagerProtocol.swift */; };
+		55DD2065269FB1FC00773CC7 /* InboxViewControllerViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD2064269FB1FC00773CC7 /* InboxViewControllerViewModelProtocol.swift */; };
+		55DD207F26A0D83800773CC7 /* IterableAuthManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD207E26A0D83800773CC7 /* IterableAuthManagerProtocol.swift */; };
 		55E02D39253F8D86009DB8BC /* WebViewProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */; };
 		55E6F462238E066400808BCE /* DeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6F45E238E066400808BCE /* DeepLinkTests.swift */; };
 		AC02480822791E2100495FB9 /* IterableInboxNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */; };
@@ -78,7 +84,6 @@
 		AC3EFFF02510B8FB007F1330 /* TaskSchedulerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3EFFEF2510B8FB007F1330 /* TaskSchedulerTests.swift */; };
 		AC4095A422B18B9D006EF67C /* InboxViewControllerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4095A322B18B9D006EF67C /* InboxViewControllerViewModel.swift */; };
 		AC426226238C27DD00164121 /* IterableInboxCell+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC426225238C27DD00164121 /* IterableInboxCell+Layout.swift */; };
-		AC426CC4211B5497002EDBE8 /* ServerResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC426CC3211B5497002EDBE8 /* ServerResponse.swift */; };
 		AC43E7FF23A8C2C0008917E2 /* image.jpg in Resources */ = {isa = PBXBuildFile; fileRef = AC74FE1E23A8C0DB004AC442 /* image.jpg */; };
 		AC4B039622A8743F0043185B /* InAppManager+Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4B039322A8743F0043185B /* InAppManager+Functions.swift */; };
 		AC4BA00224163D8F007359F1 /* IterableHtmlMessageViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4BA00124163D8F007359F1 /* IterableHtmlMessageViewControllerTests.swift */; };
@@ -382,7 +387,13 @@
 		55B9F15024B3D33700E8198A /* AuthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTests.swift; sourceTree = "<group>"; };
 		55B9F15224B6625D00E8198A /* ApiClientProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiClientProtocol.swift; sourceTree = "<group>"; };
 		55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPresenterTests.swift; sourceTree = "<group>"; };
-		55D54655239AE5750093ED1E /* LoggingInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingInternal.swift; sourceTree = "<group>"; };
+		55D54655239AE5750093ED1E /* IterableLogUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableLogUtil.swift; sourceTree = "<group>"; };
+		55DD2014269E5A4200773CC7 /* IterableInboxViewControllerViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxViewControllerViewDelegate.swift; sourceTree = "<group>"; };
+		55DD2026269E5EA300773CC7 /* InboxViewControllerViewModelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewControllerViewModelView.swift; sourceTree = "<group>"; };
+		55DD2040269FA24400773CC7 /* IterableInAppMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInAppMessage.swift; sourceTree = "<group>"; };
+		55DD2052269FA28200773CC7 /* IterableInAppManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInAppManagerProtocol.swift; sourceTree = "<group>"; };
+		55DD2064269FB1FC00773CC7 /* InboxViewControllerViewModelProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewControllerViewModelProtocol.swift; sourceTree = "<group>"; };
+		55DD207E26A0D83800773CC7 /* IterableAuthManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAuthManagerProtocol.swift; sourceTree = "<group>"; };
 		55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewProtocolTests.swift; sourceTree = "<group>"; };
 		55E6F45E238E066400808BCE /* DeepLinkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepLinkTests.swift; sourceTree = "<group>"; };
 		AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxNavigationViewController.swift; sourceTree = "<group>"; };
@@ -431,7 +442,6 @@
 		AC3EFFEF2510B8FB007F1330 /* TaskSchedulerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskSchedulerTests.swift; sourceTree = "<group>"; };
 		AC4095A322B18B9D006EF67C /* InboxViewControllerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewControllerViewModel.swift; sourceTree = "<group>"; };
 		AC426225238C27DD00164121 /* IterableInboxCell+Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "IterableInboxCell+Layout.swift"; sourceTree = "<group>"; };
-		AC426CC3211B5497002EDBE8 /* ServerResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerResponse.swift; sourceTree = "<group>"; };
 		AC4B039122A8743F0043185B /* EmptyInAppManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyInAppManager.swift; sourceTree = "<group>"; };
 		AC4B039322A8743F0043185B /* InAppManager+Functions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "InAppManager+Functions.swift"; sourceTree = "<group>"; };
 		AC4BA00124163D8F007359F1 /* IterableHtmlMessageViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableHtmlMessageViewControllerTests.swift; sourceTree = "<group>"; };
@@ -716,24 +726,6 @@
 			name = "Notification Center";
 			sourceTree = "<group>";
 		};
-		AC219C4A225FD7F900B98631 /* Inbox UI */ = {
-			isa = PBXGroup;
-			children = (
-				AC219C4E225FEDBD00B98631 /* IterableInboxCell.swift */,
-				AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */,
-				AC219C48225FD7EB00B98631 /* IterableInboxViewController.swift */,
-			);
-			name = "Inbox UI";
-			sourceTree = "<group>";
-		};
-		AC219C4B225FE2B300B98631 /* UI */ = {
-			isa = PBXGroup;
-			children = (
-				AC31B03D232AB37C00BE25EB /* Inbox */,
-			);
-			name = UI;
-			sourceTree = "<group>";
-		};
 		AC2263D520CF49B8009800EB = {
 			isa = PBXGroup;
 			children = (
@@ -769,7 +761,6 @@
 				AC72A0BB20CF4C8C004D7997 /* Internal */,
 				AC44C0EB22615F8100E0641D /* Resources */,
 				AC2263F920CF4B63009800EB /* Supporting Files */,
-				AC219C4A225FD7F900B98631 /* Inbox UI */,
 				AC72A0C120CF4CB8004D7997 /* CommerceItem.swift */,
 				AC72A0BE20CF4CB8004D7997 /* Constants.swift */,
 				AC72A0BF20CF4CB8004D7997 /* IterableAction.swift */,
@@ -777,7 +768,14 @@
 				AC6FDD8720F4372E005D811E /* IterableAPI.swift */,
 				AC72A0C620CF4CB9004D7997 /* IterableAppIntegration.swift */,
 				AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */,
+				55DD207E26A0D83800773CC7 /* IterableAuthManagerProtocol.swift */,
 				AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */,
+				55DD2052269FA28200773CC7 /* IterableInAppManagerProtocol.swift */,
+				55DD2040269FA24400773CC7 /* IterableInAppMessage.swift */,
+				AC219C4E225FEDBD00B98631 /* IterableInboxCell.swift */,
+				AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */,
+				AC219C48225FD7EB00B98631 /* IterableInboxViewController.swift */,
+				55DD2014269E5A4200773CC7 /* IterableInboxViewControllerViewDelegate.swift */,
 				AC3C10F8213F46A900A9B839 /* IterableLogging.swift */,
 				ACA8D1A221910C66001B1332 /* IterableMessaging.swift */,
 				AC78F0E6253D7F09006378A5 /* IterablePushNotificationMetadata.swift */,
@@ -794,10 +792,11 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		AC2263FA20CF4B84009800EB /* In-app */ = {
+		AC2263FA20CF4B84009800EB /* In-App */ = {
 			isa = PBXGroup;
 			children = (
 				AC4B039122A8743F0043185B /* EmptyInAppManager.swift */,
+				ACC3FDB0253724DB0004A2E0 /* InAppCalculations.swift */,
 				AC8874A922178BD80075B54B /* InAppContentParser.swift */,
 				AC684A87222F4FDD00F29749 /* InAppDisplayer.swift */,
 				AC72A0AA20CF4BEB004D7997 /* InAppHelper.swift */,
@@ -808,12 +807,11 @@
 				AC03094A21E532470003A288 /* InAppPersistence.swift */,
 				556FB1E9244FAF6A00EDF6BD /* InAppPresenter.swift */,
 				ACB8273E22372A5C00DB17D3 /* IterableHtmlMessageViewController.swift */,
-				ACC3FDB0253724DB0004A2E0 /* InAppCalculations.swift */,
 				AC426225238C27DD00164121 /* IterableInboxCell+Layout.swift */,
 				AC1BED9423F1D4C700FDD75F /* MiscInboxClasses.swift */,
 				AC1712882416AEF400F2BB0E /* WebViewProtocol.swift */,
 			);
-			name = "In-app";
+			name = "In-App";
 			sourceTree = "<group>";
 		};
 		AC28480824AA44C600C1FC7F /* endpoint-tests */ = {
@@ -833,20 +831,14 @@
 		AC31B03D232AB37C00BE25EB /* Inbox */ = {
 			isa = PBXGroup;
 			children = (
-				AC31B03E232AB3E800BE25EB /* ViewModel */,
+				AC31B041232AB53500BE25EB /* InboxImpressionTracker.swift */,
+				AC219C4C225FE4C000B98631 /* InboxMessageViewModel.swift */,
+				AC31B03F232AB42100BE25EB /* InboxSessionManager.swift */,
+				AC4095A322B18B9D006EF67C /* InboxViewControllerViewModel.swift */,
+				55DD2064269FB1FC00773CC7 /* InboxViewControllerViewModelProtocol.swift */,
+				55DD2026269E5EA300773CC7 /* InboxViewControllerViewModelView.swift */,
 			);
 			name = Inbox;
-			sourceTree = "<group>";
-		};
-		AC31B03E232AB3E800BE25EB /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-				AC219C4C225FE4C000B98631 /* InboxMessageViewModel.swift */,
-				AC4095A322B18B9D006EF67C /* InboxViewControllerViewModel.swift */,
-				AC31B03F232AB42100BE25EB /* InboxSessionManager.swift */,
-				AC31B041232AB53500BE25EB /* InboxImpressionTracker.swift */,
-			);
-			name = ViewModel;
 			sourceTree = "<group>";
 		};
 		AC3A3029262EE04400425435 /* deep-linking-tests */ = {
@@ -912,25 +904,17 @@
 		AC3C10F7213F43AC00A9B839 /* Logging */ = {
 			isa = PBXGroup;
 			children = (
-				55D54655239AE5750093ED1E /* LoggingInternal.swift */,
+				55D54655239AE5750093ED1E /* IterableLogUtil.swift */,
 			);
 			name = Logging;
-			sourceTree = "<group>";
-		};
-		AC426CC5211B5527002EDBE8 /* Fp */ = {
-			isa = PBXGroup;
-			children = (
-				AC426CC3211B5497002EDBE8 /* ServerResponse.swift */,
-			);
-			name = Fp;
 			sourceTree = "<group>";
 		};
 		AC44C0EB22615F8100E0641D /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 				AC219C522260006600B98631 /* Assets.xcassets */,
-				AC219C4F225FEDBD00B98631 /* SampleInboxCell.xib */,
 				AC50865224C60172001DC132 /* IterableDataModel.xcdatamodeld */,
+				AC219C4F225FEDBD00B98631 /* SampleInboxCell.xib */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -938,12 +922,12 @@
 		AC50865124C60133001DC132 /* Persistence */ = {
 			isa = PBXGroup;
 			children = (
-				AC50865524C603AC001DC132 /* IterablePersistence.swift */,
-				AC50865924C60572001DC132 /* IterableCoreDataPersistence.swift */,
 				AC8E7CA424C7555E0039605F /* CoreDataUtil.swift */,
-				ACFD5AB224C8179D008E497A /* PersistenceHelper.swift */,
-				ACFD5AC724C8290E008E497A /* IterableTaskManagedObject.swift */,
 				ACB1DFDA26369D2F00A31597 /* HealthMonitor.swift */,
+				AC50865924C60572001DC132 /* IterableCoreDataPersistence.swift */,
+				AC50865524C603AC001DC132 /* IterablePersistence.swift */,
+				ACFD5AC724C8290E008E497A /* IterableTaskManagedObject.swift */,
+				ACFD5AB224C8179D008E497A /* PersistenceHelper.swift */,
 			);
 			name = Persistence;
 			sourceTree = "<group>";
@@ -951,14 +935,14 @@
 		AC5E888724E1B7AD00752321 /* Request Processing */ = {
 			isa = PBXGroup;
 			children = (
-				ACF32BDA24E3EA7C0072E2CC /* RequestProcessorProtocol.swift */,
-				AC5E888824E1B7CE00752321 /* OnlineRequestProcessor.swift */,
-				AC5812F524F3A90F007E6D36 /* OfflineRequestProcessor.swift */,
-				AC3A336C24F65579008225BA /* RequestProcessorUtil.swift */,
-				AC9355D02589F9F90056C903 /* RequestHandlerProtocol.swift */,
-				AC5812F724F3AE8D007E6D36 /* RequestHandler.swift */,
 				AC9355DA2589FC070056C903 /* LegacyRequestHandler.swift */,
 				ACD2B83C25B0A74A005D7A90 /* Models.swift */,
+				AC5812F524F3A90F007E6D36 /* OfflineRequestProcessor.swift */,
+				AC5E888824E1B7CE00752321 /* OnlineRequestProcessor.swift */,
+				AC5812F724F3AE8D007E6D36 /* RequestHandler.swift */,
+				AC9355D02589F9F90056C903 /* RequestHandlerProtocol.swift */,
+				ACF32BDA24E3EA7C0072E2CC /* RequestProcessorProtocol.swift */,
+				AC3A336C24F65579008225BA /* RequestProcessorUtil.swift */,
 			);
 			name = "Request Processing";
 			sourceTree = "<group>";
@@ -978,26 +962,25 @@
 		AC72A0BB20CF4C8C004D7997 /* Internal */ = {
 			isa = PBXGroup;
 			children = (
-				ACF4061F25078186005FD775 /* Network */,
-				AC1AA1C724EBB39500F29C6B /* Notification Center */,
-				AC5E888724E1B7AD00752321 /* Request Processing */,
-				ACC362BB24D21153002C67BA /* Task Processing */,
-				AC942BC42539DEB4002988C9 /* Resource Loading */,
-				AC50865124C60133001DC132 /* Persistence */,
 				AC845105228DF5360052BB8F /* API Client */,
 				AC0248062279132400495FB9 /* Dwifft */,
-				AC426CC5211B5527002EDBE8 /* Fp */,
-				AC2263FA20CF4B84009800EB /* In-app */,
+				AC2263FA20CF4B84009800EB /* In-App */,
+				AC31B03D232AB37C00BE25EB /* Inbox */,
 				AC7A525F227BB9B80064D67E /* Initialization */,
 				ACE34AB121376ACB00691224 /* Local Storage */,
 				AC3C10F7213F43AC00A9B839 /* Logging */,
-				AC219C4B225FE2B300B98631 /* UI */,
+				ACF4061F25078186005FD775 /* Network */,
+				AC1AA1C724EBB39500F29C6B /* Notification Center */,
+				AC50865124C60133001DC132 /* Persistence */,
+				AC5E888724E1B7AD00752321 /* Request Processing */,
+				AC942BC42539DEB4002988C9 /* Resource Loading */,
+				ACC362BB24D21153002C67BA /* Task Processing */,
 				AC72A0AC20CF4C08004D7997 /* Util */,
 				557AE6BE24A56E5E00B57750 /* Auth.swift */,
 				55298B222501A5AB00190BAE /* AuthManager.swift */,
 				AC2C667D20D3111900D46CC9 /* DateProvider.swift */,
-				AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */,
 				AC72A0C520CF4CB9004D7997 /* InternalIterableAPI.swift */,
+				AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */,
 				AC2C668120D32F2800D46CC9 /* IterableAppIntegrationInternal.swift */,
 				AC72A0BD20CF4C98004D7997 /* IterableDeepLinkManager.swift */,
 				AC2B79F621E6A38900A59080 /* NotificationHelper.swift */,
@@ -1065,8 +1048,8 @@
 				AC845106228DF54E0052BB8F /* ApiClient.swift */,
 				55B9F15224B6625D00E8198A /* ApiClientProtocol.swift */,
 				AC8E9267246284F800BEB68E /* DataFieldsHelper.swift */,
-				AC84510822910A0C0052BB8F /* RequestCreator.swift */,
 				ACC362B524D16D91002C67BA /* IterableRequest.swift */,
+				AC84510822910A0C0052BB8F /* RequestCreator.swift */,
 				ACD2B84E25B15CFA005D7A90 /* RequestSender.swift */,
 			);
 			name = "API Client";
@@ -1135,11 +1118,11 @@
 			isa = PBXGroup;
 			children = (
 				ACC362B924D20BBB002C67BA /* IterableAPICallRequest.swift */,
-				ACC362BE24D21192002C67BA /* IterableTaskProcessor.swift */,
 				ACC362BC24D21172002C67BA /* IterableAPICallTaskProcessor.swift */,
 				AC50865724C60426001DC132 /* IterableTask.swift */,
-				ACC362C024D21272002C67BA /* IterableTaskResult.swift */,
 				ACC362C224D21332002C67BA /* IterableTaskError.swift */,
+				ACC362BE24D21192002C67BA /* IterableTaskProcessor.swift */,
+				ACC362C024D21272002C67BA /* IterableTaskResult.swift */,
 				AC1AA1C524EBB2DC00F29C6B /* IterableTaskRunner.swift */,
 				AC2AED4324EBC905000EE5F3 /* IterableTaskScheduler.swift */,
 			);
@@ -1198,9 +1181,9 @@
 		ACF4061F25078186005FD775 /* Network */ = {
 			isa = PBXGroup;
 			children = (
-				ACD6116B2107D004003E7F6B /* NetworkHelper.swift */,
 				AC978D3D24FF953C00372B8C /* NetworkConnectivityChecker.swift */,
 				ACF40620250781F1005FD775 /* NetworkConnectivityManager.swift */,
+				ACD6116B2107D004003E7F6B /* NetworkHelper.swift */,
 				ACF406222507BC72005FD775 /* NetworkMonitor.swift */,
 			);
 			name = Network;
@@ -1710,9 +1693,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC31B042232AB53500BE25EB /* InboxImpressionTracker.swift in Sources */,
-				55D54656239AE5750093ED1E /* LoggingInternal.swift in Sources */,
+				55D54656239AE5750093ED1E /* IterableLogUtil.swift in Sources */,
+				55DD2065269FB1FC00773CC7 /* InboxViewControllerViewModelProtocol.swift in Sources */,
 				ACF32BDB24E3EA7C0072E2CC /* RequestProcessorProtocol.swift in Sources */,
-				AC426CC4211B5497002EDBE8 /* ServerResponse.swift in Sources */,
 				AC219C49225FD7EB00B98631 /* IterableInboxViewController.swift in Sources */,
 				AC3DD9C82142F3650046F886 /* ClassExtensions.swift in Sources */,
 				AC219C50225FEDBD00B98631 /* IterableInboxCell.swift in Sources */,
@@ -1749,13 +1732,16 @@
 				ACF406232507BC72005FD775 /* NetworkMonitor.swift in Sources */,
 				AC1712892416AEF400F2BB0E /* WebViewProtocol.swift in Sources */,
 				AC3C10F9213F46A900A9B839 /* IterableLogging.swift in Sources */,
+				55DD207F26A0D83800773CC7 /* IterableAuthManagerProtocol.swift in Sources */,
 				ACE34AB72139D70B00691224 /* LocalStorageProtocol.swift in Sources */,
 				AC819186227139230014955E /* SectionedValues.swift in Sources */,
 				AC6FDD8820F4372E005D811E /* IterableAPI.swift in Sources */,
 				ACF560E820E55A6B000AAC23 /* IterableActionContext.swift in Sources */,
 				AC5812F824F3AE8D007E6D36 /* RequestHandler.swift in Sources */,
+				55DD2015269E5A4200773CC7 /* IterableInboxViewControllerViewDelegate.swift in Sources */,
 				AC2C668220D32F2800D46CC9 /* IterableAppIntegrationInternal.swift in Sources */,
 				ACD2B83D25B0A74A005D7A90 /* Models.swift in Sources */,
+				55DD2027269E5EA300773CC7 /* InboxViewControllerViewModelView.swift in Sources */,
 				AC1BED9523F1D4C700FDD75F /* MiscInboxClasses.swift in Sources */,
 				556FB1EA244FAF6A00EDF6BD /* InAppPresenter.swift in Sources */,
 				AC2AED4424EBC905000EE5F3 /* IterableTaskScheduler.swift in Sources */,
@@ -1768,6 +1754,7 @@
 				AC4095A422B18B9D006EF67C /* InboxViewControllerViewModel.swift in Sources */,
 				AC7A5261227BB9D10064D67E /* DependencyContainer.swift in Sources */,
 				AC776DA6211A1B8A00C27C27 /* IterableRequestUtil.swift in Sources */,
+				55DD2053269FA28200773CC7 /* IterableInAppManagerProtocol.swift in Sources */,
 				ACEDF41D2183C2EC000B9BFE /* Promise.swift in Sources */,
 				AC78F0E7253D7F09006378A5 /* IterablePushNotificationMetadata.swift in Sources */,
 				AC7125EF20D4579E0043BBC1 /* IterableConfig.swift in Sources */,
@@ -1797,6 +1784,7 @@
 				AC347B5C20E5A7E1003449CF /* APNSTypeChecker.swift in Sources */,
 				ACD2B84F25B15CFA005D7A90 /* RequestSender.swift in Sources */,
 				AC3A336D24F65579008225BA /* RequestProcessorUtil.swift in Sources */,
+				55DD2041269FA24400773CC7 /* IterableInAppMessage.swift in Sources */,
 				AC8E7CA524C7555E0039605F /* CoreDataUtil.swift in Sources */,
 				AC1AA1C624EBB2DC00F29C6B /* IterableTaskRunner.swift in Sources */,
 				ACFD5AC824C8290E008E497A /* IterableTaskManagedObject.swift in Sources */,

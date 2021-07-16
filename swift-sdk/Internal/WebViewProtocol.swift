@@ -3,7 +3,6 @@
 //
 
 import Foundation
-
 import WebKit
 
 struct ViewPosition: Equatable {

@@ -8,7 +8,7 @@ import Foundation
 struct OfflineRequestProcessor: RequestProcessorProtocol {
     init(apiKey: String,
          authProvider: AuthProvider?,
-         authManager: IterableInternalAuthManagerProtocol?,
+         authManager: IterableAuthManagerProtocol?,
          endPoint: String,
          deviceMetadata: DeviceMetadata,
          taskScheduler: IterableTaskScheduler,
@@ -220,7 +220,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     
     private let apiKey: String
     private weak var authProvider: AuthProvider?
-    private weak var authManager: IterableInternalAuthManagerProtocol?
+    private weak var authManager: IterableAuthManagerProtocol?
     private let endPoint: String
     private let deviceMetadata: DeviceMetadata
     private let notificationListener: NotificationListener

@@ -8,6 +8,21 @@
 import Foundation
 
 struct IterableRequestUtil {
+    static func createGetRequest(forApiEndPoint apiEndPoint: String,
+                                 path: String,
+                                 headers: [String: String]? = nil,
+                                 args: [String: String]? = nil) -> URLRequest? {
+        guard let url = getUrlComponents(forApiEndPoint: apiEndPoint, path: path, args: args)?.url else {
+            return nil
+        }
+        
+        var request = URLRequest(url: url)
+        addHeaders(headers: headers, toRequest: &request)
+        request.httpMethod = Const.Http.GET
+        
+        return request
+    }
+    
     static func createPostRequest(forApiEndPoint apiEndPoint: String,
                                   path: String,
                                   headers: [String: String]? = nil,
@@ -49,19 +64,16 @@ struct IterableRequestUtil {
         return request
     }
     
-    static func createGetRequest(forApiEndPoint apiEndPoint: String,
-                                 path: String,
-                                 headers: [String: String]? = nil,
-                                 args: [String: String]? = nil) -> URLRequest? {
-        guard let url = getUrlComponents(forApiEndPoint: apiEndPoint, path: path, args: args)?.url else {
+    static func dictToJsonData(_ dict: [AnyHashable: Any]?) -> Data? {
+        guard let dict = dict else {
             return nil
         }
         
-        var request = URLRequest(url: url)
-        addHeaders(headers: headers, toRequest: &request)
-        request.httpMethod = Const.Http.GET
-        
-        return request
+        return try? JSONSerialization.data(withJSONObject: dict, options: [])
+    }
+    
+    static func pathCombine(paths: [String]) -> String {
+        paths.reduce("", pathCombine)
     }
     
     private static func addHeaders(headers: [String: String]?, toRequest request: inout URLRequest) {
@@ -86,18 +98,6 @@ struct IterableRequestUtil {
         components.percentEncodedQuery = components.percentEncodedQuery?.replacingOccurrences(of: "+", with: "%2B")
         
         return components
-    }
-    
-    static func dictToJsonData(_ dict: [AnyHashable: Any]?) -> Data? {
-        guard let dict = dict else {
-            return nil
-        }
-        
-        return try? JSONSerialization.data(withJSONObject: dict, options: [])
-    }
-    
-    static func pathCombine(paths: [String]) -> String {
-        paths.reduce("", pathCombine)
     }
     
     private static func pathCombine(path1: String, path2: String) -> String {

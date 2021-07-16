@@ -14,46 +14,7 @@ enum RowDiff {
     case sectionUpdate(IndexSet)
 }
 
-protocol InboxViewControllerViewModelView: AnyObject {
-    // All these methods should be called on the main thread
-    func onViewModelChanged(diffs: [RowDiff])
-    func onImageLoaded(for indexPath: IndexPath)
-    var currentlyVisibleRowIndexPaths: [IndexPath] { get }
-}
-
-protocol InboxViewControllerViewModelProtocol {
-    var view: InboxViewControllerViewModelView? { get set }
-    func set(comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)?,
-             filter: ((IterableInAppMessage) -> Bool)?,
-             sectionMapper: ((IterableInAppMessage) -> Int)?)
-    var numSections: Int { get }
-    func numRows(in section: Int) -> Int
-    var unreadCount: Int { get }
-    func isEmpty() -> Bool
-    func message(atIndexPath indexPath: IndexPath) -> InboxMessageViewModel
-    func remove(atIndexPath indexPath: IndexPath)
-    func set(read: Bool, forMessage message: InboxMessageViewModel)
-    func createInboxMessageViewController(for message: InboxMessageViewModel, withInboxMode inboxMode: IterableInboxViewController.InboxMode) -> UIViewController?
-    func refresh() -> Future<Bool, Error> // Talks to the server and refreshes
-    // this works hand in hand with listener.onViewModelChanged.
-    // Internal model can't be changed until the view begins update (tableView.beginUpdates()).
-    func beganUpdates()
-    func endedUpdates()
-    func viewWillAppear()
-    func viewWillDisappear()
-    func visibleRowsChanged()
-}
-
 class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
-    weak var view: InboxViewControllerViewModelView?
-    
-    func set(comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)?, filter: ((IterableInAppMessage) -> Bool)?, sectionMapper: ((IterableInAppMessage) -> Int)?) {
-        self.comparator = comparator
-        self.filter = filter
-        self.sectionMapper = sectionMapper
-        sectionedMessages = sortAndFilter(messages: allMessagesInSections())
-    }
-    
     init(internalAPIProvider: @escaping @autoclosure () -> InternalIterableAPI? = IterableAPI.internalImplementation) {
         ITBInfo()
         
@@ -73,23 +34,45 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         NotificationCenter.default.removeObserver(self)
     }
     
+    // MARK: - InboxViewControllerViewModelProtocol
+    
+    weak var view: InboxViewControllerViewModelView?
+    
     var numSections: Int {
         sectionedMessages.sections.count
-    }
-    
-    func numRows(in section: Int) -> Int {
-        sectionedMessages[section].1.count
     }
     
     var unreadCount: Int {
         allMessagesInSections().filter { $0.read == false }.count
     }
     
+    func refresh() -> Future<Bool, Error> {
+        internalInAppManager?.scheduleSync() ?? Promise(error: IterableError.general(description: "Did not find inAppManager"))
+    }
+    
+    func createInboxMessageViewController(for message: InboxMessageViewModel, withInboxMode inboxMode: IterableInboxViewController.InboxMode) -> UIViewController? {
+        internalInAppManager?.createInboxMessageViewController(for: message.iterableMessage, withInboxMode: inboxMode, inboxSessionId: sessionManager.sessionStartInfo?.id)
+    }
+    
+    func set(comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)?, filter: ((IterableInAppMessage) -> Bool)?, sectionMapper: ((IterableInAppMessage) -> Int)?) {
+        self.comparator = comparator
+        self.filter = filter
+        self.sectionMapper = sectionMapper
+        sectionedMessages = sortAndFilter(messages: allMessagesInSections())
+    }
+    
     func isEmpty() -> Bool {
-        return
-            sectionedMessages.sectionsAndValues.reduce(0) { count, sectionAndValue in
-                count + sectionAndValue.1.count
-            } == 0
+        return sectionedMessages.sectionsAndValues.reduce(0) { count, sectionAndValue in
+            count + sectionAndValue.1.count
+        } == 0
+    }
+    
+    func numRows(in section: Int) -> Int {
+        sectionedMessages[section].1.count
+    }
+    
+    func set(read: Bool, forMessage message: InboxMessageViewModel) {
+        internalInAppManager?.set(read: read, forMessage: message.iterableMessage)
     }
     
     func message(atIndexPath indexPath: IndexPath) -> InboxMessageViewModel {
@@ -106,24 +89,6 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
                                      inboxSessionId: sessionManager.sessionStartInfo?.id)
     }
     
-    func set(read: Bool, forMessage message: InboxMessageViewModel) {
-        internalInAppManager?.set(read: read, forMessage: message.iterableMessage)
-    }
-    
-    func refresh() -> Future<Bool, Error> {
-        internalInAppManager?.scheduleSync() ?? Promise(error: IterableError.general(description: "Did not find inAppManager"))
-    }
-    
-    func createInboxMessageViewController(for message: InboxMessageViewModel, withInboxMode inboxMode: IterableInboxViewController.InboxMode) -> UIViewController? {
-        internalInAppManager?.createInboxMessageViewController(for: message.iterableMessage, withInboxMode: inboxMode, inboxSessionId: sessionManager.sessionStartInfo?.id)
-    }
-    
-    func beganUpdates() {
-        sectionedMessages = newSectionedMessages
-    }
-    
-    func endedUpdates() {}
-    
     func viewWillAppear() {
         ITBInfo()
         startSession()
@@ -138,6 +103,14 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         ITBDebug()
         updateVisibleRows()
     }
+    
+    func beganUpdates() {
+        sectionedMessages = newSectionedMessages
+    }
+    
+    func endedUpdates() {}
+    
+    // MARK: - Private/Internal
     
     private func updateVisibleRows() {
         ITBDebug()
