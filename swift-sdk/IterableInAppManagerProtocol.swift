@@ -2,6 +2,8 @@
 //  Copyright © 2021 Iterable. All rights reserved.
 //
 
+import Foundation
+
 @objc public protocol IterableInAppManagerProtocol {
     /// Turn on/off automatic displaying of in-apps
     /// - remark: the default value is `false`

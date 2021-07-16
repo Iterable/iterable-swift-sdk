@@ -2,6 +2,8 @@
 //  Copyright © 2021 Iterable. All rights reserved.
 //
 
+import Foundation
+
 /// A message is comprised of content and whether this message was skipped.
 @objcMembers public final class IterableInAppMessage: NSObject {
     /// the ID for the in-app message

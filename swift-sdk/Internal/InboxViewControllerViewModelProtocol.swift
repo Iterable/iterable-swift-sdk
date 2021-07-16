@@ -2,6 +2,8 @@
 //  Copyright © 2021 Iterable. All rights reserved.
 //
 
+import UIKit
+
 protocol InboxViewControllerViewModelProtocol {
     var view: InboxViewControllerViewModelView? { get set }
     var unreadCount: Int { get }

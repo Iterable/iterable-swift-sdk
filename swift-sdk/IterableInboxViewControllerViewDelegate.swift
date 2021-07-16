@@ -2,6 +2,8 @@
 //  Copyright © 2021 Iterable. All rights reserved.
 //
 
+import Foundation
+
 /// Use this protocol to override the default inbox display behavior.
 /// Please note that almost properties are `optional` which means that you don't have to
 /// implement them if the default behavior works for you.
