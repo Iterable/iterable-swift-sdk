@@ -70,9 +70,7 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     
     @discardableResult
     func updateCart(items: [CommerceItem], dataFields: [AnyHashable: Any]? = nil) -> Future<SendRequestValue, SendRequestError> {
-        applyCallbacks(successHandler: nil,
-                       andFailureHandler: nil,
-                       withIdentifier: "updateCart",
+        applyCallbacks(withIdentifier: "updateCart",
                        forResult: apiClient.updateCart(items: items, dataFields: dataFields))
     }
     
