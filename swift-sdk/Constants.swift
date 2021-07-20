@@ -22,6 +22,7 @@ enum Const {
     }
     
     enum Path {
+        static let updateCart = "commerce/updateCart"
         static let trackPurchase = "commerce/trackPurchase"
         static let disableDevice = "users/disableDevice"
         static let getInAppMessages = "inApp/getMessages"

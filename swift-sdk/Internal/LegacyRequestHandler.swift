@@ -79,6 +79,14 @@ class LegacyRequestHandler: RequestHandlerProtocol {
     }
     
     @discardableResult
+    func updateCart(items: [CommerceItem],
+                    dataFields: [AnyHashable : Any]?) -> Future<SendRequestValue, SendRequestError> {
+        applyCallbacks(withIdentifier: "updateCart",
+                       forResult: apiClient.updateCart(items: items,
+                                                       dataFields: dataFields))
+    }
+    
+    @discardableResult
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]? = nil,

@@ -69,6 +69,14 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     }
     
     @discardableResult
+    func updateCart(items: [CommerceItem], dataFields: [AnyHashable: Any]? = nil) -> Future<SendRequestValue, SendRequestError> {
+        applyCallbacks(successHandler: nil,
+                       andFailureHandler: nil,
+                       withIdentifier: "updateCart",
+                       forResult: apiClient.updateCart(items: items, dataFields: dataFields))
+    }
+    
+    @discardableResult
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]? = nil,

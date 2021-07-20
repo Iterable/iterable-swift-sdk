@@ -123,6 +123,12 @@ extension ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: result)
     }
     
+    func updateCart(items: [CommerceItem], dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createUpdateCartRequest(items: items, dataFields: dataFields) }
+        
+        return send(iterableRequestResult: result)
+    }
+    
     func track(purchase total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createTrackPurchaseRequest(total, items: items,
                                                                                      dataFields: dataFields) }

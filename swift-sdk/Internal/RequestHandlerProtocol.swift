@@ -40,6 +40,10 @@ protocol RequestHandlerProtocol: AnyObject {
                      onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
     
     @discardableResult
+    func updateCart(items: [CommerceItem],
+                    dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError>
+    
+    @discardableResult
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]?,

@@ -88,6 +88,12 @@ class RequestHandler: RequestHandlerProtocol {
     }
     
     @discardableResult
+    func updateCart(items: [CommerceItem], dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError> {
+        chooseRequestProcessor().updateCart(items: items,
+                                            dataFields: dataFields)
+    }
+    
+    @discardableResult
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]?,
