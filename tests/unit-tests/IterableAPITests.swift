@@ -950,18 +950,23 @@ class IterableAPITests: XCTestCase {
         
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
                                                                    networkSession: networkSession)
+        internalAPI.email = IterableAPITests.email
+        
         networkSession.callback = { _, response, _ in
             guard let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
                                                                   response: response,
                                                                   endPoint: Const.Path.trackEvent) else {
                 return
             }
+            
             TestUtils.validate(request: request, apiEndPoint: Endpoint.api, path: Const.Path.trackEvent)
             TestUtils.validateMatch(keyPath: KeyPath(string: "campaignId"), value: 1234, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(string: "templateId"), value: 4321, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(string: "messageId"), value: messageId, inDictionary: body)
+            
             expectation1.fulfill()
         }
+        
         internalAPI.trackPushOpen(userInfo)
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
@@ -983,6 +988,9 @@ class IterableAPITests: XCTestCase {
         
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
                                                                    networkSession: networkSession)
+        
+        internalAPI.userId = IterableAPITests.userId
+        
         networkSession.callback = { _, response, _ in
             guard let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
                                                                   response: response,
@@ -1018,19 +1026,26 @@ class IterableAPITests: XCTestCase {
         
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
                                                                    networkSession: networkSession)
+        
+        internalAPI.email = IterableAPITests.email
+        
         internalAPI.trackPushOpen(userInfo, dataFields: ["key1": "value1"], onSuccess: { _ in
             guard let request = networkSession.getRequest(withEndPoint: Const.Path.trackEvent) else {
                 return
             }
+            
             guard let body = TestUtils.getRequestBody(request: request) else {
                 return
             }
+            
             TestUtils.validate(request: request, apiEndPoint: Endpoint.api, path: Const.Path.trackEvent)
             TestUtils.validateMatch(keyPath: KeyPath(string: "campaignId"), value: 1234, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(string: "templateId"), value: 4321, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(string: "messageId"), value: messageId, inDictionary: body)
+            
             let dataFields: [String: AnyHashable] = ["appAlreadyRunning": false, "key1": "value1"]
             TestUtils.validateMatch(keyPath: KeyPath(string: "dataFields"), value: dataFields, inDictionary: body)
+            
             expectation1.fulfill()
         }, onFailure: nil)
         
@@ -1045,6 +1060,9 @@ class IterableAPITests: XCTestCase {
         
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
                                                                    networkSession: networkSession)
+        
+        internalAPI.userId = IterableAPITests.userId
+        
         networkSession.callback = { _, response, _ in
             guard let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
                                                                   response: response,
@@ -1072,6 +1090,9 @@ class IterableAPITests: XCTestCase {
         
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
                                                                    networkSession: networkSession)
+        
+        internalAPI.email = IterableAPITests.email
+        
         internalAPI.trackPushOpen(1234,
                                   templateId: 4321,
                                   messageId: messageId,
@@ -1081,15 +1102,19 @@ class IterableAPITests: XCTestCase {
                                     guard let request = networkSession.getRequest(withEndPoint: Const.Path.trackEvent) else {
                                         return
                                     }
+                                    
                                     guard let body = TestUtils.getRequestBody(request: request) else {
                                         return
                                     }
+                                    
                                     TestUtils.validate(request: request, apiEndPoint: Endpoint.api, path: Const.Path.trackEvent)
                                     TestUtils.validateMatch(keyPath: KeyPath(string: "campaignId"), value: 1234, inDictionary: body)
                                     TestUtils.validateMatch(keyPath: KeyPath(string: "templateId"), value: 4321, inDictionary: body)
                                     TestUtils.validateMatch(keyPath: KeyPath(string: "messageId"), value: messageId, inDictionary: body)
+                                    
                                     let dataFields: [String: AnyHashable] = ["appAlreadyRunning": true, "key1": "value1"]
                                     TestUtils.validateMatch(keyPath: KeyPath(string: "dataFields"), value: dataFields, inDictionary: body, message: "dataFields did not match")
+                                    
                                     expectation1.fulfill()
                                   },
                                   onFailure: nil)
