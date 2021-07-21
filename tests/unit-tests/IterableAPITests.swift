@@ -575,6 +575,38 @@ class IterableAPITests: XCTestCase {
         wait(for: [expectation], timeout: testExpectationTimeoutForInverted)
     }
     
+    func testUpdateCart() {
+        let condition1 = XCTestExpectation(description: #function)
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: networkSession)
+        internalAPI.email = IterableAPITests.email
+        
+        let items = [CommerceItem(id: "", name: "", price: 0.0, quantity: 1)]
+        
+        networkSession.callback = { _, response, _ in
+            guard let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
+                                                                  response: response,
+                                                                  endPoint: Const.Path.updateCart) else {
+                return
+            }
+            
+            TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.updateCart, queryParams: [])
+            TestUtils.validateMatch(keyPath: KeyPath(string: "\(JsonKey.Commerce.user).\(JsonKey.email)"), value: IterableAPITests.email, inDictionary: body)
+            
+            let itemsElement = body[JsonKey.Commerce.items] as! [[AnyHashable: Any]]
+            XCTAssertEqual(itemsElement.count, items.count)
+            
+            //TODO: create a CommerceItem matcher for use right here, and in trackPurchase tests
+            
+            condition1.fulfill()
+        }
+        
+        internalAPI.updateCart(items: items)
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+    
     func testTrackPurchaseNoUserIdOrEmail() {
         let expectation = XCTestExpectation(description: "testTrackPurchaseNoUserIdOrEmail")
         
