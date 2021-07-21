@@ -405,8 +405,7 @@ class IterableAPITests: XCTestCase {
             }
         }
         
-        // only wait for small time, supposed to error out
-        wait(for: [expectation], timeout: testExpectationTimeout)
+        wait(for: [expectation], timeout: testExpectationTimeoutForInverted)
     }
     
     func testDisableDeviceNotRegistered() {
@@ -424,8 +423,7 @@ class IterableAPITests: XCTestCase {
             expectation.fulfill()
         }
         
-        // only wait for small time, supposed to error out
-        wait(for: [expectation], timeout: testExpectationTimeout)
+        wait(for: [expectation], timeout: testExpectationTimeoutForInverted)
     }
     
     func testDisableDeviceForCurrentUser() {
@@ -463,8 +461,7 @@ class IterableAPITests: XCTestCase {
             }
         }
         
-        // only wait for small time, supposed to error out
-        wait(for: [expectation], timeout: testExpectationTimeout)
+        wait(for: [expectation], timeout: testExpectationTimeoutForInverted)
     }
     
     // Same test as above but without using success/failure callback
@@ -499,8 +496,7 @@ class IterableAPITests: XCTestCase {
             internalAPI.disableDeviceForCurrentUser()
         }
         
-        // only wait for small time, supposed to error out
-        wait(for: [expectation], timeout: testExpectationTimeout)
+        wait(for: [expectation], timeout: testExpectationTimeoutForInverted)
     }
     
     func testDisableDeviceForAllUsers() {
@@ -539,8 +535,7 @@ class IterableAPITests: XCTestCase {
         
         internalAPI.register(token: token)
         
-        // only wait for small time, supposed to error out
-        wait(for: [expectation], timeout: testExpectationTimeout)
+        wait(for: [expectation], timeout: testExpectationTimeoutForInverted)
     }
     
     // Same test as above but without using success/failure callback
@@ -577,8 +572,7 @@ class IterableAPITests: XCTestCase {
         }
         internalAPI.register(token: token)
         
-        // only wait for small time, supposed to error out
-        wait(for: [expectation], timeout: testExpectationTimeout)
+        wait(for: [expectation], timeout: testExpectationTimeoutForInverted)
     }
     
     func testTrackPurchaseNoUserIdOrEmail() {
@@ -596,8 +590,7 @@ class IterableAPITests: XCTestCase {
             expectation.fulfill()
         }
         
-        // only wait for small time, supposed to error out
-        wait(for: [expectation], timeout: testExpectationTimeout)
+        wait(for: [expectation], timeout: testExpectationTimeoutForInverted)
     }
     
     func testTrackPurchaseWithUserId() {
@@ -634,8 +627,7 @@ class IterableAPITests: XCTestCase {
             }
         }
         
-        // only wait for small time, supposed to error out
-        wait(for: [expectation], timeout: testExpectationTimeout)
+        wait(for: [expectation], timeout: testExpectationTimeoutForInverted)
     }
     
     func testTrackPurchaseWithEmail() {
@@ -701,6 +693,7 @@ class IterableAPITests: XCTestCase {
                                                                   endPoint: Const.Path.trackPurchase) else {
                 return
             }
+            
             TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackPurchase, queryParams: [])
             TestUtils.validateMatch(keyPath: KeyPath(string: "\(JsonKey.Commerce.user).\(JsonKey.email)"), value: "user@example.com", inDictionary: body)
             TestUtils.validateElementPresent(withName: JsonKey.Commerce.total, andValue: total, inDictionary: body)
@@ -713,6 +706,7 @@ class IterableAPITests: XCTestCase {
             TestUtils.validateElementPresent(withName: "quantity", andValue: 2, inDictionary: firstElement)
             expectation.fulfill()
         }
+        
         internalAPI.trackPurchase(total, items: items)
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
@@ -802,6 +796,7 @@ class IterableAPITests: XCTestCase {
                                                                   endPoint: Const.Path.inAppConsume) else {
                 return
             }
+            
             TestUtils.validate(request: request,
                                requestType: .post,
                                apiEndPoint: Endpoint.api,
@@ -886,12 +881,14 @@ class IterableAPITests: XCTestCase {
                 ],
             ],
         ]
+        
         let launchOptions: [UIApplication.LaunchOptionsKey: Any] = [UIApplication.LaunchOptionsKey.remoteNotification: userInfo]
         let customActionDelegate = MockCustomActionDelegate(returnValue: false)
         customActionDelegate.callback = { name, _ in
             XCTAssertEqual(name, "customAction")
             expectation1.fulfill()
         }
+        
         let config = IterableConfig()
         config.customActionDelegate = customActionDelegate
         InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
