@@ -5,6 +5,7 @@
 import Foundation
 import UIKit
 
+@available(iOSApplicationExtension, unavailable)
 @objcMembers
 public final class IterableAPI: NSObject {
     /// The current SDK version

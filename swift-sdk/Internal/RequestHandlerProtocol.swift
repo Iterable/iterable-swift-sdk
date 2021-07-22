@@ -5,6 +5,7 @@
 import Foundation
 
 /// `InternalIterableAPI` will delegate all network related calls to this protocol.
+@available(iOSApplicationExtension, unavailable)
 protocol RequestHandlerProtocol: AnyObject {
     var offlineMode: Bool { get set }
 

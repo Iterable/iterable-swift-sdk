@@ -4,7 +4,7 @@
 
 import Foundation
 import UIKit
-
+@available(iOSApplicationExtension, unavailable)
 final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     var apiKey: String
     

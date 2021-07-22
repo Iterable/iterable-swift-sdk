@@ -5,6 +5,7 @@
 import Foundation
 
 /// `InternalIterableAPI` will delegate all network related calls to this struct.
+@available(iOSApplicationExtension, unavailable)
 struct OnlineRequestProcessor: RequestProcessorProtocol {
     init(apiKey: String,
          authProvider: AuthProvider?,

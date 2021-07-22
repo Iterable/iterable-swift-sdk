@@ -3,7 +3,7 @@
 //
 
 import UIKit
-
+@available(iOSApplicationExtension, unavailable)
 class InAppPresenter {
     static var isPresenting = false
     

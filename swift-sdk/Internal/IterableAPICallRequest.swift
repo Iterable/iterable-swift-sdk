@@ -6,6 +6,7 @@ import Foundation
 
 /// This struct encapsulates all the data that needs to be sent to Iterable backend.
 /// This struct must be `Codable`.
+@available(iOSApplicationExtension, unavailable)
 struct IterableAPICallRequest {
     let apiKey: String
     let endPoint: String
@@ -87,5 +88,5 @@ struct IterableAPICallRequest {
         }
     }
 }
-
+@available(iOSApplicationExtension, unavailable)
 extension IterableAPICallRequest: Codable {}

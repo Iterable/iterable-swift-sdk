@@ -7,6 +7,7 @@ import os
 import UIKit
 
 @objc final class IterableUtil: NSObject {
+  @available(iOSApplicationExtension, unavailable)
     static var rootViewController: UIViewController? {
         if let rootViewController = UIApplication.shared.delegate?.window??.rootViewController {
             return rootViewController

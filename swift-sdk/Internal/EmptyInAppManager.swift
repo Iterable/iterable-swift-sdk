@@ -4,7 +4,7 @@
 
 import Foundation
 import UIKit
-
+@available(iOSApplicationExtension, unavailable)
 class EmptyInAppManager: IterableInternalInAppManagerProtocol {
     func start() -> Future<Bool, Error> {
         Promise<Bool, Error>(value: true)

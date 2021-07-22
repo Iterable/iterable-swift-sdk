@@ -6,11 +6,14 @@ import Foundation
 import UIKit
 
 /// handles opening of Urls
+
+@available(iOSApplicationExtension, unavailable)
 @objc protocol UrlOpenerProtocol: AnyObject {
     @objc func open(url: URL)
 }
 
 /// Default app opener. Defers to UIApplication open
+@available(iOSApplicationExtension, unavailable)
 class AppUrlOpener: UrlOpenerProtocol {
     public init() {}
     
@@ -30,6 +33,7 @@ class AppUrlOpener: UrlOpenerProtocol {
 struct IterableActionRunner {
     // returns true if an action is performed either by us or by the calling app.
     @discardableResult
+  @available(iOSApplicationExtension, unavailable)
     static func execute(action: IterableAction,
                         context: IterableActionContext,
                         urlHandler: UrlHandler? = nil,

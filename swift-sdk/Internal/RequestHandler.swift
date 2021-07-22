@@ -5,6 +5,7 @@
 import Foundation
 
 @available(iOS 10.0, *)
+@available(iOSApplicationExtension, unavailable)
 class RequestHandler: RequestHandlerProtocol {
     init(onlineProcessor: OnlineRequestProcessor,
          offlineProcessor: OfflineRequestProcessor?,
@@ -252,6 +253,7 @@ class RequestHandler: RequestHandlerProtocol {
 }
 
 @available(iOS 10.0, *)
+@available(iOSApplicationExtension, unavailable)
 extension RequestHandler: HealthMonitorDelegate {
     func onDBError() {
         self.offlineMode = false

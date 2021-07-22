@@ -8,6 +8,7 @@ import UIKit
 /// This is a stateless pure functional class
 /// This will create IterableRequest
 /// The API Endpoint and request endpoint is not defined yet
+@available(iOSApplicationExtension, unavailable)
 struct RequestCreator {
     let apiKey: String
     let auth: Auth

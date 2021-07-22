@@ -7,12 +7,13 @@ import UIKit
 import UserNotifications
 
 // Returns whether notifications are enabled
+@available(iOSApplicationExtension, unavailable)
 protocol NotificationStateProviderProtocol {
     var notificationsEnabled: Bool { get }
     
     func registerForRemoteNotifications()
 }
-
+@available(iOSApplicationExtension, unavailable)
 struct SystemNotificationStateProvider: NotificationStateProviderProtocol {
     var notificationsEnabled: Bool {
         if #available(iOS 10.0, *) {
@@ -129,7 +130,7 @@ extension PushTrackerProtocol {
 }
 
 extension UIApplication: ApplicationStateProviderProtocol {}
-
+@available(iOSApplicationExtension, unavailable)
 struct IterableAppIntegrationInternal {
     private weak var tracker: PushTrackerProtocol?
     private let urlDelegate: IterableURLDelegate?

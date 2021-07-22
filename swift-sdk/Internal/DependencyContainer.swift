@@ -4,7 +4,7 @@
 
 import Foundation
 import UIKit
-
+@available(iOSApplicationExtension, unavailable)
 protocol DependencyContainerProtocol {
     var dateProvider: DateProviderProtocol { get }
     var networkSession: NetworkSessionProtocol { get }
@@ -28,7 +28,7 @@ protocol DependencyContainerProtocol {
                               offlineMode: Bool) -> RequestHandlerProtocol
     func createHealthMonitorDataProvider(persistenceContextProvider: IterablePersistenceContextProvider) -> HealthMonitorDataProviderProtocol
 }
-
+@available(iOSApplicationExtension, unavailable)
 extension DependencyContainerProtocol {
     func createInAppManager(config: IterableConfig,
                             apiClient: ApiClientProtocol,
@@ -138,7 +138,7 @@ extension DependencyContainerProtocol {
                            connectivityManager: NetworkConnectivityManager())
     }
 }
-
+@available(iOSApplicationExtension, unavailable)
 struct DependencyContainer: DependencyContainerProtocol {
     func createInAppFetcher(apiClient: ApiClientProtocol) -> InAppFetcherProtocol {
         InAppFetcher(apiClient: apiClient)

@@ -3,7 +3,7 @@
 //
 
 import UIKit
-
+@available(iOSApplicationExtension, unavailable)
 protocol InboxViewControllerViewModelProtocol {
     var view: InboxViewControllerViewModelView? { get set }
     var unreadCount: Int { get }

@@ -5,6 +5,7 @@
 import Foundation
 
 /// Request handling pre iOS 10.0
+@available(iOSApplicationExtension, unavailable)
 class LegacyRequestHandler: RequestHandlerProtocol {
     init(apiKey: String,
          authProvider: AuthProvider?,

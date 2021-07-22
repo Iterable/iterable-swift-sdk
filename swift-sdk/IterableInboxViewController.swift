@@ -5,6 +5,7 @@
 import UIKit
 
 @IBDesignable
+@available(iOSApplicationExtension, unavailable)
 open class IterableInboxViewController: UITableViewController {
     public enum InboxMode {
         case popup
@@ -351,7 +352,7 @@ open class IterableInboxViewController: UITableViewController {
         }
     }
 }
-
+@available(iOSApplicationExtension, unavailable)
 extension IterableInboxViewController: InboxViewControllerViewModelView {
     func onViewModelChanged(diffs: [RowDiff]) {
         ITBInfo()

@@ -5,6 +5,7 @@
 import Foundation
 
 @available(iOS 10.0, *)
+@available(iOSApplicationExtension, unavailable)
 class IterableTaskScheduler {
     init(persistenceContextProvider: IterablePersistenceContextProvider,
          notificationCenter: NotificationCenterProtocol = NotificationCenter.default,

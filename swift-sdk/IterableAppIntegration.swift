@@ -5,7 +5,7 @@
 import Foundation
 import UIKit
 import UserNotifications
-
+@available(iOSApplicationExtension, unavailable)
 @objc public class IterableAppIntegration: NSObject {
     /**
      * This method handles incoming Iterable notifications and actions for iOS < 10.

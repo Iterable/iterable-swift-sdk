@@ -11,7 +11,7 @@ enum IterableMessageLocation: Int {
     case center
     case bottom
 }
-
+@available(iOSApplicationExtension, unavailable)
 class IterableHtmlMessageViewController: UIViewController {
     struct Parameters {
         let html: String
@@ -256,7 +256,7 @@ class IterableHtmlMessageViewController: UIViewController {
         }
     }
 }
-
+@available(iOSApplicationExtension, unavailable)
 extension IterableHtmlMessageViewController: WKNavigationDelegate {
     func webView(_: WKWebView, didFinish _: WKNavigation!) {
         ITBInfo()

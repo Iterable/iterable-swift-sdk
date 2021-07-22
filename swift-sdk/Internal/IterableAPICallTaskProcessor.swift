@@ -3,7 +3,7 @@
 //
 
 import Foundation
-
+@available(iOSApplicationExtension, unavailable)
 struct IterableAPICallTaskProcessor: IterableTaskProcessor {
     let networkSession: NetworkSessionProtocol
     

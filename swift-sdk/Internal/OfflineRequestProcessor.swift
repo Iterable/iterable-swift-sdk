@@ -5,6 +5,7 @@
 import Foundation
 
 @available(iOS 10.0, *)
+@available(iOSApplicationExtension, unavailable)
 struct OfflineRequestProcessor: RequestProcessorProtocol {
     init(apiKey: String,
          authProvider: AuthProvider?,

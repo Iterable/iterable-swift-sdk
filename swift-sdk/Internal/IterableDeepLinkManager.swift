@@ -3,7 +3,7 @@
 //
 
 import Foundation
-
+@available(iOSApplicationExtension, unavailable)
 class IterableDeepLinkManager: NSObject {
     /// Handles a Universal Link
     /// For Iterable links, it will track the click and retrieve the original URL,
@@ -101,7 +101,7 @@ class IterableDeepLinkManager: NSObject {
     private var deepLinkTemplateId: NSNumber?
     private var deepLinkMessageId: String?
 }
-
+@available(iOSApplicationExtension, unavailable)
 extension IterableDeepLinkManager: URLSessionDelegate, URLSessionTaskDelegate {
     /**
      Delegate handler when a redirect occurs. Stores a reference to the redirect url and does not execute the redirect.

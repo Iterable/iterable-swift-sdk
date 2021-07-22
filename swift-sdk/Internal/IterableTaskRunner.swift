@@ -6,6 +6,7 @@ import Foundation
 import UIKit
 
 @available(iOS 10.0, *)
+@available(iOSApplicationExtension, unavailable)
 class IterableTaskRunner: NSObject {
     init(networkSession: NetworkSessionProtocol = URLSession(configuration: .default),
          persistenceContextProvider: IterablePersistenceContextProvider,
