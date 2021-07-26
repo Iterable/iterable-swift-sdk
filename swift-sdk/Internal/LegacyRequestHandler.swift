@@ -80,10 +80,10 @@ class LegacyRequestHandler: RequestHandlerProtocol {
     
     @discardableResult
     func updateCart(items: [CommerceItem],
-                    dataFields: [AnyHashable : Any]?) -> Future<SendRequestValue, SendRequestError> {
-        applyCallbacks(withIdentifier: "updateCart",
-                       forResult: apiClient.updateCart(items: items,
-                                                       dataFields: dataFields))
+                    dataFields: [AnyHashable: Any]?,
+                    onSuccess: OnSuccessHandler?,
+                    onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+        applyCallbacks(successHandler: onSuccess, andFailureHandler: onFailure, withIdentifier: "updateCart", forResult: apiClient.updateCart(items: items, dataFields: dataFields))
     }
     
     @discardableResult

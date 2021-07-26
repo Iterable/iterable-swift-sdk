@@ -26,7 +26,10 @@ struct UpdateSubscriptionsInfo {
 /// `RequestHandler` will delegate network related calls to this protocol.
 protocol RequestProcessorProtocol {
     @discardableResult
-    func updateCart(items: [CommerceItem], dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError>
+    func updateCart(items: [CommerceItem],
+                    dataFields: [AnyHashable: Any]?,
+                    onSuccess: OnSuccessHandler?,
+                    onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
     
     @discardableResult
     func trackPurchase(_ total: NSNumber,
