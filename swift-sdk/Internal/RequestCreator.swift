@@ -17,8 +17,8 @@ struct RequestCreator {
     
     func createUpdateEmailRequest(newEmail: String) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
-            ITBError(authFailedMessage)
-            return .failure(IterableError.general(description: authFailedMessage))
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
         var body = [String: Any]()
@@ -37,8 +37,8 @@ struct RequestCreator {
     func createRegisterTokenRequest(registerTokenInfo: RegisterTokenInfo,
                                     notificationsEnabled: Bool) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
-            ITBError(authFailedMessage)
-            return .failure(IterableError.general(description: authFailedMessage))
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
         let dataFields = DataFieldsHelper.createDataFields(sdkVersion: registerTokenInfo.sdkVersion,
@@ -71,8 +71,8 @@ struct RequestCreator {
     
     func createUpdateUserRequest(dataFields: [AnyHashable: Any], mergeNestedObjects: Bool) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
-            ITBError(authFailedMessage)
-            return .failure(IterableError.general(description: authFailedMessage))
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
         var body = [AnyHashable: Any]()
@@ -92,8 +92,8 @@ struct RequestCreator {
     
     func createUpdateCartRequest(items: [CommerceItem], dataFields: [AnyHashable: Any]?) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
-            ITBError(authFailedMessage)
-            return .failure(IterableError.general(description: authFailedMessage))
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
         var apiUserDict = [AnyHashable: Any]()
@@ -114,8 +114,8 @@ struct RequestCreator {
     
     func createTrackPurchaseRequest(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
-            ITBError(authFailedMessage)
-            return .failure(IterableError.general(description: authFailedMessage))
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
         var apiUserDict = [AnyHashable: Any]()
@@ -137,8 +137,8 @@ struct RequestCreator {
     
     func createTrackPushOpenRequest(_ campaignId: NSNumber, templateId: NSNumber?, messageId: String, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
-            ITBError(authFailedMessage)
-            return .failure(IterableError.general(description: authFailedMessage))
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
         var body = [AnyHashable: Any]()
@@ -168,8 +168,8 @@ struct RequestCreator {
     
     func createTrackEventRequest(_ eventName: String, dataFields: [AnyHashable: Any]?) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
-            ITBError(authFailedMessage)
-            return .failure(IterableError.general(description: authFailedMessage))
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
         var body = [AnyHashable: Any]()
@@ -192,8 +192,8 @@ struct RequestCreator {
                                           campaignId: NSNumber? = nil,
                                           templateId: NSNumber? = nil) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
-            ITBError(authFailedMessage)
-            return .failure(IterableError.general(description: authFailedMessage))
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
         var body = [AnyHashable: Any]()
@@ -229,8 +229,8 @@ struct RequestCreator {
     
     func createGetInAppMessagesRequest(_ count: NSNumber) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
-            ITBError(authFailedMessage)
-            return .failure(IterableError.general(description: authFailedMessage))
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
         var args: [AnyHashable: Any] = [JsonKey.InApp.count: count.description,
@@ -249,8 +249,8 @@ struct RequestCreator {
     
     func createTrackInAppOpenRequest(inAppMessageContext: InAppMessageContext) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
-            ITBError(authFailedMessage)
-            return .failure(IterableError.general(description: authFailedMessage))
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
         var body = [AnyHashable: Any]()
@@ -270,8 +270,8 @@ struct RequestCreator {
     
     func createTrackInAppClickRequest(inAppMessageContext: InAppMessageContext, clickedUrl: String) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
-            ITBError(authFailedMessage)
-            return .failure(IterableError.general(description: authFailedMessage))
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
         var body = [AnyHashable: Any]()
@@ -292,8 +292,8 @@ struct RequestCreator {
     
     func createTrackInAppCloseRequest(inAppMessageContext: InAppMessageContext, source: InAppCloseSource?, clickedUrl: String?) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
-            ITBError(authFailedMessage)
-            return .failure(IterableError.general(description: authFailedMessage))
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
         var body = [AnyHashable: Any]()
@@ -321,8 +321,8 @@ struct RequestCreator {
     
     func createTrackInAppDeliveryRequest(inAppMessageContext: InAppMessageContext) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
-            ITBError(authFailedMessage)
-            return .failure(IterableError.general(description: authFailedMessage))
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
         var body = [AnyHashable: Any]()
@@ -338,8 +338,8 @@ struct RequestCreator {
     
     func createInAppConsumeRequest(_ messageId: String) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
-            ITBError(authFailedMessage)
-            return .failure(IterableError.general(description: authFailedMessage))
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
         var body = [AnyHashable: Any]()
@@ -353,8 +353,8 @@ struct RequestCreator {
     
     func createTrackInAppConsumeRequest(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource?) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
-            ITBError(authFailedMessage)
-            return .failure(IterableError.general(description: authFailedMessage))
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
         var body = [AnyHashable: Any]()
@@ -378,8 +378,8 @@ struct RequestCreator {
     
     func createTrackInboxSessionRequest(inboxSession: IterableInboxSession) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
-            ITBError(authFailedMessage)
-            return .failure(IterableError.general(description: authFailedMessage))
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
         guard let inboxSessionId = inboxSession.id else {
@@ -438,7 +438,7 @@ struct RequestCreator {
     
     // MARK: - PRIVATE
     
-    private let authFailedMessage = "Both email and userId are nil"
+    private static let authMissingMessage = "Both email and userId are nil"
     
     private func createPostRequest(path: String, body: [AnyHashable: Any]? = nil) -> PostRequest {
         PostRequest(path: path,
