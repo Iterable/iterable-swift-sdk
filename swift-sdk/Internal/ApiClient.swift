@@ -124,9 +124,8 @@ extension ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: result)
     }
     
-    func updateCart(items: [CommerceItem], dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError> {
-        let result = createRequestCreator().flatMap { $0.createUpdateCartRequest(items: items,
-                                                                                 dataFields: dataFields) }
+    func updateCart(items: [CommerceItem]) -> Future<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createUpdateCartRequest(items: items) }
         
         return send(iterableRequestResult: result)
     }
