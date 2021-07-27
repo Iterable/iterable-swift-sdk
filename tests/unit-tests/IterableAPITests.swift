@@ -405,7 +405,7 @@ class IterableAPITests: XCTestCase {
             }
         }
         
-        wait(for: [expectation], timeout: testExpectationTimeoutForInverted)
+        wait(for: [expectation], timeout: testExpectationTimeout)
     }
     
     func testDisableDeviceNotRegistered() {
@@ -443,9 +443,11 @@ class IterableAPITests: XCTestCase {
                 guard let request = networkSession.getRequest(withEndPoint: Const.Path.disableDevice) else {
                     return
                 }
+                
                 guard let body = TestUtils.getRequestBody(request: request) else {
                     return
                 }
+                
                 TestUtils.validate(request: request,
                                    requestType: .post,
                                    apiEndPoint: Endpoint.api,
@@ -461,7 +463,7 @@ class IterableAPITests: XCTestCase {
             }
         }
         
-        wait(for: [expectation], timeout: testExpectationTimeoutForInverted)
+        wait(for: [expectation], timeout: testExpectationTimeout)
     }
     
     // Same test as above but without using success/failure callback
@@ -496,7 +498,7 @@ class IterableAPITests: XCTestCase {
             internalAPI.disableDeviceForCurrentUser()
         }
         
-        wait(for: [expectation], timeout: testExpectationTimeoutForInverted)
+        wait(for: [expectation], timeout: testExpectationTimeout)
     }
     
     func testDisableDeviceForAllUsers() {
@@ -535,7 +537,7 @@ class IterableAPITests: XCTestCase {
         
         internalAPI.register(token: token)
         
-        wait(for: [expectation], timeout: testExpectationTimeoutForInverted)
+        wait(for: [expectation], timeout: testExpectationTimeout)
     }
     
     // Same test as above but without using success/failure callback
@@ -572,7 +574,7 @@ class IterableAPITests: XCTestCase {
         }
         internalAPI.register(token: token)
         
-        wait(for: [expectation], timeout: testExpectationTimeoutForInverted)
+        wait(for: [expectation], timeout: testExpectationTimeout)
     }
     
     func testUpdateCart() {
@@ -597,7 +599,7 @@ class IterableAPITests: XCTestCase {
             let itemsElement = body[JsonKey.Commerce.items] as! [[AnyHashable: Any]]
             XCTAssertEqual(itemsElement.count, items.count)
             
-            //TODO: create a CommerceItem matcher for use right here, and in trackPurchase tests
+            // TODO: create a CommerceItem matcher for use right here, and in trackPurchase tests
             
             condition1.fulfill()
         }
