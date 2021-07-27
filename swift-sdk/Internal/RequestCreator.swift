@@ -102,7 +102,7 @@ struct RequestCreator {
         
         let itemsToSerialize = items.map { $0.toDictionary() }
         
-        var body: [String: Any] = [JsonKey.Commerce.user: apiUserDict,
+        let body: [String: Any] = [JsonKey.Commerce.user: apiUserDict,
                                    JsonKey.Commerce.items: itemsToSerialize]
         
         return .success(.post(createPostRequest(path: Const.Path.updateCart, body: body)))
