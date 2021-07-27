@@ -41,7 +41,6 @@ protocol RequestHandlerProtocol: AnyObject {
     
     @discardableResult
     func updateCart(items: [CommerceItem],
-                    dataFields: [AnyHashable: Any]?,
                     onSuccess: OnSuccessHandler?,
                     onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
     

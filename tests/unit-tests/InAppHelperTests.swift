@@ -107,7 +107,7 @@ class InAppHelperTests: XCTestCase {
             fatalError()
         }
         
-        func updateCart(items: [CommerceItem], dataFields: [AnyHashable : Any]?) -> Future<SendRequestValue, SendRequestError> {
+        func updateCart(items: [CommerceItem]) -> Future<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
