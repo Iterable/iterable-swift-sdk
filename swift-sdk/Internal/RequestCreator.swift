@@ -84,6 +84,28 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: Const.Path.updateUser, body: body)))
     }
     
+    func createUpdateCartRequest(items: [CommerceItem], dataFields: [AnyHashable: Any]?) -> Result<IterableRequest, IterableError> {
+        if case .none = auth.emailOrUserId {
+            ITBError("Both email and userId are nil")
+            return .failure(IterableError.general(description: "Both email and userId are nil"))
+        }
+        
+        var apiUserDict = [AnyHashable: Any]()
+        
+        setCurrentUser(inDict: &apiUserDict)
+        
+        let itemsToSerialize = items.map { $0.toDictionary() }
+        
+        var body: [String: Any] = [JsonKey.Commerce.user: apiUserDict,
+                                   JsonKey.Commerce.items: itemsToSerialize]
+        
+        if let dataFields = dataFields {
+            body[JsonKey.dataFields] = dataFields
+        }
+        
+        return .success(.post(createPostRequest(path: Const.Path.updateCart, body: body)))
+    }
+    
     func createTrackPurchaseRequest(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
             ITBError("Both email and userId are nil")

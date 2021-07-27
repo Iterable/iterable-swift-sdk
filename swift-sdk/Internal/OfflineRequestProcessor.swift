@@ -37,6 +37,21 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     }
     
     @discardableResult
+    func updateCart(items: [CommerceItem],
+                    dataFields: [AnyHashable: Any]?,
+                    onSuccess: OnSuccessHandler?,
+                    onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createUpdateCartRequest(items: items, dataFields: dataFields)
+        }
+        
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
+    }
+    
+    @discardableResult
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]?,

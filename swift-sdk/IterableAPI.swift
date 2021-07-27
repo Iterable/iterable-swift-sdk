@@ -318,6 +318,46 @@ public final class IterableAPI: NSObject {
         internalImplementation?.updateEmail(newEmail, onSuccess: onSuccess, onFailure: onFailure)
     }
     
+    /// Tracks what's in the shopping cart (or equivalent) at this point in time
+    ///
+    /// - Parameters:
+    ///     - items: The list of items in the shopping cart to track
+    ///
+    /// - SeeAlso: CommerceItem
+    @objc(updateCart:)
+    public static func updateCart(items: [CommerceItem]) {
+        internalImplementation?.updateCart(items: items)
+    }
+    
+    /// Tracks what's in the shopping cart (or equivalent) at this point in time
+    ///
+    /// - Parameters:
+    ///     - items: The list of items in the shopping cart to track
+    ///     - dataFields: A `Dictionary` containing any additional information to save along with the event
+    ///
+    /// - SeeAlso: CommerceItem
+    @objc(updateCart:dataFields:)
+    public static func updateCart(items: [CommerceItem], dataFields: [AnyHashable: Any]?) {
+        internalImplementation?.updateCart(items: items, dataFields: dataFields)
+    }
+    
+    /// Tracks what's in the shopping cart (or equivalent) at this point in time
+    ///
+    /// - Parameters:
+    ///     - items: The list of items in the shopping cart to track
+    ///     - dataFields: A `Dictionary` containing any additional information to save along with the event
+    ///     - onSucess: `OnSuccessHandler` to invoke if cart is updated successfully
+    ///     - onFailure: `OnFailureHandler` to invoke if cart updating fails
+    ///
+    /// - SeeAlso: CommerceItem
+    @objc(updateCart:dataFields:onSucess:onFailure:)
+    public static func updateCart(items: [CommerceItem],
+                                  dataFields: [AnyHashable: Any]?,
+                                  onSucess: OnSuccessHandler,
+                                  onFailure: OnFailureHandler) {
+        internalImplementation?.updateCart(items: items, dataFields: dataFields)
+    }
+    
     /// Tracks a purchase
     ///
     /// - Parameters:
