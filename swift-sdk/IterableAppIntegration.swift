@@ -5,6 +5,7 @@
 import Foundation
 import UIKit
 import UserNotifications
+
 @available(iOSApplicationExtension, unavailable)
 @objc public class IterableAppIntegration: NSObject {
     /**

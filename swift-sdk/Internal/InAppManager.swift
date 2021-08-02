@@ -8,6 +8,7 @@ import UIKit
 protocol InAppDisplayChecker {
     func isOkToShowNow(message: IterableInAppMessage) -> Bool
 }
+
 @available(iOSApplicationExtension, unavailable)
 protocol IterableInternalInAppManagerProtocol: IterableInAppManagerProtocol, InAppNotifiable, InAppDisplayChecker {
     func start() -> Future<Bool, Error>
@@ -25,6 +26,7 @@ protocol IterableInternalInAppManagerProtocol: IterableInAppManagerProtocol, InA
     /// - parameter inboxSessionId: The ID of the inbox session that the message originates from.
     func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource, inboxSessionId: String?)
 }
+
 @available(iOSApplicationExtension, unavailable)
 class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     init(requestHandler: RequestHandlerProtocol,
@@ -558,6 +560,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     private let moveToForegroundSyncInterval: Double = 1.0 * 60.0 // don't sync within sixty seconds
     private var autoDisplayPaused = false
 }
+
 @available(iOSApplicationExtension, unavailable)
 extension InAppManager: InAppNotifiable {
     func scheduleSync() -> Future<Bool, Error> {
@@ -631,6 +634,7 @@ extension InAppManager: InAppNotifiable {
         return result
     }
 }
+
 @available(iOSApplicationExtension, unavailable)
 extension InAppManager: InAppDisplayChecker {
     func isOkToShowNow(message: IterableInAppMessage) -> Bool {

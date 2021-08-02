@@ -3,6 +3,7 @@
 //
 
 import Foundation
+
 @available(iOSApplicationExtension, unavailable)
 class InboxSessionManager {
     struct SessionInfo {

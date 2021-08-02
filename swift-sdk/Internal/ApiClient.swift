@@ -11,6 +11,7 @@ struct DeviceMetadata: Codable {
 }
 
 // MARK: - API CLIENT FUNCTIONS
+
 @available(iOSApplicationExtension, unavailable)
 class ApiClient {
     init(apiKey: String,
@@ -93,6 +94,7 @@ class ApiClient {
 }
 
 // MARK: - API REQUEST CALLS
+
 @available(iOSApplicationExtension, unavailable)
 extension ApiClient: ApiClientProtocol {
     func register(registerTokenInfo: RegisterTokenInfo, notificationsEnabled: Bool) -> Future<SendRequestValue, SendRequestError> {

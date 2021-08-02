@@ -88,5 +88,6 @@ struct IterableAPICallRequest {
         }
     }
 }
+
 @available(iOSApplicationExtension, unavailable)
 extension IterableAPICallRequest: Codable {}

@@ -18,6 +18,7 @@ protocol InAppDisplayerProtocol {
     /// `.notShown` with reason if the message could not be shown.
     func showInApp(message: IterableInAppMessage) -> ShowResult
 }
+
 @available(iOSApplicationExtension, unavailable)
 class InAppDisplayer: InAppDisplayerProtocol {
     func isShowingInApp() -> Bool {
@@ -83,6 +84,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
         
         return topViewController is IterableHtmlMessageViewController
     }
+
     private static func getTopViewController() -> UIViewController? {
         guard let rootViewController = IterableUtil.rootViewController else {
             return nil

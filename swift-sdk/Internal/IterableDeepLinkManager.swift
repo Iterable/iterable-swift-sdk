@@ -3,6 +3,7 @@
 //
 
 import Foundation
+
 @available(iOSApplicationExtension, unavailable)
 class IterableDeepLinkManager: NSObject {
     /// Handles a Universal Link
@@ -101,6 +102,7 @@ class IterableDeepLinkManager: NSObject {
     private var deepLinkTemplateId: NSNumber?
     private var deepLinkMessageId: String?
 }
+
 @available(iOSApplicationExtension, unavailable)
 extension IterableDeepLinkManager: URLSessionDelegate, URLSessionTaskDelegate {
     /**

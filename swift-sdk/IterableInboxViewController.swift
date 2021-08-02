@@ -352,6 +352,7 @@ open class IterableInboxViewController: UITableViewController {
         }
     }
 }
+
 @available(iOSApplicationExtension, unavailable)
 extension IterableInboxViewController: InboxViewControllerViewModelView {
     func onViewModelChanged(diffs: [RowDiff]) {

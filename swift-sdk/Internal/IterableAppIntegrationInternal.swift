@@ -13,6 +13,7 @@ protocol NotificationStateProviderProtocol {
     
     func registerForRemoteNotifications()
 }
+
 @available(iOSApplicationExtension, unavailable)
 struct SystemNotificationStateProvider: NotificationStateProviderProtocol {
     var notificationsEnabled: Bool {
@@ -130,6 +131,7 @@ extension PushTrackerProtocol {
 }
 
 extension UIApplication: ApplicationStateProviderProtocol {}
+
 @available(iOSApplicationExtension, unavailable)
 struct IterableAppIntegrationInternal {
     private weak var tracker: PushTrackerProtocol?
