@@ -4,8 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "IterableSDK",
-    // This is a test due to another Xcode bug that prevents archiving on iOS versions below 12
-    platforms: [.iOS(.v12)],
+    platforms: [.iOS(.v10)],
     products: [
         // The external product of our package is an importable
         // library that has the same name as the package itself:
