@@ -170,6 +170,7 @@ enum JsonKey {
         static let imageUrl = "imageUrl"
         static let url = "url"
         static let categories = "categories"
+        static let dataFields = "dataFields"
     }
     
     enum Device {
