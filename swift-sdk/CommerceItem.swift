@@ -62,7 +62,7 @@ import UIKit
                 url: String? = nil,
                 imageUrl: String? = nil,
                 categories: [String]? = nil,
-                dataFields: [AnyHashable: Any]?) {
+                dataFields: [AnyHashable: Any]? = nil) {
         self.id = id
         self.name = name
         self.price = price
