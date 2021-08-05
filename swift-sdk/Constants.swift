@@ -22,6 +22,7 @@ enum Const {
     }
     
     enum Path {
+        static let updateCart = "commerce/updateCart"
         static let trackPurchase = "commerce/trackPurchase"
         static let disableDevice = "users/disableDevice"
         static let getInAppMessages = "inApp/getMessages"
@@ -169,6 +170,7 @@ enum JsonKey {
         static let imageUrl = "imageUrl"
         static let url = "url"
         static let categories = "categories"
+        static let dataFields = "dataFields"
     }
     
     enum Device {

@@ -11,6 +11,8 @@ protocol ApiClientProtocol: AnyObject {
     
     func updateEmail(newEmail: String) -> Future<SendRequestValue, SendRequestError>
     
+    func updateCart(items: [CommerceItem]) -> Future<SendRequestValue, SendRequestError>
+    
     func track(purchase total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError>
     
     func track(pushOpen campaignId: NSNumber, templateId: NSNumber?, messageId: String, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError>

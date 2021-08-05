@@ -405,7 +405,6 @@ class IterableAPITests: XCTestCase {
             }
         }
         
-        // only wait for small time, supposed to error out
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
     
@@ -424,8 +423,7 @@ class IterableAPITests: XCTestCase {
             expectation.fulfill()
         }
         
-        // only wait for small time, supposed to error out
-        wait(for: [expectation], timeout: testExpectationTimeout)
+        wait(for: [expectation], timeout: testExpectationTimeoutForInverted)
     }
     
     func testDisableDeviceForCurrentUser() {
@@ -445,9 +443,11 @@ class IterableAPITests: XCTestCase {
                 guard let request = networkSession.getRequest(withEndPoint: Const.Path.disableDevice) else {
                     return
                 }
+                
                 guard let body = TestUtils.getRequestBody(request: request) else {
                     return
                 }
+                
                 TestUtils.validate(request: request,
                                    requestType: .post,
                                    apiEndPoint: Endpoint.api,
@@ -463,7 +463,6 @@ class IterableAPITests: XCTestCase {
             }
         }
         
-        // only wait for small time, supposed to error out
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
     
@@ -499,7 +498,6 @@ class IterableAPITests: XCTestCase {
             internalAPI.disableDeviceForCurrentUser()
         }
         
-        // only wait for small time, supposed to error out
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
     
@@ -539,7 +537,6 @@ class IterableAPITests: XCTestCase {
         
         internalAPI.register(token: token)
         
-        // only wait for small time, supposed to error out
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
     
@@ -577,8 +574,39 @@ class IterableAPITests: XCTestCase {
         }
         internalAPI.register(token: token)
         
-        // only wait for small time, supposed to error out
         wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+    
+    func testUpdateCart() {
+        let condition1 = XCTestExpectation(description: #function)
+        
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: networkSession)
+        internalAPI.email = IterableAPITests.email
+        
+        let items = [CommerceItem(id: "", name: "", price: 0.0, quantity: 1)]
+        
+        networkSession.callback = { _, response, _ in
+            guard let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
+                                                                  response: response,
+                                                                  endPoint: Const.Path.updateCart) else {
+                return
+            }
+            
+            TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.updateCart, queryParams: [])
+            TestUtils.validateMatch(keyPath: KeyPath(string: "\(JsonKey.Commerce.user).\(JsonKey.email)"), value: IterableAPITests.email, inDictionary: body)
+            
+            let itemsElement = body[JsonKey.Commerce.items] as! [[AnyHashable: Any]]
+            XCTAssertEqual(itemsElement.count, items.count)
+            
+            // TODO: create a CommerceItem matcher for use right here, and in trackPurchase tests
+            
+            condition1.fulfill()
+        }
+        
+        internalAPI.updateCart(items: items)
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
     }
     
     func testTrackPurchaseNoUserIdOrEmail() {
@@ -596,8 +624,7 @@ class IterableAPITests: XCTestCase {
             expectation.fulfill()
         }
         
-        // only wait for small time, supposed to error out
-        wait(for: [expectation], timeout: testExpectationTimeout)
+        wait(for: [expectation], timeout: testExpectationTimeoutForInverted)
     }
     
     func testTrackPurchaseWithUserId() {
@@ -634,8 +661,7 @@ class IterableAPITests: XCTestCase {
             }
         }
         
-        // only wait for small time, supposed to error out
-        wait(for: [expectation], timeout: testExpectationTimeout)
+        wait(for: [expectation], timeout: testExpectationTimeoutForInverted)
     }
     
     func testTrackPurchaseWithEmail() {
@@ -701,6 +727,7 @@ class IterableAPITests: XCTestCase {
                                                                   endPoint: Const.Path.trackPurchase) else {
                 return
             }
+            
             TestUtils.validate(request: request, requestType: .post, apiEndPoint: Endpoint.api, path: Const.Path.trackPurchase, queryParams: [])
             TestUtils.validateMatch(keyPath: KeyPath(string: "\(JsonKey.Commerce.user).\(JsonKey.email)"), value: "user@example.com", inDictionary: body)
             TestUtils.validateElementPresent(withName: JsonKey.Commerce.total, andValue: total, inDictionary: body)
@@ -713,6 +740,7 @@ class IterableAPITests: XCTestCase {
             TestUtils.validateElementPresent(withName: "quantity", andValue: 2, inDictionary: firstElement)
             expectation.fulfill()
         }
+        
         internalAPI.trackPurchase(total, items: items)
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
@@ -802,6 +830,7 @@ class IterableAPITests: XCTestCase {
                                                                   endPoint: Const.Path.inAppConsume) else {
                 return
             }
+            
             TestUtils.validate(request: request,
                                requestType: .post,
                                apiEndPoint: Endpoint.api,
@@ -886,12 +915,14 @@ class IterableAPITests: XCTestCase {
                 ],
             ],
         ]
+        
         let launchOptions: [UIApplication.LaunchOptionsKey: Any] = [UIApplication.LaunchOptionsKey.remoteNotification: userInfo]
         let customActionDelegate = MockCustomActionDelegate(returnValue: false)
         customActionDelegate.callback = { name, _ in
             XCTAssertEqual(name, "customAction")
             expectation1.fulfill()
         }
+        
         let config = IterableConfig()
         config.customActionDelegate = customActionDelegate
         InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
@@ -950,18 +981,23 @@ class IterableAPITests: XCTestCase {
         
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
                                                                    networkSession: networkSession)
+        internalAPI.email = IterableAPITests.email
+        
         networkSession.callback = { _, response, _ in
             guard let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
                                                                   response: response,
                                                                   endPoint: Const.Path.trackEvent) else {
                 return
             }
+            
             TestUtils.validate(request: request, apiEndPoint: Endpoint.api, path: Const.Path.trackEvent)
             TestUtils.validateMatch(keyPath: KeyPath(string: "campaignId"), value: 1234, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(string: "templateId"), value: 4321, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(string: "messageId"), value: messageId, inDictionary: body)
+            
             expectation1.fulfill()
         }
+        
         internalAPI.trackPushOpen(userInfo)
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
@@ -983,6 +1019,9 @@ class IterableAPITests: XCTestCase {
         
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
                                                                    networkSession: networkSession)
+        
+        internalAPI.userId = IterableAPITests.userId
+        
         networkSession.callback = { _, response, _ in
             guard let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
                                                                   response: response,
@@ -1018,19 +1057,26 @@ class IterableAPITests: XCTestCase {
         
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
                                                                    networkSession: networkSession)
+        
+        internalAPI.email = IterableAPITests.email
+        
         internalAPI.trackPushOpen(userInfo, dataFields: ["key1": "value1"], onSuccess: { _ in
             guard let request = networkSession.getRequest(withEndPoint: Const.Path.trackEvent) else {
                 return
             }
+            
             guard let body = TestUtils.getRequestBody(request: request) else {
                 return
             }
+            
             TestUtils.validate(request: request, apiEndPoint: Endpoint.api, path: Const.Path.trackEvent)
             TestUtils.validateMatch(keyPath: KeyPath(string: "campaignId"), value: 1234, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(string: "templateId"), value: 4321, inDictionary: body)
             TestUtils.validateMatch(keyPath: KeyPath(string: "messageId"), value: messageId, inDictionary: body)
+            
             let dataFields: [String: AnyHashable] = ["appAlreadyRunning": false, "key1": "value1"]
             TestUtils.validateMatch(keyPath: KeyPath(string: "dataFields"), value: dataFields, inDictionary: body)
+            
             expectation1.fulfill()
         }, onFailure: nil)
         
@@ -1045,6 +1091,9 @@ class IterableAPITests: XCTestCase {
         
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
                                                                    networkSession: networkSession)
+        
+        internalAPI.userId = IterableAPITests.userId
+        
         networkSession.callback = { _, response, _ in
             guard let (request, body) = TestUtils.matchingRequest(networkSession: networkSession,
                                                                   response: response,
@@ -1072,6 +1121,9 @@ class IterableAPITests: XCTestCase {
         
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey,
                                                                    networkSession: networkSession)
+        
+        internalAPI.email = IterableAPITests.email
+        
         internalAPI.trackPushOpen(1234,
                                   templateId: 4321,
                                   messageId: messageId,
@@ -1081,15 +1133,19 @@ class IterableAPITests: XCTestCase {
                                     guard let request = networkSession.getRequest(withEndPoint: Const.Path.trackEvent) else {
                                         return
                                     }
+                                    
                                     guard let body = TestUtils.getRequestBody(request: request) else {
                                         return
                                     }
+                                    
                                     TestUtils.validate(request: request, apiEndPoint: Endpoint.api, path: Const.Path.trackEvent)
                                     TestUtils.validateMatch(keyPath: KeyPath(string: "campaignId"), value: 1234, inDictionary: body)
                                     TestUtils.validateMatch(keyPath: KeyPath(string: "templateId"), value: 4321, inDictionary: body)
                                     TestUtils.validateMatch(keyPath: KeyPath(string: "messageId"), value: messageId, inDictionary: body)
+                                    
                                     let dataFields: [String: AnyHashable] = ["appAlreadyRunning": true, "key1": "value1"]
                                     TestUtils.validateMatch(keyPath: KeyPath(string: "dataFields"), value: dataFields, inDictionary: body, message: "dataFields did not match")
+                                    
                                     expectation1.fulfill()
                                   },
                                   onFailure: nil)
