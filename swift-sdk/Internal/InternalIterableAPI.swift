@@ -207,6 +207,13 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     @discardableResult
+    func updateCart(items: [CommerceItem],
+                    onSuccess: OnSuccessHandler? = nil,
+                    onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+        requestHandler.updateCart(items: items, onSuccess: onSuccess, onFailure: onFailure)
+    }
+    
+    @discardableResult
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]? = nil,

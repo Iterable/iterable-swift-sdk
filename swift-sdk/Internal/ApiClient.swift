@@ -31,6 +31,7 @@ class ApiClient {
         guard let authProvider = authProvider else {
             return nil
         }
+        
         let currentDate = dateProvider.currentDate
         let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
                                                     endPoint: endPoint,
@@ -48,7 +49,7 @@ class ApiClient {
             return SendRequestError.createErroredFuture(reason: iterableError.localizedDescription)
         }
     }
-
+    
     func send<T>(iterableRequestResult result: Result<IterableRequest, IterableError>) -> Future<T, SendRequestError> where T: Decodable {
         switch result {
         case let .success(iterableRequest):
@@ -57,7 +58,7 @@ class ApiClient {
             return SendRequestError.createErroredFuture(reason: iterableError.localizedDescription)
         }
     }
-
+    
     func send(iterableRequest: IterableRequest) -> Future<SendRequestValue, SendRequestError> {
         guard let urlRequest = convertToURLRequest(iterableRequest: iterableRequest) else {
             return SendRequestError.createErroredFuture()
@@ -70,7 +71,7 @@ class ApiClient {
         guard let urlRequest = convertToURLRequest(iterableRequest: iterableRequest) else {
             return SendRequestError.createErroredFuture()
         }
-
+        
         return RequestSender.sendRequest(urlRequest, usingSession: networkSession)
     }
     
@@ -97,13 +98,13 @@ class ApiClient {
 extension ApiClient: ApiClientProtocol {
     func register(registerTokenInfo: RegisterTokenInfo, notificationsEnabled: Bool) -> Future<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createRegisterTokenRequest(registerTokenInfo: registerTokenInfo,
-                                                                                     notificationsEnabled: notificationsEnabled) }
+                                                                                    notificationsEnabled: notificationsEnabled) }
         return send(iterableRequestResult: result)
     }
     
     func updateUser(_ dataFields: [AnyHashable: Any], mergeNestedObjects: Bool) -> Future<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createUpdateUserRequest(dataFields: dataFields,
-                                                                                  mergeNestedObjects: mergeNestedObjects) }
+                                                                                 mergeNestedObjects: mergeNestedObjects) }
         return send(iterableRequestResult: result)
     }
     
@@ -119,28 +120,35 @@ extension ApiClient: ApiClientProtocol {
     
     func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Future<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createDisableDeviceRequest(forAllUsers: allUsers,
-                                                                                     hexToken: hexToken) }
+                                                                                    hexToken: hexToken) }
+        return send(iterableRequestResult: result)
+    }
+    
+    func updateCart(items: [CommerceItem]) -> Future<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createUpdateCartRequest(items: items) }
+        
         return send(iterableRequestResult: result)
     }
     
     func track(purchase total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError> {
-        let result = createRequestCreator().flatMap { $0.createTrackPurchaseRequest(total, items: items,
-                                                                                     dataFields: dataFields) }
+        let result = createRequestCreator().flatMap { $0.createTrackPurchaseRequest(total,
+                                                                                    items: items,
+                                                                                    dataFields: dataFields) }
         return send(iterableRequestResult: result)
     }
     
     func track(pushOpen campaignId: NSNumber, templateId: NSNumber?, messageId: String, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createTrackPushOpenRequest(campaignId,
-                                                                                     templateId: templateId,
-                                                                                     messageId: messageId,
-                                                                                     appAlreadyRunning: appAlreadyRunning,
-                                                                                     dataFields: dataFields) }
+                                                                                    templateId: templateId,
+                                                                                    messageId: messageId,
+                                                                                    appAlreadyRunning: appAlreadyRunning,
+                                                                                    dataFields: dataFields) }
         return send(iterableRequestResult: result)
     }
     
     func track(event eventName: String, dataFields: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createTrackEventRequest(eventName,
-                                                                                  dataFields: dataFields) }
+                                                                                 dataFields: dataFields) }
         return send(iterableRequestResult: result)
     }
     
@@ -151,11 +159,11 @@ extension ApiClient: ApiClientProtocol {
                              campaignId: NSNumber? = nil,
                              templateId: NSNumber? = nil) -> Future<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createUpdateSubscriptionsRequest(emailListIds,
-                                                                                           unsubscribedChannelIds: unsubscribedChannelIds,
-                                                                                           unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
-                                                                                           subscribedMessageTypeIds: subscribedMessageTypeIds,
-                                                                                           campaignId: campaignId,
-                                                                                           templateId: templateId) }
+                                                                                          unsubscribedChannelIds: unsubscribedChannelIds,
+                                                                                          unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
+                                                                                          subscribedMessageTypeIds: subscribedMessageTypeIds,
+                                                                                          campaignId: campaignId,
+                                                                                          templateId: templateId) }
         return send(iterableRequestResult: result)
     }
     
@@ -166,14 +174,14 @@ extension ApiClient: ApiClientProtocol {
     
     func track(inAppClick inAppMessageContext: InAppMessageContext, clickedUrl: String) -> Future<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createTrackInAppClickRequest(inAppMessageContext: inAppMessageContext,
-                                                                                       clickedUrl: clickedUrl) }
+                                                                                      clickedUrl: clickedUrl) }
         return send(iterableRequestResult: result)
     }
     
     func track(inAppClose inAppMessageContext: InAppMessageContext, source: InAppCloseSource?, clickedUrl: String?) -> Future<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createTrackInAppCloseRequest(inAppMessageContext: inAppMessageContext,
-                                                                                       source: source,
-                                                                                       clickedUrl: clickedUrl) }
+                                                                                      source: source,
+                                                                                      clickedUrl: clickedUrl) }
         return send(iterableRequestResult: result)
     }
     
@@ -194,7 +202,7 @@ extension ApiClient: ApiClientProtocol {
     
     func inAppConsume(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource?) -> Future<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createTrackInAppConsumeRequest(inAppMessageContext: inAppMessageContext,
-                                                                                         source: source) }
+                                                                                        source: source) }
         return send(iterableRequestResult: result)
     }
     
