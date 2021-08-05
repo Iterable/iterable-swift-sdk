@@ -36,6 +36,9 @@ import UIKit
     /// each category is a breadcrumb in list form
     public var categories: [String]?
     
+    /// data fields for this product
+    public var dataFields: [AnyHashable: Any]?
+    
     /// Creates a `CommerceItem` with the specified properties
     ///
     /// - Parameters:
@@ -58,7 +61,8 @@ import UIKit
                 description: String? = nil,
                 url: String? = nil,
                 imageUrl: String? = nil,
-                categories: [String]? = nil) {
+                categories: [String]? = nil,
+                dataFields: [AnyHashable: Any]? = nil) {
         self.id = id
         self.name = name
         self.price = price
@@ -68,6 +72,7 @@ import UIKit
         self.url = url
         self.imageUrl = imageUrl
         self.categories = categories
+        self.dataFields = dataFields
     }
     
     /// A `Dictionary` representation of this item
@@ -97,6 +102,10 @@ import UIKit
         
         if let categories = categories {
             dictionary[JsonKey.CommerceItem.categories] = categories
+        }
+        
+        if let dataFields = dataFields {
+            dictionary[JsonKey.CommerceItem.dataFields] = dataFields
         }
         
         return dictionary

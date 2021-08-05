@@ -28,7 +28,9 @@ class CommerceItemTests: XCTestCase {
                                           url: "stand-alone-complex",
                                           imageUrl: "laughing-man",
                                           categories: ["section 9",
-                                                       "personnel transport"]).toDictionary()
+                                                       "personnel transport"],
+                                          dataFields: ["color": "yellow",
+                                                       "count": 8]).toDictionary()
         
         let expected: [AnyHashable: Any] = ["id": "THINKTANK",
                                             "name": "Tachikoma",
@@ -39,7 +41,9 @@ class CommerceItemTests: XCTestCase {
                                             "url": "stand-alone-complex",
                                             "imageUrl": "laughing-man",
                                             "categories": ["section 9",
-                                                           "personnel transport"]]
+                                                           "personnel transport"],
+                                            "dataFields": ["color": "yellow",
+                                                           "count": 8]]
         
         XCTAssertEqual(NSDictionary(dictionary: itemDictionary), NSDictionary(dictionary: expected))
     }
