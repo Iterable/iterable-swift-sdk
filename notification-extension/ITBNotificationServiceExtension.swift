@@ -13,7 +13,8 @@ import UserNotifications
         self.contentHandler = contentHandler
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
-        getCategoryId(from: request.content)
+        resolveCategory(from: request.content)
+
         retrieveAttachment(from: request.content)
         
         checkPushCreationCompletion()
@@ -78,36 +79,39 @@ import UserNotifications
         attachmentDownloadTask = nil
     }
     
-    private func getCategoryId(from content: UNNotificationContent) {
+    /// If a category id can be obtained from the message content, we set `categoryId` to the value obtained from message.
+    /// Otherwise, if a messageId is present in the content, we create a new category with the messageId
+    /// and add this newly created category to list of system categories.
+    /// After that we set `categoryId` to messageId.
+    private func resolveCategory(from content: UNNotificationContent) {
         guard content.categoryIdentifier.count == 0 else {
             setCategoryId(id: content.categoryIdentifier)
             return
         }
-        
         guard let metadata = content.userInfo[JsonKey.Payload.metadata] as? [AnyHashable: Any],
               let messageId = metadata[JsonKey.Payload.messageId] as? String else {
             setCategoryId(id: "")
             return
         }
-        
-        messageCategory = UNNotificationCategory(identifier: messageId,
-                                                 actions: getNotificationActions(metadata: metadata,
-                                                                                 content: content),
-                                                 intentIdentifiers: [],
-                                                 options: [])
-        
-        if let messageCategory = messageCategory {
-            UNUserNotificationCenter.current().getNotificationCategories { [weak self] categories in
-                var newCategories = categories
-                newCategories.insert(messageCategory)
-                UNUserNotificationCenter.current().setNotificationCategories(newCategories)
-                self?.setCategoryId(id: messageId)
-            }
-        } else {
-            setCategoryId(id: messageId)
-        }
+
+        let category = UNNotificationCategory(identifier: messageId,
+                                              actions: Self.getNotificationActions(metadata: metadata,
+                                                                                   content: content),
+                                              intentIdentifiers: [],
+                                              options: [])
+
+        Self.createCategory(category: category, afterCategoryCreated: { [weak self] in self?.setCategoryId(id: messageId) })
     }
     
+    private static func createCategory(category: UNNotificationCategory, afterCategoryCreated: (() -> Void)?) {
+        UNUserNotificationCenter.current().getNotificationCategories { categories in
+            var newCategories = categories
+            newCategories.insert(category)
+            UNUserNotificationCenter.current().setNotificationCategories(newCategories)
+            afterCategoryCreated?()
+        }
+    }
+
     private func setCategoryId(id: String) {
         // IMPORTANT: need to add this to the documentation
         bestAttemptContent?.categoryIdentifier = id
@@ -119,7 +123,7 @@ import UserNotifications
         }
     }
     
-    private func getNotificationActions(metadata: [AnyHashable: Any], content: UNNotificationContent) -> [UNNotificationAction] {
+    private static func getNotificationActions(metadata: [AnyHashable: Any], content: UNNotificationContent) -> [UNNotificationAction] {
         var actionButtons: [[AnyHashable: Any]] = []
         
         if let actionButtonsFromMetadata = metadata[JsonKey.Payload.actionButtons] as? [[AnyHashable: Any]] {
@@ -134,8 +138,8 @@ import UserNotifications
         
         return actionButtons.compactMap { createNotificationActionButton(info: $0) }
     }
-    
-    private func createNotificationActionButton(info: [AnyHashable: Any]) -> UNNotificationAction? {
+
+    private static func createNotificationActionButton(info: [AnyHashable: Any]) -> UNNotificationAction? {
         guard let identifier = info[JsonKey.ActionButton.identifier] as? String else { return nil }
         guard let title = info[JsonKey.ActionButton.title] as? String else { return nil }
         
@@ -160,8 +164,8 @@ import UserNotifications
                                              textInputButtonTitle: inputTitle,
                                              textInputPlaceholder: inputPlaceholder)
     }
-    
-    private func getButtonType(info: [AnyHashable: Any]) -> String {
+
+    private static func getButtonType(info: [AnyHashable: Any]) -> String {
         if let buttonType = info[JsonKey.ActionButton.buttonType] as? String {
             if buttonType == IterableButtonTypeTextInput || buttonType == IterableButtonTypeDestructive {
                 return buttonType
@@ -170,12 +174,12 @@ import UserNotifications
         
         return IterableButtonTypeDefault
     }
-    
-    private func getBoolValue(_ value: Any?) -> Bool? {
+
+    private static func getBoolValue(_ value: Any?) -> Bool? {
         return (value as? NSNumber)?.boolValue
     }
-    
-    private func getActionButtonOptions(buttonType: String, openApp: Bool, requiresUnlock: Bool) -> UNNotificationActionOptions {
+
+    private static func getActionButtonOptions(buttonType: String, openApp: Bool, requiresUnlock: Bool) -> UNNotificationActionOptions {
         var options: UNNotificationActionOptions = []
         
         if buttonType == IterableButtonTypeDestructive {
@@ -192,7 +196,7 @@ import UserNotifications
         
         return options
     }
-    
+
     private func checkPushCreationCompletion() {
         if getCategoryIdFinished && attachmentRetrievalFinished {
             callContentHandler()
@@ -229,7 +233,8 @@ import UserNotifications
     
     private var messageCategory: UNNotificationCategory?
     private var attachmentDownloadTask: URLSessionDownloadTask?
-    private let IterableButtonTypeDefault = "default"
-    private let IterableButtonTypeDestructive = "destructive"
-    private let IterableButtonTypeTextInput = "textInput"
+
+    private static let IterableButtonTypeDefault = "default"
+    private static let IterableButtonTypeDestructive = "destructive"
+    private static let IterableButtonTypeTextInput = "textInput"
 }
