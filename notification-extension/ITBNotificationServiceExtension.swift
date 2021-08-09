@@ -88,15 +88,13 @@ import UserNotifications
             setCategoryId(id: content.categoryIdentifier)
             return
         }
-        guard let metadata = content.userInfo[JsonKey.Payload.metadata] as? [AnyHashable: Any],
-              let messageId = metadata[JsonKey.Payload.messageId] as? String else {
+        guard let messageId = NotificationContentParser.getIterableMessageId(from: content) else {
             setCategoryId(id: "")
             return
         }
 
         let category = UNNotificationCategory(identifier: messageId,
-                                              actions: Self.getNotificationActions(metadata: metadata,
-                                                                                   content: content),
+                                              actions: NotificationContentParser.getNotificationActions(from: content),
                                               intentIdentifiers: [],
                                               options: [])
 
@@ -123,80 +121,6 @@ import UserNotifications
         }
     }
     
-    private static func getNotificationActions(metadata: [AnyHashable: Any], content: UNNotificationContent) -> [UNNotificationAction] {
-        var actionButtons: [[AnyHashable: Any]] = []
-        
-        if let actionButtonsFromMetadata = metadata[JsonKey.Payload.actionButtons] as? [[AnyHashable: Any]] {
-            actionButtons = actionButtonsFromMetadata
-        } else {
-            #if DEBUG
-            if let actionButtonsFromUserInfo = content.userInfo[JsonKey.Payload.actionButtons] as? [[AnyHashable: Any]] {
-                actionButtons = actionButtonsFromUserInfo
-            }
-            #endif
-        }
-        
-        return actionButtons.compactMap { createNotificationActionButton(info: $0) }
-    }
-
-    private static func createNotificationActionButton(info: [AnyHashable: Any]) -> UNNotificationAction? {
-        guard let identifier = info[JsonKey.ActionButton.identifier] as? String else { return nil }
-        guard let title = info[JsonKey.ActionButton.title] as? String else { return nil }
-        
-        let buttonType = getButtonType(info: info)
-        let openApp = getBoolValue(info[JsonKey.ActionButton.openApp]) ?? true
-        let requiresUnlock = getBoolValue(info[JsonKey.ActionButton.requiresUnlock]) ?? false
-        
-        let options = getActionButtonOptions(buttonType: buttonType,
-                                             openApp: openApp,
-                                             requiresUnlock: requiresUnlock)
-        
-        guard buttonType == IterableButtonTypeTextInput else {
-            return UNNotificationAction(identifier: identifier, title: title, options: options)
-        }
-        
-        let inputTitle = info[JsonKey.ActionButton.inputTitle] as? String ?? ""
-        let inputPlaceholder = info[JsonKey.ActionButton.inputPlaceholder] as? String ?? ""
-        
-        return UNTextInputNotificationAction(identifier: identifier,
-                                             title: title,
-                                             options: options,
-                                             textInputButtonTitle: inputTitle,
-                                             textInputPlaceholder: inputPlaceholder)
-    }
-
-    private static func getButtonType(info: [AnyHashable: Any]) -> String {
-        if let buttonType = info[JsonKey.ActionButton.buttonType] as? String {
-            if buttonType == IterableButtonTypeTextInput || buttonType == IterableButtonTypeDestructive {
-                return buttonType
-            }
-        }
-        
-        return IterableButtonTypeDefault
-    }
-
-    private static func getBoolValue(_ value: Any?) -> Bool? {
-        return (value as? NSNumber)?.boolValue
-    }
-
-    private static func getActionButtonOptions(buttonType: String, openApp: Bool, requiresUnlock: Bool) -> UNNotificationActionOptions {
-        var options: UNNotificationActionOptions = []
-        
-        if buttonType == IterableButtonTypeDestructive {
-            options.insert(.destructive)
-        }
-        
-        if openApp {
-            options.insert(.foreground)
-        }
-        
-        if requiresUnlock || openApp {
-            options.insert(.authenticationRequired)
-        }
-        
-        return options
-    }
-
     private func checkPushCreationCompletion() {
         if getCategoryIdFinished && attachmentRetrievalFinished {
             callContentHandler()
@@ -233,8 +157,4 @@ import UserNotifications
     
     private var messageCategory: UNNotificationCategory?
     private var attachmentDownloadTask: URLSessionDownloadTask?
-
-    private static let IterableButtonTypeDefault = "default"
-    private static let IterableButtonTypeDestructive = "destructive"
-    private static let IterableButtonTypeTextInput = "textInput"
 }

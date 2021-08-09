@@ -129,4 +129,242 @@ class NotificationExtensionSwiftTests: XCTestCase {
 
         wait(for: [condition1], timeout: timeout)
     }
+    
+    func testPushIncorrectAttachment() {
+        let content = UNMutableNotificationContent()
+        content.userInfo = [
+            "itbl": [
+                "messageId": "12345",
+                "attachment-url": "Invalid URL!"
+            ]
+        ]
+        
+        let request = UNNotificationRequest(identifier: "request", content: content, trigger: nil)
+        let expectation1 = expectation(description: "contentHandler is called")
+        
+        appExtension.didReceive(request) { contentToDeliver in
+            XCTAssertEqual(contentToDeliver.attachments.count, 0)
+            expectation1.fulfill()
+        }
+        
+        wait(for: [expectation1], timeout: timeout)
+    }
+
+    func testPushDynamicCategory() {
+        let content = UNMutableNotificationContent()
+        let messageId = UUID().uuidString
+        content.userInfo = [
+            "itbl": [
+                "messageId": messageId,
+                "actionButtons": [
+                    [
+                        "identifier": "openAppButton",
+                        "title": "Open App",
+                        "buttonType": "default",
+                        "openApp": true,
+                        "action": []
+                    ],
+                    [
+                        "identifier": "deeplinkButton",
+                        "title": "Open Deeplink",
+                        "buttonType": "default",
+                        "openApp": true,
+                        "action": [
+                            "type": "openUrl",
+                            "data": "http://maps.apple.com/?ll=37.7828,-122.3984"
+                        ]
+                    ],
+                    [
+                        "identifier": "silentActionButton",
+                        "title": "Silent Action",
+                        "buttonType": "default",
+                        "openApp": false,
+                        "action": [
+                            "type": "customActionName",
+                        ]
+                    ],
+                    [
+                        "identifier": "textInputButton",
+                        "title": "Text Input",
+                        "buttonType": "textInput",
+                        "openApp": false,
+                        "inputPlaceHolder": "Type your message here",
+                        "inputTitle": "Send",
+                        "action": [
+                            "type": "handleTextInput",
+                        ]
+                    ],
+                ]
+            ]
+        ]
+        
+        let request = UNNotificationRequest(identifier: "request", content: content, trigger: nil)
+        let expectation1 = expectation(description: "contentHandler is called")
+        
+        appExtension.didReceive(request) { contentToDeliver in
+            DispatchQueue.main.asyncAfter(deadline: .now() + self.delay) {
+                let center = UNUserNotificationCenter.current()
+                center.getNotificationCategories { categories in
+                    var createdCategory: UNNotificationCategory? = nil
+                    for category in categories {
+                        if category.identifier == messageId {
+                            createdCategory = category
+                        }
+                    }
+                    XCTAssertNotNil(createdCategory, "Category exists")
+                    
+                    let metadata = content.userInfo["itbl"] as! [AnyHashable: Any]
+                    let buttonsJsonArray = metadata["actionButtons"] as! [[AnyHashable: Any]]
+                    XCTAssertEqual(createdCategory!.actions.count, 4, "Number of buttons matches")
+                    for i in 0..<4 {
+                        let buttonPayload = buttonsJsonArray[i]
+                        let actionButton = createdCategory!.actions[i]
+                        XCTAssertEqual(actionButton.identifier, buttonPayload["identifier"] as! String, "Identifiers match")
+                        XCTAssertEqual(actionButton.title, buttonPayload["title"] as! String, "Button titles match")
+                    }
+                    
+                    expectation1.fulfill()
+                }
+            }
+        }
+
+        wait(for: [expectation1], timeout: timeout)
+    }
+
+    func testPushDestructiveSilentActionButton() {
+        let content = UNMutableNotificationContent()
+        let messageId = UUID().uuidString
+        content.userInfo = [
+            "itbl": [
+                "messageId": messageId,
+                "actionButtons": [
+                    [
+                        "identifier": "destructiveButton",
+                        "title": "Unsubscribe",
+                        "buttonType": "destructive",
+                        "openApp": false,
+                        "action": []
+                    ],
+                ]
+            ]
+        ]
+        
+        let request = UNNotificationRequest(identifier: "request", content: content, trigger: nil)
+        let expectation1 = expectation(description: "contentHandler is called")
+        
+        appExtension.didReceive(request) { contentToDeliver in
+            DispatchQueue.main.asyncAfter(deadline: .now() + self.delay) {
+                let center = UNUserNotificationCenter.current()
+                center.getNotificationCategories { categories in
+                    var createdCategory: UNNotificationCategory? = nil
+                    for category in categories {
+                        if category.identifier == messageId {
+                            createdCategory = category
+                        }
+                    }
+                    XCTAssertNotNil(createdCategory, "Category exists")
+                    
+                    XCTAssertEqual(createdCategory!.actions.count, 1, "Number of buttons matches")
+                    XCTAssertTrue(createdCategory!.actions.first!.options.contains(.destructive), "Action is destructie")
+                    XCTAssertFalse(createdCategory!.actions.first!.options.contains(.foreground), "Action is not foreground")
+                    
+                    expectation1.fulfill()
+                }
+            }
+        }
+
+        wait(for: [expectation1], timeout: timeout)
+    }
+    
+    func testPushTextInputSilentButton() {
+        let content = UNMutableNotificationContent()
+        let messageId = UUID().uuidString
+        content.userInfo = [
+            "itbl": [
+                "messageId": messageId,
+                "actionButtons": [
+                    [
+                        "identifier": "textInputButton",
+                        "title": "Text Input",
+                        "buttonType": "textInput",
+                        "openApp": false,
+                        "action": []
+                    ],
+                ]
+            ]
+        ]
+        
+        let request = UNNotificationRequest(identifier: "request", content: content, trigger: nil)
+        let expectation1 = expectation(description: "contentHandler is called")
+        
+        appExtension.didReceive(request) { contentToDeliver in
+            DispatchQueue.main.asyncAfter(deadline: .now() + self.delay) {
+                let center = UNUserNotificationCenter.current()
+                center.getNotificationCategories { categories in
+                    var createdCategory: UNNotificationCategory? = nil
+                    for category in categories {
+                        if category.identifier == messageId {
+                            createdCategory = category
+                        }
+                    }
+                    XCTAssertNotNil(createdCategory, "Category exists")
+                    
+                    XCTAssertEqual(createdCategory!.actions.count, 1, "Number of buttons matches")
+                    let textInputNotificationAction = createdCategory!.actions.first! as? UNTextInputNotificationAction
+                    XCTAssertNotNil(textInputNotificationAction)
+                    XCTAssertFalse(createdCategory!.actions.first!.options.contains(.foreground), "Action is not foreground")
+                    
+                    expectation1.fulfill()
+                }
+            }
+        }
+
+        wait(for: [expectation1], timeout: timeout)
+    }
+    
+    func testPushTextInputForegroundButton() {
+        let content = UNMutableNotificationContent()
+        let messageId = UUID().uuidString
+        content.userInfo = [
+            "itbl": [
+                "messageId": messageId,
+                "actionButtons": [
+                    [
+                        "identifier": "textInputButton",
+                        "title": "Text Input",
+                        "buttonType": "textInput",
+                        "openApp": true,
+                        "action": []
+                    ],
+                ]
+            ]
+        ]
+        
+        let request = UNNotificationRequest(identifier: "request", content: content, trigger: nil)
+        let expectation1 = expectation(description: "contentHandler is called")
+        
+        appExtension.didReceive(request) { contentToDeliver in
+            DispatchQueue.main.asyncAfter(deadline: .now() + self.delay) {
+                let center = UNUserNotificationCenter.current()
+                center.getNotificationCategories { categories in
+                    var createdCategory: UNNotificationCategory? = nil
+                    for category in categories {
+                        if category.identifier == messageId {
+                            createdCategory = category
+                        }
+                    }
+                    XCTAssertNotNil(createdCategory, "Category exists")
+                    
+                    XCTAssertEqual(createdCategory!.actions.count, 1, "Number of buttons matches")
+                    let textInputNotificationAction = createdCategory!.actions.first! as? UNTextInputNotificationAction
+                    XCTAssertNotNil(textInputNotificationAction)
+                    XCTAssertTrue(createdCategory!.actions.first!.options.contains(.foreground), "Action is foreground")
+                    
+                    expectation1.fulfill()
+                }
+            }
+        }
+
+        wait(for: [expectation1], timeout: timeout)
+    }
 }
