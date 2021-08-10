@@ -2,6 +2,20 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.3.2
+#### Added
+- `updateCart` has been added to the SDK
+- `dataFields` have been added as a field to `CommerceItem`
+
+#### Removed
+- The following calls that were previously marked as deprecated have been removed:
+  - `IterableAPI.track(inAppOpen messageId: String)`
+  - `IterableAPI.track(inAppClick messageId: String, buttonURL: String)`
+  - `IterableAPI.inAppConsume(messageId: String)`
+  - `IterableAPI.getAndTrack(deeplink webpageURL: URL, callbackBlock: @escaping ITEActionBlock)`
+  - `IterableAPI.showSystemNotification(withTitle title: String, body: String, button: String?, callbackBlock: ITEActionBlock?)`
+  - `IterableAPI.showSystemNotification(withTitle title: String, body: String, buttonLeft: String?, buttonRight: String?, callbackBlock: ITEActionBlock?)`
+
 ## 6.3.1
 #### Added
 - The following properties have been added to the `CommerceItem` class:
