@@ -42,7 +42,6 @@
 		AC02CAA6234E50B5006617E0 /* RegistrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */; };
 		AC03094B21E532470003A288 /* InAppPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC03094A21E532470003A288 /* InAppPersistence.swift */; };
 		AC05644B26387B54001FB810 /* MockPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC05644A26387B54001FB810 /* MockPersistence.swift */; };
-		AC0674E620D8766600C2806D /* NotificationExtensionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AC0674E520D8766600C2806D /* NotificationExtensionTests.m */; };
 		AC1670CD2230A91C00989F8E /* InboxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1670CC2230A91C00989F8E /* InboxTests.swift */; };
 		AC1712892416AEF400F2BB0E /* WebViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1712882416AEF400F2BB0E /* WebViewProtocol.swift */; };
 		AC19520D231D9AC600CD5B61 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA8D1A42196309C001B1332 /* Common.swift */; };
@@ -134,6 +133,7 @@
 		AC81918A22713A400014955E /* AbstractDiffCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC81918922713A400014955E /* AbstractDiffCalculator.swift */; };
 		AC845107228DF54E0052BB8F /* ApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC845106228DF54E0052BB8F /* ApiClient.swift */; };
 		AC84510922910A0C0052BB8F /* RequestCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC84510822910A0C0052BB8F /* RequestCreator.swift */; };
+		AC84EC3726C136F3007FBEF7 /* NotificationContentParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC84EC3626C136F3007FBEF7 /* NotificationContentParser.swift */; };
 		AC85A749216D24F4005241AE /* NotificationExtensionSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC85A748216D24F4005241AE /* NotificationExtensionSwiftTests.swift */; };
 		AC87172621A4E47E00FEA369 /* TestInAppPayloadGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */; };
 		AC8874AA22178BD80075B54B /* InAppContentParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8874A922178BD80075B54B /* InAppContentParser.swift */; };
@@ -400,8 +400,6 @@
 		AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTests.swift; sourceTree = "<group>"; };
 		AC03094A21E532470003A288 /* InAppPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPersistence.swift; sourceTree = "<group>"; };
 		AC05644A26387B54001FB810 /* MockPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPersistence.swift; sourceTree = "<group>"; };
-		AC0674E420D8766600C2806D /* notification-extensionTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "notification-extensionTests-Bridging-Header.h"; sourceTree = "<group>"; };
-		AC0674E520D8766600C2806D /* NotificationExtensionTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationExtensionTests.m; sourceTree = "<group>"; };
 		AC0A45372179300D0040394F /* host-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "host-app.entitlements"; sourceTree = "<group>"; };
 		AC1670CC2230A91C00989F8E /* InboxTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxTests.swift; sourceTree = "<group>"; };
 		AC1712882416AEF400F2BB0E /* WebViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewProtocol.swift; sourceTree = "<group>"; };
@@ -490,6 +488,7 @@
 		AC81918922713A400014955E /* AbstractDiffCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AbstractDiffCalculator.swift; sourceTree = "<group>"; };
 		AC845106228DF54E0052BB8F /* ApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiClient.swift; sourceTree = "<group>"; };
 		AC84510822910A0C0052BB8F /* RequestCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestCreator.swift; sourceTree = "<group>"; };
+		AC84EC3626C136F3007FBEF7 /* NotificationContentParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationContentParser.swift; sourceTree = "<group>"; };
 		AC85A748216D24F4005241AE /* NotificationExtensionSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationExtensionSwiftTests.swift; sourceTree = "<group>"; };
 		AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestInAppPayloadGenerator.swift; sourceTree = "<group>"; };
 		AC8874A922178BD80075B54B /* InAppContentParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppContentParser.swift; sourceTree = "<group>"; };
@@ -713,7 +712,6 @@
 			isa = PBXGroup;
 			children = (
 				AC90C4D520D8632E00EECA5D /* Info.plist */,
-				AC0674E420D8766600C2806D /* notification-extensionTests-Bridging-Header.h */,
 			);
 			name = "Helper Files";
 			sourceTree = "<group>";
@@ -1072,6 +1070,7 @@
 				AC90C4E120D8639E00EECA5D /* ITBNotificationServiceExtension.swift */,
 				ACDBB33A239582450036BB38 /* NotificationExtensionConstants.swift */,
 				AC9A49AA20F3C8B80007A5A2 /* TestFile.swift */,
+				AC84EC3626C136F3007FBEF7 /* NotificationContentParser.swift */,
 			);
 			path = "notification-extension";
 			sourceTree = "<group>";
@@ -1081,7 +1080,6 @@
 			children = (
 				AC0674E720D87D5B00C2806D /* Helper Files */,
 				AC85A748216D24F4005241AE /* NotificationExtensionSwiftTests.swift */,
-				AC0674E520D8766600C2806D /* NotificationExtensionTests.m */,
 				AC9A49AC20F419AA0007A5A2 /* TestFileTests.swift */,
 			);
 			path = "notification-extension-tests";
@@ -1863,6 +1861,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ACDBB33B239582450036BB38 /* NotificationExtensionConstants.swift in Sources */,
+				AC84EC3726C136F3007FBEF7 /* NotificationContentParser.swift in Sources */,
 				AC9A49AB20F3C8B80007A5A2 /* TestFile.swift in Sources */,
 				AC90C4E220D8639E00EECA5D /* ITBNotificationServiceExtension.swift in Sources */,
 			);
@@ -1872,7 +1871,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AC0674E620D8766600C2806D /* NotificationExtensionTests.m in Sources */,
 				AC85A749216D24F4005241AE /* NotificationExtensionSwiftTests.swift in Sources */,
 				AC9A49AE20F41B520007A5A2 /* TestFileTests.swift in Sources */,
 			);
@@ -2429,7 +2427,6 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "iterable.notification-extensionTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "Tests/notification-extension-tests/notification-extensionTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/host-app.app/host-app";
@@ -2452,7 +2449,6 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "iterable.notification-extensionTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "Tests/notification-extension-tests/notification-extensionTests-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/host-app.app/host-app";
 			};
