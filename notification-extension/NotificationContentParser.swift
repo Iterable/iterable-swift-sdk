@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import UserNotifications.UNNotificationContent
+import UserNotifications
 
 struct NotificationContentParser {
     static func getIterableMetadata(from content: UNNotificationContent) -> [AnyHashable: Any]? {
