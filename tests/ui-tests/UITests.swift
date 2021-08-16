@@ -27,21 +27,21 @@ class UITests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
     
-    // TODO: fix for Xcode 12
-    func fixThis_testSendNotificationOpenSafari() {
+    func testSendNotificationOpenSafari() {
         allowNotificationsIfNeeded()
         
         app.buttons["Send Notification"].tap()
         
-        let notification = springboard.otherElements["NotificationShortLookView"]
+        let springboardHelper = SpringBoardNotificationHelper(springboard: springboard)
+        let notification = springboardHelper.notification
         XCTAssert(notification.waitForExistence(timeout: 10))
         
-        notification.swipeDown()
-        
+        notification.press(forDuration: 1.0)
+
         // Give one second pause before interacting
         sleep(1)
         
-        let button = SpringBoardNotification(springboard: springboard).buttonOpenSafari
+        let button = springboardHelper.buttonOpenSafari
         button.tap()
         
         // Give some time to open
@@ -55,21 +55,22 @@ class UITests: XCTestCase {
         app.launch()
     }
     
-    // TODO: fix for Xcode 12
-    func fixThis_testSendNotificationOpenDeepLink() {
+    func testSendNotificationOpenDeepLink() {
         allowNotificationsIfNeeded()
+                                
         
         app.buttons["Send Notification"].tap()
         
-        let notification = springboard.otherElements["NotificationShortLookView"]
+        let springboardHelper = SpringBoardNotificationHelper(springboard: springboard)
+        let notification = springboardHelper.notification
         XCTAssert(notification.waitForExistence(timeout: 10))
-        
-        notification.swipeDown()
+                
+        notification.press(forDuration: 1.0)
         
         // Give one second pause before interacting
         sleep(1)
         
-        let button = SpringBoardNotification(springboard: springboard).buttonOpenDeepLink
+        let button = springboardHelper.buttonOpenDeepLink
         button.tap()
         
         // Give some time to open
@@ -78,21 +79,21 @@ class UITests: XCTestCase {
         waitForElementToAppear(app.staticTexts["https://www.myuniqueurl.com"])
     }
     
-    // TODO: fix for Xcode 12
-    func fixThis_testSendNotificationCustomAction() {
+    func testSendNotificationCustomAction() {
         allowNotificationsIfNeeded()
         
         app.buttons["Send Notification"].tap()
         
-        let notification = springboard.otherElements["NotificationShortLookView"]
+        let springboardHelper = SpringBoardNotificationHelper(springboard: springboard)
+        let notification = springboardHelper.notification
         XCTAssert(notification.waitForExistence(timeout: 10))
         
-        notification.swipeDown()
-        
+        notification.press(forDuration: 1.0)
+
         // Give one second pause before interacting
         sleep(1)
         
-        let button = SpringBoardNotification(springboard: springboard).buttonCustomAction
+        let button = springboardHelper.buttonCustomAction
         button.tap()
         
         // Give some time to open
@@ -162,8 +163,12 @@ class UITests: XCTestCase {
     }
 }
 
-struct SpringBoardNotification {
+struct SpringBoardNotificationHelper {
     let springboard: XCUIApplication
+    
+    var notification: XCUIElement {
+        springboard.otherElements["Notification"].descendants(matching: .any)["NotificationShortLookView"]
+    }
     
     var buttonOpenSafari: XCUIElement {
         springboard.buttons["Open Safari"].firstMatch
