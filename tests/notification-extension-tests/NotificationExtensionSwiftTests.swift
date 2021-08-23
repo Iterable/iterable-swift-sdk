@@ -367,4 +367,128 @@ class NotificationExtensionSwiftTests: XCTestCase {
 
         wait(for: [expectation1], timeout: timeout)
     }
+
+    @available(iOS 15.0, *)
+    func testNilActionButtonIcon() {
+        let expectation1 = expectation(description: #function)
+        
+        let content = UNMutableNotificationContent()
+        let messageId = UUID().uuidString
+        
+        content.userInfo = [
+            "itbl": [
+                "messageId": messageId,
+                "actionButtons": [[
+                    "identifier": "openAppButton",
+                    "title": "Open App",
+                    "action": [
+                        "type": "openUrl",
+                        "data": "http://maps.apple.com/?ll=37.7828,-122.3984"
+                    ],
+                    "systemImageName-invalid": "hand.thumbsup",
+                ]],
+            ],
+        ]
+        
+        let request = UNNotificationRequest(identifier: "request", content: content, trigger: nil)
+        
+        appExtension.didReceive(request) { _ in
+            DispatchQueue.main.asyncAfter(deadline: .now() + self.delay) {
+                UNUserNotificationCenter.current().getNotificationCategories(completionHandler: { categories in
+                    let createdCategory = categories.first(where: { $0.identifier == messageId })
+                    
+                    XCTAssertNotNil(createdCategory)
+                    XCTAssertEqual(createdCategory!.actions.count, 1, "Number of buttons matched")
+                    let actionButton = createdCategory!.actions.first!
+                    XCTAssertNil(actionButton.icon)
+                    expectation1.fulfill()
+                })
+            }
+        }
+        
+        wait(for: [expectation1], timeout: timeout)
+    }
+
+    
+    @available(iOS 15.0, *)
+    func testAddActionButtonWithSystemImageIcon() {
+        let expectation1 = expectation(description: #function)
+        
+        let content = UNMutableNotificationContent()
+        let messageId = UUID().uuidString
+        
+        content.userInfo = [
+            "itbl": [
+                "messageId": messageId,
+                "actionButtons": [[
+                    "identifier": "openAppButton",
+                    "title": "Open App",
+                    "action": [
+                        "type": "openUrl",
+                        "data": "http://maps.apple.com/?ll=37.7828,-122.3984"
+                    ],
+                    "systemImageName": "hand.thumbsup",
+                ]],
+            ],
+        ]
+        
+        let request = UNNotificationRequest(identifier: "request", content: content, trigger: nil)
+        
+        appExtension.didReceive(request) { _ in
+            DispatchQueue.main.asyncAfter(deadline: .now() + self.delay) {
+                UNUserNotificationCenter.current().getNotificationCategories(completionHandler: { categories in
+                    let createdCategory = categories.first(where: { $0.identifier == messageId })
+                    
+                    XCTAssertNotNil(createdCategory)
+                    XCTAssertEqual(createdCategory!.actions.count, 1, "Number of buttons matched")
+                    let actionButton = createdCategory!.actions.first!
+                    XCTAssertNotNil(actionButton.icon)
+                    expectation1.fulfill()
+                })
+            }
+        }
+        
+        wait(for: [expectation1], timeout: timeout)
+    }
+
+    @available(iOS 15.0, *)
+    func testAddActionButtonWithTemplateImageIcon() {
+        let expectation1 = expectation(description: #function)
+        
+        let content = UNMutableNotificationContent()
+        let messageId = UUID().uuidString
+        
+        content.userInfo = [
+            "itbl": [
+                "messageId": messageId,
+                "actionButtons": [[
+                    "identifier": "openAppButton",
+                    "title": "Open App",
+                    "action": [
+                        "type": "openUrl",
+                        "data": "http://maps.apple.com/?ll=37.7828,-122.3984"
+                    ],
+                    "templateImageName": "custom.thumbsup",
+                ]],
+            ],
+        ]
+        
+        let request = UNNotificationRequest(identifier: "request", content: content, trigger: nil)
+        
+        appExtension.didReceive(request) { _ in
+            DispatchQueue.main.asyncAfter(deadline: .now() + self.delay) {
+                UNUserNotificationCenter.current().getNotificationCategories(completionHandler: { categories in
+                    let createdCategory = categories.first(where: { $0.identifier == messageId })
+                    
+                    XCTAssertNotNil(createdCategory)
+                    XCTAssertEqual(createdCategory!.actions.count, 1, "Number of buttons matched")
+                    let actionButton = createdCategory!.actions.first!
+                    XCTAssertNotNil(actionButton.icon)
+                    expectation1.fulfill()
+                })
+            }
+        }
+        
+        wait(for: [expectation1], timeout: timeout)
+    }
 }

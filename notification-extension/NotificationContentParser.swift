@@ -39,64 +39,111 @@ struct NotificationContentParser {
     }
 
     private static func createNotificationActionButton(from json: [AnyHashable: Any]) -> UNNotificationAction? {
+        guard let button = createActionButton(from: json) else {
+            return nil
+        }
+        
+        if button.buttonType == .textInput {
+            if #available(iOS 15.0, *) {
+                return UNTextInputNotificationAction(identifier: button.identifier,
+                                                     title: button.title,
+                                                     options: getOptions(forActionButton: button),
+                                                     icon: getNotificationIcon(forActionButton: button),
+                                                     textInputButtonTitle: button.textInputTitle ?? "",
+                                                     textInputPlaceholder: button.textInputPlaceholder ?? "")
+            } else {
+                return UNTextInputNotificationAction(identifier: button.identifier,
+                                                     title: button.title,
+                                                     options: getOptions(forActionButton: button),
+                                                     textInputButtonTitle: button.textInputTitle ?? "",
+                                                     textInputPlaceholder: button.textInputPlaceholder ?? "")
+            }
+        } else {
+            if #available(iOS 15.0, *) {
+                return UNTextInputNotificationAction(identifier: button.identifier,
+                                                     title: button.title,
+                                                     options: getOptions(forActionButton: button),
+                                                     icon: getNotificationIcon(forActionButton: button))
+            } else {
+                return UNTextInputNotificationAction(identifier: button.identifier,
+                                                     title: button.title,
+                                                     options: getOptions(forActionButton: button))
+            }
+        }
+    }
+
+    private static func createActionButton(from json: [AnyHashable: Any]) -> ActionButton? {
         guard let identifier = json[JsonKey.ActionButton.identifier] as? String else { return nil }
         guard let title = json[JsonKey.ActionButton.title] as? String else { return nil }
         
-        let buttonType = getButtonType(info: json)
-        let openApp = getBoolValue(json[JsonKey.ActionButton.openApp]) ?? true
-        let requiresUnlock = getBoolValue(json[JsonKey.ActionButton.requiresUnlock]) ?? false
-        
-        let options = getActionButtonOptions(buttonType: buttonType,
-                                             openApp: openApp,
-                                             requiresUnlock: requiresUnlock)
-        
-        guard buttonType == IterableButtonTypeTextInput else {
-            return UNNotificationAction(identifier: identifier, title: title, options: options)
-        }
-        
-        let inputTitle = json[JsonKey.ActionButton.inputTitle] as? String ?? ""
-        let inputPlaceholder = json[JsonKey.ActionButton.inputPlaceholder] as? String ?? ""
-        
-        return UNTextInputNotificationAction(identifier: identifier,
-                                             title: title,
-                                             options: options,
-                                             textInputButtonTitle: inputTitle,
-                                             textInputPlaceholder: inputPlaceholder)
+        return ActionButton(identifier: identifier,
+                            title: title,
+                            buttonType: getButtonType(info: json),
+                            openApp: getBoolValue(json[JsonKey.ActionButton.openApp]) ?? true,
+                            requiresUnlock: getBoolValue(json[JsonKey.ActionButton.requiresUnlock]) ?? false,
+                            textInputTitle: json[JsonKey.ActionButton.inputTitle] as? String,
+                            textInputPlaceholder: json[JsonKey.ActionButton.inputPlaceholder] as? String,
+                            systemImageName: json[JsonKey.ActionButton.systemImageName] as? String,
+                            templateImageName: json[JsonKey.ActionButton.templateImageName] as? String)
     }
-
-    private static func getButtonType(info: [AnyHashable: Any]) -> String {
-        if let buttonType = info[JsonKey.ActionButton.buttonType] as? String {
-            if buttonType == IterableButtonTypeTextInput || buttonType == IterableButtonTypeDestructive {
-                return buttonType
-            }
+    
+    private static func getButtonType(info: [AnyHashable: Any]) -> ButtonType {
+        if let buttonTypeRaw = info[JsonKey.ActionButton.buttonType] as? String,
+            let buttonType = ButtonType(rawValue: buttonTypeRaw) {
+            return buttonType
         }
         
-        return IterableButtonTypeDefault
+        return .default
     }
 
     private static func getBoolValue(_ value: Any?) -> Bool? {
         return (value as? NSNumber)?.boolValue
     }
 
-    private static func getActionButtonOptions(buttonType: String, openApp: Bool, requiresUnlock: Bool) -> UNNotificationActionOptions {
+    private static func getOptions(forActionButton button: ActionButton) -> UNNotificationActionOptions {
         var options: UNNotificationActionOptions = []
         
-        if buttonType == IterableButtonTypeDestructive {
+        if button.buttonType == ButtonType.destructive {
             options.insert(.destructive)
         }
         
-        if openApp {
+        if button.openApp {
             options.insert(.foreground)
         }
         
-        if requiresUnlock || openApp {
+        if button.requiresUnlock || button.openApp {
             options.insert(.authenticationRequired)
         }
         
         return options
     }
+    
+    @available(iOS 15.0, *)
+    private static func getNotificationIcon(forActionButton button: ActionButton) -> UNNotificationActionIcon? {
+        if let systemImageName = button.systemImageName {
+            return UNNotificationActionIcon(systemImageName: systemImageName)
+        } else if let templateImageName = button.templateImageName {
+            return UNNotificationActionIcon(templateImageName: templateImageName)
+        } else {
+            return nil
+        }
+    }
+    
+    private enum ButtonType: String {
+        case `default`
+        case destructive
+        case textInput
+    }
 
-    private static let IterableButtonTypeDefault = "default"
-    private static let IterableButtonTypeDestructive = "destructive"
-    private static let IterableButtonTypeTextInput = "textInput"
+    private struct ActionButton {
+        let identifier: String
+        let title: String
+        let buttonType: ButtonType
+        let openApp: Bool
+        let requiresUnlock: Bool
+        let textInputTitle: String?
+        let textInputPlaceholder: String?
+        let systemImageName: String?
+        let templateImageName: String?
+    }
 }
