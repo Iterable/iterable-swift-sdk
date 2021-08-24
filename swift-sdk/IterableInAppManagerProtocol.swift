@@ -32,7 +32,7 @@ import Foundation
     @objc(removeMessage:) func remove(message: IterableInAppMessage)
     
     /// - parameter message: The message to remove.
-    /// - parameter source: The source of deletion `inboxSwipe` or `deleteButton`.`
+    /// - parameter location: The location from where this message was shown. `inbox` or `inApp`.
     @objc(removeMessage:location:) func remove(message: IterableInAppMessage, location: InAppLocation)
     
     /// - parameter message: The message to remove.

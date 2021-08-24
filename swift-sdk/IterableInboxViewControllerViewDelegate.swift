@@ -51,7 +51,7 @@ import Foundation
     @objc optional var customNibNameMapper: (IterableInAppMessage) -> String? { get }
     
     /// Use this method to render any additional custom fields other than title, subtitle and createAt.
-    /// - parameter forCell: The table view cell to render
-    /// - parameter withMessage: IterableInAppMessage
+    /// - parameter cell: The table view cell to render
+    /// - parameter message: IterableInAppMessage
     @objc optional func renderAdditionalFields(forCell cell: IterableInboxCell, withMessage message: IterableInAppMessage)
 }

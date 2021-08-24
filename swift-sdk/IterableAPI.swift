@@ -333,8 +333,7 @@ public final class IterableAPI: NSObject {
     ///
     /// - Parameters:
     ///     - items: The list of items in the shopping cart to track
-    ///     - dataFields: A `Dictionary` containing any additional information to save along with the event
-    ///     - onSucess: `OnSuccessHandler` to invoke if cart is updated successfully
+    ///     - onSuccess: `OnSuccessHandler` to invoke if cart is updated successfully
     ///     - onFailure: `OnFailureHandler` to invoke if cart updating fails
     ///
     /// - SeeAlso: CommerceItem
