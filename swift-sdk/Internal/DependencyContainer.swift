@@ -151,7 +151,7 @@ struct DependencyContainer: DependencyContainerProtocol {
     let inAppDisplayer: InAppDisplayerProtocol = InAppDisplayer()
     let inAppPersister: InAppPersistenceProtocol = InAppFilePersister()
     let urlOpener: UrlOpenerProtocol = AppUrlOpener()
-    let applicationStateProvider: ApplicationStateProviderProtocol = UIApplication.shared
+    let applicationStateProvider: ApplicationStateProviderProtocol = AppExtensionHelper.applicationStateProvider
     let notificationCenter: NotificationCenterProtocol = NotificationCenter.default
     let apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker()
 }

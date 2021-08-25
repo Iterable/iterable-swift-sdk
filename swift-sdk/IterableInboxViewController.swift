@@ -408,7 +408,7 @@ extension IterableInboxViewController: InboxViewControllerViewModelView {
         let topMargin = CGFloat(10.0)
         let bottomMargin = CGFloat(10.0)
         let frame = tableView.frame
-        let statusHeight = UIApplication.shared.statusBarFrame.height
+        let statusHeight = AppExtensionHelper.application?.statusBarFrame.height ?? 0
         let navHeight = navigationController?.navigationBar.frame.height ?? 0
         let topHeightToSubtract = statusHeight + navHeight - topMargin // subtract topMargin
         

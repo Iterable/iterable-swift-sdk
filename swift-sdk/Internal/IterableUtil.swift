@@ -8,10 +8,10 @@ import UIKit
 
 @objc final class IterableUtil: NSObject {
     static var rootViewController: UIViewController? {
-        if let rootViewController = UIApplication.shared.delegate?.window??.rootViewController {
+        if let rootViewController = AppExtensionHelper.application?.delegate?.window??.rootViewController {
             return rootViewController
         } else {
-            return UIApplication.shared.windows.first?.rootViewController
+            return AppExtensionHelper.application?.windows.first?.rootViewController
         }
     }
     

@@ -10,20 +10,13 @@ import UIKit
     @objc func open(url: URL)
 }
 
+
 /// Default app opener. Defers to UIApplication open
 class AppUrlOpener: UrlOpenerProtocol {
     public init() {}
-    
+
     public func open(url: URL) {
-        if #available(iOS 10.0, *) {
-            UIApplication.shared.open(url, options: [:]) { success in
-                if !success {
-                    ITBError("Could not open url: \(url)")
-                }
-            }
-        } else {
-            UIApplication.shared.openURL(url)
-        }
+        AppExtensionHelper.open(url: url)
     }
 }
 
