@@ -7,24 +7,24 @@ import UIKit
 
 final class AppExtensionHelper {
     static var application: UIApplication? {
-        sharedInsance?.appWrapper.provideApp()
+        sharedInstance?.appWrapper.provideApp()
     }
     
     static var applicationStateProvider: ApplicationStateProviderProtocol {
-        sharedInsance?.appWrapper.provideApp() ?? FallbackApplcationStateProvider()
+        sharedInstance?.appWrapper.provideApp() ?? FallbackApplcationStateProvider()
     }
     
     static func open(url: URL) {
-        sharedInsance?.appWrapper.openUrl(url: url)
+        sharedInstance?.appWrapper.openUrl(url: url)
     }
 
     @available(iOSApplicationExtension, unavailable)
     static func initialize() {
-        sharedInsance = AppExtensionHelper(appWrapper: AppWrapper())
+        sharedInstance = AppExtensionHelper(appWrapper: AppWrapper())
     }
 
     static func initialize(appWrapper: AppWrapperProtocol) {
-        sharedInsance = AppExtensionHelper(appWrapper: appWrapper)
+        sharedInstance = AppExtensionHelper(appWrapper: appWrapper)
     }
 
     private init(appWrapper: AppWrapperProtocol) {
@@ -32,7 +32,7 @@ final class AppExtensionHelper {
     }
     
     private let appWrapper: AppWrapperProtocol
-    private static var sharedInsance: AppExtensionHelper?
+    private static var sharedInstance: AppExtensionHelper?
     
     private class FallbackApplcationStateProvider: ApplicationStateProviderProtocol {
         let applicationState = UIApplication.State.active
