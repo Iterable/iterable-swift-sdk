@@ -3,47 +3,35 @@
 //
 
 import Foundation
+import UIKit
 
 final class AppExtensionHelper {
     static var application: UIApplication? {
-        sharedInsance?.appProvider()
+        sharedInsance?.appWrapper.provideApp()
     }
     
     static var applicationStateProvider: ApplicationStateProviderProtocol {
-        sharedInsance ?? FallbackApplcationStateProvider()
+        sharedInsance?.appWrapper.provideApp() ?? FallbackApplcationStateProvider()
     }
     
     static func open(url: URL) {
-        sharedInsance?.urlOpener(url)
+        sharedInsance?.appWrapper.openUrl(url: url)
     }
 
     @available(iOSApplicationExtension, unavailable)
     static func initialize() {
-        let urlOpener: (URL) -> Void = { url in
-            if #available(iOS 10.0, *) {
-                UIApplication.shared.open(url, options: [:]) { success in
-                    if !success {
-                        ITBError("Could not open url: \(url)")
-                    }
-                }
-            } else {
-                _ = UIApplication.shared.openURL(url)
-            }
-
-        }
-        sharedInsance = AppExtensionHelper(appProvider: UIApplication.shared,
-                                           urlOpener: urlOpener)
+        sharedInsance = AppExtensionHelper(appWrapper: AppWrapper())
     }
 
-    private init(appProvider: @escaping @autoclosure () -> UIApplication,
-                 urlOpener: @escaping (URL) -> Void) {
-        self.appProvider = appProvider
-        self.urlOpener = urlOpener
+    static func initialize(appWrapper: AppWrapperProtocol) {
+        sharedInsance = AppExtensionHelper(appWrapper: appWrapper)
+    }
+
+    private init(appWrapper: AppWrapperProtocol) {
+        self.appWrapper = appWrapper
     }
     
-    private let appProvider: () -> UIApplication
-    private let urlOpener: (URL) -> Void
-
+    private let appWrapper: AppWrapperProtocol
     private static var sharedInsance: AppExtensionHelper?
     
     private class FallbackApplcationStateProvider: ApplicationStateProviderProtocol {
@@ -51,8 +39,27 @@ final class AppExtensionHelper {
     }
 }
 
-extension AppExtensionHelper: ApplicationStateProviderProtocol {
-    var applicationState: UIApplication.State {
-        appProvider().applicationState
+protocol AppWrapperProtocol {
+    func openUrl(url: URL)
+    func provideApp() -> UIApplication
+}
+
+@available(iOSApplicationExtension, unavailable)
+class AppWrapper: AppWrapperProtocol {
+    func openUrl(url: URL) {
+        if #available(iOS 10.0, *) {
+            UIApplication.shared.open(url, options: [:]) { success in
+                if !success {
+                    ITBError("Could not open url: \(url)")
+                }
+            }
+        } else {
+            _ = UIApplication.shared.openURL(url)
+        }
+    }
+    
+    func provideApp() -> UIApplication {
+        UIApplication.shared
     }
 }
+
