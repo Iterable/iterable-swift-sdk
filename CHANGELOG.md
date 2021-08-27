@@ -2,6 +2,13 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.3.3
+#### Changed
+- CocoaPods targets adding this SDK do not require `use_frameworks!` anymore
+
+#### Fixed
+- Inline comments will not show anymore warnings in Objective-C projects
+
 ## 6.3.2
 #### Added
 - `updateCart` has been added to the SDK
