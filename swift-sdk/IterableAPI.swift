@@ -50,6 +50,7 @@ public final class IterableAPI: NSObject {
     ///     - apiKey: The Iterable Mobile API key to be used with the SDK
     ///
     /// - SeeAlso: IterableConfig
+    @available(iOSApplicationExtension, unavailable)
     public static func initialize(apiKey: String) {
         initialize(apiKey: apiKey, launchOptions: nil)
     }
@@ -62,6 +63,7 @@ public final class IterableAPI: NSObject {
     ///     - config: The `IterableConfig` object with the settings to be used
     ///
     /// - SeeAlso: IterableConfig
+    @available(iOSApplicationExtension, unavailable)
     public static func initialize(apiKey: String,
                                   config: IterableConfig) {
         initialize(apiKey: apiKey, launchOptions: nil, config: config)
@@ -75,6 +77,7 @@ public final class IterableAPI: NSObject {
     ///    - launchOptions: The `launchOptions` coming from `application(_:didFinishLaunchingWithOptions:)`
     ///
     /// - SeeAlso: IterableConfig
+    @available(iOSApplicationExtension, unavailable)
     public static func initialize(apiKey: String,
                                   launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
         initialize(apiKey: apiKey, launchOptions: launchOptions, config: IterableConfig())
@@ -89,6 +92,7 @@ public final class IterableAPI: NSObject {
     ///    - config: The `IterableConfig` object with the settings to be used
     ///
     /// - SeeAlso: IterableConfig
+    @available(iOSApplicationExtension, unavailable)
     public static func initialize(apiKey: String,
                                   launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
                                   config: IterableConfig = IterableConfig()) {
@@ -99,11 +103,13 @@ public final class IterableAPI: NSObject {
 
     /// DO NOT USE THIS.
     /// This method is used internally to connect to staging and test environments.
+    @available(iOSApplicationExtension, unavailable)
     public static func initialize2(apiKey: String,
                                    launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
                                    config: IterableConfig = IterableConfig(),
                                    apiEndPointOverride: String? = nil,
                                    callback: ((Bool) -> Void)? = nil) {
+        AppExtensionHelper.initialize()
         internalImplementation = InternalIterableAPI(apiKey: apiKey,
                                                      launchOptions: launchOptions,
                                                      config: config,

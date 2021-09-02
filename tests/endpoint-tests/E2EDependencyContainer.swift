@@ -49,6 +49,7 @@ extension InternalIterableAPI {
                                                     launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
                                                     config: IterableConfig = IterableConfig(),
                                                     localStorage: LocalStorageProtocol = MockLocalStorage()) -> InternalIterableAPI {
+        AppExtensionHelper.initialize()
         let e2eDependencyContainer = E2EDependencyContainer()
         let internalImplementation = InternalIterableAPI(apiKey: apiKey,
                                                          launchOptions: launchOptions,

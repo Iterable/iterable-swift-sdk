@@ -157,6 +157,7 @@ extension IterableAPI {
                                      maxTasks: Int = 1000,
                                      apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker(),
                                      persistenceContextProvider: IterablePersistenceContextProvider? = nil) {
+        AppExtensionHelper.initialize()
         let mockDependencyContainer = MockDependencyContainer(dateProvider: dateProvider,
                                                               networkSession: networkSession,
                                                               notificationStateProvider: notificationStateProvider,
@@ -200,6 +201,7 @@ extension InternalIterableAPI {
                                                         maxTasks: Int = 1000,
                                                         apnsTypeChecker: APNSTypeCheckerProtocol = APNSTypeChecker(),
                                                         persistenceContextProvider: IterablePersistenceContextProvider? = nil) -> InternalIterableAPI {
+        AppExtensionHelper.initialize()
         let mockDependencyContainer = MockDependencyContainer(dateProvider: dateProvider,
                                                               networkSession: networkSession,
                                                               notificationStateProvider: notificationStateProvider,

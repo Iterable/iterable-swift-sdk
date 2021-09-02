@@ -31,7 +31,7 @@ struct SystemNotificationStateProvider: NotificationStateProviderProtocol {
             return authorizationStatus == .authorized
         } else {
             // Fallback on earlier versions
-            if let currentSettings = UIApplication.shared.currentUserNotificationSettings, currentSettings.types != [] {
+            if let currentSettings = AppExtensionHelper.application?.currentUserNotificationSettings, currentSettings.types != [] {
                 return true
             } else {
                 return false
@@ -41,7 +41,7 @@ struct SystemNotificationStateProvider: NotificationStateProviderProtocol {
     
     func registerForRemoteNotifications() {
         DispatchQueue.main.async {
-            UIApplication.shared.registerForRemoteNotifications()
+            AppExtensionHelper.application?.registerForRemoteNotifications()
         }
     }
 }
