@@ -385,7 +385,6 @@ class NotificationExtensionSwiftTests: XCTestCase {
                         "type": "openUrl",
                         "data": "http://maps.apple.com/?ll=37.7828,-122.3984"
                     ],
-                    "systemImageName-invalid": "hand.thumbsup",
                 ]],
             ],
         ]
@@ -427,7 +426,10 @@ class NotificationExtensionSwiftTests: XCTestCase {
                         "type": "openUrl",
                         "data": "http://maps.apple.com/?ll=37.7828,-122.3984"
                     ],
-                    "systemImageName": "hand.thumbsup",
+                    "actionIcon": [
+                        "iconType": "systemImage",
+                        "imageName": "hand.thumbsup",
+                    ],
                 ]],
             ],
         ]
@@ -468,7 +470,10 @@ class NotificationExtensionSwiftTests: XCTestCase {
                         "type": "openUrl",
                         "data": "http://maps.apple.com/?ll=37.7828,-122.3984"
                     ],
-                    "templateImageName": "custom.thumbsup",
+                    "actionIcon": [
+                        "iconType": "templateImage",
+                        "imageName": "custom.thumbsup",
+                    ],
                 ]],
             ],
         ]

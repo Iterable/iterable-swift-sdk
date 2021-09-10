@@ -76,6 +76,7 @@ struct NotificationContentParser {
         guard let identifier = json[JsonKey.ActionButton.identifier] as? String else { return nil }
         guard let title = json[JsonKey.ActionButton.title] as? String else { return nil }
         
+        let actionIcon = (json[JsonKey.ActionButton.actionIcon] as? [AnyHashable: Any]).flatMap(ActionIcon.from(json:))
         return ActionButton(identifier: identifier,
                             title: title,
                             buttonType: getButtonType(info: json),
@@ -83,8 +84,7 @@ struct NotificationContentParser {
                             requiresUnlock: getBoolValue(json[JsonKey.ActionButton.requiresUnlock]) ?? false,
                             textInputTitle: json[JsonKey.ActionButton.inputTitle] as? String,
                             textInputPlaceholder: json[JsonKey.ActionButton.inputPlaceholder] as? String,
-                            systemImageName: json[JsonKey.ActionButton.systemImageName] as? String,
-                            templateImageName: json[JsonKey.ActionButton.templateImageName] as? String)
+                            actionIcon: actionIcon)
     }
     
     private static func getButtonType(info: [AnyHashable: Any]) -> ButtonType {
@@ -120,12 +120,13 @@ struct NotificationContentParser {
     
     @available(iOS 15.0, *)
     private static func getNotificationIcon(forActionButton button: ActionButton) -> UNNotificationActionIcon? {
-        if let systemImageName = button.systemImageName {
-            return UNNotificationActionIcon(systemImageName: systemImageName)
-        } else if let templateImageName = button.templateImageName {
-            return UNNotificationActionIcon(templateImageName: templateImageName)
-        } else {
+        guard let actionIcon = button.actionIcon else {
             return nil
+        }
+        if actionIcon.iconType == .systemImage {
+            return UNNotificationActionIcon(systemImageName: actionIcon.imageName)
+        } else {
+            return UNNotificationActionIcon(templateImageName: actionIcon.imageName)
         }
     }
     
@@ -143,7 +144,24 @@ struct NotificationContentParser {
         let requiresUnlock: Bool
         let textInputTitle: String?
         let textInputPlaceholder: String?
-        let systemImageName: String?
-        let templateImageName: String?
+        let actionIcon: ActionIcon?
+    }
+
+    private enum ActionIconType: String, Codable {
+        case systemImage
+        case templateImage
+    }
+
+    private struct ActionIcon: Codable {
+        let iconType: ActionIconType
+        let imageName: String
+        
+        static func from(json: [AnyHashable: Any]) -> ActionIcon? {
+            guard let data = try? JSONSerialization.data(withJSONObject: json, options: []) else {
+                return nil
+            }
+            return try? JSONDecoder().decode(ActionIcon.self, from: data)
+        }
     }
 }
+
