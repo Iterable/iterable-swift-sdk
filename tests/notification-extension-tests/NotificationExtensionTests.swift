@@ -9,7 +9,7 @@ import UniformTypeIdentifiers
 
 @testable import IterableAppExtensions
 
-class NotificationExtensionSwiftTests: XCTestCase {
+class NotificationExtensionTests: XCTestCase {
     private var appExtension: ITBNotificationServiceExtension!
     private let delay = 0.05
     private let timeout = 15.0

@@ -135,7 +135,7 @@
 		AC845107228DF54E0052BB8F /* ApiClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC845106228DF54E0052BB8F /* ApiClient.swift */; };
 		AC84510922910A0C0052BB8F /* RequestCreator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC84510822910A0C0052BB8F /* RequestCreator.swift */; };
 		AC84EC3726C136F3007FBEF7 /* NotificationContentParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC84EC3626C136F3007FBEF7 /* NotificationContentParser.swift */; };
-		AC85A749216D24F4005241AE /* NotificationExtensionSwiftTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC85A748216D24F4005241AE /* NotificationExtensionSwiftTests.swift */; };
+		AC85A749216D24F4005241AE /* NotificationExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC85A748216D24F4005241AE /* NotificationExtensionTests.swift */; };
 		AC87172621A4E47E00FEA369 /* TestInAppPayloadGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */; };
 		AC8874AA22178BD80075B54B /* InAppContentParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8874A922178BD80075B54B /* InAppContentParser.swift */; };
 		AC89661E2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC89661D2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift */; };
@@ -491,7 +491,7 @@
 		AC845106228DF54E0052BB8F /* ApiClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiClient.swift; sourceTree = "<group>"; };
 		AC84510822910A0C0052BB8F /* RequestCreator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestCreator.swift; sourceTree = "<group>"; };
 		AC84EC3626C136F3007FBEF7 /* NotificationContentParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationContentParser.swift; sourceTree = "<group>"; };
-		AC85A748216D24F4005241AE /* NotificationExtensionSwiftTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationExtensionSwiftTests.swift; sourceTree = "<group>"; };
+		AC85A748216D24F4005241AE /* NotificationExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationExtensionTests.swift; sourceTree = "<group>"; };
 		AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestInAppPayloadGenerator.swift; sourceTree = "<group>"; };
 		AC8874A922178BD80075B54B /* InAppContentParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppContentParser.swift; sourceTree = "<group>"; };
 		AC89661D2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAutoRegistrationTests.swift; sourceTree = "<group>"; };
@@ -1082,7 +1082,7 @@
 			isa = PBXGroup;
 			children = (
 				AC0674E720D87D5B00C2806D /* Helper Files */,
-				AC85A748216D24F4005241AE /* NotificationExtensionSwiftTests.swift */,
+				AC85A748216D24F4005241AE /* NotificationExtensionTests.swift */,
 				AC9A49AC20F419AA0007A5A2 /* TestFileTests.swift */,
 			);
 			path = "notification-extension-tests";
@@ -1875,7 +1875,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AC85A749216D24F4005241AE /* NotificationExtensionSwiftTests.swift in Sources */,
+				AC85A749216D24F4005241AE /* NotificationExtensionTests.swift in Sources */,
 				AC9A49AE20F41B520007A5A2 /* TestFileTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
