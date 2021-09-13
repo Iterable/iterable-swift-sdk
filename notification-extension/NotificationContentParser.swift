@@ -60,14 +60,14 @@ struct NotificationContentParser {
             }
         } else {
             if #available(iOS 15.0, *) {
-                return UNTextInputNotificationAction(identifier: button.identifier,
-                                                     title: button.title,
-                                                     options: getOptions(forActionButton: button),
-                                                     icon: getNotificationIcon(forActionButton: button))
+                return UNNotificationAction(identifier: button.identifier,
+                                            title: button.title,
+                                            options: getOptions(forActionButton: button),
+                                            icon: getNotificationIcon(forActionButton: button))
             } else {
-                return UNTextInputNotificationAction(identifier: button.identifier,
-                                                     title: button.title,
-                                                     options: getOptions(forActionButton: button))
+                return UNNotificationAction(identifier: button.identifier,
+                                            title: button.title,
+                                            options: getOptions(forActionButton: button))
             }
         }
     }
