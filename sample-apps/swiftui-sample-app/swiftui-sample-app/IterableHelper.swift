@@ -10,13 +10,15 @@ class IterableHelper {
     #error("Please add your API Key here")
     private static let apiKey = ""
     
-    static func initialize() {
+    static func initialize(launchOptions: [UIApplication.LaunchOptionsKey : Any]?) {
         let config = IterableConfig()
         // urlDelegate and customActionDelegate must be strong references
         // otherwise they will be deallocated
         config.urlDelegate = urlDelegate
         config.customActionDelegate = customActionDelegate
-        IterableAPI.initialize(apiKey: apiKey, config: config)
+        IterableAPI.initialize(apiKey: apiKey,
+                               launchOptions: launchOptions,
+                               config: config)
     }
     
     static func login(email: String) {
@@ -43,7 +45,7 @@ class IterableHelper {
     }
     
     /// Pass deeplinks to iterable
-    static func handle(universalLink url: URL) {
+    static func handle(universalLink url: URL) -> Bool {
         IterableAPI.handle(universalLink: url)
     }
     
