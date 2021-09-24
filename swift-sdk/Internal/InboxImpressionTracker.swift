@@ -5,7 +5,7 @@
 import Foundation
 
 public class InboxImpressionTracker {
-    public struct Impression {
+    struct Impression {
         let messageId: String
         let silentInbox: Bool
         let displayCount: Int
