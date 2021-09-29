@@ -644,6 +644,16 @@ public final class IterableAPI: NSObject {
         internalImplementation?.inAppConsume(message: message, location: location, source: source)
     }
     
+    /// Tracks analytics data from a session of using an inbox UI
+    /// NOTE: this is not normally used publicly, but is needed for our React Native SDK implementation
+    ///
+    /// - Parameters:
+    ///     - inboxSession: the inbox session data type to track
+    @objc(trackInboxSession:)
+    public static func track(inboxSession: IterableInboxSession) {
+        internalImplementation?.track(inboxSession: inboxSession)
+    }
+    
     // MARK: - Private/Internal
     
     static var internalImplementation: InternalIterableAPI?

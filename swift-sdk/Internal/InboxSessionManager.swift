@@ -4,17 +4,17 @@
 
 import Foundation
 
-class InboxSessionManager {
-    struct SessionInfo {
-        let startInfo: SessionStartInfo
-        let impressions: [InboxImpressionTracker.Impression]
+public class InboxSessionManager {
+    public struct SessionInfo {
+        public let startInfo: SessionStartInfo
+        public let impressions: [InboxImpressionTracker.Impression]
     }
     
-    struct SessionStartInfo {
-        let id: String
-        let startTime: Date
-        let totalMessageCount: Int
-        let unreadMessageCount: Int
+    public struct SessionStartInfo {
+        public let id: String
+        public let startTime: Date
+        public let totalMessageCount: Int
+        public let unreadMessageCount: Int
     }
     
     var sessionStartInfo: SessionStartInfo?
@@ -25,11 +25,11 @@ class InboxSessionManager {
         sessionStartInfo != nil
     }
     
-    init(provideInAppManager: @escaping @autoclosure () -> IterableInAppManagerProtocol = IterableAPI.inAppManager) {
+    public init(provideInAppManager: @escaping @autoclosure () -> IterableInAppManagerProtocol = IterableAPI.inAppManager) {
         self.provideInAppManager = provideInAppManager
     }
     
-    func updateVisibleRows(visibleRows: [InboxImpressionTracker.RowInfo]) {
+    public func updateVisibleRows(visibleRows: [InboxImpressionTracker.RowInfo]) {
         guard let impressionTracker = impressionTracker else {
             ITBError("Expecting impressionTracker here.")
             return
@@ -38,7 +38,7 @@ class InboxSessionManager {
         impressionTracker.updateVisibleRows(visibleRows: visibleRows)
     }
     
-    func startSession(visibleRows: [InboxImpressionTracker.RowInfo]) {
+    public func startSession(visibleRows: [InboxImpressionTracker.RowInfo]) {
         ITBInfo()
         
         guard isTracking == false else {
@@ -56,7 +56,7 @@ class InboxSessionManager {
         updateVisibleRows(visibleRows: visibleRows)
     }
     
-    func endSession() -> SessionInfo? {
+    public func endSession() -> SessionInfo? {
         guard let sessionStartInfo = sessionStartInfo, let impressionTracker = impressionTracker else {
             ITBError("Session ended without start")
             return nil
