@@ -6,15 +6,15 @@ import Foundation
 
 public class InboxSessionManager {
     public struct SessionInfo {
-        let startInfo: SessionStartInfo
-        let impressions: [InboxImpressionTracker.Impression]
+        public let startInfo: SessionStartInfo
+        public let impressions: [InboxImpressionTracker.Impression]
     }
     
     public struct SessionStartInfo {
-        let id: String
-        let startTime: Date
-        let totalMessageCount: Int
-        let unreadMessageCount: Int
+        public let id: String
+        public let startTime: Date
+        public let totalMessageCount: Int
+        public let unreadMessageCount: Int
     }
     
     var sessionStartInfo: SessionStartInfo?

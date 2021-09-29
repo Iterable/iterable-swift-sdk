@@ -5,13 +5,13 @@
 import Foundation
 
 public class InboxImpressionTracker {
-    struct Impression {
+    public struct Impression {
         let messageId: String
         let silentInbox: Bool
         let displayCount: Int
         let duration: TimeInterval
         
-        func toIterableInboxImpression() -> IterableInboxImpression {
+        public func toIterableInboxImpression() -> IterableInboxImpression {
             IterableInboxImpression(messageId: messageId, silentInbox: silentInbox, displayCount: displayCount, displayDuration: duration)
         }
         
