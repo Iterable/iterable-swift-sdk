@@ -5,7 +5,7 @@
 import Foundation
 
 /// Encapsulates an Inbox impression of a message
-class IterableInboxImpression: NSObject, Codable {
+public class IterableInboxImpression: NSObject, Codable {
     /// The message ID of message
     public let messageId: String
     
@@ -30,7 +30,7 @@ class IterableInboxImpression: NSObject, Codable {
 }
 
 /// Encapsulates Inbox Session
-final class IterableInboxSession: NSObject, Codable {
+final public class IterableInboxSession: NSObject, Codable {
     /// UUID of the session
     public let id: String?
     
