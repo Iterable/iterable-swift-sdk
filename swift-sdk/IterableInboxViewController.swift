@@ -514,6 +514,7 @@ extension UITableView {
             titleLabel = UILabel()
             emptyView.addSubview(titleLabel!)
             titleLabel?.translatesAutoresizingMaskIntoConstraints = false
+            titleLabel?.textAlignment = .center
             titleLabel?.textColor = UIColor.black
             titleLabel?.font = UIFont(name: "HelveticaNeue-Bold", size: 20)
             titleLabel?.text = title
