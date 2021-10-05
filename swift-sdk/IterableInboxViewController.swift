@@ -385,12 +385,11 @@ extension IterableInboxViewController: InboxViewControllerViewModelView {
     private func updateUnreadBadgeCount() {
         let unreadCount = viewModel.unreadCount
         let badgeUnreadCount = unreadCount == 0 ? nil : "\(unreadCount)"
-        let badgeUnreadIndicator = unreadCount == 0 ? nil : ""
         
         if showCountInUnreadBadge {
             navigationController?.tabBarItem?.badgeValue = badgeUnreadCount
         } else {
-            navigationController?.tabBarItem?.badgeValue = badgeUnreadIndicator
+            navigationController?.tabBarItem?.badgeValue = nil
         }
     }
     
