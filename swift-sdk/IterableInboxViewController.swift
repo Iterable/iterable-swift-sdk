@@ -67,7 +67,10 @@ open class IterableInboxViewController: UITableViewController {
 
     /// Use this to set the message to show when there are no message in the inbox.
     @IBInspectable public var noMessagesBody: String? = nil
-
+    
+    /// If `true`, the inbox badge will show a number when there are any unread messages in the inbox.
+    /// If `false` it will simply show an indicator if there are any unread messages in the inbox.
+    @IBInspectable public var showCountInUnreadBadge: Bool = true
     
     /// when in popup mode, specify here if you'd like to change the presentation style
     public var popupModalPresentationStyle: UIModalPresentationStyle? = nil
@@ -381,8 +384,13 @@ extension IterableInboxViewController: InboxViewControllerViewModelView {
     
     private func updateUnreadBadgeCount() {
         let unreadCount = viewModel.unreadCount
-        let badgeValue = unreadCount == 0 ? nil : "\(unreadCount)"
-        navigationController?.tabBarItem?.badgeValue = badgeValue
+        let badgeUnreadCount = unreadCount == 0 ? nil : "\(unreadCount)"
+        
+        if showCountInUnreadBadge {
+            navigationController?.tabBarItem?.badgeValue = badgeUnreadCount
+        } else {
+            navigationController?.tabBarItem?.badgeValue = nil
+        }
     }
     
     private func updateTableView(diffs: [RowDiff]) {
