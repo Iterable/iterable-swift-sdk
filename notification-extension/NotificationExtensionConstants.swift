@@ -13,8 +13,7 @@ public enum JsonKey {
         static let requiresUnlock = "requiresUnlock"
         static let inputTitle = "inputTitle"
         static let inputPlaceholder = "inputPlaceholder"
-        static let systemImageName = "systemImageName"
-        static let templateImageName = "templateImageName"
+        static let actionIcon = "actionIcon"
     }
     
     public enum Payload {
