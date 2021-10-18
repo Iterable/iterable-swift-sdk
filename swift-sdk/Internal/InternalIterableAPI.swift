@@ -58,6 +58,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     var auth: Auth {
         Auth(userId: userId, email: email, authToken: authManager.getAuthToken())
     }
+
+    var dependencyContainer: DependencyContainerProtocol
     
     lazy var inAppManager: IterableInternalInAppManagerProtocol = {
         self.dependencyContainer.createInAppManager(config: self.config,
@@ -376,9 +378,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     private let inAppDisplayer: InAppDisplayerProtocol
     private var notificationStateProvider: NotificationStateProviderProtocol
     private var localStorage: LocalStorageProtocol
-    var networkSession: NetworkSessionProtocol
+    private var networkSession: NetworkSessionProtocol
     private var urlOpener: UrlOpenerProtocol
-    private var dependencyContainer: DependencyContainerProtocol
     
     private var deepLinkManager: IterableDeepLinkManager
     

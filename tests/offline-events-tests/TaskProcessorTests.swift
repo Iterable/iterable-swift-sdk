@@ -47,7 +47,7 @@ class TaskProcessorTests: XCTestCase {
         let found = try persistenceProvider.mainQueueContext().findTask(withId: taskId)!
         
         // process data
-        let processor = IterableAPICallTaskProcessor(networkSession: internalAPI.networkSession)
+        let processor = IterableAPICallTaskProcessor(networkSession: networkSession)
         try processor.process(task: found).onSuccess { _ in
             let request = networkSession.getRequest(withEndPoint: Const.Path.trackEvent)!
             let body = request.httpBody!.json() as! [String: Any]
