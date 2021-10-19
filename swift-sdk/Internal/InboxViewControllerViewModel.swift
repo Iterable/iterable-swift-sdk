@@ -14,7 +14,47 @@ enum RowDiff {
     case sectionUpdate(IndexSet)
 }
 
+protocol InboxViewControllerViewModelInputProtocol {
+    var apiInitialized: Bool { get }
+    
+    var networkSession: NetworkSessionProtocol? { get }
+    
+    var inAppManager: IterableInternalInAppManagerProtocol? { get }
+    
+    func track(inboxSession: IterableInboxSession)
+}
+
+class InboxViewControllerViewModelInput: InboxViewControllerViewModelInputProtocol {
+    var apiInitialized: Bool {
+        internalAPI != nil
+    }
+    
+    var networkSession: NetworkSessionProtocol? {
+        internalAPI?.dependencyContainer.networkSession
+    }
+    
+    var inAppManager: IterableInternalInAppManagerProtocol? {
+        internalAPI?.inAppManager
+    }
+
+    func track(inboxSession: IterableInboxSession) {
+        internalAPI?.track(inboxSession: inboxSession)
+    }
+    
+    init(internalAPIProvider: @escaping @autoclosure () -> InternalIterableAPI? = IterableAPI.internalImplementation) {
+        self.internalAPIProvider = internalAPIProvider
+    }
+
+    /// We can't use a lazy variable here. Since in the beginning value will be null
+    private var internalAPI: InternalIterableAPI? {
+        internalAPIProvider()
+    }
+
+    private var internalAPIProvider: () -> InternalIterableAPI?
+}
+
 class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
+    
     init(internalAPIProvider: @escaping @autoclosure () -> InternalIterableAPI? = IterableAPI.internalImplementation) {
         ITBInfo()
         
