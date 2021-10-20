@@ -7,26 +7,48 @@ struct ContentView: View {
   @State
   private var buttonText = "Login"
   
+  @State
+  private var selectedTab: SelectedTab = .home
+  
   var body: some View {
-    NavigationView {
-      CoffeeListView(coffees: Coffee.all)
-        .toolbar {
-          ToolbarItem(placement: .navigationBarTrailing) {
-            Button(action: login) {
-              VStack {
-                Image(systemName: "person.circle")
-                Text(buttonText)
+    TabView(selection: $selectedTab) {
+      NavigationView {
+        CoffeeListView(coffees: Coffee.all)
+          .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+              Button(action: login) {
+                VStack {
+                  Image(systemName: "person.circle")
+                  Text(buttonText)
+                }
               }
             }
           }
-        }
-        .navigationTitle("Our Coffees")
+          .navigationTitle("Our Coffees")
+      }
+      .tabItem {
+        Image(systemName: "house")
+        Text("Coffees")
+      }
+      .tag(SelectedTab.home)
+      
+      NavigationView {
+        InboxView()
+      }
+      .tabItem {
+        Image(systemName: "envelope")
+        Text("Inbox")
+      }
+      .tag(SelectedTab.inbox)
     }
     .onAppear {
       buttonText = (AppModel.shared.email == nil) ? "Login" : "Logout"
     }
     .onReceive(AppModel.shared.$email) { email in
       buttonText = (email == nil) ? "Login" : "Logout"
+    }
+    .onReceive(AppModel.shared.$selectedTab) { tab in
+      selectedTab = tab ?? .home
     }
     .sheet(isPresented: $presentingLogin) {
       LoginView(isPresented: $presentingLogin)
