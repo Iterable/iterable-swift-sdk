@@ -8,7 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - Fixed the alignment of the no messages title on the inbox empty state
 
 #### Changed
-- Wrapped various app extension unsafe classes
+- Wrapped various app extension unsafe classes for Xcode 13 compatibility
 
 #### Added
 - Added ability to not show the unread count badge
