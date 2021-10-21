@@ -138,9 +138,11 @@ struct MessagesObtainedHandler {
             }
         }
         
+        let deliveredMessages = addedMessages.filter { $0.read != true }
+        
         return MergeMessagesResult(inboxChanged: removedInboxCount + addedInboxCount + messagesOverwritten > 0,
                                    messagesMap: newMessagesMap,
-                                   deliveredMessages: addedMessages)
+                                   deliveredMessages: deliveredMessages)
     }
     
     private let messagesMap: OrderedDictionary<String, IterableInAppMessage>
