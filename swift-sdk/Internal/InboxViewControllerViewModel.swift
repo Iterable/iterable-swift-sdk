@@ -134,7 +134,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     private func loadImage(forMessageId messageId: String, fromUrl url: URL) {
-        if let networkSession = internalAPI?.networkSession {
+        if let networkSession = internalAPI?.dependencyContainer.networkSession {
             NetworkHelper.getData(fromUrl: url, usingSession: networkSession).onSuccess { [weak self] in
                 self?.setImageData($0, forMessageId: messageId)
             }.onError {

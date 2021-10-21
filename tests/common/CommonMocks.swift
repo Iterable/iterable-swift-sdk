@@ -561,10 +561,6 @@ class MockWebView: WebViewProtocol {
     }
 }
 
-struct MockInjectedDependencyModule {
-    let webView: WebViewProtocol
-}
-
 class MockLocalStorage: LocalStorageProtocol {
     var userId: String? = nil
     
