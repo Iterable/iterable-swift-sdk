@@ -2,6 +2,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.3.4
+#### Fixed
+- When syncing in-app queues, new messages that already have `read` set to `true` will not spawn an `InAppDelivery` event
+- Fixed the alignment of the no messages title on the inbox empty state
+
+#### Changed
+- Wrapped various app extension unsafe classes for Xcode 13 compatibility
+
+#### Added
+- Added ability to not show the unread count badge
+
 ## 6.3.3
 #### Changed
 - CocoaPods targets adding this SDK do not require `use_frameworks!` anymore
