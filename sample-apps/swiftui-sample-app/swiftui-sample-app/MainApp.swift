@@ -4,7 +4,7 @@ import SwiftUI
 struct MainApp: App {
   @UIApplicationDelegateAdaptor
   private var appDelegate: AppDelegate
- 
+  
   var body: some Scene {
     WindowGroup {
       ContentView()
@@ -18,7 +18,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     NotificationsHelper.shared.setupNotifications()
     
     IterableHelper.initialize(launchOptions: launchOptions)
-
+    
     return true
   }
   
@@ -29,16 +29,16 @@ class AppDelegate: NSObject, UIApplicationDelegate {
   }
   
   func application(_: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-      IterableHelper.register(token: deviceToken)
+    IterableHelper.register(token: deviceToken)
   }
   
   func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-    fatalError()
+    print("Failed to register token: \(error.localizedDescription)")
   }
   
   func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
     guard let url = userActivity.webpageURL else {
-        return false
+      return false
     }
     
     return IterableHelper.handle(universalLink: url)
