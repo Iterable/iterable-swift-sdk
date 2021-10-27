@@ -1,10 +1,11 @@
-//
-//  Copyright © 2018 Iterable. All rights reserved.
+//  Created by Tapash Majumder on 10/27/21.
+//  Copyright © 2021 Iterable. All rights reserved.
 //
 
 import Foundation
 
-struct UserDefaultsLocalStorage: LocalStorageProtocol {
+/// This is Iterable encapsulation around UserDefaults
+class IterableUserDefaults {
     init(userDefaults: UserDefaults = UserDefaults.standard) {
         self.userDefaults = userDefaults
     }
@@ -102,7 +103,7 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
         let envelope = try JSONDecoder().decode(Envelope.self, from: encodedEnvelope)
         let decoded = try JSONSerialization.jsonObject(with: envelope.payload, options: []) as? [AnyHashable: Any]
         
-        if UserDefaultsLocalStorage.isExpired(expiration: envelope.expiration, currentDate: currentDate) {
+        if Self.isExpired(expiration: envelope.expiration, currentDate: currentDate) {
             return nil
         } else {
             return decoded
@@ -118,7 +119,7 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
         
         let decoded = try JSONDecoder().decode(T.self, from: envelope.payload)
         
-        if UserDefaultsLocalStorage.isExpired(expiration: envelope.expiration, currentDate: currentDate) {
+        if Self.isExpired(expiration: envelope.expiration, currentDate: currentDate) {
             return nil
         } else {
             return decoded

@@ -91,6 +91,7 @@
 		AC50865624C603AC001DC132 /* IterablePersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC50865524C603AC001DC132 /* IterablePersistence.swift */; };
 		AC50865824C60426001DC132 /* IterableTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC50865724C60426001DC132 /* IterableTask.swift */; };
 		AC50865A24C60572001DC132 /* IterableCoreDataPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC50865924C60572001DC132 /* IterableCoreDataPersistence.swift */; };
+		AC52C5B62729CE44000DCDCF /* IterableUserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC52C5B52729CE44000DCDCF /* IterableUserDefaults.swift */; };
 		AC5812F624F3A90F007E6D36 /* OfflineRequestProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5812F524F3A90F007E6D36 /* OfflineRequestProcessor.swift */; };
 		AC5812F824F3AE8D007E6D36 /* RequestHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5812F724F3AE8D007E6D36 /* RequestHandler.swift */; };
 		AC5E888924E1B7CE00752321 /* OnlineRequestProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5E888824E1B7CE00752321 /* OnlineRequestProcessor.swift */; };
@@ -208,7 +209,7 @@
 		ACDA977923159C7E004C412E /* IterableSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC2263DF20CF49B8009800EB /* IterableSDK.framework */; };
 		ACDA977A23159C7E004C412E /* IterableSDK.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = AC2263DF20CF49B8009800EB /* IterableSDK.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		ACDBB33B239582450036BB38 /* NotificationExtensionConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACDBB33A239582450036BB38 /* NotificationExtensionConstants.swift */; };
-		ACE34AB321376B1000691224 /* UserDefaultsLocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE34AB221376B1000691224 /* UserDefaultsLocalStorage.swift */; };
+		ACE34AB321376B1000691224 /* LocalStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE34AB221376B1000691224 /* LocalStorage.swift */; };
 		ACE34AB5213776CB00691224 /* LocalStorageTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE34AB4213776CB00691224 /* LocalStorageTests.swift */; };
 		ACE34AB72139D70B00691224 /* LocalStorageProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE34AB62139D70B00691224 /* LocalStorageProtocol.swift */; };
 		ACE6888D2228B86C00A95E5E /* InAppInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE6888C2228B86C00A95E5E /* InAppInternal.swift */; };
@@ -448,6 +449,7 @@
 		AC50865524C603AC001DC132 /* IterablePersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterablePersistence.swift; sourceTree = "<group>"; };
 		AC50865724C60426001DC132 /* IterableTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableTask.swift; sourceTree = "<group>"; };
 		AC50865924C60572001DC132 /* IterableCoreDataPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableCoreDataPersistence.swift; sourceTree = "<group>"; };
+		AC52C5B52729CE44000DCDCF /* IterableUserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableUserDefaults.swift; sourceTree = "<group>"; };
 		AC5812F524F3A90F007E6D36 /* OfflineRequestProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineRequestProcessor.swift; sourceTree = "<group>"; };
 		AC5812F724F3AE8D007E6D36 /* RequestHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestHandler.swift; sourceTree = "<group>"; };
 		AC5E888824E1B7CE00752321 /* OnlineRequestProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlineRequestProcessor.swift; sourceTree = "<group>"; };
@@ -556,7 +558,7 @@
 		ACDA977023159C39004C412E /* InboxUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxUITests.swift; sourceTree = "<group>"; };
 		ACDA977223159C39004C412E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		ACDBB33A239582450036BB38 /* NotificationExtensionConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NotificationExtensionConstants.swift; sourceTree = "<group>"; };
-		ACE34AB221376B1000691224 /* UserDefaultsLocalStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsLocalStorage.swift; sourceTree = "<group>"; };
+		ACE34AB221376B1000691224 /* LocalStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorage.swift; sourceTree = "<group>"; };
 		ACE34AB4213776CB00691224 /* LocalStorageTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageTests.swift; sourceTree = "<group>"; };
 		ACE34AB62139D70B00691224 /* LocalStorageProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageProtocol.swift; sourceTree = "<group>"; };
 		ACE6888C2228B86C00A95E5E /* InAppInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppInternal.swift; sourceTree = "<group>"; };
@@ -1182,7 +1184,8 @@
 			isa = PBXGroup;
 			children = (
 				ACE34AB62139D70B00691224 /* LocalStorageProtocol.swift */,
-				ACE34AB221376B1000691224 /* UserDefaultsLocalStorage.swift */,
+				ACE34AB221376B1000691224 /* LocalStorage.swift */,
+				AC52C5B52729CE44000DCDCF /* IterableUserDefaults.swift */,
 			);
 			name = "Local Storage";
 			sourceTree = "<group>";
@@ -1723,6 +1726,7 @@
 				AC4B039622A8743F0043185B /* InAppManager+Functions.swift in Sources */,
 				AC72A0D420CF4D19004D7997 /* IterableDeepLinkManager.swift in Sources */,
 				ACC51A6B22A879070095E81F /* EmptyInAppManager.swift in Sources */,
+				AC52C5B62729CE44000DCDCF /* IterableUserDefaults.swift in Sources */,
 				ACC362BF24D21192002C67BA /* IterableTaskProcessor.swift in Sources */,
 				AC684A86222EF75C00F29749 /* InAppMessageParser.swift in Sources */,
 				AC72A0C920CF4CE2004D7997 /* IterableAction.swift in Sources */,
@@ -1781,7 +1785,7 @@
 				AC72A0CB20CF4CE2004D7997 /* InternalIterableAPI.swift in Sources */,
 				AC72A0C720CF4CE2004D7997 /* CommerceItem.swift in Sources */,
 				AC31B040232AB42100BE25EB /* InboxSessionManager.swift in Sources */,
-				ACE34AB321376B1000691224 /* UserDefaultsLocalStorage.swift in Sources */,
+				ACE34AB321376B1000691224 /* LocalStorage.swift in Sources */,
 				AC8E9268246284F800BEB68E /* DataFieldsHelper.swift in Sources */,
 				AC5E888924E1B7CE00752321 /* OnlineRequestProcessor.swift in Sources */,
 				AC978D3E24FF953C00372B8C /* NetworkConnectivityChecker.swift in Sources */,

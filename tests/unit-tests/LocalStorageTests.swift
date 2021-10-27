@@ -23,7 +23,7 @@ class LocalStorageTests: XCTestCase {
     }
     
     func testUserIdAndEmail() throws {
-        var localStorage = UserDefaultsLocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
+        var localStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
         let userId = "zeeUserId"
         let email = "user@example.com"
         localStorage.userId = userId
@@ -34,7 +34,7 @@ class LocalStorageTests: XCTestCase {
     }
     
     func testDDLChecked() throws {
-        var localStorage = UserDefaultsLocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
+        var localStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
         localStorage.ddlChecked = true
         XCTAssertTrue(localStorage.ddlChecked)
         
@@ -44,7 +44,7 @@ class LocalStorageTests: XCTestCase {
     
     func testAttributionInfo() throws {
         let mockDateProvider = MockDateProvider()
-        let localStorage = UserDefaultsLocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
+        let localStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
         let attributionInfo = IterableAttributionInfo(campaignId: 1, templateId: 2, messageId: "3")
         let currentDate = Date()
         let expiration = Calendar.current.date(byAdding: Calendar.Component.hour, value: 24, to: currentDate)!
@@ -64,7 +64,7 @@ class LocalStorageTests: XCTestCase {
     
     func testPayload() throws {
         let mockDateProvider = MockDateProvider()
-        let localStorage = UserDefaultsLocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
+        let localStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
         let payload: [AnyHashable: Any] = [
             "email": "ilya@iterable.com",
             "device": [
@@ -99,7 +99,7 @@ class LocalStorageTests: XCTestCase {
         class A {}
         
         let mockDateProvider = MockDateProvider()
-        let localStorage = UserDefaultsLocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
+        let localStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
         let payload: [AnyHashable: Any] = [
             "email": "ilya@iterable.com",
             "device": [
@@ -129,21 +129,21 @@ class LocalStorageTests: XCTestCase {
     }
     
     func testDeviceId() {
-        var localStorage = UserDefaultsLocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
+        var localStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
         let deviceId = UUID().uuidString
         localStorage.deviceId = deviceId
         XCTAssertEqual(localStorage.deviceId, deviceId)
     }
     
     func testSdkVersion() {
-        var localStorage = UserDefaultsLocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
+        var localStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
         let sdkVersion = "6.0.2"
         localStorage.sdkVersion = sdkVersion
         XCTAssertEqual(localStorage.sdkVersion, sdkVersion)
     }
     
     func testAuthToken() {
-        var localStorage = UserDefaultsLocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
+        var localStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
         let authToken = "03.10.11"
         localStorage.authToken = authToken
         XCTAssertEqual(localStorage.authToken, authToken)
@@ -184,9 +184,9 @@ class LocalStorageTests: XCTestCase {
     
     private func testLocalStorage<T>(saver: (LocalStorageProtocol, T) -> Void,
                                      retriever: (LocalStorageProtocol) -> T?, value: T) where T: Equatable {
-        let localStorage = UserDefaultsLocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
+        let localStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
         saver(localStorage, value)
-        let retrievedLocalStorage = UserDefaultsLocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
+        let retrievedLocalStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
         let retrieved = retriever(retrievedLocalStorage)
         XCTAssertEqual(value, retrieved)
     }
