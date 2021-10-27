@@ -932,6 +932,13 @@
 			name = Persistence;
 			sourceTree = "<group>";
 		};
+		AC52C5B42729B4A1000DCDCF /* keychain-tests */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "keychain-tests";
+			sourceTree = "<group>";
+		};
 		AC5E888724E1B7AD00752321 /* Request Processing */ = {
 			isa = PBXGroup;
 			children = (
@@ -1003,6 +1010,7 @@
 			children = (
 				AC87172421A4E3FF00FEA369 /* Helper Classes */,
 				00B6FACF210E8B10007535CF /* Test Files */,
+				AC52C5B42729B4A1000DCDCF /* keychain-tests */,
 				AC3A3029262EE04400425435 /* deep-linking-tests */,
 				AC3A3032262EE15C00425435 /* foundational-tests */,
 				AC3A3053262EE1B500425435 /* in-app-tests */,

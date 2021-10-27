@@ -94,7 +94,7 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
     
     private let userDefaults: UserDefaults
     
-    private func dict(withKey key: LocalStorageKey, currentDate: Date) throws -> [AnyHashable: Any]? {
+    private func dict(withKey key: UserDefaultsKey, currentDate: Date) throws -> [AnyHashable: Any]? {
         guard let encodedEnvelope = userDefaults.value(forKey: key.value) as? Data else {
             return nil
         }
@@ -109,7 +109,7 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
         }
     }
     
-    private func codable<T: Codable>(withKey key: LocalStorageKey, currentDate: Date) throws -> T? {
+    private func codable<T: Codable>(withKey key: UserDefaultsKey, currentDate: Date) throws -> T? {
         guard let encodedEnvelope = userDefaults.value(forKey: key.value) as? Data else {
             return nil
         }
@@ -125,11 +125,11 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
         }
     }
     
-    private func string(withKey key: LocalStorageKey) -> String? {
+    private func string(withKey key: UserDefaultsKey) -> String? {
         userDefaults.string(forKey: key.value)
     }
     
-    private func bool(withKey key: LocalStorageKey) -> Bool {
+    private func bool(withKey key: UserDefaultsKey) -> Bool {
         userDefaults.bool(forKey: key.value)
     }
     
@@ -148,7 +148,7 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
         }
     }
     
-    private func save<T: Codable>(codable: T?, withKey key: LocalStorageKey, andExpiration expiration: Date? = nil) throws {
+    private func save<T: Codable>(codable: T?, withKey key: UserDefaultsKey, andExpiration expiration: Date? = nil) throws {
         if let value = codable {
             let data = try JSONEncoder().encode(value)
             try save(data: data, withKey: key, andExpiration: expiration)
@@ -157,7 +157,7 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
         }
     }
     
-    private func save(dict: [AnyHashable: Any]?, withKey key: LocalStorageKey, andExpiration expiration: Date? = nil) throws {
+    private func save(dict: [AnyHashable: Any]?, withKey key: UserDefaultsKey, andExpiration expiration: Date? = nil) throws {
         if let value = dict {
             if JSONSerialization.isValidJSONObject(value) {
                 let data = try JSONSerialization.data(withJSONObject: value, options: [])
@@ -168,15 +168,15 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
         }
     }
     
-    private func save(string: String?, withKey key: LocalStorageKey) {
+    private func save(string: String?, withKey key: UserDefaultsKey) {
         userDefaults.set(string, forKey: key.value)
     }
     
-    private func save(bool: Bool, withKey key: LocalStorageKey) {
+    private func save(bool: Bool, withKey key: UserDefaultsKey) {
         userDefaults.set(bool, forKey: key.value)
     }
     
-    private func save(data: Data?, withKey key: LocalStorageKey, andExpiration expiration: Date?) throws {
+    private func save(data: Data?, withKey key: UserDefaultsKey, andExpiration expiration: Date?) throws {
         guard let data = data else {
             userDefaults.removeObject(forKey: key.value)
             return
@@ -187,23 +187,23 @@ struct UserDefaultsLocalStorage: LocalStorageProtocol {
         userDefaults.set(encodedEnvelope, forKey: key.value)
     }
     
-    private struct LocalStorageKey {
+    private struct UserDefaultsKey {
         let value: String
         
         private init(value: String) {
             self.value = value
         }
         
-        static let payload = LocalStorageKey(value: Const.UserDefault.payloadKey)
-        static let attributionInfo = LocalStorageKey(value: Const.UserDefault.attributionInfoKey)
-        static let email = LocalStorageKey(value: Const.UserDefault.emailKey)
-        static let userId = LocalStorageKey(value: Const.UserDefault.userIdKey)
-        static let authToken = LocalStorageKey(value: Const.UserDefault.authTokenKey)
-        static let ddlChecked = LocalStorageKey(value: Const.UserDefault.ddlChecked)
-        static let deviceId = LocalStorageKey(value: Const.UserDefault.deviceId)
-        static let sdkVersion = LocalStorageKey(value: Const.UserDefault.sdkVersion)
-        static let offlineMode = LocalStorageKey(value: Const.UserDefault.offlineMode)
-        static let offlineModeBeta = LocalStorageKey(value: Const.UserDefault.offlineModeBeta)
+        static let payload = UserDefaultsKey(value: Const.UserDefault.payloadKey)
+        static let attributionInfo = UserDefaultsKey(value: Const.UserDefault.attributionInfoKey)
+        static let email = UserDefaultsKey(value: Const.UserDefault.emailKey)
+        static let userId = UserDefaultsKey(value: Const.UserDefault.userIdKey)
+        static let authToken = UserDefaultsKey(value: Const.UserDefault.authTokenKey)
+        static let ddlChecked = UserDefaultsKey(value: Const.UserDefault.ddlChecked)
+        static let deviceId = UserDefaultsKey(value: Const.UserDefault.deviceId)
+        static let sdkVersion = UserDefaultsKey(value: Const.UserDefault.sdkVersion)
+        static let offlineMode = UserDefaultsKey(value: Const.UserDefault.offlineMode)
+        static let offlineModeBeta = UserDefaultsKey(value: Const.UserDefault.offlineModeBeta)
     }
     
     private struct Envelope: Codable {
