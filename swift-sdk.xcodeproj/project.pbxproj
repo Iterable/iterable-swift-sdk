@@ -92,6 +92,8 @@
 		AC50865824C60426001DC132 /* IterableTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC50865724C60426001DC132 /* IterableTask.swift */; };
 		AC50865A24C60572001DC132 /* IterableCoreDataPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC50865924C60572001DC132 /* IterableCoreDataPersistence.swift */; };
 		AC52C5B62729CE44000DCDCF /* IterableUserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC52C5B52729CE44000DCDCF /* IterableUserDefaults.swift */; };
+		AC52C5B8272A8B32000DCDCF /* KeychainWrapperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC52C5B7272A8B32000DCDCF /* KeychainWrapperTests.swift */; };
+		AC52C5BA272A8BC2000DCDCF /* IterableKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC52C5B9272A8BC2000DCDCF /* IterableKeychain.swift */; };
 		AC5812F624F3A90F007E6D36 /* OfflineRequestProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5812F524F3A90F007E6D36 /* OfflineRequestProcessor.swift */; };
 		AC5812F824F3AE8D007E6D36 /* RequestHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5812F724F3AE8D007E6D36 /* RequestHandler.swift */; };
 		AC5E888924E1B7CE00752321 /* OnlineRequestProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5E888824E1B7CE00752321 /* OnlineRequestProcessor.swift */; };
@@ -450,6 +452,8 @@
 		AC50865724C60426001DC132 /* IterableTask.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableTask.swift; sourceTree = "<group>"; };
 		AC50865924C60572001DC132 /* IterableCoreDataPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableCoreDataPersistence.swift; sourceTree = "<group>"; };
 		AC52C5B52729CE44000DCDCF /* IterableUserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableUserDefaults.swift; sourceTree = "<group>"; };
+		AC52C5B7272A8B32000DCDCF /* KeychainWrapperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainWrapperTests.swift; sourceTree = "<group>"; };
+		AC52C5B9272A8BC2000DCDCF /* IterableKeychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableKeychain.swift; sourceTree = "<group>"; };
 		AC5812F524F3A90F007E6D36 /* OfflineRequestProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineRequestProcessor.swift; sourceTree = "<group>"; };
 		AC5812F724F3AE8D007E6D36 /* RequestHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestHandler.swift; sourceTree = "<group>"; };
 		AC5E888824E1B7CE00752321 /* OnlineRequestProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlineRequestProcessor.swift; sourceTree = "<group>"; };
@@ -854,11 +858,11 @@
 		AC3A3032262EE15C00425435 /* foundational-tests */ = {
 			isa = PBXGroup;
 			children = (
+				AC52C5BB272AA27A000DCDCF /* local-storage-tests */,
 				00B6FACB210E8484007535CF /* APNSTypeCheckerTests.swift */,
 				5531CDAD22A9C992000D05E2 /* ClassExtensionsTests.swift */,
 				55B37FC0229620D20042F13A /* CommerceItemTests.swift */,
 				5536781E2576FF9000DB3652 /* IterableUtilTests.swift */,
-				ACE34AB4213776CB00691224 /* LocalStorageTests.swift */,
 				ACED4C00213F50B30055A497 /* LoggingTests.swift */,
 				55B37FC5229752DD0042F13A /* OrderedDictionaryTests.swift */,
 				ACEDF41E2183C436000B9BFE /* PromiseTests.swift */,
@@ -939,6 +943,15 @@
 			children = (
 			);
 			name = "keychain-tests";
+			sourceTree = "<group>";
+		};
+		AC52C5BB272AA27A000DCDCF /* local-storage-tests */ = {
+			isa = PBXGroup;
+			children = (
+				ACE34AB4213776CB00691224 /* LocalStorageTests.swift */,
+				AC52C5B7272A8B32000DCDCF /* KeychainWrapperTests.swift */,
+			);
+			name = "local-storage-tests";
 			sourceTree = "<group>";
 		};
 		AC5E888724E1B7AD00752321 /* Request Processing */ = {
@@ -1186,6 +1199,7 @@
 				ACE34AB62139D70B00691224 /* LocalStorageProtocol.swift */,
 				ACE34AB221376B1000691224 /* LocalStorage.swift */,
 				AC52C5B52729CE44000DCDCF /* IterableUserDefaults.swift */,
+				AC52C5B9272A8BC2000DCDCF /* IterableKeychain.swift */,
 			);
 			name = "Local Storage";
 			sourceTree = "<group>";
@@ -1728,6 +1742,7 @@
 				ACC51A6B22A879070095E81F /* EmptyInAppManager.swift in Sources */,
 				AC52C5B62729CE44000DCDCF /* IterableUserDefaults.swift in Sources */,
 				ACC362BF24D21192002C67BA /* IterableTaskProcessor.swift in Sources */,
+				AC52C5BA272A8BC2000DCDCF /* IterableKeychain.swift in Sources */,
 				AC684A86222EF75C00F29749 /* InAppMessageParser.swift in Sources */,
 				AC72A0C920CF4CE2004D7997 /* IterableAction.swift in Sources */,
 				AC72A0CA20CF4CE2004D7997 /* IterableActionRunner.swift in Sources */,
@@ -1839,6 +1854,7 @@
 				5585DF8F22A73390000A32B9 /* IterableInboxViewControllerTests.swift in Sources */,
 				55B9F15124B3D33700E8198A /* AuthTests.swift in Sources */,
 				ACED4C01213F50B30055A497 /* LoggingTests.swift in Sources */,
+				AC52C5B8272A8B32000DCDCF /* KeychainWrapperTests.swift in Sources */,
 				ACC3FD9E2536D7A30004A2E0 /* InAppFilePersistenceTests.swift in Sources */,
 				55B37FC42297135F0042F13A /* NotificationMetadataTests.swift in Sources */,
 				55CC257B2462064F00A77FD5 /* InAppPresenterTests.swift in Sources */,
