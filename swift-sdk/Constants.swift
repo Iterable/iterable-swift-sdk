@@ -59,6 +59,10 @@ enum Const {
     
     enum Keychain {
         static let serviceName = "itbl_keychain"
+        
+        enum Key {
+            static let authToken = "itbl_auth_token"
+        }
     }
     
     enum PriorityLevel {

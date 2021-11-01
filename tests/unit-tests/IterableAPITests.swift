@@ -1152,4 +1152,21 @@ class IterableAPITests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
+    
+    
+    func testUpgradeJWTToken() throws {
+        let authToken = "zee-auth-token"
+        let previousKey = Const.UserDefault.authTokenKey
+        let userDefaults = UserDefaults(suiteName: "upgrade.test")!
+        userDefaults.set(authToken, forKey: previousKey)
+        userDefaults.set("some-previous-version", forKey: Const.UserDefault.sdkVersion)
+        let keychainWrapper = KeychainWrapper(serviceName: "upgrade.test")
+        keychainWrapper.removeAll()
+        let keychain = IterableKeychain(wrapper: keychainWrapper)
+        let localStorage = LocalStorage(userDefaults: userDefaults, keychain: keychain)
+        XCTAssertNil(localStorage.authToken)
+        _ = InternalIterableAPI.initializeForTesting(localStorage: localStorage)
+        XCTAssertEqual(localStorage.authToken, authToken)
+        userDefaults.removePersistentDomain(forName: "upgrade.test")
+    }
 }

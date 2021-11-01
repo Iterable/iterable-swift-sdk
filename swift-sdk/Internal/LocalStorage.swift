@@ -5,8 +5,10 @@
 import Foundation
 
 struct LocalStorage: LocalStorageProtocol {
-    init(userDefaults: UserDefaults = UserDefaults.standard) {
+    init(userDefaults: UserDefaults = UserDefaults.standard,
+         keychain: IterableKeychain = IterableKeychain()) {
         iterableUserDefaults = IterableUserDefaults(userDefaults: userDefaults)
+        self.keychain = keychain
     }
     
     var userId: String? {
@@ -27,9 +29,9 @@ struct LocalStorage: LocalStorageProtocol {
     
     var authToken: String? {
         get {
-            iterableUserDefaults.authToken
+            keychain.authToken
         } set {
-            iterableUserDefaults.authToken = newValue
+            keychain.authToken = newValue
         }
     }
     
@@ -90,7 +92,17 @@ struct LocalStorage: LocalStorageProtocol {
         iterableUserDefaults.save(payload: payload, withExpiration: expiration)
     }
     
-    // MARK: Private implementation
+    func upgrade() {
+        ITBInfo()
+        if let userDefaultAuthToken = iterableUserDefaults.authToken, keychain.authToken == nil {
+            keychain.authToken = userDefaultAuthToken
+            iterableUserDefaults.authToken = nil
+            ITBInfo("updated: keychain auth token")
+        }
+    }
+    
+    // MARK: Private
     
     private let iterableUserDefaults: IterableUserDefaults
+    private let keychain: IterableKeychain
 }

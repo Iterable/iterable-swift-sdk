@@ -5,9 +5,30 @@
 import Foundation
 
 class IterableKeychain {
+    var authToken: String? {
+        get {
+            let data = wrapper.data(forKey: Const.Keychain.Key.authToken)
+            return data.flatMap { String(data: $0, encoding: .utf8) }
+        }
+        set {
+            guard let token = newValue,
+                  let data = token.data(using: .utf8) else {
+                      wrapper.removeValue(forKey: Const.Keychain.Key.authToken)
+                      return
+                  }
+            wrapper.set(data, forKey: Const.Keychain.Key.authToken)
+        }
+    }
+    
+    init(wrapper: KeychainWrapper = KeychainWrapper()) {
+        self.wrapper = wrapper
+    }
+    
+    private let wrapper: KeychainWrapper
 }
 
 /// Basic wrapper for keychain
+/// This should have no dependency on Iterable classes
 class KeychainWrapper {
     init(serviceName: String = Const.Keychain.serviceName) {
         self.serviceName = serviceName
@@ -63,11 +84,27 @@ class KeychainWrapper {
         }
     }
     
+    @discardableResult
+    func removeAll() -> Bool {
+        var keychainQueryDictionary: [String: Any] = [SecClass: SecClassGenericPassword]
+        
+        keychainQueryDictionary[SecAttrService] = serviceName
+        
+        let status: OSStatus = SecItemDelete(keychainQueryDictionary as CFDictionary)
+        
+        if status == errSecSuccess {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    
     private let serviceName: String
     
     private func setupKeychainQueryDictionary(forKey key: String) -> [String:Any] {
         // Setup default access as generic password (rather than a certificate, internet password, etc)
-        var keychainQueryDictionary: [String: Any] = [SecClass: kSecClassGenericPassword]
+        var keychainQueryDictionary: [String: Any] = [SecClass: SecClassGenericPassword]
         
         // Uniquely identify this keychain accessor
         keychainQueryDictionary[SecAttrService] = serviceName
@@ -102,6 +139,7 @@ class KeychainWrapper {
     private let SecAttrAccessible: String = kSecAttrAccessible as String
     private let SecAttrAccessibleWhenUnlocked = kSecAttrAccessibleWhenUnlocked
     private let SecClass: String = kSecClass as String
+    private let SecClassGenericPassword = kSecClassGenericPassword
     private let SecAttrService: String = kSecAttrService as String
     private let SecAttrGeneric: String = kSecAttrGeneric as String
     private let SecAttrAccount: String = kSecAttrAccount as String

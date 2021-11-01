@@ -59,4 +59,24 @@ class KeychainWrapperTests: XCTestCase {
         wrapper.removeValue(forKey: key)
         XCTAssertNil(wrapper.data(forKey: key))
     }
+    
+    func testRemoveAll() throws {
+        let wrapper = KeychainWrapper(serviceName: UUID().uuidString)
+        let key1 = "zee-key-1"
+        let key2 = "zee-key-2"
+
+        XCTAssertNil(wrapper.data(forKey:key1))
+        XCTAssertNil(wrapper.data(forKey:key2))
+
+        XCTAssertTrue(wrapper.set("zee value1".data(using: .utf8)!, forKey: key1))
+        XCTAssertTrue(wrapper.set("zee value2".data(using: .utf8)!, forKey: key2))
+
+        XCTAssertNotNil(wrapper.data(forKey:key1))
+        XCTAssertNotNil(wrapper.data(forKey:key2))
+        
+        wrapper.removeAll()
+
+        XCTAssertNil(wrapper.data(forKey: key1))
+        XCTAssertNil(wrapper.data(forKey: key2))
+    }
 }
