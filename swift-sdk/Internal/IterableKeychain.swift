@@ -102,7 +102,7 @@ class KeychainWrapper {
     
     private let serviceName: String
     
-    private func setupKeychainQueryDictionary(forKey key: String) -> [String:Any] {
+    private func setupKeychainQueryDictionary(forKey key: String) -> [String: Any] {
         // Setup default access as generic password (rather than a certificate, internet password, etc)
         var keychainQueryDictionary: [String: Any] = [SecClass: SecClassGenericPassword]
         
