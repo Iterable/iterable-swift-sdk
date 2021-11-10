@@ -10,6 +10,10 @@ import XCTest
 
 // Note: This is used only by swift tests. So can't put this in Common
 class MockNotificationStateProvider: NotificationStateProviderProtocol {
+    func isNotificationsEnabled(withCallback callback: @escaping (Bool) -> Void) {
+        callback(enabled)
+    }
+
     var notificationsEnabled: Bool {
         return enabled
     }

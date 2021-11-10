@@ -10,10 +10,28 @@ import UserNotifications
 protocol NotificationStateProviderProtocol {
     var notificationsEnabled: Bool { get }
     
+    func isNotificationsEnabled(withCallback callback: @escaping (Bool) -> Void)
+    
     func registerForRemoteNotifications()
 }
 
 struct SystemNotificationStateProvider: NotificationStateProviderProtocol {
+    func isNotificationsEnabled(withCallback callback: @escaping (Bool) -> Void) {
+        if #available(iOS 10.0, *) {
+            UNUserNotificationCenter.current().getNotificationSettings { setttings in
+                callback(setttings.authorizationStatus == .authorized)
+            }
+        } else {
+            // Fallback on earlier versions
+            if let currentSettings = AppExtensionHelper.application?.currentUserNotificationSettings,
+               currentSettings.types != [] {
+                callback(true)
+            } else {
+                callback(false)
+            }
+        }
+    }
+    
     var notificationsEnabled: Bool {
         if #available(iOS 10.0, *) {
             var notificationSettings: UNNotificationSettings?
