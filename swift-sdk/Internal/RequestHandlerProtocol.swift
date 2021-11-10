@@ -12,11 +12,10 @@ protocol RequestHandlerProtocol: AnyObject {
     
     func stop()
     
-    @discardableResult
     func register(registerTokenInfo: RegisterTokenInfo,
                   notificationStateProvider: NotificationStateProviderProtocol,
                   onSuccess: OnSuccessHandler?,
-                  onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
+                  onFailure: OnFailureHandler?)
     
     @discardableResult
     func disableDeviceForCurrentUser(hexToken: String,

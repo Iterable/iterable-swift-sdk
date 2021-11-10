@@ -32,15 +32,16 @@ class LegacyRequestHandler: RequestHandlerProtocol {
         ITBInfo()
     }
     
-    @discardableResult
     func register(registerTokenInfo: RegisterTokenInfo,
                   notificationStateProvider: NotificationStateProviderProtocol,
                   onSuccess: OnSuccessHandler? = nil,
-                  onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
-        self.register(registerTokenInfo: registerTokenInfo,
-                      notificationsEnabled: notificationStateProvider.notificationsEnabled,
-                      onSuccess: onSuccess,
-                      onFailure: onFailure)
+                  onFailure: OnFailureHandler? = nil) {
+        notificationStateProvider.isNotificationsEnabled { enabled in
+            self.register(registerTokenInfo: registerTokenInfo,
+                          notificationsEnabled: enabled,
+                          onSuccess: onSuccess,
+                          onFailure: onFailure)
+        }
     }
     
     @discardableResult

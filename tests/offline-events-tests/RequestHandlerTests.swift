@@ -57,21 +57,26 @@ class RequestHandlerTests: XCTestCase {
             "device": deviceDict,
             "email": "user@example.com"
         ]
-        
-        let expectations = createExpectations(description: #function)
-        
-        let requestGenerator = { (requestHandler: RequestHandlerProtocol) in
-            requestHandler.register(registerTokenInfo: registerTokenInfo,
-                                    notificationStateProvider: MockNotificationStateProvider(enabled: true),
-                                    onSuccess: expectations.onSuccess,
-                                    onFailure: expectations.onFailure)
+
+        let expectation1 = expectation(description: #function)
+        let networkSession = MockNetworkSession()
+        let requestHandler = createRequestHandler(networkSession: networkSession,
+                                                  notificationCenter: MockNotificationCenter(),
+                                                  selectOffline: false)
+        requestHandler.register(registerTokenInfo: registerTokenInfo,
+                                notificationStateProvider: MockNotificationStateProvider(enabled: true),
+                                onSuccess: nil,
+                                onFailure: nil)
+
+        networkSession.requestCallback = { request in
+            TestUtils.validate(request: request, apiEndPoint: Endpoint.api, path: Const.Path.registerDeviceToken)
+            var requestBody = request.bodyDict
+            requestBody.removeValue(forKey: "createdAt")
+            XCTAssertTrue(TestUtils.areEqual(dict1: bodyDict, dict2: requestBody))
+            expectation1.fulfill()
         }
-        
-        try handleRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
-                                                path: Const.Path.registerDeviceToken,
-                                                bodyDict: bodyDict)
-        
-        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: testExpectationTimeout)
+
+        wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
     func testDisableUserforCurrentUser() throws {

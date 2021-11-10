@@ -132,15 +132,14 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     // MARK: - API Request Calls
     
-    @discardableResult
     func register(token: Data,
                   onSuccess: OnSuccessHandler? = nil,
-                  onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+                  onFailure: OnFailureHandler? = nil) {
         guard let appName = pushIntegrationName else {
             let errorMessage = "Not registering device token - appName must not be nil"
             ITBError(errorMessage)
             onFailure?(errorMessage, nil)
-            return SendRequestError.createErroredFuture(reason: errorMessage)
+            return
         }
         
         hexToken = token.hexString()
@@ -151,10 +150,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                                   deviceId: deviceId,
                                                   deviceAttributes: deviceAttributes,
                                                   sdkVersion: localStorage.sdkVersion)
-        return requestHandler.register(registerTokenInfo: registerTokenInfo,
-                                         notificationStateProvider: notificationStateProvider,
-                                         onSuccess: onSuccess,
-                                         onFailure: onFailure)
+        requestHandler.register(registerTokenInfo: registerTokenInfo,
+                                notificationStateProvider: notificationStateProvider,
+                                onSuccess: onSuccess,
+                                onFailure: onFailure)
     }
     
     @discardableResult
