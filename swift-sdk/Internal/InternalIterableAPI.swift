@@ -621,7 +621,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     private func performUpgrade(lastVersion _: String, newVersion: String) {
         // do upgrade things here
-        // ....
+        localStorage.upgrade()
+        
         // then set new version
         localStorage.sdkVersion = newVersion
     }

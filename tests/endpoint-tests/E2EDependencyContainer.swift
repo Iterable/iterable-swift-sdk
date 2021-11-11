@@ -24,7 +24,7 @@ class E2EDependencyContainer: DependencyContainerProtocol {
     init(dateProvider: DateProviderProtocol = SystemDateProvider(),
          networkSession: NetworkSessionProtocol = URLSession(configuration: .default),
          notificationStateProvider: NotificationStateProviderProtocol = MockNotificationStateProvider(enabled: true),
-         localStorage: LocalStorageProtocol = UserDefaultsLocalStorage(),
+         localStorage: LocalStorageProtocol = LocalStorage(),
          inAppDisplayer: InAppDisplayerProtocol = InAppDisplayer(),
          inAppPersister: InAppPersistenceProtocol = InAppFilePersister(),
          urlOpener: UrlOpenerProtocol = AppUrlOpener(),

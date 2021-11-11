@@ -57,6 +57,14 @@ enum Const {
         static let attributionInfoExpiration = 24
     }
     
+    enum Keychain {
+        static let serviceName = "itbl_keychain"
+        
+        enum Key {
+            static let authToken = "itbl_auth_token"
+        }
+    }
+    
     enum PriorityLevel {
         static let critical = 100.0
         static let high = 200.0
