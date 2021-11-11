@@ -14,10 +14,6 @@ class MockNotificationStateProvider: NotificationStateProviderProtocol {
         callback(enabled)
     }
 
-    var notificationsEnabled: Bool {
-        return enabled
-    }
-    
     func registerForRemoteNotifications() {
         expectation?.fulfill()
     }
