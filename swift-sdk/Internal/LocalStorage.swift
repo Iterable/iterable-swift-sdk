@@ -94,15 +94,19 @@ struct LocalStorage: LocalStorageProtocol {
     
     func upgrade() {
         ITBInfo()
-        if let userDefaultAuthToken = iterableUserDefaults.authToken, keychain.authToken == nil {
-            keychain.authToken = userDefaultAuthToken
-            iterableUserDefaults.authToken = nil
-            ITBInfo("updated: keychain auth token")
-        }
+        moveJwtFromUserDefaultsToKeychain()
     }
     
     // MARK: Private
     
     private let iterableUserDefaults: IterableUserDefaults
     private let keychain: IterableKeychain
+
+    private func moveJwtFromUserDefaultsToKeychain() {
+        if let userDefaultAuthToken = iterableUserDefaults.authToken, keychain.authToken == nil {
+            keychain.authToken = userDefaultAuthToken
+            iterableUserDefaults.authToken = nil
+            ITBInfo("updated: keychain auth token")
+        }
+    }
 }
