@@ -38,11 +38,10 @@ class RequestHandler: RequestHandlerProtocol {
         }
     }
     
-    @discardableResult
     func register(registerTokenInfo: RegisterTokenInfo,
                   notificationStateProvider: NotificationStateProviderProtocol,
                   onSuccess: OnSuccessHandler?,
-                  onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                  onFailure: OnFailureHandler?) {
         onlineProcessor.register(registerTokenInfo: registerTokenInfo,
                                  notificationStateProvider: notificationStateProvider,
                                  onSuccess: onSuccess,
