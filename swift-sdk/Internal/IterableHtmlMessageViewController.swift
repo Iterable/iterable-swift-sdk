@@ -295,6 +295,42 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
 
         decisionHandler(.cancel)
     }
+    
+    @available(iOS 13.0, *)
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, preferences: WKWebpagePreferences, decisionHandler: @escaping (WKNavigationActionPolicy, WKWebpagePreferences) -> Void) {
+        if #available(iOS 14.0, *) {
+            preferences.allowsContentJavaScript = false
+        }
+        guard navigationAction.navigationType == .linkActivated, let url = navigationAction.request.url else {
+            decisionHandler(.allow, preferences)
+            return
+        }
+        
+        guard let parsed = InAppHelper.parse(inAppUrl: url) else {
+            decisionHandler(.allow, preferences)
+            return
+        }
+        
+        let destinationUrl: String
+        if case let InAppHelper.InAppClickedUrl.localResource(name) = parsed {
+            destinationUrl = name
+        } else {
+            destinationUrl = url.absoluteString
+        }
+        
+        linkClicked = true
+        clickedLink = destinationUrl
+
+        Self.trackClickOnDismiss(internalAPI: internalAPI,
+                                 params: parameters,
+                                 futureClickedURL: futureClickedURL,
+                                 withURL: url,
+                                 andDestinationURL: destinationUrl)
+
+        animateWhileLeaving(webView.position)
+
+        decisionHandler(.cancel, preferences)
+    }
 
     private static func trackClickOnDismiss(internalAPI: InternalIterableAPI?,
                                             params: Parameters,
