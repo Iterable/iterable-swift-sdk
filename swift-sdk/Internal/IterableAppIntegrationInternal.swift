@@ -126,17 +126,20 @@ struct IterableAppIntegrationInternal {
     private let urlDelegate: IterableURLDelegate?
     private let customActionDelegate: IterableCustomActionDelegate?
     private let urlOpener: UrlOpenerProtocol?
+    private let allowedProtocols: [String]
     private weak var inAppNotifiable: InAppNotifiable?
     
     init(tracker: PushTrackerProtocol,
          urlDelegate: IterableURLDelegate? = nil,
          customActionDelegate: IterableCustomActionDelegate? = nil,
          urlOpener: UrlOpenerProtocol? = nil,
+         allowedProtocols: [String] = [],
          inAppNotifiable: InAppNotifiable) {
         self.tracker = tracker
         self.urlDelegate = urlDelegate
         self.customActionDelegate = customActionDelegate
         self.urlOpener = urlOpener
+        self.allowedProtocols = allowedProtocols
         self.inAppNotifiable = inAppNotifiable
     }
     
@@ -225,7 +228,8 @@ struct IterableAppIntegrationInternal {
                                          context: context,
                                          urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate, inContext: context),
                                          customActionHandler: IterableUtil.customActionHandler(fromCustomActionDelegate: customActionDelegate, inContext: context),
-                                         urlOpener: urlOpener)
+                                         urlOpener: urlOpener,
+                                         allowedProtocols: allowedProtocols)
         }
         
         completionHandler?()
@@ -321,7 +325,8 @@ struct IterableAppIntegrationInternal {
                                          context: context,
                                          urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate, inContext: context),
                                          customActionHandler: IterableUtil.customActionHandler(fromCustomActionDelegate: customActionDelegate, inContext: context),
-                                         urlOpener: urlOpener)
+                                         urlOpener: urlOpener,
+                                         allowedProtocols: allowedProtocols)
         }
     }
     

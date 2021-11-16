@@ -20,7 +20,7 @@ struct InAppHelper {
         case localResource(name: String) // applewebdata://abc-def/something => something
         case iterableCustomAction(name: String) // iterable://something => something
         case customAction(name: String) // action:something => something or itbl://something => something
-        case regularUrl(URL) // https://something => https://something
+        case regularUrl(URL) // protocol://something => protocol://something
     }
     
     static func parse(inAppUrl url: URL) -> InAppClickedUrl? {

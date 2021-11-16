@@ -27,7 +27,8 @@ struct IterableActionRunner {
                         context: IterableActionContext,
                         urlHandler: UrlHandler? = nil,
                         customActionHandler: CustomActionHandler? = nil,
-                        urlOpener: UrlOpenerProtocol? = nil) -> Bool {
+                        urlOpener: UrlOpenerProtocol? = nil,
+                        allowedProtocols: [String] = []) -> Bool {
         let handled = callExternalHandlers(action: action,
                                            from: context.source,
                                            urlHandler: urlHandler,
@@ -36,7 +37,9 @@ struct IterableActionRunner {
         if handled {
             return true
         } else {
-            if case let .openUrl(url) = detectActionType(fromAction: action), shouldOpenUrl(url: url, from: context.source), let urlOpener = urlOpener {
+            if case let .openUrl(url) = detectActionType(fromAction: action),
+               shouldOpenUrl(url: url, from: context.source, withAllowedProtocols: allowedProtocols),
+               let urlOpener = urlOpener {
                 urlOpener.open(url: url)
                 return true
             } else {
@@ -71,8 +74,12 @@ struct IterableActionRunner {
         }
     }
     
-    private static func shouldOpenUrl(url: URL, from source: IterableActionSource) -> Bool {
-        if source == .push || source == .inApp, let scheme = url.scheme, scheme == "http" || scheme == "https" {
+    private static func shouldOpenUrl(url: URL,
+                                      from source: IterableActionSource,
+                                      withAllowedProtocols allowedProtocols: [String]) -> Bool {
+        if source == .push || source == .inApp,
+           let scheme = url.scheme,
+           scheme == "https" || allowedProtocols.contains(scheme) {
             return true
         } else {
             return false

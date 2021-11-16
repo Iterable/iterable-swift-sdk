@@ -35,8 +35,8 @@ struct TestInAppPayloadGenerator {
         index
     }
     
-    static func getClickedUrl(index: Int) -> URL {
-        URL(string: getClickedLink(index: index))!
+    static func getClickedUrl(protocol: String = "https", index: Int) -> URL {
+        URL(string: getClickedLink(protocol: `protocol`, index: index))!
     }
     
     static func getCustomActionUrl(index: Int) -> URL {
@@ -51,19 +51,45 @@ struct TestInAppPayloadGenerator {
         (campaignId as? Int) ?? -1
     }
     
-    static func createOneInAppDictWithUrl(index: Int, trigger: IterableInAppTrigger?, expiresAt: Date? = nil, saveToInbox: Bool = false) -> [AnyHashable: Any] {
-        createOneInAppDict(withHref: getClickedLink(index: index), index: index, trigger: trigger, expiresAt: expiresAt, saveToInbox: saveToInbox)
+    static func createOneInAppDictWithUrl(protocol: String = "https",
+                                          index: Int,
+                                          trigger: IterableInAppTrigger? = nil,
+                                          expiresAt: Date? = nil,
+                                          saveToInbox: Bool = false) -> [AnyHashable: Any] {
+        createOneInAppDict(withHref: getClickedLink(protocol: `protocol`, index: index),
+                           index: index,
+                           trigger: trigger,
+                           expiresAt: expiresAt,
+                           saveToInbox: saveToInbox)
     }
     
-    static func createOneInAppDictWithUrl(index: Int, triggerType: IterableInAppTriggerType, expiresAt: Date? = nil, saveToInbox: Bool = false) -> [AnyHashable: Any] {
-        createOneInAppDict(withHref: getClickedLink(index: index), index: index, trigger: trigger(fromTriggerType: triggerType), expiresAt: expiresAt, saveToInbox: saveToInbox)
+    static func createOneInAppDictWithUrl(protocol: String = "https",
+                                          index: Int,
+                                          triggerType: IterableInAppTriggerType = .immediate,
+                                          expiresAt: Date? = nil,
+                                          saveToInbox: Bool = false) -> [AnyHashable: Any] {
+        createOneInAppDict(withHref: getClickedLink(protocol: `protocol`, index: index),
+                           index: index,
+                           trigger: trigger(fromTriggerType: triggerType),
+                           expiresAt: expiresAt,
+                           saveToInbox: saveToInbox)
     }
     
-    static func createOneInAppDictWithCustomAction(index: Int, triggerType: IterableInAppTriggerType, saveToInbox: Bool = false) -> [AnyHashable: Any] {
-        createOneInAppDict(withHref: getCustomActionUrl(index: index).absoluteString, index: index, trigger: trigger(fromTriggerType: triggerType), expiresAt: nil, saveToInbox: saveToInbox)
+    static func createOneInAppDictWithCustomAction(index: Int,
+                                                   triggerType: IterableInAppTriggerType = .immediate,
+                                                   saveToInbox: Bool = false) -> [AnyHashable: Any] {
+        createOneInAppDict(withHref: getCustomActionUrl(index: index).absoluteString,
+                           index: index,
+                           trigger: trigger(fromTriggerType: triggerType),
+                           expiresAt: nil,
+                           saveToInbox: saveToInbox)
     }
     
-    private static func createOneInAppDict(withHref href: String, index: Int, trigger: IterableInAppTrigger?, expiresAt: Date?, saveToInbox: Bool = false) -> [AnyHashable: Any] {
+    private static func createOneInAppDict(withHref href: String,
+                                           index: Int,
+                                           trigger: IterableInAppTrigger?,
+                                           expiresAt: Date?,
+                                           saveToInbox: Bool = false) -> [AnyHashable: Any] {
         var dict = createOneInAppDict(withHref: href, index: index)
         if let expiresAt = expiresAt {
             dict["expiresAt"] = IterableUtil.int(fromDate: expiresAt)
@@ -101,7 +127,8 @@ struct TestInAppPayloadGenerator {
         IterableInAppTrigger(dict: ["type": String(describing: triggerType)])
     }
     
-    private static func getClickedLink(index: Int) -> String {
-        "https://www.site\(index).com"
+    private static func getClickedLink(protocol: String = "https",
+                                       index: Int) -> String {
+        "\(`protocol`)://www.site\(index).com"
     }
 }

@@ -75,7 +75,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     // MARK: - SDK Functions
     
     @discardableResult func handleUniversalLink(_ url: URL) -> Bool {
-        let (result, future) = deepLinkManager.handleUniversalLink(url, urlDelegate: config.urlDelegate, urlOpener: AppUrlOpener())
+        let (result, future) = deepLinkManager.handleUniversalLink(url,
+                                                                   urlDelegate: config.urlDelegate,
+                                                                   urlOpener: AppUrlOpener(),
+                                                                   allowedProtocols: config.allowedProtocols)
         future.onSuccess { attributionInfo in
             if let attributionInfo = attributionInfo {
                 self.attributionInfo = attributionInfo
@@ -546,6 +549,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                                                                urlDelegate: config.urlDelegate,
                                                                                customActionDelegate: config.customActionDelegate,
                                                                                urlOpener: urlOpener,
+                                                                               allowedProtocols: config.allowedProtocols,
                                                                                inAppNotifiable: inAppManager)
         
         handle(launchOptions: launchOptions)
@@ -592,21 +596,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         if let pendingUniversalLink = Self.pendingUniversalLink {
             handleUniversalLink(pendingUniversalLink)
             Self.pendingUniversalLink = nil
-        }
-    }
-    
-    private func handleUrl(urlString: String, fromSource source: IterableActionSource) {
-        guard let action = IterableAction.actionOpenUrl(fromUrlString: urlString) else {
-            ITBError("Could not create action from: \(urlString)")
-            return
-        }
-        
-        let context = IterableActionContext(action: action, source: source)
-        DispatchQueue.main.async {
-            IterableActionRunner.execute(action: action,
-                                         context: context,
-                                         urlHandler: IterableUtil.urlHandler(fromUrlDelegate: self.config.urlDelegate, inContext: context),
-                                         urlOpener: self.urlOpener)
         }
     }
     

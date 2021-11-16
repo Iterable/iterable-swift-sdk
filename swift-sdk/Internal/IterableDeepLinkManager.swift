@@ -9,7 +9,10 @@ class IterableDeepLinkManager: NSObject {
     /// For Iterable links, it will track the click and retrieve the original URL,
     /// pass it to `IterableURLDelegate` for handling
     /// If it's not an Iterable link, it just passes the same URL to `IterableURLDelegate`
-    func handleUniversalLink(_ url: URL, urlDelegate: IterableURLDelegate?, urlOpener: UrlOpenerProtocol) -> (Bool, Future<IterableAttributionInfo?, Error>) {
+    func handleUniversalLink(_ url: URL,
+                             urlDelegate: IterableURLDelegate?,
+                             urlOpener: UrlOpenerProtocol,
+                             allowedProtocols: [String] = []) -> (Bool, Future<IterableAttributionInfo?, Error>) {
         if isIterableDeepLink(url.absoluteString) {
             let future = resolve(appLinkURL: url).map { (resolvedUrl, attributionInfo) -> IterableAttributionInfo? in
                 var resolvedUrlString: String
@@ -26,7 +29,8 @@ class IterableDeepLinkManager: NSObject {
                                                  context: context,
                                                  urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate,
                                                                                      inContext: context),
-                                                 urlOpener: urlOpener)
+                                                 urlOpener: urlOpener,
+                                                 allowedProtocols: allowedProtocols)
                 }
                 
                 return attributionInfo
@@ -42,7 +46,8 @@ class IterableDeepLinkManager: NSObject {
                                                           context: context,
                                                           urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate,
                                                                                               inContext: context),
-                                                          urlOpener: urlOpener)
+                                                          urlOpener: urlOpener,
+                                                          allowedProtocols: allowedProtocols)
                 
                 return (result, Promise<IterableAttributionInfo?, Error>(value: nil))
             } else {

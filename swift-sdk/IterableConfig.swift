@@ -116,4 +116,8 @@ public class IterableConfig: NSObject {
     /// will only apply if token-based authentication is enabled, and the current auth token has
     /// an expiration date field in it
     public var expiringAuthTokenRefreshPeriod: TimeInterval = 60.0
+    
+    /// We allow navigation only to urls with `https` protocol (for deep links within your app or external links).
+    /// If you want to allow other protocols, such as,  `http`, `tel` etc., please add them to the list below
+    public var allowedProtocols: [String] = []
 }
