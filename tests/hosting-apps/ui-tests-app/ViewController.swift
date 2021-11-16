@@ -141,7 +141,7 @@ class ViewController: UIViewController {
         let messageId = "zeeMessageId"
         let html = """
             <body style='height:100px'>
-            <a href="http://website/resource#something">Click Me</a>
+            <a href="https://website/resource#something">Click Me</a>
             <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>
             </body>
         """

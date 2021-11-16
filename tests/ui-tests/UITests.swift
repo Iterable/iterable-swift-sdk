@@ -123,7 +123,7 @@ class UITests: XCTestCase {
     
     // Full Screen
     func testShowInApp5() {
-        inAppTest(buttonName: "Show InApp#5", linkName: "Click Me", expectedCallbackUrl: "http://website/resource#something")
+        inAppTest(buttonName: "Show InApp#5", linkName: "Click Me", expectedCallbackUrl: "https://website/resource#something")
     }
     
     private func inAppTest(buttonName: String, linkName: String, expectedCallbackUrl: String) {
