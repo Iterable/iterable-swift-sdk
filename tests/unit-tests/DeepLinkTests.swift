@@ -44,7 +44,7 @@ class DeepLinkTests: XCTestCase {
         
         _ = deepLinkManager.handleUniversalLink(URL(string: iterableRewriteURL)!,
                                                 urlDelegate: mockUrlDelegate,
-                                            urlOpener: MockUrlOpener())
+                                                urlOpener: MockUrlOpener())
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }

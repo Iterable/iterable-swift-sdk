@@ -43,6 +43,7 @@ extension DependencyContainerProtocol {
                      urlDelegate: config.urlDelegate,
                      customActionDelegate: config.customActionDelegate,
                      urlOpener: urlOpener,
+                     allowedProtocols: config.allowedProtocols,
                      applicationStateProvider: applicationStateProvider,
                      notificationCenter: notificationCenter,
                      dateProvider: dateProvider,

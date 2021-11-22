@@ -111,4 +111,64 @@ class IterableActionRunnerTests: XCTestCase {
         
         XCTAssertNil(action)
     }
+    
+    func testOpenHttpsByDefault() {
+        let urlString = "https://example.com"
+        let action = IterableAction.action(fromDictionary: ["type": "openUrl", "data": urlString])!
+        let context = IterableActionContext(action: action, source: .push)
+        let expectation1 = XCTestExpectation(description: #function)
+        
+        let urlOpener = MockUrlOpener() { url in
+            XCTAssertEqual(url.absoluteString, urlString)
+            expectation1.fulfill()
+        }
+
+        let handled = IterableActionRunner.execute(action: action,
+                                                   context: context,
+                                                   urlHandler: nil,
+                                                   urlOpener: urlOpener)
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+        XCTAssertTrue(handled)
+    }
+
+    func testDoNotOpenHttpByDefault() {
+        let urlString = "http://example.com"
+        let action = IterableAction.action(fromDictionary: ["type": "openUrl", "data": urlString])!
+        let context = IterableActionContext(action: action, source: .push)
+        let expectation1 = XCTestExpectation(description: #function)
+        expectation1.isInverted = true
+        
+        let urlOpener = MockUrlOpener() { url in
+            XCTAssertEqual(url.absoluteString, urlString)
+            expectation1.fulfill()
+        }
+
+        IterableActionRunner.execute(action: action,
+                                     context: context,
+                                     urlHandler: nil,
+                                     urlOpener: urlOpener)
+        
+        wait(for: [expectation1], timeout: testExpectationTimeoutForInverted)
+    }
+
+    func testAllowHttpWhenAllowedProtocolsIsSet() {
+        let urlString = "http://example.com"
+        let action = IterableAction.action(fromDictionary: ["type": "openUrl", "data": urlString])!
+        let context = IterableActionContext(action: action, source: .push)
+        let expectation1 = XCTestExpectation(description: #function)
+        
+        let urlOpener = MockUrlOpener() { url in
+            XCTAssertEqual(url.absoluteString, urlString)
+            expectation1.fulfill()
+        }
+
+        IterableActionRunner.execute(action: action,
+                                     context: context,
+                                     urlHandler: nil,
+                                     urlOpener: urlOpener,
+                                     allowedProtocols: ["http"])
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+    }
 }

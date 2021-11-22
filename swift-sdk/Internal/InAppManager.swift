@@ -36,6 +36,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
          urlDelegate: IterableURLDelegate?,
          customActionDelegate: IterableCustomActionDelegate?,
          urlOpener: UrlOpenerProtocol,
+         allowedProtocols: [String],
          applicationStateProvider: ApplicationStateProviderProtocol,
          notificationCenter: NotificationCenterProtocol,
          dateProvider: DateProviderProtocol,
@@ -51,6 +52,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         self.urlDelegate = urlDelegate
         self.customActionDelegate = customActionDelegate
         self.urlOpener = urlOpener
+        self.allowedProtocols = allowedProtocols
         self.applicationStateProvider = applicationStateProvider
         self.notificationCenter = notificationCenter
         self.dateProvider = dateProvider
@@ -463,7 +465,8 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
                                          context: context,
                                          urlHandler: IterableUtil.urlHandler(fromUrlDelegate: self?.urlDelegate, inContext: context),
                                          customActionHandler: IterableUtil.customActionHandler(fromCustomActionDelegate: self?.customActionDelegate, inContext: context),
-                                         urlOpener: self?.urlOpener)
+                                         urlOpener: self?.urlOpener,
+                                         allowedProtocols: self?.allowedProtocols ?? [])
         }
     }
     
@@ -538,6 +541,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     private let urlDelegate: IterableURLDelegate?
     private let customActionDelegate: IterableCustomActionDelegate?
     private let urlOpener: UrlOpenerProtocol
+    private let allowedProtocols: [String]
     private let applicationStateProvider: ApplicationStateProviderProtocol
     private let notificationCenter: NotificationCenterProtocol
     
