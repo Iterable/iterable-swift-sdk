@@ -770,6 +770,7 @@
 		AC2263E120CF49B8009800EB /* swift-sdk */ = {
 			isa = PBXGroup;
 			children = (
+				AC5C467E2756AEA4000762B6 /* swiftui */,
 				AC72A0BB20CF4C8C004D7997 /* Internal */,
 				AC44C0EB22615F8100E0641D /* Resources */,
 				AC2263F920CF4B63009800EB /* Supporting Files */,
@@ -788,7 +789,6 @@
 				AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */,
 				AC219C48225FD7EB00B98631 /* IterableInboxViewController.swift */,
 				55DD2014269E5A4200773CC7 /* IterableInboxViewControllerViewDelegate.swift */,
-				ACA95D2E2754AA6800AF4666 /* IterableInboxView.swift */,
 				AC3C10F8213F46A900A9B839 /* IterableLogging.swift */,
 				ACA8D1A221910C66001B1332 /* IterableMessaging.swift */,
 				AC78F0E6253D7F09006378A5 /* IterablePushNotificationMetadata.swift */,
@@ -962,6 +962,23 @@
 			name = "local-storage-tests";
 			sourceTree = "<group>";
 		};
+		AC5C467E2756AEA4000762B6 /* swiftui */ = {
+			isa = PBXGroup;
+			children = (
+				AC5C467F2756B065000762B6 /* Internal */,
+				ACA95D2E2754AA6800AF4666 /* IterableInboxView.swift */,
+			);
+			path = swiftui;
+			sourceTree = "<group>";
+		};
+		AC5C467F2756B065000762B6 /* Internal */ = {
+			isa = PBXGroup;
+			children = (
+				ACA95D2C275494A100AF4666 /* InboxViewRepresentable.swift */,
+			);
+			name = Internal;
+			sourceTree = "<group>";
+		};
 		AC5E888724E1B7AD00752321 /* Request Processing */ = {
 			isa = PBXGroup;
 			children = (
@@ -992,7 +1009,6 @@
 		AC72A0BB20CF4C8C004D7997 /* Internal */ = {
 			isa = PBXGroup;
 			children = (
-				ACA95D2B2754942F00AF4666 /* SwiftUI */,
 				AC845105228DF5360052BB8F /* API Client */,
 				AC0248062279132400495FB9 /* Dwifft */,
 				AC2263FA20CF4B84009800EB /* In-App */,
@@ -1145,14 +1161,6 @@
 				ACA8D1A42196309C001B1332 /* Common.swift */,
 			);
 			path = common;
-			sourceTree = "<group>";
-		};
-		ACA95D2B2754942F00AF4666 /* SwiftUI */ = {
-			isa = PBXGroup;
-			children = (
-				ACA95D2C275494A100AF4666 /* InboxViewRepresentable.swift */,
-			);
-			name = SwiftUI;
 			sourceTree = "<group>";
 		};
 		ACC362BB24D21153002C67BA /* Task Processing */ = {
