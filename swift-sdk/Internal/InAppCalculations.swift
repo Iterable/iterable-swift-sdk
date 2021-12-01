@@ -150,22 +150,14 @@ struct InAppCalculations {
     }
     
     static func initialViewBackgroundColor(isModal: Bool) -> UIColor {
-        isModal ? UIColor.clear : systemBackgroundColor
+        isModal ? UIColor.clear : .iterableSystemBackground
     }
     
     static func finalViewBackgroundColor(bgColor: UIColor?, isModal: Bool) -> UIColor {
         if isModal {
             return bgColor ?? UIColor.clear
         } else {
-            return systemBackgroundColor
-        }
-    }
-
-    static var systemBackgroundColor: UIColor {
-        if #available(iOS 14, *) {
-            return UIColor.systemBackground
-        } else {
-            return UIColor.white
+            return .iterableSystemBackground
         }
     }
 }

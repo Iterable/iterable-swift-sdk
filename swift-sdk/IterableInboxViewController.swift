@@ -523,7 +523,7 @@ extension UITableView {
             emptyView.addSubview(titleLabel!)
             titleLabel?.translatesAutoresizingMaskIntoConstraints = false
             titleLabel?.textAlignment = .center
-            titleLabel?.textColor = UIColor.black
+            titleLabel?.textColor = .iterableLabel
             titleLabel?.font = UIFont(name: "HelveticaNeue-Bold", size: 20)
             titleLabel?.text = title
             titleLabel?.widthAnchor.constraint(equalTo: emptyView.widthAnchor, multiplier: 1.0, constant: -20).isActive = true
@@ -537,7 +537,7 @@ extension UITableView {
             let messageLabel = UILabel()
             emptyView.addSubview(messageLabel)
             messageLabel.translatesAutoresizingMaskIntoConstraints = false
-            messageLabel.textColor = UIColor.lightGray
+            messageLabel.textColor = .iterableSecondaryLabel
             messageLabel.font = UIFont(name: "HelveticaNeue-Regular", size: 18)
             messageLabel.text = message
             messageLabel.numberOfLines = 0

@@ -73,7 +73,7 @@ extension IterableInboxCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.systemFont(ofSize: 13.0)
-        label.textColor = UIColor.lightGray
+        label.textColor = .iterableSecondaryLabel
         label.setContentHuggingPriority(UILayoutPriority(rawValue: 249), for: .horizontal)
         label.setContentHuggingPriority(UILayoutPriority(rawValue: 249), for: .vertical)
         label.numberOfLines = 3
@@ -84,7 +84,7 @@ extension IterableInboxCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.systemFont(ofSize: 10.0)
-        label.textColor = UIColor.lightGray
+        label.textColor = .iterableSecondaryLabel
         label.setContentHuggingPriority(UILayoutPriority(rawValue: 249), for: .horizontal)
         label.setContentHuggingPriority(UILayoutPriority(rawValue: 249), for: .vertical)
         return label
