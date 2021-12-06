@@ -204,6 +204,7 @@
 		ACD2B86325B18259005D7A90 /* OfflineModeE2ETests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD2B86225B18259005D7A90 /* OfflineModeE2ETests.swift */; };
 		ACD6116C2107D004003E7F6B /* NetworkHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD6116B2107D004003E7F6B /* NetworkHelper.swift */; };
 		ACD6116E21080564003E7F6B /* IterableAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD6116D21080564003E7F6B /* IterableAPITests.swift */; };
+		ACD8BF862757FC4C00C2EAB2 /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACD8BF852757FC4C00C2EAB2 /* UIColor+Extension.swift */; };
 		ACDA975C23159C37004C412E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACDA975B23159C37004C412E /* AppDelegate.swift */; };
 		ACDA976123159C37004C412E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = ACDA975F23159C37004C412E /* Main.storyboard */; };
 		ACDA976323159C39004C412E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ACDA976223159C39004C412E /* Assets.xcassets */; };
@@ -554,6 +555,7 @@
 		ACD2B86225B18259005D7A90 /* OfflineModeE2ETests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineModeE2ETests.swift; sourceTree = "<group>"; };
 		ACD6116B2107D004003E7F6B /* NetworkHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkHelper.swift; sourceTree = "<group>"; };
 		ACD6116D21080564003E7F6B /* IterableAPITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAPITests.swift; sourceTree = "<group>"; };
+		ACD8BF852757FC4C00C2EAB2 /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
 		ACDA975923159C36004C412E /* inbox-ui-tests-app.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "inbox-ui-tests-app.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ACDA975B23159C37004C412E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		ACDA976023159C37004C412E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -980,6 +982,7 @@
 				AC776DA5211A1B8A00C27C27 /* IterableRequestUtil.swift */,
 				AC72A0AD20CF4C16004D7997 /* IterableUtil.swift */,
 				AC32E16721DD55B900BD4F83 /* OrderedDictionary.swift */,
+				ACD8BF852757FC4C00C2EAB2 /* UIColor+Extension.swift */,
 			);
 			name = Util;
 			sourceTree = "<group>";
@@ -1780,6 +1783,7 @@
 				55B9F15324B6625D00E8198A /* ApiClientProtocol.swift in Sources */,
 				AC219C4D225FE4C000B98631 /* InboxMessageViewModel.swift in Sources */,
 				AC50865A24C60572001DC132 /* IterableCoreDataPersistence.swift in Sources */,
+				ACD8BF862757FC4C00C2EAB2 /* UIColor+Extension.swift in Sources */,
 				AC72A0C820CF4CE2004D7997 /* Constants.swift in Sources */,
 				AC50865824C60426001DC132 /* IterableTask.swift in Sources */,
 				AC2B79F721E6A38900A59080 /* NotificationHelper.swift in Sources */,
