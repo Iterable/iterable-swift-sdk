@@ -13,7 +13,7 @@ class IterableActionRunnerTests: XCTestCase {
     func testUrlOpenAction() {
         validateUrlOpenAction(source: .push)
         validateUrlOpenAction(source: .inApp)
-//        validateUrlOpenAction(source: .universalLink)
+        validateUrlOpenAction(source: .universalLink)
     }
 
     func testUrlHandlingOverride() {
