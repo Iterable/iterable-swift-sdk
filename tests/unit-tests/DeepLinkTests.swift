@@ -110,7 +110,7 @@ class DeepLinkTests: XCTestCase {
         let internalAPI = InternalIterableAPI.initializeForTesting()
         internalAPI.handleUniversalLink(URL(string: iterableRewriteURL)!)
         internalAPI.attributionInfo = nil
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
             XCTAssertEqual(internalAPI.attributionInfo?.campaignId, NSNumber(value: campaignId))
             XCTAssertEqual(internalAPI.attributionInfo?.templateId, NSNumber(value: templateId))
             XCTAssertEqual(internalAPI.attributionInfo?.messageId, messageId)
