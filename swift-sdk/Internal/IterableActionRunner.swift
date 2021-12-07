@@ -77,8 +77,7 @@ struct IterableActionRunner {
     private static func shouldOpenUrl(url: URL,
                                       from source: IterableActionSource,
                                       withAllowedProtocols allowedProtocols: [String]) -> Bool {
-        if source == .push || source == .inApp,
-           let scheme = url.scheme,
+        if let scheme = url.scheme,
            scheme == "https" || allowedProtocols.contains(scheme) {
             return true
         } else {
