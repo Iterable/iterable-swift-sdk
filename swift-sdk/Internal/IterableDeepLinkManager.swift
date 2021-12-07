@@ -42,17 +42,14 @@ class IterableDeepLinkManager: NSObject {
             if let action = IterableAction.actionOpenUrl(fromUrlString: url.absoluteString) {
                 let context = IterableActionContext(action: action, source: .universalLink)
                 
-                let result = IterableActionRunner.execute(action: action,
-                                                          context: context,
-                                                          urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate,
-                                                                                              inContext: context),
-                                                          urlOpener: urlOpener,
-                                                          allowedProtocols: allowedProtocols)
-                
-                return (result, Promise<IterableAttributionInfo?, Error>(value: nil))
-            } else {
-                return (false, Promise<IterableAttributionInfo?, Error>(value: nil))
+                IterableActionRunner.execute(action: action,
+                                             context: context,
+                                             urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate,
+                                                                                 inContext: context),
+                                             urlOpener: urlOpener,
+                                             allowedProtocols: allowedProtocols)
             }
+            return (false, Promise<IterableAttributionInfo?, Error>(value: nil))
         }
     }
     
