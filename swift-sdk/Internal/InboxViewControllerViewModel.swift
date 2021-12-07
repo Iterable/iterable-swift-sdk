@@ -15,7 +15,7 @@ enum RowDiff {
 }
 
 protocol InboxViewControllerViewModelInputProtocol {
-    var apiInitialized: Bool { get }
+    var isReady: Bool { get }
     
     var networkSession: NetworkSessionProtocol? { get }
     
@@ -25,7 +25,7 @@ protocol InboxViewControllerViewModelInputProtocol {
 }
 
 class InboxViewControllerViewModelInput: InboxViewControllerViewModelInputProtocol {
-    var apiInitialized: Bool {
+    var isReady: Bool {
         internalAPI != nil
     }
     
@@ -60,7 +60,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
 
         self.input = input
         
-        if input.apiInitialized {
+        if input.isReady {
             sectionedMessages = sortAndFilter(messages: getMessages())
         }
         
