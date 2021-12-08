@@ -60,7 +60,7 @@ open class IterableInboxViewController: UITableViewController {
     
     /// We default, we don't show any message when inbox is empty.
     /// If you want to show a message, such as, "There are no messages", you will
-    /// have to set the `noMessagesTitle` and  `noMessagesText` properties below.
+    /// have to set the `noMessagesTitle` and  `noMessagesBody` properties below.
 
     /// Use this to set the title to show when there are no message in the inbox.
     @IBInspectable public var noMessagesTitle: String? = nil

@@ -21,7 +21,6 @@
 		AC5C7F6726E749B60067D6D7 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5C7F6626E749B60067D6D7 /* LoginView.swift */; };
 		AC5C7F6926E7738E0067D6D7 /* DeeplinkHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5C7F6826E7738E0067D6D7 /* DeeplinkHandler.swift */; };
 		AC5C7F6B26E778530067D6D7 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC5C7F6A26E778530067D6D7 /* AppModel.swift */; };
-		AC9AF7C2271F20CB00619392 /* InboxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9AF7C1271F20CB00619392 /* InboxView.swift */; };
 		ACEAACBC26EA00BA00D006AF /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEAACBB26EA00BA00D006AF /* NotificationService.swift */; };
 		ACEAACC026EA00BA00D006AF /* notification-extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = ACEAACB926EA00BA00D006AF /* notification-extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		ACEAACC626EA00DF00D006AF /* IterableAppExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = ACEAACC526EA00DF00D006AF /* IterableAppExtensions */; };
@@ -68,7 +67,6 @@
 		AC5C7F6626E749B60067D6D7 /* LoginView.swift */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; tabWidth = 2; };
 		AC5C7F6826E7738E0067D6D7 /* DeeplinkHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeeplinkHandler.swift; sourceTree = "<group>"; };
 		AC5C7F6A26E778530067D6D7 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
-		AC9AF7C1271F20CB00619392 /* InboxView.swift */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.swift; path = InboxView.swift; sourceTree = "<group>"; tabWidth = 2; };
 		ACEAACB426E9FA6100D006AF /* swiftui-sample-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "swiftui-sample-app.entitlements"; sourceTree = "<group>"; };
 		ACEAACB926EA00BA00D006AF /* notification-extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "notification-extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ACEAACBB26EA00BA00D006AF /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
@@ -159,7 +157,6 @@
 		AC5C7F5F26E7361A0067D6D7 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				AC9AF7C0271F200500619392 /* Inbox */,
 				AC59DB0626E0C489002A7E08 /* ContentView.swift */,
 				AC5C7F6026E7364B0067D6D7 /* CoffeeListView.swift */,
 				AC5C7F6226E7370D0067D6D7 /* CoffeeView.swift */,
@@ -167,14 +164,6 @@
 				AC5C7F6626E749B60067D6D7 /* LoginView.swift */,
 			);
 			path = Views;
-			sourceTree = "<group>";
-		};
-		AC9AF7C0271F200500619392 /* Inbox */ = {
-			isa = PBXGroup;
-			children = (
-				AC9AF7C1271F20CB00619392 /* InboxView.swift */,
-			);
-			name = Inbox;
 			sourceTree = "<group>";
 		};
 		ACEAACBA26EA00BA00D006AF /* notification-extension */ = {
@@ -292,7 +281,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC5C7F6126E7364B0067D6D7 /* CoffeeListView.swift in Sources */,
-				AC9AF7C2271F20CB00619392 /* InboxView.swift in Sources */,
 				AC5C7F6326E7370E0067D6D7 /* CoffeeView.swift in Sources */,
 				AC5C7F6B26E778530067D6D7 /* AppModel.swift in Sources */,
 				AC5C7F6526E744700067D6D7 /* CoffeeRow.swift in Sources */,

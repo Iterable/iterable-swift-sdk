@@ -1,4 +1,5 @@
 import SwiftUI
+import IterableSDK
 
 struct ContentView: View {
   @State
@@ -33,7 +34,9 @@ struct ContentView: View {
       .tag(SelectedTab.home)
       
       NavigationView {
-        InboxView()
+        IterableInboxView()
+          .noMessagesTitle("No Messages")
+          .noMessagesBody("Please check back later")
       }
       .tabItem {
         Image(systemName: "envelope")
