@@ -54,9 +54,9 @@ class IterableHtmlMessageViewController: UIViewController {
     
     weak var presenter: InAppPresenter?
     
-    init(parameters: Parameters,
-         internalAPIProvider: @escaping @autoclosure () -> InternalIterableAPI? = IterableAPI.internalImplementation,
-         webViewProvider: @escaping @autoclosure () -> WebViewProtocol = IterableHtmlMessageViewController.createWebView()) {
+    private init(parameters: Parameters,
+                 internalAPIProvider: @escaping @autoclosure () -> InternalIterableAPI? = IterableAPI.internalImplementation,
+                 webViewProvider: @escaping @autoclosure () -> WebViewProtocol = IterableHtmlMessageViewController.createWebView()) {
         ITBInfo()
         self.internalAPIProvider = internalAPIProvider
         self.webViewProvider = webViewProvider
