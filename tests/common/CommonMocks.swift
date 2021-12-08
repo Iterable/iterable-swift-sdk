@@ -373,29 +373,28 @@ class MockInAppDisplayer: InAppDisplayerProtocol {
     }
     
     // This is not resolved until a url is clicked.
-    func showInApp(message: IterableInAppMessage) -> ShowResult {
+    func showInApp(message: IterableInAppMessage, onClickCallback: ((URL) -> Void)?) -> ShowResult {
         guard showing == false else {
             onShow.reject(with: IterableError.general(description: "showing something else"))
             return .notShown("showing something else")
         }
         
-        result = Promise<URL, IterableError>()
-        
         showing = true
+        self.onClickCallback = onClickCallback
         
         onShow.resolve(with: message)
         
-        return .shown(result)
+        return .shown
     }
     
     // Mimics clicking a url
     func click(url: URL) {
         ITBInfo()
         showing = false
-        result.resolve(with: url)
+        onClickCallback?(url)
     }
     
-    private var result = Promise<URL, IterableError>()
+    private var onClickCallback: ((URL) -> Void)?
     private var showing = false
 }
 

@@ -173,20 +173,18 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             return nil
         }
         
-        let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
-                                                                      padding: content.padding,
-                                                                      messageMetadata: IterableInAppMessageMetadata(message: message, location: .inbox),
-                                                                      isModal: inboxMode == .popup,
-                                                                      inboxSessionId: inboxSessionId)
-        let createResult = IterableHtmlMessageViewController.create(parameters: parameters)
-        let viewController = createResult.viewController
-        
-        createResult.futureClickedURL.onSuccess { [weak self] url in
+        let onClickCallback: (URL) -> Void =  { [weak self] url in
             ITBInfo()
             
             // in addition perform action or url delegate task
             self?.handle(clickedUrl: url, forMessage: message, location: .inbox)
         }
+        let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
+                                                                      padding: content.padding,
+                                                                      messageMetadata: IterableInAppMessageMetadata(message: message, location: .inbox),
+                                                                      isModal: inboxMode == .popup,
+                                                                      inboxSessionId: inboxSessionId)
+        let viewController = IterableHtmlMessageViewController.create(parameters: parameters, onClickCallback: onClickCallback)
         
         viewController.navigationItem.title = message.inboxMetadata?.title
         
@@ -299,38 +297,38 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             return
         }
         
-        switch displayer.showInApp(message: message) {
+        let onClickCallback: (URL) -> Void = { [weak self] url in
+            ITBDebug("in-app clicked")
+            
+            // call the client callback, if present
+            _ = callback?(url)
+            
+            // in addition perform action or url delegate task
+            self?.handle(clickedUrl: url, forMessage: message, location: .inApp)
+            
+            // set the dismiss time
+            self?.lastDismissedTime = self?.dateProvider.currentDate
+            ITBDebug("Setting last dismissed time: \(String(describing: self?.lastDismissedTime))")
+            
+            // check if we need to process more in-apps
+            self?.scheduleNextInAppMessage()
+            
+            if consume {
+                self?.requestHandler?.inAppConsume(message.messageId,
+                                                   onSuccess: nil,
+                                                   onFailure: nil)
+            }
+        }
+        
+        switch displayer.showInApp(message: message, onClickCallback: onClickCallback) {
         case let .notShown(reason):
             ITBError("Could not show message: \(reason)")
-        case let .shown(futureClickedURL):
+        case .shown:
             ITBDebug("in-app shown")
             
             set(read: true, forMessage: message)
             
             updateMessage(message, didProcessTrigger: true, consumed: consume)
-            
-            futureClickedURL.onSuccess { [weak self] url in
-                ITBDebug("in-app clicked")
-                
-                // call the client callback, if present
-                _ = callback?(url)
-                
-                // in addition perform action or url delegate task
-                self?.handle(clickedUrl: url, forMessage: message, location: .inApp)
-                
-                // set the dismiss time
-                self?.lastDismissedTime = self?.dateProvider.currentDate
-                ITBDebug("Setting last dismissed time: \(String(describing: self?.lastDismissedTime))")
-                
-                // check if we need to process more in-apps
-                self?.scheduleNextInAppMessage()
-                
-                if consume {
-                    self?.requestHandler?.inAppConsume(message.messageId,
-                                                      onSuccess: nil,
-                                                      onFailure: nil)
-                }
-            }
         }
     }
     

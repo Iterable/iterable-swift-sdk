@@ -10,7 +10,7 @@ import XCTest
 
 class InAppPresenterTests: XCTestCase {
     func testInAppPresenterDelegateExistence() {
-        let htmlMessageViewController = IterableHtmlMessageViewController.create(parameters: getEmptyParameters()).viewController
+        let htmlMessageViewController = IterableHtmlMessageViewController.create(parameters: getEmptyParameters(), onClickCallback: nil)
         
         let inAppPresenter = InAppPresenter(topViewController: UIViewController(),
                                             htmlMessageViewController: htmlMessageViewController)
@@ -55,7 +55,7 @@ class InAppPresenterTests: XCTestCase {
     }
     
     private func getEmptyHtmlMessageViewController() -> IterableHtmlMessageViewController {
-        IterableHtmlMessageViewController.create(parameters: getEmptyParameters()).viewController
+        IterableHtmlMessageViewController.create(parameters: getEmptyParameters(), onClickCallback: nil)
     }
     
     private func getEmptyHtmlInAppContent() -> IterableHtmlInAppContent {
