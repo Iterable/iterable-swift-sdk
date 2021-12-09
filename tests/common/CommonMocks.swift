@@ -391,7 +391,9 @@ class MockInAppDisplayer: InAppDisplayerProtocol {
     func click(url: URL) {
         ITBInfo()
         showing = false
-        onClickCallback?(url)
+        DispatchQueue.main.async { [weak self] in
+            self?.onClickCallback?(url)
+        }
     }
     
     private var onClickCallback: ((URL) -> Void)?

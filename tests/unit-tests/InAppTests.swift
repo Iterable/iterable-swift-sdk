@@ -478,8 +478,8 @@ class InAppTests: XCTestCase {
         let iterableDeleteUrl = "iterable://delete"
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShow.onSuccess { _ in
-            mockInAppDisplayer.click(url: URL(string: iterableDeleteUrl)!)
             expectation1.fulfill()
+            mockInAppDisplayer.click(url: URL(string: iterableDeleteUrl)!)
         }
         
         let config = IterableConfig()
@@ -510,7 +510,7 @@ class InAppTests: XCTestCase {
         mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, payload)
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
-
+        
         let predicate = NSPredicate { (_, _) -> Bool in
             internalApi.inAppManager.getMessages().count == 0
         }
