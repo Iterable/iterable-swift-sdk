@@ -511,7 +511,12 @@ class InAppTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
 
-        XCTAssertEqual(internalApi.inAppManager.getMessages().count, 0)
+        let predicate = NSPredicate { (_, _) -> Bool in
+            internalApi.inAppManager.getMessages().count == 0
+        }
+        
+        let expectation2 = expectation(for: predicate, evaluatedWith: nil, handler: nil)
+        wait(for: [expectation2], timeout: testExpectationTimeout)
     }
 
     func testShowInAppWithIterableCustomActionDismiss() {
