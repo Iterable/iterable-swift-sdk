@@ -33,8 +33,7 @@ class AuthManager: IterableAuthManagerProtocol {
         hasFailedPriorAuth = false
     }
     
-    // @objc attribute only needed for the pre-iOS 10 Timer constructor in queueAuthTokenExpirationRefresh
-    @objc func requestNewAuthToken(hasFailedPriorAuth: Bool = false, onSuccess: AuthTokenRetrievalHandler? = nil) {
+    func requestNewAuthToken(hasFailedPriorAuth: Bool = false, onSuccess: AuthTokenRetrievalHandler? = nil) {
         ITBInfo()
         
         guard !pendingAuth else {
@@ -110,17 +109,8 @@ class AuthManager: IterableAuthManagerProtocol {
         
         let timeIntervalToRefresh = TimeInterval(expirationDate) - dateProvider.currentDate.timeIntervalSince1970 - expirationRefreshPeriod
         
-        if #available(iOS 10.0, *) {
-            expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: timeIntervalToRefresh, repeats: false) { [weak self] _ in
-                self?.requestNewAuthToken(hasFailedPriorAuth: false)
-            }
-        } else {
-            // Fallback on earlier versions
-            expirationRefreshTimer = Timer.scheduledTimer(timeInterval: timeIntervalToRefresh,
-                                                          target: self,
-                                                          selector: #selector(requestNewAuthToken),
-                                                          userInfo: nil,
-                                                          repeats: false)
+        expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: timeIntervalToRefresh, repeats: false) { [weak self] _ in
+            self?.requestNewAuthToken(hasFailedPriorAuth: false)
         }
     }
     
