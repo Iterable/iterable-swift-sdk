@@ -16,7 +16,6 @@ class MockDateProvider: DateProviderProtocol {
     }
 }
 
-@available(iOS 10.0, *)
 struct MockNotificationResponse: NotificationResponseProtocol {
     let userInfo: [AnyHashable: Any]
     let actionIdentifier: String
@@ -81,8 +80,7 @@ public class MockCustomActionDelegate: NSObject, IterableCustomActionDelegate {
 
 @objcMembers
 public class MockUrlOpener: NSObject, UrlOpenerProtocol {
-    var ios10OpenedUrl: URL?
-    var preIos10openedUrl: URL?
+    var openedUrl: URL?
     var callback: ((URL) -> Void)?
     
     public init(callback: ((URL) -> Void)? = nil) {
@@ -91,11 +89,7 @@ public class MockUrlOpener: NSObject, UrlOpenerProtocol {
     
     public func open(url: URL) {
         callback?(url)
-        if #available(iOS 10.0, *) {
-            ios10OpenedUrl = url
-        } else {
-            preIos10openedUrl = url
-        }
+        openedUrl = url
     }
 }
 
