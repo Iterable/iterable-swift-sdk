@@ -36,18 +36,13 @@ class InAppPresenter {
         
         InAppPresenter.isPresenting = true
         
-        if #available(iOS 10.0, *) {
-            DispatchQueue.main.async {
-                self.delayTimer = Timer.scheduledTimer(withTimeInterval: self.maxDelay, repeats: false) { _ in
-                    ITBInfo("delayTimer called")
-                    
-                    self.delayTimer = nil
-                    self.present()
-                }
+        DispatchQueue.main.async {
+            self.delayTimer = Timer.scheduledTimer(withTimeInterval: self.maxDelay, repeats: false) { _ in
+                ITBInfo("delayTimer called")
+                
+                self.delayTimer = nil
+                self.present()
             }
-        } else {
-            // for lack of a better stop-gap, we might as well just present
-            present()
         }
     }
     

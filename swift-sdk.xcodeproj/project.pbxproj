@@ -150,7 +150,6 @@
 		AC90C4CD20D8632E00EECA5D /* IterableAppExtensions.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC90C4C420D8632D00EECA5D /* IterableAppExtensions.framework */; };
 		AC90C4E220D8639E00EECA5D /* ITBNotificationServiceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC90C4E120D8639E00EECA5D /* ITBNotificationServiceExtension.swift */; };
 		AC9355D12589F9F90056C903 /* RequestHandlerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9355D02589F9F90056C903 /* RequestHandlerProtocol.swift */; };
-		AC9355DB2589FC070056C903 /* LegacyRequestHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9355DA2589FC070056C903 /* LegacyRequestHandler.swift */; };
 		AC942BC62539DEDA002988C9 /* ResourceHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC942BC52539DEDA002988C9 /* ResourceHelper.swift */; };
 		AC978D3E24FF953C00372B8C /* NetworkConnectivityChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC978D3D24FF953C00372B8C /* NetworkConnectivityChecker.swift */; };
 		AC995F992166EE490099A184 /* CommonMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F942166EC880099A184 /* CommonMocks.swift */; };
@@ -516,7 +515,6 @@
 		AC90C4D520D8632E00EECA5D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AC90C4E120D8639E00EECA5D /* ITBNotificationServiceExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ITBNotificationServiceExtension.swift; sourceTree = "<group>"; };
 		AC9355D02589F9F90056C903 /* RequestHandlerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestHandlerProtocol.swift; sourceTree = "<group>"; };
-		AC9355DA2589FC070056C903 /* LegacyRequestHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyRequestHandler.swift; sourceTree = "<group>"; };
 		AC942BC52539DEDA002988C9 /* ResourceHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceHelper.swift; sourceTree = "<group>"; };
 		AC978D3D24FF953C00372B8C /* NetworkConnectivityChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkConnectivityChecker.swift; sourceTree = "<group>"; };
 		AC98294A20D9D65E00796DAA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -984,7 +982,6 @@
 		AC5E888724E1B7AD00752321 /* Request Processing */ = {
 			isa = PBXGroup;
 			children = (
-				AC9355DA2589FC070056C903 /* LegacyRequestHandler.swift */,
 				ACD2B83C25B0A74A005D7A90 /* Models.swift */,
 				AC5812F524F3A90F007E6D36 /* OfflineRequestProcessor.swift */,
 				AC5E888824E1B7CE00752321 /* OnlineRequestProcessor.swift */,
@@ -1757,7 +1754,6 @@
 				ACE6888D2228B86C00A95E5E /* InAppInternal.swift in Sources */,
 				AC9355D12589F9F90056C903 /* RequestHandlerProtocol.swift in Sources */,
 				AC1AA1C924EBB3C300F29C6B /* IterableNotifications.swift in Sources */,
-				AC9355DB2589FC070056C903 /* LegacyRequestHandler.swift in Sources */,
 				ACFD5AB324C8179D008E497A /* PersistenceHelper.swift in Sources */,
 				AC72A0CD20CF4CE2004D7997 /* IterableAppIntegration.swift in Sources */,
 				AC72A0CE20CF4CE2004D7997 /* IterableAttributionInfo.swift in Sources */,
@@ -2283,7 +2279,7 @@
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = "swift-sdk/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -2314,7 +2310,7 @@
 				ENABLE_TESTABILITY = YES;
 				INFOPLIST_FILE = "swift-sdk/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
