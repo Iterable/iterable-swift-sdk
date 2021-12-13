@@ -55,12 +55,10 @@ class NetworkConnectivityManager: NSObject {
     private func startTimer() {
         ITBInfo()
         let interval = online ? onlineModePollingInterval : offlineModePollingInterval
-        if #available(iOS 10.0, *) {
-            timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true, block: { [weak self] _ in
-                ITBInfo("timer called")
-                self?.updateStatus()
-            })
-        }
+        timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true, block: { [weak self] _ in
+            ITBInfo("timer called")
+            self?.updateStatus()
+        })
     }
 
     private func stopTimer() {

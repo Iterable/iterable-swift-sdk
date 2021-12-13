@@ -68,11 +68,9 @@ class PollingNetworkMonitor: NetworkMonitorProtocol {
     func start() {
         ITBInfo()
         timer?.invalidate()
-        if #available(iOS 10.0, *) {
-            self.timer = Timer.scheduledTimer(withTimeInterval: pollingInterval, repeats: true) { timer in
-                ITBInfo("Called timer")
-                self.statusUpdatedCallback?()
-            }
+        self.timer = Timer.scheduledTimer(withTimeInterval: pollingInterval, repeats: true) { timer in
+            ITBInfo("Called timer")
+            self.statusUpdatedCallback?()
         }
     }
     
