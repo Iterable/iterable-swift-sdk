@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.author       = { "Tapash Majumder" => "tapash@iterable.com",
                      "Jay Kim" => "jay.kim@iterable.com" }
 
-  s.platform     = :ios, "9.0"
+  s.platform     = :ios, "10.0"
   s.source       = { :git => "https://github.com/Iterable/swift-sdk.git", :tag => s.version }
   s.source_files = "swift-sdk/**/*.{h,m,swift}"
   s.exclude_files = "swift-sdk/swiftui/**"
