@@ -136,12 +136,10 @@ open class IterableInboxViewController: UITableViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = UITableView.automaticDimension
         
-        if #available(iOS 10.0, *) {
-            let refreshControl = UIRefreshControl()
-            refreshControl.attributedTitle = NSAttributedString(string: "Fetching new in-app messages")
-            refreshControl.addTarget(self, action: #selector(handleRefreshControl), for: .valueChanged)
-            tableView.refreshControl = refreshControl
-        }
+        let refreshControl = UIRefreshControl()
+        refreshControl.attributedTitle = NSAttributedString(string: "Fetching new in-app messages")
+        refreshControl.addTarget(self, action: #selector(handleRefreshControl), for: .valueChanged)
+        tableView.refreshControl = refreshControl
         
         cellLoader = CellLoader(viewDelegate: viewDelegate, cellNibName: cellNibName)
         cellLoader.registerCells(forTableView: tableView)
@@ -259,7 +257,6 @@ open class IterableInboxViewController: UITableViewController {
         ITBInfo()
     }
     
-    @available(iOS 10.0, *)
     @objc private func handleRefreshControl() {
         ITBInfo()
         

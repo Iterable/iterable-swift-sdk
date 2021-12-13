@@ -585,9 +585,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     private func handlePendingNotification() {
         if let pendingNotificationResponse = Self.pendingNotificationResponse {
-            if #available(iOS 10.0, *) {
-                IterableAppIntegration.implementation?.userNotificationCenter(nil, didReceive: pendingNotificationResponse, withCompletionHandler: nil)
-            }
+            IterableAppIntegration.implementation?.userNotificationCenter(nil, didReceive: pendingNotificationResponse, withCompletionHandler: nil)
             Self.pendingNotificationResponse = nil
         }
     }

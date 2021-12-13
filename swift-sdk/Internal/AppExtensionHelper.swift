@@ -47,14 +47,10 @@ protocol AppWrapperProtocol {
 @available(iOSApplicationExtension, unavailable)
 class AppWrapper: AppWrapperProtocol {
     func openUrl(url: URL) {
-        if #available(iOS 10.0, *) {
-            UIApplication.shared.open(url, options: [:]) { success in
-                if !success {
-                    ITBError("Could not open url: \(url)")
-                }
+        UIApplication.shared.open(url, options: [:]) { success in
+            if !success {
+                ITBError("Could not open url: \(url)")
             }
-        } else {
-            _ = UIApplication.shared.openURL(url)
         }
     }
     
