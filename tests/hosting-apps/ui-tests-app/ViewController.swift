@@ -19,16 +19,12 @@ class ViewController: UIViewController {
     
     @IBAction func setupNotifications(_: UIButton) {
         ITBInfo()
-        if #available(iOS 10, *) {
-            setupNotifications()
-        }
+        setupNotifications()
     }
     
     @IBAction func sendNotification(_: UIButton) {
         ITBInfo()
-        if #available(iOS 10, *) {
-            setupAndSendNotification()
-        }
+        setupAndSendNotification()
     }
     
     @IBAction func showInAppTap(_: UIButton) {
@@ -211,7 +207,6 @@ class ViewController: UIViewController {
         }
     }
     
-    @available(iOS 10.0, *)
     private func setupNotifications(onCompletion: (() -> Void)? = nil) {
         UNUserNotificationCenter.current().delegate = self
         UNUserNotificationCenter.current().getNotificationSettings { settings in
@@ -234,7 +229,6 @@ class ViewController: UIViewController {
         }
     }
     
-    @available(iOS 10.0, *)
     private func setupAndSendNotification() {
         setupNotifications {
             self.registerCategories()
@@ -242,7 +236,6 @@ class ViewController: UIViewController {
         }
     }
     
-    @available(iOS 10.0, *)
     private func removeAllNotifications() {
         ITBInfo()
         let center = UNUserNotificationCenter.current()
@@ -250,7 +243,6 @@ class ViewController: UIViewController {
         center.removeAllDeliveredNotifications()
     }
     
-    @available(iOS 10.0, *)
     private func sendNotification() {
         ITBInfo()
         
@@ -308,7 +300,6 @@ class ViewController: UIViewController {
         UNUserNotificationCenter.current().add(request)
     }
     
-    @available(iOS 10.0, *)
     private func registerCategories() {
         ITBInfo()
         let tapButton1Action = UNNotificationAction(identifier: "Open Safari", title: "Open Safari", options: .foreground)
@@ -341,7 +332,6 @@ class ViewController: UIViewController {
     }
 }
 
-@available(iOS 10.0, *)
 extension ViewController: UNUserNotificationCenterDelegate {
     public func userNotificationCenter(_: UNUserNotificationCenter, willPresent _: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         completionHandler([.alert, .badge, .sound])

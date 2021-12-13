@@ -15,18 +15,8 @@ protocol NotificationStateProviderProtocol {
 
 struct SystemNotificationStateProvider: NotificationStateProviderProtocol {
     func isNotificationsEnabled(withCallback callback: @escaping (Bool) -> Void) {
-        if #available(iOS 10.0, *) {
-            UNUserNotificationCenter.current().getNotificationSettings { setttings in
-                callback(setttings.authorizationStatus == .authorized)
-            }
-        } else {
-            // Fallback on earlier versions
-            if let currentSettings = AppExtensionHelper.application?.currentUserNotificationSettings,
-               currentSettings.types != [] {
-                callback(true)
-            } else {
-                callback(false)
-            }
+        UNUserNotificationCenter.current().getNotificationSettings { setttings in
+            callback(setttings.authorizationStatus == .authorized)
         }
     }
     
@@ -45,7 +35,6 @@ public protocol NotificationResponseProtocol {
     var userText: String? { get }
 }
 
-@available(iOS 10.0, *)
 struct UserNotificationResponse: NotificationResponseProtocol {
     var userInfo: [AnyHashable: Any] {
         response.notification.request.content.userInfo
@@ -144,8 +133,7 @@ struct IterableAppIntegrationInternal {
     }
     
     /**
-     * This method handles incoming Iterable notifications and actions for iOS < 10.
-     * This also handles 'silent push' notifications for all iOS versions.
+     * This method handles'silent push' notifications
      *
      * - parameter application: UIApplication singleton object
      * - parameter userInfo: Dictionary containing the notification data
@@ -166,23 +154,6 @@ struct IterableAppIntegrationInternal {
                     ITBError("messageId not found in 'remove' silent push")
                 }
             }
-        } else {
-            switch application.applicationState {
-            case .active:
-                break
-            case .background:
-                break
-            case .inactive:
-                if #available(iOS 10, *) {
-                } else {
-                    // iOS 10+ notification actions are handled by userNotificationCenter:didReceiveNotificationResponse:withCompletionHandler:
-                    // so this should only be executed if iOS 10 is not available.
-                    performDefaultNotificationAction(userInfo)
-                }
-                break
-            @unknown default:
-                break
-            }
         }
         
         completionHandler?(.noData)
@@ -196,7 +167,6 @@ struct IterableAppIntegrationInternal {
      * - parameter completionHandler: Completion handler passed from the original call. Iterable will call the completion handler
      * automatically if you pass one. If you handle completionHandler in the app code, pass a nil value to this argument.
      */
-    @available(iOS 10.0, *)
     func userNotificationCenter(_: UNUserNotificationCenter?, didReceive response: NotificationResponseProtocol, withCompletionHandler completionHandler: (() -> Void)?) {
         ITBInfo()
         
@@ -235,7 +205,6 @@ struct IterableAppIntegrationInternal {
         completionHandler?()
     }
     
-    @available(iOS 10.0, *)
     private static func createIterableAction(actionIdentifier: String,
                                              userText: String?,
                                              userInfo: [AnyHashable: Any],
@@ -284,7 +253,6 @@ struct IterableAppIntegrationInternal {
         return foundButton?[JsonKey.ActionButton.action] as? [AnyHashable: Any]
     }
     
-    @available(iOS 10.0, *)
     private static func createIterableDataFields(actionIdentifier: String, userText: String?) -> [AnyHashable: Any] {
         var dataFields = [AnyHashable: Any]()
         
