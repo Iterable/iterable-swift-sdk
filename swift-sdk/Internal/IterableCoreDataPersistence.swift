@@ -21,7 +21,6 @@ enum PersistenceConst {
     }
 }
 
-@available(iOS 10.0, *)
 class PersistentContainer: NSPersistentContainer {
     static var shared: PersistentContainer?
     
@@ -75,7 +74,6 @@ class PersistentContainer: NSPersistentContainer {
     }
 }
 
-@available(iOS 10.0, *)
 struct CoreDataPersistenceContextProvider: IterablePersistenceContextProvider {
     init?(dateProvider: DateProviderProtocol = SystemDateProvider(),
           fromBundle bundle: Bundle = Bundle.main) {
@@ -98,7 +96,6 @@ struct CoreDataPersistenceContextProvider: IterablePersistenceContextProvider {
     private let dateProvider: DateProviderProtocol
 }
 
-@available(iOS 10.0, *)
 struct CoreDataPersistenceContext: IterablePersistenceContext {
     init(managedObjectContext: NSManagedObjectContext, dateProvider: DateProviderProtocol) {
         self.managedObjectContext = managedObjectContext
