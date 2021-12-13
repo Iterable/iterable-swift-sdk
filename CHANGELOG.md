@@ -2,6 +2,20 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.4.0
+### Fixed
+- Prevents in-app messages from executing JavaScript code included in their HTML templates.
+
+### Changed
+- Removed support for iOS 9.
+
+### Added
+- Added the `allowedProtocols` field on the `IterableConfig` class. 
+    - Use this array to declare the specific URL protocols that the SDK can expect to see on incoming links (and that it should therefore handle). This will help prevent the app from opening unexpected links that use arbitrary URLprotocols.
+    - Iterable&#39;s iOS SDK will always handle `https` links (in push notifications, in-app  messages, etc.), regardless of the contents of this array. However, you must explicitly specify any non-`https` URL protocols you&#39;d _also_ like the SDK to handle.
+    - If you don&#39;t set up this array, your app will only handle `https` links. If it receives other kinds of links (for example, using `http` or custom URL protocols), it won&#39;t open them (as deep links or in the browser).
+    - For example, to allow the SDK to handle `http://`, `tel://`, and `custom://` links, set the `allowedProtocols` field, on the `IterableConfig` object you pass to the SDK&#39;s `initialize` method, to `["http", "tel", "config"]`.
+
 ## 6.3.4
 #### Fixed
 - When syncing in-app queues, new messages that already have `read` set to `true` will not spawn an `InAppDelivery` event
