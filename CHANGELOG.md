@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.4.1
+### Fixed
+- Fix archiving issue. There was an issue when archiving for projects with deployment target set to iOS 10. This release fixes the issue.
+
 ## 6.4.0
 ### Fixed
 - Prevents in-app messages from executing JavaScript code included in their HTML templates.
