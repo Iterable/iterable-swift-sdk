@@ -12,12 +12,11 @@ protocol InAppDisplayChecker {
 protocol IterableInternalInAppManagerProtocol: IterableInAppManagerProtocol, InAppNotifiable, InAppDisplayChecker {
     func start() -> Future<Bool, Error>
     
-    /// This will create a ViewController which displays an inbox message.
-    /// This ViewController would typically be pushed into the navigation stack.
-    /// - parameter message: The message to show.
-    /// - parameter inboxMode:
-    /// - returns: UIViewController which displays the message.
-    func createInboxMessageViewController(for message: IterableInAppMessage, withInboxMode inboxMode: IterableInboxViewController.InboxMode, inboxSessionId: String?) -> UIViewController?
+    /// Use this method to handle clicks in InApp Messages
+    /// - parameter clickedUrl: The url that is clicked.
+    /// - parameter message: The message where the url was clicked.
+    /// - parameter location: The location `inbox` or `inApp` where the message was shown.
+    func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage, location: InAppLocation)
     
     /// - parameter message: The message to remove.
     /// - parameter location: The location from where this message was shown. `inbox` or `inApp`.
@@ -165,30 +164,22 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         return scheduleSync()
     }
     
-    func createInboxMessageViewController(for message: IterableInAppMessage,
-                                          withInboxMode inboxMode: IterableInboxViewController.InboxMode,
-                                          inboxSessionId: String? = nil) -> UIViewController? {
-        guard let content = message.content as? IterableHtmlInAppContent else {
-            ITBError("Invalid Content in message")
-            return nil
+    func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage, location: InAppLocation) {
+        guard let theUrl = url, let inAppClickedUrl = InAppHelper.parse(inAppUrl: theUrl) else {
+            ITBError("Could not parse url: \(url?.absoluteString ?? "nil")")
+            return
         }
         
-        let onClickCallback: (URL) -> Void =  { [weak self] url in
-            ITBInfo()
-            
-            // in addition perform action or url delegate task
-            self?.handle(clickedUrl: url, forMessage: message, location: .inbox)
+        switch inAppClickedUrl {
+        case let .iterableCustomAction(name: iterableCustomActionName):
+            handleIterableCustomAction(name: iterableCustomActionName, forMessage: message, location: location)
+        case let .customAction(name: customActionName):
+            handleUrlOrAction(urlOrAction: customActionName)
+        case let .localResource(name: localResourceName):
+            handleUrlOrAction(urlOrAction: localResourceName)
+        case .regularUrl:
+            handleUrlOrAction(urlOrAction: theUrl.absoluteString)
         }
-        let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
-                                                                      padding: content.padding,
-                                                                      messageMetadata: IterableInAppMessageMetadata(message: message, location: .inbox),
-                                                                      isModal: inboxMode == .popup,
-                                                                      inboxSessionId: inboxSessionId)
-        let viewController = IterableHtmlMessageViewController.create(parameters: parameters, onClickCallback: onClickCallback)
-        
-        viewController.navigationItem.title = message.inboxMetadata?.title
-        
-        return viewController
     }
     
     func remove(message: IterableInAppMessage) {
@@ -304,7 +295,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             _ = callback?(url)
             
             // in addition perform action or url delegate task
-            self?.handle(clickedUrl: url, forMessage: message, location: .inApp)
+            self?.handleClick(clickedUrl: url, forMessage: message, location: .inApp)
             
             // set the dismiss time
             self?.lastDismissedTime = self?.dateProvider.currentDate
@@ -417,24 +408,6 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         } else {
             // we have not shown any messages
             return 0.0
-        }
-    }
-    
-    private func handle(clickedUrl url: URL?, forMessage message: IterableInAppMessage, location: InAppLocation) {
-        guard let theUrl = url, let inAppClickedUrl = InAppHelper.parse(inAppUrl: theUrl) else {
-            ITBError("Could not parse url: \(url?.absoluteString ?? "nil")")
-            return
-        }
-        
-        switch inAppClickedUrl {
-        case let .iterableCustomAction(name: iterableCustomActionName):
-            handleIterableCustomAction(name: iterableCustomActionName, forMessage: message, location: location)
-        case let .customAction(name: customActionName):
-            handleUrlOrAction(urlOrAction: customActionName)
-        case let .localResource(name: localResourceName):
-            handleUrlOrAction(urlOrAction: localResourceName)
-        case .regularUrl:
-            handleUrlOrAction(urlOrAction: theUrl.absoluteString)
         }
     }
     

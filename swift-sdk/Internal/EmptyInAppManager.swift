@@ -10,10 +10,7 @@ class EmptyInAppManager: IterableInternalInAppManagerProtocol {
         Promise<Bool, Error>(value: true)
     }
     
-    func createInboxMessageViewController(for _: IterableInAppMessage, withInboxMode _: IterableInboxViewController.InboxMode, inboxSessionId _: String? = nil) -> UIViewController? {
-        ITBError("Can't create VC")
-        return nil
-    }
+    func handleClick(clickedUrl _: URL?, forMessage _: IterableInAppMessage, location _: InAppLocation) {}
     
     var isAutoDisplayPaused: Bool {
         get {

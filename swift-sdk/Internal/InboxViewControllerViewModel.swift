@@ -25,11 +25,11 @@ protocol InboxViewControllerViewModelInputProtocol {
     
     var networkSession: NetworkSessionProtocol? { get }
     
-    var inAppManager: IterableInternalInAppManagerProtocol? { get }
-    
     func sync() -> Future<Bool, Error>
     
     func track(inboxSession: IterableInboxSession)
+    
+    func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage)
     
     func set(read: Bool, forMessage message: InboxMessageViewModel)
     
@@ -40,7 +40,7 @@ class InboxViewControllerViewModelInput: InboxViewControllerViewModelInputProtoc
     var isReady: Bool {
         internalAPI != nil
     }
-    
+
     var messages: [InboxMessageViewModel] {
         inAppManager?.getInboxMessages().map { InboxMessageViewModel(message: $0) } ?? []
     }
@@ -57,16 +57,16 @@ class InboxViewControllerViewModelInput: InboxViewControllerViewModelInputProtoc
         internalAPI?.dependencyContainer.networkSession
     }
     
-    var inAppManager: IterableInternalInAppManagerProtocol? {
-        internalAPI?.inAppManager
-    }
-
     func sync() -> Future<Bool, Error> {
         inAppManager?.scheduleSync() ?? Promise(error: IterableError.general(description: "Did not find inAppManager"))
     }
     
     func track(inboxSession: IterableInboxSession) {
         internalAPI?.track(inboxSession: inboxSession)
+    }
+    
+    func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage) {
+        inAppManager?.handleClick(clickedUrl: url, forMessage: message, location: .inbox)
     }
     
     func set(read: Bool, forMessage message: InboxMessageViewModel) {
@@ -90,6 +90,10 @@ class InboxViewControllerViewModelInput: InboxViewControllerViewModelInputProtoc
     }
 
     private var internalAPIProvider: () -> InternalIterableAPI?
+
+    private var inAppManager: IterableInternalInAppManagerProtocol? {
+        internalAPI?.inAppManager
+    }
 }
 
 class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
@@ -126,12 +130,17 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         allMessagesInSections().filter { $0.read == false }.count
     }
     
+    var inboxSessionId: String? {
+        sessionManager.sessionStartInfo?.id
+    }
+    
     func refresh() -> Future<Bool, Error> {
         input.sync()
     }
     
-    func createInboxMessageViewController(for message: InboxMessageViewModel, withInboxMode inboxMode: IterableInboxViewController.InboxMode) -> UIViewController? {
-        input.inAppManager?.createInboxMessageViewController(for: message.iterableMessage, withInboxMode: inboxMode, inboxSessionId: sessionManager.sessionStartInfo?.id)
+    func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage) {
+        ITBInfo()
+        input.handleClick(clickedUrl: url, forMessage: message)
     }
     
     func set(comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)?, filter: ((IterableInAppMessage) -> Bool)?, sectionMapper: ((IterableInAppMessage) -> Int)?) {

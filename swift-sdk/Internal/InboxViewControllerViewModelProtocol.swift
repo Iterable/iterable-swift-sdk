@@ -8,13 +8,14 @@ protocol InboxViewControllerViewModelProtocol {
     var view: InboxViewControllerViewModelView? { get set }
     var unreadCount: Int { get }
     var numSections: Int { get }
+    var inboxSessionId: String? { get }
     
     // Talks to the server and refreshes
     // this works hand in hand with listener.onViewModelChanged.
     // Internal model can't be changed until the view begins update (tableView.beginUpdates()).
     func refresh() -> Future<Bool, Error>
     
-    func createInboxMessageViewController(for message: InboxMessageViewModel, withInboxMode inboxMode: IterableInboxViewController.InboxMode) -> UIViewController?
+    func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage)
     
     func set(comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)?,
              filter: ((IterableInAppMessage) -> Bool)?,

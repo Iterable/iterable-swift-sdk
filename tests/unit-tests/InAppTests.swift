@@ -1212,8 +1212,6 @@ class InAppTests: XCTestCase {
         
         _ = emptyManager.start()
         
-        XCTAssertNil(emptyManager.createInboxMessageViewController(for: getEmptyInAppMessage(), withInboxMode: .nav))
-        
         emptyManager.isAutoDisplayPaused = true
         
         XCTAssertFalse(emptyManager.isAutoDisplayPaused)

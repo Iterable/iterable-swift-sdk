@@ -222,7 +222,9 @@ open class IterableInboxViewController: UITableViewController {
         
         let message = viewModel.message(atIndexPath: indexPath)
         
-        if let viewController = viewModel.createInboxMessageViewController(for: message, withInboxMode: inboxMode) {
+        if let viewController = createInboxMessageViewController(for: message.iterableMessage,
+                                                                    withInboxMode: inboxMode,
+                                                                    inboxSessionId: viewModel.inboxSessionId) {
             viewModel.set(read: true, forMessage: message)
             
             if inboxMode == .nav {
@@ -234,6 +236,33 @@ open class IterableInboxViewController: UITableViewController {
             }
         }
     }
+    
+    private func createInboxMessageViewController(for message: IterableInAppMessage,
+                                                  withInboxMode inboxMode: IterableInboxViewController.InboxMode,
+                                                  inboxSessionId: String? = nil) -> UIViewController? {
+        guard let content = message.content as? IterableHtmlInAppContent else {
+            ITBError("Invalid Content in message")
+            return nil
+        }
+        
+        let onClickCallback: (URL) -> Void =  { [weak self] url in
+            ITBInfo()
+            
+            // in addition perform action or url delegate task
+            self?.viewModel.handleClick(clickedUrl: url, forMessage: message)
+        }
+        let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
+                                                                      padding: content.padding,
+                                                                      messageMetadata: IterableInAppMessageMetadata(message: message, location: .inbox),
+                                                                      isModal: inboxMode == .popup,
+                                                                      inboxSessionId: inboxSessionId)
+        let viewController = IterableHtmlMessageViewController.create(parameters: parameters, onClickCallback: onClickCallback)
+        
+        viewController.navigationItem.title = message.inboxMetadata?.title
+        
+        return viewController
+    }
+
     
     // MARK: - UIScrollViewDelegate (Optional Functions)
     
