@@ -21,7 +21,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         
         let fetcher = MockInAppFetcher()
         let internalAPI = InternalIterableAPI.initializeForTesting(inAppFetcher: fetcher)
-        let model = InboxViewControllerViewModel(input: InboxViewControllerViewModelInput(internalAPIProvider: internalAPI))
+        let model = InboxViewControllerViewModel(input: InboxState(internalAPIProvider: internalAPI))
         model.comparator = IterableInboxViewController.DefaultComparator.descending
         
         let date1 = Date()
@@ -61,7 +61,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         
         let fetcher = MockInAppFetcher()
         let internalAPI = InternalIterableAPI.initializeForTesting(inAppFetcher: fetcher)
-        let model = InboxViewControllerViewModel(input: InboxViewControllerViewModelInput(internalAPIProvider: internalAPI))
+        let model = InboxViewControllerViewModel(input: InboxState(internalAPIProvider: internalAPI))
         model.comparator = IterableInboxViewController.DefaultComparator.ascending
         
         let date1 = Date()
@@ -102,7 +102,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         
         let fetcher = MockInAppFetcher()
         let internalAPI = InternalIterableAPI.initializeForTesting(inAppFetcher: fetcher)
-        let model = InboxViewControllerViewModel(input: InboxViewControllerViewModelInput(internalAPIProvider: internalAPI))
+        let model = InboxViewControllerViewModel(input: InboxState(internalAPIProvider: internalAPI))
         
         let date1 = Date()
         let date2 = date1.addingTimeInterval(5.0)
@@ -141,7 +141,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         
         let fetcher = MockInAppFetcher()
         let internalAPI = InternalIterableAPI.initializeForTesting(inAppFetcher: fetcher)
-        let model = InboxViewControllerViewModel(input: InboxViewControllerViewModelInput(internalAPIProvider: internalAPI))
+        let model = InboxViewControllerViewModel(input: InboxState(internalAPIProvider: internalAPI))
         
         let date1 = Date()
         let date2 = date1.addingTimeInterval(5.0)
@@ -181,7 +181,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         
         let fetcher = MockInAppFetcher()
         let internalAPI = InternalIterableAPI.initializeForTesting(inAppFetcher: fetcher)
-        let model = InboxViewControllerViewModel(input: InboxViewControllerViewModelInput(internalAPIProvider: internalAPI))
+        let model = InboxViewControllerViewModel(input: InboxState(internalAPIProvider: internalAPI))
         model.filter = { $0.messageId == "message1" }
         
         let date1 = Date()
@@ -221,7 +221,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         
         let fetcher = MockInAppFetcher()
         let internalAPI = InternalIterableAPI.initializeForTesting(inAppFetcher: fetcher)
-        let model = InboxViewControllerViewModel(input: InboxViewControllerViewModelInput(internalAPIProvider: internalAPI))
+        let model = InboxViewControllerViewModel(input: InboxState(internalAPIProvider: internalAPI))
         model.filter = SampleInboxViewDelegateImplementations.Filter.usingCustomPayloadMessageType(in: "promotional")
         
         let date1 = Date()
@@ -262,7 +262,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let mockNetworkSession = MockNetworkSession(statusCode: 200, data: Data(repeating: 0, count: 100))
         let fetcher = MockInAppFetcher()
         let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: mockNetworkSession, inAppFetcher: fetcher)
-        let model = InboxViewControllerViewModel(input: InboxViewControllerViewModelInput(internalAPIProvider: internalAPI))
+        let model = InboxViewControllerViewModel(input: InboxState(internalAPIProvider: internalAPI))
         
         let mockView = MockViewModelView(model: model)
         mockView.onImageLoadedCallback = { indexPath in
@@ -300,7 +300,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let mockNetworkSession = MockNetworkSession(statusCode: 404, data: nil)
         let fetcher = MockInAppFetcher()
         let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: mockNetworkSession, inAppFetcher: fetcher)
-        let model = InboxViewControllerViewModel(input: InboxViewControllerViewModelInput(internalAPIProvider: internalAPI))
+        let model = InboxViewControllerViewModel(input: InboxState(internalAPIProvider: internalAPI))
         
         let mockView = MockViewModelView(model: model)
         mockView.onImageLoadedCallback = { indexPath in
@@ -336,7 +336,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         
         let fetcher = MockInAppFetcher()
         let internalAPI = InternalIterableAPI.initializeForTesting(inAppFetcher: fetcher)
-        let model = InboxViewControllerViewModel(input: InboxViewControllerViewModelInput(internalAPIProvider: internalAPI))
+        let model = InboxViewControllerViewModel(input: InboxState(internalAPIProvider: internalAPI))
         model.sectionMapper = SampleInboxViewDelegateImplementations.SectionMapper.usingCustomPayloadMessageSection
         
         let date1 = Date()
@@ -381,7 +381,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
         let secondMessageDate = firstMessageDate.addingTimeInterval(-5.0)
         let fetcher = MockInAppFetcher()
         let internalAPI = InternalIterableAPI.initializeForTesting(inAppFetcher: fetcher)
-        let model = InboxViewControllerViewModel(input: InboxViewControllerViewModelInput(internalAPIProvider: internalAPI))
+        let model = InboxViewControllerViewModel(input: InboxState(internalAPIProvider: internalAPI))
         let mockView = MockViewModelView(model: model)
         mockView.onViewModelChangedCallback = { diffs in
             if diffs.count == 3 {

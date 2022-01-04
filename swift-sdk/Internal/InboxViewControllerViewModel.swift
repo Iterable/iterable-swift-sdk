@@ -14,7 +14,7 @@ enum RowDiff {
     case sectionUpdate(IndexSet)
 }
 
-protocol InboxViewControllerViewModelInputProtocol {
+protocol InboxStateProtocol {
     var isReady: Bool { get }
     
     var messages: [InboxMessageViewModel] { get }
@@ -36,7 +36,7 @@ protocol InboxViewControllerViewModelInputProtocol {
     func remove(message: InboxMessageViewModel, inboxSessionId: String?)
 }
 
-class InboxViewControllerViewModelInput: InboxViewControllerViewModelInputProtocol {
+class InboxState: InboxStateProtocol {
     var isReady: Bool {
         internalAPI != nil
     }
@@ -98,7 +98,7 @@ class InboxViewControllerViewModelInput: InboxViewControllerViewModelInputProtoc
 
 class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
-    init(input: InboxViewControllerViewModelInput = InboxViewControllerViewModelInput()) {
+    init(input: InboxState = InboxState()) {
         ITBInfo()
 
         self.input = input
@@ -408,7 +408,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     var filter: ((IterableInAppMessage) -> Bool)?
     var sectionMapper: ((IterableInAppMessage) -> Int)?
 
-    private var input: InboxViewControllerViewModelInput
+    private var input: InboxState
     
     private var sectionedMessages = SectionedValues<Int, InboxMessageViewModel>()
     private var newSectionedMessages = SectionedValues<Int, InboxMessageViewModel>()
