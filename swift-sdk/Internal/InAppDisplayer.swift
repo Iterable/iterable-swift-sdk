@@ -32,7 +32,6 @@ class InAppDisplayer: InAppDisplayerProtocol {
     /// Creates and shows a HTML In-app Notification with trackParameters, backgroundColor with callback handler
     /// - parameter htmlString:      The string containing the dialog HTML
     /// - parameter messageMetadata: Message metadata object.
-    /// - parameter backgroundAlpha: The background alpha behind the notification
     /// - parameter padding:         The padding around the notification
     /// - parameter onclickCallback: Callback when a link is clicked in the in-app
     /// - returns:  Whether the message was shown or not shown

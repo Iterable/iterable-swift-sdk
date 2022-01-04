@@ -23,11 +23,11 @@ protocol InboxStateProtocol {
     
     var unreadMessagesCount: Int { get }
     
-    var networkSession: NetworkSessionProtocol? { get }
-    
     func sync() -> Future<Bool, Error>
     
     func track(inboxSession: IterableInboxSession)
+    
+    func loadImage(forMessageId messageId: String, fromUrl url: URL) -> Future<Data, Error>
     
     func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage)
     
@@ -53,10 +53,6 @@ class InboxState: InboxStateProtocol {
         inAppManager?.getUnreadInboxMessagesCount() ?? 0
     }
     
-    var networkSession: NetworkSessionProtocol? {
-        internalAPI?.dependencyContainer.networkSession
-    }
-    
     func sync() -> Future<Bool, Error> {
         inAppManager?.scheduleSync() ?? Promise(error: IterableError.general(description: "Did not find inAppManager"))
     }
@@ -64,6 +60,15 @@ class InboxState: InboxStateProtocol {
     func track(inboxSession: IterableInboxSession) {
         internalAPI?.track(inboxSession: inboxSession)
     }
+    
+    func loadImage(forMessageId messageId: String, fromUrl url: URL) -> Future<Data, Error> {
+        guard let networkSession = networkSession else {
+            return Promise(error: IterableError.general(description: "Network session not initialized"))
+        }
+        
+        return NetworkHelper.getData(fromUrl: url, usingSession: networkSession)
+    }
+
     
     func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage) {
         inAppManager?.handleClick(clickedUrl: url, forMessage: message, location: .inbox)
@@ -84,15 +89,19 @@ class InboxState: InboxStateProtocol {
         self.internalAPIProvider = internalAPIProvider
     }
 
+    private var internalAPIProvider: () -> InternalIterableAPI?
+
     /// We can't use a lazy variable here. Since in the beginning value will be null
     private var internalAPI: InternalIterableAPI? {
         internalAPIProvider()
     }
 
-    private var internalAPIProvider: () -> InternalIterableAPI?
-
     private var inAppManager: IterableInternalInAppManagerProtocol? {
         internalAPI?.inAppManager
+    }
+
+    private var networkSession: NetworkSessionProtocol? {
+        internalAPI?.dependencyContainer.networkSession
     }
 }
 
@@ -220,12 +229,10 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     private func loadImage(forMessageId messageId: String, fromUrl url: URL) {
-        if let networkSession = input.networkSession {
-            NetworkHelper.getData(fromUrl: url, usingSession: networkSession).onSuccess { [weak self] in
-                self?.setImageData($0, forMessageId: messageId)
-            }.onError {
-                ITBError($0.localizedDescription)
-            }
+        input.loadImage(forMessageId: messageId, fromUrl: url).onSuccess { [weak self] in
+            self?.setImageData($0, forMessageId: messageId)
+        }.onError {
+            ITBError($0.localizedDescription)
         }
     }
     
