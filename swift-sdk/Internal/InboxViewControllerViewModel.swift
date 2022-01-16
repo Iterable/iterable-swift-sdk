@@ -111,6 +111,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         ITBInfo()
 
         self.input = input
+        self.sessionManager = InboxSessionManager(inboxState: input)
         
         if input.isReady {
             sectionedMessages = sortAndFilter(messages: input.messages)
@@ -415,11 +416,11 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     var filter: ((IterableInAppMessage) -> Bool)?
     var sectionMapper: ((IterableInAppMessage) -> Int)?
 
-    private var input: InboxState
+    private let input: InboxState
     
     private var sectionedMessages = SectionedValues<Int, InboxMessageViewModel>()
     private var newSectionedMessages = SectionedValues<Int, InboxMessageViewModel>()
-    private var sessionManager = InboxSessionManager()
+    private var sessionManager: InboxSessionManager
 }
 
 extension SectionedValues {
