@@ -618,3 +618,39 @@ class MockLocalStorage: LocalStorageProtocol {
         }
     }
 }
+
+class MockInboxState: InboxStateProtocol {
+    var isReady = true
+    
+    var messages = [InboxMessageViewModel]()
+    
+    var totalMessagesCount: Int {
+        messages.count
+    }
+    
+    var unreadMessagesCount: Int {
+        messages.reduce(0) { //!!! purposely added error here
+            $1.read ? $0 + 1 : $0
+        }
+    }
+    
+    func sync() -> Future<Bool, Error> {
+        Promise(value: true)
+    }
+    
+    func track(inboxSession: IterableInboxSession) {
+    }
+    
+    func loadImage(forMessageId messageId: String, fromUrl url: URL) -> Future<Data, Error> {
+        Promise(value: Data())
+    }
+    
+    func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage) {
+    }
+    
+    func set(read: Bool, forMessage message: InboxMessageViewModel) {
+    }
+    
+    func remove(message: InboxMessageViewModel, inboxSessionId: String?) {
+    }
+}

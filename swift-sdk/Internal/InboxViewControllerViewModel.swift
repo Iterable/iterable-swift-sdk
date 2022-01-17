@@ -14,27 +14,38 @@ enum RowDiff {
     case sectionUpdate(IndexSet)
 }
 
-class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
-    
-    init(input: InboxState = InboxState()) {
+class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtocol {
+    init(input: InboxStateProtocol = InboxState(),
+         notificationCenter: NotificationCenterProtocol = NotificationCenter.default) {
         ITBInfo()
 
         self.input = input
+        self.notificationCenter = notificationCenter
         self.sessionManager = InboxSessionManager(inboxState: input)
+        
+        super.init()
         
         if input.isReady {
             sectionedMessages = sortAndFilter(messages: input.messages)
         }
         
-        NotificationCenter.default.addObserver(self, selector: #selector(onInboxChanged(notification:)), name: .iterableInboxChanged, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onAppWillEnterForeground(notification:)), name: UIApplication.willEnterForegroundNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onAppDidEnterBackground(notification:)), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        notificationCenter.addObserver(self,
+                                       selector: #selector(onInboxChanged(notification:)),
+                                       name: .iterableInboxChanged,
+                                       object: nil)
+        notificationCenter.addObserver(self,
+                                       selector: #selector(onAppWillEnterForeground(notification:)),
+                                       name: UIApplication.willEnterForegroundNotification,
+                                       object: nil)
+        notificationCenter.addObserver(self,
+                                       selector: #selector(onAppDidEnterBackground(notification:)),
+                                       name: UIApplication.didEnterBackgroundNotification,
+                                       object: nil)
     }
 
-    
     deinit {
         ITBInfo()
-        NotificationCenter.default.removeObserver(self)
+        notificationCenter.removeObserver(self)
     }
     
     // MARK: - InboxViewControllerViewModelProtocol
@@ -325,7 +336,8 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     var filter: ((IterableInAppMessage) -> Bool)?
     var sectionMapper: ((IterableInAppMessage) -> Int)?
 
-    private let input: InboxState
+    private let input: InboxStateProtocol
+    private let notificationCenter: NotificationCenterProtocol
     
     private var sectionedMessages = SectionedValues<Int, InboxMessageViewModel>()
     private var newSectionedMessages = SectionedValues<Int, InboxMessageViewModel>()

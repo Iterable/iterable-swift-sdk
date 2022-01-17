@@ -510,7 +510,7 @@
 		AC8A058824AB1FE1002C1103 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		AC8E7CA424C7555E0039605F /* CoreDataUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataUtil.swift; sourceTree = "<group>"; };
 		AC8E9267246284F800BEB68E /* DataFieldsHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataFieldsHelper.swift; sourceTree = "<group>"; };
-		AC8F35A1239806B500302994 /* InboxViewControllerViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxViewControllerViewModelTests.swift; sourceTree = "<group>"; };
+		AC8F35A1239806B500302994 /* InboxViewControllerViewModelTests.swift */ = {isa = PBXFileReference; indentWidth = 5; lastKnownFileType = sourcecode.swift; path = InboxViewControllerViewModelTests.swift; sourceTree = "<group>"; };
 		AC90C4C420D8632D00EECA5D /* IterableAppExtensions.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = IterableAppExtensions.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AC90C4C720D8632E00EECA5D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AC90C4CC20D8632E00EECA5D /* notification-extension-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "notification-extension-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
