@@ -23,10 +23,10 @@ class PromiseTests: XCTestCase {
         let f1 = createSucessfulFuture(withValue: "zeeString")
         let f2 = f1.map { $0.count }
         
-        f2.onSuccess { value in
+        f2.onCompletion { value in
             XCTAssertEqual(value, "zeeString".count)
             expectation1.fulfill()
-        }.onError { _ in
+        } receiveError: { _ in
             expectation2.fulfill()
         }
         
@@ -42,9 +42,9 @@ class PromiseTests: XCTestCase {
         let f1: Future<String, Error> = createFailureFuture(withError: MyError(message: "zeeErrorMessage"))
         let f2 = f1.map { $0.count }
         
-        f2.onSuccess { _ in
+        f2.onCompletion { _ in
             expectation1.fulfill()
-        }.onError { error in
+        } receiveError: { error in
             if let myError = error as? MyError {
                 XCTAssertEqual(myError.message, "zeeErrorMessage")
                 expectation2.fulfill()
@@ -66,10 +66,10 @@ class PromiseTests: XCTestCase {
             self.createSucessfulFuture(withValue: firstValue + firstValue)
         }
         
-        f2.onSuccess { secondValue in
+        f2.onCompletion { secondValue in
             XCTAssertEqual(secondValue, "zeeStringzeeString")
             expectation1.fulfill()
-        }.onError { _ in
+        } receiveError: { _ in
             expectation2.fulfill()
         }
         
@@ -89,9 +89,9 @@ class PromiseTests: XCTestCase {
             self.createSucessfulFuture(withValue: "zeeString")
         }
         
-        f2.onSuccess { _ in
+        f2.onCompletion { _ in
             expectation1.fulfill()
-        }.onError { error in
+        } receiveError: { error in
             if let myError = error as? MyError {
                 XCTAssertEqual(myError.message, "zeeErrorMessage")
                 expectation2.fulfill()
@@ -114,9 +114,9 @@ class PromiseTests: XCTestCase {
             self.createFailureFuture(withError: MyError(message: "zeeErrorMessage"))
         }
         
-        f2.onSuccess { _ in
+        f2.onCompletion { _ in
             expectation1.fulfill()
-        }.onError { error in
+        } receiveError: { error in
             if let myError = error as? MyError {
                 XCTAssertEqual(myError.message, "zeeErrorMessage")
                 expectation2.fulfill()
@@ -134,10 +134,10 @@ class PromiseTests: XCTestCase {
         
         let f1: Future<String, Error> = Promise<String, Error>(value: "zeeValue")
         
-        f1.onSuccess { value in
+        f1.onCompletion { value in
             XCTAssertEqual(value, "zeeValue")
             expectation1.fulfill()
-        }.onError { _ in
+        } receiveError: { _ in
             expectation2.fulfill()
         }
         
@@ -152,9 +152,9 @@ class PromiseTests: XCTestCase {
         
         let f1: Future<String, Error> = Promise<String, Error>(error: MyError(message: "zeeErrorMessage"))
         
-        f1.onSuccess { _ in
+        f1.onCompletion { _ in
             expectation1.fulfill()
-        }.onError { error in
+        } receiveError: { error in
             if let myError = error as? MyError {
                 XCTAssertEqual(myError.message, "zeeErrorMessage")
                 expectation2.fulfill()
@@ -171,17 +171,17 @@ class PromiseTests: XCTestCase {
         
         let f1 = createSucessfulFuture(withValue: true)
         
-        f1.onSuccess { val in
+        f1.onCompletion { val in
             XCTAssertTrue(val)
             expectation1.fulfill()
         }
         
-        f1.onSuccess { val in
+        f1.onCompletion { val in
             XCTAssertTrue(val)
             expectation1.fulfill()
         }
         
-        f1.onSuccess { val in
+        f1.onCompletion { val in
             XCTAssertTrue(val)
             expectation1.fulfill()
         }

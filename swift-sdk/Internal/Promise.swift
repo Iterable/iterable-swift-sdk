@@ -25,6 +25,24 @@ class Future<Value, Failure> where Failure: Error {
     fileprivate var successCallbacks = [(Value) -> Void]()
     fileprivate var errorCallbacks = [(Failure) -> Void]()
     
+    public func onCompletion(receiveValue: @escaping ((Value) -> Void), receiveError: ( (Failure) -> Void)? = nil) {
+        successCallbacks.append(receiveValue)
+        
+        // if a successful result already exists (from constructor), report it
+        if case let Result.success(value)? = result {
+            successCallbacks.forEach { $0(value) }
+        }
+        
+        if let receiveError = receiveError {
+            errorCallbacks.append(receiveError)
+            
+            // if a failed result already exists (from constructor), report it
+            if case let Result.failure(error)? = result {
+                errorCallbacks.forEach { $0(error) }
+            }
+        }
+    }
+    
     @discardableResult public func onSuccess(block: @escaping ((Value) -> Void)) -> Future<Value, Failure> {
         successCallbacks.append(block)
         
