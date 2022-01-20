@@ -11,7 +11,7 @@ class InAppHelperTests: XCTestCase {
         class MyApiClient: MockApiClient {
             override func getInAppMessages(_: NSNumber) -> Pending<SendRequestValue, SendRequestError> {
                 let payload = TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 3)
-                return Promise<SendRequestValue, SendRequestError>(value: payload)
+                return Fulfill<SendRequestValue, SendRequestError>(value: payload)
             }
         }
         
@@ -58,14 +58,14 @@ class InAppHelperTests: XCTestCase {
                 ]
                 }
                 """.toJsonDict()
-                return Promise<SendRequestValue, SendRequestError>(value: payload)
+                return Fulfill<SendRequestValue, SendRequestError>(value: payload)
             }
             
             override func inAppConsume(messageId: String) -> Pending<SendRequestValue, SendRequestError> {
                 if messageId == "message2" {
                     expectation.fulfill()
                 }
-                return Promise<SendRequestValue, SendRequestError>()
+                return Fulfill<SendRequestValue, SendRequestError>()
             }
         }
         

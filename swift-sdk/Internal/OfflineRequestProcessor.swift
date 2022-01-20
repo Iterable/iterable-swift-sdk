@@ -296,7 +296,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         
         func futureFromTask(withTaskId taskId: String) -> Pending<SendRequestValue, SendRequestError> {
             ITBInfo()
-            let result = Promise<SendRequestValue, SendRequestError>()
+            let result = Fulfill<SendRequestValue, SendRequestError>()
             pendingTasksMap[taskId] = result
             return result
         }
@@ -307,11 +307,11 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
             if let taskSendRequestValue = IterableNotificationUtil.notificationToTaskSendRequestValue(notification) {
                 let taskId = taskSendRequestValue.taskId
                 ITBInfo("task: \(taskId) finished with success")
-                if let promise = pendingTasksMap[taskId] {
-                    promise.resolve(with: taskSendRequestValue.sendRequestValue)
+                if let fulfill = pendingTasksMap[taskId] {
+                    fulfill.resolve(with: taskSendRequestValue.sendRequestValue)
                     pendingTasksMap.removeValue(forKey: taskId)
                 } else {
-                    ITBError("could not find promise for taskId: \(taskId)")
+                    ITBError("could not find fulfill for taskId: \(taskId)")
                 }
             } else {
                 ITBError("Could not find taskId for notification")
@@ -324,11 +324,11 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
             if let taskSendRequestError = IterableNotificationUtil.notificationToTaskSendRequestError(notification) {
                 let taskId = taskSendRequestError.taskId
                 ITBInfo("task: \(taskId) finished with no retry")
-                if let promise = pendingTasksMap[taskId] {
-                    promise.reject(with: taskSendRequestError.sendRequestError)
+                if let fulfill = pendingTasksMap[taskId] {
+                    fulfill.reject(with: taskSendRequestError.sendRequestError)
                     pendingTasksMap.removeValue(forKey: taskId)
                 } else {
-                    ITBError("could not find promise for taskId: \(taskId)")
+                    ITBError("could not find fulfill for taskId: \(taskId)")
                 }
             } else {
                 ITBError("Could not find taskId for notification")
@@ -336,6 +336,6 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         }
 
         private let notificationCenter: NotificationCenterProtocol
-        private var pendingTasksMap = [String: Promise<SendRequestValue, SendRequestError>]()
+        private var pendingTasksMap = [String: Fulfill<SendRequestValue, SendRequestError>]()
     }
 }

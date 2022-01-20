@@ -49,14 +49,14 @@ class IterableDeepLinkManager: NSObject {
                                              urlOpener: urlOpener,
                                              allowedProtocols: allowedProtocols)
             }
-            return (false, Promise<IterableAttributionInfo?, Error>(value: nil))
+            return (false, Fulfill<IterableAttributionInfo?, Error>(value: nil))
         }
     }
     
     /// And we will resolve with redirected URL from our server and we will also try to get attribution info.
     /// Otherwise, we will just resolve with the original URL.
     private func resolve(appLinkURL: URL) -> Pending<(URL?, IterableAttributionInfo?), Error> {
-        let promise = Promise<(URL?, IterableAttributionInfo?), Error>()
+        let fulfill = Fulfill<(URL?, IterableAttributionInfo?), Error>()
         
         deepLinkCampaignId = nil
         deepLinkTemplateId = nil
@@ -66,24 +66,24 @@ class IterableDeepLinkManager: NSObject {
             let trackAndRedirectTask = redirectUrlSession.dataTask(with: appLinkURL) { [unowned self] _, _, error in
                 if let error = error {
                     ITBError("error: \(error.localizedDescription)")
-                    promise.resolve(with: (nil, nil))
+                    fulfill.resolve(with: (nil, nil))
                 } else {
                     if let deepLinkCampaignId = self.deepLinkCampaignId,
                         let deepLinkTemplateId = self.deepLinkTemplateId,
                         let deepLinkMessageId = self.deepLinkMessageId {
-                        promise.resolve(with: (self.deepLinkLocation, IterableAttributionInfo(campaignId: deepLinkCampaignId, templateId: deepLinkTemplateId, messageId: deepLinkMessageId)))
+                        fulfill.resolve(with: (self.deepLinkLocation, IterableAttributionInfo(campaignId: deepLinkCampaignId, templateId: deepLinkTemplateId, messageId: deepLinkMessageId)))
                     } else {
-                        promise.resolve(with: (self.deepLinkLocation, nil))
+                        fulfill.resolve(with: (self.deepLinkLocation, nil))
                     }
                 }
             }
             
             trackAndRedirectTask.resume()
         } else {
-            promise.resolve(with: (appLinkURL, nil))
+            fulfill.resolve(with: (appLinkURL, nil))
         }
         
-        return promise
+        return fulfill
     }
     
     private func isIterableDeepLink(_ urlString: String) -> Bool {

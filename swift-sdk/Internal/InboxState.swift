@@ -40,7 +40,7 @@ class InboxState: InboxStateProtocol {
     }
     
     func sync() -> Pending<Bool, Error> {
-        inAppManager?.scheduleSync() ?? Promise(error: IterableError.general(description: "Did not find inAppManager"))
+        inAppManager?.scheduleSync() ?? Fulfill(error: IterableError.general(description: "Did not find inAppManager"))
     }
     
     func track(inboxSession: IterableInboxSession) {
@@ -49,7 +49,7 @@ class InboxState: InboxStateProtocol {
     
     func loadImage(forMessageId messageId: String, fromUrl url: URL) -> Pending<Data, Error> {
         guard let networkSession = networkSession else {
-            return Promise(error: IterableError.general(description: "Network session not initialized"))
+            return Fulfill(error: IterableError.general(description: "Network session not initialized"))
         }
         
         return NetworkHelper.getData(fromUrl: url, usingSession: networkSession)

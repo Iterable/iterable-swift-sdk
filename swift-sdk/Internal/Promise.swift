@@ -99,74 +99,74 @@ class Pending<Value, Failure> where Failure: Error {
 
 extension Pending {
     func flatMap<NewValue>(_ closure: @escaping (Value) -> Pending<NewValue, Failure>) -> Pending<NewValue, Failure> {
-        let promise = Promise<NewValue, Failure>()
+        let fulfill = Fulfill<NewValue, Failure>()
         
         onSuccess { value in
             let future = closure(value)
             
             future.onSuccess { futureValue in
-                promise.resolve(with: futureValue)
+                fulfill.resolve(with: futureValue)
             }
             
             future.onError { futureError in
-                promise.reject(with: futureError)
+                fulfill.reject(with: futureError)
             }
         }
         
         onError { error in
-            promise.reject(with: error)
+            fulfill.reject(with: error)
         }
         
-        return promise
+        return fulfill
     }
     
     func map<NewValue>(_ closure: @escaping (Value) -> NewValue) -> Pending<NewValue, Failure> {
-        let promise = Promise<NewValue, Failure>()
+        let fulfill = Fulfill<NewValue, Failure>()
         
         onSuccess { value in
             let nextValue = closure(value)
-            promise.resolve(with: nextValue)
+            fulfill.resolve(with: nextValue)
         }
         
         onError { error in
-            promise.reject(with: error)
+            fulfill.reject(with: error)
         }
         
-        return promise
+        return fulfill
     }
     
     func mapFailure<NewFailure>(_ closure: @escaping (Failure) -> NewFailure) -> Pending<Value, NewFailure> {
-        let promise = Promise<Value, NewFailure>()
+        let fulfill = Fulfill<Value, NewFailure>()
         
         onSuccess { value in
-            promise.resolve(with: value)
+            fulfill.resolve(with: value)
         }
         
         onError { error in
             let nextError = closure(error)
-            promise.reject(with: nextError)
+            fulfill.reject(with: nextError)
         }
         
-        return promise
+        return fulfill
     }
     
     func replaceError(with defaultForError: Value) -> Pending<Value, Failure> {
-        let promise = Promise<Value, Failure>()
+        let fulfill = Fulfill<Value, Failure>()
         
         onSuccess { value in
-            promise.resolve(with: value)
+            fulfill.resolve(with: value)
         }
         
         onError { _ in
-            promise.resolve(with: defaultForError)
+            fulfill.resolve(with: defaultForError)
         }
         
-        return promise
+        return fulfill
     }
 }
 
 // This class takes the responsibility of setting value for Future
-class Promise<Value, Failure>: Pending<Value, Failure> where Failure: Error {
+class Fulfill<Value, Failure>: Pending<Value, Failure> where Failure: Error {
     public init(value: Value? = nil) {
         ITBDebug()
         super.init()

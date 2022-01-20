@@ -26,7 +26,7 @@ struct SendRequestError: Error {
     }
     
     static func createErroredFuture<T>(reason: String? = nil) -> Pending<T, SendRequestError> {
-        Promise<T, SendRequestError>(error: SendRequestError(reason: reason))
+        Fulfill<T, SendRequestError>(error: SendRequestError(reason: reason))
     }
     
     static func from(error: Error) -> SendRequestError {

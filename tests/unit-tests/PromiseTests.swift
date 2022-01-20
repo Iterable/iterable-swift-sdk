@@ -132,7 +132,7 @@ class PromiseTests: XCTestCase {
         let expectation2 = expectation(description: "test future init with success, inverted")
         expectation2.isInverted = true
         
-        let f1: Pending<String, Error> = Promise<String, Error>(value: "zeeValue")
+        let f1: Pending<String, Error> = Fulfill<String, Error>(value: "zeeValue")
         
         f1.onCompletion { value in
             XCTAssertEqual(value, "zeeValue")
@@ -150,7 +150,7 @@ class PromiseTests: XCTestCase {
         expectation1.isInverted = true
         let expectation2 = expectation(description: "test future init with failure")
         
-        let f1: Pending<String, Error> = Promise<String, Error>(error: MyError(message: "zeeErrorMessage"))
+        let f1: Pending<String, Error> = Fulfill<String, Error>(error: MyError(message: "zeeErrorMessage"))
         
         f1.onCompletion { _ in
             expectation1.fulfill()
@@ -191,7 +191,7 @@ class PromiseTests: XCTestCase {
     
     func testWaitUntilFinished() {
         let expectation1 = expectation(description: "testWaitUntilFinished")
-        let future = Promise<Bool, Error>()
+        let future = Fulfill<Bool, Error>()
         
         DispatchQueue.global(qos: .userInitiated).asyncAfter(deadline: .now() + 0.3) {
             future.resolve(with: true)
@@ -204,7 +204,7 @@ class PromiseTests: XCTestCase {
     }
     
     private func createSucessfulFuture<T>(withValue value: T) -> Pending<T, Error> {
-        let future = Promise<T, Error>()
+        let future = Fulfill<T, Error>()
         
         DispatchQueue.main.async {
             future.resolve(with: value)
@@ -214,7 +214,7 @@ class PromiseTests: XCTestCase {
     }
     
     private func createFailureFuture<T>(withError error: MyError) -> Pending<T, Error> {
-        let future = Promise<T, Error>()
+        let future = Fulfill<T, Error>()
         
         DispatchQueue.main.async {
             future.reject(with: error)

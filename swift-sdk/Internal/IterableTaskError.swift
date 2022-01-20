@@ -8,7 +8,7 @@ enum IterableTaskError: Error {
     case general(String?)
     
     static func createErroredFuture<T>(reason: String? = nil) -> Pending<T, IterableTaskError> {
-        Promise<T, IterableTaskError>(error: IterableTaskError.general(reason))
+        Fulfill<T, IterableTaskError>(error: IterableTaskError.general(reason))
     }
 }
 

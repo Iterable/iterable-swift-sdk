@@ -66,7 +66,7 @@ extension URLSession: NetworkSessionProtocol {
 
 struct NetworkHelper {
     static func getData(fromUrl url: URL, usingSession networkSession: NetworkSessionProtocol) -> Pending<Data, Error> {
-        let promise = Promise<Data, Error>()
+        let fulfill = Fulfill<Data, Error>()
         
         networkSession.makeDataRequest(with: url) { data, response, error in
             let result = createDataResultFromNetworkResponse(data: data, response: response, error: error)
@@ -74,16 +74,16 @@ struct NetworkHelper {
             switch result {
             case let .success(value):
                 DispatchQueue.main.async {
-                    promise.resolve(with: value)
+                    fulfill.resolve(with: value)
                 }
             case let .failure(error):
                 DispatchQueue.main.async {
-                    promise.reject(with: error)
+                    fulfill.reject(with: error)
                 }
             }
         }
         
-        return promise
+        return fulfill
     }
     
     static func sendRequest<T>(_ request: URLRequest,
@@ -109,7 +109,7 @@ struct NetworkHelper {
         print()
         #endif
         
-        let promise = Promise<T, NetworkError>()
+        let fulfill = Fulfill<T, NetworkError>()
         
         networkSession.makeRequest(request) { data, response, error in
             let result = createResultFromNetworkResponse(data: data,
@@ -122,16 +122,16 @@ struct NetworkHelper {
                 #if NETWORK_DEBUG
                 print("request with requestId: \(requestId) successfully sent")
                 #endif
-                promise.resolve(with: value)
+                fulfill.resolve(with: value)
             case let .failure(error):
                 #if NETWORK_DEBUG
                 print("request with id: \(requestId) errored")
                 #endif
-                promise.reject(with: error)
+                fulfill.reject(with: error)
             }
         }
         
-        return promise
+        return fulfill
     }
     
     private static func createResultFromNetworkResponse<T>(data: Data?,

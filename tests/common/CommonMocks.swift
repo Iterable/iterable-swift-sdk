@@ -132,7 +132,7 @@ public class MockPushTracker: NSObject, PushTrackerProtocol {
         self.onSuccess = onSuccess
         self.onFailure = onFailure
         
-        return Promise<SendRequestValue, SendRequestError>(value: [:])
+        return Fulfill<SendRequestValue, SendRequestError>(value: [:])
     }
 }
 
@@ -326,7 +326,7 @@ class MockInAppFetcher: InAppFetcherProtocol {
         
         syncCallback?()
         
-        return Promise(value: messagesMap.values)
+        return Fulfill(value: messagesMap.values)
     }
     
     @discardableResult func mockMessagesAvailableFromServer(internalApi: InternalIterableAPI?, messages: [IterableInAppMessage]) -> Pending<Int, Error> {
@@ -338,7 +338,7 @@ class MockInAppFetcher: InAppFetcherProtocol {
             messagesMap[$0.messageId] = $0
         }
         
-        let result = Promise<Int, Error>()
+        let result = Fulfill<Int, Error>()
         
         let inAppManager = internalApi?.inAppManager
         inAppManager?.scheduleSync().onSuccess { [weak inAppManager = inAppManager] _ in
@@ -366,7 +366,7 @@ class MockInAppFetcher: InAppFetcherProtocol {
 
 class MockInAppDisplayer: InAppDisplayerProtocol {
     // when a message is shown this is called back
-    var onShow: Promise<IterableInAppMessage, IterableError> = Promise<IterableInAppMessage, IterableError>()
+    var onShow: Fulfill<IterableInAppMessage, IterableError> = Fulfill<IterableInAppMessage, IterableError>()
     
     func isShowingInApp() -> Bool {
         showing
@@ -544,7 +544,7 @@ class MockWebView: WebViewProtocol {
     func layoutSubviews() {}
     
     func calculateHeight() -> Pending<CGFloat, IterableError> {
-        Promise<CGFloat, IterableError>(value: height)
+        Fulfill<CGFloat, IterableError>(value: height)
     }
     
     var position: ViewPosition = ViewPosition()
@@ -635,14 +635,14 @@ class MockInboxState: InboxStateProtocol {
     }
     
     func sync() -> Pending<Bool, Error> {
-        Promise(value: true)
+        Fulfill(value: true)
     }
     
     func track(inboxSession: IterableInboxSession) {
     }
     
     func loadImage(forMessageId messageId: String, fromUrl url: URL) -> Pending<Data, Error> {
-        Promise(value: Data())
+        Fulfill(value: Data())
     }
     
     func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage) {
