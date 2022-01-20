@@ -19,7 +19,7 @@ protocol WebViewProtocol {
     func set(navigationDelegate: WKNavigationDelegate?)
     func evaluateJavaScript(_ javaScriptString: String, completionHandler: ((Any?, Error?) -> Void)?)
     func layoutSubviews()
-    func calculateHeight() -> Future<CGFloat, IterableError>
+    func calculateHeight() -> Pending<CGFloat, IterableError>
 }
 
 extension WKWebView: WebViewProtocol {
@@ -41,7 +41,7 @@ extension WKWebView: WebViewProtocol {
         self.navigationDelegate = navigationDelegate
     }
     
-    func calculateHeight() -> Future<CGFloat, IterableError> {
+    func calculateHeight() -> Pending<CGFloat, IterableError> {
         let promise = Promise<CGFloat, IterableError>()
         
         evaluateJavaScript("document.body.offsetHeight", completionHandler: { height, _ in

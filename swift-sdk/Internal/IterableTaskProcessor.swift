@@ -13,5 +13,5 @@ struct IterableTaskContext {
 }
 
 protocol IterableTaskProcessor {
-    func process(task: IterableTask) throws -> Future<IterableTaskResult, IterableTaskError>
+    func process(task: IterableTask) throws -> Pending<IterableTaskResult, IterableTaskError>
 }

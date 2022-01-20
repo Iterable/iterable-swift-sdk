@@ -65,7 +65,7 @@ extension URLSession: NetworkSessionProtocol {
 }
 
 struct NetworkHelper {
-    static func getData(fromUrl url: URL, usingSession networkSession: NetworkSessionProtocol) -> Future<Data, Error> {
+    static func getData(fromUrl url: URL, usingSession networkSession: NetworkSessionProtocol) -> Pending<Data, Error> {
         let promise = Promise<Data, Error>()
         
         networkSession.makeDataRequest(with: url) { data, response, error in
@@ -88,7 +88,7 @@ struct NetworkHelper {
     
     static func sendRequest<T>(_ request: URLRequest,
                                converter: @escaping (Data) throws -> T?,
-                               usingSession networkSession: NetworkSessionProtocol) -> Future<T, NetworkError> {
+                               usingSession networkSession: NetworkSessionProtocol) -> Pending<T, NetworkError> {
         #if NETWORK_DEBUG
         let requestId = IterableUtil.generateUUID()
         print()

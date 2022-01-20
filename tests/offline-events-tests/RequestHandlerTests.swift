@@ -556,7 +556,7 @@ class RequestHandlerTests: XCTestCase {
         
         let expectations = createExpectations(description: #function)
         
-        let requestGenerator = { (requestHandler: RequestHandlerProtocol) -> Future<SendRequestValue, SendRequestError> in
+        let requestGenerator = { (requestHandler: RequestHandlerProtocol) -> Pending<SendRequestValue, SendRequestError> in
             let message = IterableInAppMessage(messageId: messageId,
                                                campaignId: nil,
                                                content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""))
@@ -592,7 +592,7 @@ class RequestHandlerTests: XCTestCase {
         
         let expectations = createExpectations(description: #function)
         
-        let requestGenerator = { (requestHandler: RequestHandlerProtocol) -> Future<SendRequestValue, SendRequestError> in
+        let requestGenerator = { (requestHandler: RequestHandlerProtocol) -> Pending<SendRequestValue, SendRequestError> in
             let message = IterableInAppMessage(messageId: messageId,
                                                campaignId: nil,
                                                content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""))
@@ -881,7 +881,7 @@ class RequestHandlerTests: XCTestCase {
     }
 
     
-    private func handleRequestWithSuccessAndFailure(requestGenerator: (RequestHandlerProtocol) -> Future<SendRequestValue, SendRequestError>,
+    private func handleRequestWithSuccessAndFailure(requestGenerator: (RequestHandlerProtocol) -> Pending<SendRequestValue, SendRequestError>,
                                                      path: String,
                                                      bodyDict: [AnyHashable: Any]) throws {
         
@@ -899,7 +899,7 @@ class RequestHandlerTests: XCTestCase {
                                          bodyDict: bodyDict)
     }
     
-    private func handleOnlineRequestWithSuccess(requestGenerator: (RequestHandlerProtocol) -> Future<SendRequestValue, SendRequestError>,
+    private func handleOnlineRequestWithSuccess(requestGenerator: (RequestHandlerProtocol) -> Pending<SendRequestValue, SendRequestError>,
                                                  path: String,
                                                  bodyDict: [AnyHashable: Any]) {
         let notificationCenter = MockNotificationCenter()
@@ -921,7 +921,7 @@ class RequestHandlerTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
-    private func handleOnlineRequestWithFailure(requestGenerator: (RequestHandlerProtocol) -> Future<SendRequestValue, SendRequestError>,
+    private func handleOnlineRequestWithFailure(requestGenerator: (RequestHandlerProtocol) -> Pending<SendRequestValue, SendRequestError>,
                                                  path: String,
                                                  bodyDict: [AnyHashable: Any]) {
         let notificationCenter = MockNotificationCenter()
@@ -943,7 +943,7 @@ class RequestHandlerTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
-    private func handleOfflineRequestWithSuccess(requestGenerator: (RequestHandlerProtocol) -> Future<SendRequestValue, SendRequestError>,
+    private func handleOfflineRequestWithSuccess(requestGenerator: (RequestHandlerProtocol) -> Pending<SendRequestValue, SendRequestError>,
                                                   path: String,
                                                   bodyDict: [AnyHashable: Any]) {
         let notificationCenter = MockNotificationCenter()
@@ -966,7 +966,7 @@ class RequestHandlerTests: XCTestCase {
                           expectation: expectation1)
     }
     
-    private func handleOfflineRequestWithFailure(requestGenerator: (RequestHandlerProtocol) -> Future<SendRequestValue, SendRequestError>,
+    private func handleOfflineRequestWithFailure(requestGenerator: (RequestHandlerProtocol) -> Pending<SendRequestValue, SendRequestError>,
                                                   path: String,
                                                   bodyDict: [AnyHashable: Any]) {
         let notificationCenter = MockNotificationCenter()
@@ -1031,7 +1031,7 @@ class RequestHandlerTests: XCTestCase {
                               offlineMode: selectOffline)
     }
     
-    private func handleRequestWithSuccess(request: () -> Future<SendRequestValue, SendRequestError>,
+    private func handleRequestWithSuccess(request: () -> Pending<SendRequestValue, SendRequestError>,
                                            networkSession: MockNetworkSession,
                                            path: String,
                                            bodyDict: [AnyHashable: Any],
@@ -1050,7 +1050,7 @@ class RequestHandlerTests: XCTestCase {
         }
     }
     
-    private func handleRequestWithFailure(request: () -> Future<SendRequestValue, SendRequestError>,
+    private func handleRequestWithFailure(request: () -> Pending<SendRequestValue, SendRequestError>,
                                            networkSession: MockNetworkSession,
                                            path: String,
                                            bodyDict: [AnyHashable: Any],

@@ -9,8 +9,8 @@ struct RequestProcessorUtil {
     static func apply(successHandler onSuccess: OnSuccessHandler? = nil,
                       andFailureHandler onFailure: OnFailureHandler? = nil,
                       andAuthManager authManager: IterableAuthManagerProtocol? = nil,
-                      toResult result: Future<SendRequestValue, SendRequestError>,
-                      withIdentifier identifier: String) -> Future<SendRequestValue, SendRequestError> {
+                      toResult result: Pending<SendRequestValue, SendRequestError>,
+                      withIdentifier identifier: String) -> Pending<SendRequestValue, SendRequestError> {
         result.onSuccess { json in
             if let onSuccess = onSuccess {
                 onSuccess(json)

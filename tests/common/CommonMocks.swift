@@ -106,7 +106,7 @@ public class MockPushTracker: NSObject, PushTrackerProtocol {
     public func trackPushOpen(_ userInfo: [AnyHashable: Any],
                               dataFields: [AnyHashable: Any]?,
                               onSuccess: OnSuccessHandler?,
-                              onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                              onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         // save payload
         lastPushPayload = userInfo
         
@@ -123,7 +123,7 @@ public class MockPushTracker: NSObject, PushTrackerProtocol {
                               appAlreadyRunning: Bool,
                               dataFields: [AnyHashable: Any]?,
                               onSuccess: OnSuccessHandler?,
-                              onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                              onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         self.campaignId = campaignId
         self.templateId = templateId
         self.messageId = messageId
@@ -321,7 +321,7 @@ class MockInAppFetcher: InAppFetcherProtocol {
         ITBInfo()
     }
     
-    func fetch() -> Future<[IterableInAppMessage], Error> {
+    func fetch() -> Pending<[IterableInAppMessage], Error> {
         ITBInfo()
         
         syncCallback?()
@@ -329,7 +329,7 @@ class MockInAppFetcher: InAppFetcherProtocol {
         return Promise(value: messagesMap.values)
     }
     
-    @discardableResult func mockMessagesAvailableFromServer(internalApi: InternalIterableAPI?, messages: [IterableInAppMessage]) -> Future<Int, Error> {
+    @discardableResult func mockMessagesAvailableFromServer(internalApi: InternalIterableAPI?, messages: [IterableInAppMessage]) -> Pending<Int, Error> {
         ITBInfo()
         
         messagesMap = OrderedDictionary<String, IterableInAppMessage>()
@@ -348,7 +348,7 @@ class MockInAppFetcher: InAppFetcherProtocol {
         return result
     }
     
-    @discardableResult func mockInAppPayloadFromServer(internalApi: InternalIterableAPI?, _ payload: [AnyHashable: Any]) -> Future<Int, Error> {
+    @discardableResult func mockInAppPayloadFromServer(internalApi: InternalIterableAPI?, _ payload: [AnyHashable: Any]) -> Pending<Int, Error> {
         ITBInfo()
         return mockMessagesAvailableFromServer(internalApi: internalApi, messages: InAppTestHelper.inAppMessages(fromPayload: payload))
     }
@@ -543,7 +543,7 @@ class MockWebView: WebViewProtocol {
     
     func layoutSubviews() {}
     
-    func calculateHeight() -> Future<CGFloat, IterableError> {
+    func calculateHeight() -> Pending<CGFloat, IterableError> {
         Promise<CGFloat, IterableError>(value: height)
     }
     
@@ -634,14 +634,14 @@ class MockInboxState: InboxStateProtocol {
         }
     }
     
-    func sync() -> Future<Bool, Error> {
+    func sync() -> Pending<Bool, Error> {
         Promise(value: true)
     }
     
     func track(inboxSession: IterableInboxSession) {
     }
     
-    func loadImage(forMessageId messageId: String, fromUrl url: URL) -> Future<Data, Error> {
+    func loadImage(forMessageId messageId: String, fromUrl url: URL) -> Pending<Data, Error> {
         Promise(value: Data())
     }
     

@@ -161,7 +161,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     @discardableResult
     func disableDeviceForCurrentUser(withOnSuccess onSuccess: OnSuccessHandler? = nil,
-                                     onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+                                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         guard let hexToken = hexToken else {
             let errorMessage = "no token present"
             onFailure?(errorMessage, nil)
@@ -178,7 +178,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     @discardableResult
     func disableDeviceForAllUsers(withOnSuccess onSuccess: OnSuccessHandler? = nil,
-                                  onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+                                  onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         guard let hexToken = hexToken else {
             let errorMessage = "no token present"
             onFailure?(errorMessage, nil)
@@ -191,7 +191,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func updateUser(_ dataFields: [AnyHashable: Any],
                     mergeNestedObjects: Bool,
                     onSuccess: OnSuccessHandler? = nil,
-                    onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+                    onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         requestHandler.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects, onSuccess: onSuccess, onFailure: onFailure)
     }
     
@@ -199,7 +199,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func updateEmail(_ newEmail: String,
                      withToken token: String? = nil,
                      onSuccess: OnSuccessHandler? = nil,
-                     onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         requestHandler.updateEmail(newEmail, onSuccess: nil, onFailure: nil).onSuccess { json in
             if self.email != nil {
                 self.setEmail(newEmail)
@@ -213,7 +213,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     @discardableResult
     func updateCart(items: [CommerceItem],
                     onSuccess: OnSuccessHandler? = nil,
-                    onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+                    onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         requestHandler.updateCart(items: items, onSuccess: onSuccess, onFailure: onFailure)
     }
     
@@ -222,7 +222,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]? = nil,
                        onSuccess: OnSuccessHandler? = nil,
-                       onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+                       onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         requestHandler.trackPurchase(total, items: items, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
     }
     
@@ -230,7 +230,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func trackPushOpen(_ userInfo: [AnyHashable: Any],
                        dataFields: [AnyHashable: Any]? = nil,
                        onSuccess: OnSuccessHandler? = nil,
-                       onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+                       onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         save(pushPayload: userInfo)
         
         if let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: userInfo), metadata.isRealCampaignNotification() {
@@ -253,7 +253,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                        appAlreadyRunning: Bool,
                        dataFields: [AnyHashable: Any]? = nil,
                        onSuccess: OnSuccessHandler? = nil,
-                       onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+                       onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         requestHandler.trackPushOpen(campaignId,
                                        templateId: templateId,
                                        messageId: messageId,
@@ -267,7 +267,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func track(_ eventName: String,
                dataFields: [AnyHashable: Any]? = nil,
                onSuccess: OnSuccessHandler? = nil,
-               onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         requestHandler.track(event: eventName, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
     }
     
@@ -279,7 +279,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                              campaignId: NSNumber?,
                              templateId: NSNumber?,
                              onSuccess: OnSuccessHandler? = nil,
-                             onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+                             onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         let updateSubscriptionsInfo = UpdateSubscriptionsInfo(emailListIds: emailListIds,
                                                               unsubscribedChannelIds: unsubscribedChannelIds,
                                                               unsubscribedMessageTypeIds: unsubscribedMessageTypeIds,
@@ -294,7 +294,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                         location: InAppLocation,
                         inboxSessionId: String? = nil,
                         onSuccess: OnSuccessHandler? = nil,
-                        onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+                        onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         requestHandler.trackInAppOpen(message,
                                         location: location,
                                         inboxSessionId: inboxSessionId,
@@ -308,7 +308,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                          inboxSessionId: String? = nil,
                          clickedUrl: String,
                          onSuccess: OnSuccessHandler? = nil,
-                         onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+                         onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         requestHandler.trackInAppClick(message, location: location,
                                          inboxSessionId: inboxSessionId,
                                          clickedUrl: clickedUrl,
@@ -323,7 +323,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                          source: InAppCloseSource? = nil,
                          clickedUrl: String? = nil,
                          onSuccess: OnSuccessHandler? = nil,
-                         onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+                         onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         requestHandler.trackInAppClose(message,
                                          location: location,
                                          inboxSessionId: inboxSessionId,
@@ -336,21 +336,21 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     @discardableResult
     func track(inboxSession: IterableInboxSession,
                onSuccess: OnSuccessHandler? = nil,
-               onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         requestHandler.track(inboxSession: inboxSession, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     @discardableResult
     func track(inAppDelivery message: IterableInAppMessage,
                onSuccess: OnSuccessHandler? = nil,
-               onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         requestHandler.track(inAppDelivery: message, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     @discardableResult
     func inAppConsume(_ messageId: String,
                       onSuccess: OnSuccessHandler? = nil,
-                      onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+                      onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         requestHandler.inAppConsume(messageId, onSuccess: onSuccess, onFailure: onFailure)
     }
     
@@ -359,7 +359,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                       location: InAppLocation = .inApp,
                       source: InAppDeleteSource? = nil,
                       onSuccess: OnSuccessHandler? = nil,
-                      onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+                      onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         requestHandler.inAppConsume(message: message,
                                       location: location,
                                       source: source,
@@ -533,7 +533,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         deepLinkManager = IterableDeepLinkManager()
     }
     
-    func start() -> Future<Bool, Error> {
+    func start() -> Pending<Bool, Error> {
         ITBInfo()
         
         updateSDKVersion()

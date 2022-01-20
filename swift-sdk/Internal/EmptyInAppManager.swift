@@ -6,7 +6,7 @@ import Foundation
 import UIKit
 
 class EmptyInAppManager: IterableInternalInAppManagerProtocol {
-    func start() -> Future<Bool, Error> {
+    func start() -> Pending<Bool, Error> {
         Promise<Bool, Error>(value: true)
     }
     
@@ -50,7 +50,7 @@ class EmptyInAppManager: IterableInternalInAppManagerProtocol {
         0
     }
     
-    func scheduleSync() -> Future<Bool, Error> {
+    func scheduleSync() -> Pending<Bool, Error> {
         Promise<Bool, Error>(value: true)
     }
     
@@ -60,7 +60,7 @@ class EmptyInAppManager: IterableInternalInAppManagerProtocol {
         true
     }
     
-    func reset() -> Future<Bool, Error> {
+    func reset() -> Pending<Bool, Error> {
         Promise<Bool, Error>(value: true)
     }
 }

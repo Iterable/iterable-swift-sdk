@@ -139,7 +139,7 @@ class IterableTaskRunner: NSObject {
     }
     
     @discardableResult
-    private func processTasks() -> Future<Void, Never> {
+    private func processTasks() -> Pending<Void, Never> {
         ITBInfo()
         running = true
         
@@ -177,7 +177,7 @@ class IterableTaskRunner: NSObject {
     }
     
     @discardableResult
-    private func execute(task: IterableTask) -> Future<TaskExecutionResult, Never> {
+    private func execute(task: IterableTask) -> Pending<TaskExecutionResult, Never> {
         ITBInfo("Executing taskId: \(task.id), name: \(task.name ?? "nil")")
         guard task.processing == false else {
             return Promise<TaskExecutionResult, Never>(value: .processing)
@@ -191,7 +191,7 @@ class IterableTaskRunner: NSObject {
     }
     
     private func processAPICallTask(processor: IterableAPICallTaskProcessor,
-                                    task: IterableTask) -> Future<TaskExecutionResult, Never> {
+                                    task: IterableTask) -> Pending<TaskExecutionResult, Never> {
         ITBInfo()
         let result = Promise<TaskExecutionResult, Never>()
         do {

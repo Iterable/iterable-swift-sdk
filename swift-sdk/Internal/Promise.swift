@@ -21,7 +21,7 @@ extension IterableError: LocalizedError {
 // either there is a success with result
 // or there is a failure with error
 // There is no way to set value a result in this class.
-class Future<Value, Failure> where Failure: Error {
+class Pending<Value, Failure> where Failure: Error {
     fileprivate var successCallbacks = [(Value) -> Void]()
     fileprivate var errorCallbacks = [(Failure) -> Void]()
     
@@ -43,7 +43,7 @@ class Future<Value, Failure> where Failure: Error {
         }
     }
     
-    @discardableResult public func onSuccess(block: @escaping ((Value) -> Void)) -> Future<Value, Failure> {
+    @discardableResult public func onSuccess(block: @escaping ((Value) -> Void)) -> Pending<Value, Failure> {
         successCallbacks.append(block)
         
         // if a successful result already exists (from constructor), report it
@@ -54,7 +54,7 @@ class Future<Value, Failure> where Failure: Error {
         return self
     }
     
-    @discardableResult public func onError(block: @escaping ((Failure) -> Void)) -> Future<Value, Failure> {
+    @discardableResult public func onError(block: @escaping ((Failure) -> Void)) -> Pending<Value, Failure> {
         errorCallbacks.append(block)
         
         // if a failed result already exists (from constructor), report it
@@ -97,8 +97,8 @@ class Future<Value, Failure> where Failure: Error {
     }
 }
 
-extension Future {
-    func flatMap<NewValue>(_ closure: @escaping (Value) -> Future<NewValue, Failure>) -> Future<NewValue, Failure> {
+extension Pending {
+    func flatMap<NewValue>(_ closure: @escaping (Value) -> Pending<NewValue, Failure>) -> Pending<NewValue, Failure> {
         let promise = Promise<NewValue, Failure>()
         
         onSuccess { value in
@@ -120,7 +120,7 @@ extension Future {
         return promise
     }
     
-    func map<NewValue>(_ closure: @escaping (Value) -> NewValue) -> Future<NewValue, Failure> {
+    func map<NewValue>(_ closure: @escaping (Value) -> NewValue) -> Pending<NewValue, Failure> {
         let promise = Promise<NewValue, Failure>()
         
         onSuccess { value in
@@ -135,7 +135,7 @@ extension Future {
         return promise
     }
     
-    func mapFailure<NewFailure>(_ closure: @escaping (Failure) -> NewFailure) -> Future<Value, NewFailure> {
+    func mapFailure<NewFailure>(_ closure: @escaping (Failure) -> NewFailure) -> Pending<Value, NewFailure> {
         let promise = Promise<Value, NewFailure>()
         
         onSuccess { value in
@@ -150,7 +150,7 @@ extension Future {
         return promise
     }
     
-    func replaceError(with defaultForError: Value) -> Future<Value, Failure> {
+    func replaceError(with defaultForError: Value) -> Pending<Value, Failure> {
         let promise = Promise<Value, Failure>()
         
         onSuccess { value in
@@ -166,7 +166,7 @@ extension Future {
 }
 
 // This class takes the responsibility of setting value for Future
-class Promise<Value, Failure>: Future<Value, Failure> where Failure: Error {
+class Promise<Value, Failure>: Pending<Value, Failure> where Failure: Error {
     public init(value: Value? = nil) {
         ITBDebug()
         super.init()

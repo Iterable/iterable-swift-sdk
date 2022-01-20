@@ -12,7 +12,7 @@ class IterableDeepLinkManager: NSObject {
     func handleUniversalLink(_ url: URL,
                              urlDelegate: IterableURLDelegate?,
                              urlOpener: UrlOpenerProtocol,
-                             allowedProtocols: [String] = []) -> (Bool, Future<IterableAttributionInfo?, Error>) {
+                             allowedProtocols: [String] = []) -> (Bool, Pending<IterableAttributionInfo?, Error>) {
         if isIterableDeepLink(url.absoluteString) {
             let future = resolve(appLinkURL: url).map { (resolvedUrl, attributionInfo) -> IterableAttributionInfo? in
                 var resolvedUrlString: String
@@ -55,7 +55,7 @@ class IterableDeepLinkManager: NSObject {
     
     /// And we will resolve with redirected URL from our server and we will also try to get attribution info.
     /// Otherwise, we will just resolve with the original URL.
-    private func resolve(appLinkURL: URL) -> Future<(URL?, IterableAttributionInfo?), Error> {
+    private func resolve(appLinkURL: URL) -> Pending<(URL?, IterableAttributionInfo?), Error> {
         let promise = Promise<(URL?, IterableAttributionInfo?), Error>()
         
         deepLinkCampaignId = nil

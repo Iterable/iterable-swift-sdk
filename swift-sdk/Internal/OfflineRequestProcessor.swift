@@ -38,7 +38,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     @discardableResult
     func updateCart(items: [CommerceItem],
                     onSuccess: OnSuccessHandler?,
-                    onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                    onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         let requestGenerator = { (requestCreator: RequestCreator) in
             requestCreator.createUpdateCartRequest(items: items)
         }
@@ -54,7 +54,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]?,
                        onSuccess: OnSuccessHandler?,
-                       onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                       onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         let requestGenerator = { (requestCreator: RequestCreator) in
             requestCreator.createTrackPurchaseRequest(total,
                                                       items: items,
@@ -74,7 +74,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                        appAlreadyRunning: Bool,
                        dataFields: [AnyHashable: Any]?,
                        onSuccess: OnSuccessHandler?,
-                       onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                       onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         let requestGenerator = { (requestCreator: RequestCreator) in
             requestCreator.createTrackPushOpenRequest(campaignId,
                                                       templateId: templateId,
@@ -93,7 +93,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     func track(event: String,
                dataFields: [AnyHashable: Any]?,
                onSuccess: OnSuccessHandler? = nil,
-               onFailure: OnFailureHandler? = nil) -> Future<SendRequestValue, SendRequestError> {
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         ITBInfo()
         let requestGenerator = { (requestCreator: RequestCreator) in
             requestCreator.createTrackEventRequest(event,
@@ -111,7 +111,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                         location: InAppLocation,
                         inboxSessionId: String?,
                         onSuccess: OnSuccessHandler?,
-                        onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                        onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         let requestGenerator = { (requestCreator: RequestCreator) in
             requestCreator.createTrackInAppOpenRequest(inAppMessageContext: InAppMessageContext.from(message: message,
                                                                                                      location: location,
@@ -130,7 +130,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                          inboxSessionId: String?,
                          clickedUrl: String,
                          onSuccess: OnSuccessHandler?,
-                         onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                         onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         let requestGenerator = { (requestCreator: RequestCreator) in
             requestCreator.createTrackInAppClickRequest(inAppMessageContext: InAppMessageContext.from(message: message,
                                                                                                       location: location,
@@ -151,7 +151,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                          source: InAppCloseSource?,
                          clickedUrl: String?,
                          onSuccess: OnSuccessHandler?,
-                         onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                         onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         let requestGenerator = { (requestCreator: RequestCreator) in
             requestCreator.createTrackInAppCloseRequest(inAppMessageContext: InAppMessageContext.from(message: message,
                                                                                                       location: location,
@@ -169,7 +169,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     @discardableResult
     func track(inboxSession: IterableInboxSession,
                onSuccess: OnSuccessHandler?,
-               onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         let requestGenerator = { (requestCreator: RequestCreator) in
             requestCreator.createTrackInboxSessionRequest(inboxSession: inboxSession)
         }
@@ -183,7 +183,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     @discardableResult
     func track(inAppDelivery message: IterableInAppMessage,
                onSuccess: OnSuccessHandler?,
-               onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         let requestGenerator = { (requestCreator: RequestCreator) in
             requestCreator.createTrackInAppDeliveryRequest(inAppMessageContext: InAppMessageContext.from(message: message,
                                                                                                          location: nil))
@@ -198,7 +198,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     @discardableResult
     func inAppConsume(_ messageId: String,
                       onSuccess: OnSuccessHandler?,
-                      onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                      onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         let requestGenerator = { (requestCreator: RequestCreator) in
             requestCreator.createInAppConsumeRequest(messageId)
         }
@@ -214,7 +214,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                       location: InAppLocation,
                       source: InAppDeleteSource?,
                       onSuccess: OnSuccessHandler?,
-                      onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                      onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         let requestGenerator = { (requestCreator: RequestCreator) in
             requestCreator.createTrackInAppConsumeRequest(inAppMessageContext: InAppMessageContext.from(message: message, location: location),
                                                           source: source)
@@ -247,7 +247,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     private func sendIterableRequest(requestGenerator: (RequestCreator) -> Result<IterableRequest, IterableError>,
                                      successHandler onSuccess: OnSuccessHandler?,
                                      failureHandler onFailure: OnFailureHandler?,
-                                     identifier: String) -> Future<SendRequestValue, SendRequestError> {
+                                     identifier: String) -> Pending<SendRequestValue, SendRequestError> {
         guard let authProvider = authProvider else {
             return SendRequestError.createErroredFuture(reason: "AuthProvider is missing")
         }
@@ -294,7 +294,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
             self.notificationCenter.removeObserver(self)
         }
         
-        func futureFromTask(withTaskId taskId: String) -> Future<SendRequestValue, SendRequestError> {
+        func futureFromTask(withTaskId taskId: String) -> Pending<SendRequestValue, SendRequestError> {
             ITBInfo()
             let result = Promise<SendRequestValue, SendRequestError>()
             pendingTasksMap[taskId] = result

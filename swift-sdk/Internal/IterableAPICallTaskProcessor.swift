@@ -12,7 +12,7 @@ struct IterableAPICallTaskProcessor: IterableTaskProcessor {
         self.dateProvider = dateProvider
     }
     
-    func process(task: IterableTask) throws -> Future<IterableTaskResult, IterableTaskError> {
+    func process(task: IterableTask) throws -> Pending<IterableTaskResult, IterableTaskError> {
         ITBInfo()
         guard let data = task.data else {
             return IterableTaskError.createErroredFuture(reason: "expecting data")
