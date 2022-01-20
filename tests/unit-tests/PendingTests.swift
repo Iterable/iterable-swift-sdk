@@ -6,7 +6,7 @@ import XCTest
 
 @testable import IterableSDK
 
-class PromiseTests: XCTestCase {
+class PendingTests: XCTestCase {
     struct MyError: Error, CustomStringConvertible {
         let message: String
         
