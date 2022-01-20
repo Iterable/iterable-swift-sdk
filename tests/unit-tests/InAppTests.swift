@@ -728,7 +728,7 @@ class InAppTests: XCTestCase {
         
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShow.onSuccess { _ in
-            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: 1)) // need to call so future is resolved
+            mockInAppDisplayer.click(url: TestInAppPayloadGenerator.getClickedUrl(index: 1)) // need to call so pending is resolved
             expectation1.fulfill() // expectation1 should not be fulfilled within timeout (inverted)
             expectation2.fulfill()
         }

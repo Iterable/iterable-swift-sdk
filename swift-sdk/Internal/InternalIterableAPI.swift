@@ -75,11 +75,11 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     // MARK: - SDK Functions
     
     @discardableResult func handleUniversalLink(_ url: URL) -> Bool {
-        let (result, future) = deepLinkManager.handleUniversalLink(url,
+        let (result, pending) = deepLinkManager.handleUniversalLink(url,
                                                                    urlDelegate: config.urlDelegate,
                                                                    urlOpener: urlOpener,
                                                                    allowedProtocols: config.allowedProtocols)
-        future.onSuccess { attributionInfo in
+        pending.onSuccess { attributionInfo in
             if let attributionInfo = attributionInfo {
                 self.attributionInfo = attributionInfo
             }

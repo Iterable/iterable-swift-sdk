@@ -14,7 +14,7 @@ class IterableDeepLinkManager: NSObject {
                              urlOpener: UrlOpenerProtocol,
                              allowedProtocols: [String] = []) -> (Bool, Pending<IterableAttributionInfo?, Error>) {
         if isIterableDeepLink(url.absoluteString) {
-            let future = resolve(appLinkURL: url).map { (resolvedUrl, attributionInfo) -> IterableAttributionInfo? in
+            let pending = resolve(appLinkURL: url).map { (resolvedUrl, attributionInfo) -> IterableAttributionInfo? in
                 var resolvedUrlString: String
                 if let resolvedUrl = resolvedUrl {
                     resolvedUrlString = resolvedUrl.absoluteString
@@ -37,7 +37,7 @@ class IterableDeepLinkManager: NSObject {
             }
             
             // Always return true for deep link
-            return (true, future)
+            return (true, pending)
         } else {
             if let action = IterableAction.actionOpenUrl(fromUrlString: url.absoluteString) {
                 let context = IterableActionContext(action: action, source: .universalLink)

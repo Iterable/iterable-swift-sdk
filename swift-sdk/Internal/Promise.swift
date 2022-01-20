@@ -102,13 +102,13 @@ extension Pending {
         let fulfill = Fulfill<NewValue, Failure>()
         
         onSuccess { value in
-            let future = closure(value)
+            let pending = closure(value)
             
-            future.onSuccess { futureValue in
+            pending.onSuccess { futureValue in
                 fulfill.resolve(with: futureValue)
             }
             
-            future.onError { futureError in
+            pending.onError { futureError in
                 fulfill.reject(with: futureError)
             }
         }
@@ -165,7 +165,7 @@ extension Pending {
     }
 }
 
-// This class takes the responsibility of setting value for Future
+// This class takes the responsibility of setting value for Pending
 class Fulfill<Value, Failure>: Pending<Value, Failure> where Failure: Error {
     public init(value: Value? = nil) {
         ITBDebug()

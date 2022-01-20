@@ -142,13 +142,13 @@ class IterableHtmlMessageViewControllerTests: XCTestCase {
         let expectation1 = expectation(description: "checkPositioning")
         let webView = MockWebView(height: inAppHeight)
         
-        let future = IterableHtmlMessageViewController.calculateWebViewPosition(webView: webView,
+        let pending = IterableHtmlMessageViewController.calculateWebViewPosition(webView: webView,
                                                                                 safeAreaInsets: safeAreaInsets,
                                                                                 parentPosition: parentPosition,
                                                                                 paddingLeft: 0,
                                                                                 paddingRight: 0,
                                                                                 location: messageLocation)
-        future.onSuccess { position in
+        pending.onSuccess { position in
             XCTAssertEqual(position, expectedWebViewPosition)
             expectation1.fulfill()
         }

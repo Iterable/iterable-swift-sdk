@@ -77,7 +77,7 @@ class PromiseTests: XCTestCase {
         wait(for: [expectation2], timeout: testExpectationTimeoutForInverted)
     }
     
-    // The first future fails
+    // The first pending fails
     func testFlatMapFailure1() {
         let expectation1 = expectation(description: "test flatMap failure, inverted")
         expectation1.isInverted = true
@@ -102,7 +102,7 @@ class PromiseTests: XCTestCase {
         wait(for: [expectation2], timeout: testExpectationTimeout)
     }
     
-    // The second future fails
+    // The second pending fails
     func testFlatMapFailure2() {
         let expectation1 = expectation(description: "test flatMap success, inverted")
         expectation1.isInverted = true
@@ -128,8 +128,8 @@ class PromiseTests: XCTestCase {
     }
     
     func testFutureInitWithSuccess() {
-        let expectation1 = expectation(description: "test future init with success")
-        let expectation2 = expectation(description: "test future init with success, inverted")
+        let expectation1 = expectation(description: "test pending init with success")
+        let expectation2 = expectation(description: "test pending init with success, inverted")
         expectation2.isInverted = true
         
         let f1: Pending<String, Error> = Fulfill<String, Error>(value: "zeeValue")
@@ -146,9 +146,9 @@ class PromiseTests: XCTestCase {
     }
     
     func testFutureInitWithFailure() {
-        let expectation1 = expectation(description: "test future init with failure, inverted")
+        let expectation1 = expectation(description: "test pending init with failure, inverted")
         expectation1.isInverted = true
-        let expectation2 = expectation(description: "test future init with failure")
+        let expectation2 = expectation(description: "test pending init with failure")
         
         let f1: Pending<String, Error> = Fulfill<String, Error>(error: MyError(message: "zeeErrorMessage"))
         
@@ -166,7 +166,7 @@ class PromiseTests: XCTestCase {
     }
     
     func testMultiValues() {
-        let expectation1 = expectation(description: "test future init with success")
+        let expectation1 = expectation(description: "test pending init with success")
         expectation1.expectedFulfillmentCount = 3
         
         let f1 = createSucessfulFuture(withValue: true)
@@ -191,35 +191,35 @@ class PromiseTests: XCTestCase {
     
     func testWaitUntilFinished() {
         let expectation1 = expectation(description: "testWaitUntilFinished")
-        let future = Fulfill<Bool, Error>()
+        let pending = Fulfill<Bool, Error>()
         
         DispatchQueue.global(qos: .userInitiated).asyncAfter(deadline: .now() + 0.3) {
-            future.resolve(with: true)
+            pending.resolve(with: true)
         }
         
-        future.wait()
+        pending.wait()
         expectation1.fulfill()
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
     private func createSucessfulFuture<T>(withValue value: T) -> Pending<T, Error> {
-        let future = Fulfill<T, Error>()
+        let pending = Fulfill<T, Error>()
         
         DispatchQueue.main.async {
-            future.resolve(with: value)
+            pending.resolve(with: value)
         }
         
-        return future
+        return pending
     }
     
     private func createFailureFuture<T>(withError error: MyError) -> Pending<T, Error> {
-        let future = Fulfill<T, Error>()
+        let pending = Fulfill<T, Error>()
         
         DispatchQueue.main.async {
-            future.reject(with: error)
+            pending.reject(with: error)
         }
         
-        return future
+        return pending
     }
 }
