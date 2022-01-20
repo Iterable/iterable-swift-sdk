@@ -629,7 +629,7 @@ class MockInboxState: InboxStateProtocol {
     }
     
     var unreadMessagesCount: Int {
-        messages.reduce(0) { //!!! purposely added error here
+        messages.reduce(0) {
             $1.read ? $0 + 1 : $0
         }
     }
