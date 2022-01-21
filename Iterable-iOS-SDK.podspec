@@ -14,6 +14,7 @@ Pod::Spec.new do |s|
                      "Jay Kim" => "jay.kim@iterable.com" }
 
   s.platform     = :ios, "10.0"
+  s.weak_frameworks = 'SwiftUI', 'Combine'
   s.source       = { :git => "https://github.com/Iterable/swift-sdk.git", :tag => s.version }
   s.source_files = "swift-sdk/**/*.{h,m,swift}"
   s.exclude_files = "swift-sdk/swiftui/**"
