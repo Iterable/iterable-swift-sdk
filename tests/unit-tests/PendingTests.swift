@@ -7,6 +7,13 @@ import XCTest
 @testable import IterableSDK
 
 class PendingTests: XCTestCase {
+    override func setUpWithError() throws {
+        try super.setUpWithError()
+        
+        IterableLogUtil.sharedInstance = IterableLogUtil(dateProvider: SystemDateProvider(),
+                                                         logDelegate: DefaultLogDelegate())
+    }
+
     struct MyError: Error, CustomStringConvertible {
         let message: String
         

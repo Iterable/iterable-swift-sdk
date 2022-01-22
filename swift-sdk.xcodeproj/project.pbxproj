@@ -43,6 +43,9 @@
 		AC03094B21E532470003A288 /* InAppPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC03094A21E532470003A288 /* InAppPersistence.swift */; };
 		AC05644B26387B54001FB810 /* MockPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC05644A26387B54001FB810 /* MockPersistence.swift */; };
 		AC06E4D327948C32007A6F20 /* InboxState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC06E4D227948C32007A6F20 /* InboxState.swift */; };
+		AC06E4D6279B750F007A6F20 /* PendingImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC06E4D5279B750F007A6F20 /* PendingImpl.swift */; };
+		AC06E4D8279B757E007A6F20 /* IterablePendingImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC06E4D7279B757E007A6F20 /* IterablePendingImpl.swift */; };
+		AC06E4DA279B85D4007A6F20 /* CombinePendingImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC06E4D9279B85D4007A6F20 /* CombinePendingImpl.swift */; };
 		AC1670CD2230A91C00989F8E /* InboxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1670CC2230A91C00989F8E /* InboxTests.swift */; };
 		AC1712892416AEF400F2BB0E /* WebViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1712882416AEF400F2BB0E /* WebViewProtocol.swift */; };
 		AC19520D231D9AC600CD5B61 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA8D1A42196309C001B1332 /* Common.swift */; };
@@ -409,6 +412,9 @@
 		AC03094A21E532470003A288 /* InAppPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPersistence.swift; sourceTree = "<group>"; };
 		AC05644A26387B54001FB810 /* MockPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPersistence.swift; sourceTree = "<group>"; };
 		AC06E4D227948C32007A6F20 /* InboxState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxState.swift; sourceTree = "<group>"; };
+		AC06E4D5279B750F007A6F20 /* PendingImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingImpl.swift; sourceTree = "<group>"; };
+		AC06E4D7279B757E007A6F20 /* IterablePendingImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterablePendingImpl.swift; sourceTree = "<group>"; };
+		AC06E4D9279B85D4007A6F20 /* CombinePendingImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombinePendingImpl.swift; sourceTree = "<group>"; };
 		AC0A45372179300D0040394F /* host-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "host-app.entitlements"; sourceTree = "<group>"; };
 		AC1670CC2230A91C00989F8E /* InboxTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxTests.swift; sourceTree = "<group>"; };
 		AC1712882416AEF400F2BB0E /* WebViewProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewProtocol.swift; sourceTree = "<group>"; };
@@ -732,6 +738,16 @@
 			name = "Helper Files";
 			sourceTree = "<group>";
 		};
+		AC06E4D4279B7448007A6F20 /* Pending */ = {
+			isa = PBXGroup;
+			children = (
+				AC06E4D5279B750F007A6F20 /* PendingImpl.swift */,
+				AC06E4D7279B757E007A6F20 /* IterablePendingImpl.swift */,
+				AC06E4D9279B85D4007A6F20 /* CombinePendingImpl.swift */,
+			);
+			name = Pending;
+			sourceTree = "<group>";
+		};
 		AC1AA1C724EBB39500F29C6B /* Notification Center */ = {
 			isa = PBXGroup;
 			children = (
@@ -1012,6 +1028,7 @@
 		AC72A0BB20CF4C8C004D7997 /* Internal */ = {
 			isa = PBXGroup;
 			children = (
+				AC06E4D4279B7448007A6F20 /* Pending */,
 				AC845105228DF5360052BB8F /* API Client */,
 				AC0248062279132400495FB9 /* Dwifft */,
 				AC2263FA20CF4B84009800EB /* In-App */,
@@ -1756,6 +1773,7 @@
 				AC84256226D6167E0066C627 /* AppExtensionHelper.swift in Sources */,
 				ACE6888D2228B86C00A95E5E /* InAppInternal.swift in Sources */,
 				AC9355D12589F9F90056C903 /* RequestHandlerProtocol.swift in Sources */,
+				AC06E4DA279B85D4007A6F20 /* CombinePendingImpl.swift in Sources */,
 				AC1AA1C924EBB3C300F29C6B /* IterableNotifications.swift in Sources */,
 				ACFD5AB324C8179D008E497A /* PersistenceHelper.swift in Sources */,
 				AC72A0CD20CF4CE2004D7997 /* IterableAppIntegration.swift in Sources */,
@@ -1775,6 +1793,7 @@
 				AC72A0C920CF4CE2004D7997 /* IterableAction.swift in Sources */,
 				AC72A0CA20CF4CE2004D7997 /* IterableActionRunner.swift in Sources */,
 				ACC3FDB1253724DB0004A2E0 /* InAppCalculations.swift in Sources */,
+				AC06E4D8279B757E007A6F20 /* IterablePendingImpl.swift in Sources */,
 				ACD6116C2107D004003E7F6B /* NetworkHelper.swift in Sources */,
 				ACC362B624D16D91002C67BA /* IterableRequest.swift in Sources */,
 				ACB1DFDB26369D2F00A31597 /* HealthMonitor.swift in Sources */,
@@ -1810,6 +1829,7 @@
 				ACD8BF862757FC4C00C2EAB2 /* UIColor+Extension.swift in Sources */,
 				AC72A0C820CF4CE2004D7997 /* Constants.swift in Sources */,
 				AC50865824C60426001DC132 /* IterableTask.swift in Sources */,
+				AC06E4D6279B750F007A6F20 /* PendingImpl.swift in Sources */,
 				AC2B79F721E6A38900A59080 /* NotificationHelper.swift in Sources */,
 				AC4095A422B18B9D006EF67C /* InboxViewControllerViewModel.swift in Sources */,
 				AC7A5261227BB9D10064D67E /* DependencyContainer.swift in Sources */,
