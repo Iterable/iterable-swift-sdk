@@ -25,7 +25,7 @@ struct IterableAPICallTaskProcessor: IterableTaskProcessor {
             return IterableTaskError.createErroredFuture(reason: "could not convert to url request")
         }
         
-        let result = Fulfill<IterableTaskResult, IterableTaskError>()
+        let result = Pending<IterableTaskResult, IterableTaskError>()
         RequestSender.sendRequest(urlRequest, usingSession: networkSession)
             .onSuccess { sendRequestValue in
                 ITBInfo("Task finished successfully")

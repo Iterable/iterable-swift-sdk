@@ -7,7 +7,7 @@ import UIKit
 
 class EmptyInAppManager: IterableInternalInAppManagerProtocol {
     func start() -> Pending<Bool, Error> {
-        Fulfill<Bool, Error>(value: true)
+        Pending<Bool, Error>(value: true)
     }
     
     func handleClick(clickedUrl _: URL?, forMessage _: IterableInAppMessage, location _: InAppLocation) {}
@@ -51,7 +51,7 @@ class EmptyInAppManager: IterableInternalInAppManagerProtocol {
     }
     
     func scheduleSync() -> Pending<Bool, Error> {
-        Fulfill<Bool, Error>(value: true)
+        Pending<Bool, Error>(value: true)
     }
     
     func onInAppRemoved(messageId _: String) {}
@@ -61,6 +61,6 @@ class EmptyInAppManager: IterableInternalInAppManagerProtocol {
     }
     
     func reset() -> Pending<Bool, Error> {
-        Fulfill<Bool, Error>(value: true)
+        Pending<Bool, Error>(value: true)
     }
 }

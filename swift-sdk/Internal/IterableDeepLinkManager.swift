@@ -49,14 +49,14 @@ class IterableDeepLinkManager: NSObject {
                                              urlOpener: urlOpener,
                                              allowedProtocols: allowedProtocols)
             }
-            return (false, Fulfill<IterableAttributionInfo?, Error>(value: nil))
+            return (false, Pending<IterableAttributionInfo?, Error>(value: nil))
         }
     }
     
     /// And we will resolve with redirected URL from our server and we will also try to get attribution info.
     /// Otherwise, we will just resolve with the original URL.
     private func resolve(appLinkURL: URL) -> Pending<(URL?, IterableAttributionInfo?), Error> {
-        let fulfill = Fulfill<(URL?, IterableAttributionInfo?), Error>()
+        let fulfill = Pending<(URL?, IterableAttributionInfo?), Error>()
         
         deepLinkCampaignId = nil
         deepLinkTemplateId = nil

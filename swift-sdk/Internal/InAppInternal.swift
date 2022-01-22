@@ -40,7 +40,7 @@ class InAppFetcher: InAppFetcherProtocol {
         
         guard let apiClient = apiClient else {
             ITBError("Invalid state: expected ApiClient")
-            return Fulfill(error: IterableError.general(description: "Invalid state: expected InternalApi"))
+            return Pending(error: IterableError.general(description: "Invalid state: expected InternalApi"))
         }
         
         return InAppHelper.getInAppMessagesFromServer(apiClient: apiClient, number: numMessages).mapFailure { $0 }

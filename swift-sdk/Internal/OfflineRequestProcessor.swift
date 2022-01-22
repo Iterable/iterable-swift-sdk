@@ -296,7 +296,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         
         func futureFromTask(withTaskId taskId: String) -> Pending<SendRequestValue, SendRequestError> {
             ITBInfo()
-            let result = Fulfill<SendRequestValue, SendRequestError>()
+            let result = Pending<SendRequestValue, SendRequestError>()
             pendingTasksMap[taskId] = result
             return result
         }
@@ -336,6 +336,6 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         }
 
         private let notificationCenter: NotificationCenterProtocol
-        private var pendingTasksMap = [String: Fulfill<SendRequestValue, SendRequestError>]()
+        private var pendingTasksMap = [String: Pending<SendRequestValue, SendRequestError>]()
     }
 }

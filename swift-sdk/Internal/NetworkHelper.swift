@@ -66,7 +66,7 @@ extension URLSession: NetworkSessionProtocol {
 
 struct NetworkHelper {
     static func getData(fromUrl url: URL, usingSession networkSession: NetworkSessionProtocol) -> Pending<Data, Error> {
-        let fulfill = Fulfill<Data, Error>()
+        let fulfill = Pending<Data, Error>()
         
         networkSession.makeDataRequest(with: url) { data, response, error in
             let result = createDataResultFromNetworkResponse(data: data, response: response, error: error)
@@ -109,7 +109,7 @@ struct NetworkHelper {
         print()
         #endif
         
-        let fulfill = Fulfill<T, NetworkError>()
+        let fulfill = Pending<T, NetworkError>()
         
         networkSession.makeRequest(request) { data, response, error in
             let result = createResultFromNetworkResponse(data: data,

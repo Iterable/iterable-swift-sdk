@@ -42,7 +42,7 @@ extension WKWebView: WebViewProtocol {
     }
     
     func calculateHeight() -> Pending<CGFloat, IterableError> {
-        let fulfill = Fulfill<CGFloat, IterableError>()
+        let fulfill = Pending<CGFloat, IterableError>()
         
         evaluateJavaScript("document.body.offsetHeight", completionHandler: { height, _ in
             guard let floatHeight = height as? CGFloat, floatHeight >= 20 else {

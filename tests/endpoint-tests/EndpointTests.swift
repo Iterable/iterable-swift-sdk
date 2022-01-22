@@ -316,10 +316,10 @@ class EndpointTests: XCTestCase {
         let messages = InAppTestHelper.inAppMessages(fromPayload: json)
         
         guard messages.count > 0 else {
-            return Fulfill<SendRequestValue, SendRequestError>(value: [:])
+            return Pending<SendRequestValue, SendRequestError>(value: [:])
         }
         
-        let result = Fulfill<SendRequestValue, SendRequestError>(value: [:])
+        let result = Pending<SendRequestValue, SendRequestError>(value: [:])
         
         return messages.reduce(result) { (partialResult, message) -> Pending<SendRequestValue, SendRequestError> in
             partialResult.flatMap { _ in
