@@ -112,6 +112,14 @@ class IterablePendingImpl<Value, Failure> : PendingImpl<Value, Failure> where Fa
         
         return fulfill
     }
+    
+    override func resolve(with value: Value) {
+        result = .success(value)
+    }
+    
+    override func reject(with error: Failure) {
+        result = .failure(error)
+    }
 
     override func isResolved() -> Bool {
         result != nil
@@ -128,17 +136,16 @@ class IterablePendingImpl<Value, Failure> : PendingImpl<Value, Failure> where Fa
         Thread.sleep(forTimeInterval: 0.1)
         wait()
     }
-    
-    public init(value: Value? = nil) {
-        ITBDebug()
-        if let value = value {
-            result = Result.success(value)
-        } else {
-            result = nil
-        }
+
+    override init() {
+        result = nil
+    }
+
+    init(value: Value) {
+        result = Result.success(value)
     }
     
-    public init(error: Failure) {
+    init(error: Failure) {
         ITBDebug()
         result = Result.failure(error)
     }
@@ -147,14 +154,6 @@ class IterablePendingImpl<Value, Failure> : PendingImpl<Value, Failure> where Fa
         ITBDebug()
     }
     
-    public func resolve(with value: Value) {
-        result = .success(value)
-    }
-    
-    public func reject(with error: Failure) {
-        result = .failure(error)
-    }
-
     private var successCallbacks = [(Value) -> Void]()
     private var errorCallbacks = [(Failure) -> Void]()
     

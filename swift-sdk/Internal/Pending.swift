@@ -60,12 +60,12 @@ class Pending<Value, Failure> where Failure: Error {
     
     public func resolve(with value: Value) {
         ITBDebug()
-        (implementation as! IterablePendingImpl).resolve(with: value)
+        implementation.resolve(with: value)
     }
     
     public func reject(with error: Failure) {
         ITBDebug()
-        (implementation as! IterablePendingImpl).reject(with: error)
+        implementation.reject(with: error)
     }
 
     fileprivate let implementation: PendingImpl<Value, Failure>
@@ -75,7 +75,12 @@ class Pending<Value, Failure> where Failure: Error {
         self.implementation = implementation
     }
     
-    init(value: Value? = nil) {
+    init() {
+        ITBDebug()
+        implementation = IterablePendingImpl<Value, Failure>()
+    }
+    
+    init(value: Value) {
         ITBDebug()
         implementation = IterablePendingImpl<Value, Failure>(value: value)
     }

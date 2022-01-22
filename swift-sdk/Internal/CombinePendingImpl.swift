@@ -54,6 +54,17 @@ class CombinePendingImpl<Value, Failure> : PendingImpl<Value, Failure> where Fai
         CombinePendingImpl<Value, Never>(publisher: publisher.replaceError(with: defaultForError).eraseToAnyPublisher())
     }
     
+    override func resolve(with value: Value) {
+        passthroughSubject?.send(value)
+        passthroughSubject?.send(completion: .finished)
+        resolved = true
+    }
+    
+    override func reject(with error: Failure) {
+        passthroughSubject?.send(completion: .failure(error))
+        resolved = true
+    }
+
     override func isResolved() -> Bool {
         resolved
     }
@@ -70,7 +81,31 @@ class CombinePendingImpl<Value, Failure> : PendingImpl<Value, Failure> where Fai
         wait()
     }
     
-    init(publisher: AnyPublisher<Value, Failure>) {
+    override init() {
+        ITBDebug()
+        let passthroughSubject = PassthroughSubject<Value, Failure>()
+        self.passthroughSubject = passthroughSubject
+        publisher = passthroughSubject.eraseToAnyPublisher()
+        super.init()
+    }
+    
+    init(value: Value) {
+        ITBDebug()
+        resolved = true
+        self.publisher = Just(value)
+            .setFailureType(to: Failure.self)
+            .eraseToAnyPublisher()
+    }
+    
+    init(error: Failure) {
+        ITBDebug()
+        resolved = true
+        self.publisher = Fail(error: error)
+            .eraseToAnyPublisher()
+    }
+    
+    private init(publisher: AnyPublisher<Value, Failure>) {
+        ITBDebug()
         self.publisher = publisher
         super.init()
         self.publisher.subscribe(Subscribers.Sink(receiveCompletion: { [weak self] _ in
@@ -78,8 +113,13 @@ class CombinePendingImpl<Value, Failure> : PendingImpl<Value, Failure> where Fai
         }, receiveValue: { _ in
         }))
     }
+    
+    deinit {
+        ITBDebug()
+    }
 
-    private let publisher: AnyPublisher<Value, Failure>
+    private var passthroughSubject: PassthroughSubject<Value, Failure>?
+    private var publisher: AnyPublisher<Value, Failure>
     private var resolved = false
 }
 
