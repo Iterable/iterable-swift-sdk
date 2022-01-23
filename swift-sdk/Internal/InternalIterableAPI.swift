@@ -200,14 +200,16 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                      withToken token: String? = nil,
                      onSuccess: OnSuccessHandler? = nil,
                      onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        requestHandler.updateEmail(newEmail, onSuccess: nil, onFailure: nil).onSuccess { json in
+        let updateResult = requestHandler.updateEmail(newEmail, onSuccess: nil, onFailure: nil)
+        updateResult.onCompletion { json in
             if self.email != nil {
                 self.setEmail(newEmail)
             }
             onSuccess?(json)
-        }.onError { error in
+        } receiveError: { error in
             onFailure?(error.reason, error.data)
         }
+        return updateResult
     }
     
     @discardableResult
@@ -615,12 +617,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     private func checkRemoteConfiguration() {
         ITBInfo()
-        requestHandler.getRemoteConfiguration().onSuccess { remoteConfiguration in
+        requestHandler.getRemoteConfiguration().onCompletion { remoteConfiguration in
             self.localStorage.offlineMode = remoteConfiguration.offlineMode
             self.localStorage.offlineModeBeta = remoteConfiguration.offlineModeBeta
             self.requestHandler.offlineMode = remoteConfiguration.isOfflineModeEnabled()
             ITBInfo("setting offlineMode: \(self.requestHandler.offlineMode)")
-        }.onError { error in
+        } receiveError: { error in
             let offlineMode = self.requestHandler.offlineMode
             ITBError("Could not get remote configuration: \(error.localizedDescription), using saved value: \(offlineMode)")
         }

@@ -27,11 +27,11 @@ struct IterableAPICallTaskProcessor: IterableTaskProcessor {
         
         let result = Pending<IterableTaskResult, IterableTaskError>()
         RequestSender.sendRequest(urlRequest, usingSession: networkSession)
-            .onSuccess { sendRequestValue in
+            .onCompletion { sendRequestValue in
                 ITBInfo("Task finished successfully")
                 result.resolve(with: .success(detail: sendRequestValue))
             }
-            .onError { sendRequestError in
+            receiveError: { sendRequestError in
                 if IterableAPICallTaskProcessor.isNetworkUnavailable(sendRequestError: sendRequestError) {
                     ITBInfo("Network is unavailable")
                     result.resolve(with: .failureWithRetry(retryAfter: nil, detail: sendRequestError))

@@ -113,6 +113,10 @@ class IterablePendingImpl<Value, Failure> : PendingImpl<Value, Failure> where Fa
         return fulfill
     }
     
+    override func send(value: Value) {
+        result = .success(value)
+    }
+    
     override func resolve(with value: Value) {
         result = .success(value)
     }

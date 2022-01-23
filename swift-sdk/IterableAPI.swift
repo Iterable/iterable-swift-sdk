@@ -114,9 +114,9 @@ public final class IterableAPI: NSObject {
                                                      launchOptions: launchOptions,
                                                      config: config,
                                                      apiEndPointOverride: apiEndPointOverride)
-        _ = internalImplementation?.start().onSuccess { _ in
+        _ = internalImplementation?.start().onCompletion { _ in
             callback?(true)
-        }.onError { _ in
+        } receiveError: { _ in
             callback?(false)
         }
     }

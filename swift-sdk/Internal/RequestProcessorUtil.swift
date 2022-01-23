@@ -11,13 +11,13 @@ struct RequestProcessorUtil {
                       andAuthManager authManager: IterableAuthManagerProtocol? = nil,
                       toResult result: Pending<SendRequestValue, SendRequestError>,
                       withIdentifier identifier: String) -> Pending<SendRequestValue, SendRequestError> {
-        result.onSuccess { json in
+        result.onCompletion { json in
             if let onSuccess = onSuccess {
                 onSuccess(json)
             } else {
                 defaultOnSuccess(identifier)(json)
             }
-        }.onError { error in
+        } receiveError: { error in
             if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.invalidJwtPayload {
                 ITBError(error.reason)
                 authManager?.requestNewAuthToken(hasFailedPriorAuth: true, onSuccess: nil)

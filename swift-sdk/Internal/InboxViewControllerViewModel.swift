@@ -150,9 +150,9 @@ class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtoc
     }
     
     private func loadImage(forMessageId messageId: String, fromUrl url: URL) {
-        input.loadImage(forMessageId: messageId, fromUrl: url).onSuccess { [weak self] in
+        input.loadImage(forMessageId: messageId, fromUrl: url).onCompletion { [weak self] in
             self?.setImageData($0, forMessageId: messageId)
-        }.onError {
+        } receiveError: {
             ITBError($0.localizedDescription)
         }
     }

@@ -61,6 +61,11 @@ class CombinePendingImpl<Value, Failure> : PendingImpl<Value, Failure> where Fai
         return copy(publisher: publisher.replaceError(with: defaultForError).eraseToAnyPublisher())
     }
     
+    override func send(value: Value) {
+        ITBDebug()
+        passthroughSubject?.send(value)
+    }
+
     override func resolve(with value: Value) {
         ITBDebug()
         passthroughSubject?.send(value)

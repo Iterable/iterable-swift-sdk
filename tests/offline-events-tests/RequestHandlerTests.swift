@@ -1043,9 +1043,9 @@ class RequestHandlerTests: XCTestCase {
             XCTAssertTrue(TestUtils.areEqual(dict1: bodyDict, dict2: requestBody))
         }
         
-        request().onSuccess { json in
+        request().onCompletion { json in
             expectation.fulfill()
-        }.onError { error in
+        } receiveError: { error in
             XCTFail()
         }
     }
@@ -1061,9 +1061,9 @@ class RequestHandlerTests: XCTestCase {
             requestBody.removeValue(forKey: "createdAt")
             XCTAssertTrue(TestUtils.areEqual(dict1: bodyDict, dict2: requestBody))
         }
-        request().onSuccess { json in
+        request().onCompletion { json in
             XCTFail()
-        }.onError { error in
+        } receiveError: { error in
             expectation.fulfill()
         }
     }

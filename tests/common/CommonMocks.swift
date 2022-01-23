@@ -382,7 +382,7 @@ class MockInAppDisplayer: InAppDisplayerProtocol {
         showing = true
         self.onClickCallback = onClickCallback
         
-        onShow.resolve(with: message)
+        onShow.send(value: message)
         
         return .shown
     }

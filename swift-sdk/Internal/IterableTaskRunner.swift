@@ -195,7 +195,7 @@ class IterableTaskRunner: NSObject {
         ITBInfo()
         let result = Pending<TaskExecutionResult, Never>()
         do {
-            try processor.process(task: task).onSuccess { taskResult in
+            try processor.process(task: task).onCompletion { taskResult in
                 switch taskResult {
                 case let .success(detail: detail):
                     ITBInfo("task: \(task.id) succeeded")
@@ -225,7 +225,7 @@ class IterableTaskRunner: NSObject {
                     }
                     result.resolve(with: .retry)
                 }
-            }.onError { error in
+            } receiveError: { error in
                 ITBError("task processing error: \(error.localizedDescription)")
                 result.resolve(with: .failure)
             }

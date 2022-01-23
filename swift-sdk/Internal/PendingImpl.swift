@@ -17,6 +17,7 @@ class PendingImpl<Value, Failure> where Failure: Error {
     func mapFailure<NewFailure>(_ closure: @escaping (Failure) -> NewFailure) -> PendingImpl<Value, NewFailure> { preconditionFailure() }
     func replaceError(with defaultForError: Value) -> PendingImpl<Value, Never> { preconditionFailure() }
     
+    func send(value: Value) { preconditionFailure() }
     func resolve(with value: Value) { preconditionFailure() }
     func reject(with error: Failure) { preconditionFailure() }
     
