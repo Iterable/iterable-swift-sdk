@@ -10,6 +10,7 @@ import Combine
 @available(iOS 13.0, *)
 class CombinePendingImpl<Value, Failure> : PendingImpl<Value, Failure> where Failure: Error {
     override func onCompletion(receiveValue: @escaping ((Value) -> Void), receiveError: ((Failure) -> Void)? = nil) {
+        ITBDebug()
         publisher.subscribe(Subscribers.Sink(receiveCompletion: { (completion) in
             if case .failure(let error) = completion {
                 receiveError?(error)
@@ -20,6 +21,7 @@ class CombinePendingImpl<Value, Failure> : PendingImpl<Value, Failure> where Fai
     }
     
     override func onSuccess(block: @escaping ((Value) -> Void)) -> Self {
+        ITBDebug()
         onCompletion { value in
             block(value)
         }
@@ -27,6 +29,7 @@ class CombinePendingImpl<Value, Failure> : PendingImpl<Value, Failure> where Fai
     }
     
     override func onError(block: @escaping ((Failure) -> Void)) -> Self {
+        ITBDebug()
         onCompletion { _ in
         } receiveError: { error in
             block(error)
@@ -35,38 +38,45 @@ class CombinePendingImpl<Value, Failure> : PendingImpl<Value, Failure> where Fai
     }
     
     override func flatMap<NewValue>(_ closure: @escaping (Value) -> PendingImpl<NewValue, Failure>) -> PendingImpl<NewValue, Failure> {
+        ITBDebug()
         let flatMapped = publisher.flatMap { value -> AnyPublisher<NewValue,Failure> in
             (closure(value) as! CombinePendingImpl<NewValue, Failure>).publisher
         }.eraseToAnyPublisher()
         
-        return CombinePendingImpl<NewValue, Failure>(publisher: flatMapped)
+        return copy(publisher: flatMapped)
     }
     
     override func map<NewValue>(_ closure: @escaping (Value) -> NewValue) -> PendingImpl<NewValue, Failure> {
-        CombinePendingImpl<NewValue, Failure>(publisher: publisher.map (closure).eraseToAnyPublisher())
+        ITBDebug()
+        return copy(publisher: publisher.map (closure).eraseToAnyPublisher())
     }
     
     override func mapFailure<NewFailure>(_ closure: @escaping (Failure) -> NewFailure) -> PendingImpl<Value, NewFailure> where NewFailure : Error {
-        CombinePendingImpl<Value, NewFailure>(publisher: publisher.mapError(closure).eraseToAnyPublisher())
+        ITBDebug()
+        return copy(publisher: publisher.mapError(closure).eraseToAnyPublisher())
     }
     
     override func replaceError(with defaultForError: Value) -> PendingImpl<Value, Never> {
-        CombinePendingImpl<Value, Never>(publisher: publisher.replaceError(with: defaultForError).eraseToAnyPublisher())
+        ITBDebug()
+        return copy(publisher: publisher.replaceError(with: defaultForError).eraseToAnyPublisher())
     }
     
     override func resolve(with value: Value) {
+        ITBDebug()
         passthroughSubject?.send(value)
         passthroughSubject?.send(completion: .finished)
         resolved = true
     }
     
     override func reject(with error: Failure) {
+        ITBDebug()
         passthroughSubject?.send(completion: .failure(error))
         resolved = true
     }
 
     override func isResolved() -> Bool {
-        resolved
+        ITBDebug()
+        return resolved
     }
     
     override func wait() {
@@ -86,6 +96,7 @@ class CombinePendingImpl<Value, Failure> : PendingImpl<Value, Failure> where Fai
         let passthroughSubject = PassthroughSubject<Value, Failure>()
         self.passthroughSubject = passthroughSubject
         publisher = passthroughSubject.eraseToAnyPublisher()
+        
         super.init()
     }
     
@@ -104,14 +115,16 @@ class CombinePendingImpl<Value, Failure> : PendingImpl<Value, Failure> where Fai
             .eraseToAnyPublisher()
     }
     
-    private init(publisher: AnyPublisher<Value, Failure>) {
+    private func copy<NewValue, NewFailure>(publisher: AnyPublisher<NewValue, NewFailure>) -> CombinePendingImpl<NewValue, NewFailure> {
+        CombinePendingImpl<NewValue, NewFailure>(publisher: publisher,
+                                                 resolved: resolved)
+    }
+    
+    private init(publisher: AnyPublisher<Value, Failure>,
+                 resolved: Bool) {
         ITBDebug()
         self.publisher = publisher
-        super.init()
-        self.publisher.subscribe(Subscribers.Sink(receiveCompletion: { [weak self] _ in
-            self?.resolved = true
-        }, receiveValue: { _ in
-        }))
+        self.resolved = resolved
     }
     
     deinit {

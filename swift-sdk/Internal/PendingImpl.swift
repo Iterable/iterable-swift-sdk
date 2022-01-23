@@ -5,7 +5,7 @@
 import Foundation
 
 class PendingImpl<Value, Failure> where Failure: Error {
-    func onCompletion(receiveValue: @escaping ((Value) -> Void), receiveError: ( (Failure) -> Void)?) {}
+    func onCompletion(receiveValue: @escaping ((Value) -> Void), receiveError: ( (Failure) -> Void)?) { preconditionFailure() }
     
     @discardableResult
     func onSuccess(block: @escaping ((Value) -> Void)) -> Self { preconditionFailure() }
@@ -21,5 +21,5 @@ class PendingImpl<Value, Failure> where Failure: Error {
     func reject(with error: Failure) { preconditionFailure() }
     
     func isResolved() -> Bool { preconditionFailure() }
-    func wait() {}
+    func wait() { preconditionFailure() }
 }

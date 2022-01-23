@@ -19,42 +19,51 @@ extension IterableError: LocalizedError {
 
 class Pending<Value, Failure> where Failure: Error {
     func onCompletion(receiveValue: @escaping ((Value) -> Void), receiveError: ( (Failure) -> Void)? = nil) {
+        ITBDebug()
         implementation.onCompletion(receiveValue: receiveValue, receiveError: receiveError)
     }
     
     @discardableResult
     func onSuccess(block: @escaping ((Value) -> Void)) -> Self {
+        ITBDebug()
         implementation.onSuccess(block: block)
         return self
     }
     
     @discardableResult
     func onError(block: @escaping ((Failure) -> Void)) -> Self {
+        ITBDebug()
         implementation.onError(block: block)
         return self
     }
     
     func flatMap<NewValue>(_ closure: @escaping (Value) -> Pending<NewValue, Failure>) -> Pending<NewValue, Failure> {
-        Pending<NewValue, Failure>(implementation: implementation.flatMap { closure($0).implementation })
+        ITBDebug()
+        return Pending<NewValue, Failure>(implementation: implementation.flatMap { closure($0).implementation })
     }
     
     func map<NewValue>(_ closure: @escaping (Value) -> NewValue) -> Pending<NewValue, Failure> {
-        Pending<NewValue, Failure>(implementation: implementation.map { closure($0) })
+        ITBDebug()
+        return Pending<NewValue, Failure>(implementation: implementation.map { closure($0) })
     }
     
     func mapFailure<NewFailure>(_ closure: @escaping (Failure) -> NewFailure) -> Pending<Value, NewFailure> {
-        Pending<Value, NewFailure>(implementation: implementation.mapFailure { closure($0) })
+        ITBDebug()
+        return Pending<Value, NewFailure>(implementation: implementation.mapFailure { closure($0) })
     }
 
     func replaceError(with defaultForError: Value) -> Pending<Value, Never> {
-        Pending<Value, Never>(implementation: implementation.replaceError(with: defaultForError))
+        ITBDebug()
+        return Pending<Value, Never>(implementation: implementation.replaceError(with: defaultForError))
     }
 
     public func isResolved() -> Bool {
-        implementation.isResolved()
+        ITBDebug()
+        return implementation.isResolved()
     }
     
     public func wait() {
+        ITBDebug()
         implementation.wait()
     }
     
