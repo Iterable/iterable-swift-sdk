@@ -25,8 +25,8 @@ struct SendRequestError: Error {
         self.originalError = originalError
     }
     
-    static func createErroredFuture<T>(reason: String? = nil) -> Future<T, SendRequestError> {
-        Promise<T, SendRequestError>(error: SendRequestError(reason: reason))
+    static func createErroredFuture<T>(reason: String? = nil) -> Pending<T, SendRequestError> {
+        Fulfill<T, SendRequestError>(error: SendRequestError(reason: reason))
     }
     
     static func from(error: Error) -> SendRequestError {
@@ -91,7 +91,7 @@ extension SendRequestError: LocalizedError {
 
 struct RequestSender {
     static func sendRequest<T>(_ request: URLRequest,
-                               usingSession networkSession: NetworkSessionProtocol) -> Future<T, SendRequestError> where T: Decodable {
+                               usingSession networkSession: NetworkSessionProtocol) -> Pending<T, SendRequestError> where T: Decodable {
         let converter: (Data) throws -> T? = { data in
             try JSONDecoder().decode(T.self, from: data)
         }
@@ -103,7 +103,7 @@ struct RequestSender {
     }
 
     static func sendRequest(_ request: URLRequest,
-                            usingSession networkSession: NetworkSessionProtocol) -> Future<SendRequestValue, SendRequestError> {
+                            usingSession networkSession: NetworkSessionProtocol) -> Pending<SendRequestValue, SendRequestError> {
         let converter: (Data) throws -> SendRequestValue? = { data in
             try JSONSerialization.jsonObject(with: data, options: []) as? [AnyHashable: Any]
         }

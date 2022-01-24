@@ -10,7 +10,7 @@ protocol InAppDisplayChecker {
 }
 
 protocol IterableInternalInAppManagerProtocol: IterableInAppManagerProtocol, InAppNotifiable, InAppDisplayChecker {
-    func start() -> Future<Bool, Error>
+    func start() -> Pending<Bool, Error>
     
     /// Use this method to handle clicks in InApp Messages
     /// - parameter clickedUrl: The url that is clicked.
@@ -152,7 +152,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     
     // MARK: - IterableInternalInAppManagerProtocol
     
-    func start() -> Future<Bool, Error> {
+    func start() -> Pending<Bool, Error> {
         ITBInfo()
         
         if messagesMap.values.filter({ $0.saveToInbox }).count > 0 {
@@ -202,7 +202,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         }
     }
     
-    private func synchronize(appIsReady: Bool) -> Future<Bool, Error> {
+    private func synchronize(appIsReady: Bool) -> Pending<Bool, Error> {
         ITBInfo()
         
         return fetcher.fetch()
@@ -350,10 +350,10 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     private func updateMessage(_ message: IterableInAppMessage,
                                read: Bool? = nil,
                                didProcessTrigger: Bool? = nil,
-                               consumed: Bool? = nil) -> Future<Bool, IterableError> {
+                               consumed: Bool? = nil) -> Pending<Bool, IterableError> {
         ITBDebug()
         
-        let result = Promise<Bool, IterableError>()
+        let result = Fulfill<Bool, IterableError>()
         
         updateQueue.async { [weak self] in
             self?.updateMessageSync(message, read: read, didProcessTrigger: didProcessTrigger, consumed: consumed)
@@ -488,12 +488,12 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     }
     
     fileprivate static func getAppIsReady(applicationStateProvider: ApplicationStateProviderProtocol,
-                                          displayer: InAppDisplayerProtocol) -> Promise<Bool, Error> {
+                                          displayer: InAppDisplayerProtocol) -> Fulfill<Bool, Error> {
         if Thread.isMainThread {
             let ready = (applicationStateProvider.applicationState == .active) && (displayer.isShowingInApp() == false)
-            return Promise(value: ready)
+            return Fulfill(value: ready)
         } else {
-            let result = Promise<Bool, Error>()
+            let result = Fulfill<Bool, Error>()
             
             DispatchQueue.main.async {
                 let ready = (applicationStateProvider.applicationState == .active) && (displayer.isShowingInApp() == false)
@@ -528,14 +528,14 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     private let callbackQueue = DispatchQueue(label: "CallbackQueue")
     private let syncQueue = DispatchQueue(label: "SyncQueue")
     
-    private var syncResult: Future<Bool, Error>?
+    private var syncResult: Pending<Bool, Error>?
     private var lastSyncTime: Date?
     private let moveToForegroundSyncInterval: Double = 1.0 * 60.0 // don't sync within sixty seconds
     private var autoDisplayPaused = false
 }
 
 extension InAppManager: InAppNotifiable {
-    func scheduleSync() -> Future<Bool, Error> {
+    func scheduleSync() -> Pending<Bool, Error> {
         ITBInfo()
         
         return InAppManager.getAppIsReady(applicationStateProvider: applicationStateProvider,
@@ -543,17 +543,17 @@ extension InAppManager: InAppNotifiable {
             .flatMap { self.scheduleSync(appIsReady: $0) }
     }
     
-    private func scheduleSync(appIsReady: Bool) -> Future<Bool, Error> {
+    private func scheduleSync(appIsReady: Bool) -> Pending<Bool, Error> {
         ITBInfo()
         
-        let result = Promise<Bool, Error>()
+        let result = Fulfill<Bool, Error>()
         
         syncQueue.async { [weak self] in
             if let syncResult = self?.syncResult {
                 if syncResult.isResolved() {
                     self?.syncResult = self?.synchronize(appIsReady: appIsReady)
                 } else {
-                    self?.syncResult = syncResult.flatMap { _ in self?.synchronize(appIsReady: appIsReady) ?? Promise<Bool, Error>(value: true) }
+                    self?.syncResult = syncResult.flatMap { _ in self?.synchronize(appIsReady: appIsReady) ?? Fulfill<Bool, Error>(value: true) }
                 }
             } else {
                 self?.syncResult = self?.synchronize(appIsReady: appIsReady)
@@ -586,10 +586,10 @@ extension InAppManager: InAppNotifiable {
         }
     }
     
-    func reset() -> Future<Bool, Error> {
+    func reset() -> Pending<Bool, Error> {
         ITBInfo()
         
-        let result = Promise<Bool, Error>()
+        let result = Fulfill<Bool, Error>()
         
         syncQueue.async { [weak self] in
             self?.messagesMap.reset()

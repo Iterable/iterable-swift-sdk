@@ -220,8 +220,8 @@
 		ACE34AB72139D70B00691224 /* LocalStorageProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE34AB62139D70B00691224 /* LocalStorageProtocol.swift */; };
 		ACE6888D2228B86C00A95E5E /* InAppInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACE6888C2228B86C00A95E5E /* InAppInternal.swift */; };
 		ACED4C01213F50B30055A497 /* LoggingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACED4C00213F50B30055A497 /* LoggingTests.swift */; };
-		ACEDF41D2183C2EC000B9BFE /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEDF41C2183C2EC000B9BFE /* Promise.swift */; };
-		ACEDF41F2183C436000B9BFE /* PromiseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEDF41E2183C436000B9BFE /* PromiseTests.swift */; };
+		ACEDF41D2183C2EC000B9BFE /* Pending.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEDF41C2183C2EC000B9BFE /* Pending.swift */; };
+		ACEDF41F2183C436000B9BFE /* PendingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACEDF41E2183C436000B9BFE /* PendingTests.swift */; };
 		ACF32BDB24E3EA7C0072E2CC /* RequestProcessorProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF32BDA24E3EA7C0072E2CC /* RequestProcessorProtocol.swift */; };
 		ACF40621250781F1005FD775 /* NetworkConnectivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF40620250781F1005FD775 /* NetworkConnectivityManager.swift */; };
 		ACF406232507BC72005FD775 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACF406222507BC72005FD775 /* NetworkMonitor.swift */; };
@@ -575,8 +575,8 @@
 		ACE34AB62139D70B00691224 /* LocalStorageProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageProtocol.swift; sourceTree = "<group>"; };
 		ACE6888C2228B86C00A95E5E /* InAppInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppInternal.swift; sourceTree = "<group>"; };
 		ACED4C00213F50B30055A497 /* LoggingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoggingTests.swift; sourceTree = "<group>"; };
-		ACEDF41C2183C2EC000B9BFE /* Promise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Promise.swift; sourceTree = "<group>"; };
-		ACEDF41E2183C436000B9BFE /* PromiseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromiseTests.swift; sourceTree = "<group>"; };
+		ACEDF41C2183C2EC000B9BFE /* Pending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pending.swift; sourceTree = "<group>"; };
+		ACEDF41E2183C436000B9BFE /* PendingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendingTests.swift; sourceTree = "<group>"; };
 		ACF32BDA24E3EA7C0072E2CC /* RequestProcessorProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RequestProcessorProtocol.swift; sourceTree = "<group>"; };
 		ACF40620250781F1005FD775 /* NetworkConnectivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkConnectivityManager.swift; sourceTree = "<group>"; };
 		ACF406222507BC72005FD775 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
@@ -875,7 +875,7 @@
 				5536781E2576FF9000DB3652 /* IterableUtilTests.swift */,
 				ACED4C00213F50B30055A497 /* LoggingTests.swift */,
 				55B37FC5229752DD0042F13A /* OrderedDictionaryTests.swift */,
-				ACEDF41E2183C436000B9BFE /* PromiseTests.swift */,
+				ACEDF41E2183C436000B9BFE /* PendingTests.swift */,
 			);
 			name = "foundational-tests";
 			sourceTree = "<group>";
@@ -1035,7 +1035,7 @@
 				AC2C668120D32F2800D46CC9 /* IterableAppIntegrationInternal.swift */,
 				AC72A0BD20CF4C98004D7997 /* IterableDeepLinkManager.swift */,
 				AC2B79F621E6A38900A59080 /* NotificationHelper.swift */,
-				ACEDF41C2183C2EC000B9BFE /* Promise.swift */,
+				ACEDF41C2183C2EC000B9BFE /* Pending.swift */,
 			);
 			path = Internal;
 			sourceTree = "<group>";
@@ -1815,7 +1815,7 @@
 				AC7A5261227BB9D10064D67E /* DependencyContainer.swift in Sources */,
 				AC776DA6211A1B8A00C27C27 /* IterableRequestUtil.swift in Sources */,
 				55DD2053269FA28200773CC7 /* IterableInAppManagerProtocol.swift in Sources */,
-				ACEDF41D2183C2EC000B9BFE /* Promise.swift in Sources */,
+				ACEDF41D2183C2EC000B9BFE /* Pending.swift in Sources */,
 				AC78F0E7253D7F09006378A5 /* IterablePushNotificationMetadata.swift in Sources */,
 				AC7125EF20D4579E0043BBC1 /* IterableConfig.swift in Sources */,
 				AC03094B21E532470003A288 /* InAppPersistence.swift in Sources */,
@@ -1915,7 +1915,7 @@
 				AC3A2FF0262EDD4C00425435 /* InAppPriorityTests.swift in Sources */,
 				ACD6116E21080564003E7F6B /* IterableAPITests.swift in Sources */,
 				AC02CAA6234E50B5006617E0 /* RegistrationTests.swift in Sources */,
-				ACEDF41F2183C436000B9BFE /* PromiseTests.swift in Sources */,
+				ACEDF41F2183C436000B9BFE /* PendingTests.swift in Sources */,
 				AC1B29002742579000AD2BE3 /* InAppNavigationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

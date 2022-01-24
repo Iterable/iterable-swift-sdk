@@ -21,11 +21,29 @@ extension IterableError: LocalizedError {
 // either there is a success with result
 // or there is a failure with error
 // There is no way to set value a result in this class.
-class Future<Value, Failure> where Failure: Error {
+class Pending<Value, Failure> where Failure: Error {
     fileprivate var successCallbacks = [(Value) -> Void]()
     fileprivate var errorCallbacks = [(Failure) -> Void]()
     
-    @discardableResult public func onSuccess(block: @escaping ((Value) -> Void)) -> Future<Value, Failure> {
+    public func onCompletion(receiveValue: @escaping ((Value) -> Void), receiveError: ( (Failure) -> Void)? = nil) {
+        successCallbacks.append(receiveValue)
+        
+        // if a successful result already exists (from constructor), report it
+        if case let Result.success(value)? = result {
+            successCallbacks.forEach { $0(value) }
+        }
+        
+        if let receiveError = receiveError {
+            errorCallbacks.append(receiveError)
+            
+            // if a failed result already exists (from constructor), report it
+            if case let Result.failure(error)? = result {
+                errorCallbacks.forEach { $0(error) }
+            }
+        }
+    }
+    
+    @discardableResult public func onSuccess(block: @escaping ((Value) -> Void)) -> Pending<Value, Failure> {
         successCallbacks.append(block)
         
         // if a successful result already exists (from constructor), report it
@@ -36,7 +54,7 @@ class Future<Value, Failure> where Failure: Error {
         return self
     }
     
-    @discardableResult public func onError(block: @escaping ((Failure) -> Void)) -> Future<Value, Failure> {
+    @discardableResult public func onError(block: @escaping ((Failure) -> Void)) -> Pending<Value, Failure> {
         errorCallbacks.append(block)
         
         // if a failed result already exists (from constructor), report it
@@ -79,76 +97,76 @@ class Future<Value, Failure> where Failure: Error {
     }
 }
 
-extension Future {
-    func flatMap<NewValue>(_ closure: @escaping (Value) -> Future<NewValue, Failure>) -> Future<NewValue, Failure> {
-        let promise = Promise<NewValue, Failure>()
+extension Pending {
+    func flatMap<NewValue>(_ closure: @escaping (Value) -> Pending<NewValue, Failure>) -> Pending<NewValue, Failure> {
+        let fulfill = Fulfill<NewValue, Failure>()
         
         onSuccess { value in
-            let future = closure(value)
+            let pending = closure(value)
             
-            future.onSuccess { futureValue in
-                promise.resolve(with: futureValue)
+            pending.onSuccess { futureValue in
+                fulfill.resolve(with: futureValue)
             }
             
-            future.onError { futureError in
-                promise.reject(with: futureError)
+            pending.onError { futureError in
+                fulfill.reject(with: futureError)
             }
         }
         
         onError { error in
-            promise.reject(with: error)
+            fulfill.reject(with: error)
         }
         
-        return promise
+        return fulfill
     }
     
-    func map<NewValue>(_ closure: @escaping (Value) -> NewValue) -> Future<NewValue, Failure> {
-        let promise = Promise<NewValue, Failure>()
+    func map<NewValue>(_ closure: @escaping (Value) -> NewValue) -> Pending<NewValue, Failure> {
+        let fulfill = Fulfill<NewValue, Failure>()
         
         onSuccess { value in
             let nextValue = closure(value)
-            promise.resolve(with: nextValue)
+            fulfill.resolve(with: nextValue)
         }
         
         onError { error in
-            promise.reject(with: error)
+            fulfill.reject(with: error)
         }
         
-        return promise
+        return fulfill
     }
     
-    func mapFailure<NewFailure>(_ closure: @escaping (Failure) -> NewFailure) -> Future<Value, NewFailure> {
-        let promise = Promise<Value, NewFailure>()
+    func mapFailure<NewFailure>(_ closure: @escaping (Failure) -> NewFailure) -> Pending<Value, NewFailure> {
+        let fulfill = Fulfill<Value, NewFailure>()
         
         onSuccess { value in
-            promise.resolve(with: value)
+            fulfill.resolve(with: value)
         }
         
         onError { error in
             let nextError = closure(error)
-            promise.reject(with: nextError)
+            fulfill.reject(with: nextError)
         }
         
-        return promise
+        return fulfill
     }
     
-    func replaceError(with defaultForError: Value) -> Future<Value, Failure> {
-        let promise = Promise<Value, Failure>()
+    func replaceError(with defaultForError: Value) -> Pending<Value, Failure> {
+        let fulfill = Fulfill<Value, Failure>()
         
         onSuccess { value in
-            promise.resolve(with: value)
+            fulfill.resolve(with: value)
         }
         
         onError { _ in
-            promise.resolve(with: defaultForError)
+            fulfill.resolve(with: defaultForError)
         }
         
-        return promise
+        return fulfill
     }
 }
 
-// This class takes the responsibility of setting value for Future
-class Promise<Value, Failure>: Future<Value, Failure> where Failure: Error {
+// This class takes the responsibility of setting value for Pending
+class Fulfill<Value, Failure>: Pending<Value, Failure> where Failure: Error {
     public init(value: Value? = nil) {
         ITBDebug()
         super.init()

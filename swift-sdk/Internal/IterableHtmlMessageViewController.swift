@@ -235,9 +235,9 @@ class IterableHtmlMessageViewController: UIViewController {
                                          parentPosition: ViewPosition,
                                          paddingLeft: CGFloat,
                                          paddingRight: CGFloat,
-                                         location: IterableMessageLocation) -> Future<ViewPosition, IterableError> {
+                                         location: IterableMessageLocation) -> Pending<ViewPosition, IterableError> {
         guard location != .full else {
-            return Promise(value: parentPosition)
+            return Fulfill(value: parentPosition)
         }
         
         return webView.calculateHeight().map { height in

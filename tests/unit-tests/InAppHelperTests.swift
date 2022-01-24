@@ -9,9 +9,9 @@ import XCTest
 class InAppHelperTests: XCTestCase {
     func testGetInAppMessagesWithNoError() {
         class MyApiClient: MockApiClient {
-            override func getInAppMessages(_: NSNumber) -> Future<SendRequestValue, SendRequestError> {
+            override func getInAppMessages(_: NSNumber) -> Pending<SendRequestValue, SendRequestError> {
                 let payload = TestInAppPayloadGenerator.createPayloadWithUrl(numMessages: 3)
-                return Promise<SendRequestValue, SendRequestError>(value: payload)
+                return Fulfill<SendRequestValue, SendRequestError>(value: payload)
             }
         }
         
@@ -35,7 +35,7 @@ class InAppHelperTests: XCTestCase {
                 self.expectation = expectation
             }
             
-            override func getInAppMessages(_: NSNumber) -> Future<SendRequestValue, SendRequestError> {
+            override func getInAppMessages(_: NSNumber) -> Pending<SendRequestValue, SendRequestError> {
                 // the second message has no content, so it should be consumed
                 let payload = """
                 {"inAppMessages":
@@ -58,14 +58,14 @@ class InAppHelperTests: XCTestCase {
                 ]
                 }
                 """.toJsonDict()
-                return Promise<SendRequestValue, SendRequestError>(value: payload)
+                return Fulfill<SendRequestValue, SendRequestError>(value: payload)
             }
             
-            override func inAppConsume(messageId: String) -> Future<SendRequestValue, SendRequestError> {
+            override func inAppConsume(messageId: String) -> Pending<SendRequestValue, SendRequestError> {
                 if messageId == "message2" {
                     expectation.fulfill()
                 }
-                return Promise<SendRequestValue, SendRequestError>()
+                return Fulfill<SendRequestValue, SendRequestError>()
             }
         }
         
@@ -95,83 +95,83 @@ class InAppHelperTests: XCTestCase {
     
     private class MockApiClient: ApiClientProtocol {
         func register(registerTokenInfo _: RegisterTokenInfo,
-                      notificationsEnabled _: Bool) -> Future<SendRequestValue, SendRequestError> {
+                      notificationsEnabled _: Bool) -> Pending<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
-        func updateUser(_: [AnyHashable: Any], mergeNestedObjects _: Bool) -> Future<SendRequestValue, SendRequestError> {
+        func updateUser(_: [AnyHashable: Any], mergeNestedObjects _: Bool) -> Pending<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
-        func updateEmail(newEmail _: String) -> Future<SendRequestValue, SendRequestError> {
+        func updateEmail(newEmail _: String) -> Pending<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
-        func updateCart(items: [CommerceItem]) -> Future<SendRequestValue, SendRequestError> {
+        func updateCart(items: [CommerceItem]) -> Pending<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
-        func track(purchase _: NSNumber, items _: [CommerceItem], dataFields _: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError> {
+        func track(purchase _: NSNumber, items _: [CommerceItem], dataFields _: [AnyHashable: Any]?) -> Pending<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
-        func track(pushOpen _: NSNumber, templateId _: NSNumber?, messageId _: String, appAlreadyRunning _: Bool, dataFields _: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError> {
+        func track(pushOpen _: NSNumber, templateId _: NSNumber?, messageId _: String, appAlreadyRunning _: Bool, dataFields _: [AnyHashable: Any]?) -> Pending<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
-        func track(event _: String, dataFields _: [AnyHashable: Any]?) -> Future<SendRequestValue, SendRequestError> {
+        func track(event _: String, dataFields _: [AnyHashable: Any]?) -> Pending<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
-        func updateSubscriptions(_: [NSNumber]?, unsubscribedChannelIds _: [NSNumber]?, unsubscribedMessageTypeIds _: [NSNumber]?, subscribedMessageTypeIds _: [NSNumber]?, campaignId _: NSNumber?, templateId _: NSNumber?) -> Future<SendRequestValue, SendRequestError> {
+        func updateSubscriptions(_: [NSNumber]?, unsubscribedChannelIds _: [NSNumber]?, unsubscribedMessageTypeIds _: [NSNumber]?, subscribedMessageTypeIds _: [NSNumber]?, campaignId _: NSNumber?, templateId _: NSNumber?) -> Pending<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
-        func getInAppMessages(_: NSNumber) -> Future<SendRequestValue, SendRequestError> {
+        func getInAppMessages(_: NSNumber) -> Pending<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
-        func track(inAppOpen _: String) -> Future<SendRequestValue, SendRequestError> {
+        func track(inAppOpen _: String) -> Pending<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
-        func track(inAppOpen _: InAppMessageContext) -> Future<SendRequestValue, SendRequestError> {
+        func track(inAppOpen _: InAppMessageContext) -> Pending<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
-        func track(inAppClick _: String, clickedUrl _: String) -> Future<SendRequestValue, SendRequestError> {
+        func track(inAppClick _: String, clickedUrl _: String) -> Pending<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
-        func track(inAppClick _: InAppMessageContext, clickedUrl _: String) -> Future<SendRequestValue, SendRequestError> {
+        func track(inAppClick _: InAppMessageContext, clickedUrl _: String) -> Pending<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
-        func track(inAppClose _: InAppMessageContext, source _: InAppCloseSource?, clickedUrl _: String?) -> Future<SendRequestValue, SendRequestError> {
+        func track(inAppClose _: InAppMessageContext, source _: InAppCloseSource?, clickedUrl _: String?) -> Pending<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
-        func track(inAppDelivery _: InAppMessageContext) -> Future<SendRequestValue, SendRequestError> {
+        func track(inAppDelivery _: InAppMessageContext) -> Pending<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
-        func inAppConsume(messageId _: String) -> Future<SendRequestValue, SendRequestError> {
+        func inAppConsume(messageId _: String) -> Pending<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
-        func inAppConsume(inAppMessageContext _: InAppMessageContext, source _: InAppDeleteSource?) -> Future<SendRequestValue, SendRequestError> {
+        func inAppConsume(inAppMessageContext _: InAppMessageContext, source _: InAppDeleteSource?) -> Pending<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
-        func track(inboxSession _: IterableInboxSession) -> Future<SendRequestValue, SendRequestError> {
+        func track(inboxSession _: IterableInboxSession) -> Pending<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
-        func disableDevice(forAllUsers _: Bool, hexToken _: String) -> Future<SendRequestValue, SendRequestError> {
+        func disableDevice(forAllUsers _: Bool, hexToken _: String) -> Pending<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
-        func getRemoteConfiguration() -> Future<RemoteConfiguration, SendRequestError> {
+        func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError> {
             fatalError()
         }
     }

@@ -9,11 +9,11 @@ protocol InboxStateProtocol {
     
     var unreadMessagesCount: Int { get }
     
-    func sync() -> Future<Bool, Error>
+    func sync() -> Pending<Bool, Error>
     
     func track(inboxSession: IterableInboxSession)
     
-    func loadImage(forMessageId messageId: String, fromUrl url: URL) -> Future<Data, Error>
+    func loadImage(forMessageId messageId: String, fromUrl url: URL) -> Pending<Data, Error>
     
     func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage)
     
@@ -39,17 +39,17 @@ class InboxState: InboxStateProtocol {
         inAppManager?.getUnreadInboxMessagesCount() ?? 0
     }
     
-    func sync() -> Future<Bool, Error> {
-        inAppManager?.scheduleSync() ?? Promise(error: IterableError.general(description: "Did not find inAppManager"))
+    func sync() -> Pending<Bool, Error> {
+        inAppManager?.scheduleSync() ?? Fulfill(error: IterableError.general(description: "Did not find inAppManager"))
     }
     
     func track(inboxSession: IterableInboxSession) {
         internalAPI?.track(inboxSession: inboxSession)
     }
     
-    func loadImage(forMessageId messageId: String, fromUrl url: URL) -> Future<Data, Error> {
+    func loadImage(forMessageId messageId: String, fromUrl url: URL) -> Pending<Data, Error> {
         guard let networkSession = networkSession else {
-            return Promise(error: IterableError.general(description: "Network session not initialized"))
+            return Fulfill(error: IterableError.general(description: "Network session not initialized"))
         }
         
         return NetworkHelper.getData(fromUrl: url, usingSession: networkSession)

@@ -19,7 +19,7 @@ protocol WebViewProtocol {
     func set(navigationDelegate: WKNavigationDelegate?)
     func evaluateJavaScript(_ javaScriptString: String, completionHandler: ((Any?, Error?) -> Void)?)
     func layoutSubviews()
-    func calculateHeight() -> Future<CGFloat, IterableError>
+    func calculateHeight() -> Pending<CGFloat, IterableError>
 }
 
 extension WKWebView: WebViewProtocol {
@@ -41,19 +41,19 @@ extension WKWebView: WebViewProtocol {
         self.navigationDelegate = navigationDelegate
     }
     
-    func calculateHeight() -> Future<CGFloat, IterableError> {
-        let promise = Promise<CGFloat, IterableError>()
+    func calculateHeight() -> Pending<CGFloat, IterableError> {
+        let fulfill = Fulfill<CGFloat, IterableError>()
         
         evaluateJavaScript("document.body.offsetHeight", completionHandler: { height, _ in
             guard let floatHeight = height as? CGFloat, floatHeight >= 20 else {
                 ITBError("unable to get height")
-                promise.reject(with: IterableError.general(description: "unable to get height"))
+                fulfill.reject(with: IterableError.general(description: "unable to get height"))
                 return
             }
             
-            promise.resolve(with: floatHeight)
+            fulfill.resolve(with: floatHeight)
         })
         
-        return promise
+        return fulfill
     }
 }

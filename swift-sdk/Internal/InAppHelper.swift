@@ -8,7 +8,7 @@ import UIKit
 /// All classes/structs are internal.
 
 struct InAppHelper {
-    static func getInAppMessagesFromServer(apiClient: ApiClientProtocol, number: Int) -> Future<[IterableInAppMessage], SendRequestError> {
+    static func getInAppMessagesFromServer(apiClient: ApiClientProtocol, number: Int) -> Pending<[IterableInAppMessage], SendRequestError> {
         apiClient.getInAppMessages(NSNumber(value: number)).map {
             InAppMessageParser.parse(payload: $0).compactMap { parseResult in
                 process(parseResult: parseResult, apiClient: apiClient)

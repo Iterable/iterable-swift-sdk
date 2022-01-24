@@ -5,14 +5,14 @@
 import Foundation
 
 protocol InAppFetcherProtocol {
-    func fetch() -> Future<[IterableInAppMessage], Error>
+    func fetch() -> Pending<[IterableInAppMessage], Error>
 }
 
 /// For callbacks when silent push notifications arrive
 protocol InAppNotifiable: AnyObject {
-    func scheduleSync() -> Future<Bool, Error>
+    func scheduleSync() -> Pending<Bool, Error>
     func onInAppRemoved(messageId: String)
-    func reset() -> Future<Bool, Error>
+    func reset() -> Pending<Bool, Error>
 }
 
 extension IterableInAppTriggerType {
@@ -35,12 +35,12 @@ class InAppFetcher: InAppFetcherProtocol {
         ITBInfo()
     }
     
-    func fetch() -> Future<[IterableInAppMessage], Error> {
+    func fetch() -> Pending<[IterableInAppMessage], Error> {
         ITBInfo()
         
         guard let apiClient = apiClient else {
             ITBError("Invalid state: expected ApiClient")
-            return Promise(error: IterableError.general(description: "Invalid state: expected InternalApi"))
+            return Fulfill(error: IterableError.general(description: "Invalid state: expected InternalApi"))
         }
         
         return InAppHelper.getInAppMessagesFromServer(apiClient: apiClient, number: numMessages).mapFailure { $0 }

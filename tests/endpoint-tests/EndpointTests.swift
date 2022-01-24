@@ -247,7 +247,7 @@ class EndpointTests: XCTestCase {
         clearAllInAppMessages(api: api)
     }
     
-    private func verifyTrackInAppRequest(expectation: XCTestExpectation, method: (InternalIterableAPI, IterableInAppMessage) -> Future<SendRequestValue, SendRequestError>) {
+    private func verifyTrackInAppRequest(expectation: XCTestExpectation, method: (InternalIterableAPI, IterableInAppMessage) -> Pending<SendRequestValue, SendRequestError>) {
         let config = IterableConfig()
         config.inAppDelegate = MockInAppDelegate(showInApp: .skip)
         let api = InternalIterableAPI.initializeForE2E(apiKey: EndpointTests.apiKey, config: config)
@@ -312,16 +312,16 @@ class EndpointTests: XCTestCase {
         wait(for: [expectation1], timeout: 100) // wait a while for all in-apps to be deleted
     }
     
-    private func chainCallConsume(json: SendRequestValue, apiClient: ApiClientProtocol) -> Future<SendRequestValue, SendRequestError> {
+    private func chainCallConsume(json: SendRequestValue, apiClient: ApiClientProtocol) -> Pending<SendRequestValue, SendRequestError> {
         let messages = InAppTestHelper.inAppMessages(fromPayload: json)
         
         guard messages.count > 0 else {
-            return Promise<SendRequestValue, SendRequestError>(value: [:])
+            return Fulfill<SendRequestValue, SendRequestError>(value: [:])
         }
         
-        let result = Promise<SendRequestValue, SendRequestError>(value: [:])
+        let result = Fulfill<SendRequestValue, SendRequestError>(value: [:])
         
-        return messages.reduce(result) { (partialResult, message) -> Future<SendRequestValue, SendRequestError> in
+        return messages.reduce(result) { (partialResult, message) -> Pending<SendRequestValue, SendRequestError> in
             partialResult.flatMap { _ in
                 apiClient.inAppConsume(messageId: message.messageId)
             }

@@ -106,7 +106,7 @@ public class MockPushTracker: NSObject, PushTrackerProtocol {
     public func trackPushOpen(_ userInfo: [AnyHashable: Any],
                               dataFields: [AnyHashable: Any]?,
                               onSuccess: OnSuccessHandler?,
-                              onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                              onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         // save payload
         lastPushPayload = userInfo
         
@@ -123,7 +123,7 @@ public class MockPushTracker: NSObject, PushTrackerProtocol {
                               appAlreadyRunning: Bool,
                               dataFields: [AnyHashable: Any]?,
                               onSuccess: OnSuccessHandler?,
-                              onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                              onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         self.campaignId = campaignId
         self.templateId = templateId
         self.messageId = messageId
@@ -132,7 +132,7 @@ public class MockPushTracker: NSObject, PushTrackerProtocol {
         self.onSuccess = onSuccess
         self.onFailure = onFailure
         
-        return Promise<SendRequestValue, SendRequestError>(value: [:])
+        return Fulfill<SendRequestValue, SendRequestError>(value: [:])
     }
 }
 
@@ -321,15 +321,15 @@ class MockInAppFetcher: InAppFetcherProtocol {
         ITBInfo()
     }
     
-    func fetch() -> Future<[IterableInAppMessage], Error> {
+    func fetch() -> Pending<[IterableInAppMessage], Error> {
         ITBInfo()
         
         syncCallback?()
         
-        return Promise(value: messagesMap.values)
+        return Fulfill(value: messagesMap.values)
     }
     
-    @discardableResult func mockMessagesAvailableFromServer(internalApi: InternalIterableAPI?, messages: [IterableInAppMessage]) -> Future<Int, Error> {
+    @discardableResult func mockMessagesAvailableFromServer(internalApi: InternalIterableAPI?, messages: [IterableInAppMessage]) -> Pending<Int, Error> {
         ITBInfo()
         
         messagesMap = OrderedDictionary<String, IterableInAppMessage>()
@@ -338,7 +338,7 @@ class MockInAppFetcher: InAppFetcherProtocol {
             messagesMap[$0.messageId] = $0
         }
         
-        let result = Promise<Int, Error>()
+        let result = Fulfill<Int, Error>()
         
         let inAppManager = internalApi?.inAppManager
         inAppManager?.scheduleSync().onSuccess { [weak inAppManager = inAppManager] _ in
@@ -348,7 +348,7 @@ class MockInAppFetcher: InAppFetcherProtocol {
         return result
     }
     
-    @discardableResult func mockInAppPayloadFromServer(internalApi: InternalIterableAPI?, _ payload: [AnyHashable: Any]) -> Future<Int, Error> {
+    @discardableResult func mockInAppPayloadFromServer(internalApi: InternalIterableAPI?, _ payload: [AnyHashable: Any]) -> Pending<Int, Error> {
         ITBInfo()
         return mockMessagesAvailableFromServer(internalApi: internalApi, messages: InAppTestHelper.inAppMessages(fromPayload: payload))
     }
@@ -366,7 +366,7 @@ class MockInAppFetcher: InAppFetcherProtocol {
 
 class MockInAppDisplayer: InAppDisplayerProtocol {
     // when a message is shown this is called back
-    var onShow: Promise<IterableInAppMessage, IterableError> = Promise<IterableInAppMessage, IterableError>()
+    var onShow: Fulfill<IterableInAppMessage, IterableError> = Fulfill<IterableInAppMessage, IterableError>()
     
     func isShowingInApp() -> Bool {
         showing
@@ -543,8 +543,8 @@ class MockWebView: WebViewProtocol {
     
     func layoutSubviews() {}
     
-    func calculateHeight() -> Future<CGFloat, IterableError> {
-        Promise<CGFloat, IterableError>(value: height)
+    func calculateHeight() -> Pending<CGFloat, IterableError> {
+        Fulfill<CGFloat, IterableError>(value: height)
     }
     
     var position: ViewPosition = ViewPosition()
@@ -634,15 +634,15 @@ class MockInboxState: InboxStateProtocol {
         }
     }
     
-    func sync() -> Future<Bool, Error> {
-        Promise(value: true)
+    func sync() -> Pending<Bool, Error> {
+        Fulfill(value: true)
     }
     
     func track(inboxSession: IterableInboxSession) {
     }
     
-    func loadImage(forMessageId messageId: String, fromUrl url: URL) -> Future<Data, Error> {
-        Promise(value: Data())
+    func loadImage(forMessageId messageId: String, fromUrl url: URL) -> Pending<Data, Error> {
+        Fulfill(value: Data())
     }
     
     func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage) {

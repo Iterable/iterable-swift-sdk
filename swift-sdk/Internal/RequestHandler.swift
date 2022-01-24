@@ -50,7 +50,7 @@ class RequestHandler: RequestHandlerProtocol {
     @discardableResult
     func disableDeviceForCurrentUser(hexToken: String,
                                      withOnSuccess onSuccess: OnSuccessHandler?,
-                                     onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                                     onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         onlineProcessor.disableDeviceForCurrentUser(hexToken: hexToken,
                                                     withOnSuccess: onSuccess,
                                                     onFailure: onFailure)
@@ -59,7 +59,7 @@ class RequestHandler: RequestHandlerProtocol {
     @discardableResult
     func disableDeviceForAllUsers(hexToken: String,
                                   withOnSuccess onSuccess: OnSuccessHandler?,
-                                  onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                                  onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         onlineProcessor.disableDeviceForAllUsers(hexToken: hexToken,
                                                  withOnSuccess: onSuccess,
                                                  onFailure: onFailure)
@@ -69,7 +69,7 @@ class RequestHandler: RequestHandlerProtocol {
     func updateUser(_ dataFields: [AnyHashable: Any],
                     mergeNestedObjects: Bool,
                     onSuccess: OnSuccessHandler?,
-                    onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                    onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         onlineProcessor.updateUser(dataFields,
                                    mergeNestedObjects: mergeNestedObjects,
                                    onSuccess: onSuccess,
@@ -79,7 +79,7 @@ class RequestHandler: RequestHandlerProtocol {
     @discardableResult
     func updateEmail(_ newEmail: String,
                      onSuccess: OnSuccessHandler?,
-                     onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                     onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         onlineProcessor.updateEmail(newEmail,
                                     onSuccess: onSuccess,
                                     onFailure: onFailure)
@@ -88,7 +88,7 @@ class RequestHandler: RequestHandlerProtocol {
     @discardableResult
     func updateCart(items: [CommerceItem],
                     onSuccess: OnSuccessHandler?,
-                    onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                    onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         chooseRequestProcessor().updateCart(items: items,
                                             onSuccess: onSuccess,
                                             onFailure: onFailure)
@@ -99,7 +99,7 @@ class RequestHandler: RequestHandlerProtocol {
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]?,
                        onSuccess: OnSuccessHandler?,
-                       onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                       onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         chooseRequestProcessor().trackPurchase(total,
                                                items: items,
                                                dataFields: dataFields,
@@ -114,7 +114,7 @@ class RequestHandler: RequestHandlerProtocol {
                        appAlreadyRunning: Bool,
                        dataFields: [AnyHashable: Any]?,
                        onSuccess: OnSuccessHandler?,
-                       onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                       onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         chooseRequestProcessor().trackPushOpen(campaignId,
                                                templateId: templateId,
                                                messageId: messageId,
@@ -128,7 +128,7 @@ class RequestHandler: RequestHandlerProtocol {
     func track(event: String,
                dataFields: [AnyHashable: Any]?,
                onSuccess: OnSuccessHandler?,
-               onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         chooseRequestProcessor().track(event: event,
                                        dataFields: dataFields,
                                        onSuccess: onSuccess,
@@ -138,7 +138,7 @@ class RequestHandler: RequestHandlerProtocol {
     @discardableResult
     func updateSubscriptions(info: UpdateSubscriptionsInfo,
                              onSuccess: OnSuccessHandler?,
-                             onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                             onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         onlineProcessor.updateSubscriptions(info: info,
                                             onSuccess: onSuccess,
                                             onFailure: onFailure)
@@ -149,7 +149,7 @@ class RequestHandler: RequestHandlerProtocol {
                         location: InAppLocation,
                         inboxSessionId: String?,
                         onSuccess: OnSuccessHandler?,
-                        onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                        onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         chooseRequestProcessor().trackInAppOpen(message,
                                                 location: location,
                                                 inboxSessionId: inboxSessionId,
@@ -163,7 +163,7 @@ class RequestHandler: RequestHandlerProtocol {
                          inboxSessionId: String?,
                          clickedUrl: String,
                          onSuccess: OnSuccessHandler?,
-                         onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                         onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         chooseRequestProcessor().trackInAppClick(message,
                                                  location: location,
                                                  inboxSessionId: inboxSessionId,
@@ -179,7 +179,7 @@ class RequestHandler: RequestHandlerProtocol {
                          source: InAppCloseSource?,
                          clickedUrl: String?,
                          onSuccess: OnSuccessHandler?,
-                         onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                         onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         chooseRequestProcessor().trackInAppClose(message,
                                                  location: location,
                                                  inboxSessionId: inboxSessionId,
@@ -192,7 +192,7 @@ class RequestHandler: RequestHandlerProtocol {
     @discardableResult
     func track(inboxSession: IterableInboxSession,
                onSuccess: OnSuccessHandler?,
-               onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         chooseRequestProcessor().track(inboxSession: inboxSession,
                                        onSuccess: onSuccess,
                                        onFailure: onFailure)
@@ -201,7 +201,7 @@ class RequestHandler: RequestHandlerProtocol {
     @discardableResult
     func track(inAppDelivery message: IterableInAppMessage,
                onSuccess: OnSuccessHandler?,
-               onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         chooseRequestProcessor().track(inAppDelivery: message,
                                        onSuccess: onSuccess,
                                        onFailure: onFailure)
@@ -210,7 +210,7 @@ class RequestHandler: RequestHandlerProtocol {
     @discardableResult
     func inAppConsume(_ messageId: String,
                       onSuccess: OnSuccessHandler?,
-                      onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                      onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         chooseRequestProcessor().inAppConsume(messageId,
                                               onSuccess: onSuccess,
                                               onFailure: onFailure)
@@ -221,7 +221,7 @@ class RequestHandler: RequestHandlerProtocol {
                       location: InAppLocation,
                       source: InAppDeleteSource?,
                       onSuccess: OnSuccessHandler?,
-                      onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError> {
+                      onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         chooseRequestProcessor().inAppConsume(message: message,
                                               location: location,
                                               source: source,
@@ -229,7 +229,7 @@ class RequestHandler: RequestHandlerProtocol {
                                               onFailure: onFailure)
     }
     
-    func getRemoteConfiguration() -> Future<RemoteConfiguration, SendRequestError> {
+    func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError> {
         onlineProcessor.getRemoteConfiguration()
     }
     

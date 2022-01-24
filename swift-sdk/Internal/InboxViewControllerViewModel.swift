@@ -64,7 +64,7 @@ class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtoc
         sessionManager.sessionStartInfo?.id
     }
     
-    func refresh() -> Future<Bool, Error> {
+    func refresh() -> Pending<Bool, Error> {
         input.sync()
     }
     

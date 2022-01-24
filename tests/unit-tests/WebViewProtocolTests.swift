@@ -24,7 +24,7 @@ class WebViewProtocolTests: XCTestCase {
         let heightCalculationFuture = webView.calculateHeight()
         
         heightCalculationFuture.onSuccess { height in
-            XCTFail("promise shouldn't have succeeded")
+            XCTFail("fulfill shouldn't have succeeded")
         }
         
         heightCalculationFuture.onError { error in

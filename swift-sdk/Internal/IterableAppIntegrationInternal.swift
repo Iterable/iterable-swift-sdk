@@ -67,7 +67,7 @@ protocol PushTrackerProtocol: AnyObject {
     func trackPushOpen(_ userInfo: [AnyHashable: Any],
                        dataFields: [AnyHashable: Any]?,
                        onSuccess: OnSuccessHandler?,
-                       onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
+                       onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
     
     @discardableResult
     func trackPushOpen(_ campaignId: NSNumber,
@@ -76,7 +76,7 @@ protocol PushTrackerProtocol: AnyObject {
                        appAlreadyRunning: Bool,
                        dataFields: [AnyHashable: Any]?,
                        onSuccess: OnSuccessHandler?,
-                       onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
+                       onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
 }
 
 extension PushTrackerProtocol {

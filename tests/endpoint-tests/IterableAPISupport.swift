@@ -6,7 +6,7 @@ import Foundation
 @testable import IterableSDK
 
 struct IterableAPISupport {
-    static func sendDeleteUserRequest(email: String) -> Future<SendRequestValue, SendRequestError> {
+    static func sendDeleteUserRequest(email: String) -> Pending<SendRequestValue, SendRequestError> {
         guard let url = URL(string: Path.apiEndpoint + Path.deleteUser + email) else {
             return SendRequestError.createErroredFuture(reason: "could not create post request")
         }
@@ -17,7 +17,7 @@ struct IterableAPISupport {
         return RequestSender.sendRequest(urlRequest, usingSession: urlSession)
     }
     
-    static func sendInApp(to email: String, withCampaignId campaignId: Int) -> Future<SendRequestValue, SendRequestError> {
+    static func sendInApp(to email: String, withCampaignId campaignId: Int) -> Pending<SendRequestValue, SendRequestError> {
         let body: [String: Any] = [
             Key.inAppRecipientEmail: email,
             Key.inAppCampaignId: campaignId,

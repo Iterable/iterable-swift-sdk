@@ -12,7 +12,7 @@ struct IterableAPICallTaskProcessor: IterableTaskProcessor {
         self.dateProvider = dateProvider
     }
     
-    func process(task: IterableTask) throws -> Future<IterableTaskResult, IterableTaskError> {
+    func process(task: IterableTask) throws -> Pending<IterableTaskResult, IterableTaskError> {
         ITBInfo()
         guard let data = task.data else {
             return IterableTaskError.createErroredFuture(reason: "expecting data")
@@ -25,7 +25,7 @@ struct IterableAPICallTaskProcessor: IterableTaskProcessor {
             return IterableTaskError.createErroredFuture(reason: "could not convert to url request")
         }
         
-        let result = Promise<IterableTaskResult, IterableTaskError>()
+        let result = Fulfill<IterableTaskResult, IterableTaskError>()
         RequestSender.sendRequest(urlRequest, usingSession: networkSession)
             .onSuccess { sendRequestValue in
                 ITBInfo("Task finished successfully")

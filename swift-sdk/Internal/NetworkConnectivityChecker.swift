@@ -17,8 +17,8 @@ struct NetworkConnectivityChecker {
     }
 
     @discardableResult
-    func checkConnectivity() -> Future<Bool, Never> {
-        let result = Promise<Bool, Never>()
+    func checkConnectivity() -> Pending<Bool, Never> {
+        let result = Fulfill<Bool, Never>()
         let dispatchGroup = DispatchGroup()
         var tasks: [DataTaskProtocol] = []
         var successfulChecks: Int = 0, failedChecks: Int = 0

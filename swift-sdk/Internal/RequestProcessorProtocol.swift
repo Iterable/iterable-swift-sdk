@@ -28,14 +28,14 @@ protocol RequestProcessorProtocol {
     @discardableResult
     func updateCart(items: [CommerceItem],
                     onSuccess: OnSuccessHandler?,
-                    onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
+                    onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
     
     @discardableResult
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]?,
                        onSuccess: OnSuccessHandler?,
-                       onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
+                       onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
     
     @discardableResult
     func trackPushOpen(_ campaignId: NSNumber,
@@ -44,20 +44,20 @@ protocol RequestProcessorProtocol {
                        appAlreadyRunning: Bool,
                        dataFields: [AnyHashable: Any]?,
                        onSuccess: OnSuccessHandler?,
-                       onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
+                       onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
     
     @discardableResult
     func track(event: String,
                dataFields: [AnyHashable: Any]?,
                onSuccess: OnSuccessHandler?,
-               onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
     
     @discardableResult
     func trackInAppOpen(_ message: IterableInAppMessage,
                         location: InAppLocation,
                         inboxSessionId: String?,
                         onSuccess: OnSuccessHandler?,
-                        onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
+                        onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
     
     @discardableResult
     func trackInAppClick(_ message: IterableInAppMessage,
@@ -65,7 +65,7 @@ protocol RequestProcessorProtocol {
                          inboxSessionId: String?,
                          clickedUrl: String,
                          onSuccess: OnSuccessHandler?,
-                         onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
+                         onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
     
     @discardableResult
     func trackInAppClose(_ message: IterableInAppMessage,
@@ -74,26 +74,26 @@ protocol RequestProcessorProtocol {
                          source: InAppCloseSource?,
                          clickedUrl: String?,
                          onSuccess: OnSuccessHandler?,
-                         onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
+                         onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
     @discardableResult
     func track(inboxSession: IterableInboxSession,
                onSuccess: OnSuccessHandler?,
-               onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
     
     @discardableResult
     func track(inAppDelivery message: IterableInAppMessage,
                onSuccess: OnSuccessHandler?,
-               onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
     
     @discardableResult
     func inAppConsume(_ messageId: String,
                       onSuccess: OnSuccessHandler?,
-                      onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
+                      onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
     
     @discardableResult
     func inAppConsume(message: IterableInAppMessage,
                       location: InAppLocation,
                       source: InAppDeleteSource?,
                       onSuccess: OnSuccessHandler?,
-                      onFailure: OnFailureHandler?) -> Future<SendRequestValue, SendRequestError>
+                      onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
 }

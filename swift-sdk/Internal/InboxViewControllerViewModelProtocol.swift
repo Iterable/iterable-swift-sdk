@@ -13,7 +13,7 @@ protocol InboxViewControllerViewModelProtocol {
     // Talks to the server and refreshes
     // this works hand in hand with listener.onViewModelChanged.
     // Internal model can't be changed until the view begins update (tableView.beginUpdates()).
-    func refresh() -> Future<Bool, Error>
+    func refresh() -> Pending<Bool, Error>
     
     func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage)
     

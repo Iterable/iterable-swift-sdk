@@ -139,7 +139,7 @@ class IterableTaskRunner: NSObject {
     }
     
     @discardableResult
-    private func processTasks() -> Future<Void, Never> {
+    private func processTasks() -> Pending<Void, Never> {
         ITBInfo()
         running = true
         
@@ -147,11 +147,11 @@ class IterableTaskRunner: NSObject {
         /// Check whether we were stopped in the middle of running tasks
         guard !paused else {
             ITBInfo("Tasks paused before finishing processTasks()")
-            return Promise<Void, Never>(value: ())
+            return Fulfill<Void, Never>(value: ())
         }
         guard healthMonitor.canProcess() else {
             ITBInfo("Health monitor stopped processing")
-            return Promise<Void, Never>(value: ())
+            return Fulfill<Void, Never>(value: ())
         }
 
         do {
@@ -162,25 +162,25 @@ class IterableTaskRunner: NSObject {
                         self.deleteTask(task: task)
                         return self.processTasks()
                     case .processing, .retry:
-                        return Promise<Void, Never>(value: ())
+                        return Fulfill<Void, Never>(value: ())
                     }
                 }
             } else {
                 ITBInfo("No tasks to execute")
-                return Promise<Void, Never>(value: ())
+                return Fulfill<Void, Never>(value: ())
             }
         } catch let error {
             ITBError("Next task error: \(error.localizedDescription)")
             healthMonitor.onNextTaskError()
-            return Promise<Void, Never>(value: ())
+            return Fulfill<Void, Never>(value: ())
         }
     }
     
     @discardableResult
-    private func execute(task: IterableTask) -> Future<TaskExecutionResult, Never> {
+    private func execute(task: IterableTask) -> Pending<TaskExecutionResult, Never> {
         ITBInfo("Executing taskId: \(task.id), name: \(task.name ?? "nil")")
         guard task.processing == false else {
-            return Promise<TaskExecutionResult, Never>(value: .processing)
+            return Fulfill<TaskExecutionResult, Never>(value: .processing)
         }
 
         switch task.type {
@@ -191,9 +191,9 @@ class IterableTaskRunner: NSObject {
     }
     
     private func processAPICallTask(processor: IterableAPICallTaskProcessor,
-                                    task: IterableTask) -> Future<TaskExecutionResult, Never> {
+                                    task: IterableTask) -> Pending<TaskExecutionResult, Never> {
         ITBInfo()
-        let result = Promise<TaskExecutionResult, Never>()
+        let result = Fulfill<TaskExecutionResult, Never>()
         do {
             try processor.process(task: task).onSuccess { taskResult in
                 switch taskResult {
