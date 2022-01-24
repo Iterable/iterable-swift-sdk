@@ -25,8 +25,8 @@ public class InboxSessionManager {
         sessionStartInfo != nil
     }
     
-    public init(provideInAppManager: @escaping @autoclosure () -> IterableInAppManagerProtocol = IterableAPI.inAppManager) {
-        self.provideInAppManager = provideInAppManager
+    init(inboxState: InboxStateProtocol = InboxState()) {
+        self.inboxState = inboxState
     }
     
     public func updateVisibleRows(visibleRows: [InboxImpressionTracker.RowInfo]) {
@@ -50,8 +50,8 @@ public class InboxSessionManager {
         
         sessionStartInfo = SessionStartInfo(id: IterableUtil.generateUUID(),
                                             startTime: Date(),
-                                            totalMessageCount: provideInAppManager().getInboxMessages().count,
-                                            unreadMessageCount: provideInAppManager().getUnreadInboxMessagesCount())
+                                            totalMessageCount: inboxState.totalMessagesCount,
+                                            unreadMessageCount: inboxState.unreadMessagesCount)
         impressionTracker = InboxImpressionTracker()
         updateVisibleRows(visibleRows: visibleRows)
     }
@@ -71,5 +71,5 @@ public class InboxSessionManager {
         return sessionInfo
     }
     
-    private let provideInAppManager: () -> IterableInAppManagerProtocol
+    private let inboxState: InboxStateProtocol
 }

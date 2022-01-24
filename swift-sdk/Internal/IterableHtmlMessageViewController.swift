@@ -54,25 +54,20 @@ class IterableHtmlMessageViewController: UIViewController {
     
     weak var presenter: InAppPresenter?
     
-    init(parameters: Parameters,
-         internalAPIProvider: @escaping @autoclosure () -> InternalIterableAPI? = IterableAPI.internalImplementation,
-         webViewProvider: @escaping @autoclosure () -> WebViewProtocol = IterableHtmlMessageViewController.createWebView()) {
+    private init(parameters: Parameters,
+                 onClickCallback: ((URL) -> Void)?,
+                 internalAPIProvider: @escaping @autoclosure () -> InternalIterableAPI? = IterableAPI.internalImplementation,
+                 webViewProvider: @escaping @autoclosure () -> WebViewProtocol = IterableHtmlMessageViewController.createWebView()) {
         ITBInfo()
         self.internalAPIProvider = internalAPIProvider
         self.webViewProvider = webViewProvider
         self.parameters = parameters
-        futureClickedURL = Promise<URL, IterableError>()
+        self.onClickCallback = onClickCallback
         super.init(nibName: nil, bundle: nil)
     }
     
-    struct CreateResult {
-        let viewController: IterableHtmlMessageViewController
-        let futureClickedURL: Future<URL, IterableError>
-    }
-    
-    static func create(parameters: Parameters) -> CreateResult {
-        let viewController = IterableHtmlMessageViewController(parameters: parameters)
-        return CreateResult(viewController: viewController, futureClickedURL: viewController.futureClickedURL)
+    static func create(parameters: Parameters, onClickCallback: ((URL) -> Void)?) -> IterableHtmlMessageViewController {
+        IterableHtmlMessageViewController(parameters: parameters, onClickCallback: onClickCallback)
     }
     
     override var prefersStatusBarHidden: Bool { parameters.isModal }
@@ -147,7 +142,7 @@ class IterableHtmlMessageViewController: UIViewController {
     private var internalAPIProvider: () -> InternalIterableAPI?
     private var webViewProvider: () -> WebViewProtocol
     private var parameters: Parameters
-    private let futureClickedURL: Promise<URL, IterableError>
+    private var onClickCallback: ((URL) -> Void)?
     private var location: IterableMessageLocation = .full
     private var linkClicked = false
     private var clickedLink: String?
@@ -287,7 +282,7 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
 
         Self.trackClickOnDismiss(internalAPI: internalAPI,
                                  params: parameters,
-                                 futureClickedURL: futureClickedURL,
+                                 onClickCallback: onClickCallback,
                                  withURL: url,
                                  andDestinationURL: destinationUrl)
 
@@ -323,7 +318,7 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
 
         Self.trackClickOnDismiss(internalAPI: internalAPI,
                                  params: parameters,
-                                 futureClickedURL: futureClickedURL,
+                                 onClickCallback: onClickCallback,
                                  withURL: url,
                                  andDestinationURL: destinationUrl)
 
@@ -334,11 +329,11 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
 
     private static func trackClickOnDismiss(internalAPI: InternalIterableAPI?,
                                             params: Parameters,
-                                            futureClickedURL: Promise<URL, IterableError>,
+                                            onClickCallback: ((URL) -> Void)?,
                                             withURL url: URL,
                                             andDestinationURL destinationURL: String) {
         ITBInfo()
-        futureClickedURL.resolve(with: url)
+        onClickCallback?(url)
         if let messageMetadata = params.messageMetadata {
             internalAPI?.trackInAppClick(messageMetadata.message,
                                          location: messageMetadata.location,

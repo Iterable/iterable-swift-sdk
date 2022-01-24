@@ -6,7 +6,7 @@ import Foundation
 import UIKit
 
 enum ShowResult {
-    case shown(Future<URL, IterableError>)
+    case shown
     case notShown(String)
 }
 
@@ -14,9 +14,10 @@ protocol InAppDisplayerProtocol {
     func isShowingInApp() -> Bool
     /// Shows an IterableMessage.
     /// - parameter message: The Iterable message to show
-    /// - returns: A Future representing the url clicked by the user or
+    /// - parameter onclickCallback: Callback when a link is clicked in the in-app
+    /// - returns: `.shown`  or
     /// `.notShown` with reason if the message could not be shown.
-    func showInApp(message: IterableInAppMessage) -> ShowResult
+    func showInApp(message: IterableInAppMessage, onClickCallback: ((URL) -> Void)?) -> ShowResult
 }
 
 class InAppDisplayer: InAppDisplayerProtocol {
@@ -24,24 +25,21 @@ class InAppDisplayer: InAppDisplayerProtocol {
         InAppDisplayer.isShowingIterableMessage()
     }
     
-    func showInApp(message: IterableInAppMessage) -> ShowResult {
-        InAppDisplayer.show(iterableMessage: message)
+    func showInApp(message: IterableInAppMessage, onClickCallback: ((URL) -> Void)?) -> ShowResult {
+        InAppDisplayer.show(iterableMessage: message, onClickCallback: onClickCallback)
     }
     
-    /**
-     Creates and shows a HTML In-app Notification with trackParameters, backgroundColor with callback handler
-     
-     - parameters:
-     - htmlString:      The string containing the dialog HTML
-     - messageMetadata: Message metadata object.
-     - backgroundAlpha: The background alpha behind the notification
-     - padding:         The padding around the notification
-     - returns:
-     A future representing the URL clicked by the user
-     */
-    @discardableResult static func showIterableHtmlMessage(_ htmlString: String,
-                                                           messageMetadata: IterableInAppMessageMetadata? = nil,
-                                                           padding: Padding = .zero) -> ShowResult {
+    /// Creates and shows a HTML In-app Notification with trackParameters, backgroundColor with callback handler
+    /// - parameter htmlString:      The string containing the dialog HTML
+    /// - parameter messageMetadata: Message metadata object.
+    /// - parameter padding:         The padding around the notification
+    /// - parameter onclickCallback: Callback when a link is clicked in the in-app
+    /// - returns:  Whether the message was shown or not shown
+    @discardableResult
+    static func showIterableHtmlMessage(_ htmlString: String,
+                                        messageMetadata: IterableInAppMessageMetadata? = nil,
+                                        padding: Padding = .zero,
+                                        onClickCallback: ((URL) -> Void)?) -> ShowResult {
         guard !InAppPresenter.isPresenting else {
             return .notShown("In-app notification is being presented.")
         }
@@ -58,8 +56,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
                                                                       padding: padding,
                                                                       messageMetadata: messageMetadata,
                                                                       isModal: true)
-        let createResult = IterableHtmlMessageViewController.create(parameters: parameters)
-        let htmlMessageVC = createResult.viewController
+        let htmlMessageVC = IterableHtmlMessageViewController.create(parameters: parameters, onClickCallback: onClickCallback)
         
         topViewController.definesPresentationContext = true
         
@@ -68,7 +65,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
         let presenter = InAppPresenter(topViewController: topViewController, htmlMessageViewController: htmlMessageVC)
         presenter.show()
         
-        return .shown(createResult.futureClickedURL)
+        return .shown
     }
     
     fileprivate static func isShowingIterableMessage() -> Bool {
@@ -98,7 +95,8 @@ class InAppDisplayer: InAppDisplayerProtocol {
         return topViewController
     }
     
-    @discardableResult fileprivate static func show(iterableMessage: IterableInAppMessage) -> ShowResult {
+    @discardableResult
+    fileprivate static func show(iterableMessage: IterableInAppMessage, onClickCallback: ((URL) -> Void)?) -> ShowResult {
         guard let content = iterableMessage.content as? IterableHtmlInAppContent else {
             return .notShown("Invalid content type")
         }
@@ -107,6 +105,7 @@ class InAppDisplayer: InAppDisplayerProtocol {
         
         return showIterableHtmlMessage(content.html,
                                        messageMetadata: metadata,
-                                       padding: content.padding)
+                                       padding: content.padding,
+                                       onClickCallback: onClickCallback)
     }
 }

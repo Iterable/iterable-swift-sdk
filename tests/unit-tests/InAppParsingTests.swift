@@ -291,8 +291,8 @@ class InAppParsingTests: XCTestCase {
     
     func testDoNotShowMultipleTimes() {
         let expectation1 = expectation(description: "error on second time")
-        InAppDisplayer.showIterableHtmlMessage("")
-        if case ShowResult.notShown = InAppDisplayer.showIterableHtmlMessage("") {
+        InAppDisplayer.showIterableHtmlMessage("", onClickCallback: nil)
+        if case .notShown = InAppDisplayer.showIterableHtmlMessage("", onClickCallback: nil) {
             expectation1.fulfill()
         }
         

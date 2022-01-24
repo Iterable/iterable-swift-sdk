@@ -373,29 +373,30 @@ class MockInAppDisplayer: InAppDisplayerProtocol {
     }
     
     // This is not resolved until a url is clicked.
-    func showInApp(message: IterableInAppMessage) -> ShowResult {
+    func showInApp(message: IterableInAppMessage, onClickCallback: ((URL) -> Void)?) -> ShowResult {
         guard showing == false else {
             onShow.reject(with: IterableError.general(description: "showing something else"))
             return .notShown("showing something else")
         }
         
-        result = Promise<URL, IterableError>()
-        
         showing = true
+        self.onClickCallback = onClickCallback
         
         onShow.resolve(with: message)
         
-        return .shown(result)
+        return .shown
     }
     
     // Mimics clicking a url
     func click(url: URL) {
         ITBInfo()
         showing = false
-        result.resolve(with: url)
+        DispatchQueue.main.async { [weak self] in
+            self?.onClickCallback?(url)
+        }
     }
     
-    private var result = Promise<URL, IterableError>()
+    private var onClickCallback: ((URL) -> Void)?
     private var showing = false
 }
 
@@ -615,5 +616,41 @@ class MockLocalStorage: LocalStorageProtocol {
             // no expiration
             return false
         }
+    }
+}
+
+class MockInboxState: InboxStateProtocol {
+    var isReady = true
+    
+    var messages = [InboxMessageViewModel]()
+    
+    var totalMessagesCount: Int {
+        messages.count
+    }
+    
+    var unreadMessagesCount: Int {
+        messages.reduce(0) {
+            $1.read ? $0 + 1 : $0
+        }
+    }
+    
+    func sync() -> Future<Bool, Error> {
+        Promise(value: true)
+    }
+    
+    func track(inboxSession: IterableInboxSession) {
+    }
+    
+    func loadImage(forMessageId messageId: String, fromUrl url: URL) -> Future<Data, Error> {
+        Promise(value: Data())
+    }
+    
+    func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage) {
+    }
+    
+    func set(read: Bool, forMessage message: InboxMessageViewModel) {
+    }
+    
+    func remove(message: InboxMessageViewModel, inboxSessionId: String?) {
     }
 }

@@ -14,24 +14,38 @@ enum RowDiff {
     case sectionUpdate(IndexSet)
 }
 
-class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
-    init(internalAPIProvider: @escaping @autoclosure () -> InternalIterableAPI? = IterableAPI.internalImplementation) {
+class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtocol {
+    init(input: InboxStateProtocol = InboxState(),
+         notificationCenter: NotificationCenterProtocol = NotificationCenter.default) {
         ITBInfo()
+
+        self.input = input
+        self.notificationCenter = notificationCenter
+        self.sessionManager = InboxSessionManager(inboxState: input)
         
-        self.internalAPIProvider = internalAPIProvider
+        super.init()
         
-        if let _ = internalAPI {
-            sectionedMessages = sortAndFilter(messages: getMessages())
+        if input.isReady {
+            sectionedMessages = sortAndFilter(messages: input.messages)
         }
         
-        NotificationCenter.default.addObserver(self, selector: #selector(onInboxChanged(notification:)), name: .iterableInboxChanged, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onAppWillEnterForeground(notification:)), name: UIApplication.willEnterForegroundNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onAppDidEnterBackground(notification:)), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        notificationCenter.addObserver(self,
+                                       selector: #selector(onInboxChanged(notification:)),
+                                       name: .iterableInboxChanged,
+                                       object: nil)
+        notificationCenter.addObserver(self,
+                                       selector: #selector(onAppWillEnterForeground(notification:)),
+                                       name: UIApplication.willEnterForegroundNotification,
+                                       object: nil)
+        notificationCenter.addObserver(self,
+                                       selector: #selector(onAppDidEnterBackground(notification:)),
+                                       name: UIApplication.didEnterBackgroundNotification,
+                                       object: nil)
     }
-    
+
     deinit {
         ITBInfo()
-        NotificationCenter.default.removeObserver(self)
+        notificationCenter.removeObserver(self)
     }
     
     // MARK: - InboxViewControllerViewModelProtocol
@@ -46,12 +60,17 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         allMessagesInSections().filter { $0.read == false }.count
     }
     
-    func refresh() -> Future<Bool, Error> {
-        internalInAppManager?.scheduleSync() ?? Promise(error: IterableError.general(description: "Did not find inAppManager"))
+    var inboxSessionId: String? {
+        sessionManager.sessionStartInfo?.id
     }
     
-    func createInboxMessageViewController(for message: InboxMessageViewModel, withInboxMode inboxMode: IterableInboxViewController.InboxMode) -> UIViewController? {
-        internalInAppManager?.createInboxMessageViewController(for: message.iterableMessage, withInboxMode: inboxMode, inboxSessionId: sessionManager.sessionStartInfo?.id)
+    func refresh() -> Future<Bool, Error> {
+        input.sync()
+    }
+    
+    func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage) {
+        ITBInfo()
+        input.handleClick(clickedUrl: url, forMessage: message)
     }
     
     func set(comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)?, filter: ((IterableInAppMessage) -> Bool)?, sectionMapper: ((IterableInAppMessage) -> Int)?) {
@@ -72,7 +91,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     func set(read: Bool, forMessage message: InboxMessageViewModel) {
-        internalInAppManager?.set(read: read, forMessage: message.iterableMessage)
+        input.set(read: read, forMessage: message)
     }
     
     func message(atIndexPath indexPath: IndexPath) -> InboxMessageViewModel {
@@ -83,10 +102,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     func remove(atIndexPath indexPath: IndexPath) {
         let message = sectionedMessages[indexPath.section].1[indexPath.row]
-        internalInAppManager?.remove(message: message.iterableMessage,
-                                     location: .inbox,
-                                     source: .inboxSwipe,
-                                     inboxSessionId: sessionManager.sessionStartInfo?.id)
+        input.remove(message: message, inboxSessionId: sessionManager.sessionStartInfo?.id)
     }
     
     func viewWillAppear() {
@@ -134,12 +150,10 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     }
     
     private func loadImage(forMessageId messageId: String, fromUrl url: URL) {
-        if let networkSession = internalAPI?.dependencyContainer.networkSession {
-            NetworkHelper.getData(fromUrl: url, usingSession: networkSession).onSuccess { [weak self] in
-                self?.setImageData($0, forMessageId: messageId)
-            }.onError {
-                ITBError($0.localizedDescription)
-            }
+        input.loadImage(forMessageId: messageId, fromUrl: url).onSuccess { [weak self] in
+            self?.setImageData($0, forMessageId: messageId)
+        }.onError {
+            ITBError($0.localizedDescription)
         }
     }
     
@@ -201,11 +215,11 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
                                                 sessionEndTime: Date(),
                                                 startTotalMessageCount: sessionInfo.startInfo.totalMessageCount,
                                                 startUnreadMessageCount: sessionInfo.startInfo.unreadMessageCount,
-                                                endTotalMessageCount: internalInAppManager?.getInboxMessages().count ?? 0,
-                                                endUnreadMessageCount: internalInAppManager?.getUnreadInboxMessagesCount() ?? 0,
+                                                endTotalMessageCount: input.totalMessagesCount,
+                                                endUnreadMessageCount: input.unreadMessagesCount,
                                                 impressions: sessionInfo.impressions.map { $0.toIterableInboxImpression() })
         
-        internalAPI?.track(inboxSession: inboxSession)
+        input.track(inboxSession: inboxSession)
     }
     
     @objc private func onInboxChanged(notification _: NSNotification) {
@@ -218,7 +232,7 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
     
     private func updateView() {
         ITBInfo()
-        newSectionedMessages = sortAndFilter(messages: getMessages())
+        newSectionedMessages = sortAndFilter(messages: input.messages)
         
         let dwifftDiffs = Dwifft.diff(lhs: sectionedMessages, rhs: newSectionedMessages)
         if dwifftDiffs.count > 0 {
@@ -283,10 +297,6 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         }
     }
     
-    private func getMessages() -> [InboxMessageViewModel] {
-        internalAPI?.inAppManager.getInboxMessages().map { InboxMessageViewModel(message: $0) } ?? []
-    }
-    
     private func sortAndFilter(messages: [InboxMessageViewModel]) -> SectionedValues<Int, InboxMessageViewModel> {
         SectionedValues(values: filteredMessages(messages: messages),
                         valueToSection: createSectionMapper(),
@@ -322,22 +332,16 @@ class InboxViewControllerViewModel: InboxViewControllerViewModelProtocol {
         sectionedMessages.values
     }
     
-    private var internalAPI: InternalIterableAPI? {
-        internalAPIProvider()
-    }
-    
     var comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)?
     var filter: ((IterableInAppMessage) -> Bool)?
     var sectionMapper: ((IterableInAppMessage) -> Int)?
+
+    private let input: InboxStateProtocol
+    private let notificationCenter: NotificationCenterProtocol
     
     private var sectionedMessages = SectionedValues<Int, InboxMessageViewModel>()
     private var newSectionedMessages = SectionedValues<Int, InboxMessageViewModel>()
-    private var sessionManager = InboxSessionManager()
-    private var internalAPIProvider: () -> InternalIterableAPI?
-    
-    private var internalInAppManager: IterableInternalInAppManagerProtocol? {
-        internalAPI?.inAppManager
-    }
+    private var sessionManager: InboxSessionManager
 }
 
 extension SectionedValues {

@@ -478,8 +478,8 @@ class InAppTests: XCTestCase {
         let iterableDeleteUrl = "iterable://delete"
         let mockInAppDisplayer = MockInAppDisplayer()
         mockInAppDisplayer.onShow.onSuccess { _ in
-            mockInAppDisplayer.click(url: URL(string: iterableDeleteUrl)!)
             expectation1.fulfill()
+            mockInAppDisplayer.click(url: URL(string: iterableDeleteUrl)!)
         }
         
         let config = IterableConfig()
@@ -510,8 +510,13 @@ class InAppTests: XCTestCase {
         mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalApi, payload)
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
-
-        XCTAssertEqual(internalApi.inAppManager.getMessages().count, 0)
+        
+        let predicate = NSPredicate { (_, _) -> Bool in
+            internalApi.inAppManager.getMessages().count == 0
+        }
+        
+        let expectation2 = expectation(for: predicate, evaluatedWith: nil, handler: nil)
+        wait(for: [expectation2], timeout: testExpectationTimeout)
     }
 
     func testShowInAppWithIterableCustomActionDismiss() {
@@ -1206,8 +1211,6 @@ class InAppTests: XCTestCase {
         let emptyManager = EmptyInAppManager()
         
         _ = emptyManager.start()
-        
-        XCTAssertNil(emptyManager.createInboxMessageViewController(for: getEmptyInAppMessage(), withInboxMode: .nav))
         
         emptyManager.isAutoDisplayPaused = true
         
