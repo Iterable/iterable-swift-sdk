@@ -70,7 +70,7 @@ class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtoc
     
     func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage) {
         ITBInfo()
-        input.handleClick(clickedUrl: url, forMessage: message)
+        input.handleClick(clickedUrl: url, forMessage: message, inboxSessionId: inboxSessionId)
     }
     
     func set(comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)?, filter: ((IterableInAppMessage) -> Bool)?, sectionMapper: ((IterableInAppMessage) -> Int)?) {

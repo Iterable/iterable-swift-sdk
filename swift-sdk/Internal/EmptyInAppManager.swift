@@ -10,7 +10,7 @@ class EmptyInAppManager: IterableInternalInAppManagerProtocol {
         Fulfill<Bool, Error>(value: true)
     }
     
-    func handleClick(clickedUrl _: URL?, forMessage _: IterableInAppMessage, location _: InAppLocation) {}
+    func handleClick(clickedUrl _: URL?, forMessage _: IterableInAppMessage, location _: InAppLocation, inboxSessionId _: String?) {}
     
     var isAutoDisplayPaused: Bool {
         get {
