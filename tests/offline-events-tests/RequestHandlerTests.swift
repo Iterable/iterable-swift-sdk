@@ -508,6 +508,7 @@ class RequestHandlerTests: XCTestCase {
     
     func testTrackInAppConsume2() throws {
         let messageId = "message_id"
+        let inboxSessionId = UUID().uuidString
         let message = InAppTestHelper.emptyInAppMessage(messageId: messageId)
         let location = InAppLocation.inbox
         let source = InAppDeleteSource.deleteButton
@@ -519,6 +520,7 @@ class RequestHandlerTests: XCTestCase {
                 "saveToInbox": false,
                 "silentInbox": false,
             ],
+            "inboxSessionId": inboxSessionId,
             "deleteAction": "delete-button",
             "deviceInfo": Self.deviceMetadata.asDictionary()!,
         ]
@@ -529,6 +531,7 @@ class RequestHandlerTests: XCTestCase {
             requestHandler.inAppConsume(message: message,
                                         location: location,
                                         source: source,
+                                        inboxSessionId: inboxSessionId,
                                         onSuccess: expectations.onSuccess,
                                         onFailure: expectations.onFailure)
             
@@ -543,6 +546,7 @@ class RequestHandlerTests: XCTestCase {
     
     func testTrackInAppOpen2() throws {
         let messageId = "message_id"
+        let inboxSessionId = UUID().uuidString
         let bodyDict: [String: Any] = [
             "email": "user@example.com",
             "messageId": messageId,
@@ -552,6 +556,7 @@ class RequestHandlerTests: XCTestCase {
                 "saveToInbox": false,
                 "silentInbox": false,
             ],
+            "inboxSessionId": inboxSessionId,
         ]
         
         let expectations = createExpectations(description: #function)
@@ -563,7 +568,7 @@ class RequestHandlerTests: XCTestCase {
             
             return requestHandler.trackInAppOpen(message,
                                           location: .inApp,
-                                          inboxSessionId: nil,
+                                          inboxSessionId: inboxSessionId,
                                           onSuccess: expectations.onSuccess,
                                           onFailure: expectations.onFailure)
         }

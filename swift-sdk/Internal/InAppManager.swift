@@ -173,7 +173,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         
         switch inAppClickedUrl {
         case let .iterableCustomAction(name: iterableCustomActionName):
-            handleIterableCustomAction(name: iterableCustomActionName, forMessage: message, location: location)
+            handleIterableCustomAction(name: iterableCustomActionName, forMessage: message, location: location, inboxSessionId: inboxSessionId)
         case let .customAction(name: customActionName):
             handleUrlOrAction(urlOrAction: customActionName)
         case let .localResource(name: localResourceName):
@@ -412,14 +412,14 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         }
     }
     
-    private func handleIterableCustomAction(name: String, forMessage message: IterableInAppMessage, location: InAppLocation) {
+    private func handleIterableCustomAction(name: String, forMessage message: IterableInAppMessage, location: InAppLocation, inboxSessionId: String?) {
         guard let iterableCustomActionName = IterableCustomActionName(rawValue: name) else {
             return
         }
         
         switch iterableCustomActionName {
         case .delete:
-            remove(message: message, location: location, source: .deleteButton)
+            remove(message: message, location: location, source: .deleteButton, inboxSessionId: inboxSessionId)
         case .dismiss:
             break
         }
@@ -469,6 +469,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         requestHandler?.inAppConsume(message: message,
                                      location: location,
                                      source: source,
+                                     inboxSessionId: inboxSessionId,
                                      onSuccess: nil,
                                      onFailure: nil)
         callbackQueue.async { [weak self] in

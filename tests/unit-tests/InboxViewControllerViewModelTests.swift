@@ -77,7 +77,7 @@ class InboxViewControllerViewModelTests: XCTestCase {
           let model = InboxViewControllerViewModel(input: input)
           
           model.viewWillAppear()
-          model.handleClick(clickedUrl: URL(string: ""), forMessage: message)
+          model.handleClick(clickedUrl: nil, forMessage: message)
           
           wait(for: [expectation1], timeout: testExpectationTimeout)
      }
