@@ -29,6 +29,11 @@ public class InboxSessionManager {
         self.inboxState = inboxState
     }
     
+    // used for the RN SDK iOS side binding
+    public init() {
+        self.inboxState = InboxState()
+    }
+    
     public func updateVisibleRows(visibleRows: [InboxImpressionTracker.RowInfo]) {
         guard let impressionTracker = impressionTracker else {
             ITBError("Expecting impressionTracker here.")
