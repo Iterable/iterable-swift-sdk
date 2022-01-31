@@ -358,13 +358,15 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func inAppConsume(message: IterableInAppMessage,
                       location: InAppLocation = .inApp,
                       source: InAppDeleteSource? = nil,
+                      inboxSessionId: String? = nil,
                       onSuccess: OnSuccessHandler? = nil,
                       onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         requestHandler.inAppConsume(message: message,
-                                      location: location,
-                                      source: source,
-                                      onSuccess: onSuccess,
-                                      onFailure: onFailure)
+                                    location: location,
+                                    source: source,
+                                    inboxSessionId: inboxSessionId,
+                                    onSuccess: onSuccess,
+                                    onFailure: onFailure)
     }
     
     // MARK: - Private/Internal

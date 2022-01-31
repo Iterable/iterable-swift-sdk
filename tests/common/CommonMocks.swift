@@ -620,6 +620,8 @@ class MockLocalStorage: LocalStorageProtocol {
 }
 
 class MockInboxState: InboxStateProtocol {
+    var clickCallback: ((URL?,IterableInAppMessage, String?) -> Void)?
+    
     var isReady = true
     
     var messages = [InboxMessageViewModel]()
@@ -645,7 +647,8 @@ class MockInboxState: InboxStateProtocol {
         Fulfill(value: Data())
     }
     
-    func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage) {
+    func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage, inboxSessionId: String?) {
+        clickCallback?(url, message, inboxSessionId)
     }
     
     func set(read: Bool, forMessage message: InboxMessageViewModel) {

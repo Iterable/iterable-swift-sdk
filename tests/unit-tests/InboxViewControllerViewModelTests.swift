@@ -57,6 +57,32 @@ class InboxViewControllerViewModelTests: XCTestCase {
           wait(for: [expectation1], timeout: testExpectationTimeout)
      }
      
+     func test_callHandleClickWithSessionId() {
+          let expectation1 = expectation(description: #function)
+          let date1 = Date()
+          let message = IterableInAppMessage(messageId: "message1",
+                                             campaignId: 1,
+                                             trigger: IterableInAppTrigger(dict: [JsonKey.InApp.type: "never"]),
+                                             createdAt: date1,
+                                             content: IterableHtmlInAppContent(edgeInsets: .zero, html: ""),
+                                             saveToInbox: true,
+                                             inboxMetadata: nil,
+                                             customPayload: nil)
+          let input = MockInboxState()
+          input.clickCallback = { (_, _, inboxSessionId) in
+               XCTAssertNotNil(inboxSessionId)
+               expectation1.fulfill()
+          }
+
+          let model = InboxViewControllerViewModel(input: input)
+          
+          model.viewWillAppear()
+          model.handleClick(clickedUrl: nil, forMessage: message)
+          
+          wait(for: [expectation1], timeout: testExpectationTimeout)
+     }
+
+     
      func testAscendingSorting() {
           let expectation1 = expectation(description: #function)
           let date1 = Date()

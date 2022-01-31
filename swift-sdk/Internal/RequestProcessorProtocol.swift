@@ -94,6 +94,7 @@ protocol RequestProcessorProtocol {
     func inAppConsume(message: IterableInAppMessage,
                       location: InAppLocation,
                       source: InAppDeleteSource?,
+                      inboxSessionId: String?,
                       onSuccess: OnSuccessHandler?,
                       onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
 }

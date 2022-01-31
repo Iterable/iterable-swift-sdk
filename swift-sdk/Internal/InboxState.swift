@@ -15,7 +15,7 @@ protocol InboxStateProtocol {
     
     func loadImage(forMessageId messageId: String, fromUrl url: URL) -> Pending<Data, Error>
     
-    func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage)
+    func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage, inboxSessionId: String?)
     
     func set(read: Bool, forMessage message: InboxMessageViewModel)
     
@@ -56,8 +56,8 @@ class InboxState: InboxStateProtocol {
     }
 
     
-    func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage) {
-        inAppManager?.handleClick(clickedUrl: url, forMessage: message, location: .inbox)
+    func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage, inboxSessionId: String?) {
+        inAppManager?.handleClick(clickedUrl: url, forMessage: message, location: .inbox, inboxSessionId: inboxSessionId)
     }
     
     func set(read: Bool, forMessage message: InboxMessageViewModel) {

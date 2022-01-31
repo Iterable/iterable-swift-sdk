@@ -213,10 +213,11 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     func inAppConsume(message: IterableInAppMessage,
                       location: InAppLocation,
                       source: InAppDeleteSource?,
+                      inboxSessionId: String?,
                       onSuccess: OnSuccessHandler?,
                       onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         let requestGenerator = { (requestCreator: RequestCreator) in
-            requestCreator.createTrackInAppConsumeRequest(inAppMessageContext: InAppMessageContext.from(message: message, location: location),
+            requestCreator.createTrackInAppConsumeRequest(inAppMessageContext: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId),
                                                           source: source)
         }
 

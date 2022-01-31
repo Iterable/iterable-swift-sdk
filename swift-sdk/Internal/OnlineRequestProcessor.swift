@@ -216,9 +216,10 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     func inAppConsume(message: IterableInAppMessage,
                       location: InAppLocation = .inApp,
                       source: InAppDeleteSource? = nil,
+                      inboxSessionId: String? = nil,
                       onSuccess: OnSuccessHandler? = nil,
                       onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        let result = apiClient.inAppConsume(inAppMessageContext: InAppMessageContext.from(message: message, location: location),
+        let result = apiClient.inAppConsume(inAppMessageContext: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId),
                                             source: source)
         return applyCallbacks(successHandler: onSuccess,
                               andFailureHandler: onFailure,
