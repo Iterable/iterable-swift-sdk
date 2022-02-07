@@ -46,7 +46,6 @@
 		AC1670CD2230A91C00989F8E /* InboxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1670CC2230A91C00989F8E /* InboxTests.swift */; };
 		AC1712892416AEF400F2BB0E /* WebViewProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1712882416AEF400F2BB0E /* WebViewProtocol.swift */; };
 		AC19520D231D9AC600CD5B61 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA8D1A42196309C001B1332 /* Common.swift */; };
-		AC19520E231DAB7B00CD5B61 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0BE20CF4CB8004D7997 /* Constants.swift */; };
 		AC195210231DAD6B00CD5B61 /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CB31B4210960C4004ACDEC /* TestUtils.swift */; };
 		AC1AA1C624EBB2DC00F29C6B /* IterableTaskRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1AA1C524EBB2DC00F29C6B /* IterableTaskRunner.swift */; };
 		AC1AA1C924EBB3C300F29C6B /* IterableNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC1AA1C824EBB3C300F29C6B /* IterableNotifications.swift */; };
@@ -1955,7 +1954,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				ACB37AB124026C1E0093A8EA /* SampleInboxViewDelegateImplementations.swift in Sources */,
-				AC19520E231DAB7B00CD5B61 /* Constants.swift in Sources */,
 				AC2A298A231D44C00070A9C3 /* NetworkDetailViewController.swift in Sources */,
 				AC738CE62315A52A00B96B2D /* Common.swift in Sources */,
 				AC2A2988231CFAC40070A9C3 /* NetworkTableViewController.swift in Sources */,

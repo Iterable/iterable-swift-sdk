@@ -12,6 +12,41 @@ enum IterableMessageLocation: Int {
     case bottom
 }
 
+protocol MessageViewControllerEventTrackerProtocol {
+    func trackInAppOpen(_ message: IterableInAppMessage,
+                        location: InAppLocation,
+                        inboxSessionId: String?)
+    func trackInAppClose(_ message: IterableInAppMessage,
+                         location: InAppLocation,
+                         inboxSessionId: String?,
+                         source: InAppCloseSource?,
+                         clickedUrl: String?)
+    func trackInAppClick(_ message: IterableInAppMessage,
+                         location: InAppLocation,
+                         inboxSessionId: String?,
+                         clickedUrl: String)
+}
+
+class MessageViewControllerEventTracker: MessageViewControllerEventTrackerProtocol {
+    init(requestHandler: RequestHandlerProtocol?) {
+        self.requestHandler = requestHandler
+    }
+    
+    func trackInAppOpen(_ message: IterableInAppMessage, location: InAppLocation, inboxSessionId: String?) {
+        requestHandler?.trackInAppOpen(message, location: location, inboxSessionId: inboxSessionId, onSuccess: nil, onFailure: nil)
+    }
+    
+    func trackInAppClose(_ message: IterableInAppMessage, location: InAppLocation, inboxSessionId: String?, source: InAppCloseSource?, clickedUrl: String?) {
+        requestHandler?.trackInAppClose(message, location: location, inboxSessionId: inboxSessionId, source: source, clickedUrl: clickedUrl, onSuccess: nil, onFailure: nil)
+    }
+    
+    func trackInAppClick(_ message: IterableInAppMessage, location: InAppLocation, inboxSessionId: String?, clickedUrl: String) {
+        requestHandler?.trackInAppClick(message, location: location, inboxSessionId: inboxSessionId, clickedUrl: clickedUrl, onSuccess: nil, onFailure: nil)
+    }
+    
+    private let requestHandler: RequestHandlerProtocol?
+}
+
 class IterableHtmlMessageViewController: UIViewController {
     struct Parameters {
         let html: String
@@ -55,19 +90,23 @@ class IterableHtmlMessageViewController: UIViewController {
     weak var presenter: InAppPresenter?
     
     private init(parameters: Parameters,
+                 eventTrackerProvider:  @escaping @autoclosure () -> MessageViewControllerEventTrackerProtocol?,
                  onClickCallback: ((URL) -> Void)?,
                  internalAPIProvider: @escaping @autoclosure () -> InternalIterableAPI? = IterableAPI.internalImplementation,
                  webViewProvider: @escaping @autoclosure () -> WebViewProtocol = IterableHtmlMessageViewController.createWebView()) {
         ITBInfo()
         self.internalAPIProvider = internalAPIProvider
+        self.eventTrackerProvider = eventTrackerProvider
         self.webViewProvider = webViewProvider
         self.parameters = parameters
         self.onClickCallback = onClickCallback
         super.init(nibName: nil, bundle: nil)
     }
     
-    static func create(parameters: Parameters, onClickCallback: ((URL) -> Void)?) -> IterableHtmlMessageViewController {
-        IterableHtmlMessageViewController(parameters: parameters, onClickCallback: onClickCallback)
+    static func create(parameters: Parameters,
+                       eventTracker: @escaping @autoclosure () -> MessageViewControllerEventTrackerProtocol? = MessageViewControllerEventTracker(requestHandler: IterableAPI.internalImplementation?.requestHandler),
+                       onClickCallback: ((URL) -> Void)?) -> IterableHtmlMessageViewController {
+        IterableHtmlMessageViewController(parameters: parameters, eventTrackerProvider: eventTracker(), onClickCallback: onClickCallback)
     }
     
     override var prefersStatusBarHidden: Bool { parameters.isModal }
@@ -93,11 +132,11 @@ class IterableHtmlMessageViewController: UIViewController {
         
         super.viewDidLoad()
         
-        // Tracks an in-app open and layouts the webview
+        // Tracks an in-app open and lays out the webview
         if let messageMetadata = parameters.messageMetadata {
-            internalAPI?.trackInAppOpen(messageMetadata.message,
-                                        location: messageMetadata.location,
-                                        inboxSessionId: parameters.inboxSessionId)
+            eventTracker?.trackInAppOpen(messageMetadata.message,
+                                         location: messageMetadata.location,
+                                         inboxSessionId: parameters.inboxSessionId)
         }
         
         webView.layoutSubviews()
@@ -117,13 +156,13 @@ class IterableHtmlMessageViewController: UIViewController {
         }
         
         if let _ = navigationController, linkClicked == false {
-            internalAPI?.trackInAppClose(messageMetadata.message,
+            eventTracker?.trackInAppClose(messageMetadata.message,
                                          location: messageMetadata.location,
                                          inboxSessionId: parameters.inboxSessionId,
                                          source: InAppCloseSource.back,
                                          clickedUrl: nil)
         } else {
-            internalAPI?.trackInAppClose(messageMetadata.message,
+            eventTracker?.trackInAppClose(messageMetadata.message,
                                          location: messageMetadata.location,
                                          inboxSessionId: parameters.inboxSessionId,
                                          source: InAppCloseSource.link,
@@ -140,6 +179,7 @@ class IterableHtmlMessageViewController: UIViewController {
     }
     
     private var internalAPIProvider: () -> InternalIterableAPI?
+    private var eventTrackerProvider: () -> MessageViewControllerEventTrackerProtocol?
     private var webViewProvider: () -> WebViewProtocol
     private var parameters: Parameters
     private var onClickCallback: ((URL) -> Void)?
@@ -150,6 +190,9 @@ class IterableHtmlMessageViewController: UIViewController {
     private lazy var webView = webViewProvider()
     private var internalAPI: InternalIterableAPI? {
         internalAPIProvider()
+    }
+    private var eventTracker: MessageViewControllerEventTrackerProtocol? {
+        eventTrackerProvider()
     }
     
     private static func createWebView() -> WebViewProtocol {
@@ -280,7 +323,7 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
         linkClicked = true
         clickedLink = destinationUrl
 
-        Self.trackClickOnDismiss(internalAPI: internalAPI,
+        Self.trackClickOnDismiss(eventTracker: eventTracker,
                                  params: parameters,
                                  onClickCallback: onClickCallback,
                                  withURL: url,
@@ -316,7 +359,7 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
         linkClicked = true
         clickedLink = destinationUrl
 
-        Self.trackClickOnDismiss(internalAPI: internalAPI,
+        Self.trackClickOnDismiss(eventTracker: eventTracker,
                                  params: parameters,
                                  onClickCallback: onClickCallback,
                                  withURL: url,
@@ -327,7 +370,7 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
         decisionHandler(.cancel, preferences)
     }
 
-    private static func trackClickOnDismiss(internalAPI: InternalIterableAPI?,
+    private static func trackClickOnDismiss(eventTracker: MessageViewControllerEventTrackerProtocol?,
                                             params: Parameters,
                                             onClickCallback: ((URL) -> Void)?,
                                             withURL url: URL,
@@ -335,10 +378,10 @@ extension IterableHtmlMessageViewController: WKNavigationDelegate {
         ITBInfo()
         onClickCallback?(url)
         if let messageMetadata = params.messageMetadata {
-            internalAPI?.trackInAppClick(messageMetadata.message,
-                                         location: messageMetadata.location,
-                                         inboxSessionId: params.inboxSessionId,
-                                         clickedUrl: destinationURL)
+            eventTracker?.trackInAppClick(messageMetadata.message,
+                                          location: messageMetadata.location,
+                                          inboxSessionId: params.inboxSessionId,
+                                          clickedUrl: destinationURL)
         }
     }
 

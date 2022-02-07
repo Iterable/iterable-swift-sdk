@@ -620,7 +620,7 @@ class MockLocalStorage: LocalStorageProtocol {
 }
 
 class MockInboxState: InboxStateProtocol {
-    var clickCallback: ((URL?,IterableInAppMessage, String?) -> Void)?
+    var clickCallback: ((URL?, IterableInAppMessage, String?) -> Void)?
     
     var isReady = true
     
@@ -655,5 +655,56 @@ class MockInboxState: InboxStateProtocol {
     }
     
     func remove(message: InboxMessageViewModel, inboxSessionId: String?) {
+    }
+}
+
+extension IterableHtmlMessageViewController.Parameters {
+    static func createForTesting(messageId: String = UUID().uuidString,
+                                 campaignId: NSNumber? = TestHelper.generateIntGuid() as NSNumber) -> IterableHtmlMessageViewController.Parameters {
+        let metadata = IterableInAppMessageMetadata.createForTesting(messageId: messageId, campaignId: campaignId)
+        return IterableHtmlMessageViewController.Parameters(html: "",
+                                                            messageMetadata: metadata,
+                                                            isModal: false)
+    }
+}
+
+extension IterableInAppMessageMetadata {
+    static func createForTesting(messageId: String = UUID().uuidString,
+                                 campaignId: NSNumber? = TestHelper.generateIntGuid() as NSNumber) -> IterableInAppMessageMetadata {
+        IterableInAppMessageMetadata(message: IterableInAppMessage.createForTesting(messageId: messageId, campaignId: campaignId), location: .inApp)
+    }
+}
+
+extension IterableInAppMessage {
+    static func createForTesting(messageId: String = UUID().uuidString,
+                                 campaignId: NSNumber? = TestHelper.generateIntGuid() as NSNumber) -> IterableInAppMessage {
+        IterableInAppMessage(messageId: messageId,
+                             campaignId: campaignId,
+                             content: IterableHtmlInAppContent.createForTesting())
+    }
+}
+
+extension IterableHtmlInAppContent {
+    static func createForTesting() -> IterableHtmlInAppContent {
+        IterableHtmlInAppContent(edgeInsets: .zero, html: "")
+    }
+}
+
+class MockMessageViewControllerEventTracker: MessageViewControllerEventTrackerProtocol {
+    var trackInAppOpenCallback: ((IterableInAppMessage, InAppLocation, String?) -> Void)?
+    var trackInAppCloseCallback: ((IterableInAppMessage, InAppLocation, String?, InAppCloseSource?, String?) -> Void)?
+    var trackInAppClickCallback: ((IterableInAppMessage, InAppLocation, String?, String?) -> Void)?
+
+
+    func trackInAppOpen(_ message: IterableInAppMessage, location: InAppLocation, inboxSessionId: String?) {
+        trackInAppOpenCallback?(message, location, inboxSessionId)
+    }
+
+    func trackInAppClose(_ message: IterableInAppMessage, location: InAppLocation, inboxSessionId: String?, source: InAppCloseSource?, clickedUrl: String?) {
+        trackInAppCloseCallback?(message, location, inboxSessionId, source, clickedUrl)
+    }
+
+    func trackInAppClick(_ message: IterableInAppMessage, location: InAppLocation, inboxSessionId: String?, clickedUrl: String) {
+        trackInAppClickCallback?(message, location, inboxSessionId, clickedUrl)
     }
 }
