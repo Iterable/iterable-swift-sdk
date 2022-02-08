@@ -110,7 +110,7 @@ extension PushTrackerProtocol {
 
 extension UIApplication: ApplicationStateProviderProtocol {}
 
-struct IterableAppIntegrationInternal {
+struct InternalIterableAppIntegration {
     private weak var tracker: PushTrackerProtocol?
     private let urlDelegate: IterableURLDelegate?
     private let customActionDelegate: IterableCustomActionDelegate?
@@ -178,13 +178,13 @@ struct IterableAppIntegrationInternal {
             return
         }
         
-        guard let itbl = IterableAppIntegrationInternal.itblValue(fromUserInfo: userInfo) else {
+        guard let itbl = InternalIterableAppIntegration.itblValue(fromUserInfo: userInfo) else {
             completionHandler?()
             return
         }
         
-        let dataFields = IterableAppIntegrationInternal.createIterableDataFields(actionIdentifier: response.actionIdentifier, userText: response.userText)
-        let action = IterableAppIntegrationInternal.createIterableAction(actionIdentifier: response.actionIdentifier, userText: response.userText, userInfo: userInfo, iterableElement: itbl)
+        let dataFields = InternalIterableAppIntegration.createIterableDataFields(actionIdentifier: response.actionIdentifier, userText: response.userText)
+        let action = InternalIterableAppIntegration.createIterableAction(actionIdentifier: response.actionIdentifier, userText: response.userText, userInfo: userInfo, iterableElement: itbl)
         
         // Track push open
         if let _ = dataFields[JsonKey.actionIdentifier] { // i.e., if action is not dismiss
@@ -233,7 +233,7 @@ struct IterableAppIntegrationInternal {
         if let defaultActionConfig = itbl[JsonKey.Payload.defaultAction] as? [AnyHashable: Any] {
             return IterableAction.action(fromDictionary: defaultActionConfig)
         } else {
-            return IterableAppIntegrationInternal.legacyDefaultActionFromPayload(userInfo: userInfo)
+            return InternalIterableAppIntegration.legacyDefaultActionFromPayload(userInfo: userInfo)
         }
     }
     
@@ -281,12 +281,12 @@ struct IterableAppIntegrationInternal {
         let dataFields = [JsonKey.actionIdentifier: JsonValue.ActionIdentifier.pushOpenDefault]
         tracker?.trackPushOpen(userInfo, dataFields: dataFields)
         
-        guard let itbl = IterableAppIntegrationInternal.itblValue(fromUserInfo: userInfo) else {
+        guard let itbl = InternalIterableAppIntegration.itblValue(fromUserInfo: userInfo) else {
             return
         }
         
         // Execute the action
-        if let action = IterableAppIntegrationInternal.createDefaultAction(userInfo: userInfo, iterableElement: itbl) {
+        if let action = InternalIterableAppIntegration.createDefaultAction(userInfo: userInfo, iterableElement: itbl) {
             let context = IterableActionContext(action: action, source: .push)
             
             IterableActionRunner.execute(action: action,

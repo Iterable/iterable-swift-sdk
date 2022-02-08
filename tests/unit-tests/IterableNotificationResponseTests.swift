@@ -43,7 +43,7 @@ class IterableNotificationResponseTests: XCTestCase {
             expection.fulfill()
         }
         
-        let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker,
+        let appIntegration = InternalIterableAppIntegration(tracker: pushTracker,
                                                             customActionDelegate: customActionDelegate,
                                                             urlOpener: MockUrlOpener(),
                                                             inAppNotifiable: EmptyInAppManager())
@@ -87,7 +87,7 @@ class IterableNotificationResponseTests: XCTestCase {
             expection.fulfill()
         }
         
-        let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker,
+        let appIntegration = InternalIterableAppIntegration(tracker: pushTracker,
                                                             customActionDelegate: customActionDelegate,
                                                             urlOpener: MockUrlOpener(),
                                                             inAppNotifiable: EmptyInAppManager())
@@ -190,7 +190,7 @@ class IterableNotificationResponseTests: XCTestCase {
         let response = MockNotificationResponse(userInfo: userInfo, actionIdentifier: UNNotificationDefaultActionIdentifier)
         let urlOpener = MockUrlOpener()
         let pushTracker = MockPushTracker()
-        let appIntegration = IterableAppIntegrationInternal(tracker: pushTracker,
+        let appIntegration = InternalIterableAppIntegration(tracker: pushTracker,
                                                             urlOpener: urlOpener,
                                                             inAppNotifiable: EmptyInAppManager())
         appIntegration.userNotificationCenter(nil, didReceive: response, withCompletionHandler: nil)

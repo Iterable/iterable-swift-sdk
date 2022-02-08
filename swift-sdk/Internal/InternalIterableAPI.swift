@@ -547,7 +547,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             notificationStateProvider.registerForRemoteNotifications()
         }
         
-        IterableAppIntegration.implementation = IterableAppIntegrationInternal(tracker: self,
+        IterableAppIntegration.implementation = InternalIterableAppIntegration(tracker: self,
                                                                                urlDelegate: config.urlDelegate,
                                                                                customActionDelegate: config.customActionDelegate,
                                                                                urlOpener: urlOpener,
