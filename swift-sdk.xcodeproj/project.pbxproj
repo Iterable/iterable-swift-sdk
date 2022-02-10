@@ -69,7 +69,7 @@
 		AC2B79F721E6A38900A59080 /* NotificationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2B79F621E6A38900A59080 /* NotificationHelper.swift */; };
 		AC2C667E20D3111900D46CC9 /* DateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C667D20D3111900D46CC9 /* DateProvider.swift */; };
 		AC2C668020D31B1F00D46CC9 /* IterableNotificationResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */; };
-		AC2C668220D32F2800D46CC9 /* IterableAppIntegrationInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668120D32F2800D46CC9 /* IterableAppIntegrationInternal.swift */; };
+		AC2C668220D32F2800D46CC9 /* InternalIterableAppIntegration.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668120D32F2800D46CC9 /* InternalIterableAppIntegration.swift */; };
 		AC2C668420D3370600D46CC9 /* Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668320D3370600D46CC9 /* Mocks.swift */; };
 		AC2C668720D3435700D46CC9 /* IterableActionRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668620D3435700D46CC9 /* IterableActionRunnerTests.swift */; };
 		AC31B040232AB42100BE25EB /* InboxSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC31B03F232AB42100BE25EB /* InboxSessionManager.swift */; };
@@ -434,7 +434,7 @@
 		AC2B79F621E6A38900A59080 /* NotificationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationHelper.swift; sourceTree = "<group>"; };
 		AC2C667D20D3111900D46CC9 /* DateProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateProvider.swift; sourceTree = "<group>"; };
 		AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableNotificationResponseTests.swift; sourceTree = "<group>"; };
-		AC2C668120D32F2800D46CC9 /* IterableAppIntegrationInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAppIntegrationInternal.swift; sourceTree = "<group>"; };
+		AC2C668120D32F2800D46CC9 /* InternalIterableAppIntegration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternalIterableAppIntegration.swift; sourceTree = "<group>"; };
 		AC2C668320D3370600D46CC9 /* Mocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mocks.swift; sourceTree = "<group>"; };
 		AC2C668620D3435700D46CC9 /* IterableActionRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableActionRunnerTests.swift; sourceTree = "<group>"; };
 		AC31B03F232AB42100BE25EB /* InboxSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxSessionManager.swift; sourceTree = "<group>"; };
@@ -1031,7 +1031,7 @@
 				AC84256126D6167E0066C627 /* AppExtensionHelper.swift */,
 				AC72A0C520CF4CB9004D7997 /* InternalIterableAPI.swift */,
 				AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */,
-				AC2C668120D32F2800D46CC9 /* IterableAppIntegrationInternal.swift */,
+				AC2C668120D32F2800D46CC9 /* InternalIterableAppIntegration.swift */,
 				AC72A0BD20CF4C98004D7997 /* IterableDeepLinkManager.swift */,
 				AC2B79F621E6A38900A59080 /* NotificationHelper.swift */,
 				ACEDF41C2183C2EC000B9BFE /* Pending.swift */,
@@ -1797,7 +1797,7 @@
 				ACF560E820E55A6B000AAC23 /* IterableActionContext.swift in Sources */,
 				AC5812F824F3AE8D007E6D36 /* RequestHandler.swift in Sources */,
 				55DD2015269E5A4200773CC7 /* IterableInboxViewControllerViewDelegate.swift in Sources */,
-				AC2C668220D32F2800D46CC9 /* IterableAppIntegrationInternal.swift in Sources */,
+				AC2C668220D32F2800D46CC9 /* InternalIterableAppIntegration.swift in Sources */,
 				ACD2B83D25B0A74A005D7A90 /* Models.swift in Sources */,
 				55DD2027269E5EA300773CC7 /* InboxViewControllerViewModelView.swift in Sources */,
 				AC1BED9523F1D4C700FDD75F /* MiscInboxClasses.swift in Sources */,

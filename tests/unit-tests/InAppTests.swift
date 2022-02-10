@@ -1013,7 +1013,7 @@ class InAppTests: XCTestCase {
             inAppFetcher: mockInAppFetcher
         )
         
-        let appIntegration = IterableAppIntegrationInternal(tracker: internalApi,
+        let appIntegration = InternalIterableAppIntegration(tracker: internalApi,
                                                             urlDelegate: config.urlDelegate,
                                                             customActionDelegate: config.customActionDelegate,
                                                             urlOpener: MockUrlOpener(),
@@ -1053,7 +1053,7 @@ class InAppTests: XCTestCase {
         
         let mockInAppManager = MockInAppManager(expectation: expectation1)
         
-        let appIntegration = IterableAppIntegrationInternal(tracker: MockPushTracker(), inAppNotifiable: mockInAppManager)
+        let appIntegration = InternalIterableAppIntegration(tracker: MockPushTracker(), inAppNotifiable: mockInAppManager)
         appIntegration.application(MockApplicationStateProvider(applicationState: .background), didReceiveRemoteNotification: notification, fetchCompletionHandler: nil)
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
@@ -1095,7 +1095,7 @@ class InAppTests: XCTestCase {
         let config = IterableConfig()
         let internalApi = InternalIterableAPI.initializeForTesting(config: config, notificationCenter: mockNotificationCenter)
         
-        let appIntegrationInternal = IterableAppIntegrationInternal(tracker: internalApi,
+        let appIntegrationInternal = InternalIterableAppIntegration(tracker: internalApi,
                                                                     urlDelegate: config.urlDelegate,
                                                                     customActionDelegate: config.customActionDelegate,
                                                                     urlOpener: MockUrlOpener(),

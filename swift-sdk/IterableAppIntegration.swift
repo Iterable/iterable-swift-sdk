@@ -54,5 +54,5 @@ import UserNotifications
         super.init()
     }
     
-    static var implementation: IterableAppIntegrationInternal?
+    static var implementation: InternalIterableAppIntegration?
 }
