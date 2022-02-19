@@ -24,6 +24,7 @@ public class InboxSessionManager {
     var isTracking: Bool {
         sessionStartInfo != nil
     }
+    var showingMessage = false
     
     init(inboxState: InboxStateProtocol = InboxState()) {
         self.inboxState = inboxState

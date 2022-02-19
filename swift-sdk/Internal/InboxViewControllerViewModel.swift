@@ -90,8 +90,9 @@ class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtoc
         sectionedMessages[section].1.count
     }
     
-    func set(read: Bool, forMessage message: InboxMessageViewModel) {
-        input.set(read: read, forMessage: message)
+    func showingMessage(_ message: InboxMessageViewModel) {
+        input.set(read: true, forMessage: message)
+        sessionManager.showingMessage = true
     }
     
     func message(atIndexPath indexPath: IndexPath) -> InboxMessageViewModel {
@@ -107,12 +108,18 @@ class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtoc
     
     func viewWillAppear() {
         ITBInfo()
-        startSession()
+        if !sessionManager.isTracking {
+            ITBInfo("Starting new session")
+            startSession()
+        }
     }
     
     func viewWillDisappear() {
         ITBInfo()
-        endSession()
+        if !sessionManager.showingMessage {
+            ITBInfo("Not showing message, ending session")
+            endSession()
+        }
     }
     
     func visibleRowsChanged() {
@@ -205,6 +212,7 @@ class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtoc
     }
     
     private func endSession() {
+        ITBInfo()
         guard let sessionInfo = sessionManager.endSession() else {
             ITBError("Could not find session info")
             return

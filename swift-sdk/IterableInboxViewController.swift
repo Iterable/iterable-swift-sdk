@@ -225,7 +225,7 @@ open class IterableInboxViewController: UITableViewController {
         if let viewController = createInboxMessageViewController(for: message.iterableMessage,
                                                                     withInboxMode: inboxMode,
                                                                     inboxSessionId: viewModel.inboxSessionId) {
-            viewModel.set(read: true, forMessage: message)
+            viewModel.showingMessage(message)
             
             if inboxMode == .nav {
                 navigationController?.pushViewController(viewController, animated: true)

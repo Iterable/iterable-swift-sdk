@@ -23,7 +23,7 @@ protocol InboxViewControllerViewModelProtocol {
     
     func isEmpty() -> Bool
     func numRows(in section: Int) -> Int
-    func set(read: Bool, forMessage message: InboxMessageViewModel)
+    func showingMessage(_ message: InboxMessageViewModel)
     func message(atIndexPath indexPath: IndexPath) -> InboxMessageViewModel
     func remove(atIndexPath indexPath: IndexPath)
     
