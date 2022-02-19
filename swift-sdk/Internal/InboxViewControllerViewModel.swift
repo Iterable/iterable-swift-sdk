@@ -60,17 +60,8 @@ class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtoc
         allMessagesInSections().filter { $0.read == false }.count
     }
     
-    var inboxSessionId: String? {
-        sessionManager.sessionStartInfo?.id
-    }
-    
     func refresh() -> Pending<Bool, Error> {
         input.sync()
-    }
-    
-    func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage) {
-        ITBInfo()
-        input.handleClick(clickedUrl: url, forMessage: message, inboxSessionId: inboxSessionId)
     }
     
     func set(comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)?, filter: ((IterableInAppMessage) -> Bool)?, sectionMapper: ((IterableInAppMessage) -> Int)?) {
@@ -103,7 +94,7 @@ class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtoc
     
     func remove(atIndexPath indexPath: IndexPath) {
         let message = sectionedMessages[indexPath.section].1[indexPath.row]
-        input.remove(message: message, inboxSessionId: sessionManager.sessionStartInfo?.id)
+        input.remove(message: message, inboxSessionId: inboxSessionId)
     }
     
     func viewWillAppear() {
@@ -121,6 +112,33 @@ class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtoc
             endSession()
         }
     }
+    
+    func createInboxMessageViewController(for message: InboxMessageViewModel,
+                                          isModal: Bool) -> UIViewController? {
+        let iterableMessage = message.iterableMessage
+        guard let content = iterableMessage.content as? IterableHtmlInAppContent else {
+            ITBError("Invalid Content in message")
+            return nil
+        }
+        
+        let onClickCallback: (URL) -> Void =  { [weak self] url in
+            ITBInfo()
+            
+            // in addition perform action or url delegate task
+            self?.input.handleClick(clickedUrl: url, forMessage: iterableMessage, inboxSessionId: self?.inboxSessionId)
+        }
+        let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
+                                                                      padding: content.padding,
+                                                                      messageMetadata: IterableInAppMessageMetadata(message: iterableMessage, location: .inbox),
+                                                                      isModal: isModal,
+                                                                      inboxSessionId: inboxSessionId)
+        let viewController = IterableHtmlMessageViewController.create(parameters: parameters, onClickCallback: onClickCallback)
+        
+        viewController.navigationItem.title = iterableMessage.inboxMetadata?.title
+        
+        return viewController
+    }
+
     
     func visibleRowsChanged() {
         ITBDebug()
@@ -350,6 +368,9 @@ class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtoc
     private var sectionedMessages = SectionedValues<Int, InboxMessageViewModel>()
     private var newSectionedMessages = SectionedValues<Int, InboxMessageViewModel>()
     private var sessionManager: InboxSessionManager
+    private var inboxSessionId: String? {
+        sessionManager.sessionStartInfo?.id
+    }
 }
 
 extension SectionedValues {
