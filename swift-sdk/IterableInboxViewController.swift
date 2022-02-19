@@ -274,7 +274,11 @@ open class IterableInboxViewController: UITableViewController {
     
     // MARK: - IterableInboxViewController-specific Functions and Variables
     
-    var viewModel: InboxViewControllerViewModelProtocol
+    var viewModel: InboxViewControllerViewModelProtocol {
+        didSet {
+            viewModel.view = self
+        }
+    }
     
     /// Set this mode to `popup` to show a popup when an inbox message is selected in the list.
     /// Set this mode to `nav` to push inbox message into navigation stack.
