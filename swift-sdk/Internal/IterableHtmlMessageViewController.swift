@@ -48,8 +48,8 @@ class MessageViewControllerEventTracker: MessageViewControllerEventTrackerProtoc
 }
 
 protocol MessageViewControllerDelegate: AnyObject {
-    func viewDidDisappear()
-    func viewDeinitialized()
+    func messageDidDisappear()
+    func messageDeinitialized()
 }
 
 class IterableHtmlMessageViewController: UIViewController {
@@ -180,7 +180,7 @@ class IterableHtmlMessageViewController: UIViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         ITBInfo()
-        delegate?.viewDidDisappear()
+        delegate?.messageDidDisappear()
     }
     
     required init?(coder _: NSCoder) {
@@ -189,7 +189,7 @@ class IterableHtmlMessageViewController: UIViewController {
     
     deinit {
         ITBInfo()
-        delegate?.viewDeinitialized()
+        delegate?.messageDeinitialized()
     }
     
     private var eventTrackerProvider: () -> MessageViewControllerEventTrackerProtocol?

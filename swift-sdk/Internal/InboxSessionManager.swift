@@ -25,7 +25,8 @@ public class InboxSessionManager {
         sessionStartInfo != nil
     }
     var showingMessage = false
-    var isModal = false
+    var messageShown = false
+    var isModalMessage = false
     
     init(inboxState: InboxStateProtocol = InboxState()) {
         self.inboxState = inboxState

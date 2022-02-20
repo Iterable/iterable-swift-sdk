@@ -84,7 +84,8 @@ class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtoc
     func showingMessage(_ message: InboxMessageViewModel, isModal: Bool) {
         input.set(read: true, forMessage: message)
         sessionManager.showingMessage = true
-        sessionManager.isModal = isModal
+        sessionManager.messageShown = false
+        sessionManager.isModalMessage = isModal
     }
     
     func message(atIndexPath indexPath: IndexPath) -> InboxMessageViewModel {
@@ -108,9 +109,27 @@ class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtoc
     
     func viewWillDisappear() {
         ITBInfo()
-        if !sessionManager.showingMessage {
-            ITBInfo("Not showing message, ending session")
+        guard sessionManager.isTracking else {
+            ITBInfo("No session present")
+            return
+        }
+        if sessionManager.isModalMessage {
+            ITBInfo("Ending session for modal message")
             endSession()
+        } else {
+            if sessionManager.showingMessage {
+                ITBInfo("Currently showing a message")
+                if sessionManager.messageShown {
+                    ITBInfo("View disappearing after message is already shown, ending session")
+                    endSession()
+                } else {
+                    ITBInfo("View disappearing when showing message, marking message shown")
+                    sessionManager.messageShown = true
+                }
+            } else {
+                ITBInfo("Not showing a message, ending session")
+                endSession()
+            }
         }
     }
     
@@ -133,7 +152,9 @@ class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtoc
                                                                       messageMetadata: IterableInAppMessageMetadata(message: iterableMessage, location: .inbox),
                                                                       isModal: isModal,
                                                                       inboxSessionId: inboxSessionId)
-        let viewController = IterableHtmlMessageViewController.create(parameters: parameters, onClickCallback: onClickCallback)
+        let viewController = IterableHtmlMessageViewController.create(parameters: parameters,
+                                                                      onClickCallback: onClickCallback,
+                                                                      delegate: self)
         
         viewController.navigationItem.title = iterableMessage.inboxMetadata?.title
         
@@ -371,6 +392,43 @@ class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtoc
     private var sessionManager: InboxSessionManager
     private var inboxSessionId: String? {
         sessionManager.sessionStartInfo?.id
+    }
+    private let endSessionTimeout: TimeInterval = 0.5
+    private var messageTimer: Timer?
+}
+
+extension InboxViewControllerViewModel: MessageViewControllerDelegate {
+    func messageDidDisappear() {
+        ITBInfo()
+        guard !sessionManager.isModalMessage else {
+            ITBInfo("Modal message, returning")
+            return
+        }
+        
+        messageTimer?.invalidate()
+        messageTimer = nil
+        messageTimer = Timer.scheduledTimer(withTimeInterval: endSessionTimeout, repeats: false) { [weak self] _ in
+            self?.endSessionOnNavigate()
+        }
+    }
+    
+    func messageDeinitialized() {
+        ITBInfo()
+        guard !sessionManager.isModalMessage else {
+            ITBInfo("Modal message, returning")
+            return
+        }
+
+        sessionManager.showingMessage = false
+        messageTimer?.invalidate()
+        messageTimer = nil
+    }
+    
+    @objc private func endSessionOnNavigate() {
+        ITBInfo()
+        if sessionManager.isTracking {
+            endSession()
+        }
     }
 }
 
