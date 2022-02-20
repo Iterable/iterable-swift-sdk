@@ -48,6 +48,7 @@ class MessageViewControllerEventTracker: MessageViewControllerEventTrackerProtoc
 }
 
 protocol MessageViewControllerDelegate: AnyObject {
+    func messageDidAppear()
     func messageDidDisappear()
     func messageDeinitialized()
 }
@@ -152,6 +153,13 @@ class IterableHtmlMessageViewController: UIViewController {
         super.viewDidLayoutSubviews()
     
         resizeWebView(animate: false)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        ITBInfo()
+        super.viewDidAppear(animated)
+        
+        delegate?.messageDidAppear()
     }
     
     override open func viewWillDisappear(_ animated: Bool) {

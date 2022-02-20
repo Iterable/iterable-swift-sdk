@@ -398,6 +398,19 @@ class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtoc
 }
 
 extension InboxViewControllerViewModel: MessageViewControllerDelegate {
+    func messageDidAppear() {
+        ITBInfo()
+        guard !sessionManager.isModalMessage else {
+            ITBInfo("Modal message, returning")
+            return
+        }
+
+        if !sessionManager.isTracking {
+            ITBInfo("Starting a new session when navigating to Inbox")
+            startSession()
+        }
+    }
+    
     func messageDidDisappear() {
         ITBInfo()
         guard !sessionManager.isModalMessage else {
