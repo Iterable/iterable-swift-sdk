@@ -48,7 +48,7 @@ class MessageViewControllerEventTracker: MessageViewControllerEventTrackerProtoc
 }
 
 protocol MessageViewControllerDelegate: AnyObject {
-    func viewWillDisappear()
+    func viewDidDisappear()
     func viewDeinitialized()
 }
 
@@ -176,7 +176,11 @@ class IterableHtmlMessageViewController: UIViewController {
                                          clickedUrl: clickedLink)
         }
 
-        delegate?.viewWillDisappear()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        ITBInfo()
+        delegate?.viewDidDisappear()
     }
     
     required init?(coder _: NSCoder) {

@@ -22,7 +22,7 @@ protocol InboxViewControllerViewModelProtocol {
     func numRows(in section: Int) -> Int
     func createInboxMessageViewController(for message: InboxMessageViewModel,
                                           isModal: Bool) -> UIViewController?
-    func showingMessage(_ message: InboxMessageViewModel)
+    func showingMessage(_ message: InboxMessageViewModel, isModal: Bool)
     func message(atIndexPath indexPath: IndexPath) -> InboxMessageViewModel
     func remove(atIndexPath indexPath: IndexPath)
     

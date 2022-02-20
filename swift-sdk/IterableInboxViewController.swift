@@ -217,14 +217,15 @@ open class IterableInboxViewController: UITableViewController {
     
     override open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         ITBInfo()
-        if inboxMode == .popup {
+        let isModal = inboxMode == .popup
+        if isModal {
             tableView.deselectRow(at: indexPath, animated: true)
         }
         
         let message = viewModel.message(atIndexPath: indexPath)
         
-        if let viewController = viewModel.createInboxMessageViewController(for: message, isModal: inboxMode == .popup) {
-            viewModel.showingMessage(message)
+        if let viewController = viewModel.createInboxMessageViewController(for: message, isModal: isModal) {
+            viewModel.showingMessage(message, isModal: isModal)
             
             if inboxMode == .nav {
                 navigationController?.pushViewController(viewController, animated: true)
