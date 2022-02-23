@@ -25,7 +25,7 @@ public class InboxSessionManager {
         sessionStartInfo != nil
     }
     var showingMessage = false
-    var messageShown = false
+    var inboxDisappearedWhileShowingMessage = false
     var isModalMessage = false
     
     init(inboxState: InboxStateProtocol = InboxState()) {

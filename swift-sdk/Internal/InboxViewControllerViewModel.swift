@@ -84,7 +84,7 @@ class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtoc
     func showingMessage(_ message: InboxMessageViewModel, isModal: Bool) {
         input.set(read: true, forMessage: message)
         sessionManager.showingMessage = true
-        sessionManager.messageShown = false
+        sessionManager.inboxDisappearedWhileShowingMessage = false
         sessionManager.isModalMessage = isModal
     }
     
@@ -113,23 +113,19 @@ class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtoc
             ITBInfo("No session present")
             return
         }
-        if sessionManager.isModalMessage {
-            ITBInfo("Ending session for modal message")
-            endSession()
-        } else {
-            if sessionManager.showingMessage {
-                ITBInfo("Currently showing a message")
-                if sessionManager.messageShown {
-                    ITBInfo("View disappearing after message is already shown, ending session")
-                    endSession()
-                } else {
-                    ITBInfo("View disappearing when showing message, marking message shown")
-                    sessionManager.messageShown = true
-                }
-            } else {
-                ITBInfo("Not showing a message, ending session")
+        
+        if sessionManager.showingMessage {
+            ITBInfo("Currently showing a message")
+            if sessionManager.inboxDisappearedWhileShowingMessage {
+                ITBInfo("View disappearing after message is already shown, ending session")
                 endSession()
+            } else {
+                ITBInfo("View disappearing when showing message, marking message shown")
+                sessionManager.inboxDisappearedWhileShowingMessage = true
             }
+        } else {
+            ITBInfo("Not showing a message, ending session")
+            endSession()
         }
     }
     
