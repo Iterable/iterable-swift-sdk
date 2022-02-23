@@ -40,7 +40,8 @@
         }
         
         NSNumber *price = [[NSNumber alloc] initWithDouble:10.0];
-        CommerceItem *item = [[CommerceItem alloc] initWithId:self.coffeeType.name.lowercaseString name:self.coffeeType.name price:price quantity:1];
+        CommerceItem *item = [[CommerceItem alloc]
+                              initWithId:self.coffeeType.name.lowercaseString name:self.coffeeType.name price:price quantity:1 sku:nil description:nil url:nil imageUrl:nil categories:nil dataFields:nil];
         [IterableAPI trackPurchase:price items:@[item] dataFields:dataFields];
     }
 }
