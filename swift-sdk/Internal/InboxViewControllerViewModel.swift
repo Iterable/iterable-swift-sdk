@@ -120,7 +120,7 @@ class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtoc
                 ITBInfo("View disappearing after message is already shown, ending session")
                 endSession()
             } else {
-                ITBInfo("View disappearing when showing message, marking message shown")
+                ITBInfo("View disappearing when showing message")
                 sessionManager.inboxDisappearedWhileShowingMessage = true
             }
         } else {
