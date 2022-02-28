@@ -423,14 +423,13 @@ extension InboxViewControllerViewModel: MessageViewControllerDelegate {
     
     func messageDeinitialized() {
         ITBInfo()
-        guard !sessionManager.isModalMessage else {
-            ITBInfo("Modal message, returning")
-            return
-        }
-
         sessionManager.showingMessage = false
-        messageTimer?.invalidate()
-        messageTimer = nil
+
+        if !sessionManager.isModalMessage {
+            ITBInfo("Non modal message, deinitialized, invalidating timer")
+            messageTimer?.invalidate()
+            messageTimer = nil
+        }
     }
     
     @objc private func endSessionOnNavigate() {
