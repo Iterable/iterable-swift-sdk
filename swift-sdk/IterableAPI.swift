@@ -397,6 +397,36 @@ public final class IterableAPI: NSObject {
                                               onSuccess: onSuccess,
                                               onFailure: onFailure)
     }
+
+    /// Tracks a purchase with additional data and custom completion blocks.
+    ///
+    /// - Parameters:
+    ///     - withTotal: The total purchase amount
+    ///     - items: The list of purchased items
+    ///     - dataFields: A `Dictionary` containing any additional information to save along with the event
+    ///     - campaignId: The `campaignId` of the push notification that caused this open event
+    ///     - templateId: The `templateId` of the push notification that caused this open event
+    ///     - onSuccess: `OnSuccessHandler` to invoke if the purchase is tracked successfully
+    ///     - onFailure: `OnFailureHandler` to invoke if tracking the purchase fails
+    ///
+    /// - SeeAlso: CommerceItem, OnSuccessHandler, OnFailureHandler
+    @objc(trackPurchase:items:dataFields:campaignId:templateId:onSuccess:onFailure:)
+    public static func track(purchase withTotal: NSNumber,
+                             items: [CommerceItem],
+                             dataFields: [AnyHashable: Any]?,
+                             campaignId: NSNumber?,
+                             templateId: NSNumber?,
+                             onSuccess: OnSuccessHandler?,
+                             onFailure: OnFailureHandler?) {
+        internalImplementation?.trackPurchase(withTotal,
+                                              items: items,
+                                              dataFields: dataFields,
+                                              campaignId: campaignId,
+                                              templateId: templateId,
+                                              onSuccess: onSuccess,
+                                              onFailure: onFailure)
+    }
+
     
     /// Tracks a `pushOpen` event with a push notification payload
     ///

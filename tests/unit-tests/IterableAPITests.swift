@@ -663,7 +663,48 @@ class IterableAPITests: XCTestCase {
         
         wait(for: [expectation], timeout: testExpectationTimeoutForInverted)
     }
-    
+
+    func testTrackPurchaseWithUserId2() {
+        let expectation = XCTestExpectation(description: "testTrackPurchaseWithUserId")
+        
+        let campaignId: NSNumber = 22
+        let templateId: NSNumber = 33
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let config = IterableConfig()
+        config.pushIntegrationName = "my-push-integration"
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
+        internalAPI.userId = "zeeUserId"
+        
+        internalAPI.trackPurchase(10.55, items: [], dataFields: nil, campaignId: campaignId, templateId: templateId, onSuccess: { _ in
+            guard let request = networkSession.getRequest(withEndPoint: Const.Path.trackPurchase) else {
+                return
+            }
+            guard let body = TestUtils.getRequestBody(request: request) else {
+                return
+            }
+            TestUtils.validate(request: request,
+                               requestType: .post,
+                               apiEndPoint: Endpoint.api,
+                               path: Const.Path.trackPurchase,
+                               queryParams: [])
+            
+            TestUtils.validateMatch(keyPath: KeyPath(string: "\(JsonKey.Commerce.user).\(JsonKey.userId)"), value: "zeeUserId", inDictionary: body)
+            TestUtils.validateElementPresent(withName: JsonKey.Commerce.total, andValue: 10.55, inDictionary: body)
+            TestUtils.validateElementPresent(withName: JsonKey.campaignId, andValue: campaignId, inDictionary: body)
+            TestUtils.validateElementPresent(withName: JsonKey.templateId, andValue: templateId, inDictionary: body)
+
+            expectation.fulfill()
+        }) { reason, _ in
+            if let reason = reason {
+                XCTFail("encountered error: \(reason)")
+            } else {
+                XCTFail("encountered error")
+            }
+        }
+        
+        wait(for: [expectation], timeout: testExpectationTimeoutForInverted)
+    }
+
     func testTrackPurchaseWithEmail() {
         let expectation = XCTestExpectation(description: "testTrackPurchaseWithEmail")
         

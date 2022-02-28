@@ -98,11 +98,15 @@ class RequestHandler: RequestHandlerProtocol {
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]?,
+                       campaignId: NSNumber?,
+                       templateId: NSNumber?,
                        onSuccess: OnSuccessHandler?,
                        onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         chooseRequestProcessor().trackPurchase(total,
                                                items: items,
                                                dataFields: dataFields,
+                                               campaignId: campaignId,
+                                               templateId: templateId,
                                                onSuccess: onSuccess,
                                                onFailure: onFailure)
     }

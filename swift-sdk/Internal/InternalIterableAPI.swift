@@ -221,10 +221,19 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]? = nil,
+                       campaignId: NSNumber? = nil,
+                       templateId: NSNumber? = nil,
                        onSuccess: OnSuccessHandler? = nil,
                        onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        requestHandler.trackPurchase(total, items: items, dataFields: dataFields, onSuccess: onSuccess, onFailure: onFailure)
+        requestHandler.trackPurchase(total,
+                                     items: items,
+                                     dataFields: dataFields,
+                                     campaignId: campaignId,
+                                     templateId: templateId,
+                                     onSuccess: onSuccess,
+                                     onFailure: onFailure)
     }
+
     
     @discardableResult
     func trackPushOpen(_ userInfo: [AnyHashable: Any],
