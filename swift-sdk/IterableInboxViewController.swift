@@ -129,7 +129,7 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     override open func viewDidLoad() {
-        ITBDebug()
+        ITBInfo()
         
         super.viewDidLoad()
         
@@ -146,7 +146,7 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     override open func viewWillAppear(_ animated: Bool) {
-        ITBDebug()
+        ITBInfo()
         
         super.viewWillAppear(animated)
         
@@ -164,7 +164,7 @@ open class IterableInboxViewController: UITableViewController {
     }
     
     override open func viewWillDisappear(_ animated: Bool) {
-        ITBDebug()
+        ITBInfo()
         
         super.viewWillDisappear(animated)
         
@@ -216,16 +216,16 @@ open class IterableInboxViewController: UITableViewController {
     // MARK: - UITableViewDelegate (Optional Functions)
     
     override open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if inboxMode == .popup {
+        ITBInfo()
+        let isModal = inboxMode == .popup
+        if isModal {
             tableView.deselectRow(at: indexPath, animated: true)
         }
         
         let message = viewModel.message(atIndexPath: indexPath)
         
-        if let viewController = createInboxMessageViewController(for: message.iterableMessage,
-                                                                    withInboxMode: inboxMode,
-                                                                    inboxSessionId: viewModel.inboxSessionId) {
-            viewModel.set(read: true, forMessage: message)
+        if let viewController = viewModel.createInboxMessageViewController(for: message, isModal: isModal) {
+            viewModel.showingMessage(message, isModal: isModal)
             
             if inboxMode == .nav {
                 navigationController?.pushViewController(viewController, animated: true)
@@ -237,33 +237,6 @@ open class IterableInboxViewController: UITableViewController {
         }
     }
     
-    private func createInboxMessageViewController(for message: IterableInAppMessage,
-                                                  withInboxMode inboxMode: IterableInboxViewController.InboxMode,
-                                                  inboxSessionId: String? = nil) -> UIViewController? {
-        guard let content = message.content as? IterableHtmlInAppContent else {
-            ITBError("Invalid Content in message")
-            return nil
-        }
-        
-        let onClickCallback: (URL) -> Void =  { [weak self] url in
-            ITBInfo()
-            
-            // in addition perform action or url delegate task
-            self?.viewModel.handleClick(clickedUrl: url, forMessage: message)
-        }
-        let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
-                                                                      padding: content.padding,
-                                                                      messageMetadata: IterableInAppMessageMetadata(message: message, location: .inbox),
-                                                                      isModal: inboxMode == .popup,
-                                                                      inboxSessionId: inboxSessionId)
-        let viewController = IterableHtmlMessageViewController.create(parameters: parameters, onClickCallback: onClickCallback)
-        
-        viewController.navigationItem.title = message.inboxMetadata?.title
-        
-        return viewController
-    }
-
-    
     // MARK: - UIScrollViewDelegate (Optional Functions)
     
     override open func scrollViewDidScroll(_: UIScrollView) {
@@ -274,7 +247,11 @@ open class IterableInboxViewController: UITableViewController {
     
     // MARK: - IterableInboxViewController-specific Functions and Variables
     
-    var viewModel: InboxViewControllerViewModelProtocol
+    var viewModel: InboxViewControllerViewModelProtocol {
+        didSet {
+            viewModel.view = self
+        }
+    }
     
     /// Set this mode to `popup` to show a popup when an inbox message is selected in the list.
     /// Set this mode to `nav` to push inbox message into navigation stack.

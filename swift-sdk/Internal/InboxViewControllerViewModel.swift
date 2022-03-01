@@ -60,17 +60,8 @@ class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtoc
         allMessagesInSections().filter { $0.read == false }.count
     }
     
-    var inboxSessionId: String? {
-        sessionManager.sessionStartInfo?.id
-    }
-    
     func refresh() -> Pending<Bool, Error> {
         input.sync()
-    }
-    
-    func handleClick(clickedUrl url: URL?, forMessage message: IterableInAppMessage) {
-        ITBInfo()
-        input.handleClick(clickedUrl: url, forMessage: message, inboxSessionId: inboxSessionId)
     }
     
     func set(comparator: ((IterableInAppMessage, IterableInAppMessage) -> Bool)?, filter: ((IterableInAppMessage) -> Bool)?, sectionMapper: ((IterableInAppMessage) -> Int)?) {
@@ -90,8 +81,11 @@ class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtoc
         sectionedMessages[section].1.count
     }
     
-    func set(read: Bool, forMessage message: InboxMessageViewModel) {
-        input.set(read: read, forMessage: message)
+    func showingMessage(_ message: InboxMessageViewModel, isModal: Bool) {
+        input.set(read: true, forMessage: message)
+        sessionManager.showingMessage = true
+        sessionManager.inboxDisappearedWhileShowingMessage = false
+        sessionManager.isModalMessage = isModal
     }
     
     func message(atIndexPath indexPath: IndexPath) -> InboxMessageViewModel {
@@ -102,18 +96,67 @@ class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtoc
     
     func remove(atIndexPath indexPath: IndexPath) {
         let message = sectionedMessages[indexPath.section].1[indexPath.row]
-        input.remove(message: message, inboxSessionId: sessionManager.sessionStartInfo?.id)
+        input.remove(message: message, inboxSessionId: inboxSessionId)
     }
     
     func viewWillAppear() {
         ITBInfo()
-        startSession()
+        if !sessionManager.isTracking {
+            ITBInfo("Starting new session")
+            startSession()
+        }
     }
     
     func viewWillDisappear() {
         ITBInfo()
-        endSession()
+        guard sessionManager.isTracking else {
+            ITBInfo("No session present")
+            return
+        }
+        
+        if sessionManager.showingMessage {
+            ITBInfo("Currently showing a message")
+            if sessionManager.inboxDisappearedWhileShowingMessage {
+                ITBInfo("View disappearing after message is already shown, ending session")
+                endSession()
+            } else {
+                ITBInfo("View disappearing when showing message")
+                sessionManager.inboxDisappearedWhileShowingMessage = true
+            }
+        } else {
+            ITBInfo("Not showing a message, ending session")
+            endSession()
+        }
     }
+    
+    func createInboxMessageViewController(for message: InboxMessageViewModel,
+                                          isModal: Bool) -> UIViewController? {
+        let iterableMessage = message.iterableMessage
+        guard let content = iterableMessage.content as? IterableHtmlInAppContent else {
+            ITBError("Invalid Content in message")
+            return nil
+        }
+        
+        let onClickCallback: (URL) -> Void =  { [weak self] url in
+            ITBInfo()
+            
+            // in addition perform action or url delegate task
+            self?.input.handleClick(clickedUrl: url, forMessage: iterableMessage, inboxSessionId: self?.inboxSessionId)
+        }
+        let parameters = IterableHtmlMessageViewController.Parameters(html: content.html,
+                                                                      padding: content.padding,
+                                                                      messageMetadata: IterableInAppMessageMetadata(message: iterableMessage, location: .inbox),
+                                                                      isModal: isModal,
+                                                                      inboxSessionId: inboxSessionId)
+        let viewController = IterableHtmlMessageViewController.create(parameters: parameters,
+                                                                      onClickCallback: onClickCallback,
+                                                                      delegate: self)
+        
+        viewController.navigationItem.title = iterableMessage.inboxMetadata?.title
+        
+        return viewController
+    }
+
     
     func visibleRowsChanged() {
         ITBDebug()
@@ -205,6 +248,7 @@ class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtoc
     }
     
     private func endSession() {
+        ITBInfo()
         guard let sessionInfo = sessionManager.endSession() else {
             ITBError("Could not find session info")
             return
@@ -342,6 +386,58 @@ class InboxViewControllerViewModel: NSObject, InboxViewControllerViewModelProtoc
     private var sectionedMessages = SectionedValues<Int, InboxMessageViewModel>()
     private var newSectionedMessages = SectionedValues<Int, InboxMessageViewModel>()
     private var sessionManager: InboxSessionManager
+    private var inboxSessionId: String? {
+        sessionManager.sessionStartInfo?.id
+    }
+    private let endSessionTimeout: TimeInterval = 0.5
+    private var messageTimer: Timer?
+}
+
+extension InboxViewControllerViewModel: MessageViewControllerDelegate {
+    func messageDidAppear() {
+        ITBInfo()
+        guard !sessionManager.isModalMessage else {
+            ITBInfo("Modal message, returning")
+            return
+        }
+
+        if !sessionManager.isTracking {
+            ITBInfo("Starting a new session when navigating to Inbox")
+            startSession()
+        }
+    }
+    
+    func messageDidDisappear() {
+        ITBInfo()
+        guard !sessionManager.isModalMessage else {
+            ITBInfo("Modal message, returning")
+            return
+        }
+        
+        messageTimer?.invalidate()
+        messageTimer = nil
+        messageTimer = Timer.scheduledTimer(withTimeInterval: endSessionTimeout, repeats: false) { [weak self] _ in
+            self?.endSessionOnNavigate()
+        }
+    }
+    
+    func messageDeinitialized() {
+        ITBInfo()
+        sessionManager.showingMessage = false
+
+        if !sessionManager.isModalMessage {
+            ITBInfo("Non modal message, deinitialized, invalidating timer")
+            messageTimer?.invalidate()
+            messageTimer = nil
+        }
+    }
+    
+    @objc private func endSessionOnNavigate() {
+        ITBInfo()
+        if sessionManager.isTracking {
+            endSession()
+        }
+    }
 }
 
 extension SectionedValues {

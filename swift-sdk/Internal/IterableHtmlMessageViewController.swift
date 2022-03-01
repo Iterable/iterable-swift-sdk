@@ -47,6 +47,12 @@ class MessageViewControllerEventTracker: MessageViewControllerEventTrackerProtoc
     private let requestHandler: RequestHandlerProtocol?
 }
 
+protocol MessageViewControllerDelegate: AnyObject {
+    func messageDidAppear()
+    func messageDidDisappear()
+    func messageDeinitialized()
+}
+
 class IterableHtmlMessageViewController: UIViewController {
     struct Parameters {
         let html: String
@@ -92,21 +98,22 @@ class IterableHtmlMessageViewController: UIViewController {
     private init(parameters: Parameters,
                  eventTrackerProvider:  @escaping @autoclosure () -> MessageViewControllerEventTrackerProtocol?,
                  onClickCallback: ((URL) -> Void)?,
-                 internalAPIProvider: @escaping @autoclosure () -> InternalIterableAPI? = IterableAPI.internalImplementation,
-                 webViewProvider: @escaping @autoclosure () -> WebViewProtocol = IterableHtmlMessageViewController.createWebView()) {
+                 webViewProvider: @escaping @autoclosure () -> WebViewProtocol = IterableHtmlMessageViewController.createWebView(),
+                 delegate: MessageViewControllerDelegate?) {
         ITBInfo()
-        self.internalAPIProvider = internalAPIProvider
         self.eventTrackerProvider = eventTrackerProvider
         self.webViewProvider = webViewProvider
         self.parameters = parameters
         self.onClickCallback = onClickCallback
+        self.delegate = delegate
         super.init(nibName: nil, bundle: nil)
     }
     
     static func create(parameters: Parameters,
                        eventTracker: @escaping @autoclosure () -> MessageViewControllerEventTrackerProtocol? = MessageViewControllerEventTracker(requestHandler: IterableAPI.internalImplementation?.requestHandler),
-                       onClickCallback: ((URL) -> Void)?) -> IterableHtmlMessageViewController {
-        IterableHtmlMessageViewController(parameters: parameters, eventTrackerProvider: eventTracker(), onClickCallback: onClickCallback)
+                       onClickCallback: ((URL) -> Void)?,
+                       delegate: MessageViewControllerDelegate? = nil) -> IterableHtmlMessageViewController {
+        IterableHtmlMessageViewController(parameters: parameters, eventTrackerProvider: eventTracker(), onClickCallback: onClickCallback, delegate: delegate)
     }
     
     override var prefersStatusBarHidden: Bool { parameters.isModal }
@@ -148,7 +155,15 @@ class IterableHtmlMessageViewController: UIViewController {
         resizeWebView(animate: false)
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        ITBInfo()
+        super.viewDidAppear(animated)
+        
+        delegate?.messageDidAppear()
+    }
+    
     override open func viewWillDisappear(_ animated: Bool) {
+        ITBInfo()
         super.viewWillDisappear(animated)
         
         guard let messageMetadata = parameters.messageMetadata else {
@@ -168,6 +183,12 @@ class IterableHtmlMessageViewController: UIViewController {
                                          source: InAppCloseSource.link,
                                          clickedUrl: clickedLink)
         }
+
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        ITBInfo()
+        delegate?.messageDidDisappear()
     }
     
     required init?(coder _: NSCoder) {
@@ -176,21 +197,19 @@ class IterableHtmlMessageViewController: UIViewController {
     
     deinit {
         ITBInfo()
+        delegate?.messageDeinitialized()
     }
     
-    private var internalAPIProvider: () -> InternalIterableAPI?
     private var eventTrackerProvider: () -> MessageViewControllerEventTrackerProtocol?
     private var webViewProvider: () -> WebViewProtocol
     private var parameters: Parameters
     private var onClickCallback: ((URL) -> Void)?
+    private var delegate: MessageViewControllerDelegate?
     private var location: IterableMessageLocation = .full
     private var linkClicked = false
     private var clickedLink: String?
     
     private lazy var webView = webViewProvider()
-    private var internalAPI: InternalIterableAPI? {
-        internalAPIProvider()
-    }
     private var eventTracker: MessageViewControllerEventTrackerProtocol? {
         eventTrackerProvider()
     }
