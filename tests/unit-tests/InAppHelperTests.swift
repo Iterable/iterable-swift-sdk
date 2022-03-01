@@ -111,7 +111,7 @@ class InAppHelperTests: XCTestCase {
             fatalError()
         }
         
-        func track(purchase _: NSNumber, items _: [CommerceItem], dataFields _: [AnyHashable: Any]?) -> Pending<SendRequestValue, SendRequestError> {
+        func track(purchase _: NSNumber, items _: [CommerceItem], dataFields _: [AnyHashable: Any]?, campaignId _: NSNumber?, templateId _: NSNumber?) -> Pending<SendRequestValue, SendRequestError> {
             fatalError()
         }
         

@@ -53,12 +53,16 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]?,
+                       campaignId: NSNumber?,
+                       templateId: NSNumber?,
                        onSuccess: OnSuccessHandler?,
                        onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         let requestGenerator = { (requestCreator: RequestCreator) in
             requestCreator.createTrackPurchaseRequest(total,
                                                       items: items,
-                                                      dataFields: dataFields)
+                                                      dataFields: dataFields,
+                                                      campaignId: campaignId,
+                                                      templateId: templateId)
         }
         
         return sendIterableRequest(requestGenerator: requestGenerator,

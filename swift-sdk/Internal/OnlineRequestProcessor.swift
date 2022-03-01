@@ -83,12 +83,14 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]? = nil,
+                       campaignId: NSNumber?,
+                       templateId: NSNumber?,
                        onSuccess: OnSuccessHandler? = nil,
                        onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         applyCallbacks(successHandler: onSuccess,
                        andFailureHandler: onFailure,
                        withIdentifier: "trackPurchase",
-                       forResult: apiClient.track(purchase: total, items: items, dataFields: dataFields))
+                       forResult: apiClient.track(purchase: total, items: items, dataFields: dataFields, campaignId: campaignId, templateId: templateId))
     }
     
     @discardableResult

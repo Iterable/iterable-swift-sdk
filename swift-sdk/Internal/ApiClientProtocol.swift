@@ -13,7 +13,7 @@ protocol ApiClientProtocol: AnyObject {
     
     func updateCart(items: [CommerceItem]) -> Pending<SendRequestValue, SendRequestError>
     
-    func track(purchase total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) -> Pending<SendRequestValue, SendRequestError>
+    func track(purchase total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?, campaignId: NSNumber?, templateId: NSNumber?) -> Pending<SendRequestValue, SendRequestError>
     
     func track(pushOpen campaignId: NSNumber, templateId: NSNumber?, messageId: String, appAlreadyRunning: Bool, dataFields: [AnyHashable: Any]?) -> Pending<SendRequestValue, SendRequestError>
     

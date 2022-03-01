@@ -192,6 +192,8 @@ class RequestHandlerTests: XCTestCase {
             requestHandler.trackPurchase(total,
                                          items: items,
                                          dataFields: dataFields,
+                                         campaignId: nil,
+                                         templateId: nil,
                                          onSuccess: expectations.onSuccess,
                                          onFailure: expectations.onFailure)
         }
@@ -202,7 +204,49 @@ class RequestHandlerTests: XCTestCase {
         
         wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: testExpectationTimeout)
     }
-    
+
+    func testTrackPurchase2() throws {
+        let total = NSNumber(value: 15.32)
+        let items = [CommerceItem(id: "id1", name: "myCommerceItem", price: 5.1, quantity: 2)]
+        let dataFields = ["var1": "val1", "var2": "val2"]
+        let campaignId: NSNumber = 33
+        let templateId: NSNumber = 55
+        
+        let bodyDict: [String: Any] = [
+            "items": [[
+                "id": items[0].id,
+                "name": items[0].name,
+                "price": items[0].price,
+                "quantity": items[0].quantity,
+            ]],
+            "total": total,
+            "dataFields": dataFields,
+            "campaignId": campaignId,
+            "templateId": templateId,
+            "user": [
+                "email": "user@example.com",
+            ],
+        ]
+        
+        let expectations = createExpectations(description: #function)
+        
+        let requestGenerator = { (requestHandler: RequestHandlerProtocol) in
+            requestHandler.trackPurchase(total,
+                                         items: items,
+                                         dataFields: dataFields,
+                                         campaignId: campaignId,
+                                         templateId: templateId,
+                                         onSuccess: expectations.onSuccess,
+                                         onFailure: expectations.onFailure)
+        }
+        
+        try handleRequestWithSuccessAndFailure(requestGenerator: requestGenerator,
+                                                path: Const.Path.trackPurchase,
+                                                bodyDict: bodyDict)
+        
+        wait(for: [expectations.successExpectation, expectations.failureExpectation], timeout: testExpectationTimeout)
+    }
+
     func testTrackPushOpen() throws {
         let campaignId = 1
         let templateId = 2

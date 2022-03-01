@@ -108,7 +108,11 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: Const.Path.updateCart, body: body)))
     }
     
-    func createTrackPurchaseRequest(_ total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) -> Result<IterableRequest, IterableError> {
+    func createTrackPurchaseRequest(_ total: NSNumber,
+                                    items: [CommerceItem],
+                                    dataFields: [AnyHashable: Any]?,
+                                    campaignId: NSNumber?,
+                                    templateId: NSNumber?) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
             ITBError(Self.authMissingMessage)
             return .failure(IterableError.general(description: Self.authMissingMessage))
@@ -127,7 +131,14 @@ struct RequestCreator {
         if let dataFields = dataFields {
             body[JsonKey.dataFields] = dataFields
         }
-        
+
+        if let campaignId = campaignId {
+            body[JsonKey.campaignId] = campaignId
+        }
+        if let templateId = templateId {
+            body[JsonKey.templateId] = templateId
+        }
+
         return .success(.post(createPostRequest(path: Const.Path.trackPurchase, body: body)))
     }
     

@@ -130,10 +130,16 @@ extension ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: result)
     }
     
-    func track(purchase total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable: Any]?) -> Pending<SendRequestValue, SendRequestError> {
+    func track(purchase total: NSNumber,
+               items: [CommerceItem],
+               dataFields: [AnyHashable: Any]?,
+               campaignId: NSNumber?,
+               templateId: NSNumber?) -> Pending<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createTrackPurchaseRequest(total,
                                                                                     items: items,
-                                                                                    dataFields: dataFields) }
+                                                                                    dataFields: dataFields,
+                                                                                    campaignId: campaignId,
+                                                                                    templateId: templateId) }
         return send(iterableRequestResult: result)
     }
     

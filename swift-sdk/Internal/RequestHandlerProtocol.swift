@@ -47,6 +47,8 @@ protocol RequestHandlerProtocol: AnyObject {
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]?,
+                       campaignId: NSNumber?,
+                       templateId: NSNumber?,
                        onSuccess: OnSuccessHandler?,
                        onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
     
