@@ -38,6 +38,8 @@
 		55DD207F26A0D83800773CC7 /* IterableAuthManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD207E26A0D83800773CC7 /* IterableAuthManagerProtocol.swift */; };
 		55E02D39253F8D86009DB8BC /* WebViewProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */; };
 		55E6F462238E066400808BCE /* DeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6F45E238E066400808BCE /* DeepLinkTests.swift */; };
+		5B49BB3E27CFB71500E6F00C /* PopupInboxSessionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B49BB3D27CFB71500E6F00C /* PopupInboxSessionUITests.swift */; };
+		5B6C3C1127CE871F00B9A753 /* NavInboxSessionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B6C3C1027CE871F00B9A753 /* NavInboxSessionUITests.swift */; };
 		AC02480822791E2100495FB9 /* IterableInboxNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */; };
 		AC02CAA6234E50B5006617E0 /* RegistrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */; };
 		AC03094B21E532470003A288 /* InAppPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC03094A21E532470003A288 /* InAppPersistence.swift */; };
@@ -403,6 +405,8 @@
 		55DD207E26A0D83800773CC7 /* IterableAuthManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAuthManagerProtocol.swift; sourceTree = "<group>"; };
 		55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewProtocolTests.swift; sourceTree = "<group>"; };
 		55E6F45E238E066400808BCE /* DeepLinkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepLinkTests.swift; sourceTree = "<group>"; };
+		5B49BB3D27CFB71500E6F00C /* PopupInboxSessionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupInboxSessionUITests.swift; sourceTree = "<group>"; };
+		5B6C3C1027CE871F00B9A753 /* NavInboxSessionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavInboxSessionUITests.swift; sourceTree = "<group>"; };
 		AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxNavigationViewController.swift; sourceTree = "<group>"; };
 		AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTests.swift; sourceTree = "<group>"; };
 		AC03094A21E532470003A288 /* InAppPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPersistence.swift; sourceTree = "<group>"; };
@@ -1215,6 +1219,8 @@
 				ACBDDE5B23C4EDEC0008CC4D /* InboxCustomizationTests.swift */,
 				ACDA977023159C39004C412E /* InboxUITests.swift */,
 				ACC6A851232407B5003CC4BE /* InboxUITestsHelper.swift */,
+				5B6C3C1027CE871F00B9A753 /* NavInboxSessionUITests.swift */,
+				5B49BB3D27CFB71500E6F00C /* PopupInboxSessionUITests.swift */,
 				ACDA977223159C39004C412E /* Info.plist */,
 			);
 			path = "inbox-ui-tests";
@@ -1972,9 +1978,11 @@
 			files = (
 				ACBDDE5C23C4EDEC0008CC4D /* InboxCustomizationTests.swift in Sources */,
 				ACC6A852232407B5003CC4BE /* InboxUITestsHelper.swift in Sources */,
+				5B49BB3E27CFB71500E6F00C /* PopupInboxSessionUITests.swift in Sources */,
 				ACFF428824656A2000FDF10D /* CommonMocks.swift in Sources */,
 				AC19520D231D9AC600CD5B61 /* Common.swift in Sources */,
 				AC195210231DAD6B00CD5B61 /* TestUtils.swift in Sources */,
+				5B6C3C1127CE871F00B9A753 /* NavInboxSessionUITests.swift in Sources */,
 				ACDA977123159C39004C412E /* InboxUITests.swift in Sources */,
 				ACC6A8502323910D003CC4BE /* UITestsHelper.swift in Sources */,
 				ACFF4287246569D300FDF10D /* CommonExtensions.swift in Sources */,

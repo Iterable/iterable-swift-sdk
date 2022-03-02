@@ -27,15 +27,23 @@ extension IterableInboxUITestsProtocol where Self: XCTestCase {
         return request.body! as! [String: Any]
     }
     
+    func count(forEvent event: String) -> Int {
+        allEventRows(forEvent: event).count
+    }
+    
     func serializableRequest(forEvent event: String) -> SerializableRequest {
         let serializedString = lastElement(forEvent: event).staticTexts["serializedString"].label
         return SerializableRequest.create(from: serializedString)
     }
     
     private func lastElement(forEvent event: String) -> XCUIElement {
-        let eventRows = app.tables.cells.containing(.staticText, identifier: Const.apiPath + event)
+        let eventRows = allEventRows(forEvent: event)
         let count = eventRows.count
         return eventRows.element(boundBy: count - 1)
+    }
+    
+    private func allEventRows(forEvent event: String) -> XCUIElementQuery {
+        app.tables.cells.containing(.staticText, identifier: Const.apiPath + event)
     }
     
     func gotoTab(_ tabName: TabName) {
