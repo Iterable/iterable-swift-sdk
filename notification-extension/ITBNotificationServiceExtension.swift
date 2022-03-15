@@ -11,6 +11,20 @@ import UserNotifications
     @objc override open func didReceive(_ request: UNNotificationRequest,
                                         withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
+        
+        // check if it should be de-duped
+        if isDuplicateMessageId(request) {
+            suppressNotification()
+            
+            // remove from in-app queue and call de-dupe endpoint
+            
+            
+            return
+        } else {
+            trackAntiDuplicateMessageId(request)
+        }
+        
+        // continue with resolving notification
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
         resolveCategory(from: request.content)
@@ -28,6 +42,27 @@ import UserNotifications
     }
     
     // MARK: - Private
+    
+    private static let duplicateMessageIdQueueSize = 10
+    private var duplicateMessageIdQueue = NSMutableOrderedSet()
+    
+    private func isDuplicateMessageId(_ request: UNNotificationRequest) -> Bool {
+        return duplicateMessageIdQueue.contains(request.identifier)
+    }
+    
+    private func trackAntiDuplicateMessageId(_ request: UNNotificationRequest) {
+        duplicateMessageIdQueue.add(request.identifier)
+        
+        if duplicateMessageIdQueue.count > ITBNotificationServiceExtension.duplicateMessageIdQueueSize {
+            duplicateMessageIdQueue.removeObject(at: 0)
+        }
+    }
+    
+    private func suppressNotification() {
+        if let contentHandler = contentHandler {
+            contentHandler(UNNotificationContent())
+        }
+    }
     
     private func retrieveAttachment(from content: UNNotificationContent) {
         guard let metadata = content.userInfo[JsonKey.Payload.metadata] as? [AnyHashable: Any],
