@@ -54,7 +54,7 @@ import UserNotifications
         duplicateMessageIdQueue.add(request.identifier)
         
         if duplicateMessageIdQueue.count > ITBNotificationServiceExtension.duplicateMessageIdQueueSize {
-            duplicateMessageIdQueue.removeObject(at: 0)
+            _ = duplicateMessageIdQueue.dropFirst()
         }
     }
     
