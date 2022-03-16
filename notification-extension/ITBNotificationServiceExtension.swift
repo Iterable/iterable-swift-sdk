@@ -13,25 +13,7 @@ import IterableSDK
                                         withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
         
-        // just realized this should check ALL messageIds in the payload for duplicates, it won't just be 1 ID
-        // check if it should be de-duped
-        if isDuplicateMessageId(request) {
-            // tell iOS that we should remove this notification
-            suppressNotification()
-            
-            // remove from in-app queue
-            if let duplicateInAppMessage = IterableAPI.inAppManager.getMessage(withId: getMessageId(from: request)) {
-                IterableAPI.inAppConsume(message: duplicateInAppMessage)
-            }
-            
-            // call de-dupe endpoint
-            
-            
-            return
-        } else {
-            print("jay didReceive added messageId: " + getMessageId(from: request))
-            trackAntiDuplicateMessageId(request)
-        }
+        iterableNotificationProcessor.processRequest(request)
         
         // continue with resolving notification
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
@@ -51,39 +33,6 @@ import IterableSDK
     }
     
     // MARK: - Private
-    
-    private static let duplicateMessageIdQueueSize = 10
-    private var duplicateMessageIdQueue = ITBNotificationServiceExtension.getDuplicateMessageIdQueue()
-    
-    private static func getDuplicateMessageIdQueue() -> NSMutableOrderedSet {
-        // serialize FROM storage here, return if existing
-        
-        return NSMutableOrderedSet()
-    }
-    
-    private func isDuplicateMessageId(_ request: UNNotificationRequest) -> Bool {
-        print("jay isDuplicateMessageId messageId: \(getMessageId(from: request))")
-        print("jay isDuplicateMessageId tracking: \(duplicateMessageIdQueue)")
-        
-        return duplicateMessageIdQueue.contains(getMessageId(from: request))
-    }
-    
-    private func trackAntiDuplicateMessageId(_ request: UNNotificationRequest) {
-        duplicateMessageIdQueue.add(getMessageId(from: request))
-        
-        if duplicateMessageIdQueue.count > ITBNotificationServiceExtension.duplicateMessageIdQueueSize {
-            _ = duplicateMessageIdQueue.dropFirst()
-        }
-        
-        print("jay trackAntiDuplicateMessageId: \(duplicateMessageIdQueue)")
-        
-        // serialize TO storage here
-    }
-    
-    private func getMessageId(from request: UNNotificationRequest) -> String {
-        // get the MESSAGE ID which is NOT `request.identifier`, but this is temporary
-        return request.identifier
-    }
     
     private func suppressNotification() {
         if let contentHandler = contentHandler {
@@ -204,6 +153,8 @@ import IterableSDK
         
         return responseUrl.lastPathComponent
     }
+    
+    private var iterableNotificationProcessor = IterableNotificationProcessor()
     
     private var getCategoryIdFinished: Bool = false {
         didSet {
