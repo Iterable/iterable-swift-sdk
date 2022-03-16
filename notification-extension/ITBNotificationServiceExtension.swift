@@ -13,6 +13,7 @@ import IterableSDK
                                         withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
         
+        // just realized this should check ALL messageIds in the payload for duplicates, it won't just be 1 ID
         // check if it should be de-duped
         if isDuplicateMessageId(request) {
             // tell iOS that we should remove this notification
@@ -64,11 +65,11 @@ import IterableSDK
         print("jay isDuplicateMessageId messageId: \(getMessageId(from: request))")
         print("jay isDuplicateMessageId tracking: \(duplicateMessageIdQueue)")
         
-        return duplicateMessageIdQueue.contains(request.identifier)
+        return duplicateMessageIdQueue.contains(getMessageId(from: request))
     }
     
     private func trackAntiDuplicateMessageId(_ request: UNNotificationRequest) {
-        duplicateMessageIdQueue.add(request.identifier)
+        duplicateMessageIdQueue.add(getMessageId(from: request))
         
         if duplicateMessageIdQueue.count > ITBNotificationServiceExtension.duplicateMessageIdQueueSize {
             _ = duplicateMessageIdQueue.dropFirst()
