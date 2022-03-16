@@ -91,6 +91,14 @@ class IterableUserDefaults {
         try? save(dict: payload, withKey: .payload, andExpiration: expiration)
     }
     
+    func getDupSendQueue() -> NSMutableOrderedSet? {
+        mutableOrderedSet(withKey: .dupSendQueue)
+    }
+    
+    func save(dupSendQueue: NSMutableOrderedSet) {
+        try? save(orderedSet: dupSendQueue, withKey: .dupSendQueue)
+    }
+    
     // MARK: Private implementation
     
     private let userDefaults: UserDefaults
@@ -108,6 +116,10 @@ class IterableUserDefaults {
         } else {
             return decoded
         }
+    }
+    
+    private func mutableOrderedSet(withKey key: UserDefaultsKey) -> NSMutableOrderedSet {
+        userDefaults.mutableOrderedSetValue(forKey: key.value)
     }
     
     private func codable<T: Codable>(withKey key: UserDefaultsKey, currentDate: Date) throws -> T? {
@@ -169,6 +181,15 @@ class IterableUserDefaults {
         }
     }
     
+    private func save(orderedSet: NSMutableOrderedSet?, withKey key: UserDefaultsKey) throws {
+        guard let orderedSet = orderedSet else {
+            userDefaults.removeObject(forKey: key.value)
+            return
+        }
+        
+        userDefaults.setValue(orderedSet, forKey: key.value)
+    }
+    
     private func save(string: String?, withKey key: UserDefaultsKey) {
         userDefaults.set(string, forKey: key.value)
     }
@@ -205,6 +226,7 @@ class IterableUserDefaults {
         static let sdkVersion = UserDefaultsKey(value: Const.UserDefault.sdkVersion)
         static let offlineMode = UserDefaultsKey(value: Const.UserDefault.offlineMode)
         static let offlineModeBeta = UserDefaultsKey(value: Const.UserDefault.offlineModeBeta)
+        static let dupSendQueue = UserDefaultsKey(value: Const.UserDefault.dupSendQueue)
     }
     
     private struct Envelope: Codable {

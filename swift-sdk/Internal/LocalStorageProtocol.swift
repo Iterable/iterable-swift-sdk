@@ -17,6 +17,8 @@ protocol LocalStorageProtocol {
     func save(attributionInfo: IterableAttributionInfo?, withExpiration expiration: Date?)
     func getPayload(currentDate: Date) -> [AnyHashable: Any]?
     func save(payload: [AnyHashable: Any]?, withExpiration: Date?)
+    func getDupSendQueue() -> NSMutableOrderedSet?
+    func save(dupSendQueue: NSMutableOrderedSet)
     func upgrade()
 }
 

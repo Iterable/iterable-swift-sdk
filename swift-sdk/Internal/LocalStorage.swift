@@ -92,6 +92,14 @@ struct LocalStorage: LocalStorageProtocol {
         iterableUserDefaults.save(payload: payload, withExpiration: expiration)
     }
     
+    func getDupSendQueue() -> NSMutableOrderedSet? {
+        iterableUserDefaults.getDupSendQueue() ?? nil
+    }
+    
+    func save(dupSendQueue: NSMutableOrderedSet) {
+        iterableUserDefaults.save(dupSendQueue: dupSendQueue)
+    }
+    
     func upgrade() {
         ITBInfo()
         moveJwtFromUserDefaultsToKeychain()
