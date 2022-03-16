@@ -77,10 +77,6 @@ protocol RequestProcessorProtocol {
                          clickedUrl: String?,
                          onSuccess: OnSuccessHandler?,
                          onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
-    @discardableResult
-    func track(inboxSession: IterableInboxSession,
-               onSuccess: OnSuccessHandler?,
-               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
     
     @discardableResult
     func track(inAppDelivery message: IterableInAppMessage,
@@ -99,4 +95,15 @@ protocol RequestProcessorProtocol {
                       inboxSessionId: String?,
                       onSuccess: OnSuccessHandler?,
                       onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
+    
+    @discardableResult
+    func track(dupSend message: IterableInAppMessage,
+               eventType: String,
+               onSuccess: OnSuccessHandler?,
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
+    
+    @discardableResult
+    func track(inboxSession: IterableInboxSession,
+               onSuccess: OnSuccessHandler?,
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
 }

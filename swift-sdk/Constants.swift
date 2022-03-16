@@ -35,6 +35,7 @@ enum Const {
         static let trackInAppDelivery = "events/trackInAppDelivery"
         static let trackPushOpen = "events/trackPushOpen"
         static let trackInboxSession = "events/trackInboxSession"
+        static let trackDupSend = "events/trackDupSend"
         static let updateUser = "users/update"
         static let updateEmail = "users/updateEmail"
         static let updateSubscriptions = "users/updateSubscriptions"
@@ -115,6 +116,7 @@ enum JsonKey {
     static let clickedUrl = "clickedUrl"
     static let read = "read"
     static let priorityLevel = "priorityLevel"
+    static let eventType = "eventType"
     
     static let inboxSessionStart = "inboxSessionStart"
     static let inboxSessionEnd = "inboxSessionEnd"
@@ -254,6 +256,10 @@ enum JsonValue {
     enum Code {
         static let badApiKey = "BadApiKey"
         static let invalidJwtPayload = "InvalidJwtPayload"
+    }
+    
+    enum EventType {
+        static let pushSend = "pushSend"
     }
 }
 

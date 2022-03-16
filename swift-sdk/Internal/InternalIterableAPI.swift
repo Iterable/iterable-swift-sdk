@@ -343,13 +343,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     @discardableResult
-    func track(inboxSession: IterableInboxSession,
-               onSuccess: OnSuccessHandler? = nil,
-               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        requestHandler.track(inboxSession: inboxSession, onSuccess: onSuccess, onFailure: onFailure)
-    }
-    
-    @discardableResult
     func track(inAppDelivery message: IterableInAppMessage,
                onSuccess: OnSuccessHandler? = nil,
                onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
@@ -376,6 +369,24 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                     inboxSessionId: inboxSessionId,
                                     onSuccess: onSuccess,
                                     onFailure: onFailure)
+    }
+    
+    @discardableResult
+    func track(dupSend message: IterableInAppMessage,
+               eventType: String,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        requestHandler.track(dupSend: message,
+                             eventType: eventType,
+                             onSuccess: onSuccess,
+                             onFailure: onFailure)
+    }
+    
+    @discardableResult
+    func track(inboxSession: IterableInboxSession,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        requestHandler.track(inboxSession: inboxSession, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     // MARK: - Private/Internal

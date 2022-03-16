@@ -40,6 +40,8 @@ protocol ApiClientProtocol: AnyObject {
     
     @discardableResult func inAppConsume(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource?) -> Pending<SendRequestValue, SendRequestError>
     
+    func track(dupSend message: IterableInAppMessage, eventType: String) -> Pending<SendRequestValue, SendRequestError>
+    
     func track(inboxSession: IterableInboxSession) -> Pending<SendRequestValue, SendRequestError>
     
     func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Pending<SendRequestValue, SendRequestError>

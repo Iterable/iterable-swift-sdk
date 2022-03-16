@@ -674,6 +674,13 @@ public final class IterableAPI: NSObject {
         internalImplementation?.inAppConsume(message: message, location: location, source: source)
     }
     
+    ///
+    ///
+    @objc(trackDupSend:eventType:)
+    public static func trackDupSend(message: IterableInAppMessage, eventType: String) {
+        internalImplementation?.track(dupSend: message, eventType: eventType)
+    }
+    
     /// Tracks analytics data from a session of using an inbox UI
     /// NOTE: this is not normally used publicly, but is needed for our React Native SDK implementation
     ///

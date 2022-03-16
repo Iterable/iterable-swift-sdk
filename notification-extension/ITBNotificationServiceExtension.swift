@@ -3,7 +3,6 @@
 //
 
 import UserNotifications
-import IterableSDK
 
 @objc open class ITBNotificationServiceExtension: UNNotificationServiceExtension {
     var contentHandler: ((UNNotificationContent) -> Void)?

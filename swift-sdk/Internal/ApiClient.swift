@@ -96,6 +96,8 @@ class ApiClient {
 // MARK: - API REQUEST CALLS
 
 extension ApiClient: ApiClientProtocol {
+    
+    
     func register(registerTokenInfo: RegisterTokenInfo, notificationsEnabled: Bool) -> Pending<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createRegisterTokenRequest(registerTokenInfo: registerTokenInfo,
                                                                                     notificationsEnabled: notificationsEnabled) }
@@ -209,6 +211,11 @@ extension ApiClient: ApiClientProtocol {
     func inAppConsume(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource?) -> Pending<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createTrackInAppConsumeRequest(inAppMessageContext: inAppMessageContext,
                                                                                         source: source) }
+        return send(iterableRequestResult: result)
+    }
+    
+    func track(dupSend message: IterableInAppMessage, eventType: String) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createTrackDupSendRequest(message.messageId, eventType: eventType) }
         return send(iterableRequestResult: result)
     }
     

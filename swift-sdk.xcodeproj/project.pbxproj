@@ -37,7 +37,6 @@
 		55DD2065269FB1FC00773CC7 /* InboxViewControllerViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD2064269FB1FC00773CC7 /* InboxViewControllerViewModelProtocol.swift */; };
 		55DD207F26A0D83800773CC7 /* IterableAuthManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD207E26A0D83800773CC7 /* IterableAuthManagerProtocol.swift */; };
 		55E02D39253F8D86009DB8BC /* WebViewProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */; };
-		55E6EA0D27E25EDA00B17413 /* IterableNotificationProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6EA0C27E25EDA00B17413 /* IterableNotificationProcessor.swift */; };
 		55E6EA0E27E25EDA00B17413 /* IterableNotificationProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6EA0C27E25EDA00B17413 /* IterableNotificationProcessor.swift */; };
 		55E6F462238E066400808BCE /* DeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6F45E238E066400808BCE /* DeepLinkTests.swift */; };
 		AC02480822791E2100495FB9 /* IterableInboxNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */; };
@@ -1754,7 +1753,6 @@
 				55DD2065269FB1FC00773CC7 /* InboxViewControllerViewModelProtocol.swift in Sources */,
 				ACF32BDB24E3EA7C0072E2CC /* RequestProcessorProtocol.swift in Sources */,
 				AC219C49225FD7EB00B98631 /* IterableInboxViewController.swift in Sources */,
-				55E6EA0D27E25EDA00B17413 /* IterableNotificationProcessor.swift in Sources */,
 				AC3DD9C82142F3650046F886 /* ClassExtensions.swift in Sources */,
 				AC219C50225FEDBD00B98631 /* IterableInboxCell.swift in Sources */,
 				AC84256226D6167E0066C627 /* AppExtensionHelper.swift in Sources */,

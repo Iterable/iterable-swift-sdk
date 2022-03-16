@@ -229,6 +229,19 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                               forResult: result)
     }
     
+    @discardableResult
+    func track(dupSend message: IterableInAppMessage,
+               eventType: String,
+               onSuccess: OnSuccessHandler?,
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
+        let result = apiClient.track(dupSend: message, eventType: eventType)
+        
+        return applyCallbacks(successHandler: onSuccess,
+                              andFailureHandler: onFailure,
+                              withIdentifier: "trackDupSend",
+                              forResult: result)
+    }
+    
     func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError> {
         apiClient.getRemoteConfiguration()
     }

@@ -235,6 +235,17 @@ class RequestHandler: RequestHandlerProtocol {
                                               onFailure: onFailure)
     }
     
+    @discardableResult
+    func track(dupSend message: IterableInAppMessage,
+               eventType: String,
+               onSuccess: OnSuccessHandler?,
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
+        chooseRequestProcessor().track(dupSend: message,
+                                       eventType: eventType,
+                                       onSuccess: onSuccess,
+                                       onFailure: onFailure)
+    }
+    
     func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError> {
         onlineProcessor.getRemoteConfiguration()
     }

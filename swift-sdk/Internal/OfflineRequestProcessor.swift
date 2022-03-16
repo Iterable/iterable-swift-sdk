@@ -231,6 +231,20 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                                    identifier: #function)
     }
     
+    func track(dupSend message: IterableInAppMessage,
+               eventType: String,
+               onSuccess: OnSuccessHandler?,
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createTrackDupSendRequest(message.messageId, eventType: eventType)
+        }
+        
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
+    }
+    
     func deleteAllTasks() {
         ITBInfo()
         taskScheduler.deleteAllTasks()

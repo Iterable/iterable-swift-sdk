@@ -383,6 +383,22 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: Const.Path.inAppConsume, body: body)))
     }
     
+    func createTrackDupSendRequest(_ messageId: String, eventType: String) -> Result<IterableRequest, IterableError> {
+        if case .none = auth.emailOrUserId {
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
+        }
+        
+        var body = [AnyHashable: Any]()
+        
+        setCurrentUser(inDict: &body)
+        
+        body.setValue(for: JsonKey.messageId, value: messageId)
+        body.setValue(for: JsonKey.eventType, value: eventType)
+        
+        return .success(.post(createPostRequest(path: Const.Path.trackDupSend)))
+    }
+    
     func createTrackInboxSessionRequest(inboxSession: IterableInboxSession) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
             ITBError(Self.authMissingMessage)
