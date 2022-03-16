@@ -3,6 +3,7 @@
 //
 
 import UserNotifications
+import IterableSDK
 
 @objc open class ITBNotificationServiceExtension: UNNotificationServiceExtension {
     var contentHandler: ((UNNotificationContent) -> Void)?
@@ -14,9 +15,15 @@ import UserNotifications
         
         // check if it should be de-duped
         if isDuplicateMessageId(request) {
+            // tell iOS that we should remove this notification
             suppressNotification()
             
-            // remove from in-app queue and call de-dupe endpoint
+            // remove from in-app queue
+            if let duplicateInAppMessage = IterableAPI.inAppManager.getMessage(withId: request.identifier) {
+                IterableAPI.inAppConsume(message: duplicateInAppMessage)
+            }
+            
+            // call de-dupe endpoint
             
             
             return
@@ -44,9 +51,18 @@ import UserNotifications
     // MARK: - Private
     
     private static let duplicateMessageIdQueueSize = 10
-    private var duplicateMessageIdQueue = NSMutableOrderedSet()
+    private var duplicateMessageIdQueue = ITBNotificationServiceExtension.getDuplicateMessageIdQueue()
+    
+    private static func getDuplicateMessageIdQueue() -> NSMutableOrderedSet {
+        // serialize FROM storage here, return if existing
+        
+        return NSMutableOrderedSet()
+    }
     
     private func isDuplicateMessageId(_ request: UNNotificationRequest) -> Bool {
+        print("jay isDuplicateMessageId messageId: \(request.identifier)")
+        print("jay isDuplicateMessageId tracking: \(duplicateMessageIdQueue)")
+        
         return duplicateMessageIdQueue.contains(request.identifier)
     }
     
@@ -56,6 +72,8 @@ import UserNotifications
         if duplicateMessageIdQueue.count > ITBNotificationServiceExtension.duplicateMessageIdQueueSize {
             _ = duplicateMessageIdQueue.dropFirst()
         }
+        
+        // serialize TO storage here
     }
     
     private func suppressNotification() {
