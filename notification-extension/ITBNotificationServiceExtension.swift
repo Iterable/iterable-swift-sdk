@@ -19,7 +19,7 @@ import IterableSDK
             suppressNotification()
             
             // remove from in-app queue
-            if let duplicateInAppMessage = IterableAPI.inAppManager.getMessage(withId: request.identifier) {
+            if let duplicateInAppMessage = IterableAPI.inAppManager.getMessage(withId: getMessageId(from: request)) {
                 IterableAPI.inAppConsume(message: duplicateInAppMessage)
             }
             
@@ -28,6 +28,7 @@ import IterableSDK
             
             return
         } else {
+            print("jay didReceive added messageId: " + getMessageId(from: request))
             trackAntiDuplicateMessageId(request)
         }
         
@@ -60,7 +61,7 @@ import IterableSDK
     }
     
     private func isDuplicateMessageId(_ request: UNNotificationRequest) -> Bool {
-        print("jay isDuplicateMessageId messageId: \(request.identifier)")
+        print("jay isDuplicateMessageId messageId: \(getMessageId(from: request))")
         print("jay isDuplicateMessageId tracking: \(duplicateMessageIdQueue)")
         
         return duplicateMessageIdQueue.contains(request.identifier)
@@ -73,7 +74,14 @@ import IterableSDK
             _ = duplicateMessageIdQueue.dropFirst()
         }
         
+        print("jay trackAntiDuplicateMessageId: \(duplicateMessageIdQueue)")
+        
         // serialize TO storage here
+    }
+    
+    private func getMessageId(from request: UNNotificationRequest) -> String {
+        // get the MESSAGE ID which is NOT `request.identifier`, but this is temporary
+        return request.identifier
     }
     
     private func suppressNotification() {
