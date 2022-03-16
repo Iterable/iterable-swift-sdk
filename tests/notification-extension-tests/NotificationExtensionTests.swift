@@ -408,7 +408,6 @@ class NotificationExtensionTests: XCTestCase {
         wait(for: [expectation1], timeout: timeout)
     }
 
-    
     @available(iOS 15.0, *)
     func testAddActionButtonWithSystemImageIcon() {
         let expectation1 = expectation(description: #function)
@@ -495,5 +494,9 @@ class NotificationExtensionTests: XCTestCase {
         }
         
         wait(for: [expectation1], timeout: timeout)
+    }
+    
+    func testSimpleMessageIdDeDupe() {
+        // TODO: test to send 2 identical messageId in-apps and verify the 2nd one gets de-duped
     }
 }
