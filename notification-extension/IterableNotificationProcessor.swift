@@ -4,10 +4,12 @@
 
 import Foundation
 import UserNotifications
-import IterableSDK
+//import IterableSDK
 
 class IterableNotificationProcessor {
-    func checkForDuplicateMessageIds(_ request: UNNotificationRequest) -> Bool {
+    func processRequestForDuplicateMessageIds(_ request: UNNotificationRequest) -> Bool {
+        print("jay processRequestForDuplicateMessageIds ENTRY")
+        
         guard hasDuplicateMessageIds(request) else {
             print("jay didReceive added messageId: " + getMessageId(from: request))
             trackAntiDuplicateMessageId(request)
@@ -16,15 +18,15 @@ class IterableNotificationProcessor {
             return false
         }
         
-        guard let duplicateInAppMessage = IterableAPI.inAppManager.getMessage(withId: getMessageId(from: request)) else {
-            return false
-        }
+//        guard let duplicateInAppMessage = IterableAPI.inAppManager.getMessage(withId: getMessageId(from: request)) else {
+//            return false
+//        }
         
         // remove from in-app queue
-        IterableAPI.inAppConsume(message: duplicateInAppMessage)
+//        IterableAPI.inAppConsume(message: duplicateInAppMessage)
         
         // call de-dupe endpoint
-        IterableAPI.trackDupSend(message: duplicateInAppMessage, eventType: "pushSend")
+//        IterableAPI.trackDupSend(message: duplicateInAppMessage, eventType: "pushSend")
         
         // return true to tell the NSE to suppress the notification per https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_usernotifications_filtering
         return true

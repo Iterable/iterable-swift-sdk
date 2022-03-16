@@ -37,7 +37,7 @@
 		55DD2065269FB1FC00773CC7 /* InboxViewControllerViewModelProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD2064269FB1FC00773CC7 /* InboxViewControllerViewModelProtocol.swift */; };
 		55DD207F26A0D83800773CC7 /* IterableAuthManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD207E26A0D83800773CC7 /* IterableAuthManagerProtocol.swift */; };
 		55E02D39253F8D86009DB8BC /* WebViewProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */; };
-		55E6EA0E27E25EDA00B17413 /* IterableNotificationProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6EA0C27E25EDA00B17413 /* IterableNotificationProcessor.swift */; };
+		55E0AA7927E2A841000AD58D /* IterableNotificationProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6EA0C27E25EDA00B17413 /* IterableNotificationProcessor.swift */; };
 		55E6F462238E066400808BCE /* DeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6F45E238E066400808BCE /* DeepLinkTests.swift */; };
 		AC02480822791E2100495FB9 /* IterableInboxNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */; };
 		AC02CAA6234E50B5006617E0 /* RegistrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */; };
@@ -1926,7 +1926,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				55E6EA0E27E25EDA00B17413 /* IterableNotificationProcessor.swift in Sources */,
+				55E0AA7927E2A841000AD58D /* IterableNotificationProcessor.swift in Sources */,
 				ACDBB33B239582450036BB38 /* NotificationExtensionConstants.swift in Sources */,
 				AC84EC3726C136F3007FBEF7 /* NotificationContentParser.swift in Sources */,
 				AC9A49AB20F3C8B80007A5A2 /* TestFile.swift in Sources */,

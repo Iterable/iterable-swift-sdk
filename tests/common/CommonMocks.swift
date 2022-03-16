@@ -597,11 +597,21 @@ class MockLocalStorage: LocalStorageProtocol {
         payloadExpiration = withExpiration
     }
     
+    func getDupSendQueue() -> NSMutableOrderedSet? {
+        return dupSendQueue
+    }
+    
+    func save(dupSendQueue: NSMutableOrderedSet) {
+        self.dupSendQueue = dupSendQueue
+    }
+    
     private var payload: [AnyHashable: Any]? = nil
     private var payloadExpiration: Date? = nil
     
     private var attributionInfo: IterableAttributionInfo? = nil
     private var attributionInfoExpiration: Date? = nil
+    
+    private var dupSendQueue: NSMutableOrderedSet? = nil
     
     private static func isExpired(expiration: Date?, currentDate: Date) -> Bool {
         if let expiration = expiration {
