@@ -4,6 +4,7 @@
 
 import Foundation
 import UserNotifications
+import IterableSDK
 
 class IterableNotificationProcessor {
     func checkForDuplicateMessageIds(_ request: UNNotificationRequest) -> Bool {
@@ -15,13 +16,15 @@ class IterableNotificationProcessor {
             return false
         }
         
+        guard let duplicateInAppMessage = IterableAPI.inAppManager.getMessage(withId: getMessageId(from: request)) else {
+            return false
+        }
+        
         // remove from in-app queue
-//        if let duplicateInAppMessage = IterableAPI.inAppManager.getMessage(withId: getMessageId(from: request)) {
-//            IterableAPI.inAppConsume(message: duplicateInAppMessage)
-//        }
+        IterableAPI.inAppConsume(message: duplicateInAppMessage)
         
         // call de-dupe endpoint
-//        IterableAPI.trackDupSend()
+        IterableAPI.trackDupSend(message: duplicateInAppMessage, eventType: "pushSend")
         
         // return true to tell the NSE to suppress the notification per https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_usernotifications_filtering
         return true
@@ -33,6 +36,8 @@ class IterableNotificationProcessor {
     private func hasDuplicateMessageIds(_ request: UNNotificationRequest) -> Bool {
         print("jay isDuplicateMessageId messageId: \(getMessageId(from: request))")
         print("jay isDuplicateMessageId tracking: \(duplicateMessageIdQueue)")
+        
+        
         
         return true
     }
@@ -56,8 +61,12 @@ class IterableNotificationProcessor {
     }
     
     private func getMessageId(from request: UNNotificationRequest) -> String {
-        // get the MESSAGE ID which is NOT `request.identifier`, but this is temporary
-        return request.identifier
+        if let messageId = NotificationContentParser.getIterableMessageId(from: request.content) {
+            print("jay getMessageId: \(messageId)")
+            return messageId
+        }
+        
+        return ""
     }
     
     private static let duplicateMessageIdQueueSize = 10

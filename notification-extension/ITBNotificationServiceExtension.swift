@@ -13,7 +13,9 @@ import UserNotifications
         self.contentHandler = contentHandler
         
         // should the NSE continue processing the payload here? is this the correct functional logic?
-        // guess it depends on how many dupe messages there are https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_usernotifications_filtering
+        // guess it depends on how many dupe messages there are
+        // https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_usernotifications_filtering
+        
         // check if the request has duplicate messages and have iterableNotificationProcessor process it
         if iterableNotificationProcessor.checkForDuplicateMessageIds(request) {
             suppressNotification()

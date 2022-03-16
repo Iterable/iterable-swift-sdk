@@ -674,8 +674,12 @@ public final class IterableAPI: NSObject {
         internalImplementation?.inAppConsume(message: message, location: location, source: source)
     }
     
+    /// Informs the Iterable platform which specific in-app message was received as a duplicate in error
+    /// NOTE: if the app implementation already has a Notification Service Extension implemented, this is automatically called
     ///
-    ///
+    /// - Parameters:
+    ///     - message: the message that was received as a duplicate
+    ///     - eventType: the medium/type through which the received message is a duplicate
     @objc(trackDupSend:eventType:)
     public static func trackDupSend(message: IterableInAppMessage, eventType: String) {
         internalImplementation?.track(dupSend: message, eventType: eventType)
