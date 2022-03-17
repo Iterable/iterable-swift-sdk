@@ -9,9 +9,10 @@ import UserNotifications
 class IterableNotificationProcessor {
     func processRequestForDuplicateMessageIds(_ request: UNNotificationRequest) -> Bool {
         print("jay processRequestForDuplicateMessageIds ENTRY")
+        restoreDupSendQueueFromStorage()
         
-        guard hasDuplicateMessageIds(request) else {
-            print("jay didReceive added messageId: " + getMessageId(from: request))
+        guard hasDuplicateMessageId(request) else {
+            print("jay didReceive added messageId: \(getMessageId(from: request) ?? "nil")")
             trackAntiDuplicateMessageId(request)
             
             // return false to tell the NSE that there are no dupes in this payload
@@ -32,45 +33,44 @@ class IterableNotificationProcessor {
         return true
     }
     
-    
     // MARK: - Private/Internal
     
-    private func hasDuplicateMessageIds(_ request: UNNotificationRequest) -> Bool {
-        print("jay isDuplicateMessageId messageId: \(getMessageId(from: request))")
-        print("jay isDuplicateMessageId tracking: \(duplicateMessageIdQueue)")
+    private func hasDuplicateMessageId(_ request: UNNotificationRequest) -> Bool {
+        print("jay isDuplicateMessageId tracking: \(dupSendQueue)")
         
+        guard let messageId = NotificationContentParser.getIterableMessageId(from: request.content) else {
+            return false
+        }
         
-        
-        return true
-    }
-    
-    private static func getDuplicateMessageIdQueue() -> NSMutableOrderedSet {
-        // serialize FROM storage here, return if existing
-        
-        return NSMutableOrderedSet()
+        return dupSendQueue.contains(messageId)
     }
     
     private func trackAntiDuplicateMessageId(_ request: UNNotificationRequest) {
-        duplicateMessageIdQueue.add(getMessageId(from: request))
-        
-        if duplicateMessageIdQueue.count > IterableNotificationProcessor.duplicateMessageIdQueueSize {
-            _ = duplicateMessageIdQueue.dropFirst()
+        guard let messageId = getMessageId(from: request) else {
+            return
         }
         
-        print("jay trackAntiDuplicateMessageId: \(duplicateMessageIdQueue)")
+        dupSendQueue.add(messageId)
         
-        // serialize TO storage here
-    }
-    
-    private func getMessageId(from request: UNNotificationRequest) -> String {
-        if let messageId = NotificationContentParser.getIterableMessageId(from: request.content) {
-            print("jay getMessageId: \(messageId)")
-            return messageId
+        if dupSendQueue.count > IterableNotificationProcessor.dupSendQueueSize {
+            dupSendQueue.removeObjects(in: NSRange(0...(dupSendQueue.count - IterableNotificationProcessor.dupSendQueueSize - 1)))
         }
         
-        return ""
+        saveDupSendQueueToStorage()
     }
     
-    private static let duplicateMessageIdQueueSize = 10
-    private var duplicateMessageIdQueue = IterableNotificationProcessor.getDuplicateMessageIdQueue()
+    private func getMessageId(from request: UNNotificationRequest) -> String? {
+        return NotificationContentParser.getIterableMessageId(from: request.content)
+    }
+    
+    private func restoreDupSendQueueFromStorage() {
+        dupSendQueue = NSMutableOrderedSet(array: UserDefaults.standard.array(forKey: "itbl_dup_send_queue") ?? [])
+    }
+    
+    private func saveDupSendQueueToStorage() {
+        UserDefaults.standard.set(dupSendQueue.array, forKey: "itbl_dup_send_queue")
+    }
+    
+    private static let dupSendQueueSize = 10
+    private var dupSendQueue = NSMutableOrderedSet()
 }
