@@ -80,20 +80,20 @@ struct LocalStorage: LocalStorageProtocol {
         iterableUserDefaults.getAttributionInfo(currentDate: currentDate)
     }
     
-    func save(attributionInfo: IterableAttributionInfo?, withExpiration expiration: Date?) {
-        iterableUserDefaults.save(attributionInfo: attributionInfo, withExpiration: expiration)
-    }
-    
     func getPayload(currentDate: Date) -> [AnyHashable: Any]? {
         iterableUserDefaults.getPayload(currentDate: currentDate)
     }
     
-    func save(payload: [AnyHashable: Any]?, withExpiration expiration: Date?) {
-        iterableUserDefaults.save(payload: payload, withExpiration: expiration)
-    }
-    
     func getDupSendQueue() -> NSMutableOrderedSet? {
         iterableUserDefaults.getDupSendQueue() ?? nil
+    }
+    
+    func save(attributionInfo: IterableAttributionInfo?, withExpiration expiration: Date?) {
+        iterableUserDefaults.save(attributionInfo: attributionInfo, withExpiration: expiration)
+    }
+    
+    func save(payload: [AnyHashable: Any]?, withExpiration expiration: Date?) {
+        iterableUserDefaults.save(payload: payload, withExpiration: expiration)
     }
     
     func save(dupSendQueue: NSMutableOrderedSet) {

@@ -10,6 +10,8 @@ class IterableUserDefaults {
         self.userDefaults = userDefaults
     }
     
+    // MARK: - IterableUserDefaults get/set
+    
     var userId: String? {
         get {
             string(withKey: .userId)
@@ -79,29 +81,87 @@ class IterableUserDefaults {
         (try? codable(withKey: .attributionInfo, currentDate: currentDate)) ?? nil
     }
     
-    func save(attributionInfo: IterableAttributionInfo?, withExpiration expiration: Date?) {
-        try? save(codable: attributionInfo, withKey: .attributionInfo, andExpiration: expiration)
-    }
-    
     func getPayload(currentDate: Date) -> [AnyHashable: Any]? {
         (try? dict(withKey: .payload, currentDate: currentDate)) ?? nil
-    }
-    
-    func save(payload: [AnyHashable: Any]?, withExpiration expiration: Date?) {
-        try? save(dict: payload, withKey: .payload, andExpiration: expiration)
     }
     
     func getDupSendQueue() -> NSMutableOrderedSet? {
         mutableOrderedSet(withKey: .dupSendQueue)
     }
     
+    func save(attributionInfo: IterableAttributionInfo?, withExpiration expiration: Date?) {
+        try? save(codable: attributionInfo, withKey: .attributionInfo, andExpiration: expiration)
+    }
+    
+    func save(payload: [AnyHashable: Any]?, withExpiration expiration: Date?) {
+        try? save(dict: payload, withKey: .payload, andExpiration: expiration)
+    }
+    
     func save(dupSendQueue: NSMutableOrderedSet) {
         try? save(orderedSet: dupSendQueue, withKey: .dupSendQueue)
     }
     
-    // MARK: Private implementation
+    // MARK: - Private/Internal
     
     private let userDefaults: UserDefaults
+    
+    private struct UserDefaultsKey {
+        let value: String
+        
+        private init(value: String) {
+            self.value = value
+        }
+        
+        static let payload = UserDefaultsKey(value: Const.UserDefault.payloadKey)
+        static let attributionInfo = UserDefaultsKey(value: Const.UserDefault.attributionInfoKey)
+        static let email = UserDefaultsKey(value: Const.UserDefault.emailKey)
+        static let userId = UserDefaultsKey(value: Const.UserDefault.userIdKey)
+        static let authToken = UserDefaultsKey(value: Const.UserDefault.authTokenKey)
+        static let ddlChecked = UserDefaultsKey(value: Const.UserDefault.ddlChecked)
+        static let deviceId = UserDefaultsKey(value: Const.UserDefault.deviceId)
+        static let sdkVersion = UserDefaultsKey(value: Const.UserDefault.sdkVersion)
+        static let offlineMode = UserDefaultsKey(value: Const.UserDefault.offlineMode)
+        static let offlineModeBeta = UserDefaultsKey(value: Const.UserDefault.offlineModeBeta)
+        static let dupSendQueue = UserDefaultsKey(value: Const.UserDefault.dupSendQueue)
+    }
+    
+    private struct Envelope: Codable {
+        let payload: Data
+        let expiration: Date?
+    }
+    
+    private static func isExpired(expiration: Date?, currentDate: Date) -> Bool {
+        if let expiration = expiration {
+            if expiration.timeIntervalSinceReferenceDate > currentDate.timeIntervalSinceReferenceDate {
+                // expiration is later
+                return false
+            } else {
+                // expired
+                return true
+            }
+        } else {
+            // no expiration
+            return false
+        }
+    }
+    
+    private func codable<T: Codable>(withKey key: UserDefaultsKey, currentDate: Date) throws -> T? {
+        guard let encodedEnvelope = userDefaults.value(forKey: key.value) as? Data else {
+            return nil
+        }
+        
+        let envelope = try JSONDecoder().decode(Envelope.self, from: encodedEnvelope)
+        
+        let decoded = try JSONDecoder().decode(T.self, from: envelope.payload)
+        
+        if Self.isExpired(expiration: envelope.expiration, currentDate: currentDate) {
+            return nil
+        } else {
+            return decoded
+        }
+    }
+    
+    // MARK: - internal gets
     
     private func dict(withKey key: UserDefaultsKey, currentDate: Date) throws -> [AnyHashable: Any]? {
         guard let encodedEnvelope = userDefaults.value(forKey: key.value) as? Data else {
@@ -126,22 +186,6 @@ class IterableUserDefaults {
         return NSMutableOrderedSet(array: setAsArray)
     }
     
-    private func codable<T: Codable>(withKey key: UserDefaultsKey, currentDate: Date) throws -> T? {
-        guard let encodedEnvelope = userDefaults.value(forKey: key.value) as? Data else {
-            return nil
-        }
-        
-        let envelope = try JSONDecoder().decode(Envelope.self, from: encodedEnvelope)
-        
-        let decoded = try JSONDecoder().decode(T.self, from: envelope.payload)
-        
-        if Self.isExpired(expiration: envelope.expiration, currentDate: currentDate) {
-            return nil
-        } else {
-            return decoded
-        }
-    }
-    
     private func string(withKey key: UserDefaultsKey) -> String? {
         userDefaults.string(forKey: key.value)
     }
@@ -150,20 +194,7 @@ class IterableUserDefaults {
         userDefaults.bool(forKey: key.value)
     }
     
-    private static func isExpired(expiration: Date?, currentDate: Date) -> Bool {
-        if let expiration = expiration {
-            if expiration.timeIntervalSinceReferenceDate > currentDate.timeIntervalSinceReferenceDate {
-                // expiration is later
-                return false
-            } else {
-                // expired
-                return true
-            }
-        } else {
-            // no expiration
-            return false
-        }
-    }
+    // MARK: - internal sets/save
     
     private func save<T: Codable>(codable: T?, withKey key: UserDefaultsKey, andExpiration expiration: Date? = nil) throws {
         if let value = codable {
@@ -191,7 +222,6 @@ class IterableUserDefaults {
             return
         }
         
-//        userDefaults.setValue(orderedSet, forKey: key.value)
         userDefaults.set(orderedSet.array, forKey: key.value)
     }
     
@@ -212,30 +242,5 @@ class IterableUserDefaults {
         let envelope = Envelope(payload: data, expiration: expiration)
         let encodedEnvelope = try JSONEncoder().encode(envelope)
         userDefaults.set(encodedEnvelope, forKey: key.value)
-    }
-    
-    private struct UserDefaultsKey {
-        let value: String
-        
-        private init(value: String) {
-            self.value = value
-        }
-        
-        static let payload = UserDefaultsKey(value: Const.UserDefault.payloadKey)
-        static let attributionInfo = UserDefaultsKey(value: Const.UserDefault.attributionInfoKey)
-        static let email = UserDefaultsKey(value: Const.UserDefault.emailKey)
-        static let userId = UserDefaultsKey(value: Const.UserDefault.userIdKey)
-        static let authToken = UserDefaultsKey(value: Const.UserDefault.authTokenKey)
-        static let ddlChecked = UserDefaultsKey(value: Const.UserDefault.ddlChecked)
-        static let deviceId = UserDefaultsKey(value: Const.UserDefault.deviceId)
-        static let sdkVersion = UserDefaultsKey(value: Const.UserDefault.sdkVersion)
-        static let offlineMode = UserDefaultsKey(value: Const.UserDefault.offlineMode)
-        static let offlineModeBeta = UserDefaultsKey(value: Const.UserDefault.offlineModeBeta)
-        static let dupSendQueue = UserDefaultsKey(value: Const.UserDefault.dupSendQueue)
-    }
-    
-    private struct Envelope: Codable {
-        let payload: Data
-        let expiration: Date?
     }
 }
