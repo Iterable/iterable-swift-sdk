@@ -118,8 +118,12 @@ class IterableUserDefaults {
         }
     }
     
-    private func mutableOrderedSet(withKey key: UserDefaultsKey) -> NSMutableOrderedSet {
-        userDefaults.mutableOrderedSetValue(forKey: key.value)
+    private func mutableOrderedSet(withKey key: UserDefaultsKey) -> NSMutableOrderedSet? {
+        guard let setAsArray = userDefaults.array(forKey: key.value) else {
+            return nil
+        }
+        
+        return NSMutableOrderedSet(array: setAsArray)
     }
     
     private func codable<T: Codable>(withKey key: UserDefaultsKey, currentDate: Date) throws -> T? {
@@ -187,7 +191,8 @@ class IterableUserDefaults {
             return
         }
         
-        userDefaults.setValue(orderedSet, forKey: key.value)
+//        userDefaults.setValue(orderedSet, forKey: key.value)
+        userDefaults.set(orderedSet.array, forKey: key.value)
     }
     
     private func save(string: String?, withKey key: UserDefaultsKey) {

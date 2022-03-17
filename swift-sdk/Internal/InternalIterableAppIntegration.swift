@@ -183,6 +183,8 @@ struct InternalIterableAppIntegration {
             return
         }
         
+        print("jay userNotificationCenter post-itbl check: \(itbl)")
+        
         let dataFields = InternalIterableAppIntegration.createIterableDataFields(actionIdentifier: response.actionIdentifier, userText: response.userText)
         let action = InternalIterableAppIntegration.createIterableAction(actionIdentifier: response.actionIdentifier, userText: response.userText, userInfo: userInfo, iterableElement: itbl)
         

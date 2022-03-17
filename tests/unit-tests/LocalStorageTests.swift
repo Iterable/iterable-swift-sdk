@@ -182,6 +182,14 @@ class LocalStorageTests: XCTestCase {
         testLocalStorage(saver: saver, retriever: retriever, value: false)
     }
     
+    func testNSMutableOrderedSet() {
+        let localStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
+        let testSet = NSMutableOrderedSet(array: ["a", "b", "c"])
+        
+        localStorage.save(dupSendQueue: testSet)
+        XCTAssertEqual(localStorage.getDupSendQueue(), testSet)
+    }
+    
     private func testLocalStorage<T>(saver: (LocalStorageProtocol, T) -> Void,
                                      retriever: (LocalStorageProtocol) -> T?, value: T) where T: Equatable {
         let localStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())

@@ -94,6 +94,8 @@ class InAppHelperTests: XCTestCase {
     }
     
     private class MockApiClient: ApiClientProtocol {
+        
+        
         func register(registerTokenInfo _: RegisterTokenInfo,
                       notificationsEnabled _: Bool) -> Pending<SendRequestValue, SendRequestError> {
             fatalError()
@@ -160,6 +162,10 @@ class InAppHelperTests: XCTestCase {
         }
         
         func inAppConsume(inAppMessageContext _: InAppMessageContext, source _: InAppDeleteSource?) -> Pending<SendRequestValue, SendRequestError> {
+            fatalError()
+        }
+        
+        func track(dupSend message: IterableInAppMessage, eventType: String) -> Pending<SendRequestValue, SendRequestError> {
             fatalError()
         }
         
