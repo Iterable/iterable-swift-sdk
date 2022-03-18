@@ -15,7 +15,7 @@ class IterableNotificationProcessor {
         guard hasDuplicateMessageId(request) else {
             trackAntiDuplicateMessageId(request)
             
-            print("jay processRequestForDuplicateMessageIds EXIT")
+            print("jay processRequestForDuplicateMessageIds EXIT false")
             // return false to tell the NSE that there are no dupes in this payload
             return false
         }
@@ -33,7 +33,7 @@ class IterableNotificationProcessor {
         // call de-dupe endpoint
 //        IterableAPI.trackDupSend(message: duplicateInAppMessage, eventType: "pushSend")
         
-        print("jay processRequestForDuplicateMessageIds EXIT")
+        print("jay processRequestForDuplicateMessageIds EXIT true")
         // return true to tell the NSE to suppress the notification per https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_usernotifications_filtering
         return true
     }
@@ -71,6 +71,10 @@ class IterableNotificationProcessor {
     }
     
     private func saveDupSendQueueToStorage() {
+        if dupSendQueue.array.isEmpty {
+            UserDefaults.standard.removeObject(forKey: IterableNotificationProcessor.DupSendQueueUserDefaultsKey)
+        }
+        
         UserDefaults.standard.set(dupSendQueue.array, forKey: IterableNotificationProcessor.DupSendQueueUserDefaultsKey)
     }
     
