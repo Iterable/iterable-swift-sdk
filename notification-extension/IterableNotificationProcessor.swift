@@ -27,9 +27,6 @@ class IterableNotificationProcessor {
 //            return false
 //        }
         
-        // remove from in-app queue
-//        IterableAPI.inAppConsume(message: duplicateInAppMessage)
-        
         // call de-dupe endpoint
 //        IterableAPI.trackDupSend(message: duplicateInAppMessage, eventType: "pushSend")
         
