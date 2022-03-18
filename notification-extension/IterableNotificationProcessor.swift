@@ -55,8 +55,8 @@ class IterableNotificationProcessor {
         
         dupSendQueue.add(messageId)
         
-        if dupSendQueue.count > IterableNotificationProcessor.dupSendQueueSize {
-            dupSendQueue.removeObjects(in: NSRange(0...(dupSendQueue.count - IterableNotificationProcessor.dupSendQueueSize - 1)))
+        if dupSendQueue.count > IterableNotificationProcessor.DupSendQueueSize {
+            dupSendQueue.removeObjects(in: NSRange(0...(dupSendQueue.count - IterableNotificationProcessor.DupSendQueueSize - 1)))
         }
         
         saveDupSendQueueToStorage()
@@ -67,18 +67,21 @@ class IterableNotificationProcessor {
     }
     
     private func restoreDupSendQueueFromStorage() {
-        dupSendQueue = NSMutableOrderedSet(array: UserDefaults.standard.array(forKey: IterableNotificationProcessor.DupSendQueueUserDefaultsKey) ?? [])
+        if let arrayFromStorage = UserDefaults.standard.array(forKey: IterableNotificationProcessor.DupSendQueueUserDefaultsKey) {
+            dupSendQueue = NSMutableOrderedSet(array: arrayFromStorage)
+        }
     }
     
     private func saveDupSendQueueToStorage() {
         if dupSendQueue.array.isEmpty {
             UserDefaults.standard.removeObject(forKey: IterableNotificationProcessor.DupSendQueueUserDefaultsKey)
+            return
         }
         
         UserDefaults.standard.set(dupSendQueue.array, forKey: IterableNotificationProcessor.DupSendQueueUserDefaultsKey)
     }
     
     private static let DupSendQueueUserDefaultsKey = "itbl_dup_send_queue"
-    private static let dupSendQueueSize = 10
+    private static let DupSendQueueSize = 10
     private var dupSendQueue = NSMutableOrderedSet()
 }
