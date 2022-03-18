@@ -15,10 +15,13 @@ import UserNotifications
         // check if the request has duplicate messages and have iterableNotificationProcessor process it
         // https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_usernotifications_filtering
         if iterableNotificationProcessor.processRequestForDuplicateMessageIds(request) {
+            print("jay ITBNotificationServiceExtension dupe - suppressing")
             suppressNotification()
             
             return
         }
+        
+        print("jay ITBNotificationServiceExtension not duplicate")
         
         // continue with resolving notification
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)

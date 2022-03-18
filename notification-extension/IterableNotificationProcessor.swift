@@ -9,15 +9,19 @@ import UserNotifications
 class IterableNotificationProcessor {
     func processRequestForDuplicateMessageIds(_ request: UNNotificationRequest) -> Bool {
         print("jay processRequestForDuplicateMessageIds ENTRY")
+        
         restoreDupSendQueueFromStorage()
         
         guard hasDuplicateMessageId(request) else {
-            print("jay didReceive added messageId: \(getMessageId(from: request) ?? "nil")")
             trackAntiDuplicateMessageId(request)
             
+            print("jay processRequestForDuplicateMessageIds EXIT")
             // return false to tell the NSE that there are no dupes in this payload
             return false
         }
+        
+        print("jay processRequestForDuplicateMessageIds FOUND DUPLICATE!!! \(getMessageId(from: request) ?? "nil")")
+        print("jay processRequestForDuplicateMessageIds queue: \(dupSendQueue)")
         
 //        guard let duplicateInAppMessage = IterableAPI.inAppManager.getMessage(withId: getMessageId(from: request)) else {
 //            return false
@@ -29,6 +33,7 @@ class IterableNotificationProcessor {
         // call de-dupe endpoint
 //        IterableAPI.trackDupSend(message: duplicateInAppMessage, eventType: "pushSend")
         
+        print("jay processRequestForDuplicateMessageIds EXIT")
         // return true to tell the NSE to suppress the notification per https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_usernotifications_filtering
         return true
     }
@@ -36,8 +41,6 @@ class IterableNotificationProcessor {
     // MARK: - Private/Internal
     
     private func hasDuplicateMessageId(_ request: UNNotificationRequest) -> Bool {
-        print("jay isDuplicateMessageId tracking: \(dupSendQueue)")
-        
         guard let messageId = NotificationContentParser.getIterableMessageId(from: request.content) else {
             return false
         }
@@ -64,13 +67,14 @@ class IterableNotificationProcessor {
     }
     
     private func restoreDupSendQueueFromStorage() {
-        dupSendQueue = NSMutableOrderedSet(array: UserDefaults.standard.array(forKey: "itbl_dup_send_queue") ?? [])
+        dupSendQueue = NSMutableOrderedSet(array: UserDefaults.standard.array(forKey: IterableNotificationProcessor.DupSendQueueUserDefaultsKey) ?? [])
     }
     
     private func saveDupSendQueueToStorage() {
-        UserDefaults.standard.set(dupSendQueue.array, forKey: "itbl_dup_send_queue")
+        UserDefaults.standard.set(dupSendQueue.array, forKey: IterableNotificationProcessor.DupSendQueueUserDefaultsKey)
     }
     
+    private static let DupSendQueueUserDefaultsKey = "itbl_dup_send_queue"
     private static let dupSendQueueSize = 10
     private var dupSendQueue = NSMutableOrderedSet()
 }
