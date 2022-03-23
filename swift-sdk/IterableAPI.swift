@@ -321,7 +321,7 @@ public final class IterableAPI: NSObject {
                                    withToken token: String,
                                    onSuccess: OnSuccessHandler?,
                                    onFailure: OnFailureHandler?) {
-        internalImplementation?.updateEmail(newEmail, onSuccess: onSuccess, onFailure: onFailure)
+        internalImplementation?.updateEmail(newEmail, withToken: token, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     /// Tracks what's in the shopping cart (or equivalent) at this point in time
