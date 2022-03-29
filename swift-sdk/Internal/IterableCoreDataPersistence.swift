@@ -59,7 +59,7 @@ class PersistentContainer: NSPersistentContainer {
     }
     
     private static func createManagedObjectModel(fromBundle bundle: Bundle) -> NSManagedObjectModel? {
-        guard let url = managedObjectUrl(fromBundle: bundle) else {
+        guard let url = managedObjectUrl(fromBundle: bundle) ?? managedObjectUrl(fromBundle: Bundle(for: PersistentContainer.self)) else {
             ITBError("Could not find \(PersistenceConst.dataModelFileName).\(PersistenceConst.dataModelExtension) in bundle")
             return nil
         }
