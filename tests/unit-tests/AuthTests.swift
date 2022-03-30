@@ -222,7 +222,12 @@ class AuthTests: XCTestCase {
         let updatedEmail = "2"
         let updatedToken = "564g"
         
+        let authDelegate = DefaultAuthDelegate {
+            return originalToken
+        }
+        
         let config = IterableConfig()
+        config.authDelegate = authDelegate
         
         internalAPI = InternalIterableAPI.initializeForTesting(config: config)
         
