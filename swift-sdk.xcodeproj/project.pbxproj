@@ -1352,9 +1352,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = AC2263F320CF49B8009800EB /* Build configuration list for PBXNativeTarget "swift-sdk" */;
 			buildPhases = (
+				AC2263DC20CF49B8009800EB /* Headers */,
 				AC2263DA20CF49B8009800EB /* Sources */,
 				AC2263DB20CF49B8009800EB /* Frameworks */,
-				AC2263DC20CF49B8009800EB /* Headers */,
 				AC2263DD20CF49B8009800EB /* Resources */,
 			);
 			buildRules = (
@@ -1412,9 +1412,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = AC90C4DB20D8632E00EECA5D /* Build configuration list for PBXNativeTarget "notification-extension" */;
 			buildPhases = (
+				AC90C4C120D8632D00EECA5D /* Headers */,
 				AC90C4BF20D8632D00EECA5D /* Sources */,
 				AC90C4C020D8632D00EECA5D /* Frameworks */,
-				AC90C4C120D8632D00EECA5D /* Headers */,
 				AC90C4C220D8632D00EECA5D /* Resources */,
 			);
 			buildRules = (
