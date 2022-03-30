@@ -53,6 +53,12 @@ class AuthManager: IterableAuthManagerProtocol {
         }
     }
     
+    func setNewAuthTokenDirectly(_ newToken: String) {
+        ITBInfo()
+        
+        onAuthTokenReceived(retrievedAuthToken: newToken, onSuccess: nil)
+    }
+    
     func logoutUser() {
         ITBInfo()
         

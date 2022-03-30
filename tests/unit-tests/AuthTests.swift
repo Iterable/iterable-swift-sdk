@@ -246,6 +246,7 @@ class AuthTests: XCTestCase {
             XCTAssertEqual(API.email, updatedEmail)
             XCTAssertNil(API.userId)
             XCTAssertEqual(API.auth.authToken, updatedToken)
+            
             condition1.fulfill()
         } onFailure: { reason, data in
             XCTFail()
