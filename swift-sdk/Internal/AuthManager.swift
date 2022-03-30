@@ -53,10 +53,10 @@ class AuthManager: IterableAuthManagerProtocol {
         }
     }
     
-    func setNewAuthTokenDirectly(_ newToken: String) {
+    func setNewTokenAfterUpdateEmail(_ newToken: String) {
         ITBInfo()
         
-        onAuthTokenReceived(retrievedAuthToken: newToken, onSuccess: nil)
+        onAuthTokenReceived(retrievedAuthToken: newToken)
     }
     
     func logoutUser() {
@@ -92,7 +92,7 @@ class AuthManager: IterableAuthManagerProtocol {
         queueAuthTokenExpirationRefresh(authToken)
     }
     
-    private func onAuthTokenReceived(retrievedAuthToken: String?, onSuccess: AuthTokenRetrievalHandler?) {
+    private func onAuthTokenReceived(retrievedAuthToken: String?, onSuccess: AuthTokenRetrievalHandler? = nil) {
         pendingAuth = false
         
         authToken = retrievedAuthToken

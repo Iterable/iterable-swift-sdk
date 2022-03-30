@@ -8,6 +8,6 @@ import Foundation
     func getAuthToken() -> String?
     func resetFailedAuthCount()
     func requestNewAuthToken(hasFailedPriorAuth: Bool, onSuccess: ((String?) -> Void)?)
-    func setNewAuthTokenDirectly(_ newToken: String)
+    func setNewTokenAfterUpdateEmail(_ newToken: String)
     func logoutUser()
 }

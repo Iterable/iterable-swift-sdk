@@ -206,7 +206,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             }
             
             if let token = token {
-                self.authManager.setNewAuthTokenDirectly(token)
+                self.authManager.setNewTokenAfterRequest(token)
             }
             
             onSuccess?(json)
