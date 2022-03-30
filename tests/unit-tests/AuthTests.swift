@@ -90,7 +90,7 @@ class AuthTests: XCTestCase {
         XCTAssertNil(internalAPI.auth.authToken)
     }
     
-    func testNewEmailWithTokenChange() {
+    func testNewEmailAndThenChangeToken() {
         var internalAPI: InternalIterableAPI?
         
         let originalEmail = "first@example.com"
@@ -128,7 +128,7 @@ class AuthTests: XCTestCase {
         XCTAssertEqual(API.auth.authToken, newToken)
     }
     
-    func testNewUserIdWithTokenChange() {
+    func testNewUserIdAndThenChangeToken() {
         var internalAPI: InternalIterableAPI?
         
         let originalUserId = "firstUserId"
@@ -166,8 +166,8 @@ class AuthTests: XCTestCase {
         XCTAssertEqual(API.auth.authToken, newToken)
     }
     
-    func testUpdateEmailWithToken() {
-        let condition1 = expectation(description: "update email with auth token")
+    func testUpdateEmailAndThenChangeToken() {
+        let condition1 = expectation(description: "update email and then change auth token")
         
         var internalAPI: InternalIterableAPI?
         
@@ -207,6 +207,44 @@ class AuthTests: XCTestCase {
                             condition1.fulfill()
                         },
                         onFailure: nil)
+        
+        wait(for: [condition1], timeout: testExpectationTimeout)
+    }
+    
+    func testUpdateEmailWithTokenParam() {
+        let condition1 = expectation(description: #function)
+        
+        var internalAPI: InternalIterableAPI?
+        
+        let originalEmail = "rtbo"
+        let originalToken = "hngk"
+        
+        let updatedEmail = "2"
+        let updatedToken = "564g"
+        
+        let config = IterableConfig()
+        
+        internalAPI = InternalIterableAPI.initializeForTesting(config: config)
+        
+        guard let API = internalAPI else {
+            XCTFail()
+            return
+        }
+        
+        API.setEmail(originalEmail)
+        
+        XCTAssertEqual(API.email, originalEmail)
+        XCTAssertNil(API.userId)
+        XCTAssertEqual(API.auth.authToken, originalToken)
+        
+        API.updateEmail(updatedEmail, withToken: updatedToken) { data in
+            XCTAssertEqual(API.email, updatedEmail)
+            XCTAssertNil(API.userId)
+            XCTAssertEqual(API.auth.authToken, updatedToken)
+            condition1.fulfill()
+        } onFailure: { reason, data in
+            XCTFail()
+        }
         
         wait(for: [condition1], timeout: testExpectationTimeout)
     }
