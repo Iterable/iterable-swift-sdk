@@ -251,6 +251,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		5B38881D27FAE6DB00482BE7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AC2263D620CF49B8009800EB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ACF560D220E443BF000AAC23;
+			remoteInfo = "host-app";
+		};
 		AC28480D24AA44C600C1FC7F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AC2263D620CF49B8009800EB /* Project object */;
@@ -1380,6 +1387,7 @@
 			);
 			dependencies = (
 				AC28480E24AA44C600C1FC7F /* PBXTargetDependency */,
+				5B38881E27FAE6DB00482BE7 /* PBXTargetDependency */,
 			);
 			name = "endpoint-tests";
 			productName = "endpoint-tests";
@@ -1572,6 +1580,7 @@
 					};
 					AC28480624AA44C600C1FC7F = {
 						CreatedOnToolsVersion = 11.5;
+						TestTargetID = ACF560D220E443BF000AAC23;
 					};
 					AC7B142A20D02CE200877BFE = {
 						CreatedOnToolsVersion = 9.4;
@@ -2036,6 +2045,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		5B38881E27FAE6DB00482BE7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ACF560D220E443BF000AAC23 /* host-app */;
+			targetProxy = 5B38881D27FAE6DB00482BE7 /* PBXContainerItemProxy */;
+		};
 		AC28480E24AA44C600C1FC7F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = AC2263DE20CF49B8009800EB /* swift-sdk */;
@@ -2340,6 +2354,7 @@
 		AC28480F24AA44C600C1FC7F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "tests/endpoint-tests/Info.plist";
@@ -2355,12 +2370,14 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/host-app.app/host-app";
 			};
 			name = Debug;
 		};
 		AC28481024AA44C600C1FC7F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "tests/endpoint-tests/Info.plist";
@@ -2375,6 +2392,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/host-app.app/host-app";
 			};
 			name = Release;
 		};
