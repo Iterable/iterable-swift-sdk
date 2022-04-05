@@ -193,8 +193,7 @@ class HealthMonitorTests: XCTestCase {
     private let dateProvider = MockDateProvider()
     
     private lazy var persistenceProvider: IterablePersistenceContextProvider = {
-        let provider = CoreDataPersistenceContextProvider(dateProvider: dateProvider,
-                                                          fromBundle: Bundle(for: PersistentContainer.self))!
+        let provider = CoreDataPersistenceContextProvider(dateProvider: dateProvider)!
         try! provider.mainQueueContext().deleteAllTasks()
         try! provider.mainQueueContext().save()
         return provider
