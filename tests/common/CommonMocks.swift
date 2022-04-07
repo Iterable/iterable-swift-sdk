@@ -174,16 +174,40 @@ class MockNetworkSession: NetworkSessionProtocol {
         private var canceled = false
     }
 
-    var urlPatternDataMapping: [String: Data?]?
-    var delay: TimeInterval
+    struct MockResponse {
+        let statusCode: Int
+        let data: Data?
+        let delay: TimeInterval
+        let error: Error?
+        let headerFields: [String: String]?
+        
+        init(statusCode: Int = MockNetworkSession.defaultStatus,
+             data: Data? = MockNetworkSession.defaultData,
+             delay: TimeInterval = 0.0,
+             error: Error? = nil,
+             headerFields: [String: String]? = MockNetworkSession.defaultHeaderFields) {
+            self.statusCode = statusCode
+            self.data = data
+            self.delay = delay
+            self.error = error
+            self.headerFields = headerFields
+        }
+        
+        func toUrlResponse(url: URL) -> URLResponse? {
+            HTTPURLResponse(url: url,
+                            statusCode: statusCode,
+                            httpVersion: MockNetworkSession.defaultHttpVersion,
+                            headerFields: headerFields)
+        }
+    }
+    
+    var responseCallback: ((URL) -> MockResponse?)?
+    
     var requests = [URLRequest]()
     var callback: ((Data?, URLResponse?, Error?) -> Void)?
     var requestCallback: ((URLRequest) -> Void)?
     
-    var statusCode: Int
-    var error: Error?
-    
-    convenience init(statusCode: Int = 200, delay: TimeInterval = 0.0) {
+    convenience init(statusCode: Int = MockNetworkSession.defaultStatus, delay: TimeInterval = 0.0) {
         self.init(statusCode: statusCode,
                   data: [:].toJsonData(),
                   delay: delay,
@@ -198,31 +222,42 @@ class MockNetworkSession: NetworkSessionProtocol {
     }
     
     convenience init(statusCode: Int, data: Data?, delay: TimeInterval = 0.0, error: Error? = nil) {
-        self.init(statusCode: statusCode, urlPatternDataMapping: [".*": data], delay: delay, error: error)
+        let mockResponse = MockResponse(statusCode: statusCode,
+                                        data: data,
+                                        delay: delay,
+                                        error: error)
+        self.init(mapping: [".*": mockResponse])
     }
     
-    init(statusCode: Int,
-         urlPatternDataMapping: [String: Data?]?,
-         delay: TimeInterval = 0.0,
-         error: Error? = nil) {
-        self.statusCode = statusCode
-        self.urlPatternDataMapping = urlPatternDataMapping
-        self.delay = delay
-        self.error = error
+    init(mapping: [String: MockResponse?]?) {
+        self.responseCallback = { url in
+            MockNetworkSession.response(for: url.absoluteString, inMapping: mapping)
+        }
+    }
+    
+    init(responseCallback: ((URL) -> MockResponse?)?) {
+        self.responseCallback = responseCallback
     }
     
     func makeRequest(_ request: URLRequest, completionHandler: @escaping NetworkSessionProtocol.CompletionHandler) {
+        let mockResponse = self.mockResponse(for: request.url)
+
         let block = {
             self.requests.append(request)
             self.requestCallback?(request)
-            let response = HTTPURLResponse(url: request.url!, statusCode: self.statusCode, httpVersion: "HTTP/1.1", headerFields: [:])
-            let data = self.data(for: request.url?.absoluteString)
-            completionHandler(data, response, self.error)
-            
-            self.callback?(data, response, self.error)
+            if let mockResponse = mockResponse {
+                let response = mockResponse.toUrlResponse(url: request.url!)
+                completionHandler(mockResponse.data, response, mockResponse.error)
+                self.callback?(mockResponse.data, response, mockResponse.error)
+            } else {
+                let response = Self.defaultURLResponse(forUrl: request.url!)
+                completionHandler(Self.defaultData, response, nil)
+                self.callback?(Self.defaultData, response, nil)
+            }
         }
 
-        if delay == 0 {
+        let delay = mockResponse?.delay ?? 0
+        if  delay == 0 {
             DispatchQueue.main.async {
                 block()
             }
@@ -234,14 +269,24 @@ class MockNetworkSession: NetworkSessionProtocol {
     }
     
     func makeDataRequest(with url: URL, completionHandler: @escaping NetworkSessionProtocol.CompletionHandler) {
+        let mockResponse = self.mockResponse(for: url)
+
         let block = {
-            let response = HTTPURLResponse(url: url, statusCode: self.statusCode, httpVersion: "HTTP/1.1", headerFields: [:])
-            let data = self.data(for: url.absoluteString)
-            completionHandler(data, response, self.error)
-            
-            self.callback?(data, response, self.error)
+            if let mockResponse = mockResponse {
+                let response = mockResponse.toUrlResponse(url: url)
+                completionHandler(mockResponse.data, response, mockResponse.error)
+                self.callback?(mockResponse.data, response, mockResponse.error)
+            } else {
+                let response = HTTPURLResponse(url: url,
+                                               statusCode: Self.defaultStatus,
+                                               httpVersion: Self.defaultHttpVersion,
+                                               headerFields: Self.defaultHeaderFields)
+                completionHandler(nil, response, nil)
+                self.callback?(nil, response, nil)
+            }
         }
         
+        let delay = mockResponse?.delay ?? 0
         if delay == 0 {
             DispatchQueue.main.async {
                 block()
@@ -266,12 +311,31 @@ class MockNetworkSession: NetworkSessionProtocol {
     static func json(fromData data: Data) -> [AnyHashable: Any] {
         try! JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
     }
+
+    private static let defaultStatus = 200
+    private static let defaultData = [:].toJsonData()
+    private static let defaultHttpVersion = "HTTP/1.1"
+    private static let defaultHeaderFields: [String: String] = [:]
     
-    private func data(for urlAbsoluteString: String?) -> Data? {
+    private static func defaultURLResponse(forUrl url: URL) -> URLResponse? {
+        HTTPURLResponse(url: url,
+                        statusCode: Self.defaultStatus,
+                        httpVersion: Self.defaultHttpVersion,
+                        headerFields: Self.defaultHeaderFields)
+    }
+    
+    private func mockResponse(for url: URL?) -> MockResponse? {
+        guard let url = url else {
+            return nil
+        }
+        return responseCallback?(url)
+    }
+
+    private static func response(for urlAbsoluteString: String?, inMapping mapping: [String: MockResponse?]?) -> MockResponse? {
         guard let urlAbsoluteString = urlAbsoluteString else {
             return nil
         }
-        guard let mapping = urlPatternDataMapping else {
+        guard let mapping = mapping else {
             return nil
         }
         
