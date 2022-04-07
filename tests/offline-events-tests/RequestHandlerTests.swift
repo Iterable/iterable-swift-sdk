@@ -1165,8 +1165,7 @@ class RequestHandlerTests: XCTestCase {
     private let dateProvider = MockDateProvider()
     
     private lazy var persistenceContextProvider: IterablePersistenceContextProvider = {
-        let provider = CoreDataPersistenceContextProvider(dateProvider: dateProvider,
-                                                          fromBundle: Bundle(for: PersistentContainer.self))!
+        let provider = CoreDataPersistenceContextProvider(dateProvider: dateProvider)!
         return provider
     }()
 }

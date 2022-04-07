@@ -251,6 +251,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		5B38881D27FAE6DB00482BE7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AC2263D620CF49B8009800EB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = ACF560D220E443BF000AAC23;
+			remoteInfo = "host-app";
+		};
 		AC28480D24AA44C600C1FC7F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AC2263D620CF49B8009800EB /* Project object */;
@@ -407,6 +414,7 @@
 		55E6F45E238E066400808BCE /* DeepLinkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepLinkTests.swift; sourceTree = "<group>"; };
 		5B49BB3D27CFB71500E6F00C /* PopupInboxSessionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupInboxSessionUITests.swift; sourceTree = "<group>"; };
 		5B6C3C1027CE871F00B9A753 /* NavInboxSessionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavInboxSessionUITests.swift; sourceTree = "<group>"; };
+		5BFC7CED27FC9AF300E77479 /* inbox-ui-tests-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "inbox-ui-tests-app.entitlements"; sourceTree = "<group>"; };
 		AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxNavigationViewController.swift; sourceTree = "<group>"; };
 		AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTests.swift; sourceTree = "<group>"; };
 		AC03094A21E532470003A288 /* InAppPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPersistence.swift; sourceTree = "<group>"; };
@@ -746,6 +754,7 @@
 		AC2263D520CF49B8009800EB = {
 			isa = PBXGroup;
 			children = (
+				5BFC7CED27FC9AF300E77479 /* inbox-ui-tests-app.entitlements */,
 				AC2263E120CF49B8009800EB /* swift-sdk */,
 				AC90C4C520D8632E00EECA5D /* notification-extension */,
 				ACFCA72920EB02DB00BFB277 /* tests */,
@@ -1380,6 +1389,7 @@
 			);
 			dependencies = (
 				AC28480E24AA44C600C1FC7F /* PBXTargetDependency */,
+				5B38881E27FAE6DB00482BE7 /* PBXTargetDependency */,
 			);
 			name = "endpoint-tests";
 			productName = "endpoint-tests";
@@ -1572,6 +1582,7 @@
 					};
 					AC28480624AA44C600C1FC7F = {
 						CreatedOnToolsVersion = 11.5;
+						TestTargetID = ACF560D220E443BF000AAC23;
 					};
 					AC7B142A20D02CE200877BFE = {
 						CreatedOnToolsVersion = 9.4;
@@ -2036,6 +2047,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		5B38881E27FAE6DB00482BE7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = ACF560D220E443BF000AAC23 /* host-app */;
+			targetProxy = 5B38881D27FAE6DB00482BE7 /* PBXContainerItemProxy */;
+		};
 		AC28480E24AA44C600C1FC7F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = AC2263DE20CF49B8009800EB /* swift-sdk */;
@@ -2301,7 +2317,7 @@
 				PRODUCT_NAME = IterableSDK;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MACCATALYST = YES;
 				"SWIFT_ACTIVE_COMPILATION_CONDITIONS[arch=*]" = "DEBUG NETWORK_DEBUG";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -2332,7 +2348,7 @@
 				PRODUCT_NAME = IterableSDK;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MACCATALYST = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -2340,6 +2356,7 @@
 		AC28480F24AA44C600C1FC7F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "tests/endpoint-tests/Info.plist";
@@ -2355,12 +2372,14 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/host-app.app/host-app";
 			};
 			name = Debug;
 		};
 		AC28481024AA44C600C1FC7F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "tests/endpoint-tests/Info.plist";
@@ -2375,6 +2394,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/host-app.app/host-app";
 			};
 			name = Release;
 		};
@@ -2444,7 +2464,7 @@
 				PRODUCT_NAME = IterableAppExtensions;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -2476,7 +2496,7 @@
 				PRODUCT_NAME = IterableAppExtensions;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
-				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MACCATALYST = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -2570,6 +2590,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "inbox-ui-tests-app.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "tests/hosting-apps/inbox-ui-tests-app/Info.plist";
@@ -2582,6 +2603,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "iterable.inbox-ui-tests-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -2592,6 +2614,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "inbox-ui-tests-app.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = BP98Z28R86;
 				INFOPLIST_FILE = "tests/hosting-apps/inbox-ui-tests-app/Info.plist";
@@ -2603,6 +2626,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "iterable.inbox-ui-tests-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -2670,6 +2694,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "iterable.host-app";
 				PRODUCT_NAME = "host-app";
+				SUPPORTS_MACCATALYST = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -2691,6 +2716,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "iterable.host-app";
 				PRODUCT_NAME = "host-app";
+				SUPPORTS_MACCATALYST = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -2757,6 +2783,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "iterable.ui-tests-app";
 				PRODUCT_NAME = "ui-tests-app";
+				SUPPORTS_MACCATALYST = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -2778,6 +2805,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "iterable.ui-tests-app";
 				PRODUCT_NAME = "ui-tests-app";
+				SUPPORTS_MACCATALYST = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
