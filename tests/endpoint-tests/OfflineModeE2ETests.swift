@@ -116,7 +116,7 @@ class OfflineModeEndpointTests: XCTestCase {
     private static let pushTemplateId = Environment.pushTemplateId!
     private static let inAppCampaignId = Environment.inAppCampaignId!
     private lazy var persistenceContextProvider: IterablePersistenceContextProvider = {
-        let provider = CoreDataPersistenceContextProvider(fromBundle: Bundle(for: PersistentContainer.self))!
+        let provider = CoreDataPersistenceContextProvider()!
         return provider
     }()
 }
