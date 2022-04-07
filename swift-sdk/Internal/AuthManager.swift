@@ -53,7 +53,7 @@ class AuthManager: IterableAuthManagerProtocol {
         }
     }
     
-    func setNewTokenAfterUpdateEmail(_ newToken: String) {
+    func setNewToken(_ newToken: String) {
         ITBInfo()
         
         onAuthTokenReceived(retrievedAuthToken: newToken)

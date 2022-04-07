@@ -203,14 +203,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         requestHandler.updateEmail(newEmail,
                                    onSuccess: nil,
                                    onFailure: nil).onSuccess { json in
-//            if self.email != nil {
-//                self.setEmail(newEmail)
-//            }
-
-//            if let token = token {
-//                self.authManager.setNewTokenAfterUpdateEmail(token)
-//            }
-            
             if self.email != nil {
                 self.setEmail(newEmail, authToken: token)
             }
@@ -490,7 +482,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         ITBInfo()
         
         if let authToken = authToken {
-            self.authManager.setNewTokenAfterUpdateEmail(authToken)
+            self.authManager.setNewToken(authToken)
         } else if isEitherUserIdOrEmailSet() && config.authDelegate != nil {
             requestNewAuthToken()
             return
