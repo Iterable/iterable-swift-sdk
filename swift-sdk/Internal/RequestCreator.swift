@@ -449,7 +449,7 @@ struct RequestCreator {
     
     private func createPostRequest(path: String, body: [AnyHashable: Any]? = nil) -> PostRequest {
         PostRequest(path: path,
-                    args: [JsonKey.Header.apiKey: apiKey],
+                    args: nil,
                     body: body)
     }
     
