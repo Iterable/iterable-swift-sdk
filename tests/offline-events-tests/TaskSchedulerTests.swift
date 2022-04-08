@@ -31,7 +31,7 @@ class TaskSchedulerTests: XCTestCase {
             expectation1.fulfill()
         }
         XCTAssertNotNil(reference)
-        let requestCreator = RequestCreator(apiKey: apiKey, auth: auth, deviceMetadata: deviceMetadata)
+        let requestCreator = RequestCreator(auth: auth, deviceMetadata: deviceMetadata)
         guard case let Result.success(trackEventRequest) = requestCreator.createTrackEventRequest(eventName, dataFields: dataFields) else {
             throw IterableError.general(description: "Could not create trackEvent request")
         }
