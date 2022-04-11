@@ -247,8 +247,7 @@ class RequestCreatorTests: XCTestCase {
     }
     
     func testUserlessUpdateUserRequest() {
-        let userlessRequestCreator = RequestCreator(apiKey: apiKey,
-                                                    auth: userlessAuth,
+        let userlessRequestCreator = RequestCreator(auth: userlessAuth,
                                                     deviceMetadata: deviceMetadata)
         
         let result = userlessRequestCreator.createUpdateUserRequest(dataFields: [:], mergeNestedObjects: false)
@@ -262,8 +261,7 @@ class RequestCreatorTests: XCTestCase {
     }
     
     func testUserlessUpdateSubscriptionsRequest() {
-        let userlessRequestCreator = RequestCreator(apiKey: apiKey,
-                                                    auth: userlessAuth,
+        let userlessRequestCreator = RequestCreator(auth: userlessAuth,
                                                     deviceMetadata: deviceMetadata)
         
         let result = userlessRequestCreator.createUpdateSubscriptionsRequest()
@@ -277,8 +275,7 @@ class RequestCreatorTests: XCTestCase {
     }
     
     func testUserlessTrackInboxSessionRequest() {
-        let userlessRequestCreator = RequestCreator(apiKey: apiKey,
-                                                    auth: userlessAuth,
+        let userlessRequestCreator = RequestCreator(auth: userlessAuth,
                                                     deviceMetadata: deviceMetadata)
         
         let result = userlessRequestCreator.createTrackInboxSessionRequest(inboxSession: IterableInboxSession())
@@ -323,8 +320,7 @@ class RequestCreatorTests: XCTestCase {
     }
     
     func testRegisterTokenRequestPrefersUserId() {
-        let userIdRequestCreator = RequestCreator(apiKey: apiKey,
-                                                  auth: userIdAuth,
+        let userIdRequestCreator = RequestCreator(auth: userIdAuth,
                                                   deviceMetadata: deviceMetadata)
         
         let registerTokenInfo = RegisterTokenInfo(hexToken: "hex-token",
