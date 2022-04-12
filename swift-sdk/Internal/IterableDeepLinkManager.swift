@@ -5,6 +5,9 @@
 import Foundation
 
 class IterableDeepLinkManager: NSObject {
+    init(redirectNetworkSessionProvider: RedirectNetworkSessionProvider) {
+        self.redirectNetworkSessionProvider = redirectNetworkSessionProvider
+    }
     /// Handles a Universal Link
     /// For Iterable links, it will track the click and retrieve the original URL,
     /// pass it to `IterableURLDelegate` for handling
@@ -63,7 +66,7 @@ class IterableDeepLinkManager: NSObject {
         deepLinkMessageId = nil
         
         if isIterableDeepLink(appLinkURL.absoluteString) {
-            let trackAndRedirectTask = redirectUrlSession.dataTask(with: appLinkURL) { [unowned self] _, _, error in
+            redirectUrlSession.makeDataRequest(with: appLinkURL) { [unowned self] _, _, error in
                 if let error = error {
                     ITBError("error: \(error.localizedDescription)")
                     fulfill.resolve(with: (nil, nil))
@@ -77,8 +80,6 @@ class IterableDeepLinkManager: NSObject {
                     }
                 }
             }
-            
-            trackAndRedirectTask.resume()
         } else {
             fulfill.resolve(with: (appLinkURL, nil))
         }
@@ -94,59 +95,23 @@ class IterableDeepLinkManager: NSObject {
         return regex.firstMatch(in: urlString, options: [], range: NSMakeRange(0, urlString.count)) != nil
     }
     
-    private lazy var redirectUrlSession: URLSession = {
-        URLSession(configuration: .default, delegate: self, delegateQueue: OperationQueue.main)
+    private lazy var redirectUrlSession: NetworkSessionProtocol = {
+        redirectNetworkSessionProvider.createRedirectNetworkSession(delegate: self)
     }()
+
     
+    private var redirectNetworkSessionProvider: RedirectNetworkSessionProvider
     private var deepLinkLocation: URL?
     private var deepLinkCampaignId: NSNumber?
     private var deepLinkTemplateId: NSNumber?
     private var deepLinkMessageId: String?
 }
 
-extension IterableDeepLinkManager: URLSessionDelegate, URLSessionTaskDelegate {
-    /**
-     Delegate handler when a redirect occurs. Stores a reference to the redirect url and does not execute the redirect.
-     - parameters:
-        - session: the session
-        - task: the task
-        - response: the redirectResponse
-        - request: the request
-        - completionHandler: the completionHandler
-     */
-    public func urlSession(_: URLSession,
-                           task _: URLSessionTask,
-                           willPerformHTTPRedirection response: HTTPURLResponse,
-                           newRequest request: URLRequest,
-                           completionHandler: @escaping (URLRequest?) -> Void) {
-        deepLinkLocation = request.url
-        
-        guard let headerFields = response.allHeaderFields as? [String: String] else {
-            return
-        }
-        
-        guard let url = response.url else {
-            return
-        }
-        
-        for cookie in HTTPCookie.cookies(withResponseHeaderFields: headerFields, for: url) {
-            if cookie.name == "iterableEmailCampaignId" {
-                deepLinkCampaignId = number(fromString: cookie.value)
-            } else if cookie.name == "iterableTemplateId" {
-                deepLinkTemplateId = number(fromString: cookie.value)
-            } else if cookie.name == "iterableMessageId" {
-                deepLinkMessageId = cookie.value
-            }
-        }
-        
-        completionHandler(nil)
-    }
-    
-    private func number(fromString str: String) -> NSNumber {
-        if let intValue = Int(str) {
-            return NSNumber(value: intValue)
-        }
-        
-        return NSNumber(value: 0)
+extension IterableDeepLinkManager: RedirectNetworkSessionDelegate {
+    func onRedirect(deeplinkLocation: URL?, campaignId: NSNumber?, templateId: NSNumber?, messageId: String?) {
+        self.deepLinkLocation = deeplinkLocation
+        self.deepLinkCampaignId = campaignId
+        self.deepLinkTemplateId = templateId
+        self.deepLinkMessageId = messageId
     }
 }

@@ -229,10 +229,11 @@ class MockNetworkSession: NetworkSessionProtocol {
         self.init(mapping: [".*": mockResponse])
     }
     
-    init(mapping: [String: MockResponse?]?) {
-        self.responseCallback = { url in
+    convenience init(mapping: [String: MockResponse?]?) {
+        let responseCallback: (URL) -> MockResponse? = { url in
             MockNetworkSession.response(for: url.absoluteString, inMapping: mapping)
         }
+        self.init(responseCallback: responseCallback)
     }
     
     init(responseCallback: ((URL) -> MockResponse?)?) {
