@@ -40,6 +40,7 @@
 		55E6F462238E066400808BCE /* DeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6F45E238E066400808BCE /* DeepLinkTests.swift */; };
 		5B49BB3E27CFB71500E6F00C /* PopupInboxSessionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B49BB3D27CFB71500E6F00C /* PopupInboxSessionUITests.swift */; };
 		5B6C3C1127CE871F00B9A753 /* NavInboxSessionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B6C3C1027CE871F00B9A753 /* NavInboxSessionUITests.swift */; };
+		5B88BC482805D09D004016E5 /* NetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B88BC472805D09D004016E5 /* NetworkSession.swift */; };
 		AC02480822791E2100495FB9 /* IterableInboxNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */; };
 		AC02CAA6234E50B5006617E0 /* RegistrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */; };
 		AC03094B21E532470003A288 /* InAppPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC03094A21E532470003A288 /* InAppPersistence.swift */; };
@@ -414,6 +415,7 @@
 		55E6F45E238E066400808BCE /* DeepLinkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepLinkTests.swift; sourceTree = "<group>"; };
 		5B49BB3D27CFB71500E6F00C /* PopupInboxSessionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupInboxSessionUITests.swift; sourceTree = "<group>"; };
 		5B6C3C1027CE871F00B9A753 /* NavInboxSessionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavInboxSessionUITests.swift; sourceTree = "<group>"; };
+		5B88BC472805D09D004016E5 /* NetworkSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSession.swift; sourceTree = "<group>"; };
 		5BFC7CED27FC9AF300E77479 /* inbox-ui-tests-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "inbox-ui-tests-app.entitlements"; sourceTree = "<group>"; };
 		AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxNavigationViewController.swift; sourceTree = "<group>"; };
 		AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTests.swift; sourceTree = "<group>"; };
@@ -1251,6 +1253,7 @@
 			children = (
 				AC978D3D24FF953C00372B8C /* NetworkConnectivityChecker.swift */,
 				ACF40620250781F1005FD775 /* NetworkConnectivityManager.swift */,
+				5B88BC472805D09D004016E5 /* NetworkSession.swift */,
 				ACD6116B2107D004003E7F6B /* NetworkHelper.swift */,
 				ACF406222507BC72005FD775 /* NetworkMonitor.swift */,
 			);
@@ -1794,6 +1797,7 @@
 				ACD6116C2107D004003E7F6B /* NetworkHelper.swift in Sources */,
 				ACC362B624D16D91002C67BA /* IterableRequest.swift in Sources */,
 				ACB1DFDB26369D2F00A31597 /* HealthMonitor.swift in Sources */,
+				5B88BC482805D09D004016E5 /* NetworkSession.swift in Sources */,
 				AC06E4D327948C32007A6F20 /* InboxState.swift in Sources */,
 				ACC362BD24D21172002C67BA /* IterableAPICallTaskProcessor.swift in Sources */,
 				AC84510922910A0C0052BB8F /* RequestCreator.swift in Sources */,
