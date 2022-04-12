@@ -24,9 +24,9 @@ enum PersistenceConst {
 class PersistentContainer: NSPersistentContainer {
     static var shared: PersistentContainer?
     
-    static func initialize(fromBundle bundle: Bundle) -> PersistentContainer? {
+    static func initialize() -> PersistentContainer? {
         if shared == nil {
-            shared = create(fromBundle: bundle)
+            shared = create()
         }
         return shared
     }
@@ -38,8 +38,8 @@ class PersistentContainer: NSPersistentContainer {
         return backgroundContext
     }
 
-    private static func create(fromBundle bundle: Bundle) -> PersistentContainer? {
-        guard let managedObjectModel = createManagedObjectModel(fromBundle: bundle) else {
+    private static func create() -> PersistentContainer? {
+        guard let managedObjectModel = createManagedObjectModel() else {
             ITBError("Could not initialize managed object model")
             return nil
         }
@@ -58,8 +58,8 @@ class PersistentContainer: NSPersistentContainer {
         return container
     }
     
-    private static func createManagedObjectModel(fromBundle bundle: Bundle) -> NSManagedObjectModel? {
-        guard let url = managedObjectUrl(fromBundle: bundle) else {
+    private static func createManagedObjectModel() -> NSManagedObjectModel? {
+        guard let url = dataModelUrl(fromBundles: [Bundle.main, Bundle(for: PersistentContainer.self)]) else {
             ITBError("Could not find \(PersistenceConst.dataModelFileName).\(PersistenceConst.dataModelExtension) in bundle")
             return nil
         }
@@ -67,7 +67,11 @@ class PersistentContainer: NSPersistentContainer {
         return NSManagedObjectModel(contentsOf: url)
     }
     
-    private static func managedObjectUrl(fromBundle bundle: Bundle) -> URL? {
+    private static func dataModelUrl(fromBundles bundles: [Bundle]) -> URL? {
+        bundles.lazy.compactMap(dataModelUrl(fromBundle:)).first
+    }
+    
+    private static func dataModelUrl(fromBundle bundle: Bundle) -> URL? {
         ResourceHelper.url(forResource: PersistenceConst.dataModelFileName,
                            withExtension: PersistenceConst.dataModelExtension,
                            fromBundle: bundle)
@@ -75,9 +79,8 @@ class PersistentContainer: NSPersistentContainer {
 }
 
 struct CoreDataPersistenceContextProvider: IterablePersistenceContextProvider {
-    init?(dateProvider: DateProviderProtocol = SystemDateProvider(),
-          fromBundle bundle: Bundle = Bundle.main) {
-        guard let persistentContainer = PersistentContainer.initialize(fromBundle: bundle) else {
+    init?(dateProvider: DateProviderProtocol = SystemDateProvider()) {
+        guard let persistentContainer = PersistentContainer.initialize() else {
             return nil
         }
         self.persistentContainer = persistentContainer

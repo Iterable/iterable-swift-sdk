@@ -1,4 +1,7 @@
-#!/bin/sh
+#!/bin/bash
+
+set -eE
+trap 'printf "\e[31m%s: %s\e[m\n" "ERROR($?): $BASH_SOURCE:$LINENO $BASH_COMMAND"' ERR
 
 if [ ! -d *".xcodeproj" ]
 then
@@ -12,13 +15,9 @@ FULL_OUTPUT_PATH=${CURRENT_FOLDER}/${OUTPUT_FOLDER}
 
 rm -rf "${OUTPUT_FOLDER}"
 
-# -destination="iOS" -- seems like "-sdk iphoneos" is needed and not this?
-# proper format might be -destination "generic/platform=iOS"
-xcodebuild archive -scheme "swift-sdk" SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES BITCODE_GENERATION_MODE=bitcode -archivePath "./${OUTPUT_FOLDER}/IterableSDK-iOS" -sdk iphoneos
-
-# -destination="iOS Simulator" -- seems like "-sdk iphonesimulator" is needed and not this?
-# proper format might be -destination "generic/platform=iOS Simulator"
-xcodebuild archive -scheme "swift-sdk" SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES BITCODE_GENERATION_MODE=bitcode -archivePath "./${OUTPUT_FOLDER}/IterableSDK-Simulator" -sdk iphonesimulator
+xcodebuild archive -scheme "swift-sdk" SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES BITCODE_GENERATION_MODE=bitcode SUPPORTS_MACCATALYST=NO -archivePath "./${OUTPUT_FOLDER}/IterableSDK-iOS" -sdk iphoneos -destination "generic/platform=iOS" -configuration Release
+xcodebuild archive -scheme "swift-sdk" SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES BITCODE_GENERATION_MODE=bitcode SUPPORTS_MACCATALYST=NO -archivePath "./${OUTPUT_FOLDER}/IterableSDK-Simulator" -sdk iphonesimulator -destination "generic/platform=iOS Simulator" -configuration Release
+xcodebuild archive -scheme "swift-sdk" SKIP_INSTALL=NO BUILD_LIBRARY_FOR_DISTRIBUTION=YES BITCODE_GENERATION_MODE=bitcode SUPPORTS_MACCATALYST=YES -archivePath "./${OUTPUT_FOLDER}/IterableSDK-MC" -sdk iphoneos -destination "generic/platform=macOS,variant=Mac Catalyst" -configuration Release
 
 # create IterableSDK.xcframework
 # -debug-symbols requires a full path specified
@@ -29,6 +28,8 @@ xcodebuild -create-xcframework \
     -debug-symbols "${FULL_OUTPUT_PATH}/IterableSDK-iOS.xcarchive/dSYMs/IterableSDK.framework.dSYM" \
     -framework "./${OUTPUT_FOLDER}/IterableSDK-Simulator.xcarchive/Products/Library/Frameworks/IterableSDK.framework" \
     -debug-symbols "${FULL_OUTPUT_PATH}/IterableSDK-Simulator.xcarchive/dSYMs/IterableSDK.framework.dSYM" \
+    -framework "./${OUTPUT_FOLDER}/IterableSDK-MC.xcarchive/Products/Library/Frameworks/IterableSDK.framework" \
+    -debug-symbols "${FULL_OUTPUT_PATH}/IterableSDK-MC.xcarchive/dSYMs/IterableSDK.framework.dSYM"
 
 # create IterableAppExtensions.xcframework
 # -debug-symbols requires a full path specified
@@ -39,6 +40,8 @@ xcodebuild -create-xcframework \
     -debug-symbols "${FULL_OUTPUT_PATH}/IterableSDK-Simulator.xcarchive/dSYMs/IterableAppExtensions.framework.dSYM" \
     -framework "./${OUTPUT_FOLDER}/IterableSDK-Simulator.xcarchive/Products/Library/Frameworks/IterableAppExtensions.framework" \
     -debug-symbols "${FULL_OUTPUT_PATH}/IterableSDK-Simulator.xcarchive/dSYMs/IterableAppExtensions.framework.dSYM" \
+    -framework "./${OUTPUT_FOLDER}/IterableSDK-MC.xcarchive/Products/Library/Frameworks/IterableAppExtensions.framework" \
+    -debug-symbols "${FULL_OUTPUT_PATH}/IterableSDK-MC.xcarchive/dSYMs/IterableAppExtensions.framework.dSYM"
 
 # create zips of both XCFrameworks
 cd "${OUTPUT_FOLDER}"
