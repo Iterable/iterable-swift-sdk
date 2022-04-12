@@ -90,7 +90,6 @@
 		AC43E7FF23A8C2C0008917E2 /* image.jpg in Resources */ = {isa = PBXBuildFile; fileRef = AC74FE1E23A8C0DB004AC442 /* image.jpg */; };
 		AC4B039622A8743F0043185B /* InAppManager+Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4B039322A8743F0043185B /* InAppManager+Functions.swift */; };
 		AC4BA00224163D8F007359F1 /* IterableHtmlMessageViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC4BA00124163D8F007359F1 /* IterableHtmlMessageViewControllerTests.swift */; };
-		AC4BAE0A240BAF0E00D9121F /* OHHTTPStubs in Frameworks */ = {isa = PBXBuildFile; productRef = AC4BAE09240BAF0E00D9121F /* OHHTTPStubs */; };
 		AC50865424C60172001DC132 /* IterableDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = AC50865224C60172001DC132 /* IterableDataModel.xcdatamodeld */; };
 		AC50865624C603AC001DC132 /* IterablePersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC50865524C603AC001DC132 /* IterablePersistence.swift */; };
 		AC50865824C60426001DC132 /* IterableTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC50865724C60426001DC132 /* IterableTask.swift */; };
@@ -637,7 +636,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				AC7B143020D02CE200877BFE /* IterableSDK.framework in Frameworks */,
-				AC4BAE0A240BAF0E00D9121F /* OHHTTPStubs in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1415,7 +1413,6 @@
 			);
 			name = "unit-tests";
 			packageProductDependencies = (
-				AC4BAE09240BAF0E00D9121F /* OHHTTPStubs */,
 			);
 			productName = "swift-sdk-swift-tests";
 			productReference = AC7B142B20D02CE200877BFE /* unit-tests.xctest */;
@@ -1640,7 +1637,6 @@
 			);
 			mainGroup = AC2263D520CF49B8009800EB;
 			packageReferences = (
-				ACACA91623E0947C00B9E8DF /* XCRemoteSwiftPackageReference "OHHTTPStubs" */,
 			);
 			productRefGroup = AC2263E020CF49B8009800EB /* Products */;
 			projectDirPath = "";
@@ -2926,25 +2922,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		ACACA91623E0947C00B9E8DF /* XCRemoteSwiftPackageReference "OHHTTPStubs" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/AliSoftware/OHHTTPStubs.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 9.0.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		AC4BAE09240BAF0E00D9121F /* OHHTTPStubs */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = ACACA91623E0947C00B9E8DF /* XCRemoteSwiftPackageReference "OHHTTPStubs" */;
-			productName = OHHTTPStubs;
-		};
-/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		AC50865224C60172001DC132 /* IterableDataModel.xcdatamodeld */ = {
