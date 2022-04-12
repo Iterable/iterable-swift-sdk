@@ -143,6 +143,8 @@ class MockDependencyContainer: DependencyContainerProtocol {
 }
 
 struct MockRedirectNetworkSession: NetworkSessionProtocol {
+    var timeout: TimeInterval = 60.0
+    
     init(networkSession: NetworkSessionProtocol, redirectDelegate: RedirectNetworkSessionDelegate) {
         self.networkSession = Self.createRedirectNetworkSession(fromNetworkSession: networkSession, redirectDelegate: redirectDelegate)
     }

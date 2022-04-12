@@ -14,12 +14,29 @@ extension URLSessionDataTask: DataTaskProtocol {}
 
 protocol NetworkSessionProtocol {
     typealias CompletionHandler = (Data?, URLResponse?, Error?) -> Void
+    var timeout: TimeInterval { get set }
     func makeRequest(_ request: URLRequest, completionHandler: @escaping CompletionHandler)
     func makeDataRequest(with url: URL, completionHandler: @escaping CompletionHandler)
     func createDataTask(with url: URL, completionHandler: @escaping CompletionHandler) -> DataTaskProtocol
 }
 
+extension NetworkSessionProtocol {
+    var timeout: TimeInterval {
+        get { 60.0 }
+        set {}
+    }
+}
+
 extension URLSession: NetworkSessionProtocol {
+    var timeout: TimeInterval {
+        get {
+            configuration.timeoutIntervalForRequest
+        }
+        set {
+            configuration.timeoutIntervalForRequest = newValue
+        }
+    }
+    
     func makeRequest(_ request: URLRequest, completionHandler: @escaping CompletionHandler) {
         let task = dataTask(with: request) { data, response, error in
             completionHandler(data, response, error)
@@ -50,6 +67,15 @@ protocol RedirectNetworkSessionProvider {
 }
 
 class RedirectNetworkSession: NSObject, NetworkSessionProtocol {
+    var timeout: TimeInterval {
+        get {
+            networkSession.timeout
+        }
+        set {
+            networkSession.timeout = newValue
+        }
+    }
+    
     func makeRequest(_ request: URLRequest, completionHandler: @escaping CompletionHandler) {
         networkSession.makeRequest(request, completionHandler: completionHandler)
     }

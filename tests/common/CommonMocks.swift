@@ -203,6 +203,8 @@ class MockNetworkSession: NetworkSessionProtocol {
     
     var responseCallback: ((URL) -> MockResponse?)?
     
+    var timeout: TimeInterval = 60.0
+    
     var requests = [URLRequest]()
     var callback: ((Data?, URLResponse?, Error?) -> Void)?
     var requestCallback: ((URLRequest) -> Void)?
@@ -263,8 +265,16 @@ class MockNetworkSession: NetworkSessionProtocol {
                 block()
             }
         } else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-                block()
+            if delay < timeout {
+                DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                    block()
+                }
+            } else {
+                DispatchQueue.main.asyncAfter(deadline: .now() + timeout) {
+                    let error = NetworkError(reason: "The request timed out.")
+                    completionHandler(nil, nil, error)
+                    self.callback?(nil, nil, error)
+                }
             }
         }
     }
@@ -312,7 +322,7 @@ class MockNetworkSession: NetworkSessionProtocol {
     static func json(fromData data: Data) -> [AnyHashable: Any] {
         try! JSONSerialization.jsonObject(with: data, options: []) as! [AnyHashable: Any]
     }
-
+    
     private static let defaultStatus = 200
     private static let defaultData = [:].toJsonData()
     private static let defaultHttpVersion = "HTTP/1.1"
