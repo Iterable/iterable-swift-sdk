@@ -753,61 +753,6 @@ class AuthTests: XCTestCase {
         wait(for: [condition1], timeout: testExpectationTimeoutForInverted)
     }
     
-    func testA() throws {
-        
-        let expectation1 = expectation(description: #function)
-        
-        var callNumber = 0
-        let authDelegate = createAuthDelegate {
-            callNumber += 1
-            if callNumber == 1 {
-                return nil
-            } else {
-                return "some-auth-token"
-            }
-        }
-        
-        let config = IterableConfig()
-        config.authDelegate = authDelegate
-        
-        let networkSession = MockJwtResponseNetworkSession()
-        
-        let api = InternalIterableAPI.initializeForTesting(
-            config: config,
-            networkSession: networkSession
-        )
-        api.userId = "some-user-id"
-        api.track("some-event").onSuccess { _ in
-            print("success")
-            expectation1.fulfill()
-        }.onError { error in
-            print("error, \(error)")
-            expectation1.fulfill()
-        }
-        wait(for: [expectation1], timeout: testExpectationTimeout)
-        
-        class MockJwtResponseNetworkSession: NetworkSessionProtocol {
-            var callNumber = 0
-            func makeRequest(_ request: URLRequest, completionHandler: @escaping CompletionHandler) {
-                callNumber += 1
-                let data = callNumber == 1 ? [JsonKey.Response.iterableCode: JsonValue.Code.invalidJwtPayload].toJsonData() : nil
-                let response = HTTPURLResponse(url: request.url!,
-                                               statusCode: callNumber == 1 ? 401 : 200,
-                                               httpVersion: "HTTP/1.1",
-                                               headerFields: [:])
-                completionHandler(data, response, nil)
-            }
-            
-            func makeDataRequest(with url: URL, completionHandler: @escaping CompletionHandler) {
-                fatalError()
-            }
-            
-            func createDataTask(with url: URL, completionHandler: @escaping CompletionHandler) -> DataTaskProtocol {
-                fatalError()
-            }
-        }
-    }
-    
     // MARK: - Private
     
     class DefaultAuthDelegate: IterableAuthDelegate {
