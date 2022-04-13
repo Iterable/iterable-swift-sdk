@@ -753,6 +753,51 @@ class AuthTests: XCTestCase {
         wait(for: [condition1], timeout: testExpectationTimeoutForInverted)
     }
     
+    func testRetryJwtFailure() throws {
+        let expectation1 = expectation(description: "called track request")
+        expectation1.expectedFulfillmentCount = 2
+        let expectation2 = expectation(description: "pass in second attempt")
+        
+        let config = IterableConfig()
+        let authDelegate = createStockAuthDelegate()
+        config.authDelegate = authDelegate
+        
+        var callNumber = 0
+        let networkSession = MockNetworkSession()
+        networkSession.responseCallback = { url in
+            if url.absoluteString.contains("track") {
+                callNumber += 1
+                if callNumber == 1 {
+                    return MockNetworkSession.MockResponse(statusCode: 401,
+                                                           data: [JsonKey.Response.iterableCode: JsonValue.Code.invalidJwtPayload].toJsonData())
+                } else {
+                    return MockNetworkSession.MockResponse()
+                }
+            } else {
+                return MockNetworkSession.MockResponse()
+            }
+        }
+        networkSession.requestCallback = { request in
+            if request.url?.absoluteString.contains("track") == true {
+                expectation1.fulfill()
+            }
+        }
+        
+        let api = InternalIterableAPI.initializeForTesting(
+            config: config,
+            networkSession: networkSession
+        )
+        api.userId = "some-user-id"
+        api.track("some-event").onSuccess { _ in
+            print("success")
+            expectation2.fulfill()
+        }.onError { error in
+            print("error, \(error)")
+            XCTFail()
+        }
+        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
+    }
+
     // MARK: - Private
     
     class DefaultAuthDelegate: IterableAuthDelegate {

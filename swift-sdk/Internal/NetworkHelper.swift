@@ -83,12 +83,14 @@ struct NetworkHelper {
             switch result {
             case let .success(value):
                 #if NETWORK_DEBUG
-                print("request with requestId: \(requestId) successfully sent")
+                print("request with id: \(requestId) successfully sent, response:")
+                print(value)
                 #endif
                 fulfill.resolve(with: value)
             case let .failure(error):
                 #if NETWORK_DEBUG
                 print("request with id: \(requestId) errored")
+                print(error)
                 #endif
                 fulfill.reject(with: error)
             }

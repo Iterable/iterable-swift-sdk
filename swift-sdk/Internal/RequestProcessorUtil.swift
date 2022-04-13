@@ -9,6 +9,31 @@ struct RequestProcessorUtil {
     static func apply(successHandler onSuccess: OnSuccessHandler? = nil,
                       andFailureHandler onFailure: OnFailureHandler? = nil,
                       andAuthManager authManager: IterableAuthManagerProtocol? = nil,
+                      forRequest requestProvider: @escaping () -> Pending<SendRequestValue, SendRequestError>,
+                      withIdentifier identifier: String) -> Pending<SendRequestValue, SendRequestError> {
+        let result = Fulfill<SendRequestValue, SendRequestError>()
+        requestProvider().onSuccess { json in
+            reportSuccess(result: result, value: json, successHandler: onSuccess, identifier: identifier)
+        }
+        .onError { error in
+            requestProvider().onSuccess { json in
+                reportSuccess(result: result, value: json, successHandler: onSuccess, identifier: identifier)
+            }.onError { error in
+                if let onFailure = onFailure {
+                    onFailure(error.reason, error.data)
+                } else {
+                    defaultOnFailure(identifier)(error.reason, error.data)
+                }
+                result.reject(with: error)
+            }
+        }
+        return result
+    }
+
+    @discardableResult
+    static func apply(successHandler onSuccess: OnSuccessHandler? = nil,
+                      andFailureHandler onFailure: OnFailureHandler? = nil,
+                      andAuthManager authManager: IterableAuthManagerProtocol? = nil,
                       toResult result: Pending<SendRequestValue, SendRequestError>,
                       withIdentifier identifier: String) -> Pending<SendRequestValue, SendRequestError> {
         result.onSuccess { json in
@@ -34,26 +59,38 @@ struct RequestProcessorUtil {
         return result
     }
     
-    private static func defaultOnSuccess(_ identifier: String) -> OnSuccessHandler {
-    { data in
-        if let data = data {
-            ITBInfo("\(identifier) succeeded, got response: \(data)")
+    private static func reportSuccess(result: Fulfill<SendRequestValue, SendRequestError>,
+                                      value: SendRequestValue,
+                                      successHandler onSuccess: OnSuccessHandler?,
+                                      identifier: String) {
+        if let onSuccess = onSuccess {
+            onSuccess(value)
         } else {
-            ITBInfo("\(identifier) succeeded.")
+            Self.defaultOnSuccess(identifier)(value)
         }
+        result.resolve(with: value)
+    }
+    
+    private static func defaultOnSuccess(_ identifier: String) -> OnSuccessHandler {
+        { data in
+            if let data = data {
+                ITBInfo("\(identifier) succeeded, got response: \(data)")
+            } else {
+                ITBInfo("\(identifier) succeeded.")
+            }
         }
     }
     
     private static func defaultOnFailure(_ identifier: String) -> OnFailureHandler {
-    { reason, data in
-        var toLog = "\(identifier) failed:"
-        if let reason = reason {
-            toLog += ", \(reason)"
-        }
-        if let data = data {
-            toLog += ", got response \(String(data: data, encoding: .utf8) ?? "nil")"
-        }
-        ITBError(toLog)
+        { reason, data in
+            var toLog = "\(identifier) failed:"
+            if let reason = reason {
+                toLog += ", \(reason)"
+            }
+            if let data = data {
+                toLog += ", got response \(String(data: data, encoding: .utf8) ?? "nil")"
+            }
+            ITBError(toLog)
         }
     }
 }

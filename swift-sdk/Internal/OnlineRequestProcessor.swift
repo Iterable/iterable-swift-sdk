@@ -119,7 +119,7 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
         applyCallbacks(successHandler: onSuccess,
                        andFailureHandler: onFailure,
                        withIdentifier: "trackEvent",
-                       forResult: apiClient.track(event: event, dataFields: dataFields))
+                       forRequest: { apiClient.track(event: event, dataFields: dataFields) } )
     }
     
     @discardableResult
@@ -257,6 +257,17 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                        andFailureHandler: onFailure,
                        withIdentifier: "disableDevice",
                        forResult: apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken))
+    }
+
+    private func applyCallbacks(successHandler onSuccess: OnSuccessHandler? = nil,
+                                andFailureHandler onFailure: OnFailureHandler? = nil,
+                                withIdentifier identifier: String,
+                                forRequest request: @escaping () -> Pending<SendRequestValue, SendRequestError>) -> Pending<SendRequestValue, SendRequestError> {
+        RequestProcessorUtil.apply(successHandler: onSuccess,
+                                   andFailureHandler: onFailure,
+                                   andAuthManager: authManager,
+                                   forRequest: request,
+                                   withIdentifier: identifier)
     }
     
     private func applyCallbacks(successHandler onSuccess: OnSuccessHandler? = nil,
