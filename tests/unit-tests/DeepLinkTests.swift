@@ -2,7 +2,6 @@
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
-import OHHTTPStubs
 import XCTest
 
 @testable import IterableSDK
@@ -30,9 +29,7 @@ class DeepLinkTests: XCTestCase {
         let campaignId = 83306
         let templateId = 124_348
         let messageId = "93125f33ba814b13a882358f8e0852e0"
-        
-        setupRedirectStubResponse(location: redirectLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
-        
+
         let mockUrlDelegate = MockUrlDelegate(returnValue: true)
         mockUrlDelegate.callback = { url, context in
             XCTAssertEqual(url.absoluteString, redirectLocation)
@@ -41,7 +38,11 @@ class DeepLinkTests: XCTestCase {
             expectation1.fulfill()
         }
         
-        let deepLinkManager = IterableDeepLinkManager()
+        let networkSessionProvider = createRedirectNetworkSessionProvider(location: redirectLocation,
+                                                                          campaignId: campaignId,
+                                                                          templateId: templateId,
+                                                                          messageId: messageId)
+        let deepLinkManager = IterableDeepLinkManager(redirectNetworkSessionProvider: networkSessionProvider)
         
         let (isIterableLink, attributionInfoFuture) = deepLinkManager.handleUniversalLink(URL(string: iterableRewriteURL)!,
                                                                       urlDelegate: mockUrlDelegate,
@@ -55,11 +56,9 @@ class DeepLinkTests: XCTestCase {
         }
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
     }
-    
+
     func testTrackUniversalDeepLinkNoRewrite() {
         let expectation1 = expectation(description: "testUniversalDeepLinkNoRewrite")
-        
-        setupStubResponse()
         
         let mockUrlDelegate = MockUrlDelegate(returnValue: true)
         mockUrlDelegate.callback = { url, context in
@@ -69,7 +68,7 @@ class DeepLinkTests: XCTestCase {
             expectation1.fulfill()
         }
         
-        let deepLinkManager = IterableDeepLinkManager()
+        let deepLinkManager = IterableDeepLinkManager(redirectNetworkSessionProvider: createNoRedirectNetworkSessionProvider())
         
         let (isIterableLink, _) = deepLinkManager.handleUniversalLink(URL(string: iterableNoRewriteURL)!,
                                                                       urlDelegate: mockUrlDelegate,
@@ -78,7 +77,7 @@ class DeepLinkTests: XCTestCase {
         XCTAssertFalse(isIterableLink)
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
-    
+
     func testHandleUniversalLinkRewrite() {
         let expectation1 = expectation(description: "urlDelegate is called")
         
@@ -87,7 +86,10 @@ class DeepLinkTests: XCTestCase {
         let templateId = 124_348
         let messageId = "93125f33ba814b13a882358f8e0852e0"
         
-        setupRedirectStubResponse(location: redirectLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
+        let networkSession = createRedirectNetworkSession(location: redirectLocation,
+                                                          campaignId: campaignId,
+                                                          templateId: templateId,
+                                                          messageId: messageId)
         
         let mockUrlDelegate = MockUrlDelegate(returnValue: false)
         mockUrlDelegate.callback = { url, context in
@@ -98,7 +100,7 @@ class DeepLinkTests: XCTestCase {
         
         let config = IterableConfig()
         config.urlDelegate = mockUrlDelegate
-        let internalAPI = InternalIterableAPI.initializeForTesting(config: config)
+        let internalAPI = InternalIterableAPI.initializeForTesting(config: config, networkSession: networkSession)
         
         internalAPI.handleUniversalLink(URL(string: iterableRewriteURL)!)
         
@@ -113,9 +115,12 @@ class DeepLinkTests: XCTestCase {
         let templateId = 124_348
         let messageId = "93125f33ba814b13a882358f8e0852e0"
         
-        setupRedirectStubResponse(location: redirectLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
-        
-        let internalAPI = InternalIterableAPI.initializeForTesting()
+        let networkSession = createRedirectNetworkSession(location: redirectLocation,
+                                                          campaignId: campaignId,
+                                                          templateId: templateId,
+                                                          messageId: messageId)
+
+        let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: networkSession)
         internalAPI.handleUniversalLink(URL(string: iterableRewriteURL)!)
         internalAPI.attributionInfo = nil
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -132,8 +137,6 @@ class DeepLinkTests: XCTestCase {
     func testNoURLRedirect() {
         let expectation1 = expectation(description: "testNoURLRedirect")
         
-        setupStubResponse()
-        
         let mockUrlDelegate = MockUrlDelegate(returnValue: false)
         mockUrlDelegate.callback = { redirectUrl, context in
             XCTAssertNotEqual(redirectUrl.absoluteString, self.exampleUrl)
@@ -142,7 +145,7 @@ class DeepLinkTests: XCTestCase {
             expectation1.fulfill()
         }
         
-        let deepLinkManager = IterableDeepLinkManager()
+        let deepLinkManager = IterableDeepLinkManager(redirectNetworkSessionProvider: createNoRedirectNetworkSessionProvider())
         
         _ = deepLinkManager.handleUniversalLink(URL(string: redirectRequest)!,
                                                 urlDelegate: mockUrlDelegate,
@@ -151,26 +154,57 @@ class DeepLinkTests: XCTestCase {
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
-    private func setupRedirectStubResponse(location: String, campaignId: Int, templateId: Int, messageId: String) {
-        HTTPStubs.stubRequests(passingTest: { (_) -> Bool in
-            true
-        }) { (_) -> HTTPStubsResponse in
-            HTTPStubsResponse(data: try! JSONSerialization.data(withJSONObject: [:], options: []), statusCode: 301, headers: [
-                "Location": location,
-                "Set-Cookie": self.createCookieValue(nameValuePairs: "iterableEmailCampaignId", campaignId, "iterableTemplateId", templateId, "iterableMessageId", messageId),
-            ])
-        }
+    private func createRedirectNetworkSessionProvider(location: String, campaignId: Int, templateId: Int, messageId: String) -> RedirectNetworkSessionProvider {
+        MockRedirectNetworkSessionProvider(networkSession: createRedirectNetworkSession(location: location,
+                                                                                        campaignId: campaignId,
+                                                                                        templateId: templateId,
+                                                                                        messageId: messageId))
     }
-    
-    private func setupStubResponse() {
-        HTTPStubs.stubRequests(passingTest: { (_) -> Bool in
-            true
-        }) { (_) -> HTTPStubsResponse in
-            HTTPStubsResponse(data: try! JSONSerialization.data(withJSONObject: [:], options: []), statusCode: 200, headers: nil)
+
+    private func createRedirectNetworkSession(location: String, campaignId: Int, templateId: Int, messageId: String) -> MockNetworkSession {
+        let networkSession = MockNetworkSession()
+        networkSession.responseCallback = { _ in
+            MockNetworkSession.MockResponse(statusCode: 301,
+                                            data: [:].toJsonData(),
+                                            delay: 0.0,
+                                            error: nil,
+                                            headerFields: [
+                                                "Location": location,
+                                                "Set-Cookie": self.createCookieValue(nameValuePairs: "iterableEmailCampaignId", campaignId, "iterableTemplateId", templateId, "iterableMessageId", messageId),
+                                            ])
         }
+        return networkSession
     }
-    
+
+    private func createNoRedirectNetworkSessionProvider() -> RedirectNetworkSessionProvider {
+        MockNoRedirectNetworkSessionProvider(networkSession: MockNetworkSession())
+    }
+
     private func createCookieValue(nameValuePairs values: Any...) -> String {
         values.take(2).map { "\($0[0])=\($0[1])" }.joined(separator: ";,")
     }
+}
+
+private struct MockNoRedirectNetworkSessionProvider: RedirectNetworkSessionProvider {
+    init(networkSession: NetworkSessionProtocol) {
+        self.networkSession = networkSession
+    }
+    
+    func createRedirectNetworkSession(delegate: RedirectNetworkSessionDelegate) -> NetworkSessionProtocol {
+        networkSession
+    }
+    
+    private let networkSession: NetworkSessionProtocol
+}
+
+private struct MockRedirectNetworkSessionProvider: RedirectNetworkSessionProvider {
+    init(networkSession: NetworkSessionProtocol) {
+        self.networkSession = networkSession
+    }
+    
+    func createRedirectNetworkSession(delegate: RedirectNetworkSessionDelegate) -> NetworkSessionProtocol {
+        MockRedirectNetworkSession(networkSession: networkSession, redirectDelegate: delegate)
+    }
+    
+    private let networkSession: NetworkSessionProtocol
 }

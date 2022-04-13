@@ -165,8 +165,8 @@ class NotificationExtensionTests: XCTestCase {
                         "action": []
                     ],
                     [
-                        "identifier": "deeplinkButton",
-                        "title": "Open Deeplink",
+                        "identifier": "deepLinkButton",
+                        "title": "Open DeepLink",
                         "buttonType": "default",
                         "openApp": true,
                         "action": [

@@ -5,7 +5,7 @@
 import Foundation
 import UIKit
 
-protocol DependencyContainerProtocol {
+protocol DependencyContainerProtocol: RedirectNetworkSessionProvider {
     var dateProvider: DateProviderProtocol { get }
     var networkSession: NetworkSessionProtocol { get }
     var notificationStateProvider: NotificationStateProviderProtocol { get }
@@ -104,6 +104,10 @@ extension DependencyContainerProtocol {
     
     func createPersistenceContextProvider() -> IterablePersistenceContextProvider? {
         CoreDataPersistenceContextProvider(dateProvider: dateProvider)
+    }
+    
+    func createRedirectNetworkSession(delegate: RedirectNetworkSessionDelegate) -> NetworkSessionProtocol {
+        RedirectNetworkSession(delegate: delegate)
     }
     
     private func createTaskScheduler(persistenceContextProvider: IterablePersistenceContextProvider,
