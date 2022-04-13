@@ -6,11 +6,11 @@ import Foundation
 
 struct RequestProcessorUtil {
     @discardableResult
-    static func apply(successHandler onSuccess: OnSuccessHandler? = nil,
-                      andFailureHandler onFailure: OnFailureHandler? = nil,
-                      andAuthManager authManager: IterableAuthManagerProtocol? = nil,
-                      forRequest requestProvider: @escaping () -> Pending<SendRequestValue, SendRequestError>,
-                      withIdentifier identifier: String) -> Pending<SendRequestValue, SendRequestError> {
+    static func sendRequest(requestProvider: @escaping () -> Pending<SendRequestValue, SendRequestError>,
+                            successHandler onSuccess: OnSuccessHandler? = nil,
+                            failureHandler onFailure: OnFailureHandler? = nil,
+                            authManager: IterableAuthManagerProtocol? = nil,
+                            requestIdentifier identifier: String) -> Pending<SendRequestValue, SendRequestError> {
         let result = Fulfill<SendRequestValue, SendRequestError>()
         requestProvider().onSuccess { json in
             reportSuccess(result: result, value: json, successHandler: onSuccess, identifier: identifier)
@@ -28,8 +28,10 @@ struct RequestProcessorUtil {
             } else if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.badApiKey {
                 ITBError(error.reason)
                 reportFailure(result: result, error: error, failureHandler: onFailure, identifier: identifier)
+            } else {
+                ITBError(error.reason)
+                reportFailure(result: result, error: error, failureHandler: onFailure, identifier: identifier)
             }
-            
         }
         return result
     }

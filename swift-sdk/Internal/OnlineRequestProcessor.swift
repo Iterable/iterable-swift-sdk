@@ -116,10 +116,10 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                dataFields: [AnyHashable: Any]? = nil,
                onSuccess: OnSuccessHandler? = nil,
                onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        applyCallbacks(successHandler: onSuccess,
-                       andFailureHandler: onFailure,
-                       withIdentifier: "trackEvent",
-                       forRequest: { apiClient.track(event: event, dataFields: dataFields) } )
+        sendRequest(requestProvider: { apiClient.track(event: event, dataFields: dataFields) },
+                    successHandler: onSuccess,
+                    failureHandler: onFailure,
+                    requestIdentifier: "trackEvent")
     }
     
     @discardableResult
@@ -259,15 +259,15 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                        forResult: apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken))
     }
 
-    private func applyCallbacks(successHandler onSuccess: OnSuccessHandler? = nil,
-                                andFailureHandler onFailure: OnFailureHandler? = nil,
-                                withIdentifier identifier: String,
-                                forRequest request: @escaping () -> Pending<SendRequestValue, SendRequestError>) -> Pending<SendRequestValue, SendRequestError> {
-        RequestProcessorUtil.apply(successHandler: onSuccess,
-                                   andFailureHandler: onFailure,
-                                   andAuthManager: authManager,
-                                   forRequest: request,
-                                   withIdentifier: identifier)
+    private func sendRequest(requestProvider: @escaping () -> Pending<SendRequestValue, SendRequestError>,
+                             successHandler onSuccess: OnSuccessHandler? = nil,
+                             failureHandler onFailure: OnFailureHandler? = nil,
+                             requestIdentifier identifier: String) -> Pending<SendRequestValue, SendRequestError> {
+        RequestProcessorUtil.sendRequest(requestProvider: requestProvider,
+                                         successHandler: onSuccess,
+                                         failureHandler: onFailure,
+                                         authManager: authManager,
+                                         requestIdentifier: identifier)
     }
     
     private func applyCallbacks(successHandler onSuccess: OnSuccessHandler? = nil,
