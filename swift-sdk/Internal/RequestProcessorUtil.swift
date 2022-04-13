@@ -16,16 +16,25 @@ struct RequestProcessorUtil {
             reportSuccess(result: result, value: json, successHandler: onSuccess, identifier: identifier)
         }
         .onError { error in
-            requestProvider().onSuccess { json in
-                reportSuccess(result: result, value: json, successHandler: onSuccess, identifier: identifier)
-            }.onError { error in
-                if let onFailure = onFailure {
-                    onFailure(error.reason, error.data)
-                } else {
-                    defaultOnFailure(identifier)(error.reason, error.data)
+            if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.invalidJwtPayload {
+                ITBError("invalid JWT token, trying again: \(error.reason ?? "")")
+                authManager?.requestNewAuthToken(hasFailedPriorAuth: true) { _ in
+                    requestProvider().onSuccess { json in
+                        reportSuccess(result: result, value: json, successHandler: onSuccess, identifier: identifier)
+                    }.onError { error in
+                        if let onFailure = onFailure {
+                            onFailure(error.reason, error.data)
+                        } else {
+                            defaultOnFailure(identifier)(error.reason, error.data)
+                        }
+                        result.reject(with: error)
+                    }
                 }
+            } else if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.badApiKey {
+                ITBError(error.reason)
                 result.reject(with: error)
             }
+
         }
         return result
     }
