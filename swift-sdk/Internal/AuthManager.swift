@@ -95,9 +95,7 @@ class AuthManager: IterableAuthManagerProtocol {
         
         queueAuthTokenExpirationRefresh(authToken)
         
-        if authToken != nil {
-            onSuccess?(authToken)
-        }
+        onSuccess?(authToken)
     }
     
     private func queueAuthTokenExpirationRefresh(_ authToken: String?) {
