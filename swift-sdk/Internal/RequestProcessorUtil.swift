@@ -22,19 +22,14 @@ struct RequestProcessorUtil {
                     requestProvider().onSuccess { json in
                         reportSuccess(result: result, value: json, successHandler: onSuccess, identifier: identifier)
                     }.onError { error in
-                        if let onFailure = onFailure {
-                            onFailure(error.reason, error.data)
-                        } else {
-                            defaultOnFailure(identifier)(error.reason, error.data)
-                        }
-                        result.reject(with: error)
+                        reportFailure(result: result, error: error, failureHandler: onFailure, identifier: identifier)
                     }
                 }
             } else if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.badApiKey {
                 ITBError(error.reason)
-                result.reject(with: error)
+                reportFailure(result: result, error: error, failureHandler: onFailure, identifier: identifier)
             }
-
+            
         }
         return result
     }
@@ -79,7 +74,20 @@ struct RequestProcessorUtil {
         }
         result.resolve(with: value)
     }
-    
+
+    private static func reportFailure(result: Fulfill<SendRequestValue, SendRequestError>,
+                                      error: SendRequestError,
+                                      failureHandler onFailure: OnFailureHandler?,
+                                      identifier: String) {
+        
+        if let onFailure = onFailure {
+            onFailure(error.reason, error.data)
+        } else {
+            defaultOnFailure(identifier)(error.reason, error.data)
+        }
+        result.reject(with: error)
+    }
+
     private static func defaultOnSuccess(_ identifier: String) -> OnSuccessHandler {
         { data in
             if let data = data {
