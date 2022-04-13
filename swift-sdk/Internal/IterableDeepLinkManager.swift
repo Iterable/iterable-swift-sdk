@@ -108,8 +108,8 @@ class IterableDeepLinkManager: NSObject {
 }
 
 extension IterableDeepLinkManager: RedirectNetworkSessionDelegate {
-    func onRedirect(deeplinkLocation: URL?, campaignId: NSNumber?, templateId: NSNumber?, messageId: String?) {
-        self.deepLinkLocation = deeplinkLocation
+    func onRedirect(deepLinkLocation: URL?, campaignId: NSNumber?, templateId: NSNumber?, messageId: String?) {
+        self.deepLinkLocation = deepLinkLocation
         self.deepLinkCampaignId = campaignId
         self.deepLinkTemplateId = templateId
         self.deepLinkMessageId = messageId

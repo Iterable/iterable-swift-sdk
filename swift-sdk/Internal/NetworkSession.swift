@@ -59,7 +59,7 @@ extension URLSession: NetworkSessionProtocol {
 }
 
 protocol RedirectNetworkSessionDelegate: AnyObject {
-    func onRedirect(deeplinkLocation: URL?, campaignId: NSNumber?, templateId: NSNumber?, messageId: String?)
+    func onRedirect(deepLinkLocation: URL?, campaignId: NSNumber?, templateId: NSNumber?, messageId: String?)
 }
 
 protocol RedirectNetworkSessionProvider {
@@ -113,12 +113,12 @@ extension RedirectNetworkSession: URLSessionDelegate, URLSessionTaskDelegate {
         deepLinkLocation = request.url
         
         guard let headerFields = response.allHeaderFields as? [String: String] else {
-            delegate?.onRedirect(deeplinkLocation: deepLinkLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
+            delegate?.onRedirect(deepLinkLocation: deepLinkLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
             return
         }
         
         guard let url = response.url else {
-            delegate?.onRedirect(deeplinkLocation: deepLinkLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
+            delegate?.onRedirect(deepLinkLocation: deepLinkLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
             return
         }
         
@@ -132,7 +132,7 @@ extension RedirectNetworkSession: URLSessionDelegate, URLSessionTaskDelegate {
             }
         }
         
-        delegate?.onRedirect(deeplinkLocation: deepLinkLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
+        delegate?.onRedirect(deepLinkLocation: deepLinkLocation, campaignId: campaignId, templateId: templateId, messageId: messageId)
         completionHandler(nil)
     }
     

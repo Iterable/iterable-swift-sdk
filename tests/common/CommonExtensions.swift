@@ -168,15 +168,15 @@ struct MockRedirectNetworkSession: NetworkSessionProtocol {
             if let response = (networkSession as? MockNetworkSession)?.responseCallback?(url) {
                 let headerFields = response.headerFields!
                 let location = headerFields[Const.HttpHeader.location]
-                let deeplinkLocation = location.map { URL(string: $0) } ?? nil
+                let deepLinkLocation = location.map { URL(string: $0) } ?? nil
                 let (campaignId, templateId, messageId) = Self.getIterableValues(fromCookies: HTTPCookie.cookies(withResponseHeaderFields: headerFields, for: url))
-                redirectDelegate?.onRedirect(deeplinkLocation: deeplinkLocation,
+                redirectDelegate?.onRedirect(deepLinkLocation: deepLinkLocation,
                                              campaignId: campaignId,
                                              templateId: templateId,
                                              messageId: messageId)
                 return response
             } else {
-                redirectDelegate?.onRedirect(deeplinkLocation: url, campaignId: nil, templateId: nil, messageId: nil)
+                redirectDelegate?.onRedirect(deepLinkLocation: url, campaignId: nil, templateId: nil, messageId: nil)
                 return nil
             }
         }
