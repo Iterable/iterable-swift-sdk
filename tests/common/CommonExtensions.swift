@@ -136,6 +136,76 @@ class MockDependencyContainer: DependencyContainerProtocol {
             return CoreDataPersistenceContextProvider(dateProvider: dateProvider)
         }
     }
+    
+    func createRedirectNetworkSession(delegate: RedirectNetworkSessionDelegate) -> NetworkSessionProtocol {
+        MockRedirectNetworkSession(networkSession: networkSession, redirectDelegate: delegate)
+    }
+}
+
+struct MockRedirectNetworkSession: NetworkSessionProtocol {
+    var timeout: TimeInterval = 60.0
+    
+    init(networkSession: NetworkSessionProtocol, redirectDelegate: RedirectNetworkSessionDelegate) {
+        self.networkSession = Self.createRedirectNetworkSession(fromNetworkSession: networkSession, redirectDelegate: redirectDelegate)
+    }
+    
+    func makeRequest(_ request: URLRequest, completionHandler: @escaping CompletionHandler) {
+        networkSession.makeRequest(request, completionHandler: completionHandler)
+    }
+    
+    func makeDataRequest(with url: URL, completionHandler: @escaping CompletionHandler) {
+        networkSession.makeDataRequest(with: url, completionHandler: completionHandler)
+    }
+    
+    func createDataTask(with url: URL, completionHandler: @escaping CompletionHandler) -> DataTaskProtocol {
+        networkSession.createDataTask(with: url, completionHandler: completionHandler)
+    }
+    
+    private static func createRedirectNetworkSession(fromNetworkSession networkSession: NetworkSessionProtocol,
+                                                     redirectDelegate: RedirectNetworkSessionDelegate) -> NetworkSessionProtocol {
+        let redirectSession = MockNetworkSession()
+        let callback: (URL) -> MockNetworkSession.MockResponse? = { [weak redirectDelegate] url in
+            if let response = (networkSession as? MockNetworkSession)?.responseCallback?(url) {
+                let headerFields = response.headerFields!
+                let location = headerFields[Const.HttpHeader.location]
+                let deepLinkLocation = location.map { URL(string: $0) } ?? nil
+                let (campaignId, templateId, messageId) = Self.getIterableValues(fromCookies: HTTPCookie.cookies(withResponseHeaderFields: headerFields, for: url))
+                redirectDelegate?.onRedirect(deepLinkLocation: deepLinkLocation,
+                                             campaignId: campaignId,
+                                             templateId: templateId,
+                                             messageId: messageId)
+                return response
+            } else {
+                redirectDelegate?.onRedirect(deepLinkLocation: url, campaignId: nil, templateId: nil, messageId: nil)
+                return nil
+            }
+        }
+        redirectSession.responseCallback = callback
+        return redirectSession
+    }
+    
+    private static func getIterableValues(fromCookies cookies: [HTTPCookie]) -> (campaignId: NSNumber?, templateId: NSNumber?, messageId: String?) {
+        let values: (campaignId: NSNumber?, templateId: NSNumber?, messageId: String?) = (nil, nil, nil)
+        return cookies.reduce(into: values) { result, cookie in
+            if cookie.name == Const.CookieName.campaignId {
+                result.campaignId = number(fromString: cookie.value)
+            } else if cookie.name == Const.CookieName.templateId {
+                result.templateId = number(fromString: cookie.value)
+            } else if cookie.name == Const.CookieName.messageId {
+                result.messageId = cookie.value
+            }
+        }
+    }
+ 
+    private static func number(fromString str: String) -> NSNumber {
+        if let intValue = Int(str) {
+            return NSNumber(value: intValue)
+        }
+        
+        return NSNumber(value: 0)
+    }
+
+    private let networkSession: NetworkSessionProtocol
 }
 
 extension IterableAPI {
