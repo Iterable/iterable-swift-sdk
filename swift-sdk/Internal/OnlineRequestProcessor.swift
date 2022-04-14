@@ -38,14 +38,20 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     func disableDeviceForCurrentUser(hexToken: String,
                                      withOnSuccess onSuccess: OnSuccessHandler? = nil,
                                      onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        disableDevice(forAllUsers: false, hexToken: hexToken, onSuccess: onSuccess, onFailure: onFailure)
+        disableDevice(forAllUsers: false,
+                      hexToken: hexToken,
+                      onSuccess: onSuccess,
+                      onFailure: onFailure)
     }
     
     @discardableResult
     func disableDeviceForAllUsers(hexToken: String,
                                   withOnSuccess onSuccess: OnSuccessHandler? = nil,
                                   onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        disableDevice(forAllUsers: true, hexToken: hexToken, onSuccess: onSuccess, onFailure: onFailure)
+        disableDevice(forAllUsers: true,
+                      hexToken: hexToken,
+                      onSuccess: onSuccess,
+                      onFailure: onFailure)
     }
     
     @discardableResult
@@ -53,30 +59,30 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                     mergeNestedObjects: Bool,
                     onSuccess: OnSuccessHandler? = nil,
                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        applyCallbacks(successHandler: onSuccess,
-                       andFailureHandler: onFailure,
-                       withIdentifier: "updateUser",
-                       forResult: apiClient.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects))
+        sendRequest(requestProvider: { apiClient.updateUser(dataFields, mergeNestedObjects: mergeNestedObjects) },
+                    successHandler: onSuccess,
+                    failureHandler: onFailure,
+                    requestIdentifier: "updateUser")
     }
     
     @discardableResult
     func updateEmail(_ newEmail: String,
                      onSuccess: OnSuccessHandler? = nil,
                      onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        applyCallbacks(successHandler: onSuccess,
-                       andFailureHandler: onFailure,
-                       withIdentifier: "updateEmail",
-                       forResult: apiClient.updateEmail(newEmail: newEmail))
+        sendRequest(requestProvider: { apiClient.updateEmail(newEmail: newEmail) },
+                    successHandler: onSuccess,
+                    failureHandler: onFailure,
+                    requestIdentifier: "updateEmail")
     }
     
     @discardableResult
     func updateCart(items: [CommerceItem],
                     onSuccess: OnSuccessHandler? = nil,
                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        applyCallbacks(successHandler: onSuccess,
-                       andFailureHandler: onFailure,
-                       withIdentifier: "updateCart",
-                       forResult: apiClient.updateCart(items: items))
+        sendRequest(requestProvider: { apiClient.updateCart(items: items) },
+                    successHandler: onSuccess,
+                    failureHandler: onFailure,
+                    requestIdentifier: "updateCart")
     }
     
     @discardableResult
@@ -87,10 +93,14 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                        templateId: NSNumber?,
                        onSuccess: OnSuccessHandler? = nil,
                        onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        applyCallbacks(successHandler: onSuccess,
-                       andFailureHandler: onFailure,
-                       withIdentifier: "trackPurchase",
-                       forResult: apiClient.track(purchase: total, items: items, dataFields: dataFields, campaignId: campaignId, templateId: templateId))
+        sendRequest(requestProvider: { apiClient.track(purchase: total,
+                                                       items: items,
+                                                       dataFields: dataFields,
+                                                       campaignId: campaignId,
+                                                       templateId: templateId) },
+                    successHandler: onSuccess,
+                    failureHandler: onFailure,
+                    requestIdentifier: "trackPurchase")
     }
     
     @discardableResult
@@ -101,14 +111,14 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                        dataFields: [AnyHashable: Any]? = nil,
                        onSuccess: OnSuccessHandler? = nil,
                        onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        applyCallbacks(successHandler: onSuccess,
-                       andFailureHandler: onFailure,
-                       withIdentifier: "trackPushOpen",
-                       forResult: apiClient.track(pushOpen: campaignId,
-                                                  templateId: templateId,
-                                                  messageId: messageId,
-                                                  appAlreadyRunning: appAlreadyRunning,
-                                                  dataFields: dataFields))
+        sendRequest(requestProvider: { apiClient.track(pushOpen: campaignId,
+                                                       templateId: templateId,
+                                                       messageId: messageId,
+                                                       appAlreadyRunning: appAlreadyRunning,
+                                                       dataFields: dataFields) },
+                    successHandler: onSuccess,
+                    failureHandler: onFailure,
+                    requestIdentifier: "trackPushOpen")
     }
     
     @discardableResult
@@ -126,15 +136,15 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     func updateSubscriptions(info: UpdateSubscriptionsInfo,
                              onSuccess: OnSuccessHandler? = nil,
                              onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        applyCallbacks(successHandler: onSuccess,
-                       andFailureHandler: onFailure,
-                       withIdentifier: "updateSubscriptions",
-                       forResult: apiClient.updateSubscriptions(info.emailListIds,
-                                                                unsubscribedChannelIds: info.unsubscribedChannelIds,
-                                                                unsubscribedMessageTypeIds: info.unsubscribedMessageTypeIds,
-                                                                subscribedMessageTypeIds: info.subscribedMessageTypeIds,
-                                                                campaignId: info.campaignId,
-                                                                templateId: info.templateId))
+        sendRequest(requestProvider: { apiClient.updateSubscriptions(info.emailListIds,
+                                                                     unsubscribedChannelIds: info.unsubscribedChannelIds,
+                                                                     unsubscribedMessageTypeIds: info.unsubscribedMessageTypeIds,
+                                                                     subscribedMessageTypeIds: info.subscribedMessageTypeIds,
+                                                                     campaignId: info.campaignId,
+                                                                     templateId: info.templateId) },
+                    successHandler: onSuccess,
+                    failureHandler: onFailure,
+                    requestIdentifier: "updateSubscriptions")
     }
     
     @discardableResult
@@ -143,11 +153,10 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                         inboxSessionId: String? = nil,
                         onSuccess: OnSuccessHandler? = nil,
                         onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        let result = apiClient.track(inAppOpen: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId))
-        return applyCallbacks(successHandler: onSuccess,
-                              andFailureHandler: onFailure,
-                              withIdentifier: "trackInAppOpen",
-                              forResult: result)
+        sendRequest(requestProvider: { apiClient.track(inAppOpen: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId)) },
+                    successHandler: onSuccess,
+                    failureHandler: onFailure,
+                    requestIdentifier: "trackInAppOpen")
     }
     
     @discardableResult
@@ -157,12 +166,11 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                          clickedUrl: String,
                          onSuccess: OnSuccessHandler? = nil,
                          onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        let result = apiClient.track(inAppClick: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId),
-                                     clickedUrl: clickedUrl)
-        return applyCallbacks(successHandler: onSuccess,
-                              andFailureHandler: onFailure,
-                              withIdentifier: "trackInAppClick",
-                              forResult: result)
+        sendRequest(requestProvider: { apiClient.track(inAppClick: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId),
+                                                       clickedUrl: clickedUrl) },
+                    successHandler: onSuccess,
+                    failureHandler: onFailure,
+                    requestIdentifier: "trackInAppClick")
     }
     
     @discardableResult
@@ -173,45 +181,42 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                          clickedUrl: String? = nil,
                          onSuccess: OnSuccessHandler? = nil,
                          onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        let result = apiClient.track(inAppClose: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId),
-                                     source: source,
-                                     clickedUrl: clickedUrl)
-        return applyCallbacks(successHandler: onSuccess,
-                              andFailureHandler: onFailure,
-                              withIdentifier: "trackInAppClose",
-                              forResult: result)
+        sendRequest(requestProvider: { apiClient.track(inAppClose: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId),
+                                                       source: source,
+                                                       clickedUrl: clickedUrl) },
+                    successHandler: onSuccess,
+                    failureHandler: onFailure,
+                    requestIdentifier: "trackInAppClose")
     }
     
     @discardableResult
     func track(inboxSession: IterableInboxSession,
                onSuccess: OnSuccessHandler? = nil,
                onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        let result = apiClient.track(inboxSession: inboxSession)
-        
-        return applyCallbacks(successHandler: onSuccess,
-                              andFailureHandler: onFailure,
-                              withIdentifier: "trackInboxSession",
-                              forResult: result)
+        sendRequest(requestProvider: { apiClient.track(inboxSession: inboxSession) },
+                    successHandler: onSuccess,
+                    failureHandler: onFailure,
+                    requestIdentifier: "trackInboxSession")
     }
     
     @discardableResult
     func track(inAppDelivery message: IterableInAppMessage,
                onSuccess: OnSuccessHandler? = nil,
                onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        applyCallbacks(successHandler: onSuccess,
-                       andFailureHandler: onFailure,
-                       withIdentifier: "trackInAppDelivery",
-                       forResult: apiClient.track(inAppDelivery: InAppMessageContext.from(message: message, location: nil)))
+        sendRequest(requestProvider: { apiClient.track(inAppDelivery: InAppMessageContext.from(message: message, location: nil)) },
+                    successHandler: onSuccess,
+                    failureHandler: onFailure,
+                    requestIdentifier: "trackInAppDelivery")
     }
     
     @discardableResult
     func inAppConsume(_ messageId: String,
                       onSuccess: OnSuccessHandler? = nil,
                       onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        applyCallbacks(successHandler: onSuccess,
-                       andFailureHandler: onFailure,
-                       withIdentifier: "inAppConsume",
-                       forResult: apiClient.inAppConsume(messageId: messageId))
+        sendRequest(requestProvider: { apiClient.inAppConsume(messageId: messageId) },
+                    successHandler: onSuccess,
+                    failureHandler: onFailure,
+                    requestIdentifier: "inAppConsume")
     }
     
     @discardableResult
@@ -221,12 +226,11 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                       inboxSessionId: String? = nil,
                       onSuccess: OnSuccessHandler? = nil,
                       onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        let result = apiClient.inAppConsume(inAppMessageContext: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId),
-                                            source: source)
-        return applyCallbacks(successHandler: onSuccess,
-                              andFailureHandler: onFailure,
-                              withIdentifier: "inAppConsumeWithSource",
-                              forResult: result)
+        sendRequest(requestProvider: { apiClient.inAppConsume(inAppMessageContext: InAppMessageContext.from(message: message, location: location, inboxSessionId: inboxSessionId),
+                                                              source: source) },
+                    successHandler: onSuccess,
+                    failureHandler: onFailure,
+                    requestIdentifier: "inAppConsumeWithSource")
     }
     
     func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError> {
@@ -241,11 +245,11 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                           notificationsEnabled: Bool,
                           onSuccess: OnSuccessHandler? = nil,
                           onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        return applyCallbacks(successHandler: onSuccess,
-                              andFailureHandler: onFailure,
-                              withIdentifier: "registerToken",
-                              forResult: apiClient.register(registerTokenInfo: registerTokenInfo,
-                                                            notificationsEnabled: notificationsEnabled))
+        sendRequest(requestProvider: { apiClient.register(registerTokenInfo: registerTokenInfo,
+                                                          notificationsEnabled: notificationsEnabled) },
+                    successHandler: onSuccess,
+                    failureHandler: onFailure,
+                    requestIdentifier: "registerToken")
     }
     
     @discardableResult
@@ -253,10 +257,10 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                                hexToken: String,
                                onSuccess: OnSuccessHandler? = nil,
                                onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        applyCallbacks(successHandler: onSuccess,
-                       andFailureHandler: onFailure,
-                       withIdentifier: "disableDevice",
-                       forResult: apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken))
+        sendRequest(requestProvider: { apiClient.disableDevice(forAllUsers: allUsers, hexToken: hexToken) },
+                    successHandler: onSuccess,
+                    failureHandler: onFailure,
+                    requestIdentifier: "disableDevice")
     }
 
     private func sendRequest(requestProvider: @escaping () -> Pending<SendRequestValue, SendRequestError>,
@@ -268,16 +272,5 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                                          failureHandler: onFailure,
                                          authManager: authManager,
                                          requestIdentifier: identifier)
-    }
-    
-    private func applyCallbacks(successHandler onSuccess: OnSuccessHandler? = nil,
-                                andFailureHandler onFailure: OnFailureHandler? = nil,
-                                withIdentifier identifier: String,
-                                forResult result: Pending<SendRequestValue, SendRequestError>) -> Pending<SendRequestValue, SendRequestError> {
-        RequestProcessorUtil.apply(successHandler: onSuccess,
-                                   andFailureHandler: onFailure,
-                                   andAuthManager: authManager,
-                                   toResult: result,
-                                   withIdentifier: identifier)
     }
 }
