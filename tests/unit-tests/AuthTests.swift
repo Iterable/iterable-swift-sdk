@@ -378,7 +378,7 @@ class AuthTests: XCTestCase {
         })
         
         let expirationRefreshPeriod: TimeInterval = 0
-        let waitTime: TimeInterval = 2
+        let waitTime: TimeInterval = 1.0
         let expirationTimeSinceEpoch = Date(timeIntervalSinceNow: expirationRefreshPeriod + waitTime).timeIntervalSince1970
         let mockEncodedPayload = createMockEncodedPayload(exp: Int(expirationTimeSinceEpoch))
         
@@ -405,7 +405,7 @@ class AuthTests: XCTestCase {
         })
         
         let expirationRefreshPeriod: TimeInterval = 0
-        let waitTime: TimeInterval = 2
+        let waitTime: TimeInterval = 1.0
         let expirationTimeSinceEpoch = Date(timeIntervalSinceNow: expirationRefreshPeriod + waitTime).timeIntervalSince1970
         let mockEncodedPayload = createMockEncodedPayload(exp: Int(expirationTimeSinceEpoch))
         
@@ -595,7 +595,7 @@ class AuthTests: XCTestCase {
         
         class AsyncAuthDelegate: IterableAuthDelegate {
             func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler) {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     completion(AuthTests.authToken)
                 }
             }
@@ -670,7 +670,7 @@ class AuthTests: XCTestCase {
         
         class AsyncAuthDelegate: IterableAuthDelegate {
             func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler) {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     completion(AuthTests.authToken)
                 }
             }
@@ -698,7 +698,7 @@ class AuthTests: XCTestCase {
                                         })
         
         wait(for: [condition1], timeout: testExpectationTimeout)
-        wait(for: [condition2], timeout: 3)
+        wait(for: [condition2], timeout: 1.0)
     }
     
     func testAuthTokenNotRequestingForAlreadyExistingEmail() {
@@ -789,10 +789,8 @@ class AuthTests: XCTestCase {
         )
         api.userId = "some-user-id"
         api.track("some-event").onSuccess { _ in
-            print("success")
             expectation2.fulfill()
         }.onError { error in
-            print("error, \(error)")
             XCTFail()
         }
         wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
