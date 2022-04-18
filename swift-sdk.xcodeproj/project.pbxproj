@@ -72,7 +72,7 @@
 		AC2AED4424EBC905000EE5F3 /* IterableTaskScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2AED4324EBC905000EE5F3 /* IterableTaskScheduler.swift */; };
 		AC2B79F721E6A38900A59080 /* NotificationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2B79F621E6A38900A59080 /* NotificationHelper.swift */; };
 		AC2C667E20D3111900D46CC9 /* DateProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C667D20D3111900D46CC9 /* DateProvider.swift */; };
-		AC2C668020D31B1F00D46CC9 /* IterableNotificationResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */; };
+		AC2C668020D31B1F00D46CC9 /* NotificationResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C667F20D31B1F00D46CC9 /* NotificationResponseTests.swift */; };
 		AC2C668220D32F2800D46CC9 /* InternalIterableAppIntegration.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668120D32F2800D46CC9 /* InternalIterableAppIntegration.swift */; };
 		AC2C668420D3370600D46CC9 /* Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668320D3370600D46CC9 /* Mocks.swift */; };
 		AC2C668720D3435700D46CC9 /* ActionRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668620D3435700D46CC9 /* ActionRunnerTests.swift */; };
@@ -447,7 +447,7 @@
 		AC2AED4324EBC905000EE5F3 /* IterableTaskScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableTaskScheduler.swift; sourceTree = "<group>"; };
 		AC2B79F621E6A38900A59080 /* NotificationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationHelper.swift; sourceTree = "<group>"; };
 		AC2C667D20D3111900D46CC9 /* DateProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateProvider.swift; sourceTree = "<group>"; };
-		AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableNotificationResponseTests.swift; sourceTree = "<group>"; };
+		AC2C667F20D31B1F00D46CC9 /* NotificationResponseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationResponseTests.swift; sourceTree = "<group>"; };
 		AC2C668120D32F2800D46CC9 /* InternalIterableAppIntegration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternalIterableAppIntegration.swift; sourceTree = "<group>"; };
 		AC2C668320D3370600D46CC9 /* Mocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mocks.swift; sourceTree = "<group>"; };
 		AC2C668620D3435700D46CC9 /* ActionRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionRunnerTests.swift; sourceTree = "<group>"; };
@@ -723,6 +723,24 @@
 			name = "device-token-tests";
 			sourceTree = "<group>";
 		};
+		552A0AA9280E249C00A80963 /* notification-tests */ = {
+			isa = PBXGroup;
+			children = (
+				55B37FC32297135F0042F13A /* NotificationMetadataTests.swift */,
+				AC2C667F20D31B1F00D46CC9 /* NotificationResponseTests.swift */,
+			);
+			name = "notification-tests";
+			sourceTree = "<group>";
+		};
+		552A0AAA280E24E400A80963 /* api-tests */ = {
+			isa = PBXGroup;
+			children = (
+				AC64626A2140AACF0046E1BD /* IterableAPIResponseTests.swift */,
+				ACD6116D21080564003E7F6B /* IterableAPITests.swift */,
+			);
+			name = "api-tests";
+			sourceTree = "<group>";
+		};
 		5550F22324217CFC0014456A /* misc */ = {
 			isa = PBXGroup;
 			children = (
@@ -912,6 +930,8 @@
 				55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */,
 				ACA8D1A821965B7D001B1332 /* InAppTests.swift */,
 				AC1B28FF2742578F00AD2BE3 /* InAppNavigationTests.swift */,
+				AC4BA00124163D8F007359F1 /* IterableHtmlMessageViewControllerTests.swift */,
+				55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */,
 			);
 			name = "in-app-tests";
 			sourceTree = "<group>";
@@ -1067,21 +1087,17 @@
 			children = (
 				AC87172421A4E3FF00FEA369 /* Helper Classes */,
 				00B6FACF210E8B10007535CF /* Test Files */,
+				552A0AAA280E24E400A80963 /* api-tests */,
 				AC3A3029262EE04400425435 /* deep-linking-tests */,
 				552A0AA8280E22B100A80963 /* device-token-tests */,
 				AC3A3032262EE15C00425435 /* foundational-tests */,
 				AC3A3053262EE1B500425435 /* in-app-tests */,
 				AC3A305C262EE24100425435 /* inbox-tests */,
+				552A0AA9280E249C00A80963 /* notification-tests */,
 				AC3A3075262EE26D00425435 /* request-tests */,
 				AC2C668620D3435700D46CC9 /* ActionRunnerTests.swift */,
 				55B9F15024B3D33700E8198A /* AuthTests.swift */,
-				AC64626A2140AACF0046E1BD /* IterableAPIResponseTests.swift */,
-				ACD6116D21080564003E7F6B /* IterableAPITests.swift */,
-				AC4BA00124163D8F007359F1 /* IterableHtmlMessageViewControllerTests.swift */,
-				AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */,
-				55B37FC32297135F0042F13A /* NotificationMetadataTests.swift */,
 				ACB37AAF240268A60093A8EA /* SampleInboxViewDelegateImplementations.swift */,
-				55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */,
 			);
 			path = "unit-tests";
 			sourceTree = "<group>";
@@ -1917,7 +1933,7 @@
 				5531CDAE22A9C992000D05E2 /* ClassExtensionsTests.swift in Sources */,
 				AC995F9E2167E9FD0099A184 /* CommonExtensions.swift in Sources */,
 				5536781F2576FF9000DB3652 /* IterableUtilTests.swift in Sources */,
-				AC2C668020D31B1F00D46CC9 /* IterableNotificationResponseTests.swift in Sources */,
+				AC2C668020D31B1F00D46CC9 /* NotificationResponseTests.swift in Sources */,
 				55E02D39253F8D86009DB8BC /* WebViewProtocolTests.swift in Sources */,
 				AC750A4A234CD67900561902 /* InAppHelperTests.swift in Sources */,
 				AC87172621A4E47E00FEA369 /* TestInAppPayloadGenerator.swift in Sources */,
