@@ -144,7 +144,7 @@
 		AC85A749216D24F4005241AE /* NotificationExtensionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC85A748216D24F4005241AE /* NotificationExtensionTests.swift */; };
 		AC87172621A4E47E00FEA369 /* TestInAppPayloadGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */; };
 		AC8874AA22178BD80075B54B /* InAppContentParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8874A922178BD80075B54B /* InAppContentParser.swift */; };
-		AC89661E2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC89661D2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift */; };
+		AC89661E2124FBCE0051A6CD /* AutoRegistrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC89661D2124FBCE0051A6CD /* AutoRegistrationTests.swift */; };
 		AC8A058924AB1FE1002C1103 /* Environment.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8A058824AB1FE1002C1103 /* Environment.swift */; };
 		AC8E7CA524C7555E0039605F /* CoreDataUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8E7CA424C7555E0039605F /* CoreDataUtil.swift */; };
 		AC8E9268246284F800BEB68E /* DataFieldsHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC8E9267246284F800BEB68E /* DataFieldsHelper.swift */; };
@@ -518,7 +518,7 @@
 		AC85A748216D24F4005241AE /* NotificationExtensionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationExtensionTests.swift; sourceTree = "<group>"; };
 		AC87172521A4E47E00FEA369 /* TestInAppPayloadGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestInAppPayloadGenerator.swift; sourceTree = "<group>"; };
 		AC8874A922178BD80075B54B /* InAppContentParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppContentParser.swift; sourceTree = "<group>"; };
-		AC89661D2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAutoRegistrationTests.swift; sourceTree = "<group>"; };
+		AC89661D2124FBCE0051A6CD /* AutoRegistrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoRegistrationTests.swift; sourceTree = "<group>"; };
 		AC8A058824AB1FE1002C1103 /* Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Environment.swift; sourceTree = "<group>"; };
 		AC8E7CA424C7555E0039605F /* CoreDataUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataUtil.swift; sourceTree = "<group>"; };
 		AC8E9267246284F800BEB68E /* DataFieldsHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataFieldsHelper.swift; sourceTree = "<group>"; };
@@ -712,6 +712,15 @@
 				00B6FACD210E874D007535CF /* prod-1.mobileprovision */,
 			);
 			name = "Test Files";
+			sourceTree = "<group>";
+		};
+		552A0AA8280E22B100A80963 /* device-token-tests */ = {
+			isa = PBXGroup;
+			children = (
+				AC89661D2124FBCE0051A6CD /* AutoRegistrationTests.swift */,
+				AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */,
+			);
+			name = "device-token-tests";
 			sourceTree = "<group>";
 		};
 		5550F22324217CFC0014456A /* misc */ = {
@@ -960,18 +969,11 @@
 			name = Persistence;
 			sourceTree = "<group>";
 		};
-		AC52C5B42729B4A1000DCDCF /* keychain-tests */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = "keychain-tests";
-			sourceTree = "<group>";
-		};
 		AC52C5BB272AA27A000DCDCF /* local-storage-tests */ = {
 			isa = PBXGroup;
 			children = (
-				ACE34AB4213776CB00691224 /* LocalStorageTests.swift */,
 				AC52C5B7272A8B32000DCDCF /* KeychainWrapperTests.swift */,
+				ACE34AB4213776CB00691224 /* LocalStorageTests.swift */,
 			);
 			name = "local-storage-tests";
 			sourceTree = "<group>";
@@ -1064,8 +1066,8 @@
 			children = (
 				AC87172421A4E3FF00FEA369 /* Helper Classes */,
 				00B6FACF210E8B10007535CF /* Test Files */,
-				AC52C5B42729B4A1000DCDCF /* keychain-tests */,
 				AC3A3029262EE04400425435 /* deep-linking-tests */,
+				552A0AA8280E22B100A80963 /* device-token-tests */,
 				AC3A3032262EE15C00425435 /* foundational-tests */,
 				AC3A3053262EE1B500425435 /* in-app-tests */,
 				AC3A305C262EE24100425435 /* inbox-tests */,
@@ -1074,11 +1076,9 @@
 				AC2C668620D3435700D46CC9 /* IterableActionRunnerTests.swift */,
 				AC64626A2140AACF0046E1BD /* IterableAPIResponseTests.swift */,
 				ACD6116D21080564003E7F6B /* IterableAPITests.swift */,
-				AC89661D2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift */,
 				AC4BA00124163D8F007359F1 /* IterableHtmlMessageViewControllerTests.swift */,
 				AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */,
 				55B37FC32297135F0042F13A /* NotificationMetadataTests.swift */,
-				AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */,
 				ACAA816D231163660035C743 /* RequestCreatorTests.swift */,
 				ACB37AAF240268A60093A8EA /* SampleInboxViewDelegateImplementations.swift */,
 				55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */,
@@ -1893,7 +1893,7 @@
 				ACC362B824D17005002C67BA /* IterableRequestTests.swift in Sources */,
 				AC2C668720D3435700D46CC9 /* IterableActionRunnerTests.swift in Sources */,
 				00CB31B621096129004ACDEC /* TestUtils.swift in Sources */,
-				AC89661E2124FBCE0051A6CD /* IterableAutoRegistrationTests.swift in Sources */,
+				AC89661E2124FBCE0051A6CD /* AutoRegistrationTests.swift in Sources */,
 				ACA8D1A921965B7D001B1332 /* InAppTests.swift in Sources */,
 				00B6FACC210E8484007535CF /* APNSTypeCheckerTests.swift in Sources */,
 				AC8F35A2239806B500302994 /* InboxViewControllerViewModelTests.swift in Sources */,
