@@ -4,7 +4,7 @@
 
 import Foundation
 
-class IterableDeepLinkManager: NSObject {
+class DeepLinkManager: NSObject {
     init(redirectNetworkSessionProvider: RedirectNetworkSessionProvider) {
         self.redirectNetworkSessionProvider = redirectNetworkSessionProvider
     }
@@ -107,7 +107,7 @@ class IterableDeepLinkManager: NSObject {
     private var deepLinkMessageId: String?
 }
 
-extension IterableDeepLinkManager: RedirectNetworkSessionDelegate {
+extension DeepLinkManager: RedirectNetworkSessionDelegate {
     func onRedirect(deepLinkLocation: URL?, campaignId: NSNumber?, templateId: NSNumber?, messageId: String?) {
         self.deepLinkLocation = deepLinkLocation
         self.deepLinkCampaignId = campaignId

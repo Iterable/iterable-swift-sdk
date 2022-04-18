@@ -11,6 +11,7 @@
 		00B6FACE210E88ED007535CF /* prod-1.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 00B6FACD210E874D007535CF /* prod-1.mobileprovision */; };
 		00B6FAD1210E8D90007535CF /* dev-1.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */; };
 		00CB31B621096129004ACDEC /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CB31B4210960C4004ACDEC /* TestUtils.swift */; };
+		552A0AA7280E1FDA00A80963 /* DeepLinkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552A0AA6280E1FDA00A80963 /* DeepLinkManager.swift */; };
 		5531CDAC22A997A4000D05E2 /* IterableInboxViewControllerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5585DF9022A877E6000A32B9 /* IterableInboxViewControllerUITests.swift */; };
 		5531CDAE22A9C992000D05E2 /* ClassExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5531CDAD22A9C992000D05E2 /* ClassExtensionsTests.swift */; };
 		5536781F2576FF9000DB3652 /* IterableUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5536781E2576FF9000DB3652 /* IterableUtilTests.swift */; };
@@ -116,7 +117,6 @@
 		AC72A0CE20CF4CE2004D7997 /* IterableAttributionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */; };
 		AC72A0D120CF4D0B004D7997 /* InAppHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0AA20CF4BEB004D7997 /* InAppHelper.swift */; };
 		AC72A0D220CF4D12004D7997 /* IterableUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0AD20CF4C16004D7997 /* IterableUtil.swift */; };
-		AC72A0D420CF4D19004D7997 /* IterableDeepLinkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0BD20CF4C98004D7997 /* IterableDeepLinkManager.swift */; };
 		AC738CE62315A52A00B96B2D /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACA8D1A42196309C001B1332 /* Common.swift */; };
 		AC738CE72315A54100B96B2D /* CommonMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F942166EC880099A184 /* CommonMocks.swift */; };
 		AC738CE82315A5B600B96B2D /* CommonExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC995F9C2167E9FD0099A184 /* CommonExtensions.swift */; };
@@ -386,6 +386,7 @@
 		00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = "dev-1.mobileprovision"; sourceTree = "<group>"; };
 		00CB31B4210960C4004ACDEC /* TestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtils.swift; sourceTree = "<group>"; };
 		55298B222501A5AB00190BAE /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
+		552A0AA6280E1FDA00A80963 /* DeepLinkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepLinkManager.swift; sourceTree = "<group>"; };
 		5531CDAD22A9C992000D05E2 /* ClassExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassExtensionsTests.swift; sourceTree = "<group>"; };
 		5536781E2576FF9000DB3652 /* IterableUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableUtilTests.swift; sourceTree = "<group>"; };
 		556FB1E9244FAF6A00EDF6BD /* InAppPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPresenter.swift; sourceTree = "<group>"; };
@@ -484,7 +485,6 @@
 		AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableConfig.swift; sourceTree = "<group>"; };
 		AC72A0AA20CF4BEB004D7997 /* InAppHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppHelper.swift; sourceTree = "<group>"; };
 		AC72A0AD20CF4C16004D7997 /* IterableUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableUtil.swift; sourceTree = "<group>"; };
-		AC72A0BD20CF4C98004D7997 /* IterableDeepLinkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableDeepLinkManager.swift; sourceTree = "<group>"; };
 		AC72A0BE20CF4CB8004D7997 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		AC72A0BF20CF4CB8004D7997 /* IterableAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAction.swift; sourceTree = "<group>"; };
 		AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAttributionInfo.swift; sourceTree = "<group>"; };
@@ -1037,14 +1037,14 @@
 				AC942BC42539DEB4002988C9 /* Resource Loading */,
 				ACC362BB24D21153002C67BA /* Task Processing */,
 				AC72A0AC20CF4C08004D7997 /* Util */,
+				AC84256126D6167E0066C627 /* AppExtensionHelper.swift */,
 				557AE6BE24A56E5E00B57750 /* Auth.swift */,
 				55298B222501A5AB00190BAE /* AuthManager.swift */,
 				AC2C667D20D3111900D46CC9 /* DateProvider.swift */,
-				AC84256126D6167E0066C627 /* AppExtensionHelper.swift */,
+				552A0AA6280E1FDA00A80963 /* DeepLinkManager.swift */,
 				AC72A0C520CF4CB9004D7997 /* InternalIterableAPI.swift */,
-				AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */,
 				AC2C668120D32F2800D46CC9 /* InternalIterableAppIntegration.swift */,
-				AC72A0BD20CF4C98004D7997 /* IterableDeepLinkManager.swift */,
+				AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */,
 				AC2B79F621E6A38900A59080 /* NotificationHelper.swift */,
 				ACEDF41C2183C2EC000B9BFE /* Pending.swift */,
 			);
@@ -1780,7 +1780,6 @@
 				ACF40621250781F1005FD775 /* NetworkConnectivityManager.swift in Sources */,
 				AC942BC62539DEDA002988C9 /* ResourceHelper.swift in Sources */,
 				AC4B039622A8743F0043185B /* InAppManager+Functions.swift in Sources */,
-				AC72A0D420CF4D19004D7997 /* IterableDeepLinkManager.swift in Sources */,
 				ACA95D2F2754AA6800AF4666 /* IterableInboxView.swift in Sources */,
 				ACC51A6B22A879070095E81F /* EmptyInAppManager.swift in Sources */,
 				AC52C5B62729CE44000DCDCF /* IterableUserDefaults.swift in Sources */,
@@ -1832,6 +1831,7 @@
 				AC776DA6211A1B8A00C27C27 /* IterableRequestUtil.swift in Sources */,
 				55DD2053269FA28200773CC7 /* IterableInAppManagerProtocol.swift in Sources */,
 				ACEDF41D2183C2EC000B9BFE /* Pending.swift in Sources */,
+				552A0AA7280E1FDA00A80963 /* DeepLinkManager.swift in Sources */,
 				AC78F0E7253D7F09006378A5 /* IterablePushNotificationMetadata.swift in Sources */,
 				AC7125EF20D4579E0043BBC1 /* IterableConfig.swift in Sources */,
 				AC03094B21E532470003A288 /* InAppPersistence.swift in Sources */,
