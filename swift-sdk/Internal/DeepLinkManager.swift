@@ -28,7 +28,7 @@ class DeepLinkManager: NSObject {
                 if let action = IterableAction.actionOpenUrl(fromUrlString: resolvedUrlString) {
                     let context = IterableActionContext(action: action, source: .universalLink)
                     
-                    IterableActionRunner.execute(action: action,
+                    ActionRunner.execute(action: action,
                                                  context: context,
                                                  urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate,
                                                                                      inContext: context),
@@ -45,7 +45,7 @@ class DeepLinkManager: NSObject {
             if let action = IterableAction.actionOpenUrl(fromUrlString: url.absoluteString) {
                 let context = IterableActionContext(action: action, source: .universalLink)
                 
-                IterableActionRunner.execute(action: action,
+                ActionRunner.execute(action: action,
                                              context: context,
                                              urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate,
                                                                                  inContext: context),

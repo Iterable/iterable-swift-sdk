@@ -75,7 +75,7 @@
 		AC2C668020D31B1F00D46CC9 /* IterableNotificationResponseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */; };
 		AC2C668220D32F2800D46CC9 /* InternalIterableAppIntegration.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668120D32F2800D46CC9 /* InternalIterableAppIntegration.swift */; };
 		AC2C668420D3370600D46CC9 /* Mocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668320D3370600D46CC9 /* Mocks.swift */; };
-		AC2C668720D3435700D46CC9 /* IterableActionRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668620D3435700D46CC9 /* IterableActionRunnerTests.swift */; };
+		AC2C668720D3435700D46CC9 /* ActionRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC2C668620D3435700D46CC9 /* ActionRunnerTests.swift */; };
 		AC31B040232AB42100BE25EB /* InboxSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC31B03F232AB42100BE25EB /* InboxSessionManager.swift */; };
 		AC31B042232AB53500BE25EB /* InboxImpressionTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC31B041232AB53500BE25EB /* InboxImpressionTracker.swift */; };
 		AC32E16821DD55B900BD4F83 /* OrderedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC32E16721DD55B900BD4F83 /* OrderedDictionary.swift */; };
@@ -111,7 +111,7 @@
 		AC72A0C720CF4CE2004D7997 /* CommerceItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C120CF4CB8004D7997 /* CommerceItem.swift */; };
 		AC72A0C820CF4CE2004D7997 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0BE20CF4CB8004D7997 /* Constants.swift */; };
 		AC72A0C920CF4CE2004D7997 /* IterableAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0BF20CF4CB8004D7997 /* IterableAction.swift */; };
-		AC72A0CA20CF4CE2004D7997 /* IterableActionRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */; };
+		AC72A0CA20CF4CE2004D7997 /* ActionRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C420CF4CB8004D7997 /* ActionRunner.swift */; };
 		AC72A0CB20CF4CE2004D7997 /* InternalIterableAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C520CF4CB9004D7997 /* InternalIterableAPI.swift */; };
 		AC72A0CD20CF4CE2004D7997 /* IterableAppIntegration.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C620CF4CB9004D7997 /* IterableAppIntegration.swift */; };
 		AC72A0CE20CF4CE2004D7997 /* IterableAttributionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */; };
@@ -450,7 +450,7 @@
 		AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableNotificationResponseTests.swift; sourceTree = "<group>"; };
 		AC2C668120D32F2800D46CC9 /* InternalIterableAppIntegration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternalIterableAppIntegration.swift; sourceTree = "<group>"; };
 		AC2C668320D3370600D46CC9 /* Mocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mocks.swift; sourceTree = "<group>"; };
-		AC2C668620D3435700D46CC9 /* IterableActionRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableActionRunnerTests.swift; sourceTree = "<group>"; };
+		AC2C668620D3435700D46CC9 /* ActionRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionRunnerTests.swift; sourceTree = "<group>"; };
 		AC31B03F232AB42100BE25EB /* InboxSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxSessionManager.swift; sourceTree = "<group>"; };
 		AC31B041232AB53500BE25EB /* InboxImpressionTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxImpressionTracker.swift; sourceTree = "<group>"; };
 		AC32E16721DD55B900BD4F83 /* OrderedDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderedDictionary.swift; sourceTree = "<group>"; };
@@ -489,7 +489,7 @@
 		AC72A0BF20CF4CB8004D7997 /* IterableAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAction.swift; sourceTree = "<group>"; };
 		AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAttributionInfo.swift; sourceTree = "<group>"; };
 		AC72A0C120CF4CB8004D7997 /* CommerceItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommerceItem.swift; sourceTree = "<group>"; };
-		AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableActionRunner.swift; sourceTree = "<group>"; };
+		AC72A0C420CF4CB8004D7997 /* ActionRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionRunner.swift; sourceTree = "<group>"; };
 		AC72A0C520CF4CB9004D7997 /* InternalIterableAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InternalIterableAPI.swift; sourceTree = "<group>"; };
 		AC72A0C620CF4CB9004D7997 /* IterableAppIntegration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableAppIntegration.swift; sourceTree = "<group>"; };
 		AC738CE92315A8B200B96B2D /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
@@ -934,6 +934,7 @@
 			children = (
 				ACC362B724D17005002C67BA /* IterableRequestTests.swift */,
 				AC776DA3211A17C700C27C27 /* IterableRequestUtilTests.swift */,
+				ACAA816D231163660035C743 /* RequestCreatorTests.swift */,
 			);
 			name = "request-tests";
 			sourceTree = "<group>";
@@ -1039,6 +1040,7 @@
 				AC942BC42539DEB4002988C9 /* Resource Loading */,
 				ACC362BB24D21153002C67BA /* Task Processing */,
 				AC72A0AC20CF4C08004D7997 /* Util */,
+				AC72A0C420CF4CB8004D7997 /* ActionRunner.swift */,
 				AC84256126D6167E0066C627 /* AppExtensionHelper.swift */,
 				557AE6BE24A56E5E00B57750 /* Auth.swift */,
 				55298B222501A5AB00190BAE /* AuthManager.swift */,
@@ -1046,7 +1048,6 @@
 				552A0AA6280E1FDA00A80963 /* DeepLinkManager.swift */,
 				AC72A0C520CF4CB9004D7997 /* InternalIterableAPI.swift */,
 				AC2C668120D32F2800D46CC9 /* InternalIterableAppIntegration.swift */,
-				AC72A0C420CF4CB8004D7997 /* IterableActionRunner.swift */,
 				AC2B79F621E6A38900A59080 /* NotificationHelper.swift */,
 				ACEDF41C2183C2EC000B9BFE /* Pending.swift */,
 			);
@@ -1072,14 +1073,13 @@
 				AC3A3053262EE1B500425435 /* in-app-tests */,
 				AC3A305C262EE24100425435 /* inbox-tests */,
 				AC3A3075262EE26D00425435 /* request-tests */,
+				AC2C668620D3435700D46CC9 /* ActionRunnerTests.swift */,
 				55B9F15024B3D33700E8198A /* AuthTests.swift */,
-				AC2C668620D3435700D46CC9 /* IterableActionRunnerTests.swift */,
 				AC64626A2140AACF0046E1BD /* IterableAPIResponseTests.swift */,
 				ACD6116D21080564003E7F6B /* IterableAPITests.swift */,
 				AC4BA00124163D8F007359F1 /* IterableHtmlMessageViewControllerTests.swift */,
 				AC2C667F20D31B1F00D46CC9 /* IterableNotificationResponseTests.swift */,
 				55B37FC32297135F0042F13A /* NotificationMetadataTests.swift */,
-				ACAA816D231163660035C743 /* RequestCreatorTests.swift */,
 				ACB37AAF240268A60093A8EA /* SampleInboxViewDelegateImplementations.swift */,
 				55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */,
 			);
@@ -1787,7 +1787,7 @@
 				AC52C5BA272A8BC2000DCDCF /* IterableKeychain.swift in Sources */,
 				AC684A86222EF75C00F29749 /* InAppMessageParser.swift in Sources */,
 				AC72A0C920CF4CE2004D7997 /* IterableAction.swift in Sources */,
-				AC72A0CA20CF4CE2004D7997 /* IterableActionRunner.swift in Sources */,
+				AC72A0CA20CF4CE2004D7997 /* ActionRunner.swift in Sources */,
 				ACC3FDB1253724DB0004A2E0 /* InAppCalculations.swift in Sources */,
 				ACD6116C2107D004003E7F6B /* NetworkHelper.swift in Sources */,
 				ACC362B624D16D91002C67BA /* IterableRequest.swift in Sources */,
@@ -1891,7 +1891,7 @@
 				ACA8D1A62196309C001B1332 /* Common.swift in Sources */,
 				55AEA95925F05B7D00B38CED /* InAppMessageProcessorTests.swift in Sources */,
 				ACC362B824D17005002C67BA /* IterableRequestTests.swift in Sources */,
-				AC2C668720D3435700D46CC9 /* IterableActionRunnerTests.swift in Sources */,
+				AC2C668720D3435700D46CC9 /* ActionRunnerTests.swift in Sources */,
 				00CB31B621096129004ACDEC /* TestUtils.swift in Sources */,
 				AC89661E2124FBCE0051A6CD /* AutoRegistrationTests.swift in Sources */,
 				ACA8D1A921965B7D001B1332 /* InAppTests.swift in Sources */,

@@ -20,7 +20,7 @@ class AppUrlOpener: UrlOpenerProtocol {
     }
 }
 
-struct IterableActionRunner {
+struct ActionRunner {
     // returns true if an action is performed either by us or by the calling app.
     @discardableResult
     static func execute(action: IterableAction,
