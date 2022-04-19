@@ -2,6 +2,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.4.2
+### Added
+- Added support for apps built using Mac Catalyst.
+​
+### Fixed
+- Fixed a couple of problems related to Swift Package Manager and the creation of release builds and simulator artifacts.
+- Fixed a problem with the SDK’s Carthage integration.
+- Fixed a problem that prevented the SDK from properly tracking inbox sessions when a mobile inbox is displayed in `popup` mode.
+- In-app delete events are now correctly associated with inbox session IDs.
+- Fixed some problems in a script that generates XCFramework binaries.
+
 ## 6.4.1
 ### Fixed
 - Fix archiving issue. There was an issue when archiving for projects with deployment target set to iOS 10. This release fixes the issue.
