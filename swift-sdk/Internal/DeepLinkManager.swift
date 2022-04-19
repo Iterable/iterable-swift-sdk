@@ -4,10 +4,11 @@
 
 import Foundation
 
-class IterableDeepLinkManager: NSObject {
+class DeepLinkManager: NSObject {
     init(redirectNetworkSessionProvider: RedirectNetworkSessionProvider) {
         self.redirectNetworkSessionProvider = redirectNetworkSessionProvider
     }
+    
     /// Handles a Universal Link
     /// For Iterable links, it will track the click and retrieve the original URL,
     /// pass it to `IterableURLDelegate` for handling
@@ -28,7 +29,7 @@ class IterableDeepLinkManager: NSObject {
                 if let action = IterableAction.actionOpenUrl(fromUrlString: resolvedUrlString) {
                     let context = IterableActionContext(action: action, source: .universalLink)
                     
-                    IterableActionRunner.execute(action: action,
+                    ActionRunner.execute(action: action,
                                                  context: context,
                                                  urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate,
                                                                                      inContext: context),
@@ -45,7 +46,7 @@ class IterableDeepLinkManager: NSObject {
             if let action = IterableAction.actionOpenUrl(fromUrlString: url.absoluteString) {
                 let context = IterableActionContext(action: action, source: .universalLink)
                 
-                IterableActionRunner.execute(action: action,
+                ActionRunner.execute(action: action,
                                              context: context,
                                              urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate,
                                                                                  inContext: context),
@@ -107,7 +108,7 @@ class IterableDeepLinkManager: NSObject {
     private var deepLinkMessageId: String?
 }
 
-extension IterableDeepLinkManager: RedirectNetworkSessionDelegate {
+extension DeepLinkManager: RedirectNetworkSessionDelegate {
     func onRedirect(deepLinkLocation: URL?, campaignId: NSNumber?, templateId: NSNumber?, messageId: String?) {
         self.deepLinkLocation = deepLinkLocation
         self.deepLinkCampaignId = campaignId

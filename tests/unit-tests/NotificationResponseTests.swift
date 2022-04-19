@@ -7,7 +7,7 @@ import XCTest
 
 @testable import IterableSDK
 
-class IterableNotificationResponseTests: XCTestCase {
+class NotificationResponseTests: XCTestCase {
     override func setUp() {
         super.setUp()
     }

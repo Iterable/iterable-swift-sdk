@@ -42,7 +42,7 @@ class DeepLinkTests: XCTestCase {
                                                                           campaignId: campaignId,
                                                                           templateId: templateId,
                                                                           messageId: messageId)
-        let deepLinkManager = IterableDeepLinkManager(redirectNetworkSessionProvider: networkSessionProvider)
+        let deepLinkManager = DeepLinkManager(redirectNetworkSessionProvider: networkSessionProvider)
         
         let (isIterableLink, attributionInfoFuture) = deepLinkManager.handleUniversalLink(URL(string: iterableRewriteURL)!,
                                                                       urlDelegate: mockUrlDelegate,
@@ -68,7 +68,7 @@ class DeepLinkTests: XCTestCase {
             expectation1.fulfill()
         }
         
-        let deepLinkManager = IterableDeepLinkManager(redirectNetworkSessionProvider: createNoRedirectNetworkSessionProvider())
+        let deepLinkManager = DeepLinkManager(redirectNetworkSessionProvider: createNoRedirectNetworkSessionProvider())
         
         let (isIterableLink, _) = deepLinkManager.handleUniversalLink(URL(string: iterableNoRewriteURL)!,
                                                                       urlDelegate: mockUrlDelegate,
@@ -145,7 +145,7 @@ class DeepLinkTests: XCTestCase {
             expectation1.fulfill()
         }
         
-        let deepLinkManager = IterableDeepLinkManager(redirectNetworkSessionProvider: createNoRedirectNetworkSessionProvider())
+        let deepLinkManager = DeepLinkManager(redirectNetworkSessionProvider: createNoRedirectNetworkSessionProvider())
         
         _ = deepLinkManager.handleUniversalLink(URL(string: redirectRequest)!,
                                                 urlDelegate: mockUrlDelegate,

@@ -394,7 +394,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     private var networkSession: NetworkSessionProtocol
     private var urlOpener: UrlOpenerProtocol
     
-    private var deepLinkManager: IterableDeepLinkManager
+    private var deepLinkManager: DeepLinkManager
     
     private var _email: String?
     private var _userId: String?
@@ -541,7 +541,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         localStorage = dependencyContainer.localStorage
         inAppDisplayer = dependencyContainer.inAppDisplayer
         urlOpener = dependencyContainer.urlOpener
-        deepLinkManager = IterableDeepLinkManager(redirectNetworkSessionProvider: dependencyContainer)
+        deepLinkManager = DeepLinkManager(redirectNetworkSessionProvider: dependencyContainer)
     }
     
     func start() -> Pending<Bool, Error> {

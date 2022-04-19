@@ -9,7 +9,7 @@ import XCTest
 let testExpectationTimeout = 15.0 // How long to wait when we expect to succeed
 let testExpectationTimeoutForInverted = 1.0 // How long to wait when we expect to fail
 
-class IterableActionRunnerTests: XCTestCase {
+class ActionRunnerTests: XCTestCase {
     func testUrlOpenAction() {
         validateUrlOpenAction(source: .push)
         validateUrlOpenAction(source: .inApp)
@@ -28,7 +28,7 @@ class IterableActionRunnerTests: XCTestCase {
             return true
         }
         
-        let handled = IterableActionRunner.execute(action: action,
+        let handled = ActionRunner.execute(action: action,
                                                    context: context,
                                                    urlHandler: urlHandler,
                                                    urlOpener: urlOpener)
@@ -50,7 +50,7 @@ class IterableActionRunnerTests: XCTestCase {
             return true
         }
         
-        let handled = IterableActionRunner.execute(action: action,
+        let handled = ActionRunner.execute(action: action,
                                                    context: context,
                                                    customActionHandler: customActionHandler)
         
@@ -69,7 +69,7 @@ class IterableActionRunnerTests: XCTestCase {
             return false
         }
         
-        let handled = IterableActionRunner.execute(action: action,
+        let handled = ActionRunner.execute(action: action,
                                                    context: context,
                                                    customActionHandler: customActionHandler)
         
@@ -94,7 +94,7 @@ class IterableActionRunnerTests: XCTestCase {
             expectation1.fulfill()
         }
 
-        let handled = IterableActionRunner.execute(action: action,
+        let handled = ActionRunner.execute(action: action,
                                                    context: context,
                                                    urlHandler: nil,
                                                    urlOpener: urlOpener)
@@ -115,7 +115,7 @@ class IterableActionRunnerTests: XCTestCase {
             expectation1.fulfill()
         }
 
-        IterableActionRunner.execute(action: action,
+        ActionRunner.execute(action: action,
                                      context: context,
                                      urlHandler: nil,
                                      urlOpener: urlOpener)
@@ -134,7 +134,7 @@ class IterableActionRunnerTests: XCTestCase {
             expectation1.fulfill()
         }
 
-        IterableActionRunner.execute(action: action,
+        ActionRunner.execute(action: action,
                                      context: context,
                                      urlHandler: nil,
                                      urlOpener: urlOpener,
@@ -155,7 +155,7 @@ class IterableActionRunnerTests: XCTestCase {
             return false
         }
         
-        let handled = IterableActionRunner.execute(action: action,
+        let handled = ActionRunner.execute(action: action,
                                                    context: context,
                                                    urlHandler: urlHandler,
                                                    urlOpener: urlOpener)
