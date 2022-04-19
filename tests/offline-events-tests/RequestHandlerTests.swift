@@ -1175,3 +1175,15 @@ extension RequestHandlerTests: AuthProvider {
         Auth(userId: nil, email: "user@example.com", authToken: nil)
     }
 }
+
+fileprivate extension MockNetworkSession {
+    convenience init(statusCode: Int, urlPatternDataMapping: [String: Data?]?) {
+        let mapping = urlPatternDataMapping?.mapValues { data in
+            MockNetworkSession.MockResponse(statusCode: statusCode,
+                                            data: data,
+                                            delay: 0.0,
+                                            error: nil)
+        }
+        self.init(mapping: mapping)
+    }
+}

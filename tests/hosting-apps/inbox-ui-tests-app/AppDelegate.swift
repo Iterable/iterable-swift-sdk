@@ -24,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_: UIApplication, didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         mockInAppFetcher = MockInAppFetcher()
-        mockNetworkSession = MockNetworkSession(statusCode: 200, urlPatternDataMapping: createUrlToDataMapper())
+        mockNetworkSession = MockNetworkSession(mapping: createUrlToResponseMapper())
         mockNetworkSession.requestCallback = { request in
             self.logRequest(request: request)
         }
@@ -112,9 +112,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return FileManager.default.contents(atPath: path)!
     }
     
-    private func createUrlToDataMapper() -> [String: Data?] {
-        var mapper = [String: Data?]()
-        mapper[#"mocha.png"#] = loadData(from: "mocha", withExtension: "png")
+    private func createUrlToResponseMapper() -> [String: MockNetworkSession.MockResponse?] {
+        var mapper = [String: MockNetworkSession.MockResponse?]()
+        mapper[#"mocha.png"#] = MockNetworkSession.MockResponse(data: loadData(from: "mocha", withExtension: "png"))
         mapper[".*"] = nil
         return mapper
     }

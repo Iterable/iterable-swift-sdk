@@ -2,7 +2,6 @@
 //  Copyright © 2018 Iterable. All rights reserved.
 //
 
-import OHHTTPStubs
 import XCTest
 
 @testable import IterableSDK
@@ -159,18 +158,12 @@ class IterableAPIResponseTests: XCTestCase {
         let responseTime = 2.0
         let timeout = 0.1
         
-        HTTPStubs.stubRequests(passingTest: { (_) -> Bool in
-            true
-        }) { (_) -> HTTPStubsResponse in
-            let response = HTTPStubsResponse(data: try! JSONSerialization.data(withJSONObject: [:], options: []),
-                                             statusCode: 200,
-                                             headers: nil)
-            response.requestTime = 0.0
-            response.responseTime = responseTime
-            return response
+        let networkSession = MockNetworkSession() { _ in
+            MockNetworkSession.MockResponse(statusCode: 200,
+                                            data: [:].toJsonData(),
+                                            delay: responseTime)
         }
-        
-        let networkSession = URLSession(configuration: URLSessionConfiguration.default)
+        networkSession.timeout = timeout
         
         let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
         
@@ -185,6 +178,7 @@ class IterableAPIResponseTests: XCTestCase {
         
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
+
     
     private func verifyIterableHeaders(_ urlRequest: URLRequest) {
         XCTAssertEqual(urlRequest.value(forHTTPHeaderField: JsonKey.Header.sdkPlatform), JsonValue.iOS)

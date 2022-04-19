@@ -24,7 +24,7 @@ class InAppPersistenceTests: XCTestCase {
     }
     
     func testInboxMetadataDecodingEncoding() {
-        let title = "TITLE!!!"
+        let title = "TITLE"
         let subtitle = "subtitle :)"
         let icon = "picture.jpg"
         

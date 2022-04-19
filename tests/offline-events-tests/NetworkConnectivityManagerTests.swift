@@ -96,7 +96,9 @@ class NetworkConnectivityManagerTests: XCTestCase {
         
         // check that status is offline when there is network error
         let expectation1 = expectation(description: "ConnectivityManager: check status change on network error")
-        networkSession.error = IterableError.general(description: "Mock error")
+        networkSession.responseCallback = { _ in
+            MockNetworkSession.MockResponse(error: IterableError.general(description: "Mock error"))
+        }
         manager.connectivityChangedCallback = { connected in
             XCTAssertFalse(connected)
             expectation1.fulfill()
@@ -110,14 +112,16 @@ class NetworkConnectivityManagerTests: XCTestCase {
             XCTAssertTrue(connected)
             expectation2.fulfill()
         }
-        networkSession.error = nil
+        networkSession.responseCallback = nil
         wait(for: [expectation2], timeout: 10.0)
         
         // check that status does not change once manager is stopped
         let expectation3 = expectation(description: "ConnectivityManager: no status change when stopped")
         expectation3.isInverted = true
         manager.stop()
-        networkSession.error = IterableError.general(description: "Mock error")
+        networkSession.responseCallback = { _ in
+            MockNetworkSession.MockResponse(error: IterableError.general(description: "Mock error"))
+        }
         manager.connectivityChangedCallback = { connected in
             XCTAssertTrue(connected)
             expectation3.fulfill()
@@ -154,7 +158,9 @@ class NetworkConnectivityManagerTests: XCTestCase {
             XCTAssertFalse(connected)
             expectation1.fulfill()
         }
-        networkSession.error = IterableError.general(description: "Mock error")
+        networkSession.responseCallback = { _ in
+            MockNetworkSession.MockResponse(error: IterableError.general(description: "Mock error"))
+        }
 
         wait(for: [expectation1], timeout: 10.0)
     }

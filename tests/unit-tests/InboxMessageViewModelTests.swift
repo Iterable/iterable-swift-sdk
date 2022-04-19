@@ -10,7 +10,7 @@ class InboxMessageViewModelTests: XCTestCase {
     func testModel() {
         let testCreationDate = Date()
         
-        let title = "TITLE!!!!!"
+        let title = "TITLE"
         let subtitle = "a prelude of the journey to the road to the goal"
         let icon = "https://imageurl.com/thingy"
         

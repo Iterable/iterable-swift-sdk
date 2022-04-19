@@ -78,6 +78,17 @@ enum Const {
         static let online = "Online"
         static let offline = "Offline"
     }
+    
+    enum CookieName {
+        static let campaignId = "iterableEmailCampaignId"
+        static let templateId = "iterableTemplateId"
+        static let messageId = "iterableMessageId"
+    }
+    
+    enum HttpHeader {
+        static let location = "Location"
+        static let setCookie = "Set-Cookie"
+    }
 }
 
 enum JsonKey {

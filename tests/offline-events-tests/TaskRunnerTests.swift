@@ -198,8 +198,7 @@ class TaskRunnerTests: XCTestCase {
         verifyNoTaskIsExecuted(notificationCenter, forInterval: 1.0)
         
         // set network status back to normal
-        networkSession.statusCode = 200
-        networkSession.error = nil
+        networkSession.responseCallback = nil
         
         verifyTaskIsExecuted(notificationCenter, withinInterval: 10.0)
 

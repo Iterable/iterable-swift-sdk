@@ -27,43 +27,6 @@ extension NetworkError: LocalizedError {
     }
 }
 
-protocol DataTaskProtocol {
-    var state: URLSessionDataTask.State { get }
-    func resume()
-    func cancel()
-}
-
-extension URLSessionDataTask: DataTaskProtocol {}
-
-protocol NetworkSessionProtocol {
-    typealias CompletionHandler = (Data?, URLResponse?, Error?) -> Void
-    func makeRequest(_ request: URLRequest, completionHandler: @escaping CompletionHandler)
-    func makeDataRequest(with url: URL, completionHandler: @escaping CompletionHandler)
-    func createDataTask(with url: URL, completionHandler: @escaping CompletionHandler) -> DataTaskProtocol
-}
-
-extension URLSession: NetworkSessionProtocol {
-    func makeRequest(_ request: URLRequest, completionHandler: @escaping CompletionHandler) {
-        let task = dataTask(with: request) { data, response, error in
-            completionHandler(data, response, error)
-        }
-        
-        task.resume()
-    }
-    
-    func makeDataRequest(with url: URL, completionHandler: @escaping CompletionHandler) {
-        let task = dataTask(with: url) { data, response, error in
-            completionHandler(data, response, error)
-        }
-        
-        task.resume()
-    }
-
-    func createDataTask(with url: URL, completionHandler: @escaping CompletionHandler) -> DataTaskProtocol {
-        dataTask(with: url, completionHandler: completionHandler)
-    }
-}
-
 struct NetworkHelper {
     static func getData(fromUrl url: URL, usingSession networkSession: NetworkSessionProtocol) -> Pending<Data, Error> {
         let fulfill = Fulfill<Data, Error>()
