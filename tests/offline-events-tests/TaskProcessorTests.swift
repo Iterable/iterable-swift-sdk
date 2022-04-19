@@ -19,8 +19,7 @@ class TaskProcessorTests: XCTestCase {
         let networkSession = MockNetworkSession()
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: apiKey, config: config, networkSession: networkSession)
         
-        let requestCreator = RequestCreator(apiKey: apiKey,
-                                            auth: auth,
+        let requestCreator = RequestCreator(auth: auth,
                                             deviceMetadata: internalAPI.deviceMetadata)
         guard case let Result.success(trackEventRequest) = requestCreator.createTrackEventRequest(eventName, dataFields: dataFields) else {
             XCTFail("Could not create trackEvent request")
@@ -223,8 +222,7 @@ class TaskProcessorTests: XCTestCase {
         let dataFields = ["var1": "val1", "var2": "val2"]
         
         let auth = Auth(userId: nil, email: email, authToken: nil)
-        let requestCreator = RequestCreator(apiKey: apiKey,
-                                            auth: auth,
+        let requestCreator = RequestCreator(auth: auth,
                                             deviceMetadata: deviceMetadata)
         guard case let Result.success(trackEventRequest) = requestCreator.createTrackEventRequest(eventName, dataFields: dataFields) else {
             XCTFail("Could not create trackEvent request")

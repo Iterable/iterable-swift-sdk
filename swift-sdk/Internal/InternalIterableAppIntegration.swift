@@ -194,7 +194,7 @@ struct InternalIterableAppIntegration {
         // Execute the action
         if let action = action {
             let context = IterableActionContext(action: action, source: .push)
-            IterableActionRunner.execute(action: action,
+            ActionRunner.execute(action: action,
                                          context: context,
                                          urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate, inContext: context),
                                          customActionHandler: IterableUtil.customActionHandler(fromCustomActionDelegate: customActionDelegate, inContext: context),
@@ -289,7 +289,7 @@ struct InternalIterableAppIntegration {
         if let action = InternalIterableAppIntegration.createDefaultAction(userInfo: userInfo, iterableElement: itbl) {
             let context = IterableActionContext(action: action, source: .push)
             
-            IterableActionRunner.execute(action: action,
+            ActionRunner.execute(action: action,
                                          context: context,
                                          urlHandler: IterableUtil.urlHandler(fromUrlDelegate: urlDelegate, inContext: context),
                                          customActionHandler: IterableUtil.customActionHandler(fromCustomActionDelegate: customActionDelegate, inContext: context),

@@ -9,7 +9,6 @@ import UIKit
 /// This will create IterableRequest
 /// The API Endpoint and request endpoint is not defined yet
 struct RequestCreator {
-    let apiKey: String
     let auth: Auth
     let deviceMetadata: DeviceMetadata
     
@@ -449,7 +448,7 @@ struct RequestCreator {
     
     private func createPostRequest(path: String, body: [AnyHashable: Any]? = nil) -> PostRequest {
         PostRequest(path: path,
-                    args: [JsonKey.Header.apiKey: apiKey],
+                    args: nil,
                     body: body)
     }
     

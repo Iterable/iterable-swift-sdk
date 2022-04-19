@@ -433,7 +433,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         
         let context = IterableActionContext(action: action, source: .inApp)
         DispatchQueue.main.async { [weak self] in
-            IterableActionRunner.execute(action: action,
+            ActionRunner.execute(action: action,
                                          context: context,
                                          urlHandler: IterableUtil.urlHandler(fromUrlDelegate: self?.urlDelegate, inContext: context),
                                          customActionHandler: IterableUtil.customActionHandler(fromCustomActionDelegate: self?.customActionDelegate, inContext: context),

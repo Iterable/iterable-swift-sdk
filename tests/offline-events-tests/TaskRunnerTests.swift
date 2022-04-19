@@ -328,7 +328,7 @@ class TaskRunnerTests: XCTestCase {
         let eventName = "CustomEvent1"
         let dataFields = ["var1": "val1", "var2": "val2"]
         
-        let requestCreator = RequestCreator(apiKey: apiKey, auth: auth, deviceMetadata: deviceMetadata)
+        let requestCreator = RequestCreator(auth: auth, deviceMetadata: deviceMetadata)
         guard case let Result.success(trackEventRequest) = requestCreator.createTrackEventRequest(eventName, dataFields: dataFields) else {
             throw IterableError.general(description: "Could not create trackEvent request")
         }

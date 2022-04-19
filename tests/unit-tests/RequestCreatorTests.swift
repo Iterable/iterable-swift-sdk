@@ -149,7 +149,7 @@ class RequestCreatorTests: XCTestCase {
     
     func testGetInAppMessagesRequestFailure() {
         let auth = Auth(userId: nil, email: nil, authToken: nil)
-        let requestCreator = RequestCreator(apiKey: apiKey, auth: auth, deviceMetadata: deviceMetadata)
+        let requestCreator = RequestCreator(auth: auth, deviceMetadata: deviceMetadata)
         
         let failingRequest = requestCreator.createGetInAppMessagesRequest(1)
         
@@ -247,8 +247,7 @@ class RequestCreatorTests: XCTestCase {
     }
     
     func testUserlessUpdateUserRequest() {
-        let userlessRequestCreator = RequestCreator(apiKey: apiKey,
-                                                    auth: userlessAuth,
+        let userlessRequestCreator = RequestCreator(auth: userlessAuth,
                                                     deviceMetadata: deviceMetadata)
         
         let result = userlessRequestCreator.createUpdateUserRequest(dataFields: [:], mergeNestedObjects: false)
@@ -262,8 +261,7 @@ class RequestCreatorTests: XCTestCase {
     }
     
     func testUserlessUpdateSubscriptionsRequest() {
-        let userlessRequestCreator = RequestCreator(apiKey: apiKey,
-                                                    auth: userlessAuth,
+        let userlessRequestCreator = RequestCreator(auth: userlessAuth,
                                                     deviceMetadata: deviceMetadata)
         
         let result = userlessRequestCreator.createUpdateSubscriptionsRequest()
@@ -277,8 +275,7 @@ class RequestCreatorTests: XCTestCase {
     }
     
     func testUserlessTrackInboxSessionRequest() {
-        let userlessRequestCreator = RequestCreator(apiKey: apiKey,
-                                                    auth: userlessAuth,
+        let userlessRequestCreator = RequestCreator(auth: userlessAuth,
                                                     deviceMetadata: deviceMetadata)
         
         let result = userlessRequestCreator.createTrackInboxSessionRequest(inboxSession: IterableInboxSession())
@@ -323,8 +320,7 @@ class RequestCreatorTests: XCTestCase {
     }
     
     func testRegisterTokenRequestPrefersUserId() {
-        let userIdRequestCreator = RequestCreator(apiKey: apiKey,
-                                                  auth: userIdAuth,
+        let userIdRequestCreator = RequestCreator(auth: userIdAuth,
                                                   deviceMetadata: deviceMetadata)
         
         let registerTokenInfo = RegisterTokenInfo(hexToken: "hex-token",
@@ -412,7 +408,7 @@ class RequestCreatorTests: XCTestCase {
     }
     
     private func createRequestCreator() -> RequestCreator {
-        RequestCreator(apiKey: apiKey, auth: auth, deviceMetadata: deviceMetadata)
+        RequestCreator(auth: auth, deviceMetadata: deviceMetadata)
     }
     
     private func createApiClient(networkSession: NetworkSessionProtocol) -> ApiClient {
