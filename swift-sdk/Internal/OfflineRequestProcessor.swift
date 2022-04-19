@@ -246,7 +246,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     private let taskRunner: IterableTaskRunner
     
     private func createRequestCreator(authProvider: AuthProvider) -> RequestCreator {
-        return RequestCreator(apiKey: apiKey, auth: authProvider.auth, deviceMetadata: deviceMetadata)
+        return RequestCreator(auth: authProvider.auth, deviceMetadata: deviceMetadata)
     }
     
     private func sendIterableRequest(requestGenerator: (RequestCreator) -> Result<IterableRequest, IterableError>,

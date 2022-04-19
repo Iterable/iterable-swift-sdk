@@ -82,7 +82,7 @@ class ApiClient {
             return .failure(IterableError.general(description: "authProvider is missing"))
         }
         
-        return .success(RequestCreator(apiKey: apiKey, auth: authProvider.auth, deviceMetadata: deviceMetadata))
+        return .success(RequestCreator(auth: authProvider.auth, deviceMetadata: deviceMetadata))
     }
     
     private let apiKey: String
