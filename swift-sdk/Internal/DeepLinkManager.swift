@@ -8,6 +8,7 @@ class DeepLinkManager: NSObject {
     init(redirectNetworkSessionProvider: RedirectNetworkSessionProvider) {
         self.redirectNetworkSessionProvider = redirectNetworkSessionProvider
     }
+    
     /// Handles a Universal Link
     /// For Iterable links, it will track the click and retrieve the original URL,
     /// pass it to `IterableURLDelegate` for handling
