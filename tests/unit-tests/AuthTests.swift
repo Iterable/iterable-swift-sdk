@@ -378,7 +378,7 @@ class AuthTests: XCTestCase {
         })
         
         let expirationRefreshPeriod: TimeInterval = 0
-        let waitTime: TimeInterval = 2
+        let waitTime: TimeInterval = 1.0
         let expirationTimeSinceEpoch = Date(timeIntervalSinceNow: expirationRefreshPeriod + waitTime).timeIntervalSince1970
         let mockEncodedPayload = createMockEncodedPayload(exp: Int(expirationTimeSinceEpoch))
         
@@ -405,7 +405,7 @@ class AuthTests: XCTestCase {
         })
         
         let expirationRefreshPeriod: TimeInterval = 0
-        let waitTime: TimeInterval = 2
+        let waitTime: TimeInterval = 1.0
         let expirationTimeSinceEpoch = Date(timeIntervalSinceNow: expirationRefreshPeriod + waitTime).timeIntervalSince1970
         let mockEncodedPayload = createMockEncodedPayload(exp: Int(expirationTimeSinceEpoch))
         
@@ -595,7 +595,7 @@ class AuthTests: XCTestCase {
         
         class AsyncAuthDelegate: IterableAuthDelegate {
             func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler) {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     completion(AuthTests.authToken)
                 }
             }
@@ -670,7 +670,7 @@ class AuthTests: XCTestCase {
         
         class AsyncAuthDelegate: IterableAuthDelegate {
             func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler) {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     completion(AuthTests.authToken)
                 }
             }
@@ -698,7 +698,7 @@ class AuthTests: XCTestCase {
                                         })
         
         wait(for: [condition1], timeout: testExpectationTimeout)
-        wait(for: [condition2], timeout: 3)
+        wait(for: [condition2], timeout: 1.0)
     }
     
     func testAuthTokenNotRequestingForAlreadyExistingEmail() {
@@ -753,6 +753,49 @@ class AuthTests: XCTestCase {
         wait(for: [condition1], timeout: testExpectationTimeoutForInverted)
     }
     
+    func testRetryJwtFailure() throws {
+        let expectation1 = expectation(description: "called track request")
+        expectation1.expectedFulfillmentCount = 2
+        let expectation2 = expectation(description: "pass in second attempt")
+        
+        let config = IterableConfig()
+        let authDelegate = createStockAuthDelegate()
+        config.authDelegate = authDelegate
+        
+        var callNumber = 0
+        let networkSession = MockNetworkSession()
+        networkSession.responseCallback = { url in
+            if url.absoluteString.contains("track") {
+                callNumber += 1
+                if callNumber == 1 {
+                    return MockNetworkSession.MockResponse(statusCode: 401,
+                                                           data: [JsonKey.Response.iterableCode: JsonValue.Code.invalidJwtPayload].toJsonData())
+                } else {
+                    return MockNetworkSession.MockResponse()
+                }
+            } else {
+                return MockNetworkSession.MockResponse()
+            }
+        }
+        networkSession.requestCallback = { request in
+            if request.url?.absoluteString.contains("track") == true {
+                expectation1.fulfill()
+            }
+        }
+        
+        let api = InternalIterableAPI.initializeForTesting(
+            config: config,
+            networkSession: networkSession
+        )
+        api.userId = "some-user-id"
+        api.track("some-event").onSuccess { _ in
+            expectation2.fulfill()
+        }.onError { error in
+            XCTFail()
+        }
+        wait(for: [expectation1, expectation2], timeout: testExpectationTimeout)
+    }
+
     // MARK: - Private
     
     class DefaultAuthDelegate: IterableAuthDelegate {
