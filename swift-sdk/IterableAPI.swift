@@ -309,7 +309,7 @@ public final class IterableAPI: NSObject {
     ///
     /// - Parameters:
     ///    - newEmail: The new email of this user
-    ///    - token: The new authentication token for this user
+    ///    - token: The new authentication token for this user, if left out, the SDK will not update the token in any way
     ///    - onSuccess: `OnSuccessHandler` to invoke if update is successful
     ///    - onFailure: `OnFailureHandler` to invoke if update fails
     ///
@@ -321,7 +321,7 @@ public final class IterableAPI: NSObject {
                                    withToken token: String,
                                    onSuccess: OnSuccessHandler?,
                                    onFailure: OnFailureHandler?) {
-        internalImplementation?.updateEmail(newEmail, onSuccess: onSuccess, onFailure: onFailure)
+        internalImplementation?.updateEmail(newEmail, withToken: token, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     /// Tracks what's in the shopping cart (or equivalent) at this point in time

@@ -95,7 +95,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         deviceAttributes.removeValue(forKey: name)
     }
     
-    func setEmail(_ email: String?) {
+    func setEmail(_ email: String?, authToken: String? = nil) {
         ITBInfo()
         
         if _email == email {
@@ -109,10 +109,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         storeIdentifierData()
         
-        onLogin()
+        onLogin(authToken)
     }
     
-    func setUserId(_ userId: String?) {
+    func setUserId(_ userId: String?, authToken: String? = nil) {
         ITBInfo()
         
         if _userId == userId {
@@ -126,7 +126,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         storeIdentifierData()
         
-        onLogin()
+        onLogin(authToken)
     }
     
     func logoutUser() {
@@ -200,10 +200,13 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                      withToken token: String? = nil,
                      onSuccess: OnSuccessHandler? = nil,
                      onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        requestHandler.updateEmail(newEmail, onSuccess: nil, onFailure: nil).onSuccess { json in
+        requestHandler.updateEmail(newEmail,
+                                   onSuccess: nil,
+                                   onFailure: nil).onSuccess { json in
             if self.email != nil {
-                self.setEmail(newEmail)
+                self.setEmail(newEmail, authToken: token)
             }
+            
             onSuccess?(json)
         }.onError { error in
             onFailure?(error.reason, error.data)
@@ -475,10 +478,13 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         localStorage.userId = _userId
     }
     
-    private func onLogin() {
+    private func onLogin(_ authToken: String? = nil) {
         ITBInfo()
         
-        if isEitherUserIdOrEmailSet() && config.authDelegate != nil {
+        if let authToken = authToken {
+            self.authManager.setNewToken(authToken)
+            completeUserLogin()
+        } else if isEitherUserIdOrEmailSet() && config.authDelegate != nil {
             requestNewAuthToken()
         } else {
             completeUserLogin()
