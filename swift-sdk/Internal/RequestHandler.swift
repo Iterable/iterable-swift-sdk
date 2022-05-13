@@ -197,11 +197,13 @@ class RequestHandler: RequestHandlerProtocol {
     func track(inboxSession: IterableInboxSession,
                onSuccess: OnSuccessHandler?,
                onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        chooseRequestProcessor().track(inboxSession: inboxSession,
-                                       onSuccess: onSuccess,
-                                       onFailure: onFailure)
+        Pending<SendRequestValue, SendRequestError>.inBackgroundThread {
+            self.chooseRequestProcessor().track(inboxSession: inboxSession,
+                                                onSuccess: onSuccess,
+                                                onFailure: onFailure)
+        }
     }
-    
+
     @discardableResult
     func track(inAppDelivery message: IterableInAppMessage,
                onSuccess: OnSuccessHandler?,

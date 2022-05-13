@@ -20,6 +20,7 @@ class MockPersistenceContext: IterablePersistenceContext {
         var saveCallback: (() throws -> Void)? = nil
         var performCallback: (() -> Void)? = nil
         var performAndWaitCallback: (() -> Void)? = nil
+        var performAndWaitCallbackWithResult: (() -> Void)? = nil
     }
     
     init(input: Input = Input()) {
@@ -103,6 +104,12 @@ class MockPersistenceContext: IterablePersistenceContext {
         ITBInfo()
         input.performAndWaitCallback?()
         block()
+    }
+    
+    func performAndWait<T>(_ block: () throws -> T) throws -> T {
+        ITBInfo()
+        input.performAndWaitCallbackWithResult?()
+        return try block()
     }
     
     private let input: Input

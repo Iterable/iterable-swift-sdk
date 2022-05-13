@@ -46,6 +46,8 @@ protocol IterablePersistenceContext {
     func perform(_ block: @escaping () -> Void)
 
     func performAndWait(_ block: () -> Void)
+    
+    func performAndWait<T>(_ block: () throws -> T) throws -> T
 }
 
 protocol IterablePersistenceContextProvider {

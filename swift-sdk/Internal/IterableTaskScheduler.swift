@@ -23,14 +23,16 @@ class IterableTaskScheduler {
         do {
             let data = try JSONEncoder().encode(apiCallRequest)
             
-            try persistenceContext.create(task: IterableTask(id: taskId,
-                                                             name: apiCallRequest.getPath(),
-                                                             type: .apiCall,
-                                                             scheduledAt: scheduledAt ?? dateProvider.currentDate,
-                                                             data: data,
-                                                             requestedAt: dateProvider.currentDate))
-            try persistenceContext.save()
-            
+            try persistenceContext.performAndWait {
+                try persistenceContext.create(task: IterableTask(id: taskId,
+                                                                 name: apiCallRequest.getPath(),
+                                                                 type: .apiCall,
+                                                                 scheduledAt: scheduledAt ?? dateProvider.currentDate,
+                                                                 data: data,
+                                                                 requestedAt: dateProvider.currentDate))
+                try persistenceContext.save()
+                
+            }
             notificationCenter.post(name: .iterableTaskScheduled, object: self, userInfo: nil)
         } catch let error {
             healthMonitor.onScheduleError(apiCallRequest: apiCallRequest)

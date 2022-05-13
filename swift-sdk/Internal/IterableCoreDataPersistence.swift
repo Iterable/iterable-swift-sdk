@@ -130,11 +130,13 @@ struct CoreDataPersistenceContext: IterablePersistenceContext {
     }
 
     func nextTask() throws -> IterableTask? {
-        let taskManagedObjects: [IterableTaskManagedObject] = try CoreDataUtil.findSortedEntities(context: managedObjectContext,
-                                                                                                  entity: PersistenceConst.Entity.Task.name,
-                                                                                                  column: PersistenceConst.Entity.Task.Column.scheduledAt,
-                                                                                                  ascending: true,
-                                                                                                  limit: 1)
+        let taskManagedObjects: [IterableTaskManagedObject] = try performAndWait {
+            try CoreDataUtil.findSortedEntities(context: managedObjectContext,
+                                                entity: PersistenceConst.Entity.Task.name,
+                                                column: PersistenceConst.Entity.Task.Column.scheduledAt,
+                                                ascending: true,
+                                                limit: 1)
+        }
         return taskManagedObjects.first.map(PersistenceHelper.task(from:))
     }
     
@@ -177,6 +179,10 @@ struct CoreDataPersistenceContext: IterablePersistenceContext {
     
     func performAndWait(_ block: () -> Void) {
         managedObjectContext.performAndWait(block)
+    }
+    
+    func performAndWait<T>(_ block: () throws -> T) throws -> T {
+        try managedObjectContext.performAndWait(block)
     }
     
     private let managedObjectContext: NSManagedObjectContext

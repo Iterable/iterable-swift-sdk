@@ -165,6 +165,19 @@ extension Pending {
     }
 }
 
+extension Pending {
+    static func inBackgroundThread<Value, Failure>(_ block: @escaping () -> Pending<Value, Failure>) -> Pending<Value, Failure> {
+        let fulfill = Fulfill<Void, Failure>()
+        DispatchQueue.global(qos: .background).async {
+            fulfill.resolve(with: ())
+        }
+            
+        return fulfill.flatMap { _ in
+            block()
+        }
+    }
+}
+
 // This class takes the responsibility of setting value for Pending
 class Fulfill<Value, Failure>: Pending<Value, Failure> where Failure: Error {
     public init(value: Value? = nil) {

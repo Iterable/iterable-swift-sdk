@@ -244,8 +244,10 @@ class IterableTaskRunner: NSObject {
     
     private func deleteTask(task: IterableTask) {
         do {
-            try persistenceContext.delete(task: task)
-            try persistenceContext.save()
+            try persistenceContext.performAndWait {
+                try persistenceContext.delete(task: task)
+                try persistenceContext.save()
+            }
         } catch let error {
             ITBError(error.localizedDescription)
             healthMonitor.onDeleteError(task: task)
