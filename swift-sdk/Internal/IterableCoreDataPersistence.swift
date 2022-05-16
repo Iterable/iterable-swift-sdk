@@ -130,16 +130,16 @@ struct CoreDataPersistenceContext: IterablePersistenceContext {
     }
 
     func nextTask() throws -> IterableTask? {
-        let taskManagedObjects: [IterableTaskManagedObject] = try performAndWait {
-            try CoreDataUtil.findSortedEntities(context: managedObjectContext,
-                                                entity: PersistenceConst.Entity.Task.name,
-                                                column: PersistenceConst.Entity.Task.Column.scheduledAt,
-                                                ascending: true,
-                                                limit: 1)
+        try performAndWait {
+            let taskManagedObjects: [IterableTaskManagedObject] = try CoreDataUtil.findSortedEntities(context: managedObjectContext,
+                                                                                                      entity: PersistenceConst.Entity.Task.name,
+                                                                                                      column: PersistenceConst.Entity.Task.Column.scheduledAt,
+                                                                                                      ascending: true,
+                                                                                                      limit: 1)
+            return taskManagedObjects.first.map(PersistenceHelper.task(from:))
         }
-        return taskManagedObjects.first.map(PersistenceHelper.task(from:))
     }
-    
+
     func findTask(withId id: String) throws -> IterableTask? {
         guard let taskManagedObject = try findTaskManagedObject(id: id) else {
             return nil
