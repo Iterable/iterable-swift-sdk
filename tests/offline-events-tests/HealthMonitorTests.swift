@@ -47,15 +47,18 @@ class HealthMonitorTests: XCTestCase {
 
     func testSwitchProcessorsWhenNumTasksExceedsMaxTasks() throws {
         let expectation1 = expectation(description: #function)
-        expectation1.expectedFulfillmentCount = 3
         let networkSession = MockNetworkSession(statusCode: 200)
+        networkSession.queue = DispatchQueue.global(qos: .userInitiated)
         var processorMap = [String: String]()
         networkSession.requestCallback = { request in
             if request.url!.absoluteString.contains(Const.Path.trackEvent) {
                 let eventName = request.bodyDict["eventName"] as! String
-                let processor = request.allHTTPHeaderFields?[JsonKey.Header.requestProcessor]!
-                processorMap[eventName] = processor!
-                expectation1.fulfill()
+                let processor = (request.allHTTPHeaderFields?[JsonKey.Header.requestProcessor]!)!
+                processorMap[eventName] = processor
+                
+                if eventName == "myEvent", processor == "Offline" {
+                    expectation1.fulfill()
+                }
             }
         }
         let localStorage = MockLocalStorage()
@@ -66,15 +69,30 @@ class HealthMonitorTests: XCTestCase {
                                                                    maxTasks: 1)
 
         internalAPI.track("myEvent")
-        internalAPI.track("myEvent2").onSuccess { _ in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                internalAPI.track("myEvent3")
+        
+        wait(for: [expectation1], timeout: testExpectationTimeout)
+
+        let changedToOnline = TestUtils.tryUntil(attempts: 10) {
+            internalAPI.track("myEvent2")
+        } test: {
+            if let value = processorMap["myEvent2"], value == "Online" {
+                return true
+            } else {
+                return false
             }
         }
-        wait(for: [expectation1], timeout: testExpectationTimeout)
-        XCTAssertEqual(processorMap["myEvent"], "Offline")
-        XCTAssertEqual(processorMap["myEvent2"], "Online")
-        XCTAssertEqual(processorMap["myEvent3"], "Offline")
+        XCTAssertTrue(changedToOnline)
+
+        let changedBackToOffline = TestUtils.tryUntil(attempts: 10) {
+            internalAPI.track("myEvent3")
+        } test: {
+            if let value = processorMap["myEvent3"], value == "Offline" {
+                return true
+            } else {
+                return false
+            }
+        }
+        XCTAssertTrue(changedBackToOffline)
     }
 
     func testCountTasksException() throws {

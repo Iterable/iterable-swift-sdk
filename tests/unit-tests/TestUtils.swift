@@ -175,6 +175,23 @@ struct TestUtils {
 
         return (request: request, body: body)
     }
+    
+    static func tryUntil(attempts: Int,
+                         closure: () -> Pending<SendRequestValue, SendRequestError>,
+                         test: () -> Bool) -> Bool {
+        if attempts == 0 {
+            return false
+        }
+        
+        closure()
+            .wait()
+        
+        if test() {
+            return true
+        } else {
+            return tryUntil(attempts: attempts-1, closure: closure, test: test)
+        }
+    }
 
     private static func validateQueryParameters(inUrlComponents urlComponents: URLComponents, queryParams: [(name: String, value: String)]) {
         queryParams.forEach { name, value in
