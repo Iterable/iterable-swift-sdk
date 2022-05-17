@@ -19,7 +19,10 @@ struct HealthMonitorDataProvider: HealthMonitorDataProviderProtocol {
     let maxTasks: Int
 
     func countTasks() throws -> Int {
-        return try persistenceContextProvider.newBackgroundContext().countTasks()
+        let context = persistenceContextProvider.newBackgroundContext()
+        return try context.performAndWait {
+            try context.countTasks()
+        }
     }
     
     private let persistenceContextProvider: IterablePersistenceContextProvider

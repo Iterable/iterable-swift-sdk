@@ -202,6 +202,7 @@ class MockNetworkSession: NetworkSessionProtocol {
     }
     
     var responseCallback: ((URL) -> MockResponse?)?
+    var queue: DispatchQueue
     
     var timeout: TimeInterval = 60.0
     
@@ -238,8 +239,10 @@ class MockNetworkSession: NetworkSessionProtocol {
         self.init(responseCallback: responseCallback)
     }
     
-    init(responseCallback: ((URL) -> MockResponse?)?) {
+    init(responseCallback: ((URL) -> MockResponse?)?,
+         queue: DispatchQueue = DispatchQueue.main) {
         self.responseCallback = responseCallback
+        self.queue = queue
     }
     
     func makeRequest(_ request: URLRequest, completionHandler: @escaping NetworkSessionProtocol.CompletionHandler) {
@@ -261,16 +264,16 @@ class MockNetworkSession: NetworkSessionProtocol {
 
         let delay = mockResponse?.delay ?? 0
         if  delay == 0 {
-            DispatchQueue.main.async {
+            queue.async {
                 block()
             }
         } else {
             if delay < timeout {
-                DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                queue.asyncAfter(deadline: .now() + delay) {
                     block()
                 }
             } else {
-                DispatchQueue.main.asyncAfter(deadline: .now() + timeout) {
+                queue.asyncAfter(deadline: .now() + timeout) {
                     let error = NetworkError(reason: "The request timed out.")
                     completionHandler(nil, nil, error)
                     self.callback?(nil, nil, error)
@@ -299,11 +302,11 @@ class MockNetworkSession: NetworkSessionProtocol {
         
         let delay = mockResponse?.delay ?? 0
         if delay == 0 {
-            DispatchQueue.main.async {
+            queue.async {
                 block()
             }
         } else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+            queue.asyncAfter(deadline: .now() + delay) {
                 block()
             }
         }

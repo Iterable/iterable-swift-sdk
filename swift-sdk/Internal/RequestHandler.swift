@@ -89,9 +89,11 @@ class RequestHandler: RequestHandlerProtocol {
     func updateCart(items: [CommerceItem],
                     onSuccess: OnSuccessHandler?,
                     onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        chooseRequestProcessor().updateCart(items: items,
-                                            onSuccess: onSuccess,
-                                            onFailure: onFailure)
+        Pending<SendRequestValue, SendRequestError>.inBackgroundThread {
+            self.chooseRequestProcessor().updateCart(items: items,
+                                                     onSuccess: onSuccess,
+                                                     onFailure: onFailure)
+        }
     }
     
     @discardableResult
@@ -102,13 +104,15 @@ class RequestHandler: RequestHandlerProtocol {
                        templateId: NSNumber?,
                        onSuccess: OnSuccessHandler?,
                        onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        chooseRequestProcessor().trackPurchase(total,
-                                               items: items,
-                                               dataFields: dataFields,
-                                               campaignId: campaignId,
-                                               templateId: templateId,
-                                               onSuccess: onSuccess,
-                                               onFailure: onFailure)
+        Pending<SendRequestValue, SendRequestError>.inBackgroundThread {
+            self.chooseRequestProcessor().trackPurchase(total,
+                                                        items: items,
+                                                        dataFields: dataFields,
+                                                        campaignId: campaignId,
+                                                        templateId: templateId,
+                                                        onSuccess: onSuccess,
+                                                        onFailure: onFailure)
+        }
     }
     
     @discardableResult
@@ -119,13 +123,15 @@ class RequestHandler: RequestHandlerProtocol {
                        dataFields: [AnyHashable: Any]?,
                        onSuccess: OnSuccessHandler?,
                        onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        chooseRequestProcessor().trackPushOpen(campaignId,
-                                               templateId: templateId,
-                                               messageId: messageId,
-                                               appAlreadyRunning: appAlreadyRunning,
-                                               dataFields: dataFields,
-                                               onSuccess: onSuccess,
-                                               onFailure: onFailure)
+        Pending<SendRequestValue, SendRequestError>.inBackgroundThread {
+            self.chooseRequestProcessor().trackPushOpen(campaignId,
+                                                        templateId: templateId,
+                                                        messageId: messageId,
+                                                        appAlreadyRunning: appAlreadyRunning,
+                                                        dataFields: dataFields,
+                                                        onSuccess: onSuccess,
+                                                        onFailure: onFailure)
+        }
     }
     
     @discardableResult
@@ -133,10 +139,12 @@ class RequestHandler: RequestHandlerProtocol {
                dataFields: [AnyHashable: Any]?,
                onSuccess: OnSuccessHandler?,
                onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        chooseRequestProcessor().track(event: event,
-                                       dataFields: dataFields,
-                                       onSuccess: onSuccess,
-                                       onFailure: onFailure)
+        Pending<SendRequestValue, SendRequestError>.inBackgroundThread {
+            self.chooseRequestProcessor().track(event: event,
+                                                dataFields: dataFields,
+                                                onSuccess: onSuccess,
+                                                onFailure: onFailure)
+        }
     }
     
     @discardableResult
@@ -154,11 +162,13 @@ class RequestHandler: RequestHandlerProtocol {
                         inboxSessionId: String?,
                         onSuccess: OnSuccessHandler?,
                         onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        chooseRequestProcessor().trackInAppOpen(message,
-                                                location: location,
-                                                inboxSessionId: inboxSessionId,
-                                                onSuccess: onSuccess,
-                                                onFailure: onFailure)
+        Pending<SendRequestValue, SendRequestError>.inBackgroundThread {
+            self.chooseRequestProcessor().trackInAppOpen(message,
+                                                         location: location,
+                                                         inboxSessionId: inboxSessionId,
+                                                         onSuccess: onSuccess,
+                                                         onFailure: onFailure)
+        }
     }
     
     @discardableResult
@@ -168,12 +178,14 @@ class RequestHandler: RequestHandlerProtocol {
                          clickedUrl: String,
                          onSuccess: OnSuccessHandler?,
                          onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        chooseRequestProcessor().trackInAppClick(message,
-                                                 location: location,
-                                                 inboxSessionId: inboxSessionId,
-                                                 clickedUrl: clickedUrl,
-                                                 onSuccess: onSuccess,
-                                                 onFailure: onFailure)
+        Pending<SendRequestValue, SendRequestError>.inBackgroundThread {
+            self.chooseRequestProcessor().trackInAppClick(message,
+                                                          location: location,
+                                                          inboxSessionId: inboxSessionId,
+                                                          clickedUrl: clickedUrl,
+                                                          onSuccess: onSuccess,
+                                                          onFailure: onFailure)
+        }
     }
     
     @discardableResult
@@ -184,40 +196,48 @@ class RequestHandler: RequestHandlerProtocol {
                          clickedUrl: String?,
                          onSuccess: OnSuccessHandler?,
                          onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        chooseRequestProcessor().trackInAppClose(message,
-                                                 location: location,
-                                                 inboxSessionId: inboxSessionId,
-                                                 source: source,
-                                                 clickedUrl: clickedUrl,
-                                                 onSuccess: onSuccess,
-                                                 onFailure: onFailure)
+        Pending<SendRequestValue, SendRequestError>.inBackgroundThread {
+            self.chooseRequestProcessor().trackInAppClose(message,
+                                                          location: location,
+                                                          inboxSessionId: inboxSessionId,
+                                                          source: source,
+                                                          clickedUrl: clickedUrl,
+                                                          onSuccess: onSuccess,
+                                                          onFailure: onFailure)
+        }
     }
     
     @discardableResult
     func track(inboxSession: IterableInboxSession,
                onSuccess: OnSuccessHandler?,
                onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        chooseRequestProcessor().track(inboxSession: inboxSession,
-                                       onSuccess: onSuccess,
-                                       onFailure: onFailure)
+        Pending<SendRequestValue, SendRequestError>.inBackgroundThread {
+            self.chooseRequestProcessor().track(inboxSession: inboxSession,
+                                                onSuccess: onSuccess,
+                                                onFailure: onFailure)
+        }
     }
-    
+
     @discardableResult
     func track(inAppDelivery message: IterableInAppMessage,
                onSuccess: OnSuccessHandler?,
                onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        chooseRequestProcessor().track(inAppDelivery: message,
-                                       onSuccess: onSuccess,
-                                       onFailure: onFailure)
+        Pending<SendRequestValue, SendRequestError>.inBackgroundThread {
+            self.chooseRequestProcessor().track(inAppDelivery: message,
+                                                onSuccess: onSuccess,
+                                                onFailure: onFailure)
+        }
     }
     
     @discardableResult
     func inAppConsume(_ messageId: String,
                       onSuccess: OnSuccessHandler?,
                       onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        chooseRequestProcessor().inAppConsume(messageId,
-                                              onSuccess: onSuccess,
-                                              onFailure: onFailure)
+        Pending<SendRequestValue, SendRequestError>.inBackgroundThread {
+            self.chooseRequestProcessor().inAppConsume(messageId,
+                                                       onSuccess: onSuccess,
+                                                       onFailure: onFailure)
+        }
     }
     
     @discardableResult
@@ -227,12 +247,14 @@ class RequestHandler: RequestHandlerProtocol {
                       inboxSessionId: String?,
                       onSuccess: OnSuccessHandler?,
                       onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        chooseRequestProcessor().inAppConsume(message: message,
-                                              location: location,
-                                              source: source,
-                                              inboxSessionId: inboxSessionId,
-                                              onSuccess: onSuccess,
-                                              onFailure: onFailure)
+        Pending<SendRequestValue, SendRequestError>.inBackgroundThread {
+            self.chooseRequestProcessor().inAppConsume(message: message,
+                                                       location: location,
+                                                       source: source,
+                                                       inboxSessionId: inboxSessionId,
+                                                       onSuccess: onSuccess,
+                                                       onFailure: onFailure)
+        }
     }
     
     func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError> {
