@@ -2,6 +2,15 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.4.3
+### Added
+- Retry request on JWT token obtained.
+  
+### Fixed
+- Core data multithreading issue.
+- Update email with JWT token.
+
+
 ## 6.4.2
 ### Added
 - Added support for apps built using Mac Catalyst.
