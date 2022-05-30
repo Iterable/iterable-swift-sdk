@@ -263,7 +263,9 @@ class RequestHandler: RequestHandlerProtocol {
     
     func handleLogout() throws {
         if offlineMode {
-            offlineProcessor?.deleteAllTasks()
+            DispatchQueue.global(qos: .background).async { [weak self] in
+                self?.offlineProcessor?.deleteAllTasks()
+            }
         }
     }
 

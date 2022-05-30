@@ -44,7 +44,9 @@ class IterableTaskScheduler {
     func deleteAllTasks() {
         ITBInfo()
         do {
-            try persistenceContextProvider.mainQueueContext().deleteAllTasks()
+            try persistenceContext.performAndWait {
+                try persistenceContext.deleteAllTasks()
+            }
         } catch let error {
             ITBError("deleteAllTasks: \(error.localizedDescription)")
             healthMonitor.onDeleteAllTasksError()
