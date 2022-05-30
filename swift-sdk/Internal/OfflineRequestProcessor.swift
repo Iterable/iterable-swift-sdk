@@ -301,23 +301,14 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         
         func futureFromTask(withTaskId taskId: String) -> Pending<SendRequestValue, SendRequestError> {
             ITBInfo()
-            let result = Fulfill<SendRequestValue, SendRequestError>()
-            pendingTasksMap[taskId] = result
-            return result
+            return addPendingTask(taskId: taskId)
         }
 
         @objc
         private func onTaskFinishedWithSuccess(notification: Notification) {
             ITBInfo()
             if let taskSendRequestValue = IterableNotificationUtil.notificationToTaskSendRequestValue(notification) {
-                let taskId = taskSendRequestValue.taskId
-                ITBInfo("task: \(taskId) finished with success")
-                if let fulfill = pendingTasksMap[taskId] {
-                    fulfill.resolve(with: taskSendRequestValue.sendRequestValue)
-                    pendingTasksMap.removeValue(forKey: taskId)
-                } else {
-                    ITBError("could not find fulfill for taskId: \(taskId)")
-                }
+                resolveTask(value: taskSendRequestValue)
             } else {
                 ITBError("Could not find taskId for notification")
             }
@@ -327,20 +318,48 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         private func onTaskFinishedWithNoRetry(notification: Notification) {
             ITBInfo()
             if let taskSendRequestError = IterableNotificationUtil.notificationToTaskSendRequestError(notification) {
-                let taskId = taskSendRequestError.taskId
-                ITBInfo("task: \(taskId) finished with no retry")
-                if let fulfill = pendingTasksMap[taskId] {
-                    fulfill.reject(with: taskSendRequestError.sendRequestError)
-                    pendingTasksMap.removeValue(forKey: taskId)
+                rejectTask(error: taskSendRequestError)
+            } else {
+                ITBError("Could not find taskId for notification")
+            }
+        }
+        
+        private func addPendingTask(taskId: String) -> Pending<SendRequestValue, SendRequestError> {
+            let result = Fulfill<SendRequestValue, SendRequestError>()
+            pendingTasksQueue.async { [weak self] in
+                self?.pendingTasksMap[taskId] = result
+            }
+            return result
+        }
+        
+        private func resolveTask(value: TaskSendRequestValue) {
+            pendingTasksQueue.async { [weak self] in
+                let taskId = value.taskId
+                ITBInfo("task: \(taskId) finished with success")
+                if let fulfill = self?.pendingTasksMap[taskId] {
+                    fulfill.resolve(with: value.sendRequestValue)
+                    self?.pendingTasksMap.removeValue(forKey: taskId)
                 } else {
                     ITBError("could not find fulfill for taskId: \(taskId)")
                 }
-            } else {
-                ITBError("Could not find taskId for notification")
+            }
+        }
+        
+        private func rejectTask(error: TaskSendRequestError) {
+            pendingTasksQueue.async { [weak self] in
+                let taskId = error.taskId
+                ITBInfo("task: \(taskId) finished with no retry")
+                if let fulfill = self?.pendingTasksMap[taskId] {
+                    fulfill.reject(with: error.sendRequestError)
+                    self?.pendingTasksMap.removeValue(forKey: taskId)
+                } else {
+                    ITBError("could not find fulfill for taskId: \(taskId)")
+                }
             }
         }
 
         private let notificationCenter: NotificationCenterProtocol
         private var pendingTasksMap = [String: Fulfill<SendRequestValue, SendRequestError>]()
+        private var pendingTasksQueue = DispatchQueue(label: "pendingTasks")
     }
 }

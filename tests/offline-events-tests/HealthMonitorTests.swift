@@ -205,7 +205,10 @@ class HealthMonitorTests: XCTestCase {
                                                                    persistenceContextProvider: MockPersistenceContextProvider(context: context))
         XCTAssertTrue(internalAPI.requestHandler.offlineMode)
         internalAPI.email = "user2@example.com"
-        XCTAssertFalse(internalAPI.requestHandler.offlineMode)
+        let result = TestUtils.tryUntil(attempts: 10) {
+            internalAPI.requestHandler.offlineMode == false
+        }
+        XCTAssertTrue(result)
     }
 
     private let dateProvider = MockDateProvider()

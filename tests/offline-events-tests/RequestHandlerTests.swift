@@ -678,7 +678,12 @@ class RequestHandlerTests: XCTestCase {
 
         internalApi.logoutUser()
         
-        XCTAssertEqual(try persistenceContextProvider.mainQueueContext().findAllTasks().count, 0)
+        let result = TestUtils.tryUntil(attempts: 10) {
+            let count = try! persistenceContextProvider.mainQueueContext().findAllTasks().count
+            return count == 0
+        }
+        
+        XCTAssertTrue(result)
     }
     
     func testGetRemoteConfiguration() throws {

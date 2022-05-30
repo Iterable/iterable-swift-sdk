@@ -46,6 +46,7 @@ class IterableTaskScheduler {
         do {
             try persistenceContext.performAndWait {
                 try persistenceContext.deleteAllTasks()
+                try persistenceContext.save()
             }
         } catch let error {
             ITBError("deleteAllTasks: \(error.localizedDescription)")
