@@ -72,7 +72,17 @@ class HealthMonitorTests: XCTestCase {
         
         wait(for: [expectation1], timeout: testExpectationTimeout)
 
+        // We have to try many tasks simultaneously so that we have more than 1 task in the DB
         let changedToOnline = TestUtils.tryUntil(attempts: 10) {
+            internalAPI.track("myEvent2")
+            internalAPI.track("myEvent2")
+            internalAPI.track("myEvent2")
+            internalAPI.track("myEvent2")
+            internalAPI.track("myEvent2")
+            internalAPI.track("myEvent2")
+            internalAPI.track("myEvent2")
+            internalAPI.track("myEvent2")
+            internalAPI.track("myEvent2")
             internalAPI.track("myEvent2")
         } test: {
             if let value = processorMap["myEvent2"], value == "Online" {
@@ -110,7 +120,7 @@ class HealthMonitorTests: XCTestCase {
         let localStorage = MockLocalStorage()
         localStorage.email = "user@example.com"
         localStorage.offlineModeBeta = true
-        var input = MockPersistenceContext.Input()
+        let input = MockPersistenceContext.Input()
         input.countTasksCallback = {
             throw IterableDBError.general("Scheduler exception")
         }

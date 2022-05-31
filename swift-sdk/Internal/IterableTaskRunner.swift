@@ -159,7 +159,6 @@ class IterableTaskRunner: NSObject {
                 return execute(task: task).flatMap { executionResult in
                     switch executionResult {
                     case .success, .failure, .error:
-                        self.deleteTask(task: task)
                         return self.processTasks()
                     case .processing, .retry:
                         return Fulfill<Void, Never>(value: ())
@@ -199,6 +198,7 @@ class IterableTaskRunner: NSObject {
                 switch taskResult {
                 case let .success(detail: detail):
                     ITBInfo("task: \(task.id) succeeded")
+                    self.deleteTask(task: task)
                     if let successDetail = detail as? SendRequestValue {
                         let userInfo = IterableNotificationUtil.sendRequestValueToUserInfo(successDetail, taskId: task.id)
                         self.notificationCenter.post(name: .iterableTaskFinishedWithSuccess,
@@ -208,6 +208,7 @@ class IterableTaskRunner: NSObject {
                     result.resolve(with: .success)
                 case let .failureWithNoRetry(detail: detail):
                     ITBInfo("task: \(task.id) failed with no retry.")
+                    self.deleteTask(task: task)
                     if let failureDetail = detail as? SendRequestError {
                         let userInfo = IterableNotificationUtil.sendRequestErrorToUserInfo(failureDetail, taskId: task.id)
                         self.notificationCenter.post(name: .iterableTaskFinishedWithNoRetry,
@@ -227,10 +228,12 @@ class IterableTaskRunner: NSObject {
                 }
             }.onError { error in
                 ITBError("task processing error: \(error.localizedDescription)")
+                self.deleteTask(task: task)
                 result.resolve(with: .failure)
             }
         } catch let error {
             ITBError("Error proessing task: \(task.id), message: \(error.localizedDescription)")
+            self.deleteTask(task: task)
             result.resolve(with: .error)
         }
         return result

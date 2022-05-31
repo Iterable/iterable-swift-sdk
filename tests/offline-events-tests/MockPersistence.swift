@@ -7,7 +7,7 @@ import Foundation
 @testable import IterableSDK
 
 class MockPersistenceContext: IterablePersistenceContext {
-    struct Input {
+    class Input {
         var createCallback: (() throws -> Void)? = nil
         var updateCallback: (() throws -> Void)? = nil
         var deleteCallback: (() throws -> Void)? = nil
@@ -29,26 +29,26 @@ class MockPersistenceContext: IterablePersistenceContext {
     
     func create(task: IterableTask) throws -> IterableTask {
         ITBInfo()
-        try input.createCallback?()
         tasks.append(task)
+        try input.createCallback?()
         return task
     }
     
     func update(task: IterableTask) throws -> IterableTask {
         ITBInfo()
-        try input.updateCallback?()
         if let index = tasks.firstIndex(where: { $0.id == task.id}) {
             tasks[index] = task
         }
+        try input.updateCallback?()
         return task
     }
     
     func delete(task: IterableTask) throws {
         ITBInfo()
-        try input.deleteCallback?()
         if let index = tasks.firstIndex(where: { $0.id == task.id}) {
             tasks.remove(at: index)
         }
+        try input.deleteCallback?()
     }
     
     func findTask(withId id: String) throws -> IterableTask? {
@@ -59,10 +59,10 @@ class MockPersistenceContext: IterablePersistenceContext {
     
     func deleteTask(withId id: String) throws {
         ITBInfo()
-        try input.deleteTaskWithIdCallback?()
         if let index = tasks.firstIndex(where: { $0.id == id}) {
             tasks.remove(at: index)
         }
+        try input.deleteTaskWithIdCallback?()
     }
     
     func nextTask() throws -> IterableTask? {
@@ -79,8 +79,8 @@ class MockPersistenceContext: IterablePersistenceContext {
     
     func deleteAllTasks() throws {
         ITBInfo()
-        try input.deleteAllTasksCallback?()
         tasks.removeAll()
+        try input.deleteAllTasksCallback?()
     }
     
     func countTasks() throws -> Int {
@@ -96,8 +96,10 @@ class MockPersistenceContext: IterablePersistenceContext {
     
     func perform(_ block: @escaping () -> Void) {
         ITBInfo()
-        input.performCallback?()
-        block()
+        queue.async {[weak self] in
+            block()
+            self?.input.performCallback?()
+        }
     }
     
     func performAndWait(_ block: () -> Void) {
@@ -111,6 +113,8 @@ class MockPersistenceContext: IterablePersistenceContext {
         input.performAndWaitCallbackWithResult?()
         return try block()
     }
+    
+    private let queue = DispatchQueue(label: "mockPersistence")
     
     private let input: Input
     private var tasks = [IterableTask]()

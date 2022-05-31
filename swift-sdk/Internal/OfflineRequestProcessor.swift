@@ -327,6 +327,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         private func addPendingTask(taskId: String) -> Pending<SendRequestValue, SendRequestError> {
             let result = Fulfill<SendRequestValue, SendRequestError>()
             pendingTasksQueue.async { [weak self] in
+                ITBInfo("adding pending task: \(taskId)")
                 self?.pendingTasksMap[taskId] = result
             }
             return result

@@ -177,38 +177,23 @@ struct TestUtils {
     }
     
     static func tryUntil(attempts: Int,
-                         closure: () -> Pending<SendRequestValue, SendRequestError>,
-                         test: () -> Bool) -> Bool {
-        if attempts == 0 {
-            return false
-        }
-        
-        closure()
-            .wait()
-        
-        if test() {
-            return true
-        } else {
-            return tryUntil(attempts: attempts-1, closure: closure, test: test)
-        }
-    }
-
-    static func tryUntil(attempts: Int,
+                         closure: (() -> Void)? = nil,
                          test: () -> Bool) -> Bool {
         ITBInfo("attempt: \(attempts)")
         if attempts == 0 {
             return false
         }
         
-        Thread.sleep(forTimeInterval: 1.0)
+        closure?()
         
         if test() {
             return true
         } else {
-            return tryUntil(attempts: attempts-1, test: test)
+            Thread.sleep(forTimeInterval: 1.0)
+            return tryUntil(attempts: attempts-1, closure: closure, test: test)
         }
     }
-    
+
     private static func validateQueryParameters(inUrlComponents urlComponents: URLComponents, queryParams: [(name: String, value: String)]) {
         queryParams.forEach { name, value in
             validateQueryParameter(inUrlComponents: urlComponents, withName: name, andValue: value)
