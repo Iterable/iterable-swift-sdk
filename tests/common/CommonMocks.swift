@@ -180,17 +180,20 @@ class MockNetworkSession: NetworkSessionProtocol {
         let delay: TimeInterval
         let error: Error?
         let headerFields: [String: String]?
+        let queue: DispatchQueue?
         
         init(statusCode: Int = MockNetworkSession.defaultStatus,
              data: Data? = MockNetworkSession.defaultData,
              delay: TimeInterval = 0.0,
              error: Error? = nil,
-             headerFields: [String: String]? = MockNetworkSession.defaultHeaderFields) {
+             headerFields: [String: String]? = MockNetworkSession.defaultHeaderFields,
+             queue: DispatchQueue? = nil) {
             self.statusCode = statusCode
             self.data = data
             self.delay = delay
             self.error = error
             self.headerFields = headerFields
+            self.queue = queue
         }
         
         func toUrlResponse(url: URL) -> URLResponse? {
@@ -262,6 +265,8 @@ class MockNetworkSession: NetworkSessionProtocol {
             }
         }
 
+        let queue = mockResponse?.queue ?? self.queue
+
         let delay = mockResponse?.delay ?? 0
         if  delay == 0 {
             queue.async {
@@ -299,6 +304,8 @@ class MockNetworkSession: NetworkSessionProtocol {
                 self.callback?(nil, response, nil)
             }
         }
+        
+        let queue = mockResponse?.queue ?? self.queue
         
         let delay = mockResponse?.delay ?? 0
         if delay == 0 {

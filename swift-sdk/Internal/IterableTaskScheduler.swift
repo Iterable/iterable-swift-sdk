@@ -17,33 +17,40 @@ class IterableTaskScheduler {
     
     func schedule(apiCallRequest: IterableAPICallRequest,
                   context: IterableTaskContext = IterableTaskContext(blocking: true),
-                  scheduledAt: Date? = nil) -> Result<String, IterableTaskError> {
+                  scheduledAt: Date? = nil) -> Pending<String, IterableTaskError>  {
         ITBInfo()
-        let taskId = IterableUtil.generateUUID()
-        do {
-            let data = try JSONEncoder().encode(apiCallRequest)
-            
-            try persistenceContext.performAndWait {
+        let fulfill = Fulfill<String, IterableTaskError>()
+        let persistenceContext = persistenceContextProvider.newBackgroundContext()
+        persistenceContext.perform { [weak self] in
+            guard let strongSelf = self else {
+                return
+            }
+            let taskId = IterableUtil.generateUUID()
+            do {
+                let data = try JSONEncoder().encode(apiCallRequest)
+                
                 try persistenceContext.create(task: IterableTask(id: taskId,
                                                                  name: apiCallRequest.getPath(),
                                                                  type: .apiCall,
-                                                                 scheduledAt: scheduledAt ?? dateProvider.currentDate,
+                                                                 scheduledAt: scheduledAt ?? strongSelf.dateProvider.currentDate,
                                                                  data: data,
-                                                                 requestedAt: dateProvider.currentDate))
+                                                                 requestedAt: strongSelf.dateProvider.currentDate))
                 try persistenceContext.save()
                 
+                strongSelf.notificationCenter.post(name: .iterableTaskScheduled, object: strongSelf, userInfo: nil)
+            } catch let error {
+                strongSelf.healthMonitor.onScheduleError(apiCallRequest: apiCallRequest)
+                fulfill.reject(with: IterableTaskError.general("schedule taskId: \(taskId) failed with error: \(error.localizedDescription)"))
             }
-            notificationCenter.post(name: .iterableTaskScheduled, object: self, userInfo: nil)
-        } catch let error {
-            healthMonitor.onScheduleError(apiCallRequest: apiCallRequest)
-            return Result.failure(IterableTaskError.general("schedule taskId: \(taskId) failed with error: \(error.localizedDescription)"))
+            fulfill.resolve(with: taskId)
         }
-        return Result.success(taskId)
+        return fulfill
     }
-    
+
     func deleteAllTasks() {
         ITBInfo()
         do {
+            let persistenceContext = persistenceContextProvider.newBackgroundContext()
             try persistenceContext.performAndWait {
                 try persistenceContext.deleteAllTasks()
                 try persistenceContext.save()
@@ -53,13 +60,9 @@ class IterableTaskScheduler {
             healthMonitor.onDeleteAllTasksError()
         }
     }
-    
+
     private let persistenceContextProvider: IterablePersistenceContextProvider
     private let notificationCenter: NotificationCenterProtocol
     private let healthMonitor: HealthMonitor
     private let dateProvider: DateProviderProtocol
-
-    private lazy var persistenceContext: IterablePersistenceContext = {
-        return persistenceContextProvider.newBackgroundContext()
-    }()
 }

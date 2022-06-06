@@ -261,26 +261,26 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         guard case let Result.success(iterableRequest) = requestGenerator(requestCreator) else {
                 return SendRequestError.createErroredFuture(reason: "Could not create request")
         }
-
+        
         let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
                                                     endPoint: endPoint,
                                                     auth: authProvider.auth,
                                                     deviceMetadata: deviceMetadata,
                                                     iterableRequest: iterableRequest)
-        switch taskScheduler.schedule(apiCallRequest: apiCallRequest, context: IterableTaskContext(blocking: true)) {
-        case .success(let taskId):
-            let result = notificationListener.futureFromTask(withTaskId: taskId)
+        
+        return taskScheduler.schedule(apiCallRequest: apiCallRequest,
+                                      context: IterableTaskContext(blocking: true)).mapFailure { error in
+            SendRequestError.from(error: error)
+        }.flatMap { taskId -> Pending<SendRequestValue, SendRequestError> in
+            let pendingTask = notificationListener.futureFromTask(withTaskId: taskId)
             return RequestProcessorUtil.apply(successHandler: onSuccess,
                                               andFailureHandler: onFailure,
                                               andAuthManager: authManager,
-                                              toResult: result,
+                                              toResult: pendingTask,
                                               withIdentifier: identifier)
-        case .failure(let error):
-            ITBError(error.localizedDescription)
-            return SendRequestError.createErroredFuture(reason: error.localizedDescription)
         }
     }
-    
+
     private class NotificationListener: NSObject {
         init(notificationCenter: NotificationCenterProtocol) {
             ITBInfo("OfflineRequestProcessor.NotificationListener.init()")
