@@ -111,6 +111,8 @@ class IterableTaskRunner: NSObject {
 
         running = true
         
+        workItem?.cancel()
+        
         persistenceContext.perform { [weak self] in
             self?.queue.async {
                 self?.processTasks()
@@ -127,9 +129,12 @@ class IterableTaskRunner: NSObject {
         
         running = false
 
-        queue.asyncAfter(deadline: .now() + timeInterval) {[weak self] in
+        workItem?.cancel()
+        let workItem = DispatchWorkItem { [weak self] in
             self?.run()
         }
+        self.workItem = workItem
+        queue.asyncAfter(deadline: .now() + timeInterval, execute: workItem)
     }
 
     private func processTasks() {
@@ -294,6 +299,7 @@ class IterableTaskRunner: NSObject {
     }
     
     private var queue = DispatchQueue(label: "TaskRunnerQueue")
+    private var workItem: DispatchWorkItem?
     private var paused = false
     private let networkSession: NetworkSessionProtocol
     private let persistenceContextProvider: IterablePersistenceContextProvider
