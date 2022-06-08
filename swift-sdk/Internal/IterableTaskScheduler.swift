@@ -49,15 +49,15 @@ class IterableTaskScheduler {
 
     func deleteAllTasks() {
         ITBInfo()
-        do {
-            let persistenceContext = persistenceContextProvider.newBackgroundContext()
-            try persistenceContext.performAndWait {
+        let persistenceContext = persistenceContextProvider.newBackgroundContext()
+        persistenceContext.perform { [weak self] in
+            do {
                 try persistenceContext.deleteAllTasks()
                 try persistenceContext.save()
+            } catch let error {
+                ITBError("deleteAllTasks: \(error.localizedDescription)")
+                self?.healthMonitor.onDeleteAllTasksError()
             }
-        } catch let error {
-            ITBError("deleteAllTasks: \(error.localizedDescription)")
-            healthMonitor.onDeleteAllTasksError()
         }
     }
 

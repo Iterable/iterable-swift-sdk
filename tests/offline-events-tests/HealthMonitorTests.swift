@@ -154,7 +154,7 @@ class HealthMonitorTests: XCTestCase {
         let localStorage = MockLocalStorage()
         localStorage.email = "user@example.com"
         localStorage.offlineModeBeta = true
-        var input = MockPersistenceContext.Input()
+        let input = MockPersistenceContext.Input()
         input.createCallback = {
             throw IterableDBError.general("error creating task")
         }
@@ -187,7 +187,7 @@ class HealthMonitorTests: XCTestCase {
         let localStorage = MockLocalStorage()
         localStorage.email = "user@example.com"
         localStorage.offlineModeBeta = true
-        var input = MockPersistenceContext.Input()
+        let input = MockPersistenceContext.Input()
         input.nextTaskCallback = {
             throw IterableDBError.general("error getting next task")
         }
@@ -207,7 +207,7 @@ class HealthMonitorTests: XCTestCase {
         let localStorage = MockLocalStorage()
         localStorage.email = "user@example.com"
         localStorage.offlineModeBeta = true
-        var input = MockPersistenceContext.Input()
+        let input = MockPersistenceContext.Input()
         input.deleteAllTasksCallback = {
             throw IterableDBError.general("error deleting all tasks")
         }
