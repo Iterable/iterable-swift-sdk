@@ -165,16 +165,23 @@ extension Pending {
     }
 }
 
-extension Pending {
-    static func inBackgroundThread<Value, Failure>(_ block: @escaping () -> Pending<Value, Failure>) -> Pending<Value, Failure> {
-        let fulfill = Fulfill<Void, Failure>()
-        DispatchQueue.global(qos: .background).async {
-            fulfill.resolve(with: ())
-        }
+extension Pending where Failure == Never {
+    func flatMap<NewValue, NewFailure>(_ closure: @escaping (Value) -> Pending<NewValue, NewFailure>) -> Pending<NewValue, NewFailure> {
+        let fulfill = Fulfill<NewValue, NewFailure>()
+        
+        onSuccess { value in
+            let pending = closure(value)
             
-        return fulfill.flatMap { _ in
-            block()
+            pending.onSuccess { futureValue in
+                fulfill.resolve(with: futureValue)
+            }
+            
+            pending.onError { futureError in
+                fulfill.reject(with: futureError)
+            }
         }
+        
+        return fulfill
     }
 }
 

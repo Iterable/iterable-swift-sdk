@@ -6,7 +6,7 @@ import Foundation
 
 protocol HealthMonitorDataProviderProtocol {
     var maxTasks: Int { get }
-    func countTasks() throws -> Int
+    func countTasks() throws -> Pending<Int, IterableTaskError>
 }
 
 struct HealthMonitorDataProvider: HealthMonitorDataProviderProtocol {
@@ -18,11 +18,18 @@ struct HealthMonitorDataProvider: HealthMonitorDataProviderProtocol {
     
     let maxTasks: Int
 
-    func countTasks() throws -> Int {
+    func countTasks() throws -> Pending<Int, IterableTaskError> {
+        let result = Fulfill<Int, IterableTaskError>()
         let context = persistenceContextProvider.newBackgroundContext()
-        return try context.performAndWait {
-            try context.countTasks()
+        context.perform {
+            do {
+                let count = try context.countTasks()
+                result.resolve(with: count)
+            } catch let error {
+                result.reject(with: IterableTaskError.general(error.localizedDescription))
+            }
         }
+        return result
     }
     
     private let persistenceContextProvider: IterablePersistenceContextProvider
@@ -48,23 +55,35 @@ class HealthMonitor {
     
     weak var delegate: HealthMonitorDelegate?
     
-    func canSchedule() -> Bool {
+    func canSchedule() -> Pending<Bool, Never> {
         ITBInfo()
         // do not schedule further on error
         guard errored == false else {
-            return false
+            return Fulfill<Bool, Never>(value: false)
         }
 
+        let fulfill = Fulfill<Bool, Never>()
         do {
-            let count = try dataProvider.countTasks()
-            return count < dataProvider.maxTasks
+            try dataProvider.countTasks().onCompletion { count in
+                if count < self.dataProvider.maxTasks {
+                    fulfill.resolve(with: true)
+                } else {
+                    fulfill.resolve(with: false)
+                }
+            } receiveError: { error in
+                ITBError("DBError: " + error.localizedDescription)
+                self.onError()
+                fulfill.resolve(with: false)
+            }
         } catch let error {
             ITBError("DBError: " + error.localizedDescription)
             onError()
-            return false
+            fulfill.resolve(with: false)
         }
+
+        return fulfill
     }
-    
+
     func canProcess() -> Bool {
         ITBInfo()
         return !errored

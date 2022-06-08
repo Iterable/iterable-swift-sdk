@@ -15,12 +15,12 @@ class IterableTaskRunner: NSObject {
          dateProvider: DateProviderProtocol = SystemDateProvider()) {
         ITBInfo()
         self.networkSession = networkSession
-        self.persistenceContextProvider = persistenceContextProvider
         self.healthMonitor = healthMonitor
         self.notificationCenter = notificationCenter
         self.timeInterval = timeInterval
         self.dateProvider = dateProvider
         self.connectivityManager = connectivityManager
+        self.persistenceContext = persistenceContextProvider.newBackgroundContext()
         
         super.init()
 
@@ -299,15 +299,12 @@ class IterableTaskRunner: NSObject {
     private var workItem: DispatchWorkItem?
     private var paused = false
     private let networkSession: NetworkSessionProtocol
-    private let persistenceContextProvider: IterablePersistenceContextProvider
     private let healthMonitor: HealthMonitor
     private let notificationCenter: NotificationCenterProtocol
     private let timeInterval: TimeInterval
     private let dateProvider: DateProviderProtocol
     private let connectivityManager: NetworkConnectivityManager
     private var running = false
-    
-    private lazy var persistenceContext: IterablePersistenceContext = {
-        return persistenceContextProvider.newBackgroundContext()
-    }()
+
+    private let persistenceContext: IterablePersistenceContext
 }

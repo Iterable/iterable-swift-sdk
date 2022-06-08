@@ -1012,10 +1012,10 @@ class RequestHandlerTests: XCTestCase {
         let request = { requestGenerator(requestHandler) }
         let expectation1 = expectation(description: #function)
         handleRequestWithSuccess(request: request,
-                                  networkSession: networkSession,
-                                  path: path,
-                                  bodyDict: bodyDict,
-                                  expectation: expectation1)
+                                 networkSession: networkSession,
+                                 path: path,
+                                 bodyDict: bodyDict,
+                                 expectation: expectation1)
         waitForTaskRunner(requestHandler: requestHandler,
                           expectation: expectation1)
     }
