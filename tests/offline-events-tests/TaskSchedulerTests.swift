@@ -22,11 +22,18 @@ class TaskSchedulerTests: XCTestCase {
     
     func testScheduleTask() throws {
         let expectation1 = expectation(description: #function)
-        let numTimes = 5
+        let numTimes = 10
         expectation1.expectedFulfillmentCount = numTimes
         
         let notificationCenter = MockNotificationCenter()
-        let reference = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithSuccess) { _ in
+        var taskIds: Set<String> = []
+        let reference = notificationCenter.addCallback(forNotification: .iterableTaskFinishedWithSuccess) { notification in
+            if let taskId = IterableNotificationUtil.notificationToTaskSendRequestValue(notification)?.taskId {
+                taskIds.insert(taskId)
+            } else {
+                XCTFail("Could not find taskId for notification")
+            }
+
             expectation1.fulfill()
         }
         let networkSession = MockNetworkSession()
@@ -60,6 +67,7 @@ class TaskSchedulerTests: XCTestCase {
         wait(for: [expectation1], timeout: 10.0)
         taskRunner.stop()
         notificationCenter.removeCallbacks(withIds: reference.callbackId)
+        XCTAssertEqual(numTimes, taskIds.count)
     }
     
     @discardableResult

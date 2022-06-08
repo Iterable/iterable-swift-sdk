@@ -109,17 +109,17 @@ class MockNetworkSession: NetworkSessionProtocol {
     func makeRequest(_ request: URLRequest, completionHandler: @escaping NetworkSessionProtocol.CompletionHandler) {
         let mockResponse = self.mockResponse(for: request.url)
 
-        let block = {
-            self.requests.append(request)
-            self.requestCallback?(request)
+        let block = {[weak self] in
+            self?.requests.append(request)
+            self?.requestCallback?(request)
             if let mockResponse = mockResponse {
                 let response = mockResponse.toUrlResponse(url: request.url!)
                 completionHandler(mockResponse.data, response, mockResponse.error)
-                self.callback?(mockResponse.data, response, mockResponse.error)
+                self?.callback?(mockResponse.data, response, mockResponse.error)
             } else {
                 let response = Self.defaultURLResponse(forUrl: request.url!)
                 completionHandler(Self.defaultData, response, nil)
-                self.callback?(Self.defaultData, response, nil)
+                self?.callback?(Self.defaultData, response, nil)
             }
         }
 

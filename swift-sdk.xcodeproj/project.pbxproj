@@ -40,6 +40,13 @@
 		55E02D39253F8D86009DB8BC /* WebViewProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */; };
 		55E6F462238E066400808BCE /* DeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6F45E238E066400808BCE /* DeepLinkTests.swift */; };
 		5B49BB3E27CFB71500E6F00C /* PopupInboxSessionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B49BB3D27CFB71500E6F00C /* PopupInboxSessionUITests.swift */; };
+		5B5AA711284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */; };
+		5B5AA712284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */; };
+		5B5AA713284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */; };
+		5B5AA714284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */; };
+		5B5AA715284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */; };
+		5B5AA716284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */; };
+		5B5AA717284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */; };
 		5B6C3C1127CE871F00B9A753 /* NavInboxSessionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B6C3C1027CE871F00B9A753 /* NavInboxSessionUITests.swift */; };
 		5B88BC482805D09D004016E5 /* NetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B88BC472805D09D004016E5 /* NetworkSession.swift */; };
 		AC02480822791E2100495FB9 /* IterableInboxNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */; };
@@ -414,6 +421,7 @@
 		55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewProtocolTests.swift; sourceTree = "<group>"; };
 		55E6F45E238E066400808BCE /* DeepLinkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepLinkTests.swift; sourceTree = "<group>"; };
 		5B49BB3D27CFB71500E6F00C /* PopupInboxSessionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupInboxSessionUITests.swift; sourceTree = "<group>"; };
+		5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockNetworkSession.swift; sourceTree = "<group>"; };
 		5B6C3C1027CE871F00B9A753 /* NavInboxSessionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavInboxSessionUITests.swift; sourceTree = "<group>"; };
 		5B88BC472805D09D004016E5 /* NetworkSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSession.swift; sourceTree = "<group>"; };
 		5BFC7CED27FC9AF300E77479 /* inbox-ui-tests-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "inbox-ui-tests-app.entitlements"; sourceTree = "<group>"; };
@@ -1188,6 +1196,7 @@
 			children = (
 				AC995F9C2167E9FD0099A184 /* CommonExtensions.swift */,
 				AC995F942166EC880099A184 /* CommonMocks.swift */,
+				5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */,
 				ACA8D1A42196309C001B1332 /* Common.swift */,
 			);
 			path = common;
@@ -1893,6 +1902,7 @@
 				ACD2B86325B18259005D7A90 /* OfflineModeE2ETests.swift in Sources */,
 				ACA2A91E24ABB426001DFD17 /* IterableAPISupport.swift in Sources */,
 				ACA2A91824AB25E3001DFD17 /* CommonMocks.swift in Sources */,
+				5B5AA716284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */,
 				ACA2A91924AB25E8001DFD17 /* Common.swift in Sources */,
 				AC8A058924AB1FE1002C1103 /* Environment.swift in Sources */,
 				ACA2A91A24AB266F001DFD17 /* Mocks.swift in Sources */,
@@ -1919,6 +1929,7 @@
 				ACED4C01213F50B30055A497 /* LoggingTests.swift in Sources */,
 				AC52C5B8272A8B32000DCDCF /* KeychainWrapperTests.swift in Sources */,
 				ACC3FD9E2536D7A30004A2E0 /* InAppFilePersistenceTests.swift in Sources */,
+				5B5AA714284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */,
 				55B37FC42297135F0042F13A /* NotificationMetadataTests.swift in Sources */,
 				55CC257B2462064F00A77FD5 /* InAppPresenterTests.swift in Sources */,
 				AC4BA00224163D8F007359F1 /* IterableHtmlMessageViewControllerTests.swift in Sources */,
@@ -1992,6 +2003,7 @@
 				AC2A2988231CFAC40070A9C3 /* NetworkTableViewController.swift in Sources */,
 				ACDA975C23159C37004C412E /* AppDelegate.swift in Sources */,
 				AC2A2986231A7CFF0070A9C3 /* TestInAppPayloadGenerator.swift in Sources */,
+				5B5AA713284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */,
 				AC738CE82315A5B600B96B2D /* CommonExtensions.swift in Sources */,
 				AC738CE72315A54100B96B2D /* CommonMocks.swift in Sources */,
 				AC738CEA2315A8B200B96B2D /* MainViewController.swift in Sources */,
@@ -2009,6 +2021,7 @@
 				ACFF428824656A2000FDF10D /* CommonMocks.swift in Sources */,
 				AC19520D231D9AC600CD5B61 /* Common.swift in Sources */,
 				AC195210231DAD6B00CD5B61 /* TestUtils.swift in Sources */,
+				5B5AA715284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */,
 				5B6C3C1127CE871F00B9A753 /* NavInboxSessionUITests.swift in Sources */,
 				ACDA977123159C39004C412E /* InboxUITests.swift in Sources */,
 				ACC6A8502323910D003CC4BE /* UITestsHelper.swift in Sources */,
@@ -2022,6 +2035,7 @@
 			files = (
 				ACF560D620E443BF000AAC23 /* AppDelegate.swift in Sources */,
 				AC995F9D2167E9FD0099A184 /* CommonExtensions.swift in Sources */,
+				5B5AA711284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */,
 				ACA8D1A52196309C001B1332 /* Common.swift in Sources */,
 				AC995F992166EE490099A184 /* CommonMocks.swift in Sources */,
 			);
@@ -2038,6 +2052,7 @@
 				ACC362C624D2C334002C67BA /* CommonExtensions.swift in Sources */,
 				ACF406252507F90F005FD775 /* NetworkConnectivityManagerTests.swift in Sources */,
 				AC05644B26387B54001FB810 /* MockPersistence.swift in Sources */,
+				5B5AA717284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */,
 				ACCF274C24F40C85004862D5 /* RequestHandlerTests.swift in Sources */,
 				ACC362C724D2C647002C67BA /* CommonMocks.swift in Sources */,
 				ACC362C824D2C7C9002C67BA /* TestUtils.swift in Sources */,
@@ -2053,6 +2068,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ACFF42B02465B4AE00FDF10D /* AppDelegate.swift in Sources */,
+				5B5AA712284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */,
 				ACFF42A424656CCE00FDF10D /* ViewController.swift in Sources */,
 				ACFF428F24656BDF00FDF10D /* CommonExtensions.swift in Sources */,
 				ACFF429024656BDF00FDF10D /* Common.swift in Sources */,

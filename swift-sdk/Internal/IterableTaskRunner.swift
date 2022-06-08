@@ -41,57 +41,59 @@ class IterableTaskRunner: NSObject {
     
     func start() {
         ITBInfo()
-        paused = false
-        run()
-        connectivityManager.start()
+        queue.async { [weak self] in
+            self?.paused = false
+            self?.connectivityManager.start()
+            self?.run()
+        }
     }
     
     func stop() {
         ITBInfo()
-        paused = true
-        timer?.invalidate()
-        timer = nil
-        connectivityManager.stop()
+        queue.async { [weak self] in
+            self?.paused = true
+            self?.connectivityManager.stop()
+        }
     }
     
     @objc
     private func onTaskScheduled(notification: Notification) {
         ITBInfo()
-        if !running && !paused {
-            runNow()
+        queue.async { [weak self] in
+            if self?.paused == false {
+                self?.run()
+            }
         }
     }
     
     @objc
     private func onAppWillEnterForeground(notification _: Notification) {
         ITBInfo()
-        start()
+        queue.async { [weak self] in
+            self?.start()
+        }
     }
     
     @objc
     private func onAppDidEnterBackground(notification _: Notification) {
         ITBInfo()
-        stop()
+        queue.async { [weak self] in
+            self?.stop()
+        }
     }
 
-    private func runNow() {
-        timer?.invalidate()
-        timer = nil
-        run()
-    }
-    
     private func onConnectivityChanged(connected: Bool) {
         ITBInfo()
-        if connected {
-            if paused {
-                paused = false
-                if !running {
-                    runNow()
+        queue.async { [weak self] in
+            if connected {
+                if self?.paused == true {
+                    self?.paused = false
+                    self?.run()
                 }
-            }
-        } else {
-            if !paused {
-                paused = true
+            } else {
+                if self?.paused == false {
+                    self?.paused = true
+                }
             }
         }
     }
@@ -106,12 +108,12 @@ class IterableTaskRunner: NSObject {
             ITBInfo("Already running")
             return
         }
+
+        running = true
         
-        persistenceContext.perform {
-            self.processTasks().onSuccess { _ in
-                ITBInfo("Done processing tasks")
-                self.running = false
-                self.scheduleNext()
+        persistenceContext.perform { [weak self] in
+            self?.queue.async {
+                self?.processTasks()
             }
         }
     }
@@ -123,55 +125,53 @@ class IterableTaskRunner: NSObject {
             return
         }
         
-        DispatchQueue.global().async { [weak self] in
-            ITBInfo("Scheduling timer")
-            guard let timeInterval = self?.timeInterval else {
-                return
-            }
+        running = false
 
-            let timer = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: false) { [weak self] _ in
-                self?.run()
-            }
-            self?.timer = timer
-            RunLoop.current.add(timer, forMode: .default)
-            RunLoop.current.run()
+        queue.asyncAfter(deadline: .now() + timeInterval) {[weak self] in
+            self?.run()
         }
     }
-    
-    @discardableResult
-    private func processTasks() -> Pending<Void, Never> {
+
+    private func processTasks() {
         ITBInfo()
-        running = true
-        
+
         /// This is a recursive function.
         /// Check whether we were stopped in the middle of running tasks
         guard !paused else {
             ITBInfo("Tasks paused before finishing processTasks()")
-            return Fulfill<Void, Never>(value: ())
+            scheduleNext()
+            return
         }
         guard healthMonitor.canProcess() else {
             ITBInfo("Health monitor stopped processing")
-            return Fulfill<Void, Never>(value: ())
+            scheduleNext()
+            return
         }
 
         do {
             if let task = try persistenceContext.nextTask() {
-                return execute(task: task).flatMap { executionResult in
-                    switch executionResult {
-                    case .success, .failure, .error:
-                        return self.processTasks()
-                    case .processing, .retry:
-                        return Fulfill<Void, Never>(value: ())
+                execute(task: task).onSuccess { [weak self] executionResult in
+                    ITBInfo()
+                    guard let strongSelf = self else {
+                        return
+                    }
+                    strongSelf.queue.async {
+                        switch executionResult {
+                        case .success, .failure, .error:
+                            strongSelf.processTasks()
+                        case .processing, .retry:
+                            strongSelf.scheduleNext()
+                        }
                     }
                 }
             } else {
                 ITBInfo("No tasks to execute")
-                return Fulfill<Void, Never>(value: ())
+                scheduleNext()
             }
         } catch let error {
             ITBError("Next task error: \(error.localizedDescription)")
             healthMonitor.onNextTaskError()
-            return Fulfill<Void, Never>(value: ())
+            scheduleNext()
         }
     }
     
@@ -188,72 +188,100 @@ class IterableTaskRunner: NSObject {
             return processAPICallTask(processor: processor, task: task)
         }
     }
-    
+
     private func processAPICallTask(processor: IterableAPICallTaskProcessor,
                                     task: IterableTask) -> Pending<TaskExecutionResult, Never> {
         ITBInfo()
         let result = Fulfill<TaskExecutionResult, Never>()
         do {
-            try processor.process(task: task).onSuccess { taskResult in
-                switch taskResult {
-                case let .success(detail: detail):
-                    ITBInfo("task: \(task.id) succeeded")
-                    self.deleteTask(task: task)
-                    if let successDetail = detail as? SendRequestValue {
-                        let userInfo = IterableNotificationUtil.sendRequestValueToUserInfo(successDetail, taskId: task.id)
-                        self.notificationCenter.post(name: .iterableTaskFinishedWithSuccess,
-                                                     object: self,
-                                                     userInfo: userInfo)
-                    }
-                    result.resolve(with: .success)
-                case let .failureWithNoRetry(detail: detail):
-                    ITBInfo("task: \(task.id) failed with no retry.")
-                    self.deleteTask(task: task)
-                    if let failureDetail = detail as? SendRequestError {
-                        let userInfo = IterableNotificationUtil.sendRequestErrorToUserInfo(failureDetail, taskId: task.id)
-                        self.notificationCenter.post(name: .iterableTaskFinishedWithNoRetry,
-                                                     object: self,
-                                                     userInfo: userInfo)
-                    }
-                    result.resolve(with: .failure)
-                case let .failureWithRetry(_, detail: detail):
-                    ITBInfo("task: \(task.id) processed with retry")
-                    if let failureDetail = detail as? SendRequestError {
-                        let userInfo = IterableNotificationUtil.sendRequestErrorToUserInfo(failureDetail, taskId: task.id)
-                        self.notificationCenter.post(name: .iterableTaskFinishedWithRetry,
-                                                     object: self,
-                                                     userInfo: userInfo)
-                    }
-                    result.resolve(with: .retry)
+            try processor.process(task: task).onCompletion { [weak self] taskResult in
+                guard let strongSelf = self else {
+                    ITBError("Could not create strongSelf")
+                    result.resolve(with: .error)
+                    return
                 }
-            }.onError { error in
+                strongSelf.processTaskResultInQueue(task: task, taskResult: taskResult).onSuccess { taskExecutionResult in
+                    result.resolve(with: taskExecutionResult)
+                }
+            } receiveError: { [weak self] error in
                 ITBError("task processing error: \(error.localizedDescription)")
-                self.deleteTask(task: task)
+                guard let strongSelf = self else {
+                    return
+                }
+                strongSelf.deleteTask(task: task)
                 result.resolve(with: .failure)
             }
         } catch let error {
             ITBError("Error proessing task: \(task.id), message: \(error.localizedDescription)")
-            self.deleteTask(task: task)
+            deleteTask(task: task)
             result.resolve(with: .error)
         }
+        
         return result
+    }
+
+    private func processTaskResultInQueue(task: IterableTask,  taskResult: IterableTaskResult) -> Pending<TaskExecutionResult, Never> {
+        ITBInfo()
+        let fulfill = Fulfill<TaskExecutionResult, Never>()
+        
+        queue.async { [weak self] in
+            guard let strongSelf = self else {
+                ITBError()
+                return
+            }
+            switch taskResult {
+            case let .success(detail: detail):
+                ITBInfo("task: \(task.id) succeeded")
+                strongSelf.deleteTask(task: task)
+                if let successDetail = detail as? SendRequestValue {
+                    let userInfo = IterableNotificationUtil.sendRequestValueToUserInfo(successDetail, taskId: task.id)
+                    strongSelf.notificationCenter.post(name: .iterableTaskFinishedWithSuccess,
+                                                       object: strongSelf,
+                                                       userInfo: userInfo)
+                }
+                fulfill.resolve(with: .success)
+            case let .failureWithNoRetry(detail: detail):
+                ITBInfo("task: \(task.id) failed with no retry.")
+                strongSelf.deleteTask(task: task)
+                if let failureDetail = detail as? SendRequestError {
+                    let userInfo = IterableNotificationUtil.sendRequestErrorToUserInfo(failureDetail, taskId: task.id)
+                    strongSelf.notificationCenter.post(name: .iterableTaskFinishedWithNoRetry,
+                                                       object: strongSelf,
+                                                       userInfo: userInfo)
+                }
+                fulfill.resolve(with: .failure)
+            case let .failureWithRetry(_, detail: detail):
+                ITBInfo("task: \(task.id) processed with retry")
+                if let failureDetail = detail as? SendRequestError {
+                    let userInfo = IterableNotificationUtil.sendRequestErrorToUserInfo(failureDetail, taskId: task.id)
+                    strongSelf.notificationCenter.post(name: .iterableTaskFinishedWithRetry,
+                                                       object: strongSelf,
+                                                       userInfo: userInfo)
+                }
+                fulfill.resolve(with: .retry)
+            }
+        }
+        
+        return fulfill
     }
     
     deinit {
         ITBInfo()
-        stop()
         notificationCenter.removeObserver(self)
     }
     
     private func deleteTask(task: IterableTask) {
-        do {
-            try persistenceContext.performAndWait {
-                try persistenceContext.delete(task: task)
-                try persistenceContext.save()
+        ITBInfo("deleting task: \(task.id)")
+        queue.async { [weak self] in
+            do {
+                try self?.persistenceContext.performAndWait {
+                    try self?.persistenceContext.delete(task: task)
+                    try self?.persistenceContext.save()
+                }
+            } catch let error {
+                ITBError(error.localizedDescription)
+                self?.healthMonitor.onDeleteError(task: task)
             }
-        } catch let error {
-            ITBError(error.localizedDescription)
-            healthMonitor.onDeleteError(task: task)
         }
     }
     
@@ -265,6 +293,7 @@ class IterableTaskRunner: NSObject {
         case error
     }
     
+    private var queue = DispatchQueue(label: "TaskRunnerQueue")
     private var paused = false
     private let networkSession: NetworkSessionProtocol
     private let persistenceContextProvider: IterablePersistenceContextProvider
@@ -273,7 +302,6 @@ class IterableTaskRunner: NSObject {
     private let timeInterval: TimeInterval
     private let dateProvider: DateProviderProtocol
     private let connectivityManager: NetworkConnectivityManager
-    private weak var timer: Timer?
     private var running = false
     
     private lazy var persistenceContext: IterablePersistenceContext = {
