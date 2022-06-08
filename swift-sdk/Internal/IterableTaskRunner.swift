@@ -41,7 +41,7 @@ class IterableTaskRunner: NSObject {
     
     func start() {
         ITBInfo()
-        queue.async { [weak self] in
+        persistenceContext.perform { [weak self] in
             self?.paused = false
             self?.connectivityManager.start()
             self?.run()
@@ -50,7 +50,7 @@ class IterableTaskRunner: NSObject {
     
     func stop() {
         ITBInfo()
-        queue.async { [weak self] in
+        persistenceContext.perform { [weak self] in
             self?.paused = true
             self?.connectivityManager.stop()
         }
@@ -59,7 +59,7 @@ class IterableTaskRunner: NSObject {
     @objc
     private func onTaskScheduled(notification: Notification) {
         ITBInfo()
-        queue.async { [weak self] in
+        persistenceContext.perform { [weak self] in
             if self?.paused == false {
                 self?.run()
             }
@@ -69,7 +69,7 @@ class IterableTaskRunner: NSObject {
     @objc
     private func onAppWillEnterForeground(notification _: Notification) {
         ITBInfo()
-        queue.async { [weak self] in
+        persistenceContext.perform { [weak self] in
             self?.start()
         }
     }
@@ -77,14 +77,14 @@ class IterableTaskRunner: NSObject {
     @objc
     private func onAppDidEnterBackground(notification _: Notification) {
         ITBInfo()
-        queue.async { [weak self] in
+        persistenceContext.perform { [weak self] in
             self?.stop()
         }
     }
 
     private func onConnectivityChanged(connected: Bool) {
         ITBInfo()
-        queue.async { [weak self] in
+        persistenceContext.perform { [weak self] in
             if connected {
                 if self?.paused == true {
                     self?.paused = false
@@ -113,11 +113,7 @@ class IterableTaskRunner: NSObject {
         
         workItem?.cancel()
         
-        persistenceContext.perform { [weak self] in
-            self?.queue.async {
-                self?.processTasks()
-            }
-        }
+        processTasks()
     }
     
     private func scheduleNext() {
@@ -130,11 +126,15 @@ class IterableTaskRunner: NSObject {
         running = false
 
         workItem?.cancel()
+        
         let workItem = DispatchWorkItem { [weak self] in
-            self?.run()
+            self?.persistenceContext.perform {
+                self?.run()
+            }
         }
         self.workItem = workItem
-        queue.asyncAfter(deadline: .now() + timeInterval, execute: workItem)
+        
+        DispatchQueue.global().asyncAfter(deadline: .now() + timeInterval, execute: workItem)
     }
 
     private func processTasks() {
@@ -160,7 +160,7 @@ class IterableTaskRunner: NSObject {
                     guard let strongSelf = self else {
                         return
                     }
-                    strongSelf.queue.async {
+                    strongSelf.persistenceContext.perform {
                         switch executionResult {
                         case .success, .failure, .error:
                             strongSelf.processTasks()
@@ -209,6 +209,7 @@ class IterableTaskRunner: NSObject {
                     result.resolve(with: taskExecutionResult)
                 }
             } receiveError: { [weak self] error in
+                // TODO: test
                 ITBError("task processing error: \(error.localizedDescription)")
                 guard let strongSelf = self else {
                     return
@@ -217,6 +218,7 @@ class IterableTaskRunner: NSObject {
                 result.resolve(with: .failure)
             }
         } catch let error {
+            // TODO: test
             ITBError("Error proessing task: \(task.id), message: \(error.localizedDescription)")
             deleteTask(task: task)
             result.resolve(with: .error)
@@ -229,7 +231,7 @@ class IterableTaskRunner: NSObject {
         ITBInfo()
         let fulfill = Fulfill<TaskExecutionResult, Never>()
         
-        queue.async { [weak self] in
+        persistenceContext.perform { [weak self] in
             guard let strongSelf = self else {
                 ITBError()
                 return
@@ -277,16 +279,12 @@ class IterableTaskRunner: NSObject {
     
     private func deleteTask(task: IterableTask) {
         ITBInfo("deleting task: \(task.id)")
-        queue.async { [weak self] in
-            do {
-                try self?.persistenceContext.performAndWait {
-                    try self?.persistenceContext.delete(task: task)
-                    try self?.persistenceContext.save()
-                }
-            } catch let error {
-                ITBError(error.localizedDescription)
-                self?.healthMonitor.onDeleteError(task: task)
-            }
+        do {
+            try self.persistenceContext.delete(task: task)
+            try self.persistenceContext.save()
+        } catch let error {
+            ITBError(error.localizedDescription)
+            self.healthMonitor.onDeleteError(task: task)
         }
     }
     
@@ -298,7 +296,6 @@ class IterableTaskRunner: NSObject {
         case error
     }
     
-    private var queue = DispatchQueue(label: "TaskRunnerQueue")
     private var workItem: DispatchWorkItem?
     private var paused = false
     private let networkSession: NetworkSessionProtocol
