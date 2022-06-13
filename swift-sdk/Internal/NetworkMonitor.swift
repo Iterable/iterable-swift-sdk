@@ -67,21 +67,21 @@ class PollingNetworkMonitor: NetworkMonitorProtocol {
 
     func start() {
         ITBInfo()
-        timer?.invalidate()
-        self.timer = Timer.scheduledTimer(withTimeInterval: pollingInterval, repeats: true) { timer in
-            ITBInfo("Called timer")
-            self.statusUpdatedCallback?()
-        }
+        timer = DispatchSource.makeTimerSource()
+        timer?.setEventHandler(handler: {[weak self] in
+            self?.statusUpdatedCallback?()
+        })
+        timer?.schedule(deadline: .now() + pollingInterval, repeating: pollingInterval)
+        timer?.activate()
     }
     
     func stop() {
         ITBInfo()
-        timer?.invalidate()
-        timer = nil
+        timer?.cancel()
     }
     
     private var pollingInterval: TimeInterval
     private static let defaultPollingInterval: TimeInterval = 5 * 60
     
-    private var timer: Timer?
+    private var timer: DispatchSourceTimer?
 }

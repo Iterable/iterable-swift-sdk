@@ -89,10 +89,10 @@ class RequestHandler: RequestHandlerProtocol {
     func updateCart(items: [CommerceItem],
                     onSuccess: OnSuccessHandler?,
                     onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        Pending<SendRequestValue, SendRequestError>.inBackgroundThread {
-            self.chooseRequestProcessor().updateCart(items: items,
-                                                     onSuccess: onSuccess,
-                                                     onFailure: onFailure)
+        sendUsingRequestProcessor { processor in
+            processor.updateCart(items: items,
+                                 onSuccess: onSuccess,
+                                 onFailure: onFailure)
         }
     }
     
@@ -104,14 +104,14 @@ class RequestHandler: RequestHandlerProtocol {
                        templateId: NSNumber?,
                        onSuccess: OnSuccessHandler?,
                        onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        Pending<SendRequestValue, SendRequestError>.inBackgroundThread {
-            self.chooseRequestProcessor().trackPurchase(total,
-                                                        items: items,
-                                                        dataFields: dataFields,
-                                                        campaignId: campaignId,
-                                                        templateId: templateId,
-                                                        onSuccess: onSuccess,
-                                                        onFailure: onFailure)
+        sendUsingRequestProcessor { processor in
+            processor.trackPurchase(total,
+                                    items: items,
+                                    dataFields: dataFields,
+                                    campaignId: campaignId,
+                                    templateId: templateId,
+                                    onSuccess: onSuccess,
+                                    onFailure: onFailure)
         }
     }
     
@@ -123,14 +123,14 @@ class RequestHandler: RequestHandlerProtocol {
                        dataFields: [AnyHashable: Any]?,
                        onSuccess: OnSuccessHandler?,
                        onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        Pending<SendRequestValue, SendRequestError>.inBackgroundThread {
-            self.chooseRequestProcessor().trackPushOpen(campaignId,
-                                                        templateId: templateId,
-                                                        messageId: messageId,
-                                                        appAlreadyRunning: appAlreadyRunning,
-                                                        dataFields: dataFields,
-                                                        onSuccess: onSuccess,
-                                                        onFailure: onFailure)
+        sendUsingRequestProcessor { processor in
+            processor.trackPushOpen(campaignId,
+                                    templateId: templateId,
+                                    messageId: messageId,
+                                    appAlreadyRunning: appAlreadyRunning,
+                                    dataFields: dataFields,
+                                    onSuccess: onSuccess,
+                                    onFailure: onFailure)
         }
     }
     
@@ -139,11 +139,11 @@ class RequestHandler: RequestHandlerProtocol {
                dataFields: [AnyHashable: Any]?,
                onSuccess: OnSuccessHandler?,
                onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        Pending<SendRequestValue, SendRequestError>.inBackgroundThread {
-            self.chooseRequestProcessor().track(event: event,
-                                                dataFields: dataFields,
-                                                onSuccess: onSuccess,
-                                                onFailure: onFailure)
+        sendUsingRequestProcessor { processor in
+            processor.track(event: event,
+                            dataFields: dataFields,
+                            onSuccess: onSuccess,
+                            onFailure: onFailure)
         }
     }
     
@@ -162,12 +162,12 @@ class RequestHandler: RequestHandlerProtocol {
                         inboxSessionId: String?,
                         onSuccess: OnSuccessHandler?,
                         onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        Pending<SendRequestValue, SendRequestError>.inBackgroundThread {
-            self.chooseRequestProcessor().trackInAppOpen(message,
-                                                         location: location,
-                                                         inboxSessionId: inboxSessionId,
-                                                         onSuccess: onSuccess,
-                                                         onFailure: onFailure)
+        sendUsingRequestProcessor { processor in
+            processor.trackInAppOpen(message,
+                                     location: location,
+                                     inboxSessionId: inboxSessionId,
+                                     onSuccess: onSuccess,
+                                     onFailure: onFailure)
         }
     }
     
@@ -178,13 +178,13 @@ class RequestHandler: RequestHandlerProtocol {
                          clickedUrl: String,
                          onSuccess: OnSuccessHandler?,
                          onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        Pending<SendRequestValue, SendRequestError>.inBackgroundThread {
-            self.chooseRequestProcessor().trackInAppClick(message,
-                                                          location: location,
-                                                          inboxSessionId: inboxSessionId,
-                                                          clickedUrl: clickedUrl,
-                                                          onSuccess: onSuccess,
-                                                          onFailure: onFailure)
+        sendUsingRequestProcessor { processor in
+            processor.trackInAppClick(message,
+                                      location: location,
+                                      inboxSessionId: inboxSessionId,
+                                      clickedUrl: clickedUrl,
+                                      onSuccess: onSuccess,
+                                      onFailure: onFailure)
         }
     }
     
@@ -196,14 +196,14 @@ class RequestHandler: RequestHandlerProtocol {
                          clickedUrl: String?,
                          onSuccess: OnSuccessHandler?,
                          onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        Pending<SendRequestValue, SendRequestError>.inBackgroundThread {
-            self.chooseRequestProcessor().trackInAppClose(message,
-                                                          location: location,
-                                                          inboxSessionId: inboxSessionId,
-                                                          source: source,
-                                                          clickedUrl: clickedUrl,
-                                                          onSuccess: onSuccess,
-                                                          onFailure: onFailure)
+        sendUsingRequestProcessor { processor in
+            processor.trackInAppClose(message,
+                                      location: location,
+                                      inboxSessionId: inboxSessionId,
+                                      source: source,
+                                      clickedUrl: clickedUrl,
+                                      onSuccess: onSuccess,
+                                      onFailure: onFailure)
         }
     }
     
@@ -211,10 +211,10 @@ class RequestHandler: RequestHandlerProtocol {
     func track(inboxSession: IterableInboxSession,
                onSuccess: OnSuccessHandler?,
                onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        Pending<SendRequestValue, SendRequestError>.inBackgroundThread {
-            self.chooseRequestProcessor().track(inboxSession: inboxSession,
-                                                onSuccess: onSuccess,
-                                                onFailure: onFailure)
+        sendUsingRequestProcessor { processor in
+            processor.track(inboxSession: inboxSession,
+                            onSuccess: onSuccess,
+                            onFailure: onFailure)
         }
     }
 
@@ -222,10 +222,10 @@ class RequestHandler: RequestHandlerProtocol {
     func track(inAppDelivery message: IterableInAppMessage,
                onSuccess: OnSuccessHandler?,
                onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        Pending<SendRequestValue, SendRequestError>.inBackgroundThread {
-            self.chooseRequestProcessor().track(inAppDelivery: message,
-                                                onSuccess: onSuccess,
-                                                onFailure: onFailure)
+        sendUsingRequestProcessor { processor in
+            processor.track(inAppDelivery: message,
+                            onSuccess: onSuccess,
+                            onFailure: onFailure)
         }
     }
     
@@ -233,10 +233,10 @@ class RequestHandler: RequestHandlerProtocol {
     func inAppConsume(_ messageId: String,
                       onSuccess: OnSuccessHandler?,
                       onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        Pending<SendRequestValue, SendRequestError>.inBackgroundThread {
-            self.chooseRequestProcessor().inAppConsume(messageId,
-                                                       onSuccess: onSuccess,
-                                                       onFailure: onFailure)
+        sendUsingRequestProcessor { processor in
+            processor.inAppConsume(messageId,
+                                   onSuccess: onSuccess,
+                                   onFailure: onFailure)
         }
     }
     
@@ -247,13 +247,13 @@ class RequestHandler: RequestHandlerProtocol {
                       inboxSessionId: String?,
                       onSuccess: OnSuccessHandler?,
                       onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
-        Pending<SendRequestValue, SendRequestError>.inBackgroundThread {
-            self.chooseRequestProcessor().inAppConsume(message: message,
-                                                       location: location,
-                                                       source: source,
-                                                       inboxSessionId: inboxSessionId,
-                                                       onSuccess: onSuccess,
-                                                       onFailure: onFailure)
+        sendUsingRequestProcessor { processor in
+            processor.inAppConsume(message: message,
+                                   location: location,
+                                   source: source,
+                                   inboxSessionId: inboxSessionId,
+                                   onSuccess: onSuccess,
+                                   onFailure: onFailure)
         }
     }
     
@@ -263,26 +263,36 @@ class RequestHandler: RequestHandlerProtocol {
     
     func handleLogout() throws {
         if offlineMode {
-            offlineProcessor?.deleteAllTasks()
+            DispatchQueue.global(qos: .background).async { [weak self] in
+                self?.offlineProcessor?.deleteAllTasks()
+            }
         }
     }
 
     private let offlineProcessor: OfflineRequestProcessor?
     private let healthMonitor: HealthMonitor?
     private let onlineProcessor: OnlineRequestProcessor
-    
-    private func chooseRequestProcessor() -> RequestProcessorProtocol {
+
+    private func sendUsingRequestProcessor(closure: @escaping (RequestProcessorProtocol) -> Pending<SendRequestValue, SendRequestError>) -> Pending<SendRequestValue, SendRequestError> {
+        chooseRequestProcessor().flatMap { processor in
+            closure(processor)
+        }
+    }
+
+    private func chooseRequestProcessor() -> Pending<RequestProcessorProtocol, Never> {
         guard offlineMode else {
-            return onlineProcessor
+            return Fulfill<RequestProcessorProtocol, Never>(value: onlineProcessor)
         }
         guard
             let offlineProcessor = offlineProcessor,
             let healthMonitor = healthMonitor
         else {
-            return onlineProcessor
+            return Fulfill<RequestProcessorProtocol, Never>(value: onlineProcessor)
         }
-
-        return healthMonitor.canSchedule() ? offlineProcessor : onlineProcessor
+        
+        return healthMonitor.canSchedule().map { value -> RequestProcessorProtocol in
+            value ? offlineProcessor : self.onlineProcessor
+        }
     }
 }
 

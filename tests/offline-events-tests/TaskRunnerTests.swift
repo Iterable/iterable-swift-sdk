@@ -44,14 +44,18 @@ class TaskRunnerTests: XCTestCase {
                                             notificationCenter: notificationCenter,
                                             timeInterval: 0.5)
         taskRunner.start()
-
-        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter, healthMonitor: healthMonitor))
-        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter, healthMonitor: healthMonitor))
-        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter, healthMonitor: healthMonitor))
-
+        
+        let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                              notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor)
+        
+        try scheduleSampleTasks(scheduler: scheduler, times: 3, scheduledTaskIds: []).onSuccess(block: { values in
+            scheduledTaskIds = values
+        })
+        
         wait(for: [expectation1], timeout: 15.0)
         XCTAssertEqual(taskIds, scheduledTaskIds)
-
+        
         waitForZeroTasks()
         
         taskRunner.stop()
@@ -83,9 +87,12 @@ class TaskRunnerTests: XCTestCase {
                                             timeInterval: 1.0)
         taskRunner.start()
 
-        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter, healthMonitor: healthMonitor))
-        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter, healthMonitor: healthMonitor))
-        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter, healthMonitor: healthMonitor))
+        let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                              notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor)
+        try scheduleSampleTasks(scheduler: scheduler, times: 3, scheduledTaskIds: []).onSuccess(block: { values in
+            scheduledTaskIds = values
+        })
 
         let predicate = NSPredicate { _, _ in
             return retryTaskIds.count == 1
@@ -125,9 +132,12 @@ class TaskRunnerTests: XCTestCase {
                                             timeInterval: 0.5)
         taskRunner.start()
 
-        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter, healthMonitor: healthMonitor))
-        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter, healthMonitor: healthMonitor))
-        scheduledTaskIds.append(try scheduleSampleTask(notificationCenter: notificationCenter, healthMonitor: healthMonitor))
+        let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                              notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor)
+        try scheduleSampleTasks(scheduler: scheduler, times: 3, scheduledTaskIds: []).onSuccess(block: { values in
+            scheduledTaskIds = values
+        })
 
         wait(for: [expectation1], timeout: 15.0)
         XCTAssertEqual(failedTaskIds, scheduledTaskIds)
@@ -157,10 +167,13 @@ class TaskRunnerTests: XCTestCase {
                                             connectivityManager: manager)
         taskRunner.start()
 
+        let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                              notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor)
         // Now schedule a task, giving it some time for task runner to be updated with
         // offliine network status
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            let _ = try! self.scheduleSampleTask(notificationCenter: notificationCenter, healthMonitor: healthMonitor)
+            let _ = try! self.scheduleSampleTask(scheduler: scheduler)
         }
 
         verifyNoTaskIsExecuted(notificationCenter, forInterval: 1.0)
@@ -189,10 +202,14 @@ class TaskRunnerTests: XCTestCase {
                                             connectivityManager: manager)
         taskRunner.start()
 
+        let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                              notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor)
+
         // Now schedule a task, giving it some time for task runner to be updated with
         // offliine network status
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            let _ = try! self.scheduleSampleTask(notificationCenter: notificationCenter, healthMonitor: healthMonitor)
+            let _ = try! self.scheduleSampleTask(scheduler: scheduler)
         }
 
         verifyNoTaskIsExecuted(notificationCenter, forInterval: 1.0)
@@ -228,7 +245,11 @@ class TaskRunnerTests: XCTestCase {
                                             connectivityManager: manager)
         taskRunner.start()
         
-        let _ = try! self.scheduleSampleTask(notificationCenter: notificationCenter, healthMonitor: healthMonitor)
+        let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                              notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor)
+
+        let _ = try! self.scheduleSampleTask(scheduler: scheduler)
         verifyTaskIsExecuted(notificationCenter, withinInterval: 1.0)
 
         // Now move app to background
@@ -236,7 +257,7 @@ class TaskRunnerTests: XCTestCase {
         // Now schedule a task, giving it some time for task runner to be updated with
         // app background status
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            let _ = try! self.scheduleSampleTask(notificationCenter: notificationCenter, healthMonitor: healthMonitor)
+            let _ = try! self.scheduleSampleTask(scheduler: scheduler)
         }
 
         verifyNoTaskIsExecuted(notificationCenter, forInterval: 1.0)
@@ -273,7 +294,10 @@ class TaskRunnerTests: XCTestCase {
                            dateProvider: dateProvider)
         taskRunner.start()
 
-        let _ = try! self.scheduleSampleTask(notificationCenter: notificationCenter, healthMonitor: healthMonitor)
+        let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                              notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor)
+        let _ = try! self.scheduleSampleTask(scheduler: scheduler)
         verifyTaskIsExecuted(notificationCenter, withinInterval: 1.0)
 
         taskRunner.stop()
@@ -305,7 +329,10 @@ class TaskRunnerTests: XCTestCase {
                            timeInterval: 0.5)
         taskRunner.start()
 
-        let _ = try! self.scheduleSampleTask(notificationCenter: notificationCenter, dateProvider: dateProvider, healthMonitor: healthMonitor)
+        let scheduler = IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                              notificationCenter: notificationCenter,
+                                              healthMonitor: healthMonitor)
+        let _ = try! self.scheduleSampleTask(scheduler: scheduler)
         verifyTaskIsExecuted(notificationCenter, withinInterval: 1.0)
 
         taskRunner.stop()
@@ -321,9 +348,20 @@ class TaskRunnerTests: XCTestCase {
         wait(for: [expectation1], timeout: 5.0)
     }
 
-    private func scheduleSampleTask(notificationCenter: NotificationCenterProtocol,
-                                    dateProvider: DateProviderProtocol = SystemDateProvider(),
-                                    healthMonitor: HealthMonitor) throws -> String {
+    private func scheduleSampleTasks(scheduler: IterableTaskScheduler,
+                                     times: Int,
+                                     scheduledTaskIds: [String]) throws -> Pending<[String], IterableTaskError> {
+        guard times > 0 else {
+            return Fulfill<[String], IterableTaskError>(value: scheduledTaskIds)
+        }
+        return try scheduleSampleTask(scheduler: scheduler).flatMap { [self] taskId -> Pending<[String], IterableTaskError> in
+            var newTaskIds = scheduledTaskIds
+            newTaskIds.append(taskId)
+            return try! self.scheduleSampleTasks(scheduler: scheduler, times: times-1, scheduledTaskIds: newTaskIds)
+        }
+    }
+    
+    private func scheduleSampleTask(scheduler: IterableTaskScheduler) throws -> Pending<String, IterableTaskError> {
         let apiKey = "zee-api-key"
         let eventName = "CustomEvent1"
         let dataFields = ["var1": "val1", "var2": "val2"]
@@ -338,11 +376,7 @@ class TaskRunnerTests: XCTestCase {
                                                     auth: auth,
                                                     deviceMetadata: deviceMetadata,
                                                     iterableRequest: trackEventRequest)
-        
-        return try IterableTaskScheduler(persistenceContextProvider: persistenceContextProvider,
-                                         notificationCenter: notificationCenter,
-                                         healthMonitor: healthMonitor,
-                                         dateProvider: dateProvider).schedule(apiCallRequest: apiCallRequest).get()
+        return scheduler.schedule(apiCallRequest: apiCallRequest)
     }
 
     private func verifyNoTaskIsExecuted(_ notificationCenter: MockNotificationCenter, forInterval interval: TimeInterval) {
