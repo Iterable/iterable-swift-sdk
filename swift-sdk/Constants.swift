@@ -61,6 +61,8 @@ enum Const {
         static let serviceName = "itbl_keychain"
         
         enum Key {
+            static let email = "itbl_email"
+            static let userId = "itbl_userid"
             static let authToken = "itbl_auth_token"
         }
     }
