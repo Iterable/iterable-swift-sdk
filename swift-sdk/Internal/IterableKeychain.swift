@@ -51,8 +51,8 @@ class IterableKeychain {
         set {
             guard let token = newValue,
                   let data = token.data(using: .utf8) else {
-                      wrapper.removeValue(forKey: Const.Keychain.Key.authToken)
-                      return
+                wrapper.removeValue(forKey: Const.Keychain.Key.authToken)
+                return
             }
             
             wrapper.set(data, forKey: Const.Keychain.Key.authToken)
@@ -108,14 +108,14 @@ class KeychainWrapper {
         
         return status == noErr ? result as? Data : nil
     }
-
+    
     @discardableResult
     func removeValue(forKey key: String) -> Bool {
         let keychainQueryDictionary: [String: Any] = setupKeychainQueryDictionary(forKey: key)
-
+        
         // Delete
         let status: OSStatus = SecItemDelete(keychainQueryDictionary as CFDictionary)
-
+        
         if status == errSecSuccess {
             return true
         } else {
@@ -137,7 +137,7 @@ class KeychainWrapper {
             return false
         }
     }
-
+    
     
     private let serviceName: String
     
@@ -159,14 +159,14 @@ class KeychainWrapper {
         
         return keychainQueryDictionary
     }
-
+    
     private func update(_ value: Data, forKey key: String) -> Bool {
         let keychainQueryDictionary: [String: Any] = setupKeychainQueryDictionary(forKey: key)
         let updateDictionary = [SecValueData: value]
         
         // Update
         let status: OSStatus = SecItemUpdate(keychainQueryDictionary as CFDictionary, updateDictionary as CFDictionary)
-
+        
         if status == errSecSuccess {
             return true
         } else {
@@ -189,3 +189,4 @@ class KeychainWrapper {
     private let SecMatchLimitOne = kSecMatchLimitOne
     private let SecReturnData: String = kSecReturnData as String
 }
+
