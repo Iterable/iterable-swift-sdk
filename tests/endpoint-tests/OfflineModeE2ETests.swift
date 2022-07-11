@@ -23,7 +23,7 @@ class OfflineModeEndpointTests: XCTestCase {
     func test01TrackPurchase() throws {
         let expectation1 = expectation(description: #function)
         let localStorage = MockLocalStorage()
-        localStorage.offlineModeBeta = true
+        localStorage.offlineMode = true
         let api = InternalIterableAPI.initializeForE2E(apiKey: Self.apiKey,
                                                        localStorage: localStorage)
         api.email = "user@example.com"
@@ -46,7 +46,7 @@ class OfflineModeEndpointTests: XCTestCase {
     func test02TrackPushOpen() throws {
         let expectation1 = expectation(description: #function)
         let localStorage = MockLocalStorage()
-        localStorage.offlineModeBeta = true
+        localStorage.offlineMode = true
         let api = InternalIterableAPI.initializeForE2E(apiKey: Self.apiKey,
                                                        localStorage: localStorage)
         api.email = "user@example.com"
@@ -68,7 +68,7 @@ class OfflineModeEndpointTests: XCTestCase {
     func test03TrackPushOpenWithPushPayload() throws {
         let expectation1 = expectation(description: #function)
         let localStorage = MockLocalStorage()
-        localStorage.offlineModeBeta = true
+        localStorage.offlineMode = true
         let api = InternalIterableAPI.initializeForE2E(apiKey: Self.apiKey,
                                                        localStorage: localStorage)
         api.email = "user@example.com"
@@ -95,7 +95,7 @@ class OfflineModeEndpointTests: XCTestCase {
     func test04TrackEvent() throws {
         let expectation1 = expectation(description: #function)
         let localStorage = MockLocalStorage()
-        localStorage.offlineModeBeta = true
+        localStorage.offlineMode = true
         let api = InternalIterableAPI.initializeForE2E(apiKey: Self.apiKey,
                                                        localStorage: localStorage)
         api.email = "user@example.com"

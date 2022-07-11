@@ -34,7 +34,7 @@ class HealthMonitorTests: XCTestCase {
         }
         let localStorage = MockLocalStorage()
         localStorage.email = "user@example.com"
-        localStorage.offlineModeBeta = true
+        localStorage.offlineMode = true
         let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: networkSession,
                                                                    localStorage: localStorage)
 
@@ -65,7 +65,7 @@ class HealthMonitorTests: XCTestCase {
         }
         let localStorage = MockLocalStorage()
         localStorage.email = "user@example.com"
-        localStorage.offlineModeBeta = true
+        localStorage.offlineMode = true
         let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: networkSession,
                                                                    localStorage: localStorage,
                                                                    maxTasks: 1)
@@ -121,7 +121,7 @@ class HealthMonitorTests: XCTestCase {
         }
         let localStorage = MockLocalStorage()
         localStorage.email = "user@example.com"
-        localStorage.offlineModeBeta = true
+        localStorage.offlineMode = true
         let input = MockPersistenceContext.Input()
         input.countTasksCallback = {
             throw IterableDBError.general("Scheduler exception")
@@ -153,7 +153,7 @@ class HealthMonitorTests: XCTestCase {
         }
         let localStorage = MockLocalStorage()
         localStorage.email = "user@example.com"
-        localStorage.offlineModeBeta = true
+        localStorage.offlineMode = true
         let input = MockPersistenceContext.Input()
         input.createCallback = {
             throw IterableDBError.general("error creating task")
@@ -186,7 +186,7 @@ class HealthMonitorTests: XCTestCase {
         }
         let localStorage = MockLocalStorage()
         localStorage.email = "user@example.com"
-        localStorage.offlineModeBeta = true
+        localStorage.offlineMode = true
         let input = MockPersistenceContext.Input()
         input.nextTaskCallback = {
             throw IterableDBError.general("error getting next task")
@@ -206,7 +206,7 @@ class HealthMonitorTests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let localStorage = MockLocalStorage()
         localStorage.email = "user@example.com"
-        localStorage.offlineModeBeta = true
+        localStorage.offlineMode = true
         let input = MockPersistenceContext.Input()
         input.deleteAllTasksCallback = {
             throw IterableDBError.general("error deleting all tasks")
