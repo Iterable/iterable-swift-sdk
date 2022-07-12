@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.4.5
+### Added
+- This release makes offline events processing available to all Iterable customers who'd like to use it — just ask your customer success manager to enable it for your account. Offline events processing saves a local copy of events triggered in your app while the device is offline (up to 1000 events). When a connection is re-established and your app is in the foreground, the events will be sent to Iterable. For more information, read [Offline events processing](https://support.iterable.com/hc/articles/360035395671#offline-events-processing).
+
 ## 6.4.4
 ### Fixed
 - Core data issues.
