@@ -66,15 +66,6 @@ class IterableUserDefaults {
         }
     }
     
-    var offlineModeBeta: Bool {
-        get {
-            return bool(withKey: .offlineModeBeta)
-        }
-        set {
-            save(bool: newValue, withKey: .offlineModeBeta)
-        }
-    }
-    
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
         (try? codable(withKey: .attributionInfo, currentDate: currentDate)) ?? nil
     }
@@ -204,7 +195,6 @@ class IterableUserDefaults {
         static let deviceId = UserDefaultsKey(value: Const.UserDefault.deviceId)
         static let sdkVersion = UserDefaultsKey(value: Const.UserDefault.sdkVersion)
         static let offlineMode = UserDefaultsKey(value: Const.UserDefault.offlineMode)
-        static let offlineModeBeta = UserDefaultsKey(value: Const.UserDefault.offlineModeBeta)
     }
     
     private struct Envelope: Codable {
