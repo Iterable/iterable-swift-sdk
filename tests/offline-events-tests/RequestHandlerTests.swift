@@ -688,7 +688,7 @@ class RequestHandlerTests: XCTestCase {
     
     func testGetRemoteConfiguration() throws {
         let expectation1 = expectation(description: #function)
-        let expectedRemoteConfiguration = RemoteConfiguration(offlineMode: true, offlineModeBeta: true)
+        let expectedRemoteConfiguration = RemoteConfiguration(offlineMode: true)
         let data = try JSONEncoder().encode(expectedRemoteConfiguration)
         let notificationCenter = MockNotificationCenter()
         let networkSession = MockNetworkSession(statusCode: 200, data: data)
