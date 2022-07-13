@@ -13,17 +13,17 @@ struct LocalStorage: LocalStorageProtocol {
     
     var userId: String? {
         get {
-            iterableUserDefaults.userId
+            keychain.userId
         } set {
-            iterableUserDefaults.userId = newValue
+            keychain.userId = newValue
         }
     }
     
     var email: String? {
         get {
-            iterableUserDefaults.email
+            keychain.email
         } set {
-            iterableUserDefaults.email = newValue
+            keychain.email = newValue
         }
     }
     
