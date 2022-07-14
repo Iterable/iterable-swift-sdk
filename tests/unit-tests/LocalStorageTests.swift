@@ -33,6 +33,38 @@ class LocalStorageTests: XCTestCase {
         XCTAssertEqual(localStorage.email, email)
     }
     
+    func testAuthDataInKeychain() {
+        let testUserDefaults = LocalStorageTests.getTestUserDefaults()
+        let testKeychain = IterableKeychain.init(wrapper: KeychainWrapper.init(serviceName: "test-localstorage"))
+        
+        var localStorage = LocalStorage(userDefaults: testUserDefaults,
+                                        keychain: testKeychain)
+        
+        let userId = "user-id"
+        
+        localStorage.userId = userId
+        
+        XCTAssertNil(testUserDefaults.string(forKey: "userId"))
+        
+        XCTAssertEqual(testKeychain.userId, userId)
+        
+        let email = "test@example.com"
+        
+        localStorage.email = email
+        
+        XCTAssertNil(testUserDefaults.string(forKey: "email"))
+        
+        XCTAssertEqual(testKeychain.email, email)
+        
+        let authToken = "token"
+        
+        localStorage.authToken = authToken
+        
+        XCTAssertNil(testUserDefaults.string(forKey: "authToken"))
+        
+        XCTAssertEqual(testKeychain.authToken, authToken)
+    }
+    
     func testDDLChecked() throws {
         var localStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
         localStorage.ddlChecked = true
