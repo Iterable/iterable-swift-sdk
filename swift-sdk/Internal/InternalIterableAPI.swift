@@ -417,7 +417,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }()
     
     lazy var requestHandler: RequestHandlerProtocol = {
-        let offlineMode = self.localStorage.isOfflineModeEnabled()
+        let offlineMode = self.localStorage.offlineMode
         return dependencyContainer.createRequestHandler(apiKey: apiKey,
                                                         config: config,
                                                         endPoint: apiEndPoint,
@@ -636,8 +636,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         ITBInfo()
         requestHandler.getRemoteConfiguration().onSuccess { remoteConfiguration in
             self.localStorage.offlineMode = remoteConfiguration.offlineMode
-            self.localStorage.offlineModeBeta = remoteConfiguration.offlineModeBeta
-            self.requestHandler.offlineMode = remoteConfiguration.isOfflineModeEnabled()
+            self.requestHandler.offlineMode = remoteConfiguration.offlineMode
             ITBInfo("setting offlineMode: \(self.requestHandler.offlineMode)")
         }.onError { error in
             let offlineMode = self.requestHandler.offlineMode

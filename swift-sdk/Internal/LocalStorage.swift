@@ -67,15 +67,6 @@ struct LocalStorage: LocalStorageProtocol {
         }
     }
     
-    var offlineModeBeta: Bool {
-        get {
-            iterableUserDefaults.offlineModeBeta
-        }
-        set {
-            iterableUserDefaults.offlineModeBeta = newValue
-        }
-    }
-    
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
         iterableUserDefaults.getAttributionInfo(currentDate: currentDate)
     }

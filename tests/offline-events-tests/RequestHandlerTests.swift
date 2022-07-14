@@ -663,7 +663,7 @@ class RequestHandlerTests: XCTestCase {
     
     func testDeleteAllTasksOnLogout() throws {
         let localStorage = MockLocalStorage()
-        localStorage.offlineModeBeta = true
+        localStorage.offlineMode = true
         let internalApi = InternalIterableAPI.initializeForTesting(networkSession: MockNetworkSession(),
                                                                    localStorage: localStorage)
         internalApi.email = "user@example.com"
@@ -688,7 +688,7 @@ class RequestHandlerTests: XCTestCase {
     
     func testGetRemoteConfiguration() throws {
         let expectation1 = expectation(description: #function)
-        let expectedRemoteConfiguration = RemoteConfiguration(offlineMode: false, offlineModeBeta: true)
+        let expectedRemoteConfiguration = RemoteConfiguration(offlineMode: true)
         let data = try JSONEncoder().encode(expectedRemoteConfiguration)
         let notificationCenter = MockNotificationCenter()
         let networkSession = MockNetworkSession(statusCode: 200, data: data)
@@ -849,7 +849,7 @@ class RequestHandlerTests: XCTestCase {
         let expectation1 = expectation(description: "getRemoteConfiguration is called")
         let remoteConfigurationData = """
         {
-            "offlineMode": false,
+            "offlineMode": true,
             "offlineModeBeta": true
         }
         """.data(using: .utf8)!
@@ -890,7 +890,7 @@ class RequestHandlerTests: XCTestCase {
         }
         let localStorage = MockLocalStorage()
         localStorage.email = "user@example.com"
-        localStorage.offlineModeBeta = true
+        localStorage.offlineMode = true
         let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: networkSession, localStorage: localStorage)
         wait(for: [expectation1], timeout: testExpectationTimeout)
 
@@ -918,7 +918,7 @@ class RequestHandlerTests: XCTestCase {
         }
         let localStorage = MockLocalStorage()
         localStorage.email = "user@example.com"
-        localStorage.offlineModeBeta = false
+        localStorage.offlineMode = false
         let internalAPI = InternalIterableAPI.initializeForTesting(networkSession: networkSession, localStorage: localStorage)
         wait(for: [expectation1], timeout: testExpectationTimeout)
 

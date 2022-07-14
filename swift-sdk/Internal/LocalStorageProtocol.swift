@@ -12,7 +12,6 @@ protocol LocalStorageProtocol {
     var deviceId: String? { get set }
     var sdkVersion: String? { get set }
     var offlineMode: Bool { get set }
-    var offlineModeBeta: Bool { get set }
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo?
     func save(attributionInfo: IterableAttributionInfo?, withExpiration expiration: Date?)
     func getPayload(currentDate: Date) -> [AnyHashable: Any]?
@@ -21,10 +20,6 @@ protocol LocalStorageProtocol {
 }
 
 extension LocalStorageProtocol {
-    func isOfflineModeEnabled() -> Bool {
-        RemoteConfiguration.isBeta ? offlineModeBeta  : offlineMode
-    }
-
     func upgrade() {
     }
 }
