@@ -44,7 +44,7 @@ class LocalStorageTests: XCTestCase {
         
         localStorage.userId = userId
         
-        XCTAssertNil(testUserDefaults.string(forKey: "userId"))
+        XCTAssertNil(testUserDefaults.string(forKey: Const.UserDefault.userIdKey))
         
         XCTAssertEqual(testKeychain.userId, userId)
         
@@ -52,7 +52,7 @@ class LocalStorageTests: XCTestCase {
         
         localStorage.email = email
         
-        XCTAssertNil(testUserDefaults.string(forKey: "email"))
+        XCTAssertNil(testUserDefaults.string(forKey: Const.UserDefault.emailKey))
         
         XCTAssertEqual(testKeychain.email, email)
         
@@ -60,7 +60,7 @@ class LocalStorageTests: XCTestCase {
         
         localStorage.authToken = authToken
         
-        XCTAssertNil(testUserDefaults.string(forKey: "authToken"))
+        XCTAssertNil(testUserDefaults.string(forKey: Const.UserDefault.authTokenKey))
         
         XCTAssertEqual(testKeychain.authToken, authToken)
     }
