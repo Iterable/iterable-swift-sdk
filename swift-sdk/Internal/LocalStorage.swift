@@ -13,17 +13,17 @@ struct LocalStorage: LocalStorageProtocol {
     
     var userId: String? {
         get {
-            iterableUserDefaults.userId
+            keychain.userId
         } set {
-            iterableUserDefaults.userId = newValue
+            keychain.userId = newValue
         }
     }
     
     var email: String? {
         get {
-            iterableUserDefaults.email
+            keychain.email
         } set {
-            iterableUserDefaults.email = newValue
+            keychain.email = newValue
         }
     }
     
@@ -85,19 +85,36 @@ struct LocalStorage: LocalStorageProtocol {
     
     func upgrade() {
         ITBInfo()
-        moveJwtFromUserDefaultsToKeychain()
+        
+        /// moves `email`, `userId`, and `authToken` from `UserDefaults` to `IterableKeychain`
+        moveAuthDataFromUserDefaultsToKeychain()
     }
     
     // MARK: Private
     
     private let iterableUserDefaults: IterableUserDefaults
     private let keychain: IterableKeychain
-
-    private func moveJwtFromUserDefaultsToKeychain() {
+    
+    private func moveAuthDataFromUserDefaultsToKeychain() {
         if let userDefaultAuthToken = iterableUserDefaults.authToken, keychain.authToken == nil {
             keychain.authToken = userDefaultAuthToken
             iterableUserDefaults.authToken = nil
-            ITBInfo("updated: keychain auth token")
+            
+            ITBInfo("UPDATED: moved authToken from UserDefaults to IterableKeychain")
+        }
+        
+        if let userDefaultEmail = iterableUserDefaults.email, keychain.email == nil {
+            keychain.email = userDefaultEmail
+            iterableUserDefaults.email = nil
+            
+            ITBInfo("UPDATED: moved email from UserDefaults to IterableKeychain")
+        }
+        
+        if let userDefaultUserId = iterableUserDefaults.userId, keychain.userId == nil {
+            keychain.userId = userDefaultUserId
+            iterableUserDefaults.userId = nil
+            
+            ITBInfo("UPDATED: moved userId from UserDefaults to IterableKeychain")
         }
     }
 }
