@@ -5,6 +5,7 @@
 import UIKit
 
 @IBDesignable
+@objcMembers
 open class IterableInboxNavigationViewController: UINavigationController {
     // MARK: Settable properties
     
