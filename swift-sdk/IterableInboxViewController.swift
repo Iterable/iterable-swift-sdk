@@ -5,6 +5,7 @@
 import UIKit
 
 @IBDesignable
+@objcMembers
 open class IterableInboxViewController: UITableViewController {
     public enum InboxMode {
         case popup
