@@ -15,6 +15,10 @@ message, web push notification campaigns to your customers.
 
 This SDK helps you integrate your iOS apps with Iterable.
 
+## Supported iOS versions
+
+Iterable's iOS SDK supports iOS 10 and higher.
+
 ## Installation
 
 For installation instructions, read [Iterable's iOS SDK](https://support.iterable.com/hc/articles/360035018152).
