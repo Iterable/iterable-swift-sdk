@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.4.7
+### Added
+- Added `setEmail` and `setUserId` as publicly accessible functions, which will set the identity of the SDK to attribute to events. The optional second parameter will take in a JWT if you already have one at the time of this call (as opposed to through `IterableAuthDelegate`).
+
 ## 6.4.6
 ### Fixed
 - Added Objective-C access to `IterableInboxViewController` and `IterableInboxNavigationViewController`
