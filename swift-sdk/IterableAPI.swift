@@ -123,6 +123,14 @@ public final class IterableAPI: NSObject {
 
     // MARK: - SDK
     
+    public static func setEmail(_ email: String?, _ authToken: String? = nil) {
+        internalImplementation?.setEmail(email, authToken: authToken)
+    }
+    
+    public static func setUserId(_ userId: String?, _ authToken: String? = nil) {
+        internalImplementation?.setUserId(userId, authToken: authToken)
+    }
+    
     /// Handle a Universal Link
     ///
     /// For Iterable links, it will track the click and retrieve the original URL,
