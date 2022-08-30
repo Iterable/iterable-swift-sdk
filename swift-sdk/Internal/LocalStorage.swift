@@ -99,6 +99,8 @@ struct LocalStorage: LocalStorageProtocol {
     private let keychain: IterableKeychain
     
     private func moveAuthDataFromUserDefaultsToKeychain() {
+        // in the future, use the migration function from IterableUserDefaults like with the last push payload
+        
         if let userDefaultAuthToken = iterableUserDefaults.authToken, keychain.authToken == nil {
             keychain.authToken = userDefaultAuthToken
             iterableUserDefaults.authToken = nil

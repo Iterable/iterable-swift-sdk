@@ -97,6 +97,8 @@ class IterableUserDefaults {
         }
     }
     
+    // create migration function for email, userId, authToken here
+    
     // MARK: Private implementation
     
     private let userDefaults: UserDefaults
