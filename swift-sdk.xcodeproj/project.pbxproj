@@ -15,7 +15,6 @@
 		5531CDAC22A997A4000D05E2 /* IterableInboxViewControllerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5585DF9022A877E6000A32B9 /* IterableInboxViewControllerUITests.swift */; };
 		5531CDAE22A9C992000D05E2 /* ClassExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5531CDAD22A9C992000D05E2 /* ClassExtensionsTests.swift */; };
 		5536781F2576FF9000DB3652 /* IterableUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5536781E2576FF9000DB3652 /* IterableUtilTests.swift */; };
-		5555425028BED1B400DB5D20 /* KeychainWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5555424F28BED1B400DB5D20 /* KeychainWrapper.swift */; };
 		556FB1EA244FAF6A00EDF6BD /* InAppPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556FB1E9244FAF6A00EDF6BD /* InAppPresenter.swift */; };
 		557AE6BF24A56E5E00B57750 /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557AE6BE24A56E5E00B57750 /* Auth.swift */; };
 		5585DF8F22A73390000A32B9 /* IterableInboxViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5585DF8E22A73390000A32B9 /* IterableInboxViewControllerTests.swift */; };
@@ -397,7 +396,6 @@
 		552A0AA6280E1FDA00A80963 /* DeepLinkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepLinkManager.swift; sourceTree = "<group>"; };
 		5531CDAD22A9C992000D05E2 /* ClassExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassExtensionsTests.swift; sourceTree = "<group>"; };
 		5536781E2576FF9000DB3652 /* IterableUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableUtilTests.swift; sourceTree = "<group>"; };
-		5555424F28BED1B400DB5D20 /* KeychainWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainWrapper.swift; sourceTree = "<group>"; };
 		556FB1E9244FAF6A00EDF6BD /* InAppPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPresenter.swift; sourceTree = "<group>"; };
 		557AE6BE24A56E5E00B57750 /* Auth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Auth.swift; sourceTree = "<group>"; };
 		5585DF8E22A73390000A32B9 /* IterableInboxViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxViewControllerTests.swift; sourceTree = "<group>"; };
@@ -1265,11 +1263,10 @@
 		ACE34AB121376ACB00691224 /* Local Storage */ = {
 			isa = PBXGroup;
 			children = (
-				AC52C5B9272A8BC2000DCDCF /* IterableKeychain.swift */,
-				AC52C5B52729CE44000DCDCF /* IterableUserDefaults.swift */,
-				5555424F28BED1B400DB5D20 /* KeychainWrapper.swift */,
-				ACE34AB221376B1000691224 /* LocalStorage.swift */,
 				ACE34AB62139D70B00691224 /* LocalStorageProtocol.swift */,
+				ACE34AB221376B1000691224 /* LocalStorage.swift */,
+				AC52C5B52729CE44000DCDCF /* IterableUserDefaults.swift */,
+				AC52C5B9272A8BC2000DCDCF /* IterableKeychain.swift */,
 			);
 			name = "Local Storage";
 			sourceTree = "<group>";
@@ -1826,7 +1823,6 @@
 				AC84510922910A0C0052BB8F /* RequestCreator.swift in Sources */,
 				ACB8273F22372A5C00DB17D3 /* IterableHtmlMessageViewController.swift in Sources */,
 				AC5812F624F3A90F007E6D36 /* OfflineRequestProcessor.swift in Sources */,
-				5555425028BED1B400DB5D20 /* KeychainWrapper.swift in Sources */,
 				AC81918A22713A400014955E /* AbstractDiffCalculator.swift in Sources */,
 				ACA95D2D275494A100AF4666 /* InboxViewRepresentable.swift in Sources */,
 				AC684A88222F4FDD00F29749 /* InAppDisplayer.swift in Sources */,

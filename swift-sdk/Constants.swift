@@ -63,7 +63,6 @@ enum Const {
             static let email = "itbl_email"
             static let userId = "itbl_userid"
             static let authToken = "itbl_auth_token"
-            static let lastPushPayload = "itbl_last_push_payload"
         }
     }
     
