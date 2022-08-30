@@ -82,6 +82,21 @@ class IterableUserDefaults {
         try? save(dict: payload, withKey: .payload, andExpiration: expiration)
     }
     
+    func getLastPushPayloadAndExpirationPair() -> (payload: [AnyHashable: Any]?, expiration: Date?)? {
+        guard let encodedEnvelope = userDefaults.value(forKey: UserDefaultsKey.payload.value) as? Data else {
+            return nil
+        }
+        
+        do {
+            let envelope = try JSONDecoder().decode(Envelope.self, from: encodedEnvelope)
+            let decoded = try JSONSerialization.jsonObject(with: envelope.payload, options: []) as? [AnyHashable: Any]
+            
+            return (payload: decoded, envelope.expiration)
+        } catch {
+            return nil
+        }
+    }
+    
     // MARK: Private implementation
     
     private let userDefaults: UserDefaults
