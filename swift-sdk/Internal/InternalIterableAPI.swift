@@ -41,7 +41,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     var lastPushPayload: [AnyHashable: Any]? {
-        localStorage.getPayload(currentDate: dateProvider.currentDate)
+        localStorage.getLastPushPayload(dateProvider.currentDate)
     }
     
     var attributionInfo: IterableAttributionInfo? {
