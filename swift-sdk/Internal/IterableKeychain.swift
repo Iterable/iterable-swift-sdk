@@ -60,11 +60,15 @@ class IterableKeychain {
     }
     
     func getLastPushPayload(currentDate: Date) -> [AnyHashable: Any]? {
-//        let data = wrapper.data(forKey: Const.Keychain.Key.lastPushPayload)
+        guard let data = wrapper.data(forKey: Const.Keychain.Key.lastPushPayload) else {
+            return nil
+        }
         
+        let lastPushPayload = (try? JSONSerialization.jsonObject(with: data)) as? [AnyHashable: Any]
         
+        // check for expiration here
         
-        return nil
+        return lastPushPayload
     }
     
     func setLastPushPayload(_ payload: [AnyHashable: Any]?, withExpiration expiration: Date?) {
