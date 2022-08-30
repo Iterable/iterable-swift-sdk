@@ -5,6 +5,10 @@
 import Foundation
 
 class IterableKeychain {
+    init(wrapper: KeychainWrapper = KeychainWrapper()) {
+        self.wrapper = wrapper
+    }
+    
     var email: String? {
         get {
             let data = wrapper.data(forKey: Const.Keychain.Key.email)
@@ -72,6 +76,8 @@ class IterableKeychain {
     }
     
     func setLastPushPayload(_ payload: [AnyHashable: Any]?, withExpiration expiration: Date?) {
+        // save expiration here
+        
         guard let value = payload?.jsonValue, JSONSerialization.isValidJSONObject(value) else {
             wrapper.removeValue(forKey: Const.Keychain.Key.lastPushPayload)
             return
@@ -85,9 +91,7 @@ class IterableKeychain {
         }
     }
     
-    init(wrapper: KeychainWrapper = KeychainWrapper()) {
-        self.wrapper = wrapper
-    }
+    // MARK: - PRIVATE/INTERNAL
     
     private let wrapper: KeychainWrapper
 }

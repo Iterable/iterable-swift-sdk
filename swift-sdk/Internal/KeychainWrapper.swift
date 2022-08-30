@@ -89,6 +89,8 @@ class KeychainWrapper {
         return keychainQueryDictionary
     }
     
+    // MARK: - PRIVATE/INTERNAL
+    
     private func update(_ value: Data, forKey key: String) -> Bool {
         let keychainQueryDictionary: [String: Any] = setupKeychainQueryDictionary(forKey: key)
         let updateDictionary = [SecValueData: value]
