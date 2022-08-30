@@ -75,12 +75,12 @@ struct LocalStorage: LocalStorageProtocol {
         iterableUserDefaults.save(attributionInfo: attributionInfo, withExpiration: expiration)
     }
     
-    func getLastPushPayload(_ currentDate: Date) -> [AnyHashable: Any]? {
-        return keychain.getLastPushPayload(currentDate: currentDate)
+    func getPayload(currentDate: Date) -> [AnyHashable: Any]? {
+        iterableUserDefaults.getPayload(currentDate: currentDate)
     }
     
-    func saveLastPushPayload(_ payload: [AnyHashable: Any]?, withExpiration expiration: Date?) {
-        keychain.setLastPushPayload(payload, withExpiration: expiration)
+    func save(payload: [AnyHashable: Any]?, withExpiration expiration: Date?) {
+        iterableUserDefaults.save(payload: payload, withExpiration: expiration)
     }
     
     func upgrade() {
@@ -88,9 +88,6 @@ struct LocalStorage: LocalStorageProtocol {
         
         /// moves `email`, `userId`, and `authToken` from `UserDefaults` to `IterableKeychain`
         moveAuthDataFromUserDefaultsToKeychain()
-        
-        /// moves `lastPushPayload` from `UserDefaults` to `IterableKeychain`
-        moveLastPushPayloadFromUserDefaultsToKeychain()
     }
     
     // MARK: Private
@@ -118,15 +115,6 @@ struct LocalStorage: LocalStorageProtocol {
             iterableUserDefaults.userId = nil
             
             ITBInfo("UPDATED: moved userId from UserDefaults to IterableKeychain")
-        }
-    }
-    
-    private func moveLastPushPayloadFromUserDefaultsToKeychain() {
-        // using current date rather than `DateProvider` for convenience
-        if let (userDefaultLastPushPayload, expiration) = iterableUserDefaults.getLastPushPayloadAndExpirationPair() {
-            keychain.setLastPushPayload(userDefaultLastPushPayload, withExpiration: expiration)
-            
-            ITBInfo("UPDATED: moved lastPushPayload from UserDefaults to IterableKeychain")
         }
     }
 }
