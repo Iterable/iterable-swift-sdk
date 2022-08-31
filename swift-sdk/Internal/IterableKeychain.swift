@@ -25,7 +25,6 @@ class IterableKeychain {
             
             wrapper.set(data, forKey: Const.Keychain.Key.email)
         }
-        
     }
     
     var userId: String? {
@@ -52,6 +51,7 @@ class IterableKeychain {
             
             return data.flatMap { String(data: $0, encoding: .utf8) }
         }
+        
         set {
             guard let token = newValue,
                   let data = token.data(using: .utf8) else {
@@ -64,15 +64,18 @@ class IterableKeychain {
     }
     
     func getLastPushPayload(currentDate: Date) -> [AnyHashable: Any]? {
-        guard let data = wrapper.data(forKey: Const.Keychain.Key.lastPushPayload) else {
+        if isLastPushPayloadExpired(currentDate: currentDate) {
+            wrapper.removeValue(forKey: Const.Keychain.Key.lastPushPayload)
+            wrapper.removeValue(forKey: Const.Keychain.Key.lastPushPayloadExpiration)
+            
             return nil
         }
         
-        let lastPushPayload = (try? JSONSerialization.jsonObject(with: data)) as? [AnyHashable: Any]
+        if let data = wrapper.data(forKey: Const.Keychain.Key.lastPushPayload) {
+            return (try? JSONSerialization.jsonObject(with: data)) as? [AnyHashable: Any]
+        }
         
-        // check for expiration here
-        
-        return lastPushPayload
+        return nil
     }
     
     func setLastPushPayload(_ payload: [AnyHashable: Any]?, withExpiration expiration: Date?) {
@@ -94,4 +97,14 @@ class IterableKeychain {
     // MARK: - PRIVATE/INTERNAL
     
     private let wrapper: KeychainWrapper
+    
+    private func isLastPushPayloadExpired(currentDate: Date) -> Bool {
+        // get expiration here
+        
+        guard let expiration = wrapper.data(forKey: Const.Keychain.Key.lastPushPayloadExpiration) as? Date else {
+            return false
+        }
+        
+        return !(expiration.timeIntervalSinceReferenceDate > currentDate.timeIntervalSinceReferenceDate)
+    }
 }
