@@ -82,7 +82,7 @@ class IterableUserDefaults {
         try? save(dict: payload, withKey: .payload, andExpiration: expiration)
     }
     
-    func getLastPushPayloadAndExpirationPair() -> (payload: [AnyHashable: Any]?, expiration: Date?)? {
+    func getLastPushPayloadExpirationPairForMigration() -> (payload: [AnyHashable: Any]?, expiration: Date?)? {
         guard let encodedEnvelope = userDefaults.value(forKey: UserDefaultsKey.payload.value) as? Data else {
             return nil
         }
@@ -97,7 +97,11 @@ class IterableUserDefaults {
         }
     }
     
-    // create migration function for email, userId, authToken here
+    func getAuthDataForMigration() -> (email: String?, userId: String?, authToken: String?) {
+        
+        
+        return (email: nil, userId: nil, authToken: nil)
+    }
     
     // MARK: Private implementation
     

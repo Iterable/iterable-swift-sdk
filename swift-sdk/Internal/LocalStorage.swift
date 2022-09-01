@@ -99,35 +99,45 @@ struct LocalStorage: LocalStorageProtocol {
     private let keychain: IterableKeychain
     
     private func moveAuthDataFromUserDefaultsToKeychain() {
-        // in the future, use the migration function from IterableUserDefaults like with the last push payload
+        let (userDefaultEmail, userDefaultUserId, userDefaultAuthToken) = iterableUserDefaults.getAuthDataForMigration()
         
-        if let userDefaultAuthToken = iterableUserDefaults.authToken, keychain.authToken == nil {
-            keychain.authToken = userDefaultAuthToken
-            iterableUserDefaults.authToken = nil
+        if let userDefaultEmail = userDefaultEmail {
+            if keychain.email == nil {
+                keychain.email = userDefaultEmail
+            }
             
-            ITBInfo("UPDATED: moved authToken from UserDefaults to IterableKeychain")
-        }
-        
-        if let userDefaultEmail = iterableUserDefaults.email, keychain.email == nil {
-            keychain.email = userDefaultEmail
             iterableUserDefaults.email = nil
             
-            ITBInfo("UPDATED: moved email from UserDefaults to IterableKeychain")
+            ITBInfo("UPDATED: migrated email from UserDefaults to IterableKeychain")
         }
         
-        if let userDefaultUserId = iterableUserDefaults.userId, keychain.userId == nil {
-            keychain.userId = userDefaultUserId
+        if let userDefaultUserId = userDefaultUserId {
+            if keychain.userId == nil {
+                keychain.userId = userDefaultUserId
+            }
+            
             iterableUserDefaults.userId = nil
             
-            ITBInfo("UPDATED: moved userId from UserDefaults to IterableKeychain")
+            ITBInfo("UPDATED: migrated userId from UserDefaults to IterableKeychain")
+        }
+        
+        if let userDefaultAuthToken = userDefaultAuthToken {
+            if keychain.authToken == nil {
+                keychain.authToken = userDefaultAuthToken
+            }
+            
+            iterableUserDefaults.authToken = nil
+            
+            ITBInfo("UPDATED: migrated authToken from UserDefaults to IterableKeychain")
         }
     }
     
     private func moveLastPushPayloadFromUserDefaultsToKeychain() {
-        if let (userDefaultLastPushPayload, expiration) = iterableUserDefaults.getLastPushPayloadAndExpirationPair() {
+        if let (userDefaultLastPushPayload, expiration) = iterableUserDefaults.getLastPushPayloadExpirationPairForMigration() {
             keychain.setLastPushPayload(userDefaultLastPushPayload, withExpiration: expiration)
+            iterableUserDefaults.save(payload: nil, withExpiration: nil)
             
-            ITBInfo("UPDATED: moved lastPushPayload from UserDefaults to IterableKeychain")
+            ITBInfo("UPDATED: migrated lastPushPayload from UserDefaults to IterableKeychain")
         }
     }
 }
