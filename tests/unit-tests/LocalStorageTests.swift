@@ -114,16 +114,21 @@ class LocalStorageTests: XCTestCase {
                 ],
             ],
         ]
+        
         let currentDate = Date()
         let expiration = Calendar.current.date(byAdding: Calendar.Component.hour, value: 24, to: currentDate)!
-        localStorage.save(payload: payload, withExpiration: expiration)
+        
+        localStorage.saveLastPushPayload(payload, withExpiration: expiration)
+        
         // 23 hours, not expired, still present
         mockDateProvider.currentDate = Calendar.current.date(byAdding: Calendar.Component.hour, value: 23, to: currentDate)!
-        let fromLocalStorage: [AnyHashable: Any] = localStorage.getPayload(currentDate: mockDateProvider.currentDate)!
+        let fromLocalStorage: [AnyHashable: Any] = localStorage.getLastPushPayload(mockDateProvider.currentDate)!
+        
         XCTAssertTrue(NSDictionary(dictionary: payload).isEqual(to: fromLocalStorage))
         
         mockDateProvider.currentDate = Calendar.current.date(byAdding: Calendar.Component.hour, value: 25, to: currentDate)!
-        let fromLocalStorage2: [AnyHashable: Any]? = localStorage.getPayload(currentDate: mockDateProvider.currentDate)
+        let fromLocalStorage2: [AnyHashable: Any]? = localStorage.getLastPushPayload(mockDateProvider.currentDate)
+        
         XCTAssertNil(fromLocalStorage2)
     }
     
@@ -150,13 +155,16 @@ class LocalStorageTests: XCTestCase {
             ],
             "someClass": A(),
         ]
+        
         let currentDate = Date()
         let expiration = Calendar.current.date(byAdding: Calendar.Component.hour, value: 24, to: currentDate)!
-        localStorage.save(payload: payload, withExpiration: expiration)
+        
+        localStorage.saveLastPushPayload(payload, withExpiration: expiration)
         
         // 23 hours, not expired, still present
         mockDateProvider.currentDate = Calendar.current.date(byAdding: Calendar.Component.hour, value: 23, to: currentDate)!
-        let fromLocalStorage = localStorage.getPayload(currentDate: mockDateProvider.currentDate)
+        let fromLocalStorage = localStorage.getLastPushPayload(mockDateProvider.currentDate)
+        
         XCTAssertNil(fromLocalStorage)
     }
     
