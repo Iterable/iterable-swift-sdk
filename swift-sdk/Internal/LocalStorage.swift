@@ -124,7 +124,6 @@ struct LocalStorage: LocalStorageProtocol {
     }
     
     private func moveLastPushPayloadFromUserDefaultsToKeychain() {
-        // using current date rather than `DateProvider` for convenience
         if let (userDefaultLastPushPayload, expiration) = iterableUserDefaults.getLastPushPayloadAndExpirationPair() {
             keychain.setLastPushPayload(userDefaultLastPushPayload, withExpiration: expiration)
             
