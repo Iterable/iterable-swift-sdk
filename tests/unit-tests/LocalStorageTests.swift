@@ -111,7 +111,7 @@ class LocalStorageTests: XCTestCase {
     
     func testPayload() throws {
         let mockDateProvider = MockDateProvider()
-        let localStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults(), keychain: LocalStorageTests.getTestKeychain())
+        let localStorage = MockLocalStorage()
         
         let payload: [AnyHashable: Any] = [
             "email": "ilya@iterable.com",
