@@ -68,7 +68,7 @@ class KeychainWrapper {
         return status == errSecSuccess
     }
     
-    private let serviceName: String
+    // MARK: - PRIVATE/INTERNAL
     
     private func setupKeychainQueryDictionary(forKey key: String) -> [String: Any] {
         // Setup default access as generic password (rather than a certificate, internet password, etc)
@@ -89,8 +89,6 @@ class KeychainWrapper {
         return keychainQueryDictionary
     }
     
-    // MARK: - PRIVATE/INTERNAL
-    
     private func update(_ value: Data, forKey key: String) -> Bool {
         let keychainQueryDictionary: [String: Any] = setupKeychainQueryDictionary(forKey: key)
         let updateDictionary = [SecValueData: value]
@@ -101,6 +99,7 @@ class KeychainWrapper {
         return status == errSecSuccess
     }
     
+    private let serviceName: String
     private let SecValueData = kSecValueData as String
     private let SecAttrAccessible: String = kSecAttrAccessible as String
     private let SecAttrAccessibleWhenUnlocked = kSecAttrAccessibleWhenUnlocked
