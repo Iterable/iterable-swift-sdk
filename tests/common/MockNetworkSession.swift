@@ -227,3 +227,25 @@ class MockNetworkSession: NetworkSessionProtocol {
         return nil
     }
 }
+
+class NoNetworkNetworkSession: NetworkSessionProtocol {
+    func makeRequest(_ request: URLRequest, completionHandler: @escaping NetworkSessionProtocol.CompletionHandler) {
+        DispatchQueue.main.async {
+            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: [:])
+            let error = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: nil)
+            completionHandler(try! JSONSerialization.data(withJSONObject: [:], options: []), response, error)
+        }
+    }
+    
+    func makeDataRequest(with url: URL, completionHandler: @escaping NetworkSessionProtocol.CompletionHandler) {
+        DispatchQueue.main.async {
+            let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: [:])
+            let error = NSError(domain: NSURLErrorDomain, code: -1009, userInfo: nil)
+            completionHandler(try! JSONSerialization.data(withJSONObject: [:], options: []), response, error)
+        }
+    }
+    
+    func createDataTask(with url: URL, completionHandler: @escaping CompletionHandler) -> DataTaskProtocol {
+        fatalError("Not implemented")
+    }
+}
