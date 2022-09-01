@@ -98,9 +98,7 @@ class IterableUserDefaults {
     }
     
     func getAuthDataForMigration() -> (email: String?, userId: String?, authToken: String?) {
-        
-        
-        return (email: nil, userId: nil, authToken: nil)
+        return (email: email, userId: userId, authToken: authToken)
     }
     
     // MARK: Private implementation
