@@ -466,18 +466,11 @@ class MockLocalStorage: LocalStorageProtocol {
     private var attributionInfoExpiration: Date? = nil
     
     private static func isExpired(expiration: Date?, currentDate: Date) -> Bool {
-        if let expiration = expiration {
-            if expiration.timeIntervalSinceReferenceDate > currentDate.timeIntervalSinceReferenceDate {
-                // expiration is later
-                return false
-            } else {
-                // expired
-                return true
-            }
-        } else {
-            // no expiration
+        guard let expiration = expiration else {
             return false
         }
+        
+        return !(expiration.timeIntervalSinceReferenceDate > currentDate.timeIntervalSinceReferenceDate)
     }
 }
 

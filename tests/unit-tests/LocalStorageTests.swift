@@ -9,17 +9,32 @@ import XCTest
 class LocalStorageTests: XCTestCase {
     override func setUp() {
         super.setUp()
+        
         LocalStorageTests.clearTestUserDefaults()
+        LocalStorageTests.clearTestKeychain()
     }
     
-    static let userDefaultsSuiteName = "localstorage.tests"
+    static let localStorageTestSuiteName = "localstorage.tests"
     
     private static func getTestUserDefaults() -> UserDefaults {
-        UserDefaults(suiteName: userDefaultsSuiteName)!
+        UserDefaults(suiteName: localStorageTestSuiteName)!
     }
     
     private static func clearTestUserDefaults() {
-        getTestUserDefaults().removePersistentDomain(forName: userDefaultsSuiteName)
+        getTestUserDefaults().removePersistentDomain(forName: localStorageTestSuiteName)
+    }
+    
+    private static func getTestKeychain() -> IterableKeychain {
+        IterableKeychain(wrapper: KeychainWrapper(serviceName: localStorageTestSuiteName))
+    }
+    
+    private static func clearTestKeychain() {
+        let testKeychain = getTestKeychain()
+        
+        testKeychain.email = nil
+        testKeychain.userId = nil
+        testKeychain.authToken = nil
+        testKeychain.setLastPushPayload(nil, withExpiration: nil)
     }
     
     func testUserIdAndEmail() throws {
@@ -96,7 +111,8 @@ class LocalStorageTests: XCTestCase {
     
     func testPayload() throws {
         let mockDateProvider = MockDateProvider()
-        let localStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults())
+        let localStorage = LocalStorage(userDefaults: LocalStorageTests.getTestUserDefaults(), keychain: LocalStorageTests.getTestKeychain())
+        
         let payload: [AnyHashable: Any] = [
             "email": "ilya@iterable.com",
             "device": [
