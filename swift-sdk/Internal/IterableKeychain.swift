@@ -64,47 +64,99 @@ class IterableKeychain {
     }
     
     func getLastPushPayload(currentDate: Date) -> [AnyHashable: Any]? {
-        if isLastPushPayloadExpired(currentDate: currentDate) {
-            wrapper.removeValue(forKey: Const.Keychain.Key.lastPushPayload)
-            wrapper.removeValue(forKey: Const.Keychain.Key.lastPushPayloadExpiration)
-            
+        guard let payloadExpirationPair = getPayloadExpirationPairFromKeychain() else {
             return nil
         }
         
-        if let data = wrapper.data(forKey: Const.Keychain.Key.lastPushPayload) {
-            return (try? JSONSerialization.jsonObject(with: data)) as? [AnyHashable: Any]
+        if isLastPushPayloadExpired(expiration: payloadExpirationPair.expiration, currentDate: currentDate) {
+            removePayloadExpirationPairFromKeychain()
+            return nil
         }
         
-        return nil
+        return decodeJsonPayload(payloadExpirationPair.payload)
     }
     
     func setLastPushPayload(_ payload: [AnyHashable: Any]?, withExpiration expiration: Date?) {
-        // save expiration here
-        
-        guard let value = payload?.jsonValue, JSONSerialization.isValidJSONObject(value) else {
-            wrapper.removeValue(forKey: Const.Keychain.Key.lastPushPayload)
+        guard let payload = payload, JSONSerialization.isValidJSONObject(payload) else {
+            removePayloadExpirationPairFromKeychain()
             return
         }
         
-        do {
-            let data = try JSONSerialization.data(withJSONObject: value, options: [])
-            wrapper.set(data, forKey: Const.Keychain.Key.lastPushPayload)
-        } catch {
-            wrapper.removeValue(forKey: Const.Keychain.Key.lastPushPayload)
-        }
+        savePayloadExpirationPairToKeychain(payload: payload, expiration: expiration)
     }
     
     // MARK: - PRIVATE/INTERNAL
     
     private let wrapper: KeychainWrapper
     
-    private func isLastPushPayloadExpired(currentDate: Date) -> Bool {
-        // get expiration here
+    private func getPayloadExpirationPairFromKeychain() -> (payload: Data, expiration: Date?)? {
+        // get the value from the keychain
+        guard let keychainValue = wrapper.data(forKey: Const.Keychain.Key.lastPushPayloadAndExpiration) else {
+            return nil
+        }
         
-        guard let expiration = wrapper.data(forKey: Const.Keychain.Key.lastPushPayloadExpiration) as? Date else {
+        // decode the payload/expiration pair
+        guard let payloadExpirationPair = try? JSONDecoder().decode(LastPushPayloadValue.self, from: keychainValue) else {
+            return nil
+        }
+        
+        // cast the payload as a JSON object
+        guard let lastPushPayloadJSON = try? JSONSerialization.jsonObject(with: payloadExpirationPair.payload, options: []) as? [AnyHashable: Any] else {
+            return nil
+        }
+        
+        return (payload: lastPushPayloadJSON, expiration: payloadExpirationPair.expiration) as? (payload: Data, expiration: Date?)
+    }
+    
+    private func savePayloadExpirationPairToKeychain(payload: [AnyHashable: Any]?, expiration: Date?) {
+        guard let payload = payload else {
+            removePayloadExpirationPairFromKeychain()
+            return
+        }
+        
+        guard let payloadAsData = encodeJsonPayload(payload) else {
+            return
+        }
+        
+        let payloadExpirationPair = LastPushPayloadValue(payload: payloadAsData, expiration: expiration)
+        
+        guard let encodedPair = try? JSONEncoder().encode(payloadExpirationPair) else {
+            return
+        }
+        
+        wrapper.set(encodedPair, forKey: Const.Keychain.Key.lastPushPayloadAndExpiration)
+    }
+    
+    private func encodeJsonPayload(_ json: [AnyHashable: Any]?) -> Data? {
+        guard let json = json, JSONSerialization.isValidJSONObject(json) else {
+            return nil
+        }
+        
+        return try? JSONSerialization.data(withJSONObject: json)
+    }
+    
+    private func decodeJsonPayload(_ data: Data?) -> [AnyHashable: Any]? {
+        guard let data = data else {
+            return nil
+        }
+        
+        return try? JSONSerialization.jsonObject(with: data) as? [AnyHashable: Any]
+    }
+    
+    private func removePayloadExpirationPairFromKeychain() {
+        wrapper.removeValue(forKey: Const.Keychain.Key.lastPushPayloadAndExpiration)
+    }
+    
+    private func isLastPushPayloadExpired(expiration: Date?, currentDate: Date) -> Bool {
+        guard let expiration = expiration else {
             return false
         }
         
         return !(expiration.timeIntervalSinceReferenceDate > currentDate.timeIntervalSinceReferenceDate)
+    }
+    
+    private struct LastPushPayloadValue: Codable {
+        let payload: Data
+        let expiration: Date?
     }
 }

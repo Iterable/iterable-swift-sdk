@@ -522,7 +522,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         let expiration = Calendar.current.date(byAdding: .hour,
                                                value: Const.UserDefault.payloadExpiration,
                                                to: dateProvider.currentDate)
-        localStorage.save(payload: payload, withExpiration: expiration)
+        localStorage.saveLastPushPayload(payload, withExpiration: expiration)
         
         if let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: payload) {
             if let templateId = metadata.templateId {
