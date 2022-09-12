@@ -105,7 +105,11 @@ class IterableKeychain {
             return nil
         }
         
-        return (payload: lastPushPayloadJSON, expiration: payloadExpirationPair.expiration) as? (payload: Data, expiration: Date?)
+        guard let lastPushPayloadData = try? JSONSerialization.data(withJSONObject: lastPushPayloadJSON) else {
+            return nil
+        }
+        
+        return (payload: lastPushPayloadData, expiration: payloadExpirationPair.expiration)
     }
     
     private func savePayloadExpirationPairToKeychain(payload: [AnyHashable: Any]?, expiration: Date?) {
