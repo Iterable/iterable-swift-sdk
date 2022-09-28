@@ -446,16 +446,17 @@ class MockLocalStorage: LocalStorageProtocol {
         attributionInfoExpiration = expiration
     }
     
-    func getPayload(currentDate: Date) -> [AnyHashable : Any]? {
+    func getLastPushPayload(_ currentDate: Date) -> [AnyHashable : Any]? {
         guard !MockLocalStorage.isExpired(expiration: payloadExpiration, currentDate: currentDate) else {
             return nil
         }
+        
         return payload
     }
     
-    func save(payload: [AnyHashable : Any]?, withExpiration: Date?) {
+    func saveLastPushPayload(_ payload: [AnyHashable : Any]?, withExpiration expiration: Date?) {
         self.payload = payload
-        payloadExpiration = withExpiration
+        payloadExpiration = expiration
     }
     
     private var payload: [AnyHashable: Any]? = nil
@@ -465,18 +466,11 @@ class MockLocalStorage: LocalStorageProtocol {
     private var attributionInfoExpiration: Date? = nil
     
     private static func isExpired(expiration: Date?, currentDate: Date) -> Bool {
-        if let expiration = expiration {
-            if expiration.timeIntervalSinceReferenceDate > currentDate.timeIntervalSinceReferenceDate {
-                // expiration is later
-                return false
-            } else {
-                // expired
-                return true
-            }
-        } else {
-            // no expiration
+        guard let expiration = expiration else {
             return false
         }
+        
+        return !(expiration.timeIntervalSinceReferenceDate > currentDate.timeIntervalSinceReferenceDate)
     }
 }
 
