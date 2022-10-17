@@ -135,6 +135,29 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     // MARK: - API Request Calls
     
+    func register(token: String,
+                  onSuccess: OnSuccessHandler? = nil,
+                  onFailure: OnFailureHandler? = nil) {
+        guard let appName = pushIntegrationName else {
+            let errorMessage = "Not registering device token - appName must not be nil"
+            ITBError(errorMessage)
+            onFailure?(errorMessage, nil)
+            return
+        }
+
+        let registerTokenInfo = RegisterTokenInfo(hexToken: token,
+                                                  appName: appName,
+                                                  pushServicePlatform: config.pushPlatform,
+                                                  apnsType: dependencyContainer.apnsTypeChecker.apnsType,
+                                                  deviceId: deviceId,
+                                                  deviceAttributes: deviceAttributes,
+                                                  sdkVersion: localStorage.sdkVersion)
+        requestHandler.register(registerTokenInfo: registerTokenInfo,
+                                notificationStateProvider: notificationStateProvider,
+                                onSuccess: onSuccess,
+                                onFailure: onFailure)
+    }
+    
     func register(token: Data,
                   onSuccess: OnSuccessHandler? = nil,
                   onFailure: OnFailureHandler? = nil) {
@@ -146,17 +169,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
         
         hexToken = token.hexString()
-        let registerTokenInfo = RegisterTokenInfo(hexToken: token.hexString(),
-                                                  appName: appName,
-                                                  pushServicePlatform: config.pushPlatform,
-                                                  apnsType: dependencyContainer.apnsTypeChecker.apnsType,
-                                                  deviceId: deviceId,
-                                                  deviceAttributes: deviceAttributes,
-                                                  sdkVersion: localStorage.sdkVersion)
-        requestHandler.register(registerTokenInfo: registerTokenInfo,
-                                notificationStateProvider: notificationStateProvider,
-                                onSuccess: onSuccess,
-                                onFailure: onFailure)
+        
+        register(token, onSuccess, onFailure)
     }
     
     @discardableResult

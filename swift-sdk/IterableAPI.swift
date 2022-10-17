@@ -222,6 +222,24 @@ public final class IterableAPI: NSObject {
         internalImplementation?.register(token: token)
     }
     
+    // MARK: - API Request Calls
+    
+    /// Register this device's token with Iterable
+    ///
+    /// Push integration name and platform are read from `IterableConfig`. If platform is set to `auto`, it will
+    /// read APNS environment from the provisioning profile and use an integration name specified in `IterableConfig`.
+    ///
+    /// - Parameters:
+    ///    - token: The token representing this device/application pair, obtained from
+    ///             `application:didRegisterForRemoteNotificationsWithDeviceToken`
+    ///             after registering for remote notifications
+    ///
+    /// - SeeAlso: IterableConfig
+    @objc(registerToken:)
+    public static func register(token: String) {
+        internalImplementation?.register(token: token)
+    }
+    
     /// Register this device's token with Iterable
     ///
     /// Push integration name and platform are read from `IterableConfig`. If platform is set to `auto`, it will
