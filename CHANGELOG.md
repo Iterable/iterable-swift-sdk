@@ -2,6 +2,30 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+### 6.4.8
+### Changed
+Starting with this release, as a privacy enhancement, Iterable’s iOS SDK
+encrypts the following data when storing it at rest:
+
+- `email` — The user's email address.
+- `userId` — The user's ID.
+- `authToken` — The JWT used to authenticate the user with Iterable's API.
+- `lastPushPayload` — The JSON payload that came along with the last push
+  notification received by the app.
+
+(Note that Iterable's iOS SDK does not store in-app messages at rest—before or
+after this update.)
+
+When a user upgrades to a version of your app that uses this version of the SDK
+(or higher), the fields shown above are encrypted. No data that's already stored 
+is lost.
+
+For more information about the encryption described above, examine the SDK
+source code:
+
+- [`IterableKeychain`](https://github.com/Iterable/swift-sdk/blob/master/swift-sdk/Internal/IterableKeychain.swift)
+- [`KeychainWrapper`](https://github.com/Iterable/swift-sdk/blob/master/swift-sdk/Internal/KeychainWrapper.swift)
+
 ## 6.4.7
 ### Added
 - Added `setEmail` and `setUserId` as publicly accessible functions, which will set the identity of the SDK to attribute to events. The optional second parameter will take in a JWT if you already have one at the time of this call (as opposed to through `IterableAuthDelegate`).
