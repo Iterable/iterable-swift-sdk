@@ -10,6 +10,7 @@ class IterableUserDefaults {
         self.userDefaults = userDefaults
     }
     
+    // migrated to IterableKeychain
     var userId: String? {
         get {
             string(withKey: .userId)
@@ -18,6 +19,7 @@ class IterableUserDefaults {
         }
     }
     
+    // migrated to IterableKeychain
     var email: String? {
         get {
             string(withKey: .email)
@@ -26,6 +28,7 @@ class IterableUserDefaults {
         }
     }
     
+    // migrated to IterableKeychain
     var authToken: String? {
         get {
             string(withKey: .authToken)
@@ -34,6 +37,7 @@ class IterableUserDefaults {
         }
     }
     
+    // deprecated, not in use anymore
     var ddlChecked: Bool {
         get {
             bool(withKey: .ddlChecked)
@@ -74,12 +78,35 @@ class IterableUserDefaults {
         try? save(codable: attributionInfo, withKey: .attributionInfo, andExpiration: expiration)
     }
     
+    // migrated to IterableKeychain
     func getPayload(currentDate: Date) -> [AnyHashable: Any]? {
         (try? dict(withKey: .payload, currentDate: currentDate)) ?? nil
     }
     
+    // migrated to IterableKeychain
     func save(payload: [AnyHashable: Any]?, withExpiration expiration: Date?) {
         try? save(dict: payload, withKey: .payload, andExpiration: expiration)
+    }
+    
+    // MARK: data migration functions
+    
+    func getLastPushPayloadExpirationPairForMigration() -> (payload: [AnyHashable: Any]?, expiration: Date?)? {
+        guard let encodedEnvelope = userDefaults.value(forKey: UserDefaultsKey.payload.value) as? Data else {
+            return nil
+        }
+        
+        do {
+            let envelope = try JSONDecoder().decode(Envelope.self, from: encodedEnvelope)
+            let decoded = try JSONSerialization.jsonObject(with: envelope.payload, options: []) as? [AnyHashable: Any]
+            
+            return (payload: decoded, envelope.expiration)
+        } catch {
+            return nil
+        }
+    }
+    
+    func getAuthDataForMigration() -> (email: String?, userId: String?, authToken: String?) {
+        return (email: email, userId: userId, authToken: authToken)
     }
     
     // MARK: Private implementation
