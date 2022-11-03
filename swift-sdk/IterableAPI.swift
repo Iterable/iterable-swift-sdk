@@ -222,24 +222,6 @@ public final class IterableAPI: NSObject {
         internalImplementation?.register(token: token)
     }
     
-    // MARK: - API Request Calls
-    
-    /// Register this device's token with Iterable
-    ///
-    /// Push integration name and platform are read from `IterableConfig`. If platform is set to `auto`, it will
-    /// read APNS environment from the provisioning profile and use an integration name specified in `IterableConfig`.
-    ///
-    /// - Parameters:
-    ///    - token: The token representing this device/application pair, obtained from
-    ///             `application:didRegisterForRemoteNotificationsWithDeviceToken`
-    ///             after registering for remote notifications
-    ///
-    /// - SeeAlso: IterableConfig
-    @objc(registerToken:)
-    public static func register(token: String) {
-        internalImplementation?.register(token: token)
-    }
-    
     /// Register this device's token with Iterable
     ///
     /// Push integration name and platform are read from `IterableConfig`. If platform is set to `auto`, it will
@@ -253,9 +235,15 @@ public final class IterableAPI: NSObject {
     ///    - onFailure: `OnFailureHandler` to invoke if token registration fails
     ///
     /// - SeeAlso: IterableConfig, OnSuccessHandler, OnFailureHandler
+    
     @objc(registerToken:onSuccess:OnFailure:)
     public static func register(token: Data, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) {
         internalImplementation?.register(token: token, onSuccess: onSuccess, onFailure: onFailure)
+    }
+    
+    @objc(registerToken2:onSuccess:OnFailure:)
+    public static func register(hexToken: String, onSuccess: OnSuccessHandler? = nil, onFailure: OnFailureHandler? = nil) {
+        internalImplementation?.register(hexToken: hexToken, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     /// Disable this device's token in Iterable, for the current user.
