@@ -120,4 +120,7 @@ public class IterableConfig: NSObject {
     /// We allow navigation only to urls with `https` protocol (for deep links within your app or external links).
     /// If you want to allow other protocols, such as,  `http`, `tel` etc., please add them to the list below
     public var allowedProtocols: [String] = []
+    
+    /// Set whether the SDK should store in-apps only in memory, or in file storage
+    public var useInMemoryStorageForInApps = false
 }
