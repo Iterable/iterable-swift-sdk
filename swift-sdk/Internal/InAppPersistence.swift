@@ -365,6 +365,20 @@ protocol InAppPersistenceProtocol {
     func clear()
 }
 
+class InAppInMemoryPersister: InAppPersistenceProtocol {
+    func getMessages() -> [IterableInAppMessage] {
+        []
+    }
+    
+    func persist(_ messages: [IterableInAppMessage]) {
+        return
+    }
+    
+    func clear() {
+        return
+    }
+}
+
 class InAppFilePersister: InAppPersistenceProtocol {
     init(filename: String = "itbl_inapp", ext: String = "json") {
         self.filename = filename
