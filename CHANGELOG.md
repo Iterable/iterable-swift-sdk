@@ -2,6 +2,30 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+### 6.4.9
+### Changed
+[Version version 6.4.9](https://github.com/Iterable/swift-sdk/releases/tag/6.4.9) of Iterable's iOS SDK makes it possible to store in-app messages in memory, rather than in an unencrypted local file. However, an unencrypted local file is still the default option.
+
+To store in-app messages in memory, set `useInMemoryStorageForInApps` to true:
+
+_Swift_
+
+```swift
+let config = IterableConfig()
+config.useInMemoryStorageForInApps = true
+IterableAPI.initialize(apiKey: "<YOUR_API_KEY>", launchOptions: launchOptions, config: config)
+```
+
+_Objective-C_
+
+```objectivec
+IterableConfig *config = [[IterableConfig alloc] init];
+config.useInMemoryStorageForInApps = YES;
+[IterableAPI initializeWithApiKey:@"<YOUR_API_KEY>" launchOptions:launchOptions config:config];
+```
+
+When users upgrade to a version of your iOS app that uses this version of the SDK (or higher), and you've enabled this option, the local file used for in-app message storage (if it already exists) is deleted. However, no data is lost.
+
 ### 6.4.8
 ### Changed
 Starting with this release, as a privacy enhancement, Iterable’s iOS SDK
