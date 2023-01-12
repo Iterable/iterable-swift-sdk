@@ -10,14 +10,14 @@ public struct IterableFlexMessage {
     let custom: [AnyHashable: Any]?
     let payload: [AnyHashable: Any]?
     
-    private init(payload: [AnyHashable : Any]? = nil,
-                 metadata: FlexMessageMetadata,
-                 elements: FlexMessageElements? = nil,
-                 custom: [AnyHashable : Any]? = nil) {
-        self.payload = payload
+    init(metadata: FlexMessageMetadata,
+         elements: FlexMessageElements? = nil,
+         custom: [AnyHashable : Any]? = nil,
+         payload: [AnyHashable : Any]? = nil) {
         self.metadata = metadata
         self.elements = elements
         self.custom = custom
+        self.payload = payload
     }
     
     init(id: String) {
