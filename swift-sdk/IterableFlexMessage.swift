@@ -44,13 +44,24 @@ extension IterableFlexMessage {
     
     struct FlexMessageElements {
         struct FlexMessageElementsButton {
+            let id: String
             let title: String?
             let action: String?
         }
         
+        struct FlexMessageElementsImages {
+            let id: String
+            let url: String?
+        }
+        
+        struct FlexMessageElementsText {
+            let id: String
+            let text: String?
+        }
+        
         let type: String?
-        let buttons: [String: FlexMessageElementsButton]?
-        let images: [String: String]?
-        let text: [String: String]?
+        let buttons: [FlexMessageElementsButton]?
+        let images: [FlexMessageElementsImages]?
+        let text: [FlexMessageElementsText]?
     }
 }
