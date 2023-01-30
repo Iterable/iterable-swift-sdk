@@ -20,8 +20,8 @@ public struct IterableFlexMessage {
         self.payload = payload
     }
     
-    init(id: String) {
-        let metadata = FlexMessageMetadata(id: id)
+    init(id: String, placementId: String) {
+        let metadata = FlexMessageMetadata(id: id, placementId: placementId)
         
         self.init(metadata: metadata)
     }
@@ -30,11 +30,11 @@ public struct IterableFlexMessage {
 extension IterableFlexMessage {
     struct FlexMessageMetadata {
         let id: String
-        let placementId: String?
+        let placementId: String
         let campaignId: String?
         let isProof: Bool?
         
-        init(id: String, placementId: String? = nil, campaignId: String? = nil, isProof: Bool? = nil) {
+        init(id: String, placementId: String, campaignId: String? = nil, isProof: Bool? = nil) {
             self.id = id
             self.placementId = placementId
             self.campaignId = campaignId
@@ -49,7 +49,7 @@ extension IterableFlexMessage {
             let action: String?
         }
         
-        struct FlexMessageElementsImages {
+        struct FlexMessageElementsImage {
             let id: String
             let url: String?
         }
@@ -61,7 +61,7 @@ extension IterableFlexMessage {
         
         let type: String?
         let buttons: [FlexMessageElementsButton]?
-        let images: [FlexMessageElementsImages]?
+        let images: [FlexMessageElementsImage]?
         let text: [FlexMessageElementsText]?
     }
 }
