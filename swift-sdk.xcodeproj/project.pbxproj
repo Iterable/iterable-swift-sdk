@@ -11,6 +11,7 @@
 		00B6FACE210E88ED007535CF /* prod-1.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 00B6FACD210E874D007535CF /* prod-1.mobileprovision */; };
 		00B6FAD1210E8D90007535CF /* dev-1.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */; };
 		00CB31B621096129004ACDEC /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CB31B4210960C4004ACDEC /* TestUtils.swift */; };
+		55023E9C29132881003F69DC /* IterableFlexMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55023E9B29132881003F69DC /* IterableFlexMessage.swift */; };
 		552A0AA7280E1FDA00A80963 /* DeepLinkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552A0AA6280E1FDA00A80963 /* DeepLinkManager.swift */; };
 		5531CDAC22A997A4000D05E2 /* IterableInboxViewControllerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5585DF9022A877E6000A32B9 /* IterableInboxViewControllerUITests.swift */; };
 		5531CDAE22A9C992000D05E2 /* ClassExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5531CDAD22A9C992000D05E2 /* ClassExtensionsTests.swift */; };
@@ -512,6 +513,7 @@
 		00B6FACD210E874D007535CF /* prod-1.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = "prod-1.mobileprovision"; sourceTree = "<group>"; };
 		00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = "dev-1.mobileprovision"; sourceTree = "<group>"; };
 		00CB31B4210960C4004ACDEC /* TestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtils.swift; sourceTree = "<group>"; };
+		55023E9B29132881003F69DC /* IterableFlexMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableFlexMessage.swift; sourceTree = "<group>"; };
 		55298B222501A5AB00190BAE /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
 		552A0AA6280E1FDA00A80963 /* DeepLinkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepLinkManager.swift; sourceTree = "<group>"; };
 		5531CDAD22A9C992000D05E2 /* ClassExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassExtensionsTests.swift; sourceTree = "<group>"; };
@@ -969,6 +971,7 @@
 				AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */,
 				55DD207E26A0D83800773CC7 /* IterableAuthManagerProtocol.swift */,
 				AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */,
+				55023E9B29132881003F69DC /* IterableFlexMessage.swift */,
 				55DD2052269FA28200773CC7 /* IterableInAppManagerProtocol.swift */,
 				55DD2040269FA24400773CC7 /* IterableInAppMessage.swift */,
 				AC219C4E225FEDBD00B98631 /* IterableInboxCell.swift */,
@@ -1955,6 +1958,7 @@
 				AC1AA1C924EBB3C300F29C6B /* IterableNotifications.swift in Sources */,
 				ACFD5AB324C8179D008E497A /* PersistenceHelper.swift in Sources */,
 				AC72A0CD20CF4CE2004D7997 /* IterableAppIntegration.swift in Sources */,
+				55023E9C29132881003F69DC /* IterableFlexMessage.swift in Sources */,
 				AC72A0CE20CF4CE2004D7997 /* IterableAttributionInfo.swift in Sources */,
 				AC50865424C60172001DC132 /* IterableDataModel.xcdatamodeld in Sources */,
 				ACA8D1A321910C66001B1332 /* IterableMessaging.swift in Sources */,
