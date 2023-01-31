@@ -12,7 +12,7 @@
 		00B6FAD1210E8D90007535CF /* dev-1.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */; };
 		00CB31B621096129004ACDEC /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CB31B4210960C4004ACDEC /* TestUtils.swift */; };
 		55023E9C29132881003F69DC /* IterableFlexMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55023E9B29132881003F69DC /* IterableFlexMessage.swift */; };
-		551FA7582988A8FC0072D0A9 /* IterableFlexMessagingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FA7572988A8FC0072D0A9 /* IterableFlexMessagingManager.swift */; };
+		551FA7582988A8FC0072D0A9 /* IterableFlexMessagingManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FA7572988A8FC0072D0A9 /* IterableFlexMessagingManagerProtocol.swift */; };
 		551FA75E2988AC930072D0A9 /* EmptyFlexMessagingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FA75D2988AC930072D0A9 /* EmptyFlexMessagingManager.swift */; };
 		551FA7612988AC990072D0A9 /* FlexMessagingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FA75F2988AC990072D0A9 /* FlexMessagingManager.swift */; };
 		552A0AA7280E1FDA00A80963 /* DeepLinkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552A0AA6280E1FDA00A80963 /* DeepLinkManager.swift */; };
@@ -517,7 +517,7 @@
 		00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = "dev-1.mobileprovision"; sourceTree = "<group>"; };
 		00CB31B4210960C4004ACDEC /* TestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtils.swift; sourceTree = "<group>"; };
 		55023E9B29132881003F69DC /* IterableFlexMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableFlexMessage.swift; sourceTree = "<group>"; };
-		551FA7572988A8FC0072D0A9 /* IterableFlexMessagingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableFlexMessagingManager.swift; sourceTree = "<group>"; };
+		551FA7572988A8FC0072D0A9 /* IterableFlexMessagingManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableFlexMessagingManagerProtocol.swift; sourceTree = "<group>"; };
 		551FA75D2988AC930072D0A9 /* EmptyFlexMessagingManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyFlexMessagingManager.swift; sourceTree = "<group>"; };
 		551FA75F2988AC990072D0A9 /* FlexMessagingManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlexMessagingManager.swift; sourceTree = "<group>"; };
 		55298B222501A5AB00190BAE /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
@@ -987,7 +987,7 @@
 				55DD207E26A0D83800773CC7 /* IterableAuthManagerProtocol.swift */,
 				AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */,
 				55023E9B29132881003F69DC /* IterableFlexMessage.swift */,
-				551FA7572988A8FC0072D0A9 /* IterableFlexMessagingManager.swift */,
+				551FA7572988A8FC0072D0A9 /* IterableFlexMessagingManagerProtocol.swift */,
 				55DD2052269FA28200773CC7 /* IterableInAppManagerProtocol.swift */,
 				55DD2040269FA24400773CC7 /* IterableInAppMessage.swift */,
 				AC219C4E225FEDBD00B98631 /* IterableInboxCell.swift */,
@@ -2032,7 +2032,7 @@
 				AC2B79F721E6A38900A59080 /* NotificationHelper.swift in Sources */,
 				AC4095A422B18B9D006EF67C /* InboxViewControllerViewModel.swift in Sources */,
 				AC7A5261227BB9D10064D67E /* DependencyContainer.swift in Sources */,
-				551FA7582988A8FC0072D0A9 /* IterableFlexMessagingManager.swift in Sources */,
+				551FA7582988A8FC0072D0A9 /* IterableFlexMessagingManagerProtocol.swift in Sources */,
 				AC776DA6211A1B8A00C27C27 /* IterableRequestUtil.swift in Sources */,
 				55DD2053269FA28200773CC7 /* IterableInAppManagerProtocol.swift in Sources */,
 				ACEDF41D2183C2EC000B9BFE /* Pending.swift in Sources */,
