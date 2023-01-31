@@ -57,6 +57,10 @@ extension DependencyContainerProtocol {
                     dateProvider: dateProvider)
     }
     
+    func createFlexMessageManager() -> IterableFlexMessagingManagerProtocol {
+        FlexMessagingManager()
+    }
+    
     func createRequestHandler(apiKey: String,
                               config: IterableConfig,
                               endPoint: String,

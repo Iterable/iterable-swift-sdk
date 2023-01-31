@@ -12,6 +12,9 @@
 		00B6FAD1210E8D90007535CF /* dev-1.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */; };
 		00CB31B621096129004ACDEC /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CB31B4210960C4004ACDEC /* TestUtils.swift */; };
 		55023E9C29132881003F69DC /* IterableFlexMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55023E9B29132881003F69DC /* IterableFlexMessage.swift */; };
+		551FA7582988A8FC0072D0A9 /* IterableFlexMessagingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FA7572988A8FC0072D0A9 /* IterableFlexMessagingManager.swift */; };
+		551FA75E2988AC930072D0A9 /* EmptyFlexMessagingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FA75D2988AC930072D0A9 /* EmptyFlexMessagingManager.swift */; };
+		551FA7612988AC990072D0A9 /* FlexMessagingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FA75F2988AC990072D0A9 /* FlexMessagingManager.swift */; };
 		552A0AA7280E1FDA00A80963 /* DeepLinkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552A0AA6280E1FDA00A80963 /* DeepLinkManager.swift */; };
 		5531CDAC22A997A4000D05E2 /* IterableInboxViewControllerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5585DF9022A877E6000A32B9 /* IterableInboxViewControllerUITests.swift */; };
 		5531CDAE22A9C992000D05E2 /* ClassExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5531CDAD22A9C992000D05E2 /* ClassExtensionsTests.swift */; };
@@ -514,6 +517,9 @@
 		00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = "dev-1.mobileprovision"; sourceTree = "<group>"; };
 		00CB31B4210960C4004ACDEC /* TestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtils.swift; sourceTree = "<group>"; };
 		55023E9B29132881003F69DC /* IterableFlexMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableFlexMessage.swift; sourceTree = "<group>"; };
+		551FA7572988A8FC0072D0A9 /* IterableFlexMessagingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableFlexMessagingManager.swift; sourceTree = "<group>"; };
+		551FA75D2988AC930072D0A9 /* EmptyFlexMessagingManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyFlexMessagingManager.swift; sourceTree = "<group>"; };
+		551FA75F2988AC990072D0A9 /* FlexMessagingManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlexMessagingManager.swift; sourceTree = "<group>"; };
 		55298B222501A5AB00190BAE /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
 		552A0AA6280E1FDA00A80963 /* DeepLinkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepLinkManager.swift; sourceTree = "<group>"; };
 		5531CDAD22A9C992000D05E2 /* ClassExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassExtensionsTests.swift; sourceTree = "<group>"; };
@@ -862,6 +868,15 @@
 			name = "Test Files";
 			sourceTree = "<group>";
 		};
+		551FA75C2988AC800072D0A9 /* Flex Messaging */ = {
+			isa = PBXGroup;
+			children = (
+				551FA75D2988AC930072D0A9 /* EmptyFlexMessagingManager.swift */,
+				551FA75F2988AC990072D0A9 /* FlexMessagingManager.swift */,
+			);
+			name = "Flex Messaging";
+			sourceTree = "<group>";
+		};
 		552A0AA8280E22B100A80963 /* device-token-tests */ = {
 			isa = PBXGroup;
 			children = (
@@ -972,6 +987,7 @@
 				55DD207E26A0D83800773CC7 /* IterableAuthManagerProtocol.swift */,
 				AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */,
 				55023E9B29132881003F69DC /* IterableFlexMessage.swift */,
+				551FA7572988A8FC0072D0A9 /* IterableFlexMessagingManager.swift */,
 				55DD2052269FA28200773CC7 /* IterableInAppManagerProtocol.swift */,
 				55DD2040269FA24400773CC7 /* IterableInAppMessage.swift */,
 				AC219C4E225FEDBD00B98631 /* IterableInboxCell.swift */,
@@ -1197,6 +1213,7 @@
 			children = (
 				AC845105228DF5360052BB8F /* API Client */,
 				AC0248062279132400495FB9 /* Dwifft */,
+				551FA75C2988AC800072D0A9 /* Flex Messaging */,
 				AC2263FA20CF4B84009800EB /* In-App */,
 				AC31B03D232AB37C00BE25EB /* Inbox */,
 				AC7A525F227BB9B80064D67E /* Initialization */,
@@ -1950,6 +1967,7 @@
 				55DD2065269FB1FC00773CC7 /* InboxViewControllerViewModelProtocol.swift in Sources */,
 				ACF32BDB24E3EA7C0072E2CC /* RequestProcessorProtocol.swift in Sources */,
 				AC219C49225FD7EB00B98631 /* IterableInboxViewController.swift in Sources */,
+				551FA7612988AC990072D0A9 /* FlexMessagingManager.swift in Sources */,
 				AC3DD9C82142F3650046F886 /* ClassExtensions.swift in Sources */,
 				AC219C50225FEDBD00B98631 /* IterableInboxCell.swift in Sources */,
 				AC84256226D6167E0066C627 /* AppExtensionHelper.swift in Sources */,
@@ -2014,6 +2032,7 @@
 				AC2B79F721E6A38900A59080 /* NotificationHelper.swift in Sources */,
 				AC4095A422B18B9D006EF67C /* InboxViewControllerViewModel.swift in Sources */,
 				AC7A5261227BB9D10064D67E /* DependencyContainer.swift in Sources */,
+				551FA7582988A8FC0072D0A9 /* IterableFlexMessagingManager.swift in Sources */,
 				AC776DA6211A1B8A00C27C27 /* IterableRequestUtil.swift in Sources */,
 				55DD2053269FA28200773CC7 /* IterableInAppManagerProtocol.swift in Sources */,
 				ACEDF41D2183C2EC000B9BFE /* Pending.swift in Sources */,
@@ -2034,6 +2053,7 @@
 				AC72A0C720CF4CE2004D7997 /* CommerceItem.swift in Sources */,
 				AC31B040232AB42100BE25EB /* InboxSessionManager.swift in Sources */,
 				ACE34AB321376B1000691224 /* LocalStorage.swift in Sources */,
+				551FA75E2988AC930072D0A9 /* EmptyFlexMessagingManager.swift in Sources */,
 				AC8E9268246284F800BEB68E /* DataFieldsHelper.swift in Sources */,
 				AC5E888924E1B7CE00752321 /* OnlineRequestProcessor.swift in Sources */,
 				AC978D3E24FF953C00372B8C /* NetworkConnectivityChecker.swift in Sources */,
