@@ -72,6 +72,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.dependencyContainer.createAuthManager(config: self.config)
     }()
     
+    lazy var flexMessagingManager: IterableFlexMessagingManagerProtocol = {
+        self.dependencyContainer.createFlexMessagingManager()
+    }()
+    
     // MARK: - SDK Functions
     
     @discardableResult func handleUniversalLink(_ url: URL) -> Bool {
