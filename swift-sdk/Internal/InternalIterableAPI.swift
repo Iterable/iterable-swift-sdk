@@ -73,7 +73,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }()
     
     lazy var flexMessagingManager: IterableFlexMessagingManagerProtocol = {
-        self.dependencyContainer.createFlexMessageManager()
+        self.dependencyContainer.createFlexMessagingManager()
     }()
     
     // MARK: - SDK Functions
