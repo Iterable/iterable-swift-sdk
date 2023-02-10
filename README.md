@@ -50,14 +50,16 @@ For sample code, take a look at the following projects:
 
 Release notes:
 
-- [iOS SDK Release Notes](https://support.iterable.com/hc/articles/360027798391) (major releases)
-- [Releases page](https://github.com/Iterable/swift-sdk/releases) on GitHub (minor releases)
+- [Release Notes - Iterable's iOS SDK](https://support.iterable.com/hc/articles/360027798391) -
+  Release notes for significant updates to the SDK. Also, information about 
+  deprecation dates and support windows.
+- [GitHub — Releases](https://github.com/Iterable/swift-sdk/releases) -
+  This repository's **Releases** page. Release notes for all versions of the SDK.
 
 Support policies:
 
-- Iterable's [Mobile SDK Support Policy](https://support.iterable.com/hc/articles/360046136171)
-- Iterable's [iOS SDK Deprecation and End-of-Life Schedule](https://support.iterable.com/hc/articles/360027798391#deprecation-and-end-of-life-schedule)
-- Iterable's [Beta Mobile SDK Disclaimer](https://support.iterable.com/hc/articles/360034753412)
+- Iterable's [SDK Support Policy](https://support.iterable.com/hc/articles/360046136171)
+- Iterable's [Beta SDK Disclaimer](https://support.iterable.com/hc/articles/360034753412)
 
 Troubleshooting:
 
@@ -65,12 +67,11 @@ Troubleshooting:
 - [Frequently Asked Questions](https://support.iterable.com/hc/articles/360035624191) 
   for mobile developers integrating with Iterable
 
-Please contact your customer success manager with any questions.
+Questions? Talk to your customer success manager.
 
 ## License
 
-This SDK is released under the MIT License. See [LICENSE](https://github.com/Iterable/swift-sdk/blob/master/LICENSE.md)
-for more information.
+This SDK is released under the MIT License. For more information, see [LICENSE](LICENSE.md).
 
 ## Want to contribute?
 
