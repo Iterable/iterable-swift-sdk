@@ -7,14 +7,14 @@ import Foundation
 public struct IterableFlexMessage {
     let metadata: FlexMessageMetadata
     let elements: FlexMessageElements?
-    let custom: [AnyHashable: Any]?
+    let payload: [AnyHashable: Any]?
     
     init(metadata: FlexMessageMetadata,
          elements: FlexMessageElements? = nil,
-         custom: [AnyHashable : Any]? = nil) {
+         payload: [AnyHashable : Any]? = nil) {
         self.metadata = metadata
         self.elements = elements
-        self.custom = custom
+        self.payload = payload
     }
 
     init(id: String, placementId: String, campaignId: String? = nil, isProof: Bool? = nil) {
