@@ -13,20 +13,20 @@ struct FlexMessagingSerialization {
         return []
     }
     
-    static func serialize(custom: [AnyHashable: Any]?) -> Data? {
-        guard let custom = custom else {
+    static func serialize(payload: [AnyHashable: Any]?) -> Data? {
+        guard let payload = payload else {
             return nil
         }
         
-        return try? JSONSerialization.data(withJSONObject: custom)
+        return try? JSONSerialization.data(withJSONObject: payload)
     }
     
-    static func deserialize(custom: Data?) -> [AnyHashable: Any]? {
-        guard let custom = custom else {
+    static func deserialize(payload: Data?) -> [AnyHashable: Any]? {
+        guard let payload = payload else {
             return nil
         }
         
-        return try? JSONSerialization.jsonObject(with: custom) as? [AnyHashable: Any]
+        return try? JSONSerialization.jsonObject(with: payload) as? [AnyHashable: Any]
     }
 }
 
@@ -34,7 +34,7 @@ extension IterableFlexMessage: Codable {
     enum CodingKeys: String, CodingKey {
         case metadata
         case elements
-        case custom
+        case payload
     }
     
     public func encode(to encoder: Encoder) throws {
@@ -42,7 +42,7 @@ extension IterableFlexMessage: Codable {
         
         try? container.encode(metadata, forKey: .metadata)
         try? container.encodeIfPresent(elements, forKey: .elements)
-        try? container.encodeIfPresent(FlexMessagingSerialization.serialize(custom: custom), forKey: .custom)
+        try? container.encodeIfPresent(FlexMessagingSerialization.serialize(payload: payload), forKey: .payload)
     }
 
     public init(from decoder: Decoder) throws {
@@ -56,7 +56,7 @@ extension IterableFlexMessage: Codable {
         
         let metadata = (try? container.decode(FlexMessageMetadata.self, forKey: .metadata))
         let elements = (try? container.decode(FlexMessageElements.self, forKey: .elements))
-        let custom = FlexMessagingSerialization.deserialize(custom: try? container.decode(Data.self, forKey: .custom))
+        let payload = FlexMessagingSerialization.deserialize(payload: try? container.decode(Data.self, forKey: .payload))
         
         guard let metadata = metadata else {
             ITBError("unable to decode metadata section of flex message payload")
@@ -67,6 +67,6 @@ extension IterableFlexMessage: Codable {
         
         self.init(metadata: metadata,
                   elements: elements,
-                  custom: custom)
+                  payload: payload)
     }
 }
