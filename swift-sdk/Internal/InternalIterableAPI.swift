@@ -586,6 +586,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         checkRemoteConfiguration()
         
+        // obviously this should get removed soon
+        // this is only here to make the manager instantiate
         print("jay \(flexMessagingManager != nil)")
         
         return inAppManager.start()
