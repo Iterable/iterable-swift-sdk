@@ -5,5 +5,5 @@
 import Foundation
 
 @objc public protocol IterableFlexMessagingManagerProtocol {
-    
+    func start()
 }

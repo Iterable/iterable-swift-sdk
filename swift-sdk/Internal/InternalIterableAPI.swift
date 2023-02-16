@@ -577,7 +577,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         handle(launchOptions: launchOptions)
         
-        
         handlePendingNotification()
         
         handlePendingUniversalLink()
@@ -586,9 +585,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         checkRemoteConfiguration()
         
-        // obviously this should get removed soon
-        // this is only here to make the manager instantiate
-        print("jay \(flexMessagingManager != nil)")
+        flexMessagingManager.start()
         
         return inAppManager.start()
     }

@@ -8,15 +8,29 @@ class FlexMessagingManager: IterableFlexMessagingManagerProtocol {
     init() {
         ITBInfo()
         
-        
+        initializeMessages()
     }
     
     deinit {
         ITBInfo()
     }
     
-    func getMessages(placementId: String) -> [IterableFlexMessage] {
-        return messages.filter({ $0.metadata.placementId == placementId })
+    public func getMessages() -> [IterableFlexMessage] {
+        return messages
+    }
+    
+//    func getMessages(placementId: String) -> [IterableFlexMessage] {
+//        return messages.filter({ $0.metadata.placementId == placementId })
+//    }
+    
+    func start() {
+        ITBInfo()
+        
+        
+    }
+    
+    private func initializeMessages() {
+        // retrieve from persistent storage and set it to `messages`
     }
     
     private var messages: [IterableFlexMessage] = []
