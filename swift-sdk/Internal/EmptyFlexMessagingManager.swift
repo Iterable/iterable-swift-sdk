@@ -5,5 +5,7 @@
 import Foundation
 
 class EmptyFlexMessagingManager: IterableFlexMessagingManagerProtocol {
-    
+    func start() {
+        
+    }
 }
