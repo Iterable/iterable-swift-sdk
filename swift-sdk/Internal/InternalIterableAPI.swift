@@ -577,7 +577,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         handle(launchOptions: launchOptions)
         
-        
         handlePendingNotification()
         
         handlePendingUniversalLink()
@@ -585,6 +584,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         requestHandler.start()
         
         checkRemoteConfiguration()
+        
+        flexMessagingManager.start()
         
         return inAppManager.start()
     }

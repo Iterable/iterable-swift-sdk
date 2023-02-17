@@ -20,6 +20,8 @@
 		5531CDAE22A9C992000D05E2 /* ClassExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5531CDAD22A9C992000D05E2 /* ClassExtensionsTests.swift */; };
 		5536781F2576FF9000DB3652 /* IterableUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5536781E2576FF9000DB3652 /* IterableUtilTests.swift */; };
 		5555425028BED1B400DB5D20 /* KeychainWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5555424F28BED1B400DB5D20 /* KeychainWrapper.swift */; };
+		55684312298C6A9F006A5EB4 /* FlexMessagingSerialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55684311298C6A9F006A5EB4 /* FlexMessagingSerialization.swift */; };
+		55684319298C8052006A5EB4 /* FlexMessagingManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55684318298C8052006A5EB4 /* FlexMessagingManagerTests.swift */; };
 		556FB1EA244FAF6A00EDF6BD /* InAppPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556FB1E9244FAF6A00EDF6BD /* InAppPresenter.swift */; };
 		557AE6BF24A56E5E00B57750 /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557AE6BE24A56E5E00B57750 /* Auth.swift */; };
 		5585DF8F22A73390000A32B9 /* IterableInboxViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5585DF8E22A73390000A32B9 /* IterableInboxViewControllerTests.swift */; };
@@ -153,6 +155,7 @@
 		55B549862397462300243E87 /* InboxImpressionTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B549852397462300243E87 /* InboxImpressionTrackerTests.swift */; };
 		55B9F15124B3D33700E8198A /* AuthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B9F15024B3D33700E8198A /* AuthTests.swift */; };
 		55B9F15324B6625D00E8198A /* ApiClientProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B9F15224B6625D00E8198A /* ApiClientProtocol.swift */; };
+		55C87D34299EE633002013D0 /* FlexMessagingSerializationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C87D33299EE633002013D0 /* FlexMessagingSerializationTests.swift */; };
 		55CC257B2462064F00A77FD5 /* InAppPresenterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */; };
 		55D54656239AE5750093ED1E /* IterableLogUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D54655239AE5750093ED1E /* IterableLogUtil.swift */; };
 		55DD2015269E5A4200773CC7 /* IterableInboxViewControllerViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DD2014269E5A4200773CC7 /* IterableInboxViewControllerViewDelegate.swift */; };
@@ -525,6 +528,8 @@
 		5531CDAD22A9C992000D05E2 /* ClassExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassExtensionsTests.swift; sourceTree = "<group>"; };
 		5536781E2576FF9000DB3652 /* IterableUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableUtilTests.swift; sourceTree = "<group>"; };
 		5555424F28BED1B400DB5D20 /* KeychainWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainWrapper.swift; sourceTree = "<group>"; };
+		55684311298C6A9F006A5EB4 /* FlexMessagingSerialization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlexMessagingSerialization.swift; sourceTree = "<group>"; };
+		55684318298C8052006A5EB4 /* FlexMessagingManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlexMessagingManagerTests.swift; sourceTree = "<group>"; };
 		556FB1E9244FAF6A00EDF6BD /* InAppPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPresenter.swift; sourceTree = "<group>"; };
 		557AE6BE24A56E5E00B57750 /* Auth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Auth.swift; sourceTree = "<group>"; };
 		5585DF8E22A73390000A32B9 /* IterableInboxViewControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxViewControllerTests.swift; sourceTree = "<group>"; };
@@ -556,6 +561,7 @@
 		55B549852397462300243E87 /* InboxImpressionTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InboxImpressionTrackerTests.swift; sourceTree = "<group>"; };
 		55B9F15024B3D33700E8198A /* AuthTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthTests.swift; sourceTree = "<group>"; };
 		55B9F15224B6625D00E8198A /* ApiClientProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiClientProtocol.swift; sourceTree = "<group>"; };
+		55C87D33299EE633002013D0 /* FlexMessagingSerializationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlexMessagingSerializationTests.swift; sourceTree = "<group>"; };
 		55CC257A2462064F00A77FD5 /* InAppPresenterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPresenterTests.swift; sourceTree = "<group>"; };
 		55D54655239AE5750093ED1E /* IterableLogUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableLogUtil.swift; sourceTree = "<group>"; };
 		55DD2014269E5A4200773CC7 /* IterableInboxViewControllerViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxViewControllerViewDelegate.swift; sourceTree = "<group>"; };
@@ -873,6 +879,7 @@
 			children = (
 				551FA75D2988AC930072D0A9 /* EmptyFlexMessagingManager.swift */,
 				551FA75F2988AC990072D0A9 /* FlexMessagingManager.swift */,
+				55684311298C6A9F006A5EB4 /* FlexMessagingSerialization.swift */,
 			);
 			name = "Flex Messaging";
 			sourceTree = "<group>";
@@ -912,6 +919,15 @@
 			);
 			name = misc;
 			path = "swift-sdk/misc";
+			sourceTree = "<group>";
+		};
+		55684317298C8036006A5EB4 /* flex-messaging-tests */ = {
+			isa = PBXGroup;
+			children = (
+				55684318298C8052006A5EB4 /* FlexMessagingManagerTests.swift */,
+				55C87D33299EE633002013D0 /* FlexMessagingSerializationTests.swift */,
+			);
+			path = "flex-messaging-tests";
 			sourceTree = "<group>";
 		};
 		AC0248062279132400495FB9 /* Dwifft */ = {
@@ -1486,6 +1502,7 @@
 			isa = PBXGroup;
 			children = (
 				AC995F932166EC310099A184 /* common */,
+				55684317298C8036006A5EB4 /* flex-messaging-tests */,
 				ACFBEA15262DC68C000935DD /* hosting-apps */,
 				AC7B142C20D02CE200877BFE /* unit-tests */,
 				ACFD5AB924C8200C008E497A /* offline-events-tests */,
@@ -1998,6 +2015,7 @@
 				5B88BC482805D09D004016E5 /* NetworkSession.swift in Sources */,
 				AC06E4D327948C32007A6F20 /* InboxState.swift in Sources */,
 				ACC362BD24D21172002C67BA /* IterableAPICallTaskProcessor.swift in Sources */,
+				55684312298C6A9F006A5EB4 /* FlexMessagingSerialization.swift in Sources */,
 				AC84510922910A0C0052BB8F /* RequestCreator.swift in Sources */,
 				ACB8273F22372A5C00DB17D3 /* IterableHtmlMessageViewController.swift in Sources */,
 				AC5812F624F3A90F007E6D36 /* OfflineRequestProcessor.swift in Sources */,
@@ -2122,6 +2140,7 @@
 				5588DFB928C045E3000697D7 /* MockInAppDelegate.swift in Sources */,
 				5588DFD128C0465E000697D7 /* MockAPNSTypeChecker.swift in Sources */,
 				00B6FACC210E8484007535CF /* APNSTypeCheckerTests.swift in Sources */,
+				55C87D34299EE633002013D0 /* FlexMessagingSerializationTests.swift in Sources */,
 				AC8F35A2239806B500302994 /* InboxViewControllerViewModelTests.swift in Sources */,
 				AC995F9A2166EEB50099A184 /* CommonMocks.swift in Sources */,
 				5588DFE128C046B7000697D7 /* MockLocalStorage.swift in Sources */,
@@ -2141,6 +2160,7 @@
 				55E6F462238E066400808BCE /* DeepLinkTests.swift in Sources */,
 				55B37FC1229620D20042F13A /* CommerceItemTests.swift in Sources */,
 				5588DFC128C0460E000697D7 /* MockNotificationCenter.swift in Sources */,
+				55684319298C8052006A5EB4 /* FlexMessagingManagerTests.swift in Sources */,
 				5588DFC928C04642000697D7 /* MockInAppPersister.swift in Sources */,
 				AC776DA4211A17C700C27C27 /* IterableRequestUtilTests.swift in Sources */,
 				ACAA816E231163660035C743 /* RequestCreatorTests.swift in Sources */,
