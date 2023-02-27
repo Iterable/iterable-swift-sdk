@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.4.11
+### Fixed
+- Fixed so that `AuthManager` clears the previous refresh timer before setting a new one (thanks, @cranberyxl!)
+
 ## 6.4.10
 ### Fixed
 - Fixed instances where `config.inAppDisplayInterval` would not set custom interval set via react native layer.
