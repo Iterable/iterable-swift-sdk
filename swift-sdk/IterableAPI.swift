@@ -204,14 +204,14 @@ public final class IterableAPI: NSObject {
         return internalImplementation.inAppManager
     }
     
-    public static var flexMessagingManager: IterableFlexMessagingManagerProtocol {
+    public static var embeddedMessagingManager: IterableEmbeddedMessagingManagerProtocol {
         guard let internalImplementation = internalImplementation else {
-            ITBError("The Iterable SDK is not initialized yet. Flex Messaging will not function.")
-            assertionFailure("The Iterable SDK is not initialized yet. Flex Messaging will not function.")
-            return EmptyFlexMessagingManager()
+            ITBError("The Iterable SDK is not initialized yet. Embedded Messaging will not function.")
+            assertionFailure("The Iterable SDK is not initialized yet. Embedded Messaging will not function.")
+            return EmptyEmbeddedMessagingManager()
         }
         
-        return internalImplementation.flexMessagingManager
+        return internalImplementation.embeddedMessagingManager
     }
     
     // MARK: - API Request Calls

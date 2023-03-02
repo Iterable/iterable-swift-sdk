@@ -11,16 +11,16 @@
 		00B6FACE210E88ED007535CF /* prod-1.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 00B6FACD210E874D007535CF /* prod-1.mobileprovision */; };
 		00B6FAD1210E8D90007535CF /* dev-1.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */; };
 		00CB31B621096129004ACDEC /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CB31B4210960C4004ACDEC /* TestUtils.swift */; };
-		55023E9C29132881003F69DC /* IterableFlexMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55023E9B29132881003F69DC /* IterableFlexMessage.swift */; };
-		551FA7582988A8FC0072D0A9 /* IterableFlexMessagingManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FA7572988A8FC0072D0A9 /* IterableFlexMessagingManagerProtocol.swift */; };
-		551FA75E2988AC930072D0A9 /* EmptyFlexMessagingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FA75D2988AC930072D0A9 /* EmptyFlexMessagingManager.swift */; };
-		551FA7612988AC990072D0A9 /* FlexMessagingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FA75F2988AC990072D0A9 /* FlexMessagingManager.swift */; };
+		55023E9C29132881003F69DC /* IterableEmbeddedMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55023E9B29132881003F69DC /* IterableEmbeddedMessage.swift */; };
+		551FA7582988A8FC0072D0A9 /* IterableEmbeddedMessagingManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FA7572988A8FC0072D0A9 /* IterableEmbeddedMessagingManagerProtocol.swift */; };
+		551FA75E2988AC930072D0A9 /* EmptyEmbeddedMessagingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FA75D2988AC930072D0A9 /* EmptyEmbeddedMessagingManager.swift */; };
+		551FA7612988AC990072D0A9 /* EmbeddedMessagingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FA75F2988AC990072D0A9 /* EmbeddedMessagingManager.swift */; };
 		552A0AA7280E1FDA00A80963 /* DeepLinkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552A0AA6280E1FDA00A80963 /* DeepLinkManager.swift */; };
 		5531CDAC22A997A4000D05E2 /* IterableInboxViewControllerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5585DF9022A877E6000A32B9 /* IterableInboxViewControllerUITests.swift */; };
 		5531CDAE22A9C992000D05E2 /* ClassExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5531CDAD22A9C992000D05E2 /* ClassExtensionsTests.swift */; };
 		5536781F2576FF9000DB3652 /* IterableUtilTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5536781E2576FF9000DB3652 /* IterableUtilTests.swift */; };
 		5555425028BED1B400DB5D20 /* KeychainWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5555424F28BED1B400DB5D20 /* KeychainWrapper.swift */; };
-		55684312298C6A9F006A5EB4 /* FlexMessagingSerialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55684311298C6A9F006A5EB4 /* FlexMessagingSerialization.swift */; };
+		55684312298C6A9F006A5EB4 /* EmbeddedMessagingSerialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55684311298C6A9F006A5EB4 /* EmbeddedMessagingSerialization.swift */; };
 		55684319298C8052006A5EB4 /* FlexMessagingManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55684318298C8052006A5EB4 /* FlexMessagingManagerTests.swift */; };
 		556FB1EA244FAF6A00EDF6BD /* InAppPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556FB1E9244FAF6A00EDF6BD /* InAppPresenter.swift */; };
 		557AE6BF24A56E5E00B57750 /* Auth.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557AE6BE24A56E5E00B57750 /* Auth.swift */; };
@@ -519,16 +519,16 @@
 		00B6FACD210E874D007535CF /* prod-1.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = "prod-1.mobileprovision"; sourceTree = "<group>"; };
 		00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = "dev-1.mobileprovision"; sourceTree = "<group>"; };
 		00CB31B4210960C4004ACDEC /* TestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtils.swift; sourceTree = "<group>"; };
-		55023E9B29132881003F69DC /* IterableFlexMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableFlexMessage.swift; sourceTree = "<group>"; };
-		551FA7572988A8FC0072D0A9 /* IterableFlexMessagingManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableFlexMessagingManagerProtocol.swift; sourceTree = "<group>"; };
-		551FA75D2988AC930072D0A9 /* EmptyFlexMessagingManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyFlexMessagingManager.swift; sourceTree = "<group>"; };
-		551FA75F2988AC990072D0A9 /* FlexMessagingManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlexMessagingManager.swift; sourceTree = "<group>"; };
+		55023E9B29132881003F69DC /* IterableEmbeddedMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableEmbeddedMessage.swift; sourceTree = "<group>"; };
+		551FA7572988A8FC0072D0A9 /* IterableEmbeddedMessagingManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableEmbeddedMessagingManagerProtocol.swift; sourceTree = "<group>"; };
+		551FA75D2988AC930072D0A9 /* EmptyEmbeddedMessagingManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyEmbeddedMessagingManager.swift; sourceTree = "<group>"; };
+		551FA75F2988AC990072D0A9 /* EmbeddedMessagingManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmbeddedMessagingManager.swift; sourceTree = "<group>"; };
 		55298B222501A5AB00190BAE /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
 		552A0AA6280E1FDA00A80963 /* DeepLinkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepLinkManager.swift; sourceTree = "<group>"; };
 		5531CDAD22A9C992000D05E2 /* ClassExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClassExtensionsTests.swift; sourceTree = "<group>"; };
 		5536781E2576FF9000DB3652 /* IterableUtilTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableUtilTests.swift; sourceTree = "<group>"; };
 		5555424F28BED1B400DB5D20 /* KeychainWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainWrapper.swift; sourceTree = "<group>"; };
-		55684311298C6A9F006A5EB4 /* FlexMessagingSerialization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlexMessagingSerialization.swift; sourceTree = "<group>"; };
+		55684311298C6A9F006A5EB4 /* EmbeddedMessagingSerialization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddedMessagingSerialization.swift; sourceTree = "<group>"; };
 		55684318298C8052006A5EB4 /* FlexMessagingManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlexMessagingManagerTests.swift; sourceTree = "<group>"; };
 		556FB1E9244FAF6A00EDF6BD /* InAppPresenter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPresenter.swift; sourceTree = "<group>"; };
 		557AE6BE24A56E5E00B57750 /* Auth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Auth.swift; sourceTree = "<group>"; };
@@ -877,9 +877,9 @@
 		551FA75C2988AC800072D0A9 /* Flex Messaging */ = {
 			isa = PBXGroup;
 			children = (
-				551FA75D2988AC930072D0A9 /* EmptyFlexMessagingManager.swift */,
-				551FA75F2988AC990072D0A9 /* FlexMessagingManager.swift */,
-				55684311298C6A9F006A5EB4 /* FlexMessagingSerialization.swift */,
+				551FA75D2988AC930072D0A9 /* EmptyEmbeddedMessagingManager.swift */,
+				551FA75F2988AC990072D0A9 /* EmbeddedMessagingManager.swift */,
+				55684311298C6A9F006A5EB4 /* EmbeddedMessagingSerialization.swift */,
 			);
 			name = "Flex Messaging";
 			sourceTree = "<group>";
@@ -1002,8 +1002,8 @@
 				AC72A0C020CF4CB8004D7997 /* IterableAttributionInfo.swift */,
 				55DD207E26A0D83800773CC7 /* IterableAuthManagerProtocol.swift */,
 				AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */,
-				55023E9B29132881003F69DC /* IterableFlexMessage.swift */,
-				551FA7572988A8FC0072D0A9 /* IterableFlexMessagingManagerProtocol.swift */,
+				55023E9B29132881003F69DC /* IterableEmbeddedMessage.swift */,
+				551FA7572988A8FC0072D0A9 /* IterableEmbeddedMessagingManagerProtocol.swift */,
 				55DD2052269FA28200773CC7 /* IterableInAppManagerProtocol.swift */,
 				55DD2040269FA24400773CC7 /* IterableInAppMessage.swift */,
 				AC219C4E225FEDBD00B98631 /* IterableInboxCell.swift */,
@@ -1984,7 +1984,7 @@
 				55DD2065269FB1FC00773CC7 /* InboxViewControllerViewModelProtocol.swift in Sources */,
 				ACF32BDB24E3EA7C0072E2CC /* RequestProcessorProtocol.swift in Sources */,
 				AC219C49225FD7EB00B98631 /* IterableInboxViewController.swift in Sources */,
-				551FA7612988AC990072D0A9 /* FlexMessagingManager.swift in Sources */,
+				551FA7612988AC990072D0A9 /* EmbeddedMessagingManager.swift in Sources */,
 				AC3DD9C82142F3650046F886 /* ClassExtensions.swift in Sources */,
 				AC219C50225FEDBD00B98631 /* IterableInboxCell.swift in Sources */,
 				AC84256226D6167E0066C627 /* AppExtensionHelper.swift in Sources */,
@@ -1993,7 +1993,7 @@
 				AC1AA1C924EBB3C300F29C6B /* IterableNotifications.swift in Sources */,
 				ACFD5AB324C8179D008E497A /* PersistenceHelper.swift in Sources */,
 				AC72A0CD20CF4CE2004D7997 /* IterableAppIntegration.swift in Sources */,
-				55023E9C29132881003F69DC /* IterableFlexMessage.swift in Sources */,
+				55023E9C29132881003F69DC /* IterableEmbeddedMessage.swift in Sources */,
 				AC72A0CE20CF4CE2004D7997 /* IterableAttributionInfo.swift in Sources */,
 				AC50865424C60172001DC132 /* IterableDataModel.xcdatamodeld in Sources */,
 				ACA8D1A321910C66001B1332 /* IterableMessaging.swift in Sources */,
@@ -2015,7 +2015,7 @@
 				5B88BC482805D09D004016E5 /* NetworkSession.swift in Sources */,
 				AC06E4D327948C32007A6F20 /* InboxState.swift in Sources */,
 				ACC362BD24D21172002C67BA /* IterableAPICallTaskProcessor.swift in Sources */,
-				55684312298C6A9F006A5EB4 /* FlexMessagingSerialization.swift in Sources */,
+				55684312298C6A9F006A5EB4 /* EmbeddedMessagingSerialization.swift in Sources */,
 				AC84510922910A0C0052BB8F /* RequestCreator.swift in Sources */,
 				ACB8273F22372A5C00DB17D3 /* IterableHtmlMessageViewController.swift in Sources */,
 				AC5812F624F3A90F007E6D36 /* OfflineRequestProcessor.swift in Sources */,
@@ -2050,7 +2050,7 @@
 				AC2B79F721E6A38900A59080 /* NotificationHelper.swift in Sources */,
 				AC4095A422B18B9D006EF67C /* InboxViewControllerViewModel.swift in Sources */,
 				AC7A5261227BB9D10064D67E /* DependencyContainer.swift in Sources */,
-				551FA7582988A8FC0072D0A9 /* IterableFlexMessagingManagerProtocol.swift in Sources */,
+				551FA7582988A8FC0072D0A9 /* IterableEmbeddedMessagingManagerProtocol.swift in Sources */,
 				AC776DA6211A1B8A00C27C27 /* IterableRequestUtil.swift in Sources */,
 				55DD2053269FA28200773CC7 /* IterableInAppManagerProtocol.swift in Sources */,
 				ACEDF41D2183C2EC000B9BFE /* Pending.swift in Sources */,
@@ -2071,7 +2071,7 @@
 				AC72A0C720CF4CE2004D7997 /* CommerceItem.swift in Sources */,
 				AC31B040232AB42100BE25EB /* InboxSessionManager.swift in Sources */,
 				ACE34AB321376B1000691224 /* LocalStorage.swift in Sources */,
-				551FA75E2988AC930072D0A9 /* EmptyFlexMessagingManager.swift in Sources */,
+				551FA75E2988AC930072D0A9 /* EmptyEmbeddedMessagingManager.swift in Sources */,
 				AC8E9268246284F800BEB68E /* DataFieldsHelper.swift in Sources */,
 				AC5E888924E1B7CE00752321 /* OnlineRequestProcessor.swift in Sources */,
 				AC978D3E24FF953C00372B8C /* NetworkConnectivityChecker.swift in Sources */,

@@ -4,13 +4,13 @@
 
 import Foundation
 
-public struct IterableFlexMessage {
-    let metadata: FlexMessageMetadata
-    let elements: FlexMessageElements?
+public struct IterableEmbeddedMessage {
+    let metadata: EmbeddedMessageMetadata
+    let elements: EmbeddedMessageElements?
     let payload: [AnyHashable: Any]?
     
-    init(metadata: FlexMessageMetadata,
-         elements: FlexMessageElements? = nil,
+    init(metadata: EmbeddedMessageMetadata,
+         elements: EmbeddedMessageElements? = nil,
          payload: [AnyHashable : Any]? = nil) {
         self.metadata = metadata
         self.elements = elements
@@ -18,38 +18,38 @@ public struct IterableFlexMessage {
     }
 
     init(id: String, placementId: String, campaignId: String? = nil, isProof: Bool? = nil) {
-        let metadata = FlexMessageMetadata(id: id, placementId: placementId, campaignId: campaignId, isProof: isProof)
+        let metadata = EmbeddedMessageMetadata(id: id, placementId: placementId, campaignId: campaignId, isProof: isProof)
 
         self.init(metadata: metadata)
     }
 }
 
-extension IterableFlexMessage {
-    struct FlexMessageMetadata: Codable {
+extension IterableEmbeddedMessage {
+    struct EmbeddedMessageMetadata: Codable {
         let id: String
         let placementId: String
         let campaignId: String?
         let isProof: Bool?
     }
 
-    struct FlexMessageElements: Codable {
+    struct EmbeddedMessageElements: Codable {
         let type: String?
-        let buttons: [FlexMessageElementsButton]?
-        let images: [FlexMessageElementsImage]?
-        let text: [FlexMessageElementsText]?
+        let buttons: [EmbeddedMessageElementsButton]?
+        let images: [EmbeddedMessageElementsImage]?
+        let text: [EmbeddedMessageElementsText]?
         
-        struct FlexMessageElementsButton: Codable {
+        struct EmbeddedMessageElementsButton: Codable {
             let id: String
             let title: String?
             let action: String?
         }
 
-        struct FlexMessageElementsImage: Codable {
+        struct EmbeddedMessageElementsImage: Codable {
             let id: String
             let url: String?
         }
 
-        struct FlexMessageElementsText: Codable {
+        struct EmbeddedMessageElementsText: Codable {
             let id: String
             let text: String?
         }
