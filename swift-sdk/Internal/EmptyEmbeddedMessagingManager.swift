@@ -4,7 +4,7 @@
 
 import Foundation
 
-class EmptyFlexMessagingManager: IterableFlexMessagingManagerProtocol {
+class EmptyEmbeddedMessagingManager: IterableEmbeddedMessagingManagerProtocol {
     func start() {
         
     }

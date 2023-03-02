@@ -4,7 +4,7 @@
 
 import Foundation
 
-class FlexMessagingManager: IterableFlexMessagingManagerProtocol {
+class EmbeddedMessagingManager: IterableEmbeddedMessagingManagerProtocol {
     init() {
         ITBInfo()
         
@@ -15,7 +15,7 @@ class FlexMessagingManager: IterableFlexMessagingManagerProtocol {
         ITBInfo()
     }
     
-    public func getMessages() -> [IterableFlexMessage] {
+    public func getMessages() -> [IterableEmbeddedMessage] {
         return messages
     }
     
@@ -33,5 +33,5 @@ class FlexMessagingManager: IterableFlexMessagingManagerProtocol {
         // retrieve from persistent storage and set it to `messages`
     }
     
-    private var messages: [IterableFlexMessage] = []
+    private var messages: [IterableEmbeddedMessage] = []
 }

@@ -72,8 +72,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.dependencyContainer.createAuthManager(config: self.config)
     }()
     
-    lazy var flexMessagingManager: IterableFlexMessagingManagerProtocol = {
-        self.dependencyContainer.createFlexMessagingManager()
+    lazy var embeddedMessagingManager: IterableEmbeddedMessagingManagerProtocol = {
+        self.dependencyContainer.createEmbeddedMessagingManager()
     }()
     
     // MARK: - SDK Functions
@@ -585,7 +585,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         checkRemoteConfiguration()
         
-        flexMessagingManager.start()
+        embeddedMessagingManager.start()
         
         return inAppManager.start()
     }

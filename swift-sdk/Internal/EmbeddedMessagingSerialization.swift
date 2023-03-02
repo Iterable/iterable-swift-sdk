@@ -4,8 +4,8 @@
 
 import Foundation
 
-struct FlexMessagingSerialization {
-    static func encode(messages: [IterableFlexMessage]) -> Data {
+struct EmbeddedMessagingSerialization {
+    static func encode(messages: [IterableEmbeddedMessage]) -> Data {
         guard let encoded = try? JSONEncoder().encode(messages) else {
             ITBError("unable to encode flex messages into JSON payload")
             return Data()
@@ -14,8 +14,8 @@ struct FlexMessagingSerialization {
         return encoded
     }
     
-    static func decode(messages: Data) -> [IterableFlexMessage] {
-        guard let decoded = try? JSONDecoder().decode([IterableFlexMessage].self, from: messages) else {
+    static func decode(messages: Data) -> [IterableEmbeddedMessage] {
+        guard let decoded = try? JSONDecoder().decode([IterableEmbeddedMessage].self, from: messages) else {
             ITBError("unable to decode JSON payload into flex messages")
             return []
         }
@@ -40,7 +40,7 @@ struct FlexMessagingSerialization {
     }
 }
 
-extension IterableFlexMessage: Codable {
+extension IterableEmbeddedMessage: Codable {
     enum CodingKeys: String, CodingKey {
         case metadata
         case elements
@@ -52,7 +52,7 @@ extension IterableFlexMessage: Codable {
         
         try? container.encode(metadata, forKey: .metadata)
         try? container.encodeIfPresent(elements, forKey: .elements)
-        try? container.encodeIfPresent(FlexMessagingSerialization.encode(payload: payload), forKey: .payload)
+        try? container.encodeIfPresent(EmbeddedMessagingSerialization.encode(payload: payload), forKey: .payload)
     }
     
     public init(from decoder: Decoder) throws {
@@ -64,9 +64,9 @@ extension IterableFlexMessage: Codable {
             return
         }
         
-        let metadata = (try? container.decode(FlexMessageMetadata.self, forKey: .metadata))
-        let elements = (try? container.decode(FlexMessageElements.self, forKey: .elements))
-        let payload = FlexMessagingSerialization.decode(payload: try? container.decode(Data.self, forKey: .payload))
+        let metadata = (try? container.decode(EmbeddedMessageMetadata.self, forKey: .metadata))
+        let elements = (try? container.decode(EmbeddedMessageElements.self, forKey: .elements))
+        let payload = EmbeddedMessagingSerialization.decode(payload: try? container.decode(Data.self, forKey: .payload))
         
         guard let metadata = metadata else {
             ITBError("unable to decode metadata section of flex message payload")
