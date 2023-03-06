@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.4.11
+### Fixed
+- Fixed so that `AuthManager` clears the previous refresh timer before setting a new one (thanks, @cranberyxl!)
+
+## 6.4.10
+### Fixed
+- Fixed instances where `config.inAppDisplayInterval` would not set custom interval set via react native layer.
+
 ### 6.4.9
 ### Added
 [Version version 6.4.9](https://github.com/Iterable/swift-sdk/releases/tag/6.4.9) of Iterable's iOS SDK makes it possible to store in-app messages in memory, rather than in an unencrypted local file. However, an unencrypted local file is still the default option.

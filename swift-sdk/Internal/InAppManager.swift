@@ -40,7 +40,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
          applicationStateProvider: ApplicationStateProviderProtocol,
          notificationCenter: NotificationCenterProtocol,
          dateProvider: DateProviderProtocol,
-         retryInterval: Double) {
+         moveToForegroundSyncInterval: Double) {
         ITBInfo()
         
         self.requestHandler = requestHandler
@@ -56,7 +56,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         self.applicationStateProvider = applicationStateProvider
         self.notificationCenter = notificationCenter
         self.dateProvider = dateProvider
-        self.retryInterval = retryInterval
+        self.moveToForegroundSyncInterval = moveToForegroundSyncInterval
         
         super.init()
         
@@ -391,7 +391,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     // How long do we have to wait before showing the message
     // > 0 means wait, otherwise we are good to show
     private func getInAppShowingWaitTimeInterval() -> TimeInterval {
-        InAppManager.getWaitTimeInterval(fromLastTime: lastDismissedTime, currentTime: dateProvider.currentDate, gap: retryInterval)
+        InAppManager.getWaitTimeInterval(fromLastTime: lastDismissedTime, currentTime: dateProvider.currentDate, gap: moveToForegroundSyncInterval)
     }
     
     // How long do we have to wait?
@@ -521,7 +521,6 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     private let persister: InAppPersistenceProtocol
     private var messagesMap = OrderedDictionary<String, IterableInAppMessage>()
     private let dateProvider: DateProviderProtocol
-    private let retryInterval: TimeInterval // in seconds, if a message is already showing how long to wait?
     private var lastDismissedTime: Date?
     private var lastDisplayTime: Date?
     
@@ -532,7 +531,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     
     private var syncResult: Pending<Bool, Error>?
     private var lastSyncTime: Date?
-    private let moveToForegroundSyncInterval: Double = 1.0 * 60.0 // don't sync within sixty seconds
+    private var moveToForegroundSyncInterval: Double = 1.0 * 60.0 // don't sync within sixty seconds
     private var autoDisplayPaused = false
 }
 
@@ -621,13 +620,13 @@ extension InAppManager: InAppDisplayChecker {
             return false
         }
         
-        guard InAppManager.getWaitTimeInterval(fromLastTime: lastDismissedTime, currentTime: dateProvider.currentDate, gap: retryInterval) <= 0 else {
-            ITBInfo("can't display within retryInterval window")
+        guard InAppManager.getWaitTimeInterval(fromLastTime: lastDismissedTime, currentTime: dateProvider.currentDate, gap: moveToForegroundSyncInterval) <= 0 else {
+            ITBInfo("can't display within configured In-App display interval window")
             return false
         }
         
-        guard InAppManager.getWaitTimeInterval(fromLastTime: lastDisplayTime, currentTime: dateProvider.currentDate, gap: retryInterval) <= 0 else {
-            ITBInfo("can't display within retryInterval window")
+        guard InAppManager.getWaitTimeInterval(fromLastTime: lastDisplayTime, currentTime: dateProvider.currentDate, gap: moveToForegroundSyncInterval) <= 0 else {
+            ITBInfo("can't display within configured In-App display window")
             return false
         }
         

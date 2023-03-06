@@ -113,6 +113,7 @@ class AuthManager: IterableAuthManagerProtocol {
         
         let timeIntervalToRefresh = TimeInterval(expirationDate) - dateProvider.currentDate.timeIntervalSince1970 - expirationRefreshPeriod
         
+        clearRefreshTimer()
         expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: timeIntervalToRefresh, repeats: false) { [weak self] _ in
             self?.requestNewAuthToken(hasFailedPriorAuth: false)
         }
