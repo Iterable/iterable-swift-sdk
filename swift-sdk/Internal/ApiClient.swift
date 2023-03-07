@@ -216,4 +216,10 @@ extension ApiClient: ApiClientProtocol {
         let result = createRequestCreator().flatMap { $0.createGetRemoteConfigurationRequest() }
         return send(iterableRequestResult: result)
     }
+    
+    // MARK: - Embedded Messaging
+    func getEmbeddedMessages() -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createGetEmbeddedMessagesRequest() }
+        return send(iterableRequestResult: result)
+    }
 }

@@ -233,6 +233,8 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: Const.Path.updateSubscriptions, body: body)))
     }
     
+    // MARK: - In-App Messaging Request Calls
+    
     func createGetInAppMessagesRequest(_ count: NSNumber) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
             ITBError(Self.authMissingMessage)
@@ -417,6 +419,23 @@ struct RequestCreator {
         
         return .success(.post(createPostRequest(path: Const.Path.trackInboxSession, body: body)))
     }
+    
+    // MARK: - Embedded Messaging Request Calls
+    
+    func createGetEmbeddedMessagesRequest() -> Result<IterableRequest, IterableError> {
+        if case .none = auth.emailOrUserId {
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
+        }
+        
+        var args: [AnyHashable: Any] = [:]
+        
+        setCurrentUser(inDict: &args)
+        
+        return .success(.get(createGetRequest(forPath: Const.Path.embeddedMessages, withArgs: args as! [String: String])))
+    }
+    
+    // MARK: - Misc Request Calls
     
     func createDisableDeviceRequest(forAllUsers allUsers: Bool, hexToken: String) -> Result<IterableRequest, IterableError> {
         var body = [AnyHashable: Any]()

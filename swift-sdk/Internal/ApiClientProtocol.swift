@@ -45,4 +45,6 @@ protocol ApiClientProtocol: AnyObject {
     func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Pending<SendRequestValue, SendRequestError>
 
     func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError>
+    
+    func getEmbeddedMessages() -> Pending<SendRequestValue, SendRequestError>
 }
