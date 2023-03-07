@@ -19,10 +19,6 @@ class EmbeddedMessagingManager: IterableEmbeddedMessagingManagerProtocol {
         return messages
     }
     
-//    func getMessages(placementId: String) -> [IterableFlexMessage] {
-//        return messages.filter({ $0.metadata.placementId == placementId })
-//    }
-    
     func start() {
         ITBInfo()
         
