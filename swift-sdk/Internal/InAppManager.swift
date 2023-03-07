@@ -482,11 +482,11 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
             return false
         }
         
-        return currentDate >= expiresAt
+        return currentDate > expiresAt
     }
     
     fileprivate static func isValid(message: IterableInAppMessage, currentDate: Date) -> Bool {
-        message.consumed == false && isExpired(message: message, currentDate: currentDate) == false
+        return !isExpired(message: message, currentDate: currentDate)
     }
     
     fileprivate static func getAppIsReady(applicationStateProvider: ApplicationStateProviderProtocol,
