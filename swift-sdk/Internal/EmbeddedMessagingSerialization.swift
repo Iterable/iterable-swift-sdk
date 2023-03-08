@@ -55,7 +55,7 @@ extension IterableEmbeddedMessage: Codable {
         try? container.encodeIfPresent(EmbeddedMessagingSerialization.encode(payload: payload), forKey: .payload)
     }
     
-    public init(from decoder: Decoder) throws {
+    public convenience init(from decoder: Decoder) throws {
         guard let container = try? decoder.container(keyedBy: CodingKeys.self) else {
             ITBError("unable to decode flex message payload")
             

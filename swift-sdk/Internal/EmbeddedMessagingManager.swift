@@ -4,19 +4,35 @@
 
 import Foundation
 
-class EmbeddedMessagingManager: IterableEmbeddedMessagingManagerProtocol {
-    init() {
+class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtocol {
+    override init() {
         ITBInfo()
         
-        initializeMessages()
+        super.init()
+        
+        initMessages()
+        initObservers()
+        initAutoFetchTimer()
     }
     
     deinit {
         ITBInfo()
+        
+        deinitObservers()
     }
     
     public func getMessages() -> [IterableEmbeddedMessage] {
+        ITBInfo()
+        
         return messages
+    }
+    
+    public func addListener() {
+        listeners.append("")
+    }
+    
+    public func removeListener() {
+        listeners.remove(at: 0)
     }
     
     func start() {
@@ -25,9 +41,24 @@ class EmbeddedMessagingManager: IterableEmbeddedMessagingManagerProtocol {
         
     }
     
-    private func initializeMessages() {
-        // retrieve from persistent storage and set it to `messages`
+    private func initMessages() {
+        // TODO: retrieve from persistent storage and set it to `messages`
+        
+        
+    }
+    
+    private func initObservers() {
+        
+    }
+    
+    private func deinitObservers() {
+        
+    }
+    
+    private func initAutoFetchTimer() {
+        
     }
     
     private var messages: [IterableEmbeddedMessage] = []
+    private var listeners: [String] = [] //change to protocol
 }
