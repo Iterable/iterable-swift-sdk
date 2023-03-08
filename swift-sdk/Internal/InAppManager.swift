@@ -466,12 +466,14 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         ITBInfo()
         
         updateMessage(message, didProcessTrigger: true, consumed: true)
+        
         requestHandler?.inAppConsume(message: message,
                                      location: location,
                                      source: source,
                                      inboxSessionId: inboxSessionId,
                                      onSuccess: nil,
                                      onFailure: nil)
+        
         callbackQueue.async { [weak self] in
             self?.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
         }
@@ -486,7 +488,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     }
     
     fileprivate static func isValid(message: IterableInAppMessage, currentDate: Date) -> Bool {
-        return !isExpired(message: message, currentDate: currentDate)
+        return !message.consumed && !isExpired(message: message, currentDate: currentDate)
     }
     
     fileprivate static func getAppIsReady(applicationStateProvider: ApplicationStateProviderProtocol,
