@@ -174,5 +174,9 @@ class InAppHelperTests: XCTestCase {
         func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError> {
             fatalError()
         }
+        
+        func getEmbeddedMessages() -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+            fatalError()
+        }
     }
 }
