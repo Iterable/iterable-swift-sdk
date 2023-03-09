@@ -9,11 +9,11 @@ class EmptyEmbeddedMessagingManager: IterableEmbeddedMessagingManagerProtocol {
         return []
     }
     
-    func addListener() {
+    func addUpdateListener() {
         
     }
     
-    func removeListener() {
+    func removeUpdateListener() {
         
     }
     

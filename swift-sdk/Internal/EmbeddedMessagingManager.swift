@@ -27,11 +27,11 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
         return messages
     }
     
-    public func addListener() {
+    public func addUpdateListener() {
         listeners.append("")
     }
     
-    public func removeListener() {
+    public func removeUpdateListener() {
         listeners.remove(at: 0)
     }
     
