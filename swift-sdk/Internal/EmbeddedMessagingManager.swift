@@ -5,8 +5,12 @@
 import Foundation
 
 class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtocol {
-    override init() {
+    init(autoFetchInterval: TimeInterval,
+         apiClient: ApiClientProtocol) {
         ITBInfo()
+        
+        self.autoFetchInterval = autoFetchInterval
+        self.apiClient = apiClient
         
         super.init()
         
