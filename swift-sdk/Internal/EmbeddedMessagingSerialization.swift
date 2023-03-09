@@ -7,7 +7,7 @@ import Foundation
 struct EmbeddedMessagingSerialization {
     static func encode(messages: [IterableEmbeddedMessage]) -> Data {
         guard let encoded = try? JSONEncoder().encode(messages) else {
-            ITBError("unable to encode flex messages into JSON payload")
+            ITBError("unable to encode embedded messages into JSON payload")
             return Data()
         }
         
@@ -16,7 +16,7 @@ struct EmbeddedMessagingSerialization {
     
     static func decode(messages: Data) -> [IterableEmbeddedMessage] {
         guard let decoded = try? JSONDecoder().decode([IterableEmbeddedMessage].self, from: messages) else {
-            ITBError("unable to decode JSON payload into flex messages")
+            ITBError("unable to decode JSON payload into embedded messages")
             return []
         }
         
@@ -55,9 +55,9 @@ extension IterableEmbeddedMessage: Codable {
         try? container.encodeIfPresent(EmbeddedMessagingSerialization.encode(payload: payload), forKey: .payload)
     }
     
-    public init(from decoder: Decoder) throws {
+    public convenience init(from decoder: Decoder) throws {
         guard let container = try? decoder.container(keyedBy: CodingKeys.self) else {
-            ITBError("unable to decode flex message payload")
+            ITBError("unable to decode embedded messages payload")
             
             self.init(id: "", placementId: "")
             
@@ -69,7 +69,7 @@ extension IterableEmbeddedMessage: Codable {
         let payload = EmbeddedMessagingSerialization.decode(payload: try? container.decode(Data.self, forKey: .payload))
         
         guard let metadata = metadata else {
-            ITBError("unable to decode metadata section of flex message payload")
+            ITBError("unable to decode metadata section of embedded messages payload")
             self.init(id: "", placementId: "")
             
             return

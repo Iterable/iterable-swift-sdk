@@ -428,7 +428,13 @@ struct RequestCreator {
             return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
-        var args: [AnyHashable: Any] = [:]
+        var args: [AnyHashable: Any] = [JsonKey.platform: JsonValue.iOS,
+                                        JsonKey.systemVersion: UIDevice.current.systemVersion,
+                                        JsonKey.InApp.sdkVersion: IterableAPI.sdkVersion]
+        
+        if let packageName = Bundle.main.appPackageName {
+            args[JsonKey.InApp.packageName] = packageName
+        }
         
         setCurrentUser(inDict: &args)
         

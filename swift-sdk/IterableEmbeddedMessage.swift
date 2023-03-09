@@ -4,7 +4,8 @@
 
 import Foundation
 
-public struct IterableEmbeddedMessage {
+@objcMembers
+public final class IterableEmbeddedMessage: NSObject {
     let metadata: EmbeddedMessageMetadata
     let elements: EmbeddedMessageElements?
     let payload: [AnyHashable: Any]?
@@ -17,7 +18,7 @@ public struct IterableEmbeddedMessage {
         self.payload = payload
     }
 
-    init(id: String, placementId: String, campaignId: String? = nil, isProof: Bool? = nil) {
+    convenience init(id: String, placementId: String, campaignId: String? = nil, isProof: Bool? = nil) {
         let metadata = EmbeddedMessageMetadata(id: id, placementId: placementId, campaignId: campaignId, isProof: isProof)
 
         self.init(metadata: metadata)
