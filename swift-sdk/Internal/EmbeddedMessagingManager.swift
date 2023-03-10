@@ -48,15 +48,16 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
     // MARK: - PRIVATE/INTERNAL
     
     private func initObservers() {
-        // TODO: add app foreground/background switching notification registration here
-        
-        
+        NotificationCenter().addObserver(self,
+                                         selector: #selector(onAppDidBecomeActiveNotification(notification:)),
+                                         name: UIApplication.didBecomeActiveNotification,
+                                         object: nil)
     }
     
     private func deinitObservers() {
-        // TODO: add app foreground/background switching notification removal here
-        
-        
+        NotificationCenter().removeObserver(self,
+                                            name: UIApplication.didBecomeActiveNotification,
+                                            object: nil)
     }
     
     private func initAutoFetchTimer() {
@@ -84,6 +85,12 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
                                               block: { [weak self] _ in
             self?.retrieveAndSyncEmbeddedMessages()
         })
+    }
+    
+    @objc private func onAppDidBecomeActiveNotification(notification: Notification) {
+        ITBInfo()
+        
+        retrieveAndSyncEmbeddedMessages()
     }
     
     private func retrieveAndSyncEmbeddedMessages() {
