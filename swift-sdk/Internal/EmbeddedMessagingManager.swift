@@ -86,6 +86,12 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
     }
     
     private func retrieveAndSyncEmbeddedMessages() {
+        if let lastMessagesFetchDate = lastMessagesFetchDate {
+            if lastMessagesFetchDate + autoFetchInterval <= dateProvider.currentDate {
+                return
+            }
+        }
+        
         apiClient.getEmbeddedMessages()
             .onCompletion(
                 receiveValue: { fetchedMessages in
