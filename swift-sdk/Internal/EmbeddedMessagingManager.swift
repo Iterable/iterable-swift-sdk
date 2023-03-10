@@ -12,6 +12,7 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
         
         self.autoFetchInterval = autoFetchInterval
         self.apiClient = apiClient
+        self.dateProvider = dateProvider
         
         super.init()
         
