@@ -175,7 +175,7 @@ class InAppHelperTests: XCTestCase {
             fatalError()
         }
         
-        func getEmbeddedMessages() -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+        func getEmbeddedMessages() -> Pending<[IterableEmbeddedMessage], SendRequestError> {
             fatalError()
         }
     }
