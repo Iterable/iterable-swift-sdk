@@ -6,7 +6,8 @@ import Foundation
 
 class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtocol {
     init(autoFetchInterval: TimeInterval,
-         apiClient: ApiClientProtocol) {
+         apiClient: ApiClientProtocol,
+         dateProvider: DateProviderProtocol) {
         ITBInfo()
         
         self.autoFetchInterval = autoFetchInterval
@@ -92,6 +93,7 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
                     self.messages = fetchedMessages
                     self.trackDeliveries(messages: fetchedMessages)
                     self.notifyUpdateDelegates(messages: fetchedMessages)
+                    self.lastMessagesFetchDate = self.dateProvider.currentDate
                 },
                 
                 receiveError: { sendRequestError in
@@ -108,9 +110,12 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
     }
     
     private var apiClient: ApiClientProtocol
+    private var dateProvider: DateProviderProtocol
     
     private var autoFetchInterval: TimeInterval
     private var autoFetchTimer: Timer?
+    
+    private var lastMessagesFetchDate: Date?
     
     private var messages: [IterableEmbeddedMessage] = []
     
