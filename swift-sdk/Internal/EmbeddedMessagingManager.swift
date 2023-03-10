@@ -14,7 +14,6 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
         
         super.init()
         
-        initMessages()
         initObservers()
         initAutoFetchTimer()
     }
@@ -42,15 +41,9 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
     
     func start() {
         ITBInfo()
-        
-        
     }
     
-    private func initMessages() {
-        // TODO: retrieve from persistent storage and set it to `messages`
-        
-        
-    }
+    // MARK: - PRIVATE/INTERNAL
     
     private func initObservers() {
         // TODO: add app foreground/background switching notification registration here
@@ -92,15 +85,26 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
     }
     
     private func retrieveAndSyncEmbeddedMessages() {
-        // Pending<[IterableEmbeddedMessage], SendRequestError>
         apiClient.getEmbeddedMessages()
-            .map { fetchedMessages in
-                // TODO: decide if parsing errors should be accounted for here
+            .onCompletion(
+                receiveValue: { fetchedMessages in
+                    // TODO: decide if parsing errors should be accounted for here
+                    self.messages = fetchedMessages
+                    self.trackDeliveries(messages: fetchedMessages)
+                    self.notifyUpdateDelegates(messages: fetchedMessages)
+                },
                 
-                // TODO: diff merge comparison with local messages variable
-                // TODO: persist, if desired, or add placeholder for future
-                // TODO: notify message update delegates
-            }
+                receiveError: { sendRequestError in
+                    ITBError()
+                })
+    }
+    
+    private func trackDeliveries(messages: [IterableEmbeddedMessage]) {
+        // TODO: track deliveries
+    }
+    
+    private func notifyUpdateDelegates(messages: [IterableEmbeddedMessage]) {
+        // TODO: filter `messages` by `placementId` and notify objects in `listeners` that have that placement ID
     }
     
     private var apiClient: ApiClientProtocol
