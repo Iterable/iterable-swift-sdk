@@ -204,6 +204,11 @@ enum JsonKey {
         static let userInterfaceIdiom = "userInterfaceIdiom"
     }
     
+    enum Embedded {
+        static let packageName = "packageName"
+        static let sdkVersion = "SDKVersion"
+    }
+    
     enum Header {
         static let apiKey = "Api-Key"
         static let sdkVersion = "SDK-Version"

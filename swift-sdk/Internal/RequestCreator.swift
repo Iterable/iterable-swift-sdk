@@ -430,10 +430,10 @@ struct RequestCreator {
         
         var args: [AnyHashable: Any] = [JsonKey.platform: JsonValue.iOS,
                                         JsonKey.systemVersion: UIDevice.current.systemVersion,
-                                        JsonKey.InApp.sdkVersion: IterableAPI.sdkVersion]
+                                        JsonKey.Embedded.sdkVersion: IterableAPI.sdkVersion]
         
         if let packageName = Bundle.main.appPackageName {
-            args[JsonKey.InApp.packageName] = packageName
+            args[JsonKey.Embedded.packageName] = packageName
         }
         
         setCurrentUser(inDict: &args)
