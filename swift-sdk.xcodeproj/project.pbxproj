@@ -12,6 +12,7 @@
 		00B6FAD1210E8D90007535CF /* dev-1.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */; };
 		00CB31B621096129004ACDEC /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CB31B4210960C4004ACDEC /* TestUtils.swift */; };
 		55023E9C29132881003F69DC /* IterableEmbeddedMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55023E9B29132881003F69DC /* IterableEmbeddedMessage.swift */; };
+		5511FF5529BBE698005D42AB /* IterableEmbeddedMessagingUpdateDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5511FF5429BBE698005D42AB /* IterableEmbeddedMessagingUpdateDelegate.swift */; };
 		551FA7582988A8FC0072D0A9 /* IterableEmbeddedMessagingManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FA7572988A8FC0072D0A9 /* IterableEmbeddedMessagingManagerProtocol.swift */; };
 		551FA75E2988AC930072D0A9 /* EmptyEmbeddedMessagingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FA75D2988AC930072D0A9 /* EmptyEmbeddedMessagingManager.swift */; };
 		551FA7612988AC990072D0A9 /* EmbeddedMessagingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FA75F2988AC990072D0A9 /* EmbeddedMessagingManager.swift */; };
@@ -520,6 +521,7 @@
 		00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = "dev-1.mobileprovision"; sourceTree = "<group>"; };
 		00CB31B4210960C4004ACDEC /* TestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtils.swift; sourceTree = "<group>"; };
 		55023E9B29132881003F69DC /* IterableEmbeddedMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableEmbeddedMessage.swift; sourceTree = "<group>"; };
+		5511FF5429BBE698005D42AB /* IterableEmbeddedMessagingUpdateDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableEmbeddedMessagingUpdateDelegate.swift; sourceTree = "<group>"; };
 		551FA7572988A8FC0072D0A9 /* IterableEmbeddedMessagingManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableEmbeddedMessagingManagerProtocol.swift; sourceTree = "<group>"; };
 		551FA75D2988AC930072D0A9 /* EmptyEmbeddedMessagingManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmptyEmbeddedMessagingManager.swift; sourceTree = "<group>"; };
 		551FA75F2988AC990072D0A9 /* EmbeddedMessagingManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmbeddedMessagingManager.swift; sourceTree = "<group>"; };
@@ -1004,6 +1006,7 @@
 				AC7125EE20D4579E0043BBC1 /* IterableConfig.swift */,
 				55023E9B29132881003F69DC /* IterableEmbeddedMessage.swift */,
 				551FA7572988A8FC0072D0A9 /* IterableEmbeddedMessagingManagerProtocol.swift */,
+				5511FF5429BBE698005D42AB /* IterableEmbeddedMessagingUpdateDelegate.swift */,
 				55DD2052269FA28200773CC7 /* IterableInAppManagerProtocol.swift */,
 				55DD2040269FA24400773CC7 /* IterableInAppMessage.swift */,
 				AC219C4E225FEDBD00B98631 /* IterableInboxCell.swift */,
@@ -2001,6 +2004,7 @@
 				AC942BC62539DEDA002988C9 /* ResourceHelper.swift in Sources */,
 				AC4B039622A8743F0043185B /* InAppManager+Functions.swift in Sources */,
 				ACA95D2F2754AA6800AF4666 /* IterableInboxView.swift in Sources */,
+				5511FF5529BBE698005D42AB /* IterableEmbeddedMessagingUpdateDelegate.swift in Sources */,
 				ACC51A6B22A879070095E81F /* EmptyInAppManager.swift in Sources */,
 				AC52C5B62729CE44000DCDCF /* IterableUserDefaults.swift in Sources */,
 				ACC362BF24D21192002C67BA /* IterableTaskProcessor.swift in Sources */,

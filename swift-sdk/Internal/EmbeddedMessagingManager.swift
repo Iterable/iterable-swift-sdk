@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import UIKit
 
 class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtocol {
     init(autoFetchInterval: TimeInterval,
@@ -33,12 +34,12 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
         return messages
     }
     
-    public func addUpdateListener() {
-        listeners.append("")
+    public func addUpdateListener(_ listener: IterableEmbeddedMessagingUpdateDelegate) {
+//        listeners.append(listener)
     }
     
-    public func removeUpdateListener() {
-        listeners.remove(at: 0)
+    public func removeUpdateListener(_ listener: IterableEmbeddedMessagingUpdateDelegate) {
+//        listeners.
     }
     
     func start() {
@@ -133,5 +134,5 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
     
     private var messages: [IterableEmbeddedMessage] = []
     
-    private var listeners: [String] = [] //change to protocol
+    private var listeners: [IterableEmbeddedMessagingUpdateDelegate] = []
 }
