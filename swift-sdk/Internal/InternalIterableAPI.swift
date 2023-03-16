@@ -587,6 +587,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     private func handle(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
         guard let launchOptions = launchOptions else {
+            localStorage.saveLastPushPayload(nil, withExpiration: nil)
             return
         }
         if let remoteNotificationPayload = launchOptions[UIApplication.LaunchOptionsKey.remoteNotification] as? [AnyHashable: Any] {
