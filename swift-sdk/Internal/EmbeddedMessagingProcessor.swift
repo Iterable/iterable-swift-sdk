@@ -22,9 +22,13 @@ struct EmbeddedMessagingProcessor {
     }
 
     func placementIdsToNotify() -> [String] {
+        // TODO: account for removed placement IDs, this only counts new ones for now
+        
         return getNewMessages()
             .map { $0.metadata.placementId }
     }
+    
+    // TODO: track message removals
     
     private let currentMessages: [IterableEmbeddedMessage]
     private let fetchedMessages: [IterableEmbeddedMessage]

@@ -1512,13 +1512,13 @@
 			children = (
 				AC995F932166EC310099A184 /* common */,
 				55684317298C8036006A5EB4 /* embedded-messaging-tests */,
+				AC28480824AA44C600C1FC7F /* endpoint-tests */,
 				ACFBEA15262DC68C000935DD /* hosting-apps */,
-				AC7B142C20D02CE200877BFE /* unit-tests */,
+				ACDA976F23159C39004C412E /* inbox-ui-tests */,
+				AC90C4D220D8632E00EECA5D /* notification-extension-tests */,
 				ACFD5AB924C8200C008E497A /* offline-events-tests */,
 				ACC87764215C20B50097E29B /* ui-tests */,
-				ACDA976F23159C39004C412E /* inbox-ui-tests */,
-				AC28480824AA44C600C1FC7F /* endpoint-tests */,
-				AC90C4D220D8632E00EECA5D /* notification-extension-tests */,
+				AC7B142C20D02CE200877BFE /* unit-tests */,
 			);
 			path = tests;
 			sourceTree = "<group>";

@@ -35,11 +35,11 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
     }
     
     public func addUpdateListener(_ listener: IterableEmbeddedMessagingUpdateDelegate) {
-//        listeners.append(listener)
+        listeners.add(listener)
     }
     
     public func removeUpdateListener(_ listener: IterableEmbeddedMessagingUpdateDelegate) {
-//        listeners.
+        listeners.remove(listener)
     }
     
     func start() {
@@ -133,7 +133,7 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
         
 //        let placementIdsToUpdate = processor.placementIdsToNotify()
         
-        for listener in listeners {
+        for listener in listeners.allObjects {
             listener.onMessagesUpdated()
         }
     }
@@ -148,5 +148,5 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
     
     private var messages: [IterableEmbeddedMessage] = []
     
-    private var listeners: [IterableEmbeddedMessagingUpdateDelegate] = []
+    private var listeners: NSHashTable<IterableEmbeddedMessagingUpdateDelegate> = NSHashTable(options: [.weakMemory])
 }
