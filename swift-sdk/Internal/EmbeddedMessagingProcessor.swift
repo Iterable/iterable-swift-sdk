@@ -23,9 +23,11 @@ struct EmbeddedMessagingProcessor {
         return fetchedMessageIds.filter { !currentMessageIds.contains($0) }
     }
     
-    // TODO: func for getting message IDs of removed messages
     func newlyRemovedMessageIds() -> [String] {
-        return []
+        let currentMessageIds = currentMessages.map { $0.metadata.id }
+        let fetchedMessageIds = fetchedMessages.map { $0.metadata.id }
+        
+        return currentMessageIds.filter { !fetchedMessageIds.contains($0) }
     }
 
     func placementIdsToNotify() -> [String] {

@@ -25,8 +25,7 @@ final class EmbeddedMessagingProcessorTests: XCTestCase {
         let processor = EmbeddedMessagingProcessor(currentMessages: currentMessages,
                                                    fetchedMessages: fetchedMessages)
         
-        // TODO: write function for removed messages, write test afterwards
-        // TODO: it should match ["a", "c", "d", "e"]
+        XCTAssertEqual(processor.newlyRemovedMessageIds(), ["b"])
     }
     
     func testMessageIdsToTrackDelivery() {
