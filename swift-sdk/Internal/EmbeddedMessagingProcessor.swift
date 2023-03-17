@@ -31,7 +31,7 @@ struct EmbeddedMessagingProcessor {
             .map { $0.metadata.placementId }
     }
     
-    // TODO: track message removals
+    // MARK: - PRIVATE/INTERNAL
     
     private let currentMessages: [IterableEmbeddedMessage]
     private let fetchedMessages: [IterableEmbeddedMessage]
