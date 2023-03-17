@@ -4,7 +4,7 @@
 
 import XCTest
 
-final class FlexMessagingManagerTests: XCTestCase {
+final class EmbeddedMessagingManagerTests: XCTestCase {
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
@@ -13,7 +13,7 @@ final class FlexMessagingManagerTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    func testFlexMessagingManagerInit() throws {
+    func testEmbeddedMessagingManagerInit() throws {
         
     }
 }

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import UIKit
 
 class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtocol {
     init(autoFetchInterval: TimeInterval,
@@ -33,12 +34,12 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
         return messages
     }
     
-    public func addUpdateListener() {
-        listeners.append("")
+    public func addUpdateListener(_ listener: IterableEmbeddedMessagingUpdateDelegate) {
+//        listeners.append(listener)
     }
     
-    public func removeUpdateListener() {
-        listeners.remove(at: 0)
+    public func removeUpdateListener(_ listener: IterableEmbeddedMessagingUpdateDelegate) {
+//        listeners.
     }
     
     func start() {
@@ -104,9 +105,13 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
             .onCompletion(
                 receiveValue: { fetchedMessages in
                     // TODO: decide if parsing errors should be accounted for here
-                    self.messages = fetchedMessages
-                    self.trackDeliveries(messages: fetchedMessages)
-                    self.notifyUpdateDelegates(messages: fetchedMessages)
+                    
+                    let processor = EmbeddedMessagingProcessor(currentMessages: self.messages,
+                                                               fetchedMessages: fetchedMessages)
+                    
+                    self.setMessages(processor)
+                    self.trackDeliveries(processor)
+                    self.notifyUpdateDelegates(processor)
                     self.lastMessagesFetchDate = self.dateProvider.currentDate
                 },
                 
@@ -115,12 +120,22 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
                 })
     }
     
-    private func trackDeliveries(messages: [IterableEmbeddedMessage]) {
+    private func setMessages(_ processor: EmbeddedMessagingProcessor) {
+        messages = processor.processedMessagesList()
+    }
+    
+    private func trackDeliveries(_ processor: EmbeddedMessagingProcessor) {
         // TODO: track deliveries
     }
     
-    private func notifyUpdateDelegates(messages: [IterableEmbeddedMessage]) {
+    private func notifyUpdateDelegates(_ processor: EmbeddedMessagingProcessor) {
         // TODO: filter `messages` by `placementId` and notify objects in `listeners` that have that placement ID
+        
+//        let placementIdsToUpdate = processor.placementIdsToNotify()
+        
+        for listener in listeners {
+            listener.onMessagesUpdated()
+        }
     }
     
     private var apiClient: ApiClientProtocol
@@ -133,5 +148,5 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
     
     private var messages: [IterableEmbeddedMessage] = []
     
-    private var listeners: [String] = [] //change to protocol
+    private var listeners: [IterableEmbeddedMessagingUpdateDelegate] = []
 }

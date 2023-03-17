@@ -9,6 +9,6 @@ import Foundation
     
     func getMessages() -> [IterableEmbeddedMessage]
     
-    func addUpdateListener()
-    func removeUpdateListener()
+    func addUpdateListener(_ listener: IterableEmbeddedMessagingUpdateDelegate)
+    func removeUpdateListener(_ listener: IterableEmbeddedMessagingUpdateDelegate)
 }
