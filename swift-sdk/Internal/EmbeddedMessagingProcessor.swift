@@ -17,17 +17,11 @@ struct EmbeddedMessagingProcessor {
     }
 
     func newlyDeliveredMessageIds() -> [String] {
-        let currentMessageIds = currentMessages.map { $0.metadata.id }
-        let fetchedMessageIds = fetchedMessages.map { $0.metadata.id }
-        
-        return fetchedMessageIds.filter { !currentMessageIds.contains($0) }
+        return getFetchedMessageIds().filter { !getCurrentMessageIds().contains($0) }
     }
     
     func newlyRemovedMessageIds() -> [String] {
-        let currentMessageIds = currentMessages.map { $0.metadata.id }
-        let fetchedMessageIds = fetchedMessages.map { $0.metadata.id }
-        
-        return currentMessageIds.filter { !fetchedMessageIds.contains($0) }
+        return getCurrentMessageIds().filter { !getFetchedMessageIds().contains($0) }
     }
 
     func placementIdsToNotify() -> [String] {
@@ -49,5 +43,13 @@ struct EmbeddedMessagingProcessor {
             .filter { message in
                 !currentMessageIds.contains(where: { $0 == message.metadata.id })
             }
+    }
+    
+    private func getCurrentMessageIds() -> [String] {
+        return currentMessages.map { $0.metadata.id }
+    }
+    
+    private func getFetchedMessageIds() -> [String] {
+        return fetchedMessages.map { $0.metadata.id }
     }
 }
