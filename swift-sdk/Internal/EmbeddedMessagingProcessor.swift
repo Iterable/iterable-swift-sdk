@@ -11,6 +11,8 @@ struct EmbeddedMessagingProcessor {
     }
     
     func processedMessagesList() -> [IterableEmbeddedMessage] {
+        // TODO: understand/handle case of message with same message ID but different contents
+        
         return fetchedMessages
     }
 
@@ -19,6 +21,11 @@ struct EmbeddedMessagingProcessor {
         let fetchedMessageIds = fetchedMessages.map { $0.metadata.id }
         
         return fetchedMessageIds.filter { !currentMessageIds.contains($0) }
+    }
+    
+    // TODO: func for getting message IDs of removed messages
+    func newlyRemovedMessageIds() -> [String] {
+        return []
     }
 
     func placementIdsToNotify() -> [String] {

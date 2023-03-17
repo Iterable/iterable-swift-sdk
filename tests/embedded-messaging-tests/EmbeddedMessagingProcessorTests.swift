@@ -7,7 +7,7 @@ import XCTest
 @testable import IterableSDK
 
 final class EmbeddedMessagingProcessorTests: XCTestCase {
-    func testMessageListProcessingDedupe() {
+    func testMessageListProcessing() {
         let currentMessages = makeBlankMessagesList(with: ["a", "b", "c"])
         let fetchedMessages = makeBlankMessagesList(with: ["a", "c", "d", "e"])
         
@@ -15,7 +15,18 @@ final class EmbeddedMessagingProcessorTests: XCTestCase {
                                                    fetchedMessages: fetchedMessages)
         
         XCTAssertEqual(processor.processedMessagesList().map { $0.metadata.id },
-                       ["a", "b", "c", "d", "e"])
+                       ["a", "c", "d", "e"])
+    }
+    
+    func testMessageListRemovedMessages() {
+        let currentMessages = makeBlankMessagesList(with: ["a", "b", "c"])
+        let fetchedMessages = makeBlankMessagesList(with: ["a", "c", "d", "e"])
+        
+        let processor = EmbeddedMessagingProcessor(currentMessages: currentMessages,
+                                                   fetchedMessages: fetchedMessages)
+        
+        // TODO: write function for removed messages, write test afterwards
+        // TODO: it should match ["a", "c", "d", "e"]
     }
     
     func testMessageIdsToTrackDelivery() {
