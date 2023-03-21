@@ -107,14 +107,22 @@ class AuthManager: IterableAuthManagerProtocol {
     private func queueAuthTokenExpirationRefresh(_ authToken: String?) {
         ITBInfo()
         
+        clearRefreshTimer()
+        
         guard let authToken = authToken, let expirationDate = AuthManager.decodeExpirationDateFromAuthToken(authToken) else {
+            /// schedule a default timer of 10 seconds if we fall into this case
+            scheduleAuthTokenRefreshTimer(10)
+            
             return
         }
         
         let timeIntervalToRefresh = TimeInterval(expirationDate) - dateProvider.currentDate.timeIntervalSince1970 - expirationRefreshPeriod
         
-        clearRefreshTimer()
-        expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: timeIntervalToRefresh, repeats: false) { [weak self] _ in
+        scheduleAuthTokenRefreshTimer(timeIntervalToRefresh)
+    }
+    
+    private func scheduleAuthTokenRefreshTimer(_ interval: TimeInterval) {
+        expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [weak self] _ in
             self?.requestNewAuthToken(hasFailedPriorAuth: false)
         }
     }
