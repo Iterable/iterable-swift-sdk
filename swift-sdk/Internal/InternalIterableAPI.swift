@@ -24,6 +24,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
+    var authToken: String? {
+        get {
+            authManager.getAuthToken()
+        }
+    }
+    
     var deviceId: String {
         if let value = localStorage.deviceId {
             return value

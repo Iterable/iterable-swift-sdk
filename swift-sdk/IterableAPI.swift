@@ -28,6 +28,13 @@ public final class IterableAPI: NSObject {
         }
     }
     
+    /// The current authentication token
+    public static var authToken: String? {
+        get {
+            internalImplementation?.authToken
+        }
+    }
+    
     /// The `userInfo` dictionary which came with last push
     public static var lastPushPayload: [AnyHashable: Any]? {
         internalImplementation?.lastPushPayload
