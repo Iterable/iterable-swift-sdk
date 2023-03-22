@@ -97,6 +97,7 @@ enum Const {
 enum JsonKey {
     static let email = "email"
     static let userId = "userId"
+    static let userKey = "userKey"
     static let currentEmail = "currentEmail"
     static let currentUserId = "currentUserId"
     static let newEmail = "newEmail"
