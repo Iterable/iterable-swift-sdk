@@ -438,6 +438,15 @@ struct RequestCreator {
         
         setCurrentUser(inDict: &args)
         
+        switch auth.emailOrUserId {
+        case let .email(email):
+            args.setValue(for: JsonKey.userKey, value: email)
+        case let .userId(userId):
+            args.setValue(for: JsonKey.userKey, value: userId)
+        case .none:
+            ITBInfo("Current user is unavailable")
+        }
+        
         return .success(.get(createGetRequest(forPath: Const.Path.embeddedMessages, withArgs: args as! [String: String])))
     }
     
