@@ -24,12 +24,12 @@ struct EmbeddedMessagingProcessor {
         return getCurrentMessageIds().filter { !getFetchedMessageIds().contains($0) }
     }
 
-    func placementIdsToNotify() -> [String] {
-        // TODO: account for removed placement IDs, this only counts new ones for now
-        
-        return getNewMessages()
-            .map { $0.metadata.placementId }
-    }
+//    func placementIdsToNotify() -> [String] {
+//        // TODO: account for removed placement IDs, this only counts new ones for now
+//        
+//        return getNewMessages()
+//            .map { $0.metadata.placementId }
+//    }
     
     // MARK: - PRIVATE/INTERNAL
     

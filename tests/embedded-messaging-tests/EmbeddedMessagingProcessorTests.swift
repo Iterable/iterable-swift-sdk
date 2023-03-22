@@ -38,28 +38,28 @@ final class EmbeddedMessagingProcessorTests: XCTestCase {
         XCTAssertEqual(processor.newlyDeliveredMessageIds(), ["d"])
     }
     
-    func testPlacementIdsToNotify() {
-        let currentMessages = makeBlankMessagesListWithMessageAndPlacementIds(
-            [("a", "1"), ("d", "3")]
-        )
-        
-        let fetchedMessages = makeBlankMessagesListWithMessageAndPlacementIds(
-            [("a", "1"), ("b", "1"), ("c", "2")]
-        )
-        
-        let processor = EmbeddedMessagingProcessor(currentMessages: currentMessages,
-                                                   fetchedMessages: fetchedMessages)
-        
-        // TODO: when removals are accounted for, add `"3"` into the assert
-        XCTAssertEqual(processor.placementIdsToNotify(), ["1", "2"])
-    }
+//    func testPlacementIdsToNotify() {
+//        let currentMessages = makeBlankMessagesListWithMessageAndPlacementIds(
+//            [("a", "1"), ("d", "3")]
+//        )
+//
+//        let fetchedMessages = makeBlankMessagesListWithMessageAndPlacementIds(
+//            [("a", "1"), ("b", "1"), ("c", "2")]
+//        )
+//
+//        let processor = EmbeddedMessagingProcessor(currentMessages: currentMessages,
+//                                                   fetchedMessages: fetchedMessages)
+//
+//        // TODO: when removals are accounted for, add `"3"` into the assert
+//        XCTAssertEqual(processor.placementIdsToNotify(), ["1", "2"])
+//    }
     
     private func makeBlankMessagesList(with ids: [String]) -> [IterableEmbeddedMessage] {
-        return ids.map { IterableEmbeddedMessage(id: $0, placementId: "") }
+        return ids.map { IterableEmbeddedMessage(id: $0) }
     }
     
-    private func makeBlankMessagesListWithMessageAndPlacementIds(_ messageAndPlacementIds: [(String, String)]) -> [IterableEmbeddedMessage] {
-        return messageAndPlacementIds.map { IterableEmbeddedMessage(id: $0.0, placementId: $0.1) }
-    }
+//    private func makeBlankMessagesListWithMessageAndPlacementIds(_ messageAndPlacementIds: [(String, String)]) -> [IterableEmbeddedMessage] {
+//        return messageAndPlacementIds.map { IterableEmbeddedMessage(id: $0.0, placementId: $0.1) }
+//    }
 }
 
