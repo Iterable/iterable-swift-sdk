@@ -55,6 +55,13 @@ import Foundation
 /// The delegate for getting the authentication token
 @objc public protocol IterableAuthDelegate: AnyObject {
     @objc func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler)
+    @objc func onTokenRegistrationFailed()
+}
+
+extension IterableAuthDelegate {
+    func onTokenRegistrationFailed() {
+        
+    }
 }
 
 /// Iterable Configuration Object. Use this when initializing the API.

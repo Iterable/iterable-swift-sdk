@@ -95,6 +95,15 @@ class AuthManager: IterableAuthManagerProtocol {
     private func onAuthTokenReceived(retrievedAuthToken: String?, onSuccess: AuthTokenRetrievalHandler? = nil) {
         pendingAuth = false
         
+        guard let authToken = authToken else {
+            delegate?.onTokenRegistrationFailed()
+            
+            /// by default, schedule a refresh for 10s
+            scheduleAuthTokenRefreshTimer(10)
+            
+            return
+        }
+        
         authToken = retrievedAuthToken
         
         storeAuthToken()
@@ -110,6 +119,8 @@ class AuthManager: IterableAuthManagerProtocol {
         clearRefreshTimer()
         
         guard let authToken = authToken, let expirationDate = AuthManager.decodeExpirationDateFromAuthToken(authToken) else {
+            delegate?.onTokenRegistrationFailed()
+            
             /// schedule a default timer of 10 seconds if we fall into this case
             scheduleAuthTokenRefreshTimer(10)
             
