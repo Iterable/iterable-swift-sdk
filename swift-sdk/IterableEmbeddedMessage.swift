@@ -6,9 +6,9 @@ import Foundation
 
 @objcMembers
 public final class IterableEmbeddedMessage: NSObject {
-    let metadata: EmbeddedMessageMetadata
-    let elements: EmbeddedMessageElements?
-    let payload: [AnyHashable: Any]?
+    public let metadata: EmbeddedMessageMetadata
+    public let elements: EmbeddedMessageElements?
+    public let payload: [AnyHashable: Any]?
     
     init(metadata: EmbeddedMessageMetadata,
          elements: EmbeddedMessageElements? = nil,
@@ -26,13 +26,13 @@ public final class IterableEmbeddedMessage: NSObject {
 }
 
 extension IterableEmbeddedMessage {
-    struct EmbeddedMessageMetadata: Codable {
+    public struct EmbeddedMessageMetadata: Codable {
         let id: Int
         let campaignId: String?
         let isProof: Bool?
     }
 
-    struct EmbeddedMessageElements: Codable {
+    public struct EmbeddedMessageElements: Codable {
         let title: String?
         let body: String?
         let mediaUrl: String?
@@ -41,18 +41,18 @@ extension IterableEmbeddedMessage {
         let images: [EmbeddedMessageElementsImage]?
         let text: [EmbeddedMessageElementsText]?
         
-        struct EmbeddedMessageElementsButton: Codable {
+        public struct EmbeddedMessageElementsButton: Codable {
             let id: String
             let title: String?
             let action: String?
         }
 
-        struct EmbeddedMessageElementsImage: Codable {
+        public struct EmbeddedMessageElementsImage: Codable {
             let id: String
             let url: String?
         }
 
-        struct EmbeddedMessageElementsText: Codable {
+        public struct EmbeddedMessageElementsText: Codable {
             let id: String
             let text: String?
         }
