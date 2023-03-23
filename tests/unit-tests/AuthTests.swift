@@ -643,6 +643,10 @@ class AuthTests: XCTestCase {
                     completion(AuthTests.authToken)
                 }
             }
+            
+            func onTokenRegistrationFailed() {
+                
+            }
         }
         
         let authDelegate = AsyncAuthDelegate()
@@ -670,6 +674,10 @@ class AuthTests: XCTestCase {
         class AuthDelegate: IterableAuthDelegate {
             func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler) {
                 completion(AuthTests.authToken)
+            }
+            
+            func onTokenRegistrationFailed() {
+                
             }
         }
         
@@ -717,6 +725,10 @@ class AuthTests: XCTestCase {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     completion(AuthTests.authToken)
                 }
+            }
+            
+            func onTokenRegistrationFailed() {
+                
             }
         }
         
@@ -851,6 +863,10 @@ class AuthTests: XCTestCase {
         
         func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler) {
             completion(authTokenGenerator())
+        }
+        
+        func onTokenRegistrationFailed() {
+            
         }
     }
 
