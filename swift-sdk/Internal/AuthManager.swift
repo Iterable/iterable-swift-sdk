@@ -95,7 +95,7 @@ class AuthManager: IterableAuthManagerProtocol {
     private func onAuthTokenReceived(retrievedAuthToken: String?, onSuccess: AuthTokenRetrievalHandler? = nil) {
         pendingAuth = false
         
-        guard let authToken = authToken else {
+        guard authToken != nil else {
             delegate?.onTokenRegistrationFailed()
             
             /// by default, schedule a refresh for 10s
