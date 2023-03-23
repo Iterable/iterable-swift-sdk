@@ -44,7 +44,7 @@ extension IterableEmbeddedMessage {
         public struct EmbeddedMessageElementsButton: Codable {
             let id: String
             let title: String?
-            let action: String?
+            let action: EmbeddedMessageElementsButtonAction?
         }
 
         public struct EmbeddedMessageElementsImage: Codable {
@@ -55,6 +55,11 @@ extension IterableEmbeddedMessage {
         public struct EmbeddedMessageElementsText: Codable {
             let id: String
             let text: String?
+        }
+
+        public struct EmbeddedMessageElementsButtonAction: Codable {
+            public let type: String
+            public let data: String?
         }
     }
 }
