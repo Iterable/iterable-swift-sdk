@@ -6,7 +6,7 @@ import Foundation
 
 struct EmbeddedMessagingSerialization {
     static func encode(messages: [IterableEmbeddedMessage]) -> Data {
-        guard let encoded = try? JSONEncoder().encode(messages) else {
+        guard let encoded = try? JSONEncoder().encode(EmbeddedMessagesPayload(embeddedMessages: messages)) else {
             ITBError("unable to encode embedded messages into JSON payload")
             return Data()
         }
@@ -15,12 +15,12 @@ struct EmbeddedMessagingSerialization {
     }
     
     static func decode(messages: Data) -> [IterableEmbeddedMessage] {
-        guard let decoded = try? JSONDecoder().decode([IterableEmbeddedMessage].self, from: messages) else {
+        guard let decoded = try? JSONDecoder().decode(EmbeddedMessagesPayload.self, from: messages) else {
             ITBError("unable to decode JSON payload into embedded messages")
             return []
         }
         
-        return decoded
+        return decoded.embeddedMessages
     }
     
     static func encode(payload: [AnyHashable: Any]?) -> Data? {
@@ -38,6 +38,10 @@ struct EmbeddedMessagingSerialization {
         
         return try? JSONSerialization.jsonObject(with: payload) as? [AnyHashable: Any]
     }
+}
+
+struct EmbeddedMessagesPayload: Codable {
+    let embeddedMessages: [IterableEmbeddedMessage]
 }
 
 extension IterableEmbeddedMessage: Codable {

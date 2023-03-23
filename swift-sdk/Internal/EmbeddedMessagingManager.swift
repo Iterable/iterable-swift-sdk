@@ -103,7 +103,9 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
         
         apiClient.getEmbeddedMessages()
             .onCompletion(
-                receiveValue: { fetchedMessages in
+                receiveValue: { embeddedMessagesPayload in
+                    let fetchedMessages = embeddedMessagesPayload.embeddedMessages
+                    
                     // TODO: decide if parsing errors should be accounted for here
                     
                     let processor = EmbeddedMessagingProcessor(currentMessages: self.messages,
