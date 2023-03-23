@@ -136,9 +136,9 @@ final class EmbeddedMessagingManagerTests: XCTestCase {
             Pending()
         }
         
-        func getEmbeddedMessages() -> IterableSDK.Pending<[IterableSDK.IterableEmbeddedMessage], IterableSDK.SendRequestError> {
+        func getEmbeddedMessages() -> IterableSDK.Pending<IterableSDK.EmbeddedMessagesPayload, IterableSDK.SendRequestError> {
             if newMessages {
-                let messages = makeBlankMessagesList(with: [1])
+                let messages = EmbeddedMessagesPayload(embeddedMessages: makeBlankMessagesList(with: [1]))
                 
                 return Fulfill(value: messages)
             }

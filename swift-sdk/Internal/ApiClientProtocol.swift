@@ -46,5 +46,5 @@ protocol ApiClientProtocol: AnyObject {
 
     func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError>
     
-    func getEmbeddedMessages() -> Pending<[IterableEmbeddedMessage], SendRequestError>
+    func getEmbeddedMessages() -> Pending<EmbeddedMessagesPayload, SendRequestError>
 }
