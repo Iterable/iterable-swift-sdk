@@ -16,20 +16,20 @@ struct EmbeddedMessagingProcessor {
         return fetchedMessages
     }
 
-    func newlyDeliveredMessageIds() -> [String] {
+    func newlyDeliveredMessageIds() -> [Int] {
         return getFetchedMessageIds().filter { !getCurrentMessageIds().contains($0) }
     }
     
-    func newlyRemovedMessageIds() -> [String] {
+    func newlyRemovedMessageIds() -> [Int] {
         return getCurrentMessageIds().filter { !getFetchedMessageIds().contains($0) }
     }
 
-    func placementIdsToNotify() -> [String] {
-        // TODO: account for removed placement IDs, this only counts new ones for now
-        
-        return getNewMessages()
-            .map { $0.metadata.placementId }
-    }
+//    func placementIdsToNotify() -> [String] {
+//        // TODO: account for removed placement IDs, this only counts new ones for now
+//        
+//        return getNewMessages()
+//            .map { $0.metadata.placementId }
+//    }
     
     // MARK: - PRIVATE/INTERNAL
     
@@ -45,11 +45,11 @@ struct EmbeddedMessagingProcessor {
             }
     }
     
-    private func getCurrentMessageIds() -> [String] {
+    private func getCurrentMessageIds() -> [Int] {
         return currentMessages.map { $0.metadata.id }
     }
     
-    private func getFetchedMessageIds() -> [String] {
+    private func getFetchedMessageIds() -> [Int] {
         return fetchedMessages.map { $0.metadata.id }
     }
 }

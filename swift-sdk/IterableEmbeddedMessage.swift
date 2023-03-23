@@ -17,24 +17,26 @@ public final class IterableEmbeddedMessage: NSObject {
         self.elements = elements
         self.payload = payload
     }
-
-    convenience init(id: String, placementId: String, campaignId: String? = nil, isProof: Bool? = nil) {
-        let metadata = EmbeddedMessageMetadata(id: id, placementId: placementId, campaignId: campaignId, isProof: isProof)
-
+    
+    convenience init(id: Int, campaignId: String? = nil, isProof: Bool? = nil) {
+        let metadata = EmbeddedMessageMetadata(id: id, campaignId: campaignId, isProof: isProof)
+        
         self.init(metadata: metadata)
     }
 }
 
 extension IterableEmbeddedMessage {
     struct EmbeddedMessageMetadata: Codable {
-        let id: String
-        let placementId: String
+        let id: Int
         let campaignId: String?
         let isProof: Bool?
     }
 
     struct EmbeddedMessageElements: Codable {
-        let type: String?
+        let title: String?
+        let body: String?
+        let mediaUrl: String?
+        
         let buttons: [EmbeddedMessageElementsButton]?
         let images: [EmbeddedMessageElementsImage]?
         let text: [EmbeddedMessageElementsText]?

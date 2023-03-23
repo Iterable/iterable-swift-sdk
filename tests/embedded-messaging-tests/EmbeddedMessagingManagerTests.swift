@@ -60,8 +60,8 @@ final class EmbeddedMessagingManagerTests: XCTestCase {
             newMessages = true
         }
         
-        private func makeBlankMessagesList(with ids: [String]) -> [IterableEmbeddedMessage] {
-            return ids.map { IterableEmbeddedMessage(id: $0, placementId: "") }
+        private func makeBlankMessagesList(with ids: [Int]) -> [IterableEmbeddedMessage] {
+            return ids.map { IterableEmbeddedMessage(id: $0) }
         }
         
         func register(registerTokenInfo: IterableSDK.RegisterTokenInfo, notificationsEnabled: Bool) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
@@ -138,7 +138,7 @@ final class EmbeddedMessagingManagerTests: XCTestCase {
         
         func getEmbeddedMessages() -> IterableSDK.Pending<[IterableSDK.IterableEmbeddedMessage], IterableSDK.SendRequestError> {
             if newMessages {
-                let messages = makeBlankMessagesList(with: ["a"])
+                let messages = makeBlankMessagesList(with: [1])
                 
                 return Fulfill(value: messages)
             }
