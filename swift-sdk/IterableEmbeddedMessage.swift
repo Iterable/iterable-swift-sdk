@@ -27,34 +27,39 @@ public final class IterableEmbeddedMessage: NSObject {
 
 extension IterableEmbeddedMessage {
     public struct EmbeddedMessageMetadata: Codable {
-        let id: Int
-        let campaignId: String?
-        let isProof: Bool?
+        public let id: Int
+        public let campaignId: String?
+        public let isProof: Bool?
     }
 
     public struct EmbeddedMessageElements: Codable {
-        let title: String?
-        let body: String?
-        let mediaUrl: String?
+        public let title: String?
+        public let body: String?
+        public let mediaUrl: String?
         
-        let buttons: [EmbeddedMessageElementsButton]?
-        let images: [EmbeddedMessageElementsImage]?
-        let text: [EmbeddedMessageElementsText]?
+        public let buttons: [EmbeddedMessageElementsButton]?
+        public let images: [EmbeddedMessageElementsImage]?
+        public let text: [EmbeddedMessageElementsText]?
         
         public struct EmbeddedMessageElementsButton: Codable {
-            let id: String
-            let title: String?
-            let action: String?
+            public let id: String
+            public let title: String?
+            public let action: EmbeddedMessageElementsButtonAction?
         }
 
         public struct EmbeddedMessageElementsImage: Codable {
-            let id: String
-            let url: String?
+            public let id: String
+            public let url: String?
         }
 
         public struct EmbeddedMessageElementsText: Codable {
-            let id: String
-            let text: String?
+            public let id: String
+            public let text: String?
+        }
+
+        public struct EmbeddedMessageElementsButtonAction: Codable {
+            public let type: String
+            public let data: String?
         }
     }
 }
