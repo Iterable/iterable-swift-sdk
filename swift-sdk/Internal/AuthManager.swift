@@ -93,12 +93,16 @@ class AuthManager: IterableAuthManagerProtocol {
     }
     
     private func retrieveAuthToken() {
+        ITBInfo()
+        
         authToken = localStorage.authToken
         
         queueAuthTokenExpirationRefresh(authToken)
     }
     
     private func onAuthTokenReceived(retrievedAuthToken: String?, onSuccess: AuthTokenRetrievalHandler? = nil) {
+        ITBInfo()
+        
         pendingAuth = false
         
         guard authToken != nil else {
@@ -139,12 +143,16 @@ class AuthManager: IterableAuthManagerProtocol {
     }
     
     private func scheduleAuthTokenRefreshTimer(_ interval: TimeInterval) {
+        ITBInfo()
+        
         expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [weak self] _ in
             self?.requestNewAuthToken(hasFailedPriorAuth: false)
         }
     }
     
     private func clearRefreshTimer() {
+        ITBInfo()
+        
         expirationRefreshTimer?.invalidate()
         expirationRefreshTimer = nil
     }
