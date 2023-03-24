@@ -4,6 +4,12 @@
 
 import Foundation
 
+extension IterableAuthDelegate {
+    func onTokenRegistrationFailed(_ reason: String? = nil) {
+        
+    }
+}
+
 class AuthManager: IterableAuthManagerProtocol {
     init(delegate: IterableAuthDelegate?,
          expirationRefreshPeriod: TimeInterval,
@@ -96,7 +102,7 @@ class AuthManager: IterableAuthManagerProtocol {
         pendingAuth = false
         
         guard authToken != nil else {
-            delegate?.onTokenRegistrationFailed()
+            delegate?.onTokenRegistrationFailed("auth token was nil, scheduling auth token retrieval in 10 seconds")
             
             /// by default, schedule a refresh for 10s
             scheduleAuthTokenRefreshTimer(10)
@@ -119,7 +125,7 @@ class AuthManager: IterableAuthManagerProtocol {
         clearRefreshTimer()
         
         guard let authToken = authToken, let expirationDate = AuthManager.decodeExpirationDateFromAuthToken(authToken) else {
-            delegate?.onTokenRegistrationFailed()
+            delegate?.onTokenRegistrationFailed("auth token was nil or could not decode an expiration date, scheduling auth token retrieval in 10 seconds")
             
             /// schedule a default timer of 10 seconds if we fall into this case
             scheduleAuthTokenRefreshTimer(10)

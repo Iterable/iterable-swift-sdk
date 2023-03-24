@@ -646,7 +646,7 @@ class AuthTests: XCTestCase {
                 }
             }
             
-            func onTokenRegistrationFailed() {
+            func onTokenRegistrationFailed(_ reason: String?) {
                 
             }
         }
@@ -678,7 +678,7 @@ class AuthTests: XCTestCase {
                 completion(AuthTests.authToken)
             }
             
-            func onTokenRegistrationFailed() {
+            func onTokenRegistrationFailed(_ reason: String?) {
                 
             }
         }
@@ -729,7 +729,7 @@ class AuthTests: XCTestCase {
                 }
             }
             
-            func onTokenRegistrationFailed() {
+            func onTokenRegistrationFailed(_ reason: String?) {
                 
             }
         }
@@ -867,7 +867,7 @@ class AuthTests: XCTestCase {
             completion(authTokenGenerator())
         }
         
-        func onTokenRegistrationFailed() {
+        func onTokenRegistrationFailed(_ reason: String?) {
             
         }
     }
