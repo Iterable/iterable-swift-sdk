@@ -101,7 +101,7 @@ class AuthManager: IterableAuthManagerProtocol {
         
         pendingAuth = false
         
-        guard authToken != nil else {
+        guard retrievedAuthToken != nil else {
             delegate?.onTokenRegistrationFailed("auth token was nil, scheduling auth token retrieval in 10 seconds")
             
             /// by default, schedule a refresh for 10s
