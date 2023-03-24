@@ -4,12 +4,6 @@
 
 import Foundation
 
-extension IterableAuthDelegate {
-    func onTokenRegistrationFailed(_ reason: String? = nil) {
-        
-    }
-}
-
 class AuthManager: IterableAuthManagerProtocol {
     init(delegate: IterableAuthDelegate?,
          expirationRefreshPeriod: TimeInterval,
