@@ -22,7 +22,9 @@ class AuthManager: IterableAuthManagerProtocol {
         self.dateProvider = dateProvider
         self.expirationRefreshPeriod = expirationRefreshPeriod
         
-        retrieveAuthToken()
+        if self.delegate != nil {
+            retrieveAuthToken()
+        }
     }
     
     deinit {
