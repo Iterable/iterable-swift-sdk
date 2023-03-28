@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
   s.name         = "Iterable-iOS-AppExtensions"
   s.module_name  = "IterableAppExtensions"
-  s.version      = "6.4.11"
+  s.version      = "6.4.12"
   s.summary      = "App Extensions for Iterable SDK"
 
   s.description  = <<-DESC
@@ -10,8 +10,7 @@ Pod::Spec.new do |s|
 
   s.homepage     = "https://github.com/Iterable/swift-sdk.git"
   s.license      = "MIT"
-  s.author       = { "Tapash Majumder" => "tapash@iterable.com",
-                     "Jay Kim" => "jay.kim@iterable.com" }
+  s.author       = { "Jay Kim" => "jay.kim@iterable.com" }
 
   s.platform     = :ios, "10.0"
   s.source       = { :git => "https://github.com/Iterable/swift-sdk.git", :tag => s.version }

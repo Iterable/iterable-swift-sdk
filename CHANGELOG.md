@@ -2,6 +2,17 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.4.12
+### Added
+- Added a new function to `IterableAPI` to get the currently set authentication token
+- Added a new function (`onTokenRegistrationFailed`) to the `IterableAuthDelegate` upon authentication token retrieval failure
+
+### Changed
+- Changed `setEmail` and `setUserId` to run through the login process if also sent in an authentication token (and a non-`nil` ID)
+
+### Fixed
+- Fixed instances where setting a new authentication token for a user failed
+
 ## 6.4.11
 ### Fixed
 - Fixed so that `AuthManager` clears the previous refresh timer before setting a new one (thanks, @cranberyxl!)
