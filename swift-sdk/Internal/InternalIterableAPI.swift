@@ -24,6 +24,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
+    var authToken: String? {
+        get {
+            authManager.getAuthToken()
+        }
+    }
+    
     var deviceId: String {
         if let value = localStorage.deviceId {
             return value
@@ -104,6 +110,11 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func setEmail(_ email: String?, authToken: String? = nil) {
         ITBInfo()
         
+        if _email == email && email != nil && authToken != nil {
+            checkAndUpdateAuthToken(authToken)
+            return
+        }
+        
         if _email == email {
             return
         }
@@ -120,6 +131,11 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     func setUserId(_ userId: String?, authToken: String? = nil) {
         ITBInfo()
+        
+        if _userId == userId && userId != nil && authToken != nil {
+            checkAndUpdateAuthToken(authToken)
+            return
+        }
         
         if _userId == userId {
             return
@@ -498,6 +514,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     private func requestNewAuthToken() {
+        ITBInfo()
+        
         authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: { [weak self] token in
             if token != nil {
                 self?.completeUserLogin()
@@ -534,6 +552,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             if let templateId = metadata.templateId {
                 attributionInfo = IterableAttributionInfo(campaignId: metadata.campaignId, templateId: templateId, messageId: metadata.messageId)
             }
+        }
+    }
+    
+    private func checkAndUpdateAuthToken(_ authToken: String? = nil) {
+        if config.authDelegate != nil && authToken != authManager.getAuthToken() {
+            onLogin(authToken)
         }
     }
     

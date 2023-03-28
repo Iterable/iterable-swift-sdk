@@ -3,9 +3,11 @@
 //
 
 import XCTest
+import CryptoKit
 
 @testable import IterableSDK
 
+@available(iOS 13, *)
 class AuthTests: XCTestCase {
     private static let apiKey = "zeeApiKey"
     private static let email = "user@example.com"
@@ -37,9 +39,9 @@ class AuthTests: XCTestCase {
     }
     
     func testEmailWithTokenPersistence() {
-        let emailToken = "asdf"
+        let authToken = AuthTests.generateJwt()
         
-        let authDelegate = createAuthDelegate({ emailToken })
+        let authDelegate = createAuthDelegate({ authToken })
         
         let config = IterableConfig()
         config.authDelegate = authDelegate
@@ -48,11 +50,11 @@ class AuthTests: XCTestCase {
         
         internalAPI.email = "previous.user@example.com"
         
-        internalAPI.setEmail(AuthTests.email)
+        internalAPI.email = AuthTests.email
         
         XCTAssertEqual(internalAPI.email, AuthTests.email)
         XCTAssertNil(internalAPI.userId)
-        XCTAssertEqual(internalAPI.auth.authToken, emailToken)
+        XCTAssertEqual(internalAPI.authToken, authToken)
     }
     
     func testUserIdWithTokenPersistence() {
@@ -643,6 +645,10 @@ class AuthTests: XCTestCase {
                     completion(AuthTests.authToken)
                 }
             }
+            
+            func onTokenRegistrationFailed(_ reason: String?) {
+                
+            }
         }
         
         let authDelegate = AsyncAuthDelegate()
@@ -670,6 +676,10 @@ class AuthTests: XCTestCase {
         class AuthDelegate: IterableAuthDelegate {
             func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler) {
                 completion(AuthTests.authToken)
+            }
+            
+            func onTokenRegistrationFailed(_ reason: String?) {
+                
             }
         }
         
@@ -717,6 +727,10 @@ class AuthTests: XCTestCase {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     completion(AuthTests.authToken)
                 }
+            }
+            
+            func onTokenRegistrationFailed(_ reason: String?) {
+                
             }
         }
         
@@ -852,6 +866,10 @@ class AuthTests: XCTestCase {
         func onAuthTokenRequested(completion: @escaping AuthTokenRetrievalHandler) {
             completion(authTokenGenerator())
         }
+        
+        func onTokenRegistrationFailed(_ reason: String?) {
+            
+        }
     }
 
     private func createAuthDelegate(_ authTokenGenerator: @escaping () -> String?) -> IterableAuthDelegate {
@@ -871,5 +889,46 @@ class AuthTests: XCTestCase {
         """
         
         return "asdf.\(payload.data(using: .utf8)!.base64EncodedString()).asdf"
+    }
+    
+    /// adapated from https://stackoverflow.com/questions/60290703/how-do-i-generate-a-jwt-to-use-in-api-authentication-for-swift-app
+    private static func generateJwt() -> String {
+        let secret = "secret"
+        let privateKey = SymmetricKey(data: Data(secret.utf8))
+        
+        struct Header: Encodable {
+            let alg = "HS256"
+            let typ = "JWT"
+        }
+        
+        struct Payload: Encodable {
+            let email = AuthTests.email
+            let iat = Date()
+            let exp = Date(timeIntervalSinceNow: 24 * 60 * 1)
+        }
+        
+        let headerJsonData = try! JSONEncoder().encode(Header())
+        let headerBase64 = headerJsonData.urlEncodedBase64()
+        
+        let payloadJsonData = try! JSONEncoder().encode(Payload())
+        let payloadBase64 = payloadJsonData.urlEncodedBase64()
+        
+        let toSign = Data((headerBase64 + "." + payloadBase64).utf8)
+        
+        let signature = HMAC<SHA256>.authenticationCode(for: toSign, using: privateKey)
+        let signatureBase64 = Data(signature).urlEncodedBase64()
+        
+        let token = [headerBase64, payloadBase64, signatureBase64].joined(separator: ".")
+        
+        return token
+    }
+}
+
+extension Data {
+    func urlEncodedBase64() -> String {
+        return base64EncodedString()
+            .replacingOccurrences(of: "+", with: "-")
+            .replacingOccurrences(of: "/", with: "_")
+            .replacingOccurrences(of: "=", with: "")
     }
 }
