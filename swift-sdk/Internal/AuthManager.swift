@@ -16,7 +16,9 @@ class AuthManager: IterableAuthManagerProtocol {
         self.dateProvider = dateProvider
         self.expirationRefreshPeriod = expirationRefreshPeriod
         
-        retrieveAuthToken()
+        if self.delegate != nil {
+            retrieveAuthToken()
+        }
     }
     
     deinit {
@@ -87,13 +89,26 @@ class AuthManager: IterableAuthManagerProtocol {
     }
     
     private func retrieveAuthToken() {
+        ITBInfo()
+        
         authToken = localStorage.authToken
         
         queueAuthTokenExpirationRefresh(authToken)
     }
     
     private func onAuthTokenReceived(retrievedAuthToken: String?, onSuccess: AuthTokenRetrievalHandler? = nil) {
+        ITBInfo()
+        
         pendingAuth = false
+        
+        guard retrievedAuthToken != nil else {
+            delegate?.onTokenRegistrationFailed("auth token was nil, scheduling auth token retrieval in 10 seconds")
+            
+            /// by default, schedule a refresh for 10s
+            scheduleAuthTokenRefreshTimer(10)
+            
+            return
+        }
         
         authToken = retrievedAuthToken
         
@@ -110,6 +125,8 @@ class AuthManager: IterableAuthManagerProtocol {
         clearRefreshTimer()
         
         guard let authToken = authToken, let expirationDate = AuthManager.decodeExpirationDateFromAuthToken(authToken) else {
+            delegate?.onTokenRegistrationFailed("auth token was nil or could not decode an expiration date, scheduling auth token retrieval in 10 seconds")
+            
             /// schedule a default timer of 10 seconds if we fall into this case
             scheduleAuthTokenRefreshTimer(10)
             
@@ -122,12 +139,16 @@ class AuthManager: IterableAuthManagerProtocol {
     }
     
     private func scheduleAuthTokenRefreshTimer(_ interval: TimeInterval) {
+        ITBInfo()
+        
         expirationRefreshTimer = Timer.scheduledTimer(withTimeInterval: interval, repeats: false) { [weak self] _ in
             self?.requestNewAuthToken(hasFailedPriorAuth: false)
         }
     }
     
     private func clearRefreshTimer() {
+        ITBInfo()
+        
         expirationRefreshTimer?.invalidate()
         expirationRefreshTimer = nil
     }
