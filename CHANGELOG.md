@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 6.4.11
+### Added
+- Added a new function to `IterableAPI` to get the currently set authentication token
+
+### Changed
+- Changed `setEmail` and `setUserId` to run through the login process if also sent in an authentication token (and a non-`nil` ID)
+- Changed authentication manager behavior to schedule automatic refreshes on JWT retrieval or decoding failures
+
+## 6.4.11
 ### Fixed
 - Fixed so that `AuthManager` clears the previous refresh timer before setting a new one (thanks, @cranberyxl!)
 
