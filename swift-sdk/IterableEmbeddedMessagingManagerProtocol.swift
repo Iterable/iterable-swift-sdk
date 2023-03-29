@@ -6,6 +6,7 @@ import Foundation
 
 @objc public protocol IterableEmbeddedMessagingManagerProtocol {
     func start()
+    func stop()
     
     func getMessages() -> [IterableEmbeddedMessage]
     
