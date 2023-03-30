@@ -55,16 +55,16 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
     // MARK: - PRIVATE/INTERNAL
     
     private func addForegroundObservers() {
-        NotificationCenter().addObserver(self,
-                                         selector: #selector(onAppDidBecomeActiveNotification(notification:)),
-                                         name: UIApplication.didBecomeActiveNotification,
-                                         object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(onAppDidBecomeActiveNotification(notification:)),
+                                               name: UIApplication.didBecomeActiveNotification,
+                                               object: nil)
     }
     
     private func removeForegroundObservers() {
-        NotificationCenter().removeObserver(self,
-                                            name: UIApplication.didBecomeActiveNotification,
-                                            object: nil)
+        NotificationCenter.default.removeObserver(self,
+                                                  name: UIApplication.didBecomeActiveNotification,
+                                                  object: nil)
     }
     
     private func startAutoFetchTimer() {
@@ -88,7 +88,7 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
     
     private func retrieveAndSyncEmbeddedMessages() {
         if let lastMessagesFetchDate = lastMessagesFetchDate {
-            if lastMessagesFetchDate + autoFetchInterval <= dateProvider.currentDate {
+            if lastMessagesFetchDate + autoFetchInterval < dateProvider.currentDate {
                 return
             }
         }
