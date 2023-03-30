@@ -16,16 +16,12 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
         self.dateProvider = dateProvider
         
         super.init()
-        
-        initObservers()
-        initAutoFetchTimer()
     }
     
     deinit {
         ITBInfo()
         
-        deinitAutoFetchTimer()
-        deinitObservers()
+        stop()
     }
     
     public func getMessages() -> [IterableEmbeddedMessage] {
@@ -44,40 +40,31 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
     
     func start() {
         ITBInfo()
+        
+        addForegroundObservers()
+        startAutoFetchTimer()
+    }
+    
+    func stop() {
+        ITBInfo()
+        
+        removeForegroundObservers()
+        stopAutoFetchTimer()
     }
     
     // MARK: - PRIVATE/INTERNAL
     
-    private func initObservers() {
+    private func addForegroundObservers() {
         NotificationCenter().addObserver(self,
                                          selector: #selector(onAppDidBecomeActiveNotification(notification:)),
                                          name: UIApplication.didBecomeActiveNotification,
                                          object: nil)
     }
     
-    private func deinitObservers() {
+    private func removeForegroundObservers() {
         NotificationCenter().removeObserver(self,
                                             name: UIApplication.didBecomeActiveNotification,
                                             object: nil)
-    }
-    
-    private func initAutoFetchTimer() {
-        startAutoFetchTimer()
-    }
-    
-    private func deinitAutoFetchTimer() {
-        stopAutoFetchTimer()
-    }
-    
-    private func resetAutoFetchTimer() {
-        stopAutoFetchTimer()
-        
-        startAutoFetchTimer()
-    }
-    
-    private func stopAutoFetchTimer() {
-        autoFetchTimer?.invalidate()
-        autoFetchTimer = nil
     }
     
     private func startAutoFetchTimer() {
@@ -86,6 +73,11 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
                                               block: { [weak self] _ in
             self?.retrieveAndSyncEmbeddedMessages()
         })
+    }
+    
+    private func stopAutoFetchTimer() {
+        autoFetchTimer?.invalidate()
+        autoFetchTimer = nil
     }
     
     @objc private func onAppDidBecomeActiveNotification(notification: Notification) {

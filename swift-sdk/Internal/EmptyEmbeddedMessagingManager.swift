@@ -20,4 +20,8 @@ class EmptyEmbeddedMessagingManager: IterableEmbeddedMessagingManagerProtocol {
     func start() {
         
     }
+    
+    func stop() {
+        
+    }
 }
