@@ -16,6 +16,8 @@ final class EmbeddedMessagingManagerTests: XCTestCase {
                                                apiClient: mockApiClient,
                                                dateProvider: MockDateProvider())
         
+        manager.start()
+        
         let view1 = ViewWithUpdateDelegate({
             condition1.fulfill()
         })
