@@ -7,6 +7,7 @@ import UIKit
 
 final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     var apiKey: String
+    
     var lastPushPayload: [AnyHashable: Any]? {
         get {
             _payloadData
