@@ -534,7 +534,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                 attributionInfo = IterableAttributionInfo(campaignId: metadata.campaignId, templateId: templateId, messageId: metadata.messageId)
             }
 
-            if !metadata.isGhostPush { // save lastpuspayload only if it is NOT a ghostpush
+            if !metadata.isGhostPush {
                 lastPushPayload = payload
             }
         }
