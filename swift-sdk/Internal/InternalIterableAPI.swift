@@ -7,7 +7,13 @@ import UIKit
 
 final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     var apiKey: String
-    
+    var lastPushPayload: [AnyHashable: Any]? {
+        get {
+            _payloadData
+        } set {
+            setPayloadData(newValue)
+        }
+    }
     var email: String? {
         get {
             _email
@@ -21,6 +27,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             _userId
         } set {
             setUserId(newValue)
+        }
+    }
+    
+    var authToken: String? {
+        get {
+            authManager.getAuthToken()
         }
     }
     
@@ -38,10 +50,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         DeviceMetadata(deviceId: deviceId,
                        platform: JsonValue.iOS,
                        appPackageName: Bundle.main.appPackageName ?? "")
-    }
-    
-    var lastPushPayload: [AnyHashable: Any]? {
-        localStorage.getLastPushPayload(dateProvider.currentDate)
     }
     
     var attributionInfo: IterableAttributionInfo? {
@@ -95,8 +103,18 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         deviceAttributes.removeValue(forKey: name)
     }
     
+    func setPayloadData(_ data: [AnyHashable: Any]?){
+        ITBInfo()
+        _payloadData = data
+    }
+    
     func setEmail(_ email: String?, authToken: String? = nil) {
         ITBInfo()
+        
+        if _email == email && email != nil && authToken != nil {
+            checkAndUpdateAuthToken(authToken)
+            return
+        }
         
         if _email == email {
             return
@@ -114,6 +132,11 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     func setUserId(_ userId: String?, authToken: String? = nil) {
         ITBInfo()
+        
+        if _userId == userId && userId != nil && authToken != nil {
+            checkAndUpdateAuthToken(authToken)
+            return
+        }
         
         if _userId == userId {
             return
@@ -400,6 +423,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     private var deepLinkManager: DeepLinkManager
     
     private var _email: String?
+    private var _payloadData: [AnyHashable: Any]?
     private var _userId: String?
     
     /// the hex representation of this device token
@@ -492,6 +516,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     private func requestNewAuthToken() {
+        ITBInfo()
+        
         authManager.requestNewAuthToken(hasFailedPriorAuth: false, onSuccess: { [weak self] token in
             if token != nil {
                 self?.completeUserLogin()
@@ -519,15 +545,20 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     private func save(pushPayload payload: [AnyHashable: Any]) {
-        let expiration = Calendar.current.date(byAdding: .hour,
-                                               value: Const.UserDefault.payloadExpiration,
-                                               to: dateProvider.currentDate)
-        localStorage.saveLastPushPayload(payload, withExpiration: expiration)
-        
         if let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: payload) {
             if let templateId = metadata.templateId {
                 attributionInfo = IterableAttributionInfo(campaignId: metadata.campaignId, templateId: templateId, messageId: metadata.messageId)
             }
+            
+            if !metadata.isGhostPush {
+                lastPushPayload = payload
+            }
+        }
+    }
+    
+    private func checkAndUpdateAuthToken(_ authToken: String? = nil) {
+        if config.authDelegate != nil && authToken != authManager.getAuthToken() {
+            onLogin(authToken)
         }
     }
     
@@ -587,7 +618,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     private func handle(launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
         guard let launchOptions = launchOptions else {
-            localStorage.saveLastPushPayload(nil, withExpiration: nil)
             return
         }
         if let remoteNotificationPayload = launchOptions[UIApplication.LaunchOptionsKey.remoteNotification] as? [AnyHashable: Any] {
