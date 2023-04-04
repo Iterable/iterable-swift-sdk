@@ -68,6 +68,11 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
     }
     
     private func startAutoFetchTimer() {
+        guard autoFetchInterval > 0 else {
+            ITBInfo("embedded messaging automatic fetching not started since autoFetchInterval is <= 0")
+            return
+        }
+        
         autoFetchTimer = Timer.scheduledTimer(withTimeInterval: autoFetchInterval,
                                               repeats: true,
                                               block: { [weak self] _ in
