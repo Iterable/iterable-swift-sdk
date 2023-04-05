@@ -126,5 +126,5 @@ public class IterableConfig: NSObject {
     public var useInMemoryStorageForInApps = false
     
     /// Sets data region which determines data center and endpoints used by the SDK
-    public var dataRegion: DataRegion = DataRegion.US
+    public var dataRegion: IterableDataRegion = IterableDataRegion.US
 }
