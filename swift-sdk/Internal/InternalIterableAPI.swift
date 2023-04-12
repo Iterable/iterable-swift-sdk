@@ -555,6 +555,11 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
+    private static func getApiEndpoint(apiEndPointOverride: String?, config: IterableConfig) -> String {
+        let apiEndPoint = config.dataRegion
+        return apiEndPointOverride ?? apiEndPoint
+    }
+    
     init(apiKey: String,
          launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
          config: IterableConfig = IterableConfig(),
@@ -565,7 +570,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.apiKey = apiKey
         self.launchOptions = launchOptions
         self.config = config
-        apiEndPoint = apiEndPointOverride ?? Endpoint.api
+        apiEndPoint = InternalIterableAPI.getApiEndpoint(apiEndPointOverride: apiEndPointOverride, config: config)
         self.dependencyContainer = dependencyContainer
         dateProvider = dependencyContainer.dateProvider
         networkSession = dependencyContainer.networkSession

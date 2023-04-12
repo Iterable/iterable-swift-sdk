@@ -104,8 +104,9 @@ public final class IterableAPI: NSObject {
                                   launchOptions: [UIApplication.LaunchOptionsKey: Any]?,
                                   config: IterableConfig = IterableConfig()) {
         initialize2(apiKey: apiKey,
-                    launchOptions: launchOptions,
-                    config: config)
+                        launchOptions: launchOptions,
+                        config: config,
+                        apiEndPointOverride: config.dataRegion)
     }
 
     /// DO NOT USE THIS.
