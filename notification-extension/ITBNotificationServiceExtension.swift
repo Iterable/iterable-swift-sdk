@@ -4,14 +4,30 @@
 
 import UserNotifications
 
+public protocol ITBNotificationServiceExtensionDelegate {
+    func notificationServiceDidReceive(_ request: UNNotificationRequest, bestAttemptContent: UNMutableNotificationContent, contentHandler: @escaping (UNNotificationContent) -> Void)
+}
+
 @objc open class ITBNotificationServiceExtension: UNNotificationServiceExtension {
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
+    public static var itblNotificationDelegate: ITBNotificationServiceExtensionDelegate?
     
     @objc override open func didReceive(_ request: UNNotificationRequest,
                                         withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
+        
+        if let itblNotificationDelegate = ITBNotificationServiceExtension.itblNotificationDelegate,
+           let bestAttemptContent = bestAttemptContent {
+            
+            let result = request.content.userInfo.contains { $0.key as! String == JsonKey.Payload.metadata }
+            
+            if !result {
+                itblNotificationDelegate.notificationServiceDidReceive(request, bestAttemptContent: bestAttemptContent, contentHandler: contentHandler)
+                return
+            }
+        }
         
         resolveCategory(from: request.content)
 
