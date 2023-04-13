@@ -105,8 +105,7 @@ public final class IterableAPI: NSObject {
                                   config: IterableConfig = IterableConfig()) {
         initialize2(apiKey: apiKey,
                         launchOptions: launchOptions,
-                        config: config,
-                        apiEndPointOverride: config.dataRegion)
+                        config: config)
     }
 
     /// DO NOT USE THIS.
