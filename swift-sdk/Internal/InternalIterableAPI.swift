@@ -82,6 +82,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                                                    urlDelegate: config.urlDelegate,
                                                                    urlOpener: urlOpener,
                                                                    allowedProtocols: config.allowedProtocols)
+        
         pending.onSuccess { attributionInfo in
             if let attributionInfo = attributionInfo {
                 self.attributionInfo = attributionInfo
@@ -98,7 +99,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         deviceAttributes.removeValue(forKey: name)
     }
 
-    func setPayloadData(_ data: [AnyHashable: Any]?){
+    func setPayloadData(_ data: [AnyHashable: Any]?) {
         ITBInfo()
         _payloadData = data
     }
