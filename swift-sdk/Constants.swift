@@ -51,7 +51,6 @@ enum Const {
         static let sdkVersion = "itbl_sdk_version"
         static let offlineMode = "itbl_offline_mode"
         
-        static let payloadExpiration = 24
         static let attributionInfoExpiration = 24
     }
     
