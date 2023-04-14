@@ -34,7 +34,6 @@ class LocalStorageTests: XCTestCase {
         testKeychain.email = nil
         testKeychain.userId = nil
         testKeychain.authToken = nil
-        testKeychain.setLastPushPayload(nil, withExpiration: nil)
     }
     
     func testUserIdAndEmail() throws {
