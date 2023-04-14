@@ -82,4 +82,5 @@ class IterableKeychain {
         
         return try? JSONSerialization.jsonObject(with: data) as? [AnyHashable: Any]
     }
+    
 }
