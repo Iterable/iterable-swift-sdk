@@ -21,7 +21,13 @@ public protocol ITBNotificationServiceExtensionDelegate {
         if let itblNotificationDelegate = ITBNotificationServiceExtension.itblNotificationDelegate,
            let bestAttemptContent = bestAttemptContent {
             
-            let result = request.content.userInfo.contains { $0.key as! String == JsonKey.Payload.metadata }
+            let result = request.content.userInfo.contains {
+                guard let itbl = $0.key as? String else {
+                    print("Iterable SDK notification service extension: failed to cast JSON key to string")
+                    return false
+                }
+                return itbl == JsonKey.Payload.metadata
+            }
             
             if !result {
                 itblNotificationDelegate.notificationServiceDidReceive(request, bestAttemptContent: bestAttemptContent, contentHandler: contentHandler)
