@@ -75,22 +75,11 @@ struct LocalStorage: LocalStorageProtocol {
         iterableUserDefaults.save(attributionInfo: attributionInfo, withExpiration: expiration)
     }
     
-    func getLastPushPayload(_ currentDate: Date) -> [AnyHashable: Any]? {
-        return keychain.getLastPushPayload(currentDate: currentDate)
-    }
-    
-    func saveLastPushPayload(_ payload: [AnyHashable: Any]?, withExpiration expiration: Date?) {
-        keychain.setLastPushPayload(payload, withExpiration: expiration)
-    }
-    
     func upgrade() {
         ITBInfo()
         
         /// moves `email`, `userId`, and `authToken` from `UserDefaults` to `IterableKeychain`
         moveAuthDataFromUserDefaultsToKeychain()
-        
-        /// moves `lastPushPayload` from `UserDefaults` to `IterableKeychain`
-        moveLastPushPayloadFromUserDefaultsToKeychain()
     }
     
     // MARK: Private
@@ -129,15 +118,6 @@ struct LocalStorage: LocalStorageProtocol {
             iterableUserDefaults.authToken = nil
             
             ITBInfo("UPDATED: migrated authToken from UserDefaults to IterableKeychain")
-        }
-    }
-    
-    private func moveLastPushPayloadFromUserDefaultsToKeychain() {
-        if let (userDefaultLastPushPayload, expiration) = iterableUserDefaults.getLastPushPayloadExpirationPairForMigration() {
-            keychain.setLastPushPayload(userDefaultLastPushPayload, withExpiration: expiration)
-            iterableUserDefaults.save(payload: nil, withExpiration: nil)
-            
-            ITBInfo("UPDATED: migrated lastPushPayload from UserDefaults to IterableKeychain")
         }
     }
 }

@@ -43,7 +43,6 @@ enum Const {
     }
     
     public enum UserDefault {
-        static let payloadKey = "itbl_payload_key"
         static let attributionInfoKey = "itbl_attribution_info_key"
         static let emailKey = "itbl_email"
         static let userIdKey = "itbl_userid"
@@ -53,7 +52,6 @@ enum Const {
         static let sdkVersion = "itbl_sdk_version"
         static let offlineMode = "itbl_offline_mode"
         
-        static let payloadExpiration = 24
         static let attributionInfoExpiration = 24
     }
     
@@ -64,7 +62,6 @@ enum Const {
             static let email = "itbl_email"
             static let userId = "itbl_userid"
             static let authToken = "itbl_auth_token"
-            static let lastPushPayloadAndExpiration = "itbl_last_push_payload_and_expiration"
         }
     }
     
