@@ -2,6 +2,16 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.4.13
+### Added
+- `ITBNotificationServiceExtension` has a new optional delegate in the scenario of wanting to receive and pass along push information (e.g. Firebase)
+
+### Changed
+- The behavior of `lastPushPayload` now matches that of the Android SDK in being purely in memory and will now not count the payload of a silent push
+
+### Fixed
+- The `itbl_inapp.json` file generated from in-app messaging has been relocated to the correct spot
+
 ## 6.4.12
 ### Added
 - Added a new function to `IterableAPI` to get the currently set authentication token
