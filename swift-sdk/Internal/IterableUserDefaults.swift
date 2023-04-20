@@ -78,32 +78,8 @@ class IterableUserDefaults {
         try? save(codable: attributionInfo, withKey: .attributionInfo, andExpiration: expiration)
     }
     
-    // migrated to IterableKeychain
-    func getPayload(currentDate: Date) -> [AnyHashable: Any]? {
-        (try? dict(withKey: .payload, currentDate: currentDate)) ?? nil
-    }
-    
-    // migrated to IterableKeychain
-    func save(payload: [AnyHashable: Any]?, withExpiration expiration: Date?) {
-        try? save(dict: payload, withKey: .payload, andExpiration: expiration)
-    }
     
     // MARK: data migration functions
-    
-    func getLastPushPayloadExpirationPairForMigration() -> (payload: [AnyHashable: Any]?, expiration: Date?)? {
-        guard let encodedEnvelope = userDefaults.value(forKey: UserDefaultsKey.payload.value) as? Data else {
-            return nil
-        }
-        
-        do {
-            let envelope = try JSONDecoder().decode(Envelope.self, from: encodedEnvelope)
-            let decoded = try JSONSerialization.jsonObject(with: envelope.payload, options: []) as? [AnyHashable: Any]
-            
-            return (payload: decoded, envelope.expiration)
-        } catch {
-            return nil
-        }
-    }
     
     func getAuthDataForMigration() -> (email: String?, userId: String?, authToken: String?) {
         return (email: email, userId: userId, authToken: authToken)
@@ -212,8 +188,6 @@ class IterableUserDefaults {
         private init(value: String) {
             self.value = value
         }
-        
-        static let payload = UserDefaultsKey(value: Const.UserDefault.payloadKey)
         static let attributionInfo = UserDefaultsKey(value: Const.UserDefault.attributionInfoKey)
         static let email = UserDefaultsKey(value: Const.UserDefault.emailKey)
         static let userId = UserDefaultsKey(value: Const.UserDefault.userIdKey)
