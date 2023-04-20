@@ -411,7 +411,7 @@ class InAppFilePersister: InAppPersistenceProtocol {
 
 struct FileHelper {
     static func getUrl(filename: String, ext: String) -> URL? {
-        guard let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+        guard let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first else {
             return nil
         }
         
