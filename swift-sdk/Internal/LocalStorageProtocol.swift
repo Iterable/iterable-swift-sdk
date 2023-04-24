@@ -23,10 +23,6 @@ protocol LocalStorageProtocol {
     
     func save(attributionInfo: IterableAttributionInfo?, withExpiration expiration: Date?)
     
-    func getLastPushPayload(_ currentDate: Date) -> [AnyHashable: Any]?
-    
-    func saveLastPushPayload(_ payload: [AnyHashable: Any]?, withExpiration expiration: Date?)
-    
     func upgrade()
 }
 
