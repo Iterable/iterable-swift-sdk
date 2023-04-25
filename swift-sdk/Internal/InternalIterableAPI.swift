@@ -110,7 +110,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         _payloadData = data
     }
     
-    func setEmail(_ email: String?, authToken: String? = nil) {
+    func setEmail(_ email: String?, authToken: String? = nil, resultCallback: ((Bool) -> Void)? = nil) {
         ITBInfo()
         
         if _email == email && email != nil && authToken != nil {
@@ -126,13 +126,14 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         _email = email
         _userId = nil
+        self.resultCallback = resultCallback
         
         storeIdentifierData()
         
         onLogin(authToken)
     }
     
-    func setUserId(_ userId: String?, authToken: String? = nil) {
+    func setUserId(_ userId: String?, authToken: String? = nil, resultCallback: ((Bool) -> Void)? = nil) {
         ITBInfo()
         
         if _userId == userId && userId != nil && authToken != nil {
@@ -148,6 +149,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         _email = nil
         _userId = userId
+        self.resultCallback = resultCallback
         
         storeIdentifierData()
         
@@ -166,6 +168,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         guard let appName = pushIntegrationName else {
             let errorMessage = "Not registering device token - appName must not be nil"
             ITBError(errorMessage)
+            self.resultCallback?(false)
             onFailure?(errorMessage, nil)
             return
         }
@@ -180,8 +183,15 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                                   sdkVersion: localStorage.sdkVersion)
         requestHandler.register(registerTokenInfo: registerTokenInfo,
                                 notificationStateProvider: notificationStateProvider,
-                                onSuccess: onSuccess,
-                                onFailure: onFailure)
+                                onSuccess: { (_ data: [AnyHashable: Any]?) in
+                                                self.resultCallback?(true)
+                                                onSuccess?(data)
+                                },
+                                onFailure: { (_ reason: String?, _ data: Data?) in
+                                                self.resultCallback?(false)
+                                                onFailure?(reason, data)
+                                }
+        )
     }
     
     @discardableResult
@@ -410,6 +420,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     private var config: IterableConfig
     private var apiEndPoint: String
+    private var resultCallback: ((Bool) -> Void)? = nil
     
     /// Following are needed for handling pending notification and deep link.
     static var pendingNotificationResponse: NotificationResponseProtocol?
@@ -536,6 +547,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         if config.autoPushRegistration {
             notificationStateProvider.registerForRemoteNotifications()
+        } else {
+            self.resultCallback?(true)
         }
         
         _ = inAppManager.scheduleSync()
