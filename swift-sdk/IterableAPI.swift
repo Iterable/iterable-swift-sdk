@@ -130,11 +130,11 @@ public final class IterableAPI: NSObject {
 
     // MARK: - SDK
     
-    public static func setEmail(_ email: String?, _ authToken: String? = nil, _ successCallback: ((Bool) -> Void)? = nil) {
+    public static func setEmail(_ email: String?, _ authToken: String? = nil, _ resultCallback: ((Bool) -> Void)? = nil) {
         internalImplementation?.setEmail(email, authToken: authToken, resultCallback: resultCallback)
     }
     
-    public static func setUserId(_ userId: String?, _ authToken: String? = nil, _ successCallback: ((Bool) -> Void)? = nil) {
+    public static func setUserId(_ userId: String?, _ authToken: String? = nil, _ resultCallback: ((Bool) -> Void)? = nil) {
         internalImplementation?.setUserId(userId, authToken: authToken, resultCallback: resultCallback)
     }
     
