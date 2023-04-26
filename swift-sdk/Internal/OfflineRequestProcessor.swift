@@ -231,6 +231,20 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                                    identifier: #function)
     }
     
+    @discardableResult
+    func track(embeddedMessagingDelivery message: IterableEmbeddedMessage,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createEmbeddedMessagingDeliveryRequest(message)
+        }
+        
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
+    }
+    
     func deleteAllTasks() {
         ITBInfo()
         taskScheduler.deleteAllTasks()

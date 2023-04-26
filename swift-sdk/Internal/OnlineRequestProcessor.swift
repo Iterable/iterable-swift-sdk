@@ -233,6 +233,16 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                     requestIdentifier: "inAppConsumeWithSource")
     }
     
+    @discardableResult
+    func track(embeddedMessagingDelivery message: IterableEmbeddedMessage,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        sendRequest(requestProvider: { apiClient.track(embeddedMessagingDelivery: message) },
+                    successHandler: onSuccess,
+                    failureHandler: onFailure,
+                    requestIdentifier: "trackEmbeddedMessagingDelivery")
+    }
+    
     func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError> {
         apiClient.getRemoteConfiguration()
     }

@@ -16,8 +16,8 @@ struct EmbeddedMessagingProcessor {
         return fetchedMessages
     }
 
-    func newlyDeliveredMessageIds() -> [Int] {
-        return getFetchedMessageIds().filter { !getCurrentMessageIds().contains($0) }
+    func newlyDeliveredMessages() -> [IterableEmbeddedMessage] {
+        return getNewMessages()
     }
     
     func newlyRemovedMessageIds() -> [Int] {

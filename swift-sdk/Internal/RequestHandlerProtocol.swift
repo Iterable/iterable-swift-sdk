@@ -117,6 +117,11 @@ protocol RequestHandlerProtocol: AnyObject {
                       inboxSessionId: String?,
                       onSuccess: OnSuccessHandler?,
                       onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
+    
+    @discardableResult
+    func track(embeddedMessagingDelivery message: IterableEmbeddedMessage,
+               onSuccess: OnSuccessHandler?,
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
 
     func handleLogout() throws
     
