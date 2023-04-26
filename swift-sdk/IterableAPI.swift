@@ -5,8 +5,7 @@
 import Foundation
 import UIKit
 
-@objcMembers
-public final class IterableAPI: NSObject {
+@objcMembers public final class IterableAPI: NSObject {
     /// The current SDK version
     public static let sdkVersion = "6.4.13"
     

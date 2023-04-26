@@ -21,7 +21,7 @@ protocol DependencyContainerProtocol: RedirectNetworkSessionProvider {
     func createPersistenceContextProvider() -> IterablePersistenceContextProvider?
     func createRequestHandler(apiKey: String,
                               config: IterableConfig,
-                              endPoint: String,
+                              endpoint: String,
                               authProvider: AuthProvider?,
                               authManager: IterableAuthManagerProtocol,
                               deviceMetadata: DeviceMetadata,
@@ -59,7 +59,7 @@ extension DependencyContainerProtocol {
     
     func createRequestHandler(apiKey: String,
                               config: IterableConfig,
-                              endPoint: String,
+                              endpoint: String,
                               authProvider: AuthProvider?,
                               authManager: IterableAuthManagerProtocol,
                               deviceMetadata: DeviceMetadata,
@@ -67,7 +67,7 @@ extension DependencyContainerProtocol {
         let onlineProcessor = OnlineRequestProcessor(apiKey: apiKey,
                                                      authProvider: authProvider,
                                                      authManager: authManager,
-                                                     endPoint: endPoint,
+                                                     endpoint: endpoint,
                                                      networkSession: networkSession,
                                                      deviceMetadata: deviceMetadata,
                                                      dateProvider: dateProvider)
@@ -79,7 +79,7 @@ extension DependencyContainerProtocol {
             let offlineProcessor = OfflineRequestProcessor(apiKey: apiKey,
                                                            authProvider: authProvider,
                                                            authManager: authManager,
-                                                           endPoint: endPoint,
+                                                           endpoint: endpoint,
                                                            deviceMetadata: deviceMetadata,
                                                            taskScheduler: createTaskScheduler(persistenceContextProvider: persistenceContextProvider,
                                                                                               healthMonitor: healthMonitor),
