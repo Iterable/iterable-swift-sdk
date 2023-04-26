@@ -10,6 +10,7 @@ struct IterableAPICallRequest {
     let apiKey: String
     let endPoint: String
     let auth: Auth
+    let authToken: String?
     let deviceMetadata: DeviceMetadata
     let iterableRequest: IterableRequest
     
@@ -54,6 +55,7 @@ struct IterableAPICallRequest {
         IterableAPICallRequest(apiKey: apiKey,
                                endPoint: endPoint,
                                auth: auth,
+                               authToken: authToken,
                                deviceMetadata: deviceMetadata,
                                iterableRequest: iterableRequest.addingBodyField(key: key, value: value))
     }

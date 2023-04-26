@@ -265,6 +265,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
                                                     endPoint: endPoint,
                                                     auth: authProvider.auth,
+                                                    authToken: authManager?.getAuthToken(),
                                                     deviceMetadata: deviceMetadata,
                                                     iterableRequest: iterableRequest)
         

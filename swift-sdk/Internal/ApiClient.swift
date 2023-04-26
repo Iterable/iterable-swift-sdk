@@ -36,6 +36,7 @@ class ApiClient {
         let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
                                                     endPoint: endPoint,
                                                     auth: authProvider.auth,
+                                                    authToken: authProvider.auth.authToken,
                                                     deviceMetadata: deviceMetadata,
                                                     iterableRequest: iterableRequest).addingCreatedAt(currentDate)
         return apiCallRequest.convertToURLRequest(sentAt: currentDate)
