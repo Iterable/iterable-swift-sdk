@@ -134,7 +134,11 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
     
     private func trackDeliveries(_ processor: EmbeddedMessagingProcessor) {
         for message in processor.newlyDeliveredMessages() {
-            apiClient.track(embeddedMessagingDelivery: message)
+//            apiClient.track(embeddedMessagingDelivery: message)
+            IterableAPI.track(event: "embedded-messaging",
+                              dataFields: ["name": "delivery",
+                                           "messageId": message.metadata.id]
+            )
         }
     }
     
