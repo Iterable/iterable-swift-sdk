@@ -119,7 +119,7 @@ protocol RequestHandlerProtocol: AnyObject {
                       onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
     
     @discardableResult
-    func track(embeddedMessagingDelivery message: IterableEmbeddedMessage,
+    func track(embeddedMessageReceived message: IterableEmbeddedMessage,
                onSuccess: OnSuccessHandler?,
                onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
 

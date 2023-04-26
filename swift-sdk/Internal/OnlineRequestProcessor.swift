@@ -234,10 +234,10 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     }
     
     @discardableResult
-    func track(embeddedMessagingDelivery message: IterableEmbeddedMessage,
+    func track(embeddedMessageReceived message: IterableEmbeddedMessage,
                onSuccess: OnSuccessHandler? = nil,
                onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        sendRequest(requestProvider: { apiClient.track(embeddedMessagingDelivery: message) },
+        sendRequest(requestProvider: { apiClient.track(embeddedMessageReceived: message) },
                     successHandler: onSuccess,
                     failureHandler: onFailure,
                     requestIdentifier: "trackEmbeddedMessagingDelivery")

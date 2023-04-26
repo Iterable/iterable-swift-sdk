@@ -83,7 +83,7 @@ class BlankApiClient: ApiClientProtocol {
         Pending()
     }
     
-    func track(embeddedMessagingDelivery message: IterableSDK.IterableEmbeddedMessage) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+    func track(embeddedMessageReceived message: IterableSDK.IterableEmbeddedMessage) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
         Pending()
     }
 }

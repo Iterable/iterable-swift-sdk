@@ -40,7 +40,7 @@ enum Const {
         static let updateSubscriptions = "users/updateSubscriptions"
         static let getRemoteConfiguration = "mobile/getRemoteConfiguration"
         static let embeddedMessages = "embedded-messaging/messages"
-        static let embeddedMessagingDelivery = "embedded-messaging/received"
+        static let embeddedMessageReceived = "embedded-messaging/events/received"
     }
     
     public enum UserDefault {

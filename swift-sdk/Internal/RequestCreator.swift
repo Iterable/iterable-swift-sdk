@@ -448,7 +448,7 @@ struct RequestCreator {
         return .success(.get(createGetRequest(forPath: Const.Path.embeddedMessages, withArgs: args as! [String: String])))
     }
     
-    func createEmbeddedMessagingDeliveryRequest(_ message: IterableEmbeddedMessage) -> Result<IterableRequest, IterableError> {
+    func createEmbeddedMessageReceivedRequest(_ message: IterableEmbeddedMessage) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
             ITBError(Self.authMissingMessage)
             return .failure(IterableError.general(description: Self.authMissingMessage))
@@ -474,7 +474,7 @@ struct RequestCreator {
         // TODO: find/create proper key for the value of the embedded message ID
         args.setValue(for: JsonKey.messageId, value: message.metadata.id)
         
-        return .success(.get(createGetRequest(forPath: Const.Path.embeddedMessagingDelivery, withArgs: args as! [String: String])))
+        return .success(.get(createGetRequest(forPath: Const.Path.embeddedMessageReceived, withArgs: args as! [String: String])))
     }
     
     // MARK: - Misc Request Calls

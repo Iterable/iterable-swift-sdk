@@ -48,5 +48,5 @@ protocol ApiClientProtocol: AnyObject {
     
     func getEmbeddedMessages() -> Pending<EmbeddedMessagesPayload, SendRequestError>
     
-    func track(embeddedMessagingDelivery message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError>
+    func track(embeddedMessageReceived message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError>
 }

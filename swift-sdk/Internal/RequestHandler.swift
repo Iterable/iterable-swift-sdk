@@ -258,11 +258,11 @@ class RequestHandler: RequestHandlerProtocol {
     }
     
     @discardableResult
-    func track(embeddedMessagingDelivery message: IterableEmbeddedMessage,
+    func track(embeddedMessageReceived message: IterableEmbeddedMessage,
                onSuccess: OnSuccessHandler?,
                onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         sendUsingRequestProcessor { processor in
-            processor.track(embeddedMessagingDelivery: message,
+            processor.track(embeddedMessageReceived: message,
                             onSuccess: onSuccess,
                             onFailure: onFailure)
         }
