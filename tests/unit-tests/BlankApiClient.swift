@@ -78,4 +78,8 @@ class BlankApiClient: ApiClientProtocol {
     func getRemoteConfiguration() -> IterableSDK.Pending<IterableSDK.RemoteConfiguration, IterableSDK.SendRequestError> {
         Pending()
     }
+    
+    func getEmbeddedMessages() -> IterableSDK.Pending<IterableSDK.EmbeddedMessagesPayload, IterableSDK.SendRequestError> {
+        Pending()
+    }
 }
