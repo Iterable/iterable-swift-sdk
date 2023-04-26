@@ -38,6 +38,10 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
         listeners.remove(listener)
     }
     
+    public func temp_manualOverrideRefresh() {
+        retrieveEmbeddedMessages()
+    }
+    
     func start() {
         ITBInfo()
         
@@ -98,6 +102,10 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
             }
         }
         
+        retrieveEmbeddedMessages()
+    }
+    
+    private func retrieveEmbeddedMessages() {
         apiClient.getEmbeddedMessages()
             .onCompletion(
                 receiveValue: { embeddedMessagesPayload in
@@ -116,7 +124,8 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
                 
                 receiveError: { sendRequestError in
                     ITBError()
-                })
+                }
+            )
     }
     
     private func setMessages(_ processor: EmbeddedMessagingProcessor) {
