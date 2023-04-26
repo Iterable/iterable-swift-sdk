@@ -165,6 +165,67 @@ class IterableAPITests: XCTestCase {
         
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
+
+    func testSetEmailWithCallbackSuccess() {
+        let expectation = XCTestExpectation(description: "Set email with callback success")
+
+        let config = IterableConfig()
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: mockNetworkSession)
+     
+        internalAPI.setEmail("test@example.com") { error in
+            XCTAssertNil(error)
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+
+    func testSetEmailWithCallbackFailure() {
+        let expectation = XCTestExpectation(description: "Set email with callback failure")
+        
+        let config = IterableConfig()
+        let networkSession = MockNetworkSession(statusCode: 400, responseData: nil)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
+
+        internalAPI.setEmail("invalid_email") { error in
+            XCTAssertNotNil(error)
+            XCTAssertEqual(error?.localizedDescription, "Invalid email address")
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+
+    func testSetUserIdWithCallbackSuccess() {
+        let expectation = XCTestExpectation(description: "Set user ID with callback success")
+        
+        let config = IterableConfig()
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: mockNetworkSession)
+        
+        internalAPI.setUserId("user123") { error in
+            XCTAssertNil(error)
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+
+    func testSetUserIdWithCallbackFailure() {
+        let expectation = XCTestExpectation(description: "Set user ID with callback failure")
+        
+        let config = IterableConfig()
+        let networkSession = MockNetworkSession(statusCode: 400)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: mockNetworkSession)
+        
+        internalAPI.setUserId("user123") { error in
+            XCTAssertNotNil(error)
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
     
     func testEmailPersistence() {
         let internalAPI = InternalIterableAPI.initializeForTesting()
