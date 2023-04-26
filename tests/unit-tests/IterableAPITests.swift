@@ -171,7 +171,7 @@ class IterableAPITests: XCTestCase {
 
         let config = IterableConfig()
         let networkSession = MockNetworkSession(statusCode: 200)
-        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: mockNetworkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
      
         internalAPI.setEmail("test@example.com") { error in
             XCTAssertNil(error)
@@ -185,7 +185,7 @@ class IterableAPITests: XCTestCase {
         let expectation = XCTestExpectation(description: "Set email with callback failure")
         
         let config = IterableConfig()
-        let networkSession = MockNetworkSession(statusCode: 400, responseData: nil)
+        let networkSession = MockNetworkSession(statusCode: 400)
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
 
         internalAPI.setEmail("invalid_email") { error in
@@ -202,7 +202,7 @@ class IterableAPITests: XCTestCase {
         
         let config = IterableConfig()
         let networkSession = MockNetworkSession(statusCode: 200)
-        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: mockNetworkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         
         internalAPI.setUserId("user123") { error in
             XCTAssertNil(error)
@@ -217,7 +217,7 @@ class IterableAPITests: XCTestCase {
         
         let config = IterableConfig()
         let networkSession = MockNetworkSession(statusCode: 400)
-        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: mockNetworkSession)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         
         internalAPI.setUserId("user123") { error in
             XCTAssertNotNil(error)
