@@ -346,8 +346,8 @@ class RequestCreatorTests: XCTestCase {
         
         let iterableRequest = try createRequestCreator().createTrackEventRequest(eventName, dataFields: nil).get()
         let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
-                                                    endPoint: Endpoint.api,
-                                                    auth: Auth(userId: nil, email: "user@example.com", authToken: nil),
+                                                    endpoint: Endpoint.api,
+                                                    authToken: nil,
                                                     deviceMetadata: deviceMetadata,
                                                     iterableRequest: iterableRequest)
         
@@ -414,7 +414,7 @@ class RequestCreatorTests: XCTestCase {
     private func createApiClient(networkSession: NetworkSessionProtocol) -> ApiClient {
         ApiClient(apiKey: apiKey,
                   authProvider: self,
-                  endPoint: Endpoint.api,
+                  endpoint: Endpoint.api,
                   networkSession: networkSession,
                   deviceMetadata: deviceMetadata,
                   dateProvider: dateProvider)

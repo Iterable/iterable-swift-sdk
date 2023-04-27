@@ -43,7 +43,7 @@ class CommerceItemTests: XCTestCase {
                                             "categories": ["section 9",
                                                            "personnel transport"],
                                             "dataFields": ["color": "yellow",
-                                                           "count": 8]]
+                                                           "count": 8] as [String : Any]]
         
         XCTAssertEqual(NSDictionary(dictionary: itemDictionary), NSDictionary(dictionary: expected))
     }

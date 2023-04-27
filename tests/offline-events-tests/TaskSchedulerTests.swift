@@ -82,8 +82,8 @@ class TaskSchedulerTests: XCTestCase {
         }
         
         let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
-                                                    endPoint: Endpoint.api,
-                                                    auth: auth,
+                                                    endpoint: Endpoint.api,
+                                                    authToken: auth.authToken,
                                                     deviceMetadata: deviceMetadata,
                                                     iterableRequest: trackEventRequest)
         
