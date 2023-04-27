@@ -160,7 +160,7 @@ class IterableAPIResponseTests: XCTestCase {
         
         let networkSession = MockNetworkSession() { _ in
             MockNetworkSession.MockResponse(statusCode: 200,
-                                            data: [:].toJsonData(),
+                                            data: Dictionary<AnyHashable, Any>().toJsonData(),
                                             delay: responseTime)
         }
         networkSession.timeout = timeout
@@ -194,7 +194,7 @@ class IterableAPIResponseTests: XCTestCase {
     private func createApiClient(networkSession: NetworkSessionProtocol = MockNetworkSession()) -> ApiClient {
         ApiClient(apiKey: apiKey,
                   authProvider: self,
-                  endPoint: Endpoint.api,
+                  endpoint: Endpoint.api,
                   networkSession: networkSession,
                   deviceMetadata: InternalIterableAPI.initializeForTesting().deviceMetadata,
                   dateProvider: dateProvider)
@@ -203,7 +203,7 @@ class IterableAPIResponseTests: XCTestCase {
     private func createApiClientWithAuthToken() -> ApiClient {
         ApiClient(apiKey: apiKey,
                   authProvider: self,
-                  endPoint: Endpoint.api,
+                  endpoint: Endpoint.api,
                   networkSession: MockNetworkSession(),
                   deviceMetadata: InternalIterableAPI.initializeForTesting().deviceMetadata,
                   dateProvider: dateProvider)

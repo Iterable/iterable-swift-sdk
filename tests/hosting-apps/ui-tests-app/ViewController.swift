@@ -52,13 +52,13 @@ class ViewController: UIViewController {
             "content": ["html": "<a href='https://www.google.com/q=something'>Click Here</a>"],
             "messageId": "messageId-1",
             "campaignId": 1,
-        ]]]
+        ] as [String : Any]]]
         IterableAPI.initializeForTesting(apiKey: "apiKey",
                                          config: config,
                                          inAppFetcher: mockInAppFetcher,
                                          inAppDisplayer: InAppDisplayer())
         
-        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: IterableAPI.internalImplementation, payload).onSuccess { _ in
+        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: IterableAPI.implementation, payload).onSuccess { _ in
             let message = IterableAPI.inAppManager.getMessages()[0]
             
             IterableAPI.inAppManager.show(message: message, consume: true) { url in
@@ -78,17 +78,17 @@ class ViewController: UIViewController {
         let payload = ["inAppMessages": [[
             "content": [
                 "html": "<body style='height:100px'><a href='https://www.google.com/q=something'>Click Here</a></body><meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no'>",
-                "inAppDisplaySettings": ["backgroundAlpha": 0.5, "left": ["percentage": 60], "right": ["percentage": 60], "bottom": ["displayOption": "AutoExpand"], "top": ["displayOption": "AutoExpand"]],
-            ],
+                "inAppDisplaySettings": ["backgroundAlpha": 0.5, "left": ["percentage": 60], "right": ["percentage": 60], "bottom": ["displayOption": "AutoExpand"], "top": ["displayOption": "AutoExpand"]] as [String : Any],
+            ] as [String : Any],
             "messageId": "messageId-1",
             "campaignId": 1,
-        ]]]
+        ] as [String : Any]]]
         IterableAPI.initializeForTesting(apiKey: "apiKey",
                                          config: config,
                                          inAppFetcher: mockInAppFetcher,
                                          inAppDisplayer: InAppDisplayer())
         
-        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: IterableAPI.internalImplementation, payload).onSuccess { _ in
+        mockInAppFetcher.mockInAppPayloadFromServer(internalApi: IterableAPI.implementation, payload).onSuccess { _ in
             let message = IterableAPI.inAppManager.getMessages()[0]
             
             IterableAPI.inAppManager.show(message: message, consume: true) { url in
@@ -124,7 +124,7 @@ class ViewController: UIViewController {
                                          inAppFetcher: mockInAppFetcher,
                                          inAppDisplayer: InAppDisplayer())
         
-        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: IterableAPI.internalImplementation, messages: [message])
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: IterableAPI.implementation, messages: [message])
     }
     
     // Center and Open url, corresponds to UITests.testShowInApp5
@@ -162,7 +162,7 @@ class ViewController: UIViewController {
                                          inAppDisplayer: InAppDisplayer(),
                                          urlOpener: mockUrlOpener)
         
-        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: IterableAPI.internalImplementation, messages: [message])
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: IterableAPI.implementation, messages: [message])
     }
     
     @IBAction func showInboxTap(_: UIButton) {
@@ -195,7 +195,7 @@ class ViewController: UIViewController {
                                          inAppDisplayer: InAppDisplayer(),
                                          urlOpener: mockUrlOpener)
         
-        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: IterableAPI.internalImplementation, messages: [message]).onSuccess { _ in
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: IterableAPI.implementation, messages: [message]).onSuccess { _ in
             DispatchQueue.main.async {
                 let viewController = IterableInboxViewController(style: .plain)
                 self.present(viewController, animated: true) {
@@ -287,9 +287,9 @@ class ViewController: UIViewController {
                         "action": [
                             "type": customActionName,
                         ],
-                    ],
+                    ] as [String : Any],
                 ],
-            ],
+            ] as [String : Any],
         ]
         content.userInfo = userInfo
         
