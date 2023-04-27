@@ -29,20 +29,24 @@ import Foundation
     @objc(showMessage:consume:callbackBlock:) func show(message: IterableInAppMessage, consume: Bool, callback: ITBURLCallback?)
     
     /// - parameter message: The message to remove.
-    @objc(removeMessage:) func remove(message: IterableInAppMessage)
+    /// - parameter onCompletion: The callback which returns `success` or `failure`.
+    @objc(removeMessage:onCompletion:) func remove(message: IterableInAppMessage, onCompletion: OnCompletionHandler?)
     
     /// - parameter message: The message to remove.
     /// - parameter location: The location from where this message was shown. `inbox` or `inApp`.
-    @objc(removeMessage:location:) func remove(message: IterableInAppMessage, location: InAppLocation)
+    /// - parameter onCompletion: The callback which returns `success` or `failure`.
+    @objc(removeMessage:location:onCompletion:) func remove(message: IterableInAppMessage, location: InAppLocation, onCompletion: OnCompletionHandler?)
     
     /// - parameter message: The message to remove.
     /// - parameter location: The location from where this message was shown. `inbox` or `inApp`.
     /// - parameter source: The source of deletion `inboxSwipe` or `deleteButton`.`
-    @objc(removeMessage:location:source:) func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource)
+    /// - parameter onCompletion: The callback which returns `success` or `failure`.
+    @objc(removeMessage:location:source:onCompletion:) func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource, onCompletion: OnCompletionHandler?)
     
     /// - parameter read: Whether this inbox message was read
     /// - parameter message: The inbox message
-    @objc(setRead:forMessage:) func set(read: Bool, forMessage message: IterableInAppMessage)
+    /// - parameter onCompletion: The callback which returns `success` or `failure`.
+    @objc(setRead:forMessage:onCompletion:) func set(read: Bool, forMessage message: IterableInAppMessage, onCompletion: OnCompletionHandler?)
     
     /// - parameter id: The id of the message
     /// - returns: IterableInAppMessage with the id, if it exists.

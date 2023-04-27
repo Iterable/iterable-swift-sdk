@@ -121,15 +121,15 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         }
     }
     
-    func remove(message: IterableInAppMessage, location: InAppLocation) {
+    func remove(message: IterableInAppMessage, location: InAppLocation, onCompletion: OnCompletionHandler?) {
         ITBInfo()
-        
+        self.completionHandler = onCompletion
         removePrivate(message: message, location: location)
     }
     
-    func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource) {
+    func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource, onCompletion: OnCompletionHandler?) {
         ITBInfo()
-        
+        self.completionHandler = onCompletion
         removePrivate(message: message, location: location, source: source)
     }
     
@@ -139,11 +139,15 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         removePrivate(message: message, location: location, source: source, inboxSessionId: inboxSessionId)
     }
     
-    func set(read: Bool, forMessage message: IterableInAppMessage) {
+    func set(read: Bool, forMessage message: IterableInAppMessage, onCompletion: OnCompletionHandler?) {
+        self.completionHandler = onCompletion
         updateMessage(message, read: read).onSuccess { [weak self] _ in
+            self?.completionHandler?(true)
             self?.callbackQueue.async { [weak self] in
                 self?.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
             }
+        }.onError { [weak self] _ in
+            self?.completionHandler?(false)
         }
     }
     
@@ -183,7 +187,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         }
     }
     
-    func remove(message: IterableInAppMessage) {
+    func remove(message: IterableInAppMessage, onCompletion: OnCompletionHandler?) {
         ITBInfo()
         
         removePrivate(message: message)
@@ -470,8 +474,12 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
                                      location: location,
                                      source: source,
                                      inboxSessionId: inboxSessionId,
-                                     onSuccess: nil,
-                                     onFailure: nil)
+                                     onSuccess: { (_ data: [AnyHashable: Any]?) in
+                                                    self.completionHandler?(true)
+                                     },
+                                     onFailure: { (_ reason: String?, _ data: Data?) in
+                                                    self.completionHandler?(false)
+                                                })
         callbackQueue.async { [weak self] in
             self?.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
         }
@@ -533,6 +541,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     private var lastSyncTime: Date?
     private var moveToForegroundSyncInterval: Double = 1.0 * 60.0 // don't sync within sixty seconds
     private var autoDisplayPaused = false
+    private var completionHandler: OnCompletionHandler? = nil
 }
 
 extension InAppManager: InAppNotifiable {
