@@ -445,7 +445,7 @@ struct RequestCreator {
             ITBInfo("Current user is unavailable")
         }
         
-        return .success(.get(createGetRequest(forPath: Const.Path.embeddedMessages, withArgs: args as! [String: String])))
+        return .success(.get(createGetRequest(forPath: Const.Path.getEmbeddedMessages, withArgs: args as! [String: String])))
     }
     
     func createEmbeddedMessageReceivedRequest(_ message: IterableEmbeddedMessage) -> Result<IterableRequest, IterableError> {
