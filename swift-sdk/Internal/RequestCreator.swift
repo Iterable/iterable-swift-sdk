@@ -477,6 +477,34 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: Const.Path.embeddedMessageReceived, body: args as! [String: String])))
     }
     
+    func createEmbeddedMessageClickRequest() -> Result<IterableRequest, IterableError> {
+        if case .none = auth.emailOrUserId {
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
+        }
+        
+        var args: [AnyHashable: Any] = [JsonKey.platform: JsonValue.iOS,
+                                        JsonKey.systemVersion: UIDevice.current.systemVersion,
+                                        JsonKey.Embedded.sdkVersion: IterableAPI.sdkVersion]
+        
+        if let packageName = Bundle.main.appPackageName {
+            args[JsonKey.Embedded.packageName] = packageName
+        }
+        
+        switch auth.emailOrUserId {
+        case let .email(email):
+            args.setValue(for: JsonKey.userKey, value: email)
+        case let .userId(userId):
+            args.setValue(for: JsonKey.userKey, value: userId)
+        case .none:
+            ITBInfo("Current user is unavailable")
+        }
+        
+        // TODO: find/create proper key for the value of the embedded message ID
+        
+        return .success(.post(createPostRequest(path: Const.Path.embeddedMessageClick, body: args as! [String: String])))
+    }
+    
     // MARK: - Misc Request Calls
     
     func createDisableDeviceRequest(forAllUsers allUsers: Bool, hexToken: String) -> Result<IterableRequest, IterableError> {
