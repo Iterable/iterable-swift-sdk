@@ -954,7 +954,7 @@ class IterableAPITests: XCTestCase {
                 "defaultAction": [
                     "type": "customAction",
                 ],
-            ],
+            ] as [String : Any],
         ]
         
         let launchOptions: [UIApplication.LaunchOptionsKey: Any] = [UIApplication.LaunchOptionsKey.remoteNotification: userInfo]
@@ -985,7 +985,7 @@ class IterableAPITests: XCTestCase {
                     "type": "openUrl",
                     "data": "http://somewhere.com",
                 ],
-            ],
+            ] as [String : Any],
         ]
         let launchOptions: [UIApplication.LaunchOptionsKey: Any] = [UIApplication.LaunchOptionsKey.remoteNotification: userInfo]
         let urlDelegate = MockUrlDelegate(returnValue: true)
@@ -1015,7 +1015,7 @@ class IterableAPITests: XCTestCase {
                     "type": "openUrl",
                     "data": "http://somewhere.com",
                 ],
-            ],
+            ] as [String : Any],
         ]
         
         let networkSession = MockNetworkSession(statusCode: 200)
@@ -1053,7 +1053,7 @@ class IterableAPITests: XCTestCase {
                 "templateId": 4321,
                 "messageId": messageId,
                 "isGhostPush": false,
-            ],
+            ] as [String : Any],
         ]
         
         let networkSession = MockNetworkSession(statusCode: 200)
@@ -1091,7 +1091,7 @@ class IterableAPITests: XCTestCase {
                 "templateId": 4321,
                 "messageId": messageId,
                 "isGhostPush": false,
-            ],
+            ] as [String : Any],
         ]
         
         let networkSession = MockNetworkSession(statusCode: 200)

@@ -7,6 +7,7 @@ import UIKit
 
 final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     var apiKey: String
+    
     var lastPushPayload: [AnyHashable: Any]? {
         get {
             _payloadData
@@ -451,7 +452,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     lazy var apiClient: ApiClientProtocol = {
         ApiClient(apiKey: apiKey,
                   authProvider: self,
-                  endPoint: apiEndPoint,
+                  endpoint: apiEndPoint,
                   networkSession: networkSession,
                   deviceMetadata: deviceMetadata,
                   dateProvider: dateProvider)
@@ -461,7 +462,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         let offlineMode = self.localStorage.offlineMode
         return dependencyContainer.createRequestHandler(apiKey: apiKey,
                                                         config: config,
-                                                        endPoint: apiEndPoint,
+                                                        endpoint: apiEndPoint,
                                                         authProvider: self,
                                                         authManager: authManager,
                                                         deviceMetadata: deviceMetadata,

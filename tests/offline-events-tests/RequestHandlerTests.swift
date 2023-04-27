@@ -178,7 +178,7 @@ class RequestHandlerTests: XCTestCase {
                 "name": items[0].name,
                 "price": items[0].price,
                 "quantity": items[0].quantity,
-            ]],
+            ] as [String : Any]],
             "total": total,
             "dataFields": dataFields,
             "user": [
@@ -218,7 +218,7 @@ class RequestHandlerTests: XCTestCase {
                 "name": items[0].name,
                 "price": items[0].price,
                 "quantity": items[0].quantity,
-            ]],
+            ] as [String : Any]],
             "total": total,
             "dataFields": dataFields,
             "campaignId": campaignId,
@@ -355,7 +355,7 @@ class RequestHandlerTests: XCTestCase {
                 "location": "in-app",
                 "saveToInbox": false,
                 "silentInbox": false,
-            ],
+            ] as [String : Any],
         ]
         
         let expectations = createExpectations(description: #function)
@@ -390,7 +390,7 @@ class RequestHandlerTests: XCTestCase {
                 "location": "inbox",
                 "saveToInbox": false,
                 "silentInbox": false,
-            ],
+            ] as [String : Any],
         ]
         
         let expectations = createExpectations(description: #function)
@@ -427,7 +427,7 @@ class RequestHandlerTests: XCTestCase {
                 "location": "inbox",
                 "saveToInbox": false,
                 "silentInbox": false,
-            ],
+            ] as [String : Any],
             "closeAction": "link",
         ]
         
@@ -563,7 +563,7 @@ class RequestHandlerTests: XCTestCase {
                 "location": "inbox",
                 "saveToInbox": false,
                 "silentInbox": false,
-            ],
+            ] as [String : Any],
             "inboxSessionId": inboxSessionId,
             "deleteAction": "delete-button",
             "deviceInfo": Self.deviceMetadata.asDictionary()!,
@@ -599,7 +599,7 @@ class RequestHandlerTests: XCTestCase {
                 "location": "in-app",
                 "saveToInbox": false,
                 "silentInbox": false,
-            ],
+            ] as [String : Any],
             "inboxSessionId": inboxSessionId,
         ]
         
@@ -636,7 +636,7 @@ class RequestHandlerTests: XCTestCase {
                 "location": "in-app",
                 "saveToInbox": false,
                 "silentInbox": false,
-            ],
+            ] as [String : Any],
         ]
         
         let expectations = createExpectations(description: #function)
@@ -1066,14 +1066,14 @@ class RequestHandlerTests: XCTestCase {
         let onlineProcessor = OnlineRequestProcessor(apiKey: "zee-api-key",
                                                      authProvider: self,
                                                      authManager: nil,
-                                                     endPoint: Endpoint.api,
+                                                     endpoint: Endpoint.api,
                                                      networkSession: networkSession,
                                                      deviceMetadata: Self.deviceMetadata,
                                                      dateProvider: self.dateProvider)
         let offlineProcessor = OfflineRequestProcessor(apiKey: "zee-api-key",
                                                        authProvider: self,
                                                        authManager: nil,
-                                                       endPoint: Endpoint.api,
+                                                       endpoint: Endpoint.api,
                                                        deviceMetadata: Self.deviceMetadata,
                                                        taskScheduler: taskScheduler,
                                                        taskRunner: taskRunner,

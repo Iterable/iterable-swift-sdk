@@ -9,14 +9,14 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     init(apiKey: String,
          authProvider: AuthProvider?,
          authManager: IterableAuthManagerProtocol?,
-         endPoint: String,
+         endpoint: String,
          networkSession: NetworkSessionProtocol,
          deviceMetadata: DeviceMetadata,
          dateProvider: DateProviderProtocol) {
         self.authManager = authManager
         apiClient = ApiClient(apiKey: apiKey,
                               authProvider: authProvider,
-                              endPoint: endPoint,
+                              endpoint: endpoint,
                               networkSession: networkSession,
                               deviceMetadata: deviceMetadata,
                               dateProvider: dateProvider)

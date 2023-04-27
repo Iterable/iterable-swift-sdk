@@ -7,75 +7,75 @@ import Foundation
 @testable import IterableSDK
 
 class BlankApiClient: ApiClientProtocol {
-    func register(registerTokenInfo: IterableSDK.RegisterTokenInfo, notificationsEnabled: Bool) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+    func register(registerTokenInfo: RegisterTokenInfo, notificationsEnabled: Bool) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
     
-    func updateUser(_ dataFields: [AnyHashable : Any], mergeNestedObjects: Bool) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+    func updateUser(_ dataFields: [AnyHashable : Any], mergeNestedObjects: Bool) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
     
-    func updateEmail(newEmail: String) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+    func updateEmail(newEmail: String) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
     
-    func updateCart(items: [IterableSDK.CommerceItem]) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+    func updateCart(items: [CommerceItem]) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
     
-    func track(purchase total: NSNumber, items: [IterableSDK.CommerceItem], dataFields: [AnyHashable : Any]?, campaignId: NSNumber?, templateId: NSNumber?) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+    func track(purchase total: NSNumber, items: [CommerceItem], dataFields: [AnyHashable : Any]?, campaignId: NSNumber?, templateId: NSNumber?) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
     
-    func track(pushOpen campaignId: NSNumber, templateId: NSNumber?, messageId: String, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+    func track(pushOpen campaignId: NSNumber, templateId: NSNumber?, messageId: String, appAlreadyRunning: Bool, dataFields: [AnyHashable : Any]?) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
     
-    func track(event eventName: String, dataFields: [AnyHashable : Any]?) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+    func track(event eventName: String, dataFields: [AnyHashable : Any]?) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
     
-    func updateSubscriptions(_ emailListIds: [NSNumber]?, unsubscribedChannelIds: [NSNumber]?, unsubscribedMessageTypeIds: [NSNumber]?, subscribedMessageTypeIds: [NSNumber]?, campaignId: NSNumber?, templateId: NSNumber?) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+    func updateSubscriptions(_ emailListIds: [NSNumber]?, unsubscribedChannelIds: [NSNumber]?, unsubscribedMessageTypeIds: [NSNumber]?, subscribedMessageTypeIds: [NSNumber]?, campaignId: NSNumber?, templateId: NSNumber?) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
     
-    func getInAppMessages(_ count: NSNumber) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+    func getInAppMessages(_ count: NSNumber) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
     
-    func track(inAppOpen inAppMessageContext: IterableSDK.InAppMessageContext) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+    func track(inAppOpen inAppMessageContext: InAppMessageContext) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
     
-    func track(inAppClick inAppMessageContext: IterableSDK.InAppMessageContext, clickedUrl: String) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+    func track(inAppClick inAppMessageContext: InAppMessageContext, clickedUrl: String) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
     
-    func track(inAppClose inAppMessageContext: IterableSDK.InAppMessageContext, source: IterableSDK.InAppCloseSource?, clickedUrl: String?) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+    func track(inAppClose inAppMessageContext: InAppMessageContext, source: InAppCloseSource?, clickedUrl: String?) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
     
-    func track(inAppDelivery inAppMessageContext: IterableSDK.InAppMessageContext) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+    func track(inAppDelivery inAppMessageContext: InAppMessageContext) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
     
-    func inAppConsume(messageId: String) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+    func inAppConsume(messageId: String) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
     
-    func inAppConsume(inAppMessageContext: IterableSDK.InAppMessageContext, source: IterableSDK.InAppDeleteSource?) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+    func inAppConsume(inAppMessageContext: InAppMessageContext, source: InAppDeleteSource?) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
     
-    func track(inboxSession: IterableSDK.IterableInboxSession) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+    func track(inboxSession: IterableInboxSession) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
     
-    func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> IterableSDK.Pending<IterableSDK.SendRequestValue, IterableSDK.SendRequestError> {
+    func disableDevice(forAllUsers allUsers: Bool, hexToken: String) -> Pending<SendRequestValue, SendRequestError> {
         Pending()
     }
     
-    func getRemoteConfiguration() -> IterableSDK.Pending<IterableSDK.RemoteConfiguration, IterableSDK.SendRequestError> {
+    func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError> {
         Pending()
     }
     
