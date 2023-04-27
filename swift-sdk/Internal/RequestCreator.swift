@@ -474,7 +474,7 @@ struct RequestCreator {
         // TODO: find/create proper key for the value of the embedded message ID
         args.setValue(for: JsonKey.messageId, value: message.metadata.id)
         
-        return .success(.get(createGetRequest(forPath: Const.Path.embeddedMessageReceived, withArgs: args as! [String: String])))
+        return .success(.post(createPostRequest(path: Const.Path.embeddedMessageReceived, body: args as! [String: String])))
     }
     
     // MARK: - Misc Request Calls
