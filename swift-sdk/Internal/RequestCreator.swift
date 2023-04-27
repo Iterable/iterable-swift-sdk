@@ -463,7 +463,7 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: Const.Path.embeddedMessageReceived, body: body as! [String: String])))
     }
     
-    func createEmbeddedMessageClickRequest() -> Result<IterableRequest, IterableError> {
+    func createEmbeddedMessageClickRequest(_ message: IterableEmbeddedMessage) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
             ITBError(Self.authMissingMessage)
             return .failure(IterableError.general(description: Self.authMissingMessage))
