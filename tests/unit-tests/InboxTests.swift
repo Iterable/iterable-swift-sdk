@@ -162,12 +162,12 @@ class InboxTests: XCTestCase {
         let mockInAppFetcher = MockInAppFetcher()
         let config = IterableConfig()
         config.logDelegate = AllLogDelegate()
-        
+
         let internalAPI = InternalIterableAPI.initializeForTesting(
             config: config,
             inAppFetcher: mockInAppFetcher
         )
-        
+
         let payload = """
         {"inAppMessages":
         [
@@ -190,19 +190,21 @@ class InboxTests: XCTestCase {
         ]
         }
         """.toJsonDict()
-        
+
         mockInAppFetcher.mockInAppPayloadFromServer(internalApi: internalAPI, payload).onSuccess { _ in
             let messages = internalAPI.inAppManager.getInboxMessages()
             XCTAssertEqual(messages.count, 2)
-            
-            internalAPI.inAppManager.remove(message: messages[0], location: .inbox, source: .inboxSwipe)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+
+            let messageToRemove = messages[0]
+            internalAPI.inAppManager.remove(messageToRemove, location: .inbox, source: .inboxSwipe) { success in
+                XCTAssertTrue(success)
                 let newMessages = internalAPI.inAppManager.getInboxMessages()
                 XCTAssertEqual(newMessages.count, 1)
+                XCTAssertFalse(newMessages.contains(messageToRemove))
                 expectation1.fulfill()
             }
         }
-        
+
         wait(for: [expectation1], timeout: testExpectationTimeout)
     }
     
