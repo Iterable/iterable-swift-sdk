@@ -8,8 +8,8 @@ import Foundation
 /// This struct must be `Codable`.
 struct IterableAPICallRequest {
     let apiKey: String
-    let endPoint: String
-    let auth: Auth
+    let endpoint: String
+    let authToken: String?
     let deviceMetadata: DeviceMetadata
     let iterableRequest: IterableRequest
     
@@ -21,13 +21,13 @@ struct IterableAPICallRequest {
     func convertToURLRequest(sentAt: Date, processorType: ProcessorType = .online) -> URLRequest? {
         switch iterableRequest {
         case let .get(getRequest):
-            return IterableRequestUtil.createGetRequest(forApiEndPoint: endPoint,
+            return IterableRequestUtil.createGetRequest(forApiEndPoint: endpoint,
                                                         path: getRequest.path,
                                                         headers: createIterableHeaders(sentAt: sentAt,
                                                                                        processorType: processorType),
                                                         args: getRequest.args)
         case let .post(postRequest):
-            return IterableRequestUtil.createPostRequest(forApiEndPoint: endPoint,
+            return IterableRequestUtil.createPostRequest(forApiEndPoint: endpoint,
                                                          path: postRequest.path,
                                                          headers: createIterableHeaders(sentAt: sentAt,
                                                                                         processorType: processorType),
@@ -52,8 +52,8 @@ struct IterableAPICallRequest {
     
     private func addingBodyField(key: AnyHashable, value: Any) -> IterableAPICallRequest {
         IterableAPICallRequest(apiKey: apiKey,
-                               endPoint: endPoint,
-                               auth: auth,
+                               endpoint: endpoint,
+                               authToken: authToken,
                                deviceMetadata: deviceMetadata,
                                iterableRequest: iterableRequest.addingBodyField(key: key, value: value))
     }
@@ -67,7 +67,7 @@ struct IterableAPICallRequest {
                        JsonKey.Header.requestProcessor: Self.name(for: processorType)
         ]
         
-        if let authToken = auth.authToken {
+        if let authToken = authToken {
             headers[JsonKey.Header.authorization] = "Bearer \(authToken)"
         }
         
