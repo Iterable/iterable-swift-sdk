@@ -257,6 +257,17 @@ class RequestHandler: RequestHandlerProtocol {
         }
     }
     
+    @discardableResult
+    func track(embeddedMessageReceived message: IterableEmbeddedMessage,
+               onSuccess: OnSuccessHandler?,
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
+        sendUsingRequestProcessor { processor in
+            processor.track(embeddedMessageReceived: message,
+                            onSuccess: onSuccess,
+                            onFailure: onFailure)
+        }
+    }
+    
     func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError> {
         onlineProcessor.getRemoteConfiguration()
     }

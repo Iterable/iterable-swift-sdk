@@ -436,8 +436,6 @@ struct RequestCreator {
             args[JsonKey.Embedded.packageName] = packageName
         }
         
-        setCurrentUser(inDict: &args)
-        
         switch auth.emailOrUserId {
         case let .email(email):
             args.setValue(for: JsonKey.userKey, value: email)
@@ -448,6 +446,35 @@ struct RequestCreator {
         }
         
         return .success(.get(createGetRequest(forPath: Const.Path.embeddedMessages, withArgs: args as! [String: String])))
+    }
+    
+    func createEmbeddedMessageReceivedRequest(_ message: IterableEmbeddedMessage) -> Result<IterableRequest, IterableError> {
+        if case .none = auth.emailOrUserId {
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
+        }
+        
+        var args: [AnyHashable: Any] = [JsonKey.platform: JsonValue.iOS,
+                                        JsonKey.systemVersion: UIDevice.current.systemVersion,
+                                        JsonKey.Embedded.sdkVersion: IterableAPI.sdkVersion]
+        
+        if let packageName = Bundle.main.appPackageName {
+            args[JsonKey.Embedded.packageName] = packageName
+        }
+        
+        switch auth.emailOrUserId {
+        case let .email(email):
+            args.setValue(for: JsonKey.userKey, value: email)
+        case let .userId(userId):
+            args.setValue(for: JsonKey.userKey, value: userId)
+        case .none:
+            ITBInfo("Current user is unavailable")
+        }
+        
+        // TODO: find/create proper key for the value of the embedded message ID
+        args.setValue(for: JsonKey.messageId, value: message.metadata.id)
+        
+        return .success(.post(createPostRequest(path: Const.Path.embeddedMessageReceived, body: args as! [String: String])))
     }
     
     // MARK: - Misc Request Calls

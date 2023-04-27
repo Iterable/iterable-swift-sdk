@@ -35,7 +35,7 @@ final class EmbeddedMessagingProcessorTests: XCTestCase {
         let processor = EmbeddedMessagingProcessor(currentMessages: currentMessages,
                                                    fetchedMessages: fetchedMessages)
         
-        XCTAssertEqual(processor.newlyDeliveredMessageIds(), [4])
+        XCTAssertEqual(processor.newlyDeliveredMessages().map { $0.metadata.id }, [4])
     }
     
 //    func testPlacementIdsToNotify() {
