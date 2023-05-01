@@ -51,4 +51,6 @@ protocol ApiClientProtocol: AnyObject {
     func track(embeddedMessageReceived message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError>
     
     func track(embeddedMessageClick message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError>
+    
+    func track(embeddedMessageDismiss message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError>
 }

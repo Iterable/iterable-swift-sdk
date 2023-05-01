@@ -233,4 +233,9 @@ extension ApiClient: ApiClientProtocol {
         let result = createRequestCreator().flatMap { $0.createEmbeddedMessageClickRequest(message) }
         return send(iterableRequestResult: result)
     }
+    
+    func track(embeddedMessageDismiss message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createEmbeddedMessageDismissRequest(message) }
+        return send(iterableRequestResult: result)
+    }
 }
