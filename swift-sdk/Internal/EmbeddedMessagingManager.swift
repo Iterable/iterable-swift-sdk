@@ -42,6 +42,12 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
         retrieveEmbeddedMessages()
     }
     
+    public func track(click message: IterableEmbeddedMessage) {
+//        apiClient.track(embeddedMessageClick: message)
+        IterableAPI.track(event: "embedded-messaging", dataFields: ["name": "click",
+                                                                    "messageId": message.metadata.id])
+    }
+    
     func start() {
         ITBInfo()
         
