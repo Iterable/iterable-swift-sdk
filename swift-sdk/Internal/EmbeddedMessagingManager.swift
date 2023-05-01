@@ -123,7 +123,7 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
                                                                fetchedMessages: fetchedMessages)
                     
                     self.setMessages(processor)
-                    self.trackDeliveries(processor)
+                    self.trackNewlyRetrieved(processor)
                     self.notifyUpdateDelegates(processor)
                     self.lastMessagesFetchDate = self.dateProvider.currentDate
                 },
@@ -138,11 +138,11 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
         messages = processor.processedMessagesList()
     }
     
-    private func trackDeliveries(_ processor: EmbeddedMessagingProcessor) {
-        for message in processor.newlyDeliveredMessages() {
-//            apiClient.track(embeddedMessagingDelivery: message)
+    private func trackNewlyRetrieved(_ processor: EmbeddedMessagingProcessor) {
+        for message in processor.newlyRetrievedMessages() {
+//            apiClient.track(embeddedMessagingReceived: message)
             IterableAPI.track(event: "embedded-messaging",
-                              dataFields: ["name": "delivery",
+                              dataFields: ["name": "received",
                                            "messageId": message.metadata.id]
             )
         }

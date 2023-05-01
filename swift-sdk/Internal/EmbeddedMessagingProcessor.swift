@@ -16,7 +16,7 @@ struct EmbeddedMessagingProcessor {
         return fetchedMessages
     }
 
-    func newlyDeliveredMessages() -> [IterableEmbeddedMessage] {
+    func newlyRetrievedMessages() -> [IterableEmbeddedMessage] {
         return getNewMessages()
     }
     
