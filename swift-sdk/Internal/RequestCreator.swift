@@ -55,7 +55,7 @@ struct RequestCreator {
             JsonKey.dataFields: dataFields,
         ]
         
-        var body = [AnyHashable: Any]()
+        var body: [AnyHashable: Any] = [:]
         
         body[JsonKey.device] = deviceDictionary
         
@@ -74,7 +74,7 @@ struct RequestCreator {
             return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
-        var body = [AnyHashable: Any]()
+        var body: [AnyHashable: Any] = [:]
         
         setCurrentUser(inDict: &body)
         
@@ -117,27 +117,30 @@ struct RequestCreator {
             return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
-        var apiUserDict = [AnyHashable: Any]()
+        var apiUserDict: [AnyHashable: Any] = [:]
         
         setCurrentUser(inDict: &apiUserDict)
         
         let itemsToSerialize = items.map { $0.toDictionary() }
         
-        var body: [String: Any] = [JsonKey.Commerce.user: apiUserDict,
-                                   JsonKey.Commerce.items: itemsToSerialize,
-                                   JsonKey.Commerce.total: total]
+        var body: [String: Any] = [:]
+        
+        body[JsonKey.Commerce.user] = apiUserDict
+        body[JsonKey.Commerce.items] = itemsToSerialize
+        body[JsonKey.Commerce.total] = total
         
         if let dataFields = dataFields {
             body[JsonKey.dataFields] = dataFields
         }
-
+        
         if let campaignId = campaignId {
             body[JsonKey.campaignId] = campaignId
         }
+        
         if let templateId = templateId {
             body[JsonKey.templateId] = templateId
         }
-
+        
         return .success(.post(createPostRequest(path: Const.Path.trackPurchase, body: body)))
     }
     
@@ -147,27 +150,26 @@ struct RequestCreator {
             return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
-        var body = [AnyHashable: Any]()
+        var body: [AnyHashable: Any] = [:]
         
         setCurrentUser(inDict: &body)
-        
-        body[JsonKey.campaignId] = campaignId
         
         if let templateId = templateId {
             body[JsonKey.templateId] = templateId
         }
         
         body.setValue(for: JsonKey.messageId, value: messageId)
+        body.setValue(for: JsonKey.campaignId, value: campaignId.description)
         
-        var compositeDataFields = [AnyHashable: Any]()
+        var compositeDataFields: [AnyHashable: Any] = [:]
         
         if let dataFields = dataFields {
             compositeDataFields = dataFields
         }
         
-        compositeDataFields[JsonKey.appAlreadyRunning] = appAlreadyRunning
+        compositeDataFields.setValue(for: JsonKey.appAlreadyRunning, value: appAlreadyRunning)
         
-        body[JsonKey.dataFields] = compositeDataFields
+        body.setValue(for: JsonKey.dataFields, value: compositeDataFields)
         
         return .success(.post(createPostRequest(path: Const.Path.trackPushOpen, body: body)))
     }
@@ -178,14 +180,14 @@ struct RequestCreator {
             return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
-        var body = [AnyHashable: Any]()
+        var body: [AnyHashable: Any] = [:]
         
         setCurrentUser(inDict: &body)
         
         body.setValue(for: JsonKey.eventName, value: eventName)
         
         if let dataFields = dataFields {
-            body[JsonKey.dataFields] = dataFields
+            body.setValue(for: JsonKey.dataFields, value: dataFields)
         }
         
         return .success(.post(createPostRequest(path: Const.Path.trackEvent, body: body)))
@@ -202,7 +204,7 @@ struct RequestCreator {
             return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
-        var body = [AnyHashable: Any]()
+        var body: [AnyHashable: Any] = [:]
         
         setCurrentUser(inDict: &body)
         
@@ -239,13 +241,15 @@ struct RequestCreator {
             return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
-        var args: [AnyHashable: Any] = [JsonKey.InApp.count: count.description,
-                                        JsonKey.platform: JsonValue.iOS,
-                                        JsonKey.systemVersion: UIDevice.current.systemVersion,
-                                        JsonKey.InApp.sdkVersion: IterableAPI.sdkVersion]
+        var args: [AnyHashable: Any] = [:]
+        
+        args.setValue(for: JsonKey.InApp.count, value: count.description)
+        args.setValue(for: JsonKey.platform, value: JsonValue.iOS)
+        args.setValue(for: JsonKey.systemVersion, value: UIDevice.current.systemVersion)
+        args.setValue(for: JsonKey.InApp.sdkVersion, value: IterableAPI.sdkVersion)
         
         if let packageName = Bundle.main.appPackageName {
-            args[JsonKey.InApp.packageName] = packageName
+            args.setValue(for: JsonKey.InApp.packageName, value: packageName)
         }
         
         setCurrentUser(inDict: &args)
@@ -259,7 +263,7 @@ struct RequestCreator {
             return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
-        var body = [AnyHashable: Any]()
+        var body: [AnyHashable: Any] = [:]
         
         setCurrentUser(inDict: &body)
         
@@ -280,7 +284,7 @@ struct RequestCreator {
             return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
-        var body = [AnyHashable: Any]()
+        var body: [AnyHashable: Any] = [:]
         
         setCurrentUser(inDict: &body)
         
@@ -302,7 +306,7 @@ struct RequestCreator {
             return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
-        var body = [AnyHashable: Any]()
+        var body: [AnyHashable: Any] = [:]
         
         setCurrentUser(inDict: &body)
         
@@ -331,7 +335,7 @@ struct RequestCreator {
             return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
-        var body = [AnyHashable: Any]()
+        var body: [AnyHashable: Any] = [:]
         
         setCurrentUser(inDict: &body)
         
@@ -348,7 +352,7 @@ struct RequestCreator {
             return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
-        var body = [AnyHashable: Any]()
+        var body: [AnyHashable: Any] = [:]
         
         setCurrentUser(inDict: &body)
         
@@ -363,7 +367,7 @@ struct RequestCreator {
             return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
-        var body = [AnyHashable: Any]()
+        var body: [AnyHashable: Any] = [:]
         
         setCurrentUser(inDict: &body)
         
@@ -400,7 +404,7 @@ struct RequestCreator {
             return .failure(IterableError.general(description: "expecting session end time"))
         }
         
-        var body = [AnyHashable: Any]()
+        var body: [AnyHashable: Any] = [:]
         
         setCurrentUser(inDict: &body)
         
@@ -419,7 +423,7 @@ struct RequestCreator {
     }
     
     func createDisableDeviceRequest(forAllUsers allUsers: Bool, hexToken: String) -> Result<IterableRequest, IterableError> {
-        var body = [AnyHashable: Any]()
+        var body: [AnyHashable: Any] = [:]
         
         body.setValue(for: JsonKey.token, value: hexToken)
         
@@ -447,14 +451,14 @@ struct RequestCreator {
     private static let authMissingMessage = "Both email and userId are nil"
     
     private func createPostRequest(path: String, body: [AnyHashable: Any]? = nil) -> PostRequest {
-        PostRequest(path: path,
-                    args: nil,
-                    body: body)
+        return PostRequest(path: path,
+                           args: nil,
+                           body: body)
     }
     
     private func createGetRequest(forPath path: String, withArgs args: [String: String]) -> GetRequest {
-        GetRequest(path: path,
-                   args: args)
+        return GetRequest(path: path,
+                          args: args)
     }
     
     private static func pushServicePlatformToString(_ pushServicePlatform: PushServicePlatform, apnsType: APNSType) -> String {
