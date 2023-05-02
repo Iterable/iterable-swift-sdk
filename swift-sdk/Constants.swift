@@ -41,6 +41,7 @@ enum Const {
         static let getRemoteConfiguration = "mobile/getRemoteConfiguration"
         static let getEmbeddedMessages = "embedded-messaging/messages"
         static let embeddedMessageReceived = "embedded-messaging/events/received"
+        static let embeddedMessageClick = "embedded-messaging/events/click"
     }
     
     public enum UserDefault {
