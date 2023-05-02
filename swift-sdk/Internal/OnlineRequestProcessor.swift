@@ -260,7 +260,7 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
         sendRequest(requestProvider: { apiClient.track(embeddedMessageDismiss: message) },
                     successHandler: onSuccess,
                     failureHandler: onFailure,
-                    requestIdentifier: "trackEmbeddedMessageClick")
+                    requestIdentifier: "trackEmbeddedMessageDismiss")
     }
     
     func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError> {
