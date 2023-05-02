@@ -43,6 +43,7 @@ enum Const {
         static let embeddedMessageReceived = "embedded-messaging/events/received"
         static let embeddedMessageClick = "embedded-messaging/events/click"
         static let embeddedMessageDismiss = "embedded-messaging/events/dismiss"
+        static let embeddedMessageImpression = "embedded-messaging/events/impression"
     }
     
     public enum UserDefault {

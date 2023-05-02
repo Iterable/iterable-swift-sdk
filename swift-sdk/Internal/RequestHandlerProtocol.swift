@@ -132,6 +132,11 @@ protocol RequestHandlerProtocol: AnyObject {
     func track(embeddedMessageDismiss message: IterableEmbeddedMessage,
                onSuccess: OnSuccessHandler?,
                onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
+    
+    @discardableResult
+    func track(embeddedMessageImpression message: IterableEmbeddedMessage,
+               onSuccess: OnSuccessHandler?,
+               onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
 
     func handleLogout() throws
     
