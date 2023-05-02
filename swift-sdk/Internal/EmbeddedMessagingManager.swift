@@ -48,6 +48,10 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
                                                                     "messageId": message.metadata.id])
     }
     
+//    public func track(dismiss message: IterableEmbeddedMessage) {
+//        apiClient.track(embeddedMessageDismiss: message)
+//    }
+    
     func start() {
         ITBInfo()
         
