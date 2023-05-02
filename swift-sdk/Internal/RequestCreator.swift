@@ -505,6 +505,27 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: Const.Path.embeddedMessageDismiss, body: body as! [String: String])))
     }
     
+    func createEmbeddedMessageImpressionRequest(_ message: IterableEmbeddedMessage) -> Result<IterableRequest, IterableError> {
+        if case .none = auth.emailOrUserId {
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
+        }
+        
+        var body: [AnyHashable: Any] = [JsonKey.platform: JsonValue.iOS,
+                                        JsonKey.systemVersion: UIDevice.current.systemVersion,
+                                        JsonKey.Embedded.sdkVersion: IterableAPI.sdkVersion]
+        
+        if let packageName = Bundle.main.appPackageName {
+            body[JsonKey.Embedded.packageName] = packageName
+        }
+        
+        addUserKey(intoDict: &body)
+        
+        // TODO: find/create proper key for the value of the embedded message ID
+        
+        return .success(.post(createPostRequest(path: Const.Path.embeddedMessageImpression, body: body as! [String: String])))
+    }
+    
     // MARK: - Misc Request Calls
     
     func createDisableDeviceRequest(forAllUsers allUsers: Bool, hexToken: String) -> Result<IterableRequest, IterableError> {

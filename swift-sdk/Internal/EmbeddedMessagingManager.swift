@@ -54,6 +54,12 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
                                                                     "messageId": message.metadata.id])
     }
     
+    public func track(impression message: IterableEmbeddedMessage) {
+//        apiClient.track(embeddedMessageImpression: message)
+        IterableAPI.track(event: "embedded-messaging", dataFields: ["name": "impression",
+                                                                    "messageId": message.metadata.id])
+    }
+    
     func start() {
         ITBInfo()
         
