@@ -458,7 +458,7 @@ struct RequestCreator {
         addUserKey(intoDict: &body)
         
         // TODO: find/create proper key for the value of the embedded message ID
-        body.setValue(for: JsonKey.messageId, value: message.metadata.id)
+        body.setValue(for: JsonKey.messageId, value: message.metadata.messageId)
         
         return .success(.post(createPostRequest(path: Const.Path.embeddedMessageReceived, body: body as! [String: String])))
     }
