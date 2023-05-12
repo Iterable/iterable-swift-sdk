@@ -78,6 +78,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.dependencyContainer.createAuthManager(config: self.config)
     }()
     
+    var apiEndPoint: String {
+        get {
+            _apiEndPoint
+        }
+    }
+    
     // MARK: - SDK Functions
     
     @discardableResult func handleUniversalLink(_ url: URL) -> Bool {
@@ -400,7 +406,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     // MARK: - Private/Internal
     
     private var config: IterableConfig
-    private var apiEndPoint: String
+    private var _apiEndPoint: String
     
     /// Following are needed for handling pending notification and deep link.
     static var pendingNotificationResponse: NotificationResponseProtocol?
@@ -555,7 +561,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
-    private static func getApiEndpoint(apiEndPointOverride: String?, config: IterableConfig) -> String {
+    private static func setApiEndpoint(apiEndPointOverride: String?, config: IterableConfig) -> String {
         let apiEndPoint = config.dataRegion
         return apiEndPointOverride ?? apiEndPoint
     }
@@ -570,7 +576,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.apiKey = apiKey
         self.launchOptions = launchOptions
         self.config = config
-        apiEndPoint = InternalIterableAPI.getApiEndpoint(apiEndPointOverride: apiEndPointOverride, config: config)
+        _apiEndPoint = InternalIterableAPI.setApiEndpoint(apiEndPointOverride: apiEndPointOverride, config: config)
         self.dependencyContainer = dependencyContainer
         dateProvider = dependencyContainer.dateProvider
         networkSession = dependencyContainer.networkSession
