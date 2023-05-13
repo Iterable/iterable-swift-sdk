@@ -46,7 +46,7 @@ class IterableAPITests: XCTestCase {
 
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config)
 
-        XCTAssertEqual(internalAPI.apiEndPoint, IterableAPITests.apiEndPointUS)
+        XCTAssertEqual(internalAPI.apiEndPointForTest, IterableAPITests.apiEndPointUS)
     }
     
     func testInitializeWithEUDataRegion() {
@@ -59,7 +59,7 @@ class IterableAPITests: XCTestCase {
 
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config)
 
-        XCTAssertEqual(internalAPI.apiEndPoint, IterableAPITests.apiEndPointEU)
+        XCTAssertEqual(internalAPI.apiEndPointForTest, IterableAPITests.apiEndPointEU)
     }
     
     func testInitializeCheckEndpoint() {

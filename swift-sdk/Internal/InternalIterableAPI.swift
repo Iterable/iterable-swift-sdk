@@ -78,9 +78,9 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.dependencyContainer.createAuthManager(config: self.config)
     }()
     
-    var apiEndPoint: String {
+    var apiEndPointForTest: String {
         get {
-            _apiEndPoint
+            apiEndPoint
         }
     }
     
@@ -406,7 +406,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     // MARK: - Private/Internal
     
     private var config: IterableConfig
-    private var _apiEndPoint: String
+    private var apiEndPoint: String
     
     /// Following are needed for handling pending notification and deep link.
     static var pendingNotificationResponse: NotificationResponseProtocol?
@@ -576,7 +576,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.apiKey = apiKey
         self.launchOptions = launchOptions
         self.config = config
-        _apiEndPoint = InternalIterableAPI.setApiEndpoint(apiEndPointOverride: apiEndPointOverride, config: config)
+        apiEndPoint = InternalIterableAPI.setApiEndpoint(apiEndPointOverride: apiEndPointOverride, config: config)
+        print("api endpoint: " + apiEndPoint)
         self.dependencyContainer = dependencyContainer
         dateProvider = dependencyContainer.dateProvider
         networkSession = dependencyContainer.networkSession

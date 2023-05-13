@@ -8,7 +8,7 @@ import IterableSDK
 class IterableHelper {
     // Please replace with your API key
     #error("Please add your API Key here")
-    private static let apiKey = ""
+    private static let apiKey = "a8b1a3c7b5ec48119aa976f7f5a49603"
     
     static func initialize(launchOptions: [UIApplication.LaunchOptionsKey : Any]?) {
         let config = IterableConfig()
@@ -16,6 +16,8 @@ class IterableHelper {
         // otherwise they will be deallocated
         config.urlDelegate = urlDelegate
         config.customActionDelegate = customActionDelegate
+        config.dataRegion = IterableDataRegion.EU
+        print("HIT!!!")
         IterableAPI.initialize(apiKey: apiKey,
                                launchOptions: launchOptions,
                                config: config)
