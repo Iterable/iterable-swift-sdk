@@ -11,6 +11,8 @@ class IterableAPITests: XCTestCase {
     private static let apiKey = "zeeApiKey"
     private static let email = "user@example.com"
     private static let userId = "testUserId"
+    private static let apiEndPointUS = "https://api.iterable.com"
+    private static let apiEndPointEU = "https://api.eu.iterable.com"
     
     override func setUp() {
         super.setUp()
@@ -32,6 +34,32 @@ class IterableAPITests: XCTestCase {
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config)
         
         XCTAssertEqual(internalAPI.apiKey, IterableAPITests.apiKey)
+    }
+    
+    func testInitializeWithDefaultDataRegion() {
+        let prodIntegrationName = "the-best-app-ever"
+
+        let config = IterableConfig()
+        config.pushIntegrationName = prodIntegrationName
+        config.inAppDisplayInterval = 1.0
+        config.dataRegion = IterableDataRegion.US
+
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config)
+
+        XCTAssertEqual(internalAPI.apiEndPointForTest, IterableAPITests.apiEndPointUS)
+    }
+    
+    func testInitializeWithEUDataRegion() {
+        let prodIntegrationName = "the-best-app-ever"
+
+        let config = IterableConfig()
+        config.pushIntegrationName = prodIntegrationName
+        config.inAppDisplayInterval = 1.0
+        config.dataRegion = IterableDataRegion.EU
+
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config)
+
+        XCTAssertEqual(internalAPI.apiEndPointForTest, IterableAPITests.apiEndPointEU)
     }
     
     func testInitializeCheckEndpoint() {
