@@ -577,7 +577,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.launchOptions = launchOptions
         self.config = config
         apiEndPoint = InternalIterableAPI.setApiEndpoint(apiEndPointOverride: apiEndPointOverride, config: config)
-        print("api endpoint: " + apiEndPoint)
         self.dependencyContainer = dependencyContainer
         dateProvider = dependencyContainer.dateProvider
         networkSession = dependencyContainer.networkSession
