@@ -37,19 +37,19 @@ struct EmbeddedMessagingProcessor {
     private let fetchedMessages: [IterableEmbeddedMessage]
     
     private func getNewMessages() -> [IterableEmbeddedMessage] {
-        let currentMessageIds = currentMessages.map { $0.metadata.messageId }
+        let currentMessageIds = currentMessages.map { $0.metadata.id }
         
         return fetchedMessages
             .filter { message in
-                !currentMessageIds.contains(where: { $0 == message.metadata.messageId })
+                !currentMessageIds.contains(where: { $0 == message.metadata.id })
             }
     }
     
     private func getCurrentMessageIds() -> [Int] {
-        return currentMessages.map { $0.metadata.messageId }
+        return currentMessages.map { $0.metadata.id }
     }
     
     private func getFetchedMessageIds() -> [Int] {
-        return fetchedMessages.map { $0.metadata.messageId }
+        return fetchedMessages.map { $0.metadata.id }
     }
 }
