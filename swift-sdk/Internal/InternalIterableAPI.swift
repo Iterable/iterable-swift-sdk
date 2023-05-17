@@ -185,11 +185,11 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         requestHandler.register(registerTokenInfo: registerTokenInfo,
                                 notificationStateProvider: notificationStateProvider,
                                 onSuccess: { (_ data: [AnyHashable: Any]?) in
-                                                _resultCallback?(true)
+                                                self._resultCallback?(true)
                                                 onSuccess?(data)
                                 },
                                 onFailure: { (_ reason: String?, _ data: Data?) in
-                                                _resultCallback?(false)
+                                                self._resultCallback?(false)
                                                 onFailure?(reason, data)
                                 }
         )
