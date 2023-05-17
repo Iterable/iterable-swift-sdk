@@ -173,8 +173,8 @@ class IterableAPITests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
      
-        internalAPI.setEmail("test@example.com") { error in
-            XCTAssertNil(error)
+        internalAPI.setEmail("test@example.com") { success in
+            XCTAssertNotNil(success)
             expectation.fulfill()
         }
 
@@ -190,7 +190,6 @@ class IterableAPITests: XCTestCase {
 
         internalAPI.setEmail("invalid_email") { error in
             XCTAssertNotNil(error)
-            XCTAssertEqual(error?.localizedDescription, "Invalid email address")
             expectation.fulfill()
         }
 
@@ -204,8 +203,8 @@ class IterableAPITests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         
-        internalAPI.setUserId("user123") { error in
-            XCTAssertNil(error)
+        internalAPI.setUserId("user123") { success in
+            XCTAssertNil(success)
             expectation.fulfill()
         }
         

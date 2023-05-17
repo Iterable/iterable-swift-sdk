@@ -381,6 +381,7 @@ public enum IterableCustomActionName: String, CaseIterable {
 
 public typealias ITEActionBlock = (String?) -> Void
 public typealias ITBURLCallback = (URL?) -> Void
+public typealias OnCompletionHandler = (Bool) -> Void
 public typealias OnSuccessHandler = (_ data: [AnyHashable: Any]?) -> Void
 public typealias OnFailureHandler = (_ reason: String?, _ data: Data?) -> Void
 public typealias UrlHandler = (URL) -> Bool
