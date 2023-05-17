@@ -27,8 +27,8 @@ class TaskProcessorTests: XCTestCase {
         }
         
         let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
-                                                    endPoint: Endpoint.api,
-                                                    auth: auth,
+                                                    endpoint: Endpoint.api,
+                                                    authToken: auth.authToken,
                                                     deviceMetadata: internalAPI.deviceMetadata,
                                                     iterableRequest: trackEventRequest)
         let data = try JSONEncoder().encode(apiCallRequest)
@@ -230,8 +230,8 @@ class TaskProcessorTests: XCTestCase {
         }
         
         let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
-                                                    endPoint: Endpoint.api,
-                                                    auth: auth,
+                                                    endpoint: Endpoint.api,
+                                                    authToken: auth.authToken,
                                                     deviceMetadata: deviceMetadata,
                                                     iterableRequest: trackEventRequest)
         let data = try JSONEncoder().encode(apiCallRequest)

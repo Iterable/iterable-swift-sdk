@@ -71,7 +71,7 @@ class InboxState: InboxStateProtocol {
                              inboxSessionId: inboxSessionId)
     }
 
-    init(internalAPIProvider: @escaping @autoclosure () -> InternalIterableAPI? = IterableAPI.internalImplementation) {
+    init(internalAPIProvider: @escaping @autoclosure () -> InternalIterableAPI? = IterableAPI.implementation) {
         self.internalAPIProvider = internalAPIProvider
     }
 

@@ -18,22 +18,22 @@ class NotificationMetadataTests: XCTestCase {
             
             // no "templateId"
             ["itbl": ["campaignId": 0,
-                      "isGhostPush": false]],
+                      "isGhostPush": false] as [String : Any]],
             
             // "campaignId" not a number
             ["itbl": ["campaignId": "hello campaignId :)",
                       "templateId": 0,
-                      "isGhostPush": false]],
+                      "isGhostPush": false] as [String : Any]],
             
             // "templateId" not a number
             ["itbl": ["campaignId": 0,
                       "templateId": "hello templateId :)",
-                      "isGhostPush": false]],
+                      "isGhostPush": false] as [String : Any]],
             
             // "isGhostPush" not a number
             ["itbl": ["campaignId": 0,
                       "templateId": 0,
-                      "isGhostPush": "hahahhahhahaha"]],
+                      "isGhostPush": "hahahhahhahaha"] as [String : Any]],
         ]
         
         for payload in invalidPayloads {
@@ -48,7 +48,7 @@ class NotificationMetadataTests: XCTestCase {
         let payload = ["itbl": ["campaignId": campaignId,
                                 "templateId": templateId,
                                 "isGhostPush": true,
-                                "messageId": "39580285"]]
+                                "messageId": "39580285"] as [String : Any]]
         
         let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: payload)!
         
@@ -68,7 +68,7 @@ class NotificationMetadataTests: XCTestCase {
         let payload = ["itbl": ["campaignId": campaignId,
                                 "templateId": templateId,
                                 "isGhostPush": false,
-                                "messageId": "94589291"]]
+                                "messageId": "94589291"] as [String : Any]]
         
         let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: payload)!
         
@@ -88,7 +88,7 @@ class NotificationMetadataTests: XCTestCase {
         let payload = ["itbl": ["campaignId": campaignId,
                                 "templateId": templateId,
                                 "isGhostPush": false,
-                                "messageId": "53082983"]]
+                                "messageId": "53082983"] as [String : Any]]
         
         let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: payload)!
         
@@ -107,7 +107,7 @@ class NotificationMetadataTests: XCTestCase {
         
         let payload = ["itbl": ["templateId": templateId,
                                 "isGhostPush": false,
-                                "messageId": "983479527"]]
+                                "messageId": "983479527"] as [String : Any]]
         
         let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: payload)!
         
@@ -127,7 +127,7 @@ class NotificationMetadataTests: XCTestCase {
         let payload = ["itbl": ["campaignId": campaignId,
                                 "templateId": templateId,
                                 "isGhostPush": false,
-                                "messageId": "2938706098"]]
+                                "messageId": "2938706098"] as [String : Any]]
         
         let metadata = IterablePushNotificationMetadata.metadata(fromLaunchOptions: payload)!
         
@@ -144,7 +144,7 @@ class NotificationMetadataTests: XCTestCase {
         let ghostPush: NSDictionary = ["itbl": ["campaignId": 666,
                                                 "templateId": 777,
                                                 "isGhostPush": true,
-                                                "messageId": "8794582"]]
+                                                "messageId": "8794582"] as [String : Any]]
         
         let jsonGhostPush = "{\"itbl\":{\"campaignId\":666,\"templateId\":777,\"isGhostPush\":true,\"messageId\":\"8794582\"}}"
         
@@ -164,7 +164,7 @@ class NotificationMetadataTests: XCTestCase {
         let realPush: NSDictionary = ["itbl": ["campaignId": 666,
                                                "templateId": 777,
                                                "isGhostPush": false,
-                                               "messageId": "8794582"]]
+                                               "messageId": "8794582"] as [String : Any]]
         
         let jsonRealPush = "{\"itbl\":{\"campaignId\":666,\"templateId\":777,\"isGhostPush\":false,\"messageId\":\"8794582\"}}"
         
