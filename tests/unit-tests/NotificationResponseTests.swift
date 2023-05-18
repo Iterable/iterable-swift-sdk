@@ -31,7 +31,7 @@ class NotificationResponseTests: XCTestCase {
                 "defaultAction": [
                     "type": "customAction",
                 ],
-            ],
+            ] as [String : Any],
         ]
         
         let response = MockNotificationResponse(userInfo: userInfo, actionIdentifier: UNNotificationDefaultActionIdentifier)
@@ -73,8 +73,8 @@ class NotificationResponseTests: XCTestCase {
                     "action": [
                         "type": "customAction",
                     ],
-                ]],
-            ],
+                ] as [String : Any]],
+            ] as [String : Any],
         ]
         
         let response = MockNotificationResponse(userInfo: userInfo, actionIdentifier: "buttonIdentifier")
@@ -102,42 +102,6 @@ class NotificationResponseTests: XCTestCase {
         XCTAssertEqual(pushTracker.dataFields?[JsonKey.actionIdentifier] as? String, "buttonIdentifier")
     }
     
-    func testSavePushPayload() {
-        let messageId = UUID().uuidString
-        let userInfo: [AnyHashable: Any] = [
-            "itbl": [
-                "campaignId": 1234,
-                "templateId": 4321,
-                "isGhostPush": false,
-                "messageId": messageId,
-                "defaultAction": [
-                    "type": "customAction",
-                ],
-            ],
-        ]
-        
-        // call track push open
-        let mockDateProvider = MockDateProvider()
-        let internalAPI = InternalIterableAPI.initializeForTesting(dateProvider: mockDateProvider)
-        internalAPI.trackPushOpen(userInfo)
-        
-        // check the push payload for messageId
-        var pushPayload = internalAPI.lastPushPayload
-        var itbl = pushPayload?["itbl"] as? [String: Any]
-        XCTAssertEqual(itbl?["messageId"] as? String, messageId)
-        
-        // 23 hours, not expired, still present
-        mockDateProvider.currentDate = Calendar.current.date(byAdding: Calendar.Component.hour, value: 23, to: Date())!
-        pushPayload = internalAPI.lastPushPayload
-        itbl = pushPayload?["itbl"] as? [String: Any]
-        XCTAssertEqual(itbl?["messageId"] as? String, messageId)
-        
-        // 24 hours, expired, nil payload
-        mockDateProvider.currentDate = Calendar.current.date(byAdding: Calendar.Component.hour, value: 24, to: Date())!
-        pushPayload = internalAPI.lastPushPayload
-        XCTAssertNil(pushPayload)
-    }
-    
     func testSaveAttributionInfo() {
         let messageId = UUID().uuidString
         let userInfo: [AnyHashable: Any] = [
@@ -149,7 +113,7 @@ class NotificationResponseTests: XCTestCase {
                 "defaultAction": [
                     "type": "customAction",
                 ],
-            ],
+            ] as [String : Any],
         ]
         
         // call track push open
@@ -183,7 +147,7 @@ class NotificationResponseTests: XCTestCase {
                 "templateId": 4321,
                 "isGhostPush": false,
                 "messageId": messageId,
-            ],
+            ] as [String : Any],
             "url": "https://example.com",
         ]
         

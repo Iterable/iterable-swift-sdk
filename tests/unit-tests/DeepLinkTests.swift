@@ -165,7 +165,7 @@ class DeepLinkTests: XCTestCase {
         let networkSession = MockNetworkSession()
         networkSession.responseCallback = { _ in
             MockNetworkSession.MockResponse(statusCode: 301,
-                                            data: [:].toJsonData(),
+                                            data: Dictionary<AnyHashable, Any>().toJsonData(),
                                             delay: 0.0,
                                             error: nil,
                                             headerFields: [
