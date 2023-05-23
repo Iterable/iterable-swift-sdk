@@ -224,11 +224,13 @@ extension ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: result)
     }
     
+    @discardableResult
     func track(embeddedMessageReceived message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createEmbeddedMessageReceivedRequest(message) }
         return send(iterableRequestResult: result)
     }
     
+    @discardableResult
     func track(embeddedMessageClick message: IterableEmbeddedMessage) -> Pending<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createEmbeddedMessageClickRequest(message) }
         return send(iterableRequestResult: result)
