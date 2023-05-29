@@ -29,24 +29,28 @@ import Foundation
     @objc(showMessage:consume:callbackBlock:) func show(message: IterableInAppMessage, consume: Bool, callback: ITBURLCallback?)
     
     /// - parameter message: The message to remove.
-    /// - parameter onCompletion: The callback which returns `success` or `failure`.
-    @objc(removeMessage:onCompletion:) func remove(message: IterableInAppMessage, onCompletion: OnCompletionHandler?)
+    /// - parameter successHandler: The callback which returns `success.
+    /// - parameter failureHandler: The callback which returns `failure.
+    @objc(removeMessage:successHandler:failureHandler:) func remove(message: IterableInAppMessage, successHandler: OnSuccessHandler?, failureHandler: OnFailureHandler?)
     
     /// - parameter message: The message to remove.
     /// - parameter location: The location from where this message was shown. `inbox` or `inApp`.
-    /// - parameter onCompletion: The callback which returns `success` or `failure`.
-    @objc(removeMessage:location:onCompletion:) func remove(message: IterableInAppMessage, location: InAppLocation, onCompletion: OnCompletionHandler?)
+    /// - parameter successHandler: The callback which returns `success.
+    /// - parameter failureHandler: The callback which returns `failure.
+    @objc(removeMessage:location:successHandler:failureHandler:) func remove(message: IterableInAppMessage, location: InAppLocation, successHandler: OnSuccessHandler?, failureHandler: OnFailureHandler?)
     
     /// - parameter message: The message to remove.
     /// - parameter location: The location from where this message was shown. `inbox` or `inApp`.
     /// - parameter source: The source of deletion `inboxSwipe` or `deleteButton`.`
-    /// - parameter onCompletion: The callback which returns `success` or `failure`.
-    @objc(removeMessage:location:source:onCompletion:) func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource, onCompletion: OnCompletionHandler?)
+    /// - parameter successHandler: The callback which returns `success.
+    /// - parameter failureHandler: The callback which returns `failure.
+    @objc(removeMessage:location:source:successHandler:failureHandler:) func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource, successHandler: OnSuccessHandler?, failureHandler: OnFailureHandler?)
     
     /// - parameter read: Whether this inbox message was read
     /// - parameter message: The inbox message
-    /// - parameter onCompletion: The callback which returns `success` or `failure`.
-    @objc(setRead:forMessage:onCompletion:) func set(read: Bool, forMessage message: IterableInAppMessage, onCompletion: OnCompletionHandler?)
+    /// - parameter successHandler: The callback which returns `success.
+    /// - parameter failureHandler: The callback which returns `failure.
+    @objc(setRead:forMessage:successHandler:failureHandler:) func set(read: Bool, forMessage message: IterableInAppMessage, successHandler: OnSuccessHandler?, failureHandler: OnFailureHandler?)
     
     /// - parameter id: The id of the message
     /// - returns: IterableInAppMessage with the id, if it exists.

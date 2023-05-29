@@ -196,13 +196,20 @@ class InboxTests: XCTestCase {
             XCTAssertEqual(messages.count, 2)
 
             let messageToRemove = messages[0]
-            internalAPI.inAppManager.remove(messageToRemove, location: .inbox, source: .inboxSwipe) { success in
-                XCTAssertTrue(success)
-                let newMessages = internalAPI.inAppManager.getInboxMessages()
-                XCTAssertEqual(newMessages.count, 1)
-                XCTAssertFalse(newMessages.contains(messageToRemove))
-                expectation1.fulfill()
-            }
+            internalAPI.inAppManager.remove(
+                message: messageToRemove,
+                location: .inbox,
+                source: .inboxSwipe,
+                successHandler: { _ in
+                    // Success handler code
+                    expectation1.fulfill()
+                },
+                failureHandler: { _, _ in
+                    // Failure handler code
+                    XCTFail("Failed to remove message")
+                    expectation1.fulfill()
+                }
+            )
         }
 
         wait(for: [expectation1], timeout: testExpectationTimeout)

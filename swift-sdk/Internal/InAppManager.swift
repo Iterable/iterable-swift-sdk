@@ -23,10 +23,13 @@ protocol IterableInternalInAppManagerProtocol: IterableInAppManagerProtocol, InA
     /// - parameter location: The location from where this message was shown. `inbox` or `inApp`.
     /// - parameter source: The source of deletion `inboxSwipe` or `deleteButton`.`
     /// - parameter inboxSessionId: The ID of the inbox session that the message originates from.
-    func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource, inboxSessionId: String?)
+    /// - parameter successHandler: The callback which returns `success.
+    /// - parameter failureHandler: The callback which returns `failure.
+    func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource, inboxSessionId: String?, successHandler: OnSuccessHandler?, failureHandler: OnFailureHandler?)
 }
 
 class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
+    
     init(requestHandler: RequestHandlerProtocol,
          deviceMetadata: DeviceMetadata,
          fetcher: InAppFetcherProtocol,
@@ -121,33 +124,31 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         }
     }
     
-    func remove(message: IterableInAppMessage, location: InAppLocation, onCompletion: OnCompletionHandler?) {
+    func remove(message: IterableInAppMessage, location: InAppLocation, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
         ITBInfo()
-        self.completionHandler = onCompletion
-        removePrivate(message: message, location: location)
+        removePrivate(message: message, location: location, successHandler: successHandler, failureHandler: failureHandler)
     }
     
-    func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource, onCompletion: OnCompletionHandler?) {
+    func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
         ITBInfo()
-        self.completionHandler = onCompletion
-        removePrivate(message: message, location: location, source: source)
+        removePrivate(message: message, location: location, source: source, successHandler: successHandler, failureHandler: failureHandler)
     }
     
-    func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource, inboxSessionId: String? = nil) {
+    func remove(message: IterableInAppMessage, location: InAppLocation, source: InAppDeleteSource, inboxSessionId: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
         ITBInfo()
         
-        removePrivate(message: message, location: location, source: source, inboxSessionId: inboxSessionId)
+        removePrivate(message: message, location: location, source: source, inboxSessionId: inboxSessionId, successHandler: successHandler, failureHandler: failureHandler)
     }
     
-    func set(read: Bool, forMessage message: IterableInAppMessage, onCompletion: OnCompletionHandler?) {
-        self.completionHandler = onCompletion
+    func set(read: Bool, forMessage message: IterableInAppMessage, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
         updateMessage(message, read: read).onSuccess { [weak self] _ in
-            self?.completionHandler?(true)
+            var successObject: [AnyHashable: Any] = [:]
+            successHandler?(successObject)
             self?.callbackQueue.async { [weak self] in
                 self?.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
             }
         }.onError { [weak self] _ in
-            self?.completionHandler?(false)
+            failureHandler?(self?.description, nil)
         }
     }
     
@@ -187,10 +188,10 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
         }
     }
     
-    func remove(message: IterableInAppMessage, onCompletion: OnCompletionHandler?) {
+    func remove(message: IterableInAppMessage, successHandler: OnSuccessHandler?, failureHandler: OnFailureHandler?) {
         ITBInfo()
         
-        removePrivate(message: message)
+        removePrivate(message: message, location: .inApp, source: nil, successHandler: successHandler, failureHandler: failureHandler)
     }
     
     // MARK: - Private/Internal
@@ -466,20 +467,17 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     private func removePrivate(message: IterableInAppMessage,
                                location: InAppLocation = .inApp,
                                source: InAppDeleteSource? = nil,
-                               inboxSessionId: String? = nil) {
+                               inboxSessionId: String? = nil,
+                               successHandler: OnSuccessHandler? = nil,
+                               failureHandler: OnFailureHandler? = nil) {
         ITBInfo()
-        
         updateMessage(message, didProcessTrigger: true, consumed: true)
         requestHandler?.inAppConsume(message: message,
                                      location: location,
                                      source: source,
                                      inboxSessionId: inboxSessionId,
-                                     onSuccess: { (_ data: [AnyHashable: Any]?) in
-                                                    self.completionHandler?(true)
-                                     },
-                                     onFailure: { (_ reason: String?, _ data: Data?) in
-                                                    self.completionHandler?(false)
-                                                })
+                                     onSuccess: successHandler,
+                                     onFailure: failureHandler)
         callbackQueue.async { [weak self] in
             self?.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
         }
@@ -541,7 +539,6 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     private var lastSyncTime: Date?
     private var moveToForegroundSyncInterval: Double = 1.0 * 60.0 // don't sync within sixty seconds
     private var autoDisplayPaused = false
-    private var completionHandler: OnCompletionHandler? = nil
 }
 
 extension InAppManager: InAppNotifiable {
