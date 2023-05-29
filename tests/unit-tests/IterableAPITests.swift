@@ -172,11 +172,14 @@ class IterableAPITests: XCTestCase {
         let config = IterableConfig()
         let networkSession = MockNetworkSession(statusCode: 200)
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
-     
-        internalAPI.setEmail("test@example.com") { success in
+                
+        internalAPI.setEmail("test@example.com", successHandler: { success in
             XCTAssertNotNil(success)
             expectation.fulfill()
-        }
+        }, failureHandler: { _, _ in
+            XCTFail("Failed to set email")
+            expectation.fulfill()
+        })
 
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
@@ -188,10 +191,13 @@ class IterableAPITests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 400)
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
 
-        internalAPI.setEmail("invalid_email") { error in
+        internalAPI.setEmail("invalid_email", successHandler: { success in
+            XCTFail("Email should not be set successfully")
+            expectation.fulfill()
+        }, failureHandler: { _, error in
             XCTAssertNotNil(error)
             expectation.fulfill()
-        }
+        })
 
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
@@ -203,10 +209,13 @@ class IterableAPITests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 200)
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         
-        internalAPI.setUserId("user123") { success in
+        internalAPI.setUserId("user123", successHandler: { success in
             XCTAssertNil(success)
             expectation.fulfill()
-        }
+        }, failureHandler: { _, _ in
+            XCTFail("Failed to set user ID")
+            expectation.fulfill()
+        })
         
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
@@ -218,10 +227,13 @@ class IterableAPITests: XCTestCase {
         let networkSession = MockNetworkSession(statusCode: 400)
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         
-        internalAPI.setUserId("user123") { error in
+        internalAPI.setUserId("user123", successHandler: { success in
+            XCTFail("User ID should not be set successfully")
+            expectation.fulfill()
+        }, failureHandler: { _, error in
             XCTAssertNotNil(error)
             expectation.fulfill()
-        }
+        })
         
         wait(for: [expectation], timeout: testExpectationTimeout)
     }

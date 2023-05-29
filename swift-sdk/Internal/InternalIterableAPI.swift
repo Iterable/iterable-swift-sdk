@@ -111,7 +111,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         _payloadData = data
     }
     
-    func setEmail(_ email: String?, authToken: String? = nil, onCompletion: OnCompletionHandler? = nil) {
+    func setEmail(_ email: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
         ITBInfo()
         
         if _email == email && email != nil && authToken != nil {
@@ -127,14 +127,15 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         _email = email
         _userId = nil
-        _resultCallback = onCompletion
+        _successCallback = successHandler
+        _failureCallback = failureHandler
         
         storeIdentifierData()
         
         onLogin(authToken)
     }
     
-    func setUserId(_ userId: String?, authToken: String? = nil, onCompletion: OnCompletionHandler? = nil) {
+    func setUserId(_ userId: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
         ITBInfo()
         
         if _userId == userId && userId != nil && authToken != nil {
@@ -150,7 +151,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         _email = nil
         _userId = userId
-        _resultCallback = onCompletion
+        _successCallback = successHandler
+        _failureCallback = failureHandler
         
         storeIdentifierData()
         
@@ -169,7 +171,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         guard let appName = pushIntegrationName else {
             let errorMessage = "Not registering device token - appName must not be nil"
             ITBError(errorMessage)
-            _resultCallback?(false)
+            _failureCallback?(errorMessage, nil)
             onFailure?(errorMessage, nil)
             return
         }
@@ -185,11 +187,11 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         requestHandler.register(registerTokenInfo: registerTokenInfo,
                                 notificationStateProvider: notificationStateProvider,
                                 onSuccess: { (_ data: [AnyHashable: Any]?) in
-                                                self._resultCallback?(true)
+                                                self._successCallback?(data)
                                                 onSuccess?(data)
                                 },
                                 onFailure: { (_ reason: String?, _ data: Data?) in
-                                                self._resultCallback?(false)
+                                                self._failureCallback?(reason, data)
                                                 onFailure?(reason, data)
                                 }
         )
@@ -438,7 +440,8 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     private var _email: String?
     private var _payloadData: [AnyHashable: Any]?
     private var _userId: String?
-    private var _resultCallback: OnCompletionHandler? = nil
+    private var _successCallback: OnSuccessHandler? = nil
+    private var _failureCallback: OnFailureHandler? = nil
 
     
     /// the hex representation of this device token
@@ -550,7 +553,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         if config.autoPushRegistration {
             notificationStateProvider.registerForRemoteNotifications()
         } else {
-            _resultCallback?(true)
+            _successCallback?([:])
         }
         
         _ = inAppManager.scheduleSync()

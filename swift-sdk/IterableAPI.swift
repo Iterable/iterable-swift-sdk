@@ -129,20 +129,12 @@ import UIKit
 
     // MARK: - SDK
     
-    public static func setEmail(_ email: String?, _ authToken: String? = nil, _ onCompletion: OnCompletionHandler? = nil) {
-        implementation?.setEmail(email, authToken: authToken, onCompletion: onCompletion)
+    public static func setEmail(_ email: String?, _ authToken: String? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+        implementation?.setEmail(email, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler)
     }
     
-    public static func setUserId(_ userId: String?, _ authToken: String? = nil, _ onCompletion: OnCompletionHandler? = nil) {
-        implementation?.setUserId(userId, authToken: authToken, onCompletion: onCompletion)
-    }
-
-    public static func setEmail(_ email: String?, _ authToken: String? = nil) {
-        implementation?.setEmail(email, authToken: authToken, onCompletion: nil)
-    }
-    
-    public static func setUserId(_ userId: String?, _ authToken: String? = nil) {
-        implementation?.setUserId(userId, authToken: authToken, onCompletion: nil)
+    public static func setUserId(_ userId: String?, _ authToken: String? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+        implementation?.setUserId(userId, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler)
     }
     
     /// Handle a Universal Link
