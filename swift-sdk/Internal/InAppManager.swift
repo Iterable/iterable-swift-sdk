@@ -142,8 +142,7 @@ class InAppManager: NSObject, IterableInternalInAppManagerProtocol {
     
     func set(read: Bool, forMessage message: IterableInAppMessage, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
         updateMessage(message, read: read).onSuccess { [weak self] _ in
-            var successObject: [AnyHashable: Any] = [:]
-            successHandler?(successObject)
+            successHandler?([:])
             self?.callbackQueue.async { [weak self] in
                 self?.notificationCenter.post(name: .iterableInboxChanged, object: self, userInfo: nil)
             }

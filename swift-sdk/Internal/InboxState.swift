@@ -61,14 +61,16 @@ class InboxState: InboxStateProtocol {
     }
     
     func set(read: Bool, forMessage message: InboxMessageViewModel) {
-        inAppManager?.set(read: read, forMessage: message.iterableMessage)
+        inAppManager?.set(read: read, forMessage: message.iterableMessage, successHandler: nil, failureHandler: nil)
     }
 
     func remove(message: InboxMessageViewModel, inboxSessionId: String?) {
         inAppManager?.remove(message: message.iterableMessage,
                              location: .inbox,
                              source: .inboxSwipe,
-                             inboxSessionId: inboxSessionId)
+                             inboxSessionId: inboxSessionId,
+                             successHandler: nil,
+                             failureHandler: nil)
     }
 
     init(internalAPIProvider: @escaping @autoclosure () -> InternalIterableAPI? = IterableAPI.internalImplementation) {
