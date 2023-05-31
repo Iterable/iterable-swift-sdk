@@ -44,6 +44,7 @@ enum Const {
         static let embeddedMessageClick = "embedded-messaging/events/click"
         static let embeddedMessageDismiss = "embedded-messaging/events/dismiss"
         static let embeddedMessageImpression = "embedded-messaging/events/impression"
+        static let trackEmbeddedSession = "embedded-messaging/events/impression"
     }
     
     public enum UserDefault {
@@ -172,6 +173,14 @@ enum JsonKey {
     static let notificationsEnabled = "notificationsEnabled"
     
     static let contentType = "Content-Type"
+    
+    
+//    embedded
+    static let embeddedSessionId = "embeddedSessionId"
+    static let placementId = "placementId"
+    static let embeddedSessionStart = "embeddedSessionStart"
+    static let embeddedSessionEnd = "embeddedSessionEnd"
+    
     
     enum ActionButton {
         static let identifier = "identifier"

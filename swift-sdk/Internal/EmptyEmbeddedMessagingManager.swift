@@ -32,4 +32,8 @@ class EmptyEmbeddedMessagingManager: IterableEmbeddedMessagingManagerProtocol {
     func track(impression message: IterableEmbeddedMessage) {
         
     }
+    
+    func track(embeddedSession: IterableEmbeddedSession) {
+        
+    }
 }

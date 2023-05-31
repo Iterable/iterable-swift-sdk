@@ -613,6 +613,18 @@ import UIKit
                                             templateId: templateId)
     }
     
+    // MARK: Embedded Notifications
+    
+    /// Tracks analytics data from a session of using an inbox UI
+    /// NOTE: this is not normally used publicly, but is needed for our React Native SDK implementation
+    ///
+    /// - Parameters:
+    ///     - embeddedSession: the embedded session data type to track
+    @objc(trackEmbeddedSession:)
+    public static func track(embeddedSession: IterableEmbeddedSession) {
+        implementation?.track(embeddedSession: embeddedSession)
+    }
+    
     // MARK: In-App Notifications
     
     /// Tracks an `InAppOpen` event

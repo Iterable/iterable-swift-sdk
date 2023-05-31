@@ -273,6 +273,16 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
                     requestIdentifier: "trackEmbeddedMessageImpression")
     }
     
+    @discardableResult
+    func track(embeddedSession: IterableEmbeddedSession,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        sendRequest(requestProvider: { apiClient.track(embeddedSession: embeddedSession) },
+                    successHandler: onSuccess,
+                    failureHandler: onFailure,
+                    requestIdentifier: "trackEmbeddedSession")
+    }
+    
     func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError> {
         apiClient.getRemoteConfiguration()
     }

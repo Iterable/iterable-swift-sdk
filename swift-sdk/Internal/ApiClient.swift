@@ -245,4 +245,9 @@ extension ApiClient: ApiClientProtocol {
         let result = createRequestCreator().flatMap { $0.createEmbeddedMessageImpressionRequest(message) }
         return send(iterableRequestResult: result)
     }
+    
+    func track(embeddedSession: IterableEmbeddedSession) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createTrackEmbeddedSessionRequest(embeddedSession: embeddedSession) }
+        return send(iterableRequestResult:  result)
+    }
 }
