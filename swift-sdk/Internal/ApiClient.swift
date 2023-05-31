@@ -15,13 +15,13 @@ struct DeviceMetadata: Codable {
 class ApiClient {
     init(apiKey: String,
          authProvider: AuthProvider?,
-         endPoint: String,
+         endpoint: String,
          networkSession: NetworkSessionProtocol,
          deviceMetadata: DeviceMetadata,
          dateProvider: DateProviderProtocol) {
         self.apiKey = apiKey
         self.authProvider = authProvider
-        self.endPoint = endPoint
+        self.endpoint = endpoint
         self.networkSession = networkSession
         self.deviceMetadata = deviceMetadata
         self.dateProvider = dateProvider
@@ -34,8 +34,8 @@ class ApiClient {
         
         let currentDate = dateProvider.currentDate
         let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
-                                                    endPoint: endPoint,
-                                                    auth: authProvider.auth,
+                                                    endpoint: endpoint,
+                                                    authToken: authProvider.auth.authToken,
                                                     deviceMetadata: deviceMetadata,
                                                     iterableRequest: iterableRequest).addingCreatedAt(currentDate)
         return apiCallRequest.convertToURLRequest(sentAt: currentDate)
@@ -87,7 +87,7 @@ class ApiClient {
     
     private let apiKey: String
     private weak var authProvider: AuthProvider?
-    private let endPoint: String
+    private let endpoint: String
     private let networkSession: NetworkSessionProtocol
     private let deviceMetadata: DeviceMetadata
     private let dateProvider: DateProviderProtocol

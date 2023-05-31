@@ -8,7 +8,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     init(apiKey: String,
          authProvider: AuthProvider?,
          authManager: IterableAuthManagerProtocol?,
-         endPoint: String,
+         endpoint: String,
          deviceMetadata: DeviceMetadata,
          taskScheduler: IterableTaskScheduler,
          taskRunner: IterableTaskRunner,
@@ -18,7 +18,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         self.apiKey = apiKey
         self.authProvider = authProvider
         self.authManager = authManager
-        self.endPoint = endPoint
+        self.endpoint = endpoint
         self.deviceMetadata = deviceMetadata
         self.taskScheduler = taskScheduler
         self.taskRunner = taskRunner
@@ -239,7 +239,7 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     private let apiKey: String
     private weak var authProvider: AuthProvider?
     private weak var authManager: IterableAuthManagerProtocol?
-    private let endPoint: String
+    private let endpoint: String
     private let deviceMetadata: DeviceMetadata
     private let notificationListener: NotificationListener
     private let taskScheduler: IterableTaskScheduler
@@ -263,8 +263,8 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         }
         
         let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
-                                                    endPoint: endPoint,
-                                                    auth: authProvider.auth,
+                                                    endpoint: endpoint,
+                                                    authToken: authManager?.getAuthToken(),
                                                     deviceMetadata: deviceMetadata,
                                                     iterableRequest: iterableRequest)
         

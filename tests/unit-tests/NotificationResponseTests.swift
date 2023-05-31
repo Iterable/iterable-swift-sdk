@@ -31,7 +31,7 @@ class NotificationResponseTests: XCTestCase {
                 "defaultAction": [
                     "type": "customAction",
                 ],
-            ],
+            ] as [String : Any],
         ]
         
         let response = MockNotificationResponse(userInfo: userInfo, actionIdentifier: UNNotificationDefaultActionIdentifier)
@@ -73,8 +73,8 @@ class NotificationResponseTests: XCTestCase {
                     "action": [
                         "type": "customAction",
                     ],
-                ]],
-            ],
+                ] as [String : Any]],
+            ] as [String : Any],
         ]
         
         let response = MockNotificationResponse(userInfo: userInfo, actionIdentifier: "buttonIdentifier")
@@ -113,7 +113,7 @@ class NotificationResponseTests: XCTestCase {
                 "defaultAction": [
                     "type": "customAction",
                 ],
-            ],
+            ] as [String : Any],
         ]
         
         // call track push open
@@ -147,7 +147,7 @@ class NotificationResponseTests: XCTestCase {
                 "templateId": 4321,
                 "isGhostPush": false,
                 "messageId": messageId,
-            ],
+            ] as [String : Any],
             "url": "https://example.com",
         ]
         

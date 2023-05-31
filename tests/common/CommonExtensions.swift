@@ -196,7 +196,7 @@ struct MockRedirectNetworkSession: NetworkSessionProtocol {
             }
         }
     }
- 
+    
     private static func number(fromString str: String) -> NSNumber {
         if let intValue = Int(str) {
             return NSNumber(value: intValue)
@@ -204,7 +204,7 @@ struct MockRedirectNetworkSession: NetworkSessionProtocol {
         
         return NSNumber(value: 0)
     }
-
+    
     private let networkSession: NetworkSessionProtocol
 }
 
@@ -242,13 +242,13 @@ extension IterableAPI {
                                                               apnsTypeChecker: apnsTypeChecker,
                                                               persistenceContextProvider: persistenceContextProvider)
         
-        internalImplementation = InternalIterableAPI(apiKey: apiKey,
-                                                     launchOptions: launchOptions,
-                                                     config: config,
-                                                     apiEndPointOverride: apiEndPointOverride,
-                                                     dependencyContainer: mockDependencyContainer)
+        implementation = InternalIterableAPI(apiKey: apiKey,
+                                             launchOptions: launchOptions,
+                                             config: config,
+                                             apiEndPointOverride: apiEndPointOverride,
+                                             dependencyContainer: mockDependencyContainer)
         
-        internalImplementation?.start().wait()
+        implementation?.start().wait()
     }
 }
 

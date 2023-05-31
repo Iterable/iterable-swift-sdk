@@ -372,8 +372,8 @@ class TaskRunnerTests: XCTestCase {
         }
         
         let apiCallRequest = IterableAPICallRequest(apiKey: apiKey,
-                                                    endPoint: Endpoint.api,
-                                                    auth: auth,
+                                                    endpoint: Endpoint.api,
+                                                    authToken: auth.authToken,
                                                     deviceMetadata: deviceMetadata,
                                                     iterableRequest: trackEventRequest)
         return scheduler.schedule(apiCallRequest: apiCallRequest)

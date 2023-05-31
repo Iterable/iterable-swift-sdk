@@ -67,12 +67,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func loadDataset(number: Int) {
         let messages = loadMessages(from: "inbox-messages-\(number)", withExtension: "json")
-        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: IterableAPI.internalImplementation, messages: messages)
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: IterableAPI.implementation, messages: messages)
     }
     
     func addInboxMessage() {
         ITBInfo()
-        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: IterableAPI.internalImplementation, messages: mockInAppFetcher.messages + [createNewMessage()])
+        mockInAppFetcher.mockMessagesAvailableFromServer(internalApi: IterableAPI.implementation, messages: mockInAppFetcher.messages + [createNewMessage()])
     }
     
     func addMessageToServer() {
