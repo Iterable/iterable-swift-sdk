@@ -43,9 +43,9 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
     }
     
     public func track(click message: IterableEmbeddedMessage) {
-//        apiClient.track(embeddedMessageClick: message)
-        IterableAPI.track(event: "embedded-messaging", dataFields: ["name": "click",
-                                                                    "messageId": message.metadata.id])
+        apiClient.track(embeddedMessageClick: message)
+//        IterableAPI.track(event: "embedded-messaging", dataFields: ["name": "click",
+//                                                                    "messageId": message.metadata.id])
     }
     
 //    public func track(dismiss message: IterableEmbeddedMessage) {
@@ -150,11 +150,11 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
     
     private func trackNewlyRetrieved(_ processor: EmbeddedMessagingProcessor) {
         for message in processor.newlyRetrievedMessages() {
-//            apiClient.track(embeddedMessagingReceived: message)
-            IterableAPI.track(event: "embedded-messaging",
-                              dataFields: ["name": "received",
-                                           "messageId": message.metadata.id]
-            )
+            apiClient.track(embeddedMessageReceived: message)
+//            IterableAPI.track(event: "embedded-messaging",
+//                              dataFields: ["name": "received",
+//                                           "messageId": message.metadata.id]
+//            )
         }
     }
     

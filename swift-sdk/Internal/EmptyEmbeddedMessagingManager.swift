@@ -24,4 +24,12 @@ class EmptyEmbeddedMessagingManager: IterableEmbeddedMessagingManagerProtocol {
     func stop() {
         
     }
+    
+    func track(click message: IterableEmbeddedMessage) {
+            
+    }
+    
+    func track(impression message: IterableEmbeddedMessage) {
+        
+    }
 }
