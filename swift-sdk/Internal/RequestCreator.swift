@@ -548,20 +548,14 @@ struct RequestCreator {
         
         addUserKey(intoDict: &body)
 
-        body.setValue(for: "session", value: [
+        body.setValue(for: JsonKey.embeddedSessionId, value: [
             "id": embeddedSessionId,
             "start": IterableUtil.int(fromDate: sessionStartTime),
             "end": IterableUtil.int(fromDate: sessionEndTime)
         ])
-        
-        if let placementId = embeddedSession.placementId {
-            body.setValue(for: "placementId", value: placementId)
-        }
 
-        body.setValue(for: "impressions", value: embeddedSession.impressions.compactMap { $0.asDictionary() })
-
-        body.setValue(for: "deviceInfo", value: deviceMetadata.asDictionary()) // ensure that `deviceMetadata` object has appropriate properties as per new structure
-
+        body.setValue(for: JsonKey.impressions, value: embeddedSession.impressions.compactMap { $0.asDictionary() })
+        body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
         return .success(.post(createPostRequest(path: Const.Path.trackEmbeddedSession, body: body)))
     }
 

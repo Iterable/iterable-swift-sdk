@@ -176,7 +176,7 @@ enum JsonKey {
     
     
 //    embedded
-    static let embeddedSessionId = "embeddedSessionId"
+    static let embeddedSessionId = "session"
     static let placementId = "placementId"
     static let embeddedSessionStart = "embeddedSessionStart"
     static let embeddedSessionEnd = "embeddedSessionEnd"
