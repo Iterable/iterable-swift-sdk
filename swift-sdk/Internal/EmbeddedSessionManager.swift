@@ -46,8 +46,7 @@ public class EmbeddedSessionManager {
         if let timer = messageTimers[impressionId], timer.isValid {
             return
         }
-        if let pauseTimestamp = pauseTimestamps.removeValue(forKey: impressionId) {
-            let pauseDuration = Int(Date().timeIntervalSince(pauseTimestamp))
+        if pauseTimestamps.removeValue(forKey: impressionId) != nil {
             if let index = currentSession?.impressions.firstIndex(where: { $0.messageId == impressionId }) {
                 let newDisplayDuration = currentSession!.impressions[index].displayDuration
                 currentSession?.impressions[index].displayDuration = newDisplayDuration

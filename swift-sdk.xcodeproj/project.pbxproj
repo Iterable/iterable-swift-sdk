@@ -12,6 +12,7 @@
 		00B6FAD1210E8D90007535CF /* dev-1.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */; };
 		00CB31B621096129004ACDEC /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CB31B4210960C4004ACDEC /* TestUtils.swift */; };
 		1CCA91202A27FA8700AEA213 /* MiscEmbeddedClasses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCA911F2A27FA8700AEA213 /* MiscEmbeddedClasses.swift */; };
+		1CCA91222A28075A00AEA213 /* EmbeddedSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCA91212A28075A00AEA213 /* EmbeddedSessionManager.swift */; };
 		55023E9C29132881003F69DC /* IterableEmbeddedMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55023E9B29132881003F69DC /* IterableEmbeddedMessage.swift */; };
 		5511FF5529BBE698005D42AB /* IterableEmbeddedMessagingUpdateDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5511FF5429BBE698005D42AB /* IterableEmbeddedMessagingUpdateDelegate.swift */; };
 		551FA7582988A8FC0072D0A9 /* IterableEmbeddedMessagingManagerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551FA7572988A8FC0072D0A9 /* IterableEmbeddedMessagingManagerProtocol.swift */; };
@@ -526,7 +527,8 @@
 		00B6FACD210E874D007535CF /* prod-1.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = "prod-1.mobileprovision"; sourceTree = "<group>"; };
 		00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = "dev-1.mobileprovision"; sourceTree = "<group>"; };
 		00CB31B4210960C4004ACDEC /* TestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtils.swift; sourceTree = "<group>"; };
-		1CCA911F2A27FA8700AEA213 /* MiscEmbeddedClasses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MiscEmbeddedClasses.swift; path = "swift-sdk/Internal/MiscEmbeddedClasses.swift"; sourceTree = "<group>"; };
+		1CCA911F2A27FA8700AEA213 /* MiscEmbeddedClasses.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiscEmbeddedClasses.swift; sourceTree = "<group>"; };
+		1CCA91212A28075A00AEA213 /* EmbeddedSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmbeddedSessionManager.swift; sourceTree = "<group>"; };
 		55023E9B29132881003F69DC /* IterableEmbeddedMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableEmbeddedMessage.swift; sourceTree = "<group>"; };
 		5511FF5429BBE698005D42AB /* IterableEmbeddedMessagingUpdateDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableEmbeddedMessagingUpdateDelegate.swift; sourceTree = "<group>"; };
 		551FA7572988A8FC0072D0A9 /* IterableEmbeddedMessagingManagerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableEmbeddedMessagingManagerProtocol.swift; sourceTree = "<group>"; };
@@ -890,6 +892,8 @@
 		551FA75C2988AC800072D0A9 /* Embedded Messaging */ = {
 			isa = PBXGroup;
 			children = (
+				1CCA911F2A27FA8700AEA213 /* MiscEmbeddedClasses.swift */,
+				1CCA91212A28075A00AEA213 /* EmbeddedSessionManager.swift */,
 				551FA75D2988AC930072D0A9 /* EmptyEmbeddedMessagingManager.swift */,
 				551FA75F2988AC990072D0A9 /* EmbeddedMessagingManager.swift */,
 				553449A029C2621E002E4599 /* EmbeddedMessagingProcessor.swift */,
@@ -975,7 +979,6 @@
 		AC2263D520CF49B8009800EB = {
 			isa = PBXGroup;
 			children = (
-				1CCA911F2A27FA8700AEA213 /* MiscEmbeddedClasses.swift */,
 				AC2263E120CF49B8009800EB /* swift-sdk */,
 				AC90C4C520D8632E00EECA5D /* notification-extension */,
 				ACFCA72920EB02DB00BFB277 /* tests */,
@@ -1998,6 +2001,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1CCA91222A28075A00AEA213 /* EmbeddedSessionManager.swift in Sources */,
 				1CCA91202A27FA8700AEA213 /* MiscEmbeddedClasses.swift in Sources */,
 				AC31B042232AB53500BE25EB /* InboxImpressionTracker.swift in Sources */,
 				55D54656239AE5750093ED1E /* IterableLogUtil.swift in Sources */,
