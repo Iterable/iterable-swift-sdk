@@ -28,13 +28,6 @@ public class EmbeddedSessionManager {
         messageTimers.removeAll()
         
         if let session = currentSession {
-            print(session.embeddedSessionId)
-            print(session.impressions)
-            for impression in session.impressions {
-                print(impression.messageId)
-                print(impression.displayCount)
-                print(impression.displayDuration)
-            }
             let _ = IterableAPI.embeddedMessagingManager.track(embeddedSession: session)
         }
     }
