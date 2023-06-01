@@ -9,11 +9,8 @@ import Foundation
 
 public class EmbeddedSessionManager {
     public static let shared = EmbeddedSessionManager()
-
     public var currentSession: IterableEmbeddedSession?
-    private var messageTimers: [String: Timer] = [:]
-    var pauseTimestamps: [String: Date] = [:]
-
+    var currentlyTrackingImpressions: [String: (currentDisplayDuration: TimeInterval, startTime: Date, tracking: Bool)] = [:]
 
     public func startSession() {
         let startTime = Date()
@@ -21,66 +18,57 @@ public class EmbeddedSessionManager {
     }
 
     public func endSession() {
-        currentSession?.embeddedSessionEnd = Date()
-        for timer in messageTimers.values {
-            timer.invalidate()
-        }
-        messageTimers.removeAll()
-        
-        if let session = currentSession {
-            let _ = IterableAPI.embeddedMessagingManager.track(embeddedSession: session)
-        }
-    }
-
-    public func stopTimerForImpression(impressionId: String) {
-        messageTimers[impressionId]?.invalidate()
-        messageTimers[impressionId] = nil
-    }
-    
-    public func pauseTimerForImpression(impressionId: String) {
-        messageTimers[impressionId]?.invalidate()
-        pauseTimestamps[impressionId] = Date()
-    }
-
-    public func resumeTimerForImpression(impressionId: String) {
-        if let timer = messageTimers[impressionId], timer.isValid {
+        guard let currentSession = currentSession else {
+            ITBError("No current session.")
             return
         }
-        if pauseTimestamps.removeValue(forKey: impressionId) != nil {
-            if let index = currentSession?.impressions.firstIndex(where: { $0.messageId == impressionId }) {
-                let newDisplayDuration = currentSession!.impressions[index].displayDuration
-                currentSession?.impressions[index].displayDuration = newDisplayDuration
-            }
-            let timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-                self?.updateDisplayDurationForImpression(impressionId: impressionId)
-            }
-            messageTimers[impressionId] = timer
+        
+        for impressionId in currentlyTrackingImpressions.keys {
+            pauseImpression(impressionId: impressionId)
+        }
+        currentSession.embeddedSessionEnd = Date()
+        updateDisplayDurations()
+        let _ = IterableAPI.embeddedMessagingManager.track(embeddedSession: currentSession)
+    }
+    
+    public func pauseImpression(impressionId: String) {
+        if var trackingImpression = currentlyTrackingImpressions[impressionId], trackingImpression.tracking {
+            let currentTime = Date()
+            let elapsedTime = currentTime.timeIntervalSince(trackingImpression.startTime)
+            trackingImpression.currentDisplayDuration += elapsedTime
+            trackingImpression.tracking = false
+            currentlyTrackingImpressions[impressionId] = trackingImpression
         }
     }
 
+    public func resumeImpression(impressionId: String) {
+        if var trackingImpression = currentlyTrackingImpressions[impressionId], !trackingImpression.tracking {
+            trackingImpression.startTime = Date()
+            trackingImpression.tracking = true
+            currentlyTrackingImpressions[impressionId] = trackingImpression
+        }
+    }
 
-    
     public func createOrUpdateImpression(impressionId: String) {
-        if let index = currentSession?.impressions.firstIndex(where: { $0.messageId == impressionId }) {
-            currentSession?.impressions[index].displayCount += 1
+        if let _ = currentlyTrackingImpressions[impressionId] {
+            if let index = currentSession?.impressions.firstIndex(where: { $0.messageId == impressionId }) {
+                currentSession?.impressions[index].displayCount += 1
+            }
         } else {
             let newImpression = IterableEmbeddedImpression(messageId: impressionId, displayCount: 1, displayDuration: 0)
             currentSession?.impressions.append(newImpression)
-        }
-
-        if messageTimers[impressionId] == nil {
-            let timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-                self?.updateDisplayDurationForImpression(impressionId: impressionId)
-            }
-            messageTimers[impressionId] = timer
+            currentlyTrackingImpressions[impressionId] = (currentDisplayDuration: 0, startTime: Date(), tracking: true)
         }
         
-        resumeTimerForImpression(impressionId: impressionId)
+        resumeImpression(impressionId: impressionId)
     }
-
-    private func updateDisplayDurationForImpression(impressionId: String) {
-        if let index = currentSession?.impressions.firstIndex(where: { $0.messageId == impressionId }) {
-            currentSession?.impressions[index].displayDuration += 1
+    
+    private func updateDisplayDurations() {
+        for (impressionId, impressionData) in currentlyTrackingImpressions {
+            if let index = currentSession?.impressions.firstIndex(where: { $0.messageId == impressionId }) {
+                let displayDuration = round(impressionData.currentDisplayDuration)
+                currentSession?.impressions[index].displayDuration = displayDuration
+            }
         }
     }
 }
