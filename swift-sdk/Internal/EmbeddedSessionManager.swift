@@ -9,16 +9,16 @@ import Foundation
 
 public class EmbeddedSessionManager {
     public static let shared = EmbeddedSessionManager()
-    public var currentSession: IterableEmbeddedSession?
-    var currentlyTrackingImpressions: [String: (currentDisplayDuration: TimeInterval, startTime: Date, tracking: Bool)] = [:]
+    public var session: IterableEmbeddedSession?
+    var currentlyTrackingImpressions: [String: (totalDisplayDuration: TimeInterval, startTime: Date, tracking: Bool)] = [:]
 
     public func startSession() {
         let startTime = Date()
-        currentSession = IterableEmbeddedSession(embeddedSessionId: UUID().uuidString, embeddedSessionStart: startTime, impressions: [])
+        session = IterableEmbeddedSession(embeddedSessionId: UUID().uuidString, embeddedSessionStart: startTime, impressions: [])
     }
 
     public func endSession() {
-        guard let currentSession = currentSession else {
+        guard let session = session else {
             ITBError("No current session.")
             return
         }
@@ -26,16 +26,16 @@ public class EmbeddedSessionManager {
         for impressionId in currentlyTrackingImpressions.keys {
             pauseImpression(impressionId: impressionId)
         }
-        currentSession.embeddedSessionEnd = Date()
+        session.embeddedSessionEnd = Date()
         updateDisplayDurations()
-        let _ = IterableAPI.embeddedMessagingManager.track(embeddedSession: currentSession)
+        let _ = IterableAPI.embeddedMessagingManager.track(embeddedSession: session)
     }
     
     public func pauseImpression(impressionId: String) {
         if var trackingImpression = currentlyTrackingImpressions[impressionId], trackingImpression.tracking {
             let currentTime = Date()
             let elapsedTime = currentTime.timeIntervalSince(trackingImpression.startTime)
-            trackingImpression.currentDisplayDuration += elapsedTime
+            trackingImpression.totalDisplayDuration += elapsedTime
             trackingImpression.tracking = false
             currentlyTrackingImpressions[impressionId] = trackingImpression
         }
@@ -51,13 +51,13 @@ public class EmbeddedSessionManager {
 
     public func createOrUpdateImpression(impressionId: String) {
         if let _ = currentlyTrackingImpressions[impressionId] {
-            if let index = currentSession?.impressions.firstIndex(where: { $0.messageId == impressionId }) {
-                currentSession?.impressions[index].displayCount += 1
+            if let index = session?.impressions.firstIndex(where: { $0.messageId == impressionId }) {
+                session?.impressions[index].displayCount += 1
             }
         } else {
             let newImpression = IterableEmbeddedImpression(messageId: impressionId, displayCount: 1, displayDuration: 0)
-            currentSession?.impressions.append(newImpression)
-            currentlyTrackingImpressions[impressionId] = (currentDisplayDuration: 0, startTime: Date(), tracking: true)
+            session?.impressions.append(newImpression)
+            currentlyTrackingImpressions[impressionId] = (totalDisplayDuration: 0, startTime: Date(), tracking: true)
         }
         
         resumeImpression(impressionId: impressionId)
@@ -65,9 +65,9 @@ public class EmbeddedSessionManager {
     
     private func updateDisplayDurations() {
         for (impressionId, impressionData) in currentlyTrackingImpressions {
-            if let index = currentSession?.impressions.firstIndex(where: { $0.messageId == impressionId }) {
-                let displayDuration = round(impressionData.currentDisplayDuration)
-                currentSession?.impressions[index].displayDuration = displayDuration
+            if let index = session?.impressions.firstIndex(where: { $0.messageId == impressionId }) {
+                let displayDuration = round(impressionData.totalDisplayDuration)
+                session?.impressions[index].displayDuration = displayDuration
             }
         }
     }
