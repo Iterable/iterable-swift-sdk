@@ -1,1 +1,0 @@
-cp -r "${SRCROOT}/swift-sdk/Resources" "${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app"

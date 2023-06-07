@@ -25,7 +25,7 @@ let package = Package(
                 .script(
                     path: "script.sh"
                 )
-                ]
+                ],
                 resources: [
                     .process("Resources"),
                 ]),
