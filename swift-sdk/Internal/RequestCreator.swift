@@ -525,6 +525,42 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: Const.Path.embeddedMessageImpression, body: body as! [String: String])))
     }
     
+    func createTrackEmbeddedSessionRequest(embeddedSession: IterableEmbeddedSession) -> Result<IterableRequest, IterableError> {
+        if case .none = auth.emailOrUserId {
+            ITBError(Self.authMissingMessage)
+            return .failure(IterableError.general(description: Self.authMissingMessage))
+        }
+
+        guard !embeddedSession.embeddedSessionId.isEmpty else {
+            return .failure(IterableError.general(description: "expecting session UUID"))
+        }
+        let embeddedSessionId = embeddedSession.embeddedSessionId
+
+        guard let sessionStartTime = embeddedSession.embeddedSessionStart else {
+            return .failure(IterableError.general(description: "expecting session start time"))
+        }
+
+        guard let sessionEndTime = embeddedSession.embeddedSessionEnd else {
+            return .failure(IterableError.general(description: "expecting session end time"))
+        }
+
+        var body = [AnyHashable: Any]()
+        
+        addUserKey(intoDict: &body)
+
+        body.setValue(for: JsonKey.embeddedSessionId, value: [
+            "id": embeddedSessionId,
+            "start": IterableUtil.int(fromDate: sessionStartTime),
+            "end": IterableUtil.int(fromDate: sessionEndTime)
+        ])
+
+        body.setValue(for: JsonKey.impressions, value: embeddedSession.impressions.compactMap { $0.asDictionary() })
+        body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
+        return .success(.post(createPostRequest(path: Const.Path.trackEmbeddedSession, body: body)))
+    }
+
+
+    
     // MARK: - Misc Request Calls
     
     func createDisableDeviceRequest(forAllUsers allUsers: Bool, hexToken: String) -> Result<IterableRequest, IterableError> {

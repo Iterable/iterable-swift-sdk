@@ -58,6 +58,10 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
                                                                     "messageId": message.metadata.id])
     }
     
+    public func track(embeddedSession: IterableEmbeddedSession) {
+        apiClient.track(embeddedSession: embeddedSession)
+    }
+    
     func start() {
         ITBInfo()
         

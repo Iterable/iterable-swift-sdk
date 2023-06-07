@@ -15,5 +15,6 @@ import Foundation
     
     func track(click message: IterableEmbeddedMessage)
     func track(impression message: IterableEmbeddedMessage)
+    func track(embeddedSession: IterableEmbeddedSession)
 
 }
