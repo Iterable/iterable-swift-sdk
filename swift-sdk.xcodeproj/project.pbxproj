@@ -2022,7 +2022,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\ncp -r \"${SRCROOT}/swift-sdk/Resources\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app\"\n\n";
+			shellScript = "cp -r \"${SRCROOT}/swift-sdk/Resources\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app\"\n\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
