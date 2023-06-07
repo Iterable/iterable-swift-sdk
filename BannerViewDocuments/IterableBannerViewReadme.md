@@ -14,9 +14,9 @@ This repository contains a collection of IBDesignable components for iOS, specif
     ![ClassName](/swift-sdk/BannerViewDocuments/ClassName.jpg)
 
 ### Design Samples
-![Sample 1](/swift-sdk/BannerViewDocuments/Sample1.jpg)
-![Sample 2](/swift-sdk/BannerViewDocuments/Sample2.jpg)
-![Sample 3](/swift-sdk/BannerViewDocuments/Sample3.jpg)
+![Sample 1](/BannerViewDocuments/Sample1.jpg)
+![Sample 2](/BannerViewDocuments/Sample2.jpg)
+![Sample 3](/BannerViewDocuments/Sample3.jpg)
 
 ### Customized
 Customize the various properties of the IterableBannerView in the Attributes Inspector, including:
