@@ -70,6 +70,10 @@ public class IterableBannerView:UIView {
         let bundle = Bundle(for: IterableBannerView.self)
         //let sdkBundle = Bundle(identifier: "iterable.swift-sdk")
 
+        let contents = try? FileManager.default.contentsOfDirectory(atPath: bundle.bundlePath)
+        print(contents ?? "")
+        
+        
         let nib = UINib(nibName: "IterableBannerView", bundle: bundle)
         let view = nib.instantiate(withOwner: self, options: nil).first as? UIView
         view?.backgroundColor = UIColor.clear
