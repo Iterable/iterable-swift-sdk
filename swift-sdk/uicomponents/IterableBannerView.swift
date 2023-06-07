@@ -70,7 +70,7 @@ public class IterableBannerView:UIView {
         let bundle = Bundle(for: IterableBannerView.self)
         //let sdkBundle = Bundle(identifier: "iterable.swift-sdk")
 
-        let nib = UINib(nibName: "IterableBanner", bundle: bundle)
+        let nib = UINib(nibName: "IterableBannerView", bundle: bundle)
         let view = nib.instantiate(withOwner: self, options: nil).first as? UIView
         view?.backgroundColor = UIColor.clear
         view?.layer.masksToBounds = false
