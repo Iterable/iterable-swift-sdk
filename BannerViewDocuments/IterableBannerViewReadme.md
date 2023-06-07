@@ -11,7 +11,7 @@ This repository contains a collection of IBDesignable components for iOS, specif
 - Click on Identity Inspector.
 - Insert class name "IterableBannerView"
 
-    ![ClassName](/swift-sdk/BannerViewDocuments/ClassName.jpg)
+    ![ClassName](/BannerViewDocuments/ClassName.jpg)
 
 ### Design Samples
 ![Sample 1](/BannerViewDocuments/Sample1.jpg)
@@ -21,7 +21,7 @@ This repository contains a collection of IBDesignable components for iOS, specif
 ### Customized
 Customize the various properties of the IterableBannerView in the Attributes Inspector, including:
 
-![Property](/swift-sdk/BannerViewDocuments/Property.jpg)
+![Property](/BannerViewDocuments/Property.jpg)
 
 ### View:
     - Set the corner radius
@@ -64,7 +64,7 @@ Preview and adjust the appearance of the IterableBannerView directly in Interfac
 Build and run your project to see the IterableBannerView in action on your device or simulator.
 
 ## Video Preview
-<!-- ![Preview](/swift-sdk/BannerViewDocuments/full_design_video.mp4) -->
+<!-- ![Preview](/BannerViewDocuments/full_design_video.mp4) -->
 
 ### Full Sample Code
 
