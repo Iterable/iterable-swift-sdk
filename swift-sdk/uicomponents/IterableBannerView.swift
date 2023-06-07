@@ -67,13 +67,13 @@ public class IterableBannerView:UIView {
         //        let nib = UINib(nibName: nibName, bundle: bundle)
         //        let view = nib.instantiate(withOwner: self, options: nil)[0] as! UIView
         //        let view = UINib(nibName: nibName, bundle: bundle).instantiate(withOwner: self).first as? IterableBannerView
-        //let bundle = Bundle(for: IterableBannerView.self)
-        let sdkBundle = Bundle(identifier: "iterable.swift-sdk")
+        let bundle = Bundle(for: IterableBannerView.self)
+        //let sdkBundle = Bundle(identifier: "iterable.swift-sdk")
 
-        let nib = UINib(nibName: "IterableBannerView", bundle: sdkBundle)
-        let view = nib.instantiate(withOwner: self, options: nil)[0] as! UIView
-        view.backgroundColor = UIColor.clear
-        view.layer.masksToBounds = false
+        let nib = UINib(nibName: "IterableBannerView", bundle: bundle)
+        let view = nib.instantiate(withOwner: self, options: nil).first as? UIView
+        view?.backgroundColor = UIColor.clear
+        view?.layer.masksToBounds = false
         return view
     }
     
