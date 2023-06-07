@@ -74,7 +74,7 @@ public class IterableBannerView:UIView {
         print(contents ?? "")
         
         
-        let nib = UINib(nibName: "IterableBannerView", bundle: bundle)
+        let nib = UINib(nibName: "IterableBannerView", bundle: nil)
         let view = nib.instantiate(withOwner: self, options: nil).first as? UIView
         view?.backgroundColor = UIColor.clear
         view?.layer.masksToBounds = false
