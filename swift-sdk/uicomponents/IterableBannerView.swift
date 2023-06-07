@@ -62,6 +62,7 @@ public class IterableBannerView:UIView {
     }
     
     func loadViewFromNib() -> UIView? {
+        print("inside")
         let bundle = Bundle(for: Self.self)
         let nib = UINib(nibName: "IterableBannerView", bundle: bundle)
         let view = nib.instantiate(withOwner: self, options: nil).first as? UIView
