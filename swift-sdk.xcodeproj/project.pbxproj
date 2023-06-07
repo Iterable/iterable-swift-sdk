@@ -1014,10 +1014,10 @@
 		AC2263E120CF49B8009800EB /* swift-sdk */ = {
 			isa = PBXGroup;
 			children = (
+				AC44C0EB22615F8100E0641D /* Resources */,
 				560ACF442A308C8A007F9503 /* uicomponents */,
 				AC5C467E2756AEA4000762B6 /* swiftui */,
 				AC72A0BB20CF4C8C004D7997 /* Internal */,
-				AC44C0EB22615F8100E0641D /* Resources */,
 				AC2263F920CF4B63009800EB /* Supporting Files */,
 				AC72A0C120CF4CB8004D7997 /* CommerceItem.swift */,
 				AC72A0BE20CF4CB8004D7997 /* Constants.swift */,
@@ -1614,7 +1614,6 @@
 				AC2263DA20CF49B8009800EB /* Sources */,
 				AC2263DB20CF49B8009800EB /* Frameworks */,
 				AC2263DD20CF49B8009800EB /* Resources */,
-				56CE7B402A30DB0F00E55B37 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -2005,26 +2004,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		56CE7B402A30DB0F00E55B37 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "mkdir -p \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/Contents/Resources\"\ncp -r \"${SRCROOT}/swift-sdk/Resources\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app\"\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		AC2263DA20CF49B8009800EB /* Sources */ = {
