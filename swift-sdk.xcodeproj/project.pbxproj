@@ -492,7 +492,7 @@
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
-			dstSubfolderSpec = 7;
+			dstSubfolderSpec = 6;
 			files = (
 				56CE7B3F2A30D41D00E55B37 /* IterableBannerView.xib in CopyFiles */,
 			);
