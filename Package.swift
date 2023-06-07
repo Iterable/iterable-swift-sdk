@@ -22,7 +22,7 @@ let package = Package(
                 path: "swift-sdk",
                 exclude: ["Info.plist"],
                 resources: [
-                    .copy("Resources"),
+                    .process("Resources"),
                 ]),
         .target(name: "IterableAppExtensions",
                 path: "notification-extension",
