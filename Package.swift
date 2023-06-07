@@ -21,11 +21,6 @@ let package = Package(
         .target(name: "IterableSDK",
                 path: "swift-sdk",
                 exclude: ["Info.plist"],
-                postBuild: [
-                .script(
-                    path: "script.sh"
-                )
-                ],
                 resources: [
                     .process("Resources"),
                 ]),
