@@ -62,7 +62,7 @@ public class IterableBannerView:UIView {
     }
     
     func loadViewFromNib() -> UIView? {
-        let bundle = Bundle(identifier: "IterableSDK")
+        let bundle = Bundle(identifier: "IterableSDK_IterableSDK")
 
         if let bundlePath = bundle?.bundlePath,
            let contents = try? FileManager.default.contentsOfDirectory(atPath: bundlePath) {
