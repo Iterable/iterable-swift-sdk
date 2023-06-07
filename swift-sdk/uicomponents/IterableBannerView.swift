@@ -62,7 +62,7 @@ public class IterableBannerView:UIView {
     }
     
     func loadViewFromNib() -> UIView? {
-        let bundle = Bundle(for: IterableBannerView.self)
+        let bundle = Bundle(for: Self.self)
         let nib = UINib(nibName: "IterableBannerView", bundle: bundle)
         let view = nib.instantiate(withOwner: self, options: nil).first as? UIView
         view?.backgroundColor = UIColor.clear
