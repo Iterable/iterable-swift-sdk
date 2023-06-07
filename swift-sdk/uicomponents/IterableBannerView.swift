@@ -63,6 +63,9 @@ public class IterableBannerView:UIView {
     
     func loadViewFromNib() -> UIView? {
         let bundle = Bundle(for: Self.self)
+        let contents = try? FileManager.default.contentsOfDirectory(atPath: bundle.bundlePath)
+        print(contents)
+        
         let nibPath = bundle.path(forResource: "IterableBannerView", ofType: "nib") ?? ""
         let nib = UINib(nibName: nibPath, bundle: nil)
         let view = nib.instantiate(withOwner: self, options: nil).first as? UIView
