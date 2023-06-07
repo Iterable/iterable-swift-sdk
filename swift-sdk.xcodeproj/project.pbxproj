@@ -174,7 +174,6 @@
 		55E9BE3429F9F5E6000C9FF2 /* DependencyContainerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E9BE3329F9F5E6000C9FF2 /* DependencyContainerProtocol.swift */; };
 		560ACF482A308C8A007F9503 /* IterableBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560ACF462A308C8A007F9503 /* IterableBannerView.swift */; };
 		564BCC302A30B60500A699B9 /* IterableBannerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 560ACF452A308C8A007F9503 /* IterableBannerView.xib */; };
-		56CE7B3F2A30D41D00E55B37 /* IterableBannerView.xib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 560ACF452A308C8A007F9503 /* IterableBannerView.xib */; };
 		5B49BB3E27CFB71500E6F00C /* PopupInboxSessionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B49BB3D27CFB71500E6F00C /* PopupInboxSessionUITests.swift */; };
 		5B5AA711284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */; };
 		5B5AA712284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */; };
@@ -488,16 +487,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		56CE7B3E2A30D3C200E55B37 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 6;
-			files = (
-				56CE7B3F2A30D41D00E55B37 /* IterableBannerView.xib in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		ACC87771215C23CC0097E29B /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1625,7 +1614,7 @@
 				AC2263DA20CF49B8009800EB /* Sources */,
 				AC2263DB20CF49B8009800EB /* Frameworks */,
 				AC2263DD20CF49B8009800EB /* Resources */,
-				56CE7B3E2A30D3C200E55B37 /* CopyFiles */,
+				56CE7B402A30DB0F00E55B37 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -2016,6 +2005,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		56CE7B402A30DB0F00E55B37 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\ncp -r \"${SRCROOT}/swift-sdk/Resources\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app\"\n\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		AC2263DA20CF49B8009800EB /* Sources */ = {
