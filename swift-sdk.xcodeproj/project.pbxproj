@@ -172,6 +172,8 @@
 		55E02D39253F8D86009DB8BC /* WebViewProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */; };
 		55E6F462238E066400808BCE /* DeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6F45E238E066400808BCE /* DeepLinkTests.swift */; };
 		55E9BE3429F9F5E6000C9FF2 /* DependencyContainerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E9BE3329F9F5E6000C9FF2 /* DependencyContainerProtocol.swift */; };
+		560ACF472A308C8A007F9503 /* IterableBannerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 560ACF452A308C8A007F9503 /* IterableBannerView.xib */; };
+		560ACF482A308C8A007F9503 /* IterableBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560ACF462A308C8A007F9503 /* IterableBannerView.swift */; };
 		5B49BB3E27CFB71500E6F00C /* PopupInboxSessionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B49BB3D27CFB71500E6F00C /* PopupInboxSessionUITests.swift */; };
 		5B5AA711284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */; };
 		5B5AA712284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */; };
@@ -583,6 +585,8 @@
 		55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewProtocolTests.swift; sourceTree = "<group>"; };
 		55E6F45E238E066400808BCE /* DeepLinkTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeepLinkTests.swift; sourceTree = "<group>"; };
 		55E9BE3329F9F5E6000C9FF2 /* DependencyContainerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependencyContainerProtocol.swift; sourceTree = "<group>"; };
+		560ACF452A308C8A007F9503 /* IterableBannerView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IterableBannerView.xib; sourceTree = "<group>"; };
+		560ACF462A308C8A007F9503 /* IterableBannerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IterableBannerView.swift; sourceTree = "<group>"; };
 		5B49BB3D27CFB71500E6F00C /* PopupInboxSessionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupInboxSessionUITests.swift; sourceTree = "<group>"; };
 		5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockNetworkSession.swift; sourceTree = "<group>"; };
 		5B6C3C1027CE871F00B9A753 /* NavInboxSessionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavInboxSessionUITests.swift; sourceTree = "<group>"; };
@@ -943,6 +947,15 @@
 			path = "embedded-messaging-tests";
 			sourceTree = "<group>";
 		};
+		560ACF442A308C8A007F9503 /* uicomponents */ = {
+			isa = PBXGroup;
+			children = (
+				560ACF452A308C8A007F9503 /* IterableBannerView.xib */,
+				560ACF462A308C8A007F9503 /* IterableBannerView.swift */,
+			);
+			path = uicomponents;
+			sourceTree = "<group>";
+		};
 		AC0248062279132400495FB9 /* Dwifft */ = {
 			isa = PBXGroup;
 			children = (
@@ -1002,6 +1015,7 @@
 		AC2263E120CF49B8009800EB /* swift-sdk */ = {
 			isa = PBXGroup;
 			children = (
+				560ACF442A308C8A007F9503 /* uicomponents */,
 				AC5C467E2756AEA4000762B6 /* swiftui */,
 				AC72A0BB20CF4C8C004D7997 /* Internal */,
 				AC44C0EB22615F8100E0641D /* Resources */,
@@ -1896,6 +1910,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				560ACF472A308C8A007F9503 /* IterableBannerView.xib in Resources */,
 				AC219C532260006600B98631 /* Assets.xcassets in Resources */,
 				AC219C51225FEDBD00B98631 /* SampleInboxCell.xib in Resources */,
 			);
@@ -2025,6 +2040,7 @@
 				AC684A86222EF75C00F29749 /* InAppMessageParser.swift in Sources */,
 				AC72A0C920CF4CE2004D7997 /* IterableAction.swift in Sources */,
 				AC72A0CA20CF4CE2004D7997 /* ActionRunner.swift in Sources */,
+				560ACF482A308C8A007F9503 /* IterableBannerView.swift in Sources */,
 				ACC3FDB1253724DB0004A2E0 /* InAppCalculations.swift in Sources */,
 				ACD6116C2107D004003E7F6B /* NetworkHelper.swift in Sources */,
 				ACC362B624D16D91002C67BA /* IterableRequest.swift in Sources */,
