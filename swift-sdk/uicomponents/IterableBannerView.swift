@@ -62,14 +62,11 @@ public class IterableBannerView:UIView {
     }
     
     func loadViewFromNib() -> UIView? {
-        let bundle = Bundle(identifier: "IterableSDK_IterableSDK")
-
-        if let bundlePath = bundle?.bundlePath,
-           let contents = try? FileManager.default.contentsOfDirectory(atPath: bundlePath) {
-            print(contents)
-        }
+        let bundle = Bundle(for: Self.self)
+        let contents = try? FileManager.default.contentsOfDirectory(atPath: bundle.bundlePath)
+        print(contents)
         
-        let nibPath = bundle!.path(forResource: "IterableBannerView", ofType: "nib") ?? ""
+        let nibPath = bundle.path(forResource: "IterableBannerView", ofType: "nib") ?? ""
         let nib = UINib(nibName: nibPath, bundle: nil)
         let view = nib.instantiate(withOwner: self, options: nil).first as? UIView
         view?.backgroundColor = UIColor.clear
