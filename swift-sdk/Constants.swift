@@ -267,9 +267,9 @@ enum JsonValue {
     }
 }
 
-enum IterableDataRegion {
-    static let US = "https://api.iterable.com/api/"
-    static let EU = "https://api.eu.iterable.com/api/"
+public enum IterableDataRegion {
+    public static let US = "https://api.iterable.com/api/"
+    public static let EU = "https://api.eu.iterable.com/api/"
 }
 
 public protocol JsonValueRepresentable {
