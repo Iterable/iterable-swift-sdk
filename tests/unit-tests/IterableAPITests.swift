@@ -11,8 +11,8 @@ class IterableAPITests: XCTestCase {
     private static let apiKey = "zeeApiKey"
     private static let email = "user@example.com"
     private static let userId = "testUserId"
-    private static let apiEndPointUS = "https://api.iterable.com"
-    private static let apiEndPointEU = "https://api.eu.iterable.com"
+    private static let apiEndPointUS = "https://api.iterable.com/api/"
+    private static let apiEndPointEU = "https://api.eu.iterable.com/api/"
     
     override func setUp() {
         super.setUp()
