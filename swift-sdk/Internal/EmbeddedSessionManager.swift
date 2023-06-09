@@ -30,7 +30,7 @@ public class EmbeddedSessionManager {
         }
         session.embeddedSessionEnd = Date()
         updateDisplayDurations()
-//        let _ = IterableAPI.embeddedMessagingManager.track(embeddedSession: session)
+        let _ = IterableAPI.embeddedMessagingManager.track(embeddedSession: session)
     }
     
     public func pauseImpression(impressionId: String) {
