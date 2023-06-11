@@ -14,7 +14,7 @@ final class EmbeddedMessagingProcessorTests: XCTestCase {
         let processor = EmbeddedMessagingProcessor(currentMessages: currentMessages,
                                                    fetchedMessages: fetchedMessages)
         
-        XCTAssertEqual(processor.processedMessagesList().map { $0.metadata.id },
+        XCTAssertEqual(processor.processedMessagesList().map { $0.metadata.messageId },
                        [1, 3, 4, 5])
     }
     
@@ -55,7 +55,7 @@ final class EmbeddedMessagingProcessorTests: XCTestCase {
 //    }
     
     private func makeBlankMessagesList(with ids: [Int]) -> [IterableEmbeddedMessage] {
-        return ids.map { IterableEmbeddedMessage(id: $0) }
+        return ids.map { IterableEmbeddedMessage(messageId: $0) }
     }
     
 //    private func makeBlankMessagesListWithMessageAndPlacementIds(_ messageAndPlacementIds: [(String, String)]) -> [IterableEmbeddedMessage] {

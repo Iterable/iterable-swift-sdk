@@ -63,7 +63,7 @@ extension IterableEmbeddedMessage: Codable {
         guard let container = try? decoder.container(keyedBy: CodingKeys.self) else {
             ITBError("unable to decode embedded messages payload")
             
-            self.init(id: 0)
+            self.init(messageId: 0)
             
             return
         }
@@ -74,7 +74,7 @@ extension IterableEmbeddedMessage: Codable {
         
         guard let metadata = metadata else {
             ITBError("unable to decode metadata section of embedded messages payload")
-            self.init(id: 0)
+            self.init(messageId: 0)
             
             return
         }
