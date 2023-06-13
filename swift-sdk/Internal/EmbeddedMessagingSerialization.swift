@@ -4,6 +4,38 @@
 
 import Foundation
 
+struct AnyDecodable: Decodable {
+    let value: Any
+
+    // the current implementation decodes the following value types: null, int, string, bool, double, array, and dictionary
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if container.decodeNil() {
+            value = NSNull()
+        }
+        else if let intVal = try? container.decode(Int.self) {
+            value = intVal
+        } else if let stringVal = try? container.decode(String.self) {
+            value = stringVal
+        } else if let boolVal = try? container.decode(Bool.self) {
+            value = boolVal
+        } else if let doubleVal = try? container.decode(Double.self) {
+            value = doubleVal
+        } else if let arrayVal = try? container.decode([AnyDecodable].self) {
+            value = arrayVal.map { $0.value }
+        } else if let dictionaryVal = try? container.decode([String: AnyDecodable].self) {
+            var dictionary: [String: Any] = [:]
+            for (key, val) in dictionaryVal {
+                dictionary[key] = val.value
+            }
+            value = dictionary
+        } else {
+            throw DecodingError.dataCorruptedError(in: container, debugDescription: "Container contains an unexpected type")
+        }
+    }
+}
+
+
 struct EmbeddedMessagingSerialization {
     static func encode(messages: [IterableEmbeddedMessage]) -> Data {
         guard let encoded = try? JSONEncoder().encode(EmbeddedMessagesPayload(embeddedMessages: messages)) else {
@@ -63,18 +95,25 @@ extension IterableEmbeddedMessage: Codable {
         guard let container = try? decoder.container(keyedBy: CodingKeys.self) else {
             ITBError("unable to decode embedded messages payload")
             
-            self.init(id: 0)
+            self.init(messageId: 0)
             
             return
         }
         
         let metadata = (try? container.decode(EmbeddedMessageMetadata.self, forKey: .metadata))
         let elements = (try? container.decode(EmbeddedMessageElements.self, forKey: .elements))
-        let payload = EmbeddedMessagingSerialization.decode(payload: try? container.decode(Data.self, forKey: .payload))
+        var payload: [String: Any]? = nil
+        
+        do {
+            let anyDecodable = try container.decodeIfPresent(AnyDecodable.self, forKey: .payload)
+            payload = anyDecodable?.value as? [String: Any]
+        } catch {
+            ITBError("Error decoding payload data: \(error)")
+        }
         
         guard let metadata = metadata else {
             ITBError("unable to decode metadata section of embedded messages payload")
-            self.init(id: 0)
+            self.init(messageId: 0)
             
             return
         }

@@ -457,7 +457,7 @@ struct RequestCreator {
         
         addUserKey(intoDict: &body)
         
-        body.setValue(for: JsonKey.messageId, value: String(message.metadata.id))
+        body.setValue(for: JsonKey.messageId, value: String(message.metadata.messageId))
         
         return .success(.post(createPostRequest(path: Const.Path.embeddedMessageReceived, body: body as! [String: String])))
     }
@@ -478,7 +478,7 @@ struct RequestCreator {
         
         addUserKey(intoDict: &body)
         
-        body.setValue(for: JsonKey.messageId, value: String(message.metadata.id))
+        body.setValue(for: JsonKey.messageId, value: String(message.metadata.messageId))
         
         return .success(.post(createPostRequest(path: Const.Path.embeddedMessageClick, body: body as! [String: String])))
     }

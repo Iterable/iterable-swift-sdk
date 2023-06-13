@@ -13,11 +13,13 @@ public class EmbeddedSessionManager {
     var currentlyTrackingImpressions: [String: (totalDisplayDuration: TimeInterval, startTime: Date, tracking: Bool)] = [:]
 
     public func startSession() {
+        print("starting session...")
         let startTime = Date()
         session = IterableEmbeddedSession(embeddedSessionId: UUID().uuidString, embeddedSessionStart: startTime, impressions: [])
     }
 
     public func endSession() {
+        print("ending session...")
         guard let session = session else {
             ITBError("No current session.")
             return
