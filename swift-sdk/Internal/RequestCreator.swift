@@ -436,7 +436,7 @@ struct RequestCreator {
             args[JsonKey.Embedded.packageName] = packageName
         }
         
-        addUserKey(intoDict: &args)
+        setCurrentUser(inDict: &args)
         
         return .success(.get(createGetRequest(forPath: Const.Path.getEmbeddedMessages, withArgs: args as! [String: String])))
     }
@@ -455,7 +455,7 @@ struct RequestCreator {
             body[JsonKey.Embedded.packageName] = packageName
         }
         
-        addUserKey(intoDict: &body)
+        setCurrentUser(inDict: &body)
         
         body.setValue(for: JsonKey.messageId, value: String(message.metadata.messageId))
         
@@ -476,7 +476,7 @@ struct RequestCreator {
             body[JsonKey.Embedded.packageName] = packageName
         }
         
-        addUserKey(intoDict: &body)
+        setCurrentUser(inDict: &body)
         
         body.setValue(for: JsonKey.messageId, value: String(message.metadata.messageId))
         
@@ -497,7 +497,7 @@ struct RequestCreator {
             body[JsonKey.Embedded.packageName] = packageName
         }
         
-        addUserKey(intoDict: &body)
+        setCurrentUser(inDict: &body)
         
         // TODO: find/create proper key for the value of the embedded message ID
         
@@ -518,7 +518,7 @@ struct RequestCreator {
             body[JsonKey.Embedded.packageName] = packageName
         }
         
-        addUserKey(intoDict: &body)
+        setCurrentUser(inDict: &body)
         
         // TODO: find/create proper key for the value of the embedded message ID
         
@@ -546,7 +546,7 @@ struct RequestCreator {
 
         var body = [AnyHashable: Any]()
         
-        addUserKey(intoDict: &body)
+        setCurrentUser(inDict: &body)
 
         body.setValue(for: JsonKey.embeddedSessionId, value: [
             "id": embeddedSessionId,
