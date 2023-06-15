@@ -143,7 +143,15 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
                 },
                 
                 receiveError: { sendRequestError in
-                    ITBError()
+                    //TODO: This check can go away once eligibility based retrieval comes in place.
+                    if sendRequestError.reason == "SUBSCRIPTION_INACTIVE" ||
+                        sendRequestError.reason == "Invalid API Key" {
+                        self.autoFetchInterval = 0
+                        self.stopAutoFetchTimer()
+                        ITBInfo("Subscription inactive. Stopping embedded message sync")
+                    } else {
+                        ITBError()
+                    }
                 }
             )
     }
