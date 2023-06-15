@@ -148,6 +148,7 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
                         sendRequestError.reason == "Invalid API Key" {
                         self.autoFetchInterval = 0
                         self.stopAutoFetchTimer()
+                        self.notifyDelegatesOfInvalidApiKeyOrSyncStop()
                         ITBInfo("Subscription inactive. Stopping embedded message sync")
                     } else {
                         ITBError()
@@ -180,6 +181,11 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
         }
     }
     
+    private func notifyDelegatesOfInvalidApiKeyOrSyncStop() {
+        for listener in listeners.allObjects {
+            listener.onInvalidApiKeyOrSyncStop()
+        }
+    }
     private var apiClient: ApiClientProtocol
     private var dateProvider: DateProviderProtocol
     

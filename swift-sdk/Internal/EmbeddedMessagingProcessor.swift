@@ -20,7 +20,7 @@ struct EmbeddedMessagingProcessor {
         return getNewMessages()
     }
     
-    func newlyRemovedMessageIds() -> [Int] {
+    func newlyRemovedMessageIds() -> [String] {
         return getCurrentMessageIds().filter { !getFetchedMessageIds().contains($0) }
     }
 
@@ -45,11 +45,11 @@ struct EmbeddedMessagingProcessor {
             }
     }
     
-    private func getCurrentMessageIds() -> [Int] {
+    private func getCurrentMessageIds() -> [String] {
         return currentMessages.map { $0.metadata.messageId }
     }
     
-    private func getFetchedMessageIds() -> [Int] {
+    private func getFetchedMessageIds() -> [String] {
         return fetchedMessages.map { $0.metadata.messageId }
     }
 }

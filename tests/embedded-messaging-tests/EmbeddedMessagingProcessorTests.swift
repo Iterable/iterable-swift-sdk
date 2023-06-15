@@ -8,34 +8,34 @@ import XCTest
 
 final class EmbeddedMessagingProcessorTests: XCTestCase {
     func testMessageListProcessing() {
-        let currentMessages = makeBlankMessagesList(with: [1, 2, 3])
-        let fetchedMessages = makeBlankMessagesList(with: [1, 3, 4, 5])
+        let currentMessages = makeBlankMessagesList(with: ["1", "2", "3"])
+        let fetchedMessages = makeBlankMessagesList(with: ["1", "3", "4", "5"])
         
         let processor = EmbeddedMessagingProcessor(currentMessages: currentMessages,
                                                    fetchedMessages: fetchedMessages)
         
         XCTAssertEqual(processor.processedMessagesList().map { $0.metadata.messageId },
-                       [1, 3, 4, 5])
+                       ["1", "3", "4", "5"])
     }
     
     func testMessageListRemovedMessages() {
-        let currentMessages = makeBlankMessagesList(with: [1, 2, 3])
-        let fetchedMessages = makeBlankMessagesList(with: [1, 3, 4, 5])
+        let currentMessages = makeBlankMessagesList(with: ["1", "2", "3"])
+        let fetchedMessages = makeBlankMessagesList(with: ["1", "3", "4", "5"])
         
         let processor = EmbeddedMessagingProcessor(currentMessages: currentMessages,
                                                    fetchedMessages: fetchedMessages)
         
-        XCTAssertEqual(processor.newlyRemovedMessageIds(), [2])
+        XCTAssertEqual(processor.newlyRemovedMessageIds(), ["2"])
     }
     
     func testMessageIdsToTrackDelivery() {
-        let currentMessages = makeBlankMessagesList(with: [1, 2, 3])
-        let fetchedMessages = makeBlankMessagesList(with: [1, 2, 3, 4])
+        let currentMessages = makeBlankMessagesList(with: ["1", "2", "3"])
+        let fetchedMessages = makeBlankMessagesList(with: ["1", "2", "3", "4"])
         
         let processor = EmbeddedMessagingProcessor(currentMessages: currentMessages,
                                                    fetchedMessages: fetchedMessages)
         
-        XCTAssertEqual(processor.newlyRetrievedMessages().map { $0.metadata.messageId }, [4])
+        XCTAssertEqual(processor.newlyRetrievedMessages().map { $0.metadata.messageId }, ["4"])
     }
     
 //    func testPlacementIdsToNotify() {
@@ -54,8 +54,8 @@ final class EmbeddedMessagingProcessorTests: XCTestCase {
 //        XCTAssertEqual(processor.placementIdsToNotify(), ["1", "2"])
 //    }
     
-    private func makeBlankMessagesList(with ids: [Int]) -> [IterableEmbeddedMessage] {
-        return ids.map { IterableEmbeddedMessage(id: $0) }
+    private func makeBlankMessagesList(with ids: [String]) -> [IterableEmbeddedMessage] {
+        return ids.map { IterableEmbeddedMessage(messageId: $0) }
     }
     
 //    private func makeBlankMessagesListWithMessageAndPlacementIds(_ messageAndPlacementIds: [(String, String)]) -> [IterableEmbeddedMessage] {

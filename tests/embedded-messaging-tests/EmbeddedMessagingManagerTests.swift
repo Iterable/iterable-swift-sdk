@@ -18,9 +18,12 @@ final class EmbeddedMessagingManagerTests: XCTestCase {
         
         manager.start()
         
-        let view1 = ViewWithUpdateDelegate({
-            condition1.fulfill()
-        })
+        let view1 = ViewWithUpdateDelegate(
+            onMessagesUpdatedCallback: {
+                condition1.fulfill()
+            },
+            onInvalidApiKeyOrSyncStopCallback: nil
+        )
         
         manager.addUpdateListener(view1)
         
@@ -38,10 +41,11 @@ final class EmbeddedMessagingManagerTests: XCTestCase {
     }
     
     private class ViewWithUpdateDelegate: UIView, IterableEmbeddedMessagingUpdateDelegate {
-        init(_ onMessagesUpdatedCallback: (() -> Void)?) {
+        init(onMessagesUpdatedCallback: (() -> Void)?, onInvalidApiKeyOrSyncStopCallback: (() -> Void)?) {
             super.init(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
             
             self.onMessagesUpdatedCallback = onMessagesUpdatedCallback
+            self.onInvalidApiKeyOrSyncStopCallback = onInvalidApiKeyOrSyncStopCallback
         }
         
         required init?(coder: NSCoder) {
@@ -49,9 +53,14 @@ final class EmbeddedMessagingManagerTests: XCTestCase {
         }
         
         private var onMessagesUpdatedCallback: (() -> Void)?
+        private var onInvalidApiKeyOrSyncStopCallback: (() -> Void)?
         
         func onMessagesUpdated() {
             onMessagesUpdatedCallback?()
+        }
+        
+        func onInvalidApiKeyOrSyncStop() {
+            onInvalidApiKeyOrSyncStopCallback?()
         }
     }
     
@@ -62,13 +71,13 @@ final class EmbeddedMessagingManagerTests: XCTestCase {
             newMessages = true
         }
         
-        private func makeBlankMessagesList(with ids: [Int]) -> [IterableEmbeddedMessage] {
-            return ids.map { IterableEmbeddedMessage(id: $0) }
+        private func makeBlankMessagesList(with ids: [String]) -> [IterableEmbeddedMessage] {
+            return ids.map { IterableEmbeddedMessage(messageId: $0) }
         }
         
         override func getEmbeddedMessages() -> IterableSDK.Pending<IterableSDK.EmbeddedMessagesPayload, IterableSDK.SendRequestError> {
             if newMessages {
-                let messages = EmbeddedMessagesPayload(embeddedMessages: makeBlankMessagesList(with: [1]))
+                let messages = EmbeddedMessagesPayload(embeddedMessages: makeBlankMessagesList(with: ["1"]))
                 
                 return Fulfill(value: messages)
             }

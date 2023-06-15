@@ -457,7 +457,7 @@ struct RequestCreator {
         
         setCurrentUser(inDict: &body)
         
-        body.setValue(for: JsonKey.messageId, value: String(message.metadata.messageId))
+        body.setValue(for: JsonKey.messageId, value: message.metadata.messageId)
         
         return .success(.post(createPostRequest(path: Const.Path.embeddedMessageReceived, body: body as! [String: String])))
     }
@@ -478,7 +478,7 @@ struct RequestCreator {
         
         setCurrentUser(inDict: &body)
         
-        body.setValue(for: JsonKey.messageId, value: String(message.metadata.messageId))
+        body.setValue(for: JsonKey.messageId, value: message.metadata.messageId)
         
         return .success(.post(createPostRequest(path: Const.Path.embeddedMessageClick, body: body as! [String: String])))
     }
@@ -532,7 +532,7 @@ struct RequestCreator {
         }
 
         guard !embeddedSession.embeddedSessionId.isEmpty else {
-            return .failure(IterableError.general(description: "expecting session UUID"))
+            return .failure(IterableError.general(description: "expecting session id"))
         }
         let embeddedSessionId = embeddedSession.embeddedSessionId
 
@@ -555,7 +555,7 @@ struct RequestCreator {
         ])
 
         body.setValue(for: JsonKey.impressions, value: embeddedSession.impressions.compactMap { $0.asDictionary() })
-        body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
+        body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())        
         return .success(.post(createPostRequest(path: Const.Path.trackEmbeddedSession, body: body)))
     }
 
