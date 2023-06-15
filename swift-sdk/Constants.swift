@@ -5,7 +5,7 @@
 import Foundation
 
 enum Endpoint {
-    private static let apiHostName = "https://api.iterable.com"
+    private static let apiHostName = "https://api.stg-itbl.co"
     
     static let api = Endpoint.apiHostName + Const.apiPath
 }
