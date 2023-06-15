@@ -30,6 +30,11 @@ public class EmbeddedSessionManager {
         }
         session.embeddedSessionEnd = Date()
         updateDisplayDurations()
+        
+        if session.impressions.isEmpty {
+                ITBInfo("No impressions in the session. Skipping tracking.")
+                return
+            }
         let _ = IterableAPI.embeddedMessagingManager.track(embeddedSession: session)
     }
     

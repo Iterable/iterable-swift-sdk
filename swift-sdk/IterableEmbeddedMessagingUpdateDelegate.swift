@@ -6,4 +6,5 @@ import Foundation
 
 @objc public protocol IterableEmbeddedMessagingUpdateDelegate {
     func onMessagesUpdated()
+    func onInvalidApiKeyOrSyncStop()
 }
