@@ -269,11 +269,12 @@ class RequestHandler: RequestHandlerProtocol {
     }
     
     @discardableResult
-    func track(embeddedMessageClick message: IterableEmbeddedMessage,
+    func track(embeddedMessageClick message: IterableEmbeddedMessage, clickType: String,
                onSuccess: OnSuccessHandler?,
                onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         sendUsingRequestProcessor { processor in
             processor.track(embeddedMessageClick: message,
+                            clickType: clickType,
                             onSuccess: onSuccess,
                             onFailure: onFailure)
         }

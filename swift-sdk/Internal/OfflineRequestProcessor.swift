@@ -246,11 +246,11 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     }
     
     @discardableResult
-    func track(embeddedMessageClick message: IterableEmbeddedMessage,
+    func track(embeddedMessageClick message: IterableEmbeddedMessage, clickType: String,
                onSuccess: OnSuccessHandler? = nil,
                onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         let requestGenerator = { (requestCreator: RequestCreator) in
-            requestCreator.createEmbeddedMessageClickRequest(message)
+            requestCreator.createEmbeddedMessageClickRequest(message, clickType)
         }
         
         return sendIterableRequest(requestGenerator: requestGenerator,

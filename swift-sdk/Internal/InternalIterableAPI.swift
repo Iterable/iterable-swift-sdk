@@ -424,9 +424,11 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     @discardableResult
     func track(embeddedMessageClick message: IterableEmbeddedMessage,
+               clickType: String,
                onSuccess: OnSuccessHandler? = nil,
                onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
         requestHandler.track(embeddedMessageClick: message,
+                             clickType: clickType,
                              onSuccess: onSuccess,
                              onFailure: onFailure)
     }

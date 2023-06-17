@@ -15,6 +15,7 @@ public class EmbeddedSessionManager {
     public func startSession() {
         print("starting session...")
         let startTime = Date()
+        currentlyTrackingImpressions = [:]
         session = IterableEmbeddedSession(embeddedSessionId: UUID().uuidString, embeddedSessionStart: startTime, impressions: [])
     }
 
