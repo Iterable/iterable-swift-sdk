@@ -180,7 +180,7 @@ class IterableAPITests: XCTestCase {
             XCTFail("Failed to set email")
             expectation.fulfill()
         })
-
+        internalAPI.register(token: "zeeToken".data(using: .utf8)!)
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
 
@@ -198,7 +198,7 @@ class IterableAPITests: XCTestCase {
             XCTAssertNotNil(error)
             expectation.fulfill()
         })
-
+        internalAPI.register(token: "zeeToken".data(using: .utf8)!)
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
 
@@ -210,13 +210,13 @@ class IterableAPITests: XCTestCase {
         let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
         
         internalAPI.setUserId("user123", successHandler: { success in
-            XCTAssertNil(success)
+            XCTAssertNotNil(success)
             expectation.fulfill()
         }, failureHandler: { _, _ in
             XCTFail("Failed to set user ID")
             expectation.fulfill()
         })
-        
+        internalAPI.register(token: "zeeToken".data(using: .utf8)!)
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
 
@@ -234,7 +234,7 @@ class IterableAPITests: XCTestCase {
             XCTAssertNotNil(error)
             expectation.fulfill()
         })
-        
+        internalAPI.register(token: "zeeToken".data(using: .utf8)!)
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
     
