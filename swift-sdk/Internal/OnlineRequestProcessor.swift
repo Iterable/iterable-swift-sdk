@@ -244,10 +244,10 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     }
     
     @discardableResult
-    func track(embeddedMessageClick message: IterableEmbeddedMessage, clickType: String,
+    func track(embeddedMessageClick message: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String,
                onSuccess: OnSuccessHandler? = nil,
                onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        sendRequest(requestProvider: { apiClient.track(embeddedMessageClick: message, clickType: clickType) },
+        sendRequest(requestProvider: { apiClient.track(embeddedMessageClick: message, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl) },
                     successHandler: onSuccess,
                     failureHandler: onFailure,
                     requestIdentifier: "trackEmbeddedMessageClick")

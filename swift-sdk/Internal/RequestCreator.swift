@@ -457,42 +457,21 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: Const.Path.embeddedMessageReceived, body: body)))
     }
     
-    func createEmbeddedMessageClickRequest(_ message: IterableEmbeddedMessage, _ clickType: String) -> Result<IterableRequest, IterableError> {
+    func createEmbeddedMessageClickRequest(_ message: IterableEmbeddedMessage, _ buttonIdentifier: String?, _ clickedUrl: String) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
             ITBError(Self.authMissingMessage)
             return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
         var body = [AnyHashable: Any]()
-        
         setCurrentUser(inDict: &body)
         
-        switch clickType {
-            case "primaryEmbeddedMessageButton":
-                if let buttonData = message.elements?.buttons?.first {
-                    if !buttonData.id.isEmpty {
-                        body.setValue(for: JsonKey.embeddedButtonId, value: buttonData.id)
-                    }
-                    if let actionData = buttonData.action?.data, !actionData.isEmpty {
-                        body.setValue(for: JsonKey.embeddedTargetUrl, value: actionData)
-                    }
-                }
-            case "secondaryEmbeddedMessageButton":
-                if let buttonData = message.elements?.buttons?.dropFirst().first {
-                    if !buttonData.id.isEmpty {
-                        body.setValue(for: JsonKey.embeddedButtonId, value: buttonData.id)
-                    }
-                    if let actionData = buttonData.action?.data, !actionData.isEmpty {
-                        body.setValue(for: JsonKey.embeddedTargetUrl, value: actionData)
-                    }
-                }
-            case "embeddedMessage":
-                if let defaultActionData = message.elements?.defaultAction?.data, !defaultActionData.isEmpty {
-                    body.setValue(for: JsonKey.embeddedTargetUrl, value: defaultActionData)
-                }
-            default:
-                return .failure(IterableError.general(description: "Invalid click type"))
+        if let buttonIdentifier, !buttonIdentifier.isEmpty {
+            body.setValue(for: JsonKey.embeddedButtonId, value: buttonIdentifier)
         }
+        
+        body.setValue(for: JsonKey.embeddedTargetUrl, value: clickedUrl)
+        
         body.setValue(for: JsonKey.messageId, value: message.metadata.messageId)
 
         body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())

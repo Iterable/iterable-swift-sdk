@@ -14,9 +14,5 @@ import Foundation
     func removeUpdateListener(_ listener: IterableEmbeddedMessagingUpdateDelegate)
     
     func temp_manualOverrideRefresh()
-    
-    func track(click message: IterableEmbeddedMessage, clickType: String)
-    func track(impression message: IterableEmbeddedMessage)
-    func track(embeddedSession: IterableEmbeddedSession)
 
 }

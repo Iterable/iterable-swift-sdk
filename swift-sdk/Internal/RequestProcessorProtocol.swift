@@ -106,7 +106,7 @@ protocol RequestProcessorProtocol {
                onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
     
     @discardableResult
-    func track(embeddedMessageClick message: IterableEmbeddedMessage, clickType: String,
+    func track(embeddedMessageClick message: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String,
                onSuccess: OnSuccessHandler?,
                onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
     

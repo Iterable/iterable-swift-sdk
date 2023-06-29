@@ -125,7 +125,8 @@ protocol RequestHandlerProtocol: AnyObject {
     
     @discardableResult
     func track(embeddedMessageClick message: IterableEmbeddedMessage,
-               clickType: String,
+               buttonIdentifier: String?,
+               clickedUrl: String,
                onSuccess: OnSuccessHandler?,
                onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>
     
