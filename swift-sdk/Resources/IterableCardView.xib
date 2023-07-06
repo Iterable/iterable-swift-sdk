@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <array key="SofiaPro-Regular.ttf">
+            <string>SofiaPro-Regular</string>
+        </array>
+        <array key="SofiaPro-SemiBold.ttf">
+            <string>SofiaPro-SemiBold</string>
+        </array>
+    </customFonts>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CardView" customModule="Fiterable" customModuleProvider="target">
+            <connections>
+                <outlet property="descriptionLabel" destination="FcP-rC-sHW" id="daS-LA-9bN"/>
+                <outlet property="imageView" destination="bJ1-kb-XrF" id="giB-U2-bdr"/>
+                <outlet property="linkLabel" destination="E64-sB-P1x" id="uEH-BO-oXB"/>
+                <outlet property="titleLabel" destination="TmQ-gf-EkO" id="UBA-j3-FMT"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="360" height="360"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="bJ1-kb-XrF">
+                    <rect key="frame" x="0.0" y="0.0" width="360" height="230"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="230" id="jIV-9A-hz7"/>
+                    </constraints>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TmQ-gf-EkO">
+                    <rect key="frame" x="16" y="246" width="328" height="24"/>
+                    <fontDescription key="fontDescription" name="SofiaPro-SemiBold" family="Sofia Pro" pointSize="18"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FcP-rC-sHW">
+                    <rect key="frame" x="16" y="286" width="328" height="19"/>
+                    <fontDescription key="fontDescription" name="SofiaPro-Regular" family="Sofia Pro" pointSize="14"/>
+                    <color key="textColor" red="0.47058823529999999" green="0.4431372549" blue="0.4549019608" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="E64-sB-P1x">
+                    <rect key="frame" x="16" y="321" width="328" height="19"/>
+                    <fontDescription key="fontDescription" name="SofiaPro-SemiBold" family="Sofia Pro" pointSize="14"/>
+                    <color key="textColor" red="0.38431376220000002" green="0.1647058874" blue="0.41568624970000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="TmQ-gf-EkO" secondAttribute="trailing" constant="16" id="7Ie-dP-zfx"/>
+                <constraint firstAttribute="bottom" secondItem="E64-sB-P1x" secondAttribute="bottom" priority="600" constant="16" id="8PW-SF-Q3u"/>
+                <constraint firstAttribute="trailing" secondItem="E64-sB-P1x" secondAttribute="trailing" constant="16" id="GLh-rl-mD2"/>
+                <constraint firstItem="TmQ-gf-EkO" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="16" id="Gyw-oh-T3k"/>
+                <constraint firstItem="E64-sB-P1x" firstAttribute="top" secondItem="FcP-rC-sHW" secondAttribute="bottom" constant="16" id="HUP-Wx-QU7"/>
+                <constraint firstItem="bJ1-kb-XrF" firstAttribute="trailing" secondItem="iN0-l3-epB" secondAttribute="trailing" id="IfD-kx-T7W"/>
+                <constraint firstItem="TmQ-gf-EkO" firstAttribute="top" secondItem="bJ1-kb-XrF" secondAttribute="bottom" constant="16" id="KLJ-CM-TNf"/>
+                <constraint firstItem="FcP-rC-sHW" firstAttribute="top" secondItem="TmQ-gf-EkO" secondAttribute="bottom" constant="16" id="KU4-2f-XiJ"/>
+                <constraint firstAttribute="trailing" secondItem="FcP-rC-sHW" secondAttribute="trailing" constant="16" id="Tcg-yM-5sd"/>
+                <constraint firstItem="FcP-rC-sHW" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="16" id="URt-ig-eSR"/>
+                <constraint firstItem="bJ1-kb-XrF" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="gLY-Eg-GNw"/>
+                <constraint firstItem="bJ1-kb-XrF" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="sa5-N6-llk"/>
+                <constraint firstItem="E64-sB-P1x" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" constant="16" id="yMt-Xl-DaP"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="94.656488549618317" y="12.67605633802817"/>
+        </view>
+    </objects>
+</document>
