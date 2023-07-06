@@ -19,23 +19,25 @@ public class IterableNotificationView: UIView {
     // Delegate Methods
     weak public var notificationViewDelegate: IterableNotificationViewDelegate!
     
-    @IBOutlet var contentView: UIView!
-    @IBOutlet weak var titleLabel: UITextField!
-    @IBOutlet weak var bodyLabel: UITextField!
-    @IBOutlet weak var primaryButton: UIButton!
-    @IBOutlet weak var secondaryButton: UIButton!
+    @IBOutlet public var contentView: UIView!
+    @IBOutlet weak public var titleLabel: UITextField!
+    @IBOutlet weak public var bodyLabel: UITextField!
+    @IBOutlet weak public var primaryButton: UIButton!
+    @IBOutlet weak public var secondaryButton: UIButton!
     
-    override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
-        commonInit()
-    }
-    
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        commonInit()
+        self.backgroundColor = UIColor.clear
+        // Setup view from .xib file
+        xibSetup()
     }
 
-    private func commonInit() {
+    required init?(coder aDecoder: NSCoder) {
+        super.init(coder: aDecoder)
+        xibSetup()
+    }
+
+    func xibSetup() {
         self.contentView = self.loadViewFromNib()
         self.contentView.frame = self.bounds
         self.setDefaultValue()
