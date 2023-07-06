@@ -14,7 +14,7 @@ public protocol IterableNotificationViewDelegate: NSObject {
 }
 
 @IBDesignable
-class IterableNotificationView: UIView {
+public class IterableNotificationView: UIView {
     
     // Delegate Methods
     weak public var notificationViewDelegate: IterableNotificationViewDelegate!
