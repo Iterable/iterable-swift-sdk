@@ -447,40 +447,36 @@ struct RequestCreator {
             return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
-        var body: [AnyHashable: Any] = [JsonKey.platform: JsonValue.iOS,
-                                        JsonKey.systemVersion: UIDevice.current.systemVersion,
-                                        JsonKey.Embedded.sdkVersion: IterableAPI.sdkVersion]
-        
-        if let packageName = Bundle.main.appPackageName {
-            body[JsonKey.Embedded.packageName] = packageName
-        }
+        var body = [AnyHashable: Any]()
         
         setCurrentUser(inDict: &body)
         
         body.setValue(for: JsonKey.messageId, value: message.metadata.messageId)
+        body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
         
-        return .success(.post(createPostRequest(path: Const.Path.embeddedMessageReceived, body: body as! [String: String])))
+        return .success(.post(createPostRequest(path: Const.Path.embeddedMessageReceived, body: body)))
     }
     
-    func createEmbeddedMessageClickRequest(_ message: IterableEmbeddedMessage) -> Result<IterableRequest, IterableError> {
+    func createEmbeddedMessageClickRequest(_ message: IterableEmbeddedMessage, _ buttonIdentifier: String?, _ clickedUrl: String) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
             ITBError(Self.authMissingMessage)
             return .failure(IterableError.general(description: Self.authMissingMessage))
         }
         
-        var body: [AnyHashable: Any] = [JsonKey.platform: JsonValue.iOS,
-                                        JsonKey.systemVersion: UIDevice.current.systemVersion,
-                                        JsonKey.Embedded.sdkVersion: IterableAPI.sdkVersion]
-        
-        if let packageName = Bundle.main.appPackageName {
-            body[JsonKey.Embedded.packageName] = packageName
-        }
-        
+        var body = [AnyHashable: Any]()
         setCurrentUser(inDict: &body)
         
-        body.setValue(for: JsonKey.messageId, value: message.metadata.messageId)
+        if let buttonIdentifier, !buttonIdentifier.isEmpty {
+            body.setValue(for: JsonKey.embeddedButtonId, value: buttonIdentifier)
+        }
         
-        return .success(.post(createPostRequest(path: Const.Path.embeddedMessageClick, body: body as! [String: String])))
+        body.setValue(for: JsonKey.embeddedTargetUrl, value: clickedUrl)
+        
+        body.setValue(for: JsonKey.messageId, value: message.metadata.messageId)
+
+        body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
+        
+        return .success(.post(createPostRequest(path: Const.Path.embeddedMessageClick, body: body)))
     }
     
     func createEmbeddedMessageDismissRequest(_ message: IterableEmbeddedMessage) -> Result<IterableRequest, IterableError> {
@@ -509,20 +505,16 @@ struct RequestCreator {
             ITBError(Self.authMissingMessage)
             return .failure(IterableError.general(description: Self.authMissingMessage))
         }
+
         
-        var body: [AnyHashable: Any] = [JsonKey.platform: JsonValue.iOS,
-                                        JsonKey.systemVersion: UIDevice.current.systemVersion,
-                                        JsonKey.Embedded.sdkVersion: IterableAPI.sdkVersion]
-        
-        if let packageName = Bundle.main.appPackageName {
-            body[JsonKey.Embedded.packageName] = packageName
-        }
+        var body = [AnyHashable: Any]()
         
         setCurrentUser(inDict: &body)
         
-        // TODO: find/create proper key for the value of the embedded message ID
+        body.setValue(for: JsonKey.messageId, value: message.metadata.messageId)
+        body.setValue(for: JsonKey.deviceInfo, value: deviceMetadata.asDictionary())
         
-        return .success(.post(createPostRequest(path: Const.Path.embeddedMessageImpression, body: body as! [String: String])))
+        return .success(.post(createPostRequest(path: Const.Path.embeddedMessageImpression, body: body)))
     }
     
     func createTrackEmbeddedSessionRequest(embeddedSession: IterableEmbeddedSession) -> Result<IterableRequest, IterableError> {

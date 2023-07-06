@@ -44,16 +44,20 @@ final public class IterableEmbeddedSession: NSObject, Codable {
     /// Array of impressions for messages
     public var impressions: [IterableEmbeddedImpression]
     
+    public var isActive: Bool
+    
     public init(embeddedSessionId: String = UUID().uuidString,
                 placementId: String? = nil,
                 embeddedSessionStart: Date,
                 embeddedSessionEnd: Date? = nil,
-                impressions: [IterableEmbeddedImpression]) {
+                impressions: [IterableEmbeddedImpression],
+                isActive: Bool = false) {
         self.embeddedSessionId = embeddedSessionId
         self.placementId = placementId
         self.embeddedSessionStart = embeddedSessionStart
         self.embeddedSessionEnd = embeddedSessionEnd
         self.impressions = impressions
+        self.isActive = isActive
     }
 }
 

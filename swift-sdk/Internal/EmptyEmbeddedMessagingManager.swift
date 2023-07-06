@@ -5,6 +5,7 @@
 import Foundation
 
 class EmptyEmbeddedMessagingManager: IterableEmbeddedMessagingManagerProtocol {
+    
     func addUpdateListener(_ listener: IterableEmbeddedMessagingUpdateDelegate) {
         
     }
@@ -25,7 +26,11 @@ class EmptyEmbeddedMessagingManager: IterableEmbeddedMessagingManagerProtocol {
         
     }
     
-    func track(click message: IterableEmbeddedMessage) {
+    func temp_manualOverrideRefresh() {
+        
+    }
+    
+    func track(click message: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String) {
             
     }
     

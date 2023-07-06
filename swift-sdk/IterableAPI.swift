@@ -620,9 +620,19 @@ import UIKit
     ///
     /// - Parameters:
     ///     - embeddedSession: the embedded session data type to track
-    @objc(trackEmbeddedSession:)
+    @objc(embeddedSession:)
     public static func track(embeddedSession: IterableEmbeddedSession) {
         implementation?.track(embeddedSession: embeddedSession)
+    }
+    
+    @objc(embeddedMessageClick:buttonIdentifier:clickedUrl:)
+    public static func track(embeddedMessageClick: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String) {
+        implementation?.track(embeddedMessageClick: embeddedMessageClick, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
+    }
+    
+    @objc(embeddedMessageReceived:)
+    public static func track(embeddedMessageReceived: IterableEmbeddedMessage) {
+        implementation?.track(embeddedMessageReceived: embeddedMessageReceived)
     }
     
     // MARK: In-App Notifications

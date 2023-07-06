@@ -180,6 +180,8 @@ enum JsonKey {
     static let placementId = "placementId"
     static let embeddedSessionStart = "embeddedSessionStart"
     static let embeddedSessionEnd = "embeddedSessionEnd"
+    static let embeddedButtonId = "buttonIdentifier"
+    static let embeddedTargetUrl = "targetUrl"
     
     
     enum ActionButton {
