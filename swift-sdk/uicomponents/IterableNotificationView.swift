@@ -43,9 +43,11 @@ class IterableNotificationView: UIView {
     }
     
     private func loadViewFromNib() -> UIView? {
-        let bundle = Bundle(for: type(of: self))
-        let nib = UINib(nibName: "NotificationView", bundle: bundle)
-        return nib.instantiate(withOwner: self, options: nil).first as? UIView
+        let nib = UINib(nibName: "IterableNotificationView", bundle: .module)
+        let view = nib.instantiate(withOwner: self, options: nil).first as? UIView
+        view?.backgroundColor = UIColor.clear
+        view?.layer.masksToBounds = false
+        return view
     }
     
     ///setDefaultValue assign default values to NotificationView
