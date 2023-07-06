@@ -16,6 +16,7 @@ jobs:
     - name: Build and test
       env: 
         api_key: ${{secrets.E2E_API_KEY}}
+        server_api_key: ${{secrets.E2E_SERVER_API_KEY}}
         push_campaign_id: ${{secrets.E2E_PUSH_CAMPAIGN_ID}}
         push_template_id: ${{secrets.E2E_PUSH_TEMPLATE_ID}}
         in_app_campaign_id: ${{secrets.E2E_IN_APP_CAMPAIGN_ID}}
