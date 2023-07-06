@@ -10,6 +10,7 @@ import Foundation
 struct Environment {
     enum Key: String {
         case apiKey = "api_key"
+        case serverApiKey = "server_api_key"
         case pushCampaignId = "push_campaign_id"
         case pushTemplateId = "push_template_id"
         case inAppCampaignId = "in_app_campaign_id"
@@ -18,6 +19,10 @@ struct Environment {
     
     static var apiKey: String? {
         getFromEnv(key: .apiKey) ?? CI.apiKey
+    }
+
+    static var serverApiKey: String? {
+        getFromEnv(key: .serverApiKey) ?? CI.serverApiKey
     }
     
     static var pushCampaignId: NSNumber? {

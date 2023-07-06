@@ -274,6 +274,7 @@ class EndpointTests: XCTestCase {
     }
     
     private static let apiKey = Environment.apiKey!
+    private static let serverApiKey = Environment.serverApiKey!
     private static let pushCampaignId = Environment.pushCampaignId!
     private static let pushTemplateId = Environment.pushTemplateId!
     private static let inAppCampaignId = Environment.inAppCampaignId!
