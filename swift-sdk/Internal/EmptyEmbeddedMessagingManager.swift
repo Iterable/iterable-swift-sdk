@@ -5,7 +5,7 @@
 import Foundation
 
 class EmptyEmbeddedMessagingManager: IterableEmbeddedMessagingManagerProtocol {
-    
+   
     func addUpdateListener(_ listener: IterableEmbeddedMessagingUpdateDelegate) {
         
     }
@@ -17,16 +17,8 @@ class EmptyEmbeddedMessagingManager: IterableEmbeddedMessagingManagerProtocol {
     func getMessages() -> [IterableEmbeddedMessage] {
         return []
     }
-    
-    func start() {
-        
-    }
-    
-    func stop() {
-        
-    }
-    
-    func temp_manualOverrideRefresh() {
+
+    func syncMessages(completion: @escaping () -> Void) {
         
     }
     

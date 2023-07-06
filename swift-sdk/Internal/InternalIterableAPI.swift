@@ -84,8 +84,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     lazy var embeddedMessagingManager: IterableEmbeddedMessagingManagerProtocol = {
         self.dependencyContainer.createEmbeddedMessagingManager(config: self.config,
-                                                                apiClient: self.apiClient,
-                                                                dateProvider: self.dateProvider)
+                                                                apiClient: self.apiClient)
     }()
     
     // MARK: - SDK Functions
@@ -547,9 +546,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         storeIdentifierData()
         
         authManager.logoutUser()
-        
-        embeddedMessagingManager.stop()
-        
+                
         _ = inAppManager.reset()
         
         try? requestHandler.handleLogout()
@@ -670,9 +667,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         requestHandler.start()
         
         checkRemoteConfiguration()
-        
-        embeddedMessagingManager.start()
-        
+                
         return inAppManager.start()
     }
     

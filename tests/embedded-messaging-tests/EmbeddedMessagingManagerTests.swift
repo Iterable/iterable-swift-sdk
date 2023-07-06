@@ -12,11 +12,7 @@ final class EmbeddedMessagingManagerTests: XCTestCase {
         
         let mockApiClient = MockApiClient()
         
-        let manager = EmbeddedMessagingManager(autoFetchInterval: 1.0,
-                                               apiClient: mockApiClient,
-                                               dateProvider: MockDateProvider())
-        
-        manager.start()
+        let manager = EmbeddedMessagingManager(apiClient: mockApiClient)
         
         let view1 = ViewWithUpdateDelegate(
             onMessagesUpdatedCallback: {
@@ -28,6 +24,9 @@ final class EmbeddedMessagingManagerTests: XCTestCase {
         manager.addUpdateListener(view1)
         
         mockApiClient.haveNewEmbeddedMessages()
+        manager.syncMessages {
+            print("syncMessages completion")
+        }
         
         wait(for: [condition1], timeout: 2)
     }
