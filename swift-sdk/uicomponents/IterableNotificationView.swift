@@ -20,8 +20,9 @@ public class IterableNotificationView: UIView {
     weak public var notificationViewDelegate: IterableNotificationViewDelegate!
     
     @IBOutlet public var contentView: UIView!
-    @IBOutlet weak public var titleLabel: UITextField!
-    @IBOutlet weak public var bodyLabel: UITextField!
+    
+    @IBOutlet weak public var titleLabel: UILabel!
+    @IBOutlet weak public var bodyLabel: UILabel!
     @IBOutlet weak public var primaryButton: UIButton!
     @IBOutlet weak public var secondaryButton: UIButton!
     
@@ -74,8 +75,8 @@ public class IterableNotificationView: UIView {
         
         // Buttons Primary
         btnPrimaryText = "Primary"
-        btnPrimaryColor = UIColor.white
-        btnPrimaryTextColor = UIColor.purple
+        btnPrimaryColor = UIColor.purple
+        btnPrimaryTextColor = UIColor.white
         btnPrimaryBorderRadius = 17
         
         // Button Secondary
