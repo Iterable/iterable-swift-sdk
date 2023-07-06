@@ -466,7 +466,7 @@ struct RequestCreator {
         var body = [AnyHashable: Any]()
         setCurrentUser(inDict: &body)
         
-        if let buttonIdentifier, !buttonIdentifier.isEmpty {
+        if let buttonIdentifier = buttonIdentifier, !buttonIdentifier.isEmpty {
             body.setValue(for: JsonKey.embeddedButtonId, value: buttonIdentifier)
         }
         

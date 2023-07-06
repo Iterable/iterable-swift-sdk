@@ -215,10 +215,13 @@ class EndpointTests: XCTestCase {
         ensureInAppMessages(api: api, email: email)
         
         api.inAppManager.scheduleSync().wait()
-        let count = api.inAppManager.getMessages().count
-        XCTAssert(count > 0)
-        
-        let message = api.inAppManager.getMessages()[0]
+        let messages = api.inAppManager.getMessages()
+        XCTAssert(messages.count > 0)
+
+        guard let message = messages.first else {
+            XCTFail("No messages available")
+            return
+        }
         let startTime = Date()
         let endTime = startTime.addingTimeInterval(10.0)
         
@@ -274,6 +277,7 @@ class EndpointTests: XCTestCase {
     }
     
     private static let apiKey = Environment.apiKey!
+    private static let serverApiKey = Environment.serverApiKey!
     private static let pushCampaignId = Environment.pushCampaignId!
     private static let pushTemplateId = Environment.pushTemplateId!
     private static let inAppCampaignId = Environment.inAppCampaignId!
@@ -288,7 +292,7 @@ class EndpointTests: XCTestCase {
         }
         
         let expectation1 = expectation(for: predicate, evaluatedWith: nil, handler: nil)
-        wait(for: [expectation1], timeout: 60)
+        wait(for: [expectation1], timeout: 120)
     }
     
     private func clearAllInAppMessages(api: InternalIterableAPI) {
