@@ -129,12 +129,12 @@ import UIKit
 
     // MARK: - SDK
     
-    public static func setEmail(_ email: String?, _ authToken: String? = nil) {
-        implementation?.setEmail(email, authToken: authToken)
+    public static func setEmail(_ email: String?, _ authToken: String? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+        implementation?.setEmail(email, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler)
     }
     
-    public static func setUserId(_ userId: String?, _ authToken: String? = nil) {
-        implementation?.setUserId(userId, authToken: authToken)
+    public static func setUserId(_ userId: String?, _ authToken: String? = nil, _ successHandler: OnSuccessHandler? = nil, _ failureHandler: OnFailureHandler? = nil) {
+        implementation?.setUserId(userId, authToken: authToken, successHandler: successHandler, failureHandler: failureHandler)
     }
     
     /// Handle a Universal Link
