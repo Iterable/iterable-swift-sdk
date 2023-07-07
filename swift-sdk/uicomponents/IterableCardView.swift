@@ -25,7 +25,7 @@ public class IterableCardView:UIView {
     @IBOutlet weak public var labelTitle: UILabel!
     
     /// IterableCardView Description Label
-    @IBOutlet weak public var labelDescription: UILabel!
+    @IBOutlet weak var labelDescription: UILabel!
     
     /// IterableCardView Primary button.
     @IBOutlet weak public var btnPrimary: UIButton!
