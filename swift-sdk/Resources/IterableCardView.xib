@@ -36,8 +36,8 @@
                         </mask>
                     </variation>
                 </imageView>
-                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gMj-V1-YgH">
-                    <rect key="frame" x="18" y="292" width="81" height="29"/>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gMj-V1-YgH">
+                    <rect key="frame" x="18" y="294.33333333333331" width="70.666666666666671" height="29"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="78" id="QlE-jK-aJh"/>
                     </constraints>
@@ -51,8 +51,8 @@
                         </mask>
                     </variation>
                 </button>
-                <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="1ZL-9a-OyB">
-                    <rect key="frame" x="107" y="292" width="99" height="29"/>
+                <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="1ZL-9a-OyB">
+                    <rect key="frame" x="106.66666666666669" y="294.33333333333331" width="72.333333333333314" height="29"/>
                     <state key="normal" title="Button"/>
                     <buttonConfiguration key="configuration" style="plain" title="Button 2" cornerStyle="capsule">
                         <fontDescription key="titleFontDescription" style="UICTFontTextStyleCaption1"/>
@@ -91,11 +91,15 @@
                 <constraint firstItem="xEA-81-odD" firstAttribute="centerX" secondItem="vn8-sH-N3x" secondAttribute="centerX" id="8Ld-K6-VWT"/>
                 <constraint firstItem="vn8-sH-N3x" firstAttribute="top" secondItem="Baa-0E-Yq1" secondAttribute="bottom" constant="8" id="9FI-Qm-hUg"/>
                 <constraint firstItem="Baa-0E-Yq1" firstAttribute="top" secondItem="xEA-81-odD" secondAttribute="bottom" constant="19" id="AGj-tV-Ea3"/>
+                <constraint firstItem="1ZL-9a-OyB" firstAttribute="top" secondItem="vn8-sH-N3x" secondAttribute="bottom" constant="22" id="ELW-e8-U2l"/>
                 <constraint firstItem="HJg-Kj-tjO" firstAttribute="trailing" secondItem="xEA-81-odD" secondAttribute="trailing" id="EiI-eF-nBh"/>
                 <constraint firstItem="vn8-sH-N3x" firstAttribute="top" secondItem="Baa-0E-Yq1" secondAttribute="bottom" constant="10" id="FIT-yc-Gfc"/>
                 <constraint firstItem="gMj-V1-YgH" firstAttribute="baseline" secondItem="1ZL-9a-OyB" secondAttribute="baseline" id="FKa-US-I6w"/>
+                <constraint firstItem="1ZL-9a-OyB" firstAttribute="leading" secondItem="gMj-V1-YgH" secondAttribute="trailing" constant="18" id="HpR-sn-5nj"/>
                 <constraint firstItem="vn8-sH-N3x" firstAttribute="leading" secondItem="Baa-0E-Yq1" secondAttribute="leading" id="I1m-PU-PX2"/>
                 <constraint firstItem="xEA-81-odD" firstAttribute="leading" secondItem="gMj-V1-YgH" secondAttribute="leading" id="IJd-q8-n6m"/>
+                <constraint firstItem="gMj-V1-YgH" firstAttribute="leading" secondItem="HJg-Kj-tjO" secondAttribute="leading" constant="18" id="JHB-dn-6EO"/>
+                <constraint firstItem="gMj-V1-YgH" firstAttribute="top" secondItem="vn8-sH-N3x" secondAttribute="bottom" constant="22" id="KvB-ii-pE0"/>
                 <constraint firstItem="Baa-0E-Yq1" firstAttribute="leading" secondItem="HJg-Kj-tjO" secondAttribute="leading" constant="18" id="L1z-pv-4is"/>
                 <constraint firstItem="Baa-0E-Yq1" firstAttribute="top" secondItem="xEA-81-odD" secondAttribute="bottom" constant="10" id="MUV-yG-kdz"/>
                 <constraint firstItem="xEA-81-odD" firstAttribute="trailing" secondItem="HJg-Kj-tjO" secondAttribute="trailing" id="R7h-zA-p4E"/>
@@ -123,14 +127,20 @@
                     <exclude reference="8Ld-K6-VWT"/>
                     <exclude reference="IJd-q8-n6m"/>
                     <exclude reference="gQu-bE-Wki"/>
+                    <exclude reference="6hs-MF-fz8"/>
                     <exclude reference="EiI-eF-nBh"/>
                     <exclude reference="AGj-tV-Ea3"/>
                     <exclude reference="9FI-Qm-hUg"/>
                     <exclude reference="I1m-PU-PX2"/>
                     <exclude reference="ijJ-TT-q3W"/>
                     <exclude reference="FKa-US-I6w"/>
+                    <exclude reference="aJK-Xe-Lzu"/>
+                    <exclude reference="tQ8-N5-nEI"/>
+                    <exclude reference="wLt-fJ-E4B"/>
                     <exclude reference="wc9-RO-ZNZ"/>
                     <exclude reference="ZJV-7W-ySJ"/>
+                    <exclude reference="acI-jG-CaJ"/>
+                    <exclude reference="i9v-sf-7P5"/>
                     <exclude reference="ua0-hs-Cud"/>
                 </mask>
             </variation>
