@@ -12,7 +12,7 @@ struct IterableAPISupport {
         }
         
         var urlRequest = URLRequest(url: url)
-        urlRequest.setValue(apiKey, forHTTPHeaderField: JsonKey.Header.apiKey)
+        urlRequest.setValue(serverApiKey, forHTTPHeaderField: JsonKey.Header.apiKey)
         
         return RequestSender.sendRequest(urlRequest, usingSession: urlSession)
     }
@@ -44,6 +44,7 @@ struct IterableAPISupport {
     }
     
     private static let apiKey = Environment.apiKey!
+    private static let serverApiKey = Environment.serverApiKey!
     
     private static func createPostRequest(iterablePostRequest: PostRequest) -> URLRequest? {
         IterableRequestUtil.createPostRequest(forApiEndPoint: Path.apiEndpoint,
@@ -57,7 +58,7 @@ struct IterableAPISupport {
         [JsonKey.contentType: JsonValue.applicationJson,
          JsonKey.Header.sdkPlatform: JsonValue.iOS,
          JsonKey.Header.sdkVersion: IterableAPI.sdkVersion,
-         JsonKey.Header.apiKey: apiKey]
+         JsonKey.Header.apiKey: serverApiKey]
     }
     
     private static var urlSession: URLSession = {
