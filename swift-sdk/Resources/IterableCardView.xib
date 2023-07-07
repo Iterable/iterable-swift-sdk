@@ -37,7 +37,7 @@
                     </variation>
                 </imageView>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gMj-V1-YgH">
-                    <rect key="frame" x="18" y="294.33333333333331" width="70.666666666666671" height="29"/>
+                    <rect key="frame" x="8" y="294.33333333333331" width="70.666666666666671" height="29"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="78" id="QlE-jK-aJh"/>
                     </constraints>
@@ -52,7 +52,7 @@
                     </variation>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="1ZL-9a-OyB">
-                    <rect key="frame" x="106.66666666666669" y="294.33333333333331" width="72.333333333333314" height="29"/>
+                    <rect key="frame" x="96.666666666666686" y="294.33333333333331" width="72.333333333333314" height="29"/>
                     <state key="normal" title="Button"/>
                     <buttonConfiguration key="configuration" style="plain" title="Button 2" cornerStyle="capsule">
                         <fontDescription key="titleFontDescription" style="UICTFontTextStyleCaption1"/>
@@ -98,7 +98,7 @@
                 <constraint firstItem="1ZL-9a-OyB" firstAttribute="leading" secondItem="gMj-V1-YgH" secondAttribute="trailing" constant="18" id="HpR-sn-5nj"/>
                 <constraint firstItem="vn8-sH-N3x" firstAttribute="leading" secondItem="Baa-0E-Yq1" secondAttribute="leading" id="I1m-PU-PX2"/>
                 <constraint firstItem="xEA-81-odD" firstAttribute="leading" secondItem="gMj-V1-YgH" secondAttribute="leading" id="IJd-q8-n6m"/>
-                <constraint firstItem="gMj-V1-YgH" firstAttribute="leading" secondItem="HJg-Kj-tjO" secondAttribute="leading" constant="18" id="JHB-dn-6EO"/>
+                <constraint firstItem="gMj-V1-YgH" firstAttribute="leading" secondItem="HJg-Kj-tjO" secondAttribute="leading" constant="8" id="JHB-dn-6EO"/>
                 <constraint firstItem="gMj-V1-YgH" firstAttribute="top" secondItem="vn8-sH-N3x" secondAttribute="bottom" constant="22" id="KvB-ii-pE0"/>
                 <constraint firstItem="Baa-0E-Yq1" firstAttribute="leading" secondItem="HJg-Kj-tjO" secondAttribute="leading" constant="18" id="L1z-pv-4is"/>
                 <constraint firstItem="Baa-0E-Yq1" firstAttribute="top" secondItem="xEA-81-odD" secondAttribute="bottom" constant="10" id="MUV-yG-kdz"/>
