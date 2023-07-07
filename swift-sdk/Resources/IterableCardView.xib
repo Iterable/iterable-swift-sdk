@@ -21,7 +21,7 @@
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="iN0-l3-epB">
-            <rect key="frame" x="0.0" y="0.0" width="360" height="360"/>
+            <rect key="frame" x="0.0" y="0.0" width="360" height="339"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xEA-81-odD">
@@ -30,14 +30,8 @@
                         <constraint firstAttribute="height" constant="216" id="8c2-N4-GbG"/>
                     </constraints>
                 </imageView>
-                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Baa-0E-Yq1">
-                    <rect key="frame" x="16" y="219" width="328" height="21"/>
-                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <nil key="textColor"/>
-                    <nil key="highlightedColor"/>
-                </label>
                 <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gMj-V1-YgH">
-                    <rect key="frame" x="0.0" y="311" width="78" height="29"/>
+                    <rect key="frame" x="0.0" y="296" width="78" height="29"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="78" id="QlE-jK-aJh"/>
                     </constraints>
@@ -46,8 +40,15 @@
                         <fontDescription key="titleFontDescription" style="UICTFontTextStyleCaption1"/>
                     </buttonConfiguration>
                 </button>
+                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="1ZL-9a-OyB">
+                    <rect key="frame" x="86" y="296" width="117" height="29"/>
+                    <state key="normal" title="Button"/>
+                    <buttonConfiguration key="configuration" style="plain" title="Button 2" cornerStyle="capsule">
+                        <fontDescription key="titleFontDescription" style="UICTFontTextStyleCaption1"/>
+                    </buttonConfiguration>
+                </button>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Description" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vn8-sH-N3x">
-                    <rect key="frame" x="16" y="248" width="328" height="59"/>
+                    <rect key="frame" x="16" y="256" width="328" height="22"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="59" id="lUe-qb-F6f"/>
                     </constraints>
@@ -55,13 +56,12 @@
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="1ZL-9a-OyB">
-                    <rect key="frame" x="86" y="311" width="117" height="29"/>
-                    <state key="normal" title="Button"/>
-                    <buttonConfiguration key="configuration" style="plain" title="Button 2" cornerStyle="capsule">
-                        <fontDescription key="titleFontDescription" style="UICTFontTextStyleCaption1"/>
-                    </buttonConfiguration>
-                </button>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Baa-0E-Yq1">
+                    <rect key="frame" x="16" y="227" width="328" height="21"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <viewLayoutGuide key="safeArea" id="HJg-Kj-tjO"/>
             <color key="backgroundColor" systemColor="systemGray6Color"/>
@@ -82,7 +82,7 @@
                 <constraint firstItem="gMj-V1-YgH" firstAttribute="top" secondItem="Baa-0E-Yq1" secondAttribute="bottom" constant="66" id="wc9-RO-ZNZ"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="94.656488549618317" y="12.67605633802817"/>
+            <point key="canvasLocation" x="94.656488549618317" y="5.2816901408450709"/>
         </view>
     </objects>
     <resources>
