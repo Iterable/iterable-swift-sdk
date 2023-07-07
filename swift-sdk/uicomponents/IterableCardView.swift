@@ -19,7 +19,7 @@ public class IterableCardView:UIView {
     weak public var iterableCardViewDelegate: IterableCardViewDelegate!
     
     /// Set background color of view in container view.
-    @IBOutlet weak public var contentView: UIView!
+    @IBOutlet public var contentView: UIView!
     
     /// IterableCardView Title Label
     @IBOutlet weak public var labelTitle: UILabel!
@@ -28,10 +28,10 @@ public class IterableCardView:UIView {
     @IBOutlet weak public var labelDescription: UILabel!
     
     /// IterableCardView Primary button.
-    @IBOutlet weak public var btnPrimary: UIButton!
+    @IBOutlet weak var btnPrimary: UIButton!
     
     /// IterableCardView Secondary button.
-    @IBOutlet weak public var btnSecondary: UIButton!
+    @IBOutlet weak var btnSecondary: UIButton!
     
     /// IterableCardView Image View.
     @IBOutlet weak public var imgView: UIImageView!
