@@ -16,7 +16,7 @@ public protocol IterableCardViewDelegate: NSObject {
 @IBDesignable
 public class IterableCardView:UIView {
     // Delegate Methods
-    weak public var iterableCardViewDelegate: iterableCardViewDelegate!
+    weak public var iterableCardViewDelegate: IterableCardViewDelegate!
     
     /// Set background color of view in container view.
     @IBOutlet weak public var contentView: UIView!
@@ -144,7 +144,7 @@ public class IterableCardView:UIView {
     
     //MARK: IterableCardView Shadow Offset Height
     /// IterableCardView shadow height CGSize
-    @IBInspectable public var bannerShadowHeight: Double = 1 {
+    @IBInspectable public var cardShadowHeight: Double = 1 {
         didSet {
             layer.shadowOffset = CGSize(width: cardShadowWidth, height: cardShadowHeight)
         }
