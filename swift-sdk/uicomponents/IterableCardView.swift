@@ -28,10 +28,10 @@ public class IterableCardView:UIView {
     @IBOutlet weak public var labelDescription: UILabel!
     
     /// IterableCardView Primary button.
-    @IBOutlet weak var btnPrimary: UIButton!
+    @IBOutlet weak public var btnPrimary: UIButton!
     
     /// IterableCardView Secondary button.
-    @IBOutlet weak var btnSecondary: UIButton!
+    @IBOutlet weak public var btnSecondary: UIButton!
     
     /// IterableCardView Image View.
     @IBOutlet weak public var imgView: UIImageView!
