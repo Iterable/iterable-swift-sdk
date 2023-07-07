@@ -37,30 +37,30 @@
                     </constraints>
                 </imageView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TmQ-gf-EkO">
-                    <rect key="frame" x="16" y="246.00000000000003" width="328" height="23.333333333333343"/>
+                    <rect key="frame" x="16" y="246" width="328" height="21"/>
                     <fontDescription key="fontDescription" name="SofiaPro-SemiBold" family="Sofia Pro" pointSize="18"/>
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FcP-rC-sHW">
-                    <rect key="frame" x="16" y="285.33333333333331" width="328" height="18.333333333333314"/>
+                    <rect key="frame" x="16" y="283" width="328" height="16.333333333333314"/>
                     <fontDescription key="fontDescription" name="SofiaPro-Regular" family="Sofia Pro" pointSize="14"/>
                     <color key="textColor" red="0.47058823529999999" green="0.4431372549" blue="0.4549019608" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gMj-V1-YgH">
-                    <rect key="frame" x="5" y="313" width="71" height="29"/>
+                    <rect key="frame" x="0.0" y="313" width="78" height="29"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <state key="normal" title="Button"/>
-                    <buttonConfiguration key="configuration" style="plain" title="Button 1">
+                    <buttonConfiguration key="configuration" style="plain" title="Button 1" cornerStyle="capsule">
                         <fontDescription key="titleFontDescription" style="UICTFontTextStyleCaption1"/>
                     </buttonConfiguration>
                 </button>
-                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1ZL-9a-OyB">
-                    <rect key="frame" x="75" y="313" width="73" height="29"/>
+                <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="wordWrap" translatesAutoresizingMaskIntoConstraints="NO" id="1ZL-9a-OyB">
+                    <rect key="frame" x="86" y="313" width="117" height="29"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <state key="normal" title="Button"/>
-                    <buttonConfiguration key="configuration" style="plain" title="Button 2">
+                    <buttonConfiguration key="configuration" style="plain" title="Button 2" cornerStyle="capsule">
                         <fontDescription key="titleFontDescription" style="UICTFontTextStyleCaption1"/>
                     </buttonConfiguration>
                 </button>
