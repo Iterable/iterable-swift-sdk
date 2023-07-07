@@ -82,6 +82,11 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.dependencyContainer.createAuthManager(config: self.config)
     }()
     
+    lazy var embeddedMessagingManager: IterableEmbeddedMessagingManagerProtocol = {
+        self.dependencyContainer.createEmbeddedMessagingManager(config: self.config,
+                                                                apiClient: self.apiClient)
+    }()
+    
     // MARK: - SDK Functions
     
     @discardableResult func handleUniversalLink(_ url: URL) -> Bool {
@@ -407,6 +412,53 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
                                     onFailure: onFailure)
     }
     
+    @discardableResult
+    func track(embeddedMessageReceived message: IterableEmbeddedMessage,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        requestHandler.track(embeddedMessageReceived: message,
+                             onSuccess: onSuccess,
+                             onFailure: onFailure)
+    }
+    
+    @discardableResult
+    func track(embeddedMessageClick message: IterableEmbeddedMessage,
+               buttonIdentifier: String?,
+               clickedUrl: String,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        requestHandler.track(embeddedMessageClick: message,
+                             buttonIdentifier: buttonIdentifier,
+                             clickedUrl: clickedUrl,
+                             onSuccess: onSuccess,
+                             onFailure: onFailure)
+    }
+    
+    @discardableResult
+    func track(embeddedMessageDismiss message: IterableEmbeddedMessage,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        requestHandler.track(embeddedMessageDismiss: message,
+                             onSuccess: onSuccess,
+                             onFailure: onFailure)
+    }
+    
+    @discardableResult
+    func track(embeddedMessageImpression message: IterableEmbeddedMessage,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        requestHandler.track(embeddedMessageImpression: message,
+                             onSuccess: onSuccess,
+                             onFailure: onFailure)
+    }
+    
+    @discardableResult
+    func track(embeddedSession: IterableEmbeddedSession,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        requestHandler.track(embeddedSession: embeddedSession, onSuccess: onSuccess, onFailure: onFailure)
+    }
+    
     // MARK: - Private/Internal
     
     private var config: IterableConfig
@@ -494,7 +546,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         storeIdentifierData()
         
         authManager.logoutUser()
-        
+                
         _ = inAppManager.reset()
         
         try? requestHandler.handleLogout()
@@ -608,7 +660,6 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         
         handle(launchOptions: launchOptions)
         
-        
         handlePendingNotification()
         
         handlePendingUniversalLink()
@@ -616,7 +667,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         requestHandler.start()
         
         checkRemoteConfiguration()
-        
+                
         return inAppManager.start()
     }
     
