@@ -62,7 +62,7 @@ import UIKit
 import Foundation
 import IterableSDK
 
-class DesignSampleViewController: UIViewController, NotificationViewDelegate, IterableNotificationViewDelegate {
+class DesignSampleViewController: UIViewController, IterableNotificationViewDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         renderNotifications()
