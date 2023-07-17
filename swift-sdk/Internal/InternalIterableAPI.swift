@@ -82,6 +82,12 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.dependencyContainer.createAuthManager(config: self.config)
     }()
     
+    var apiEndPointForTest: String {
+        get {
+            apiEndPoint
+        }
+    }
+    
     // MARK: - SDK Functions
     
     @discardableResult func handleUniversalLink(_ url: URL) -> Bool {
@@ -583,6 +589,11 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
     }
     
+    private static func setApiEndpoint(apiEndPointOverride: String?, config: IterableConfig) -> String {
+        let apiEndPoint = config.dataRegion
+        return apiEndPointOverride ?? apiEndPoint
+    }
+    
     init(apiKey: String,
          launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil,
          config: IterableConfig = IterableConfig(),
@@ -593,7 +604,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.apiKey = apiKey
         self.launchOptions = launchOptions
         self.config = config
-        apiEndPoint = apiEndPointOverride ?? Endpoint.api
+        apiEndPoint = InternalIterableAPI.setApiEndpoint(apiEndPointOverride: apiEndPointOverride, config: config)
         self.dependencyContainer = dependencyContainer
         dateProvider = dependencyContainer.dateProvider
         networkSession = dependencyContainer.networkSession
