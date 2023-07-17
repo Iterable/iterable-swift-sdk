@@ -6,6 +6,7 @@ import Foundation
 import UIKit
 
 class EmptyInAppManager: IterableInternalInAppManagerProtocol {
+    
     func start() -> Pending<Bool, Error> {
         Fulfill<Bool, Error>(value: true)
     }
@@ -34,13 +35,23 @@ class EmptyInAppManager: IterableInternalInAppManagerProtocol {
     
     func remove(message _: IterableInAppMessage) {}
     
+    func remove(message _: IterableInAppMessage, successHandler _: OnSuccessHandler?, failureHandler _: OnFailureHandler?) {}
+    
     func remove(message _: IterableInAppMessage, location _: InAppLocation) {}
+    
+    func remove(message _: IterableInAppMessage, location _: InAppLocation, successHandler _: OnSuccessHandler?, failureHandler _: OnFailureHandler?) {}
     
     func remove(message _: IterableInAppMessage, location _: InAppLocation, source _: InAppDeleteSource) {}
     
+    func remove(message _: IterableInAppMessage, location _: InAppLocation, source _: InAppDeleteSource, successHandler _: OnSuccessHandler?, failureHandler _: OnFailureHandler?) {}
+    
     func remove(message _: IterableInAppMessage, location _: InAppLocation, source _: InAppDeleteSource, inboxSessionId _: String?) {}
     
+    func remove(message _: IterableInAppMessage, location _: InAppLocation, source _: InAppDeleteSource, inboxSessionId _: String?, successHandler _: OnSuccessHandler?, failureHandler _: OnFailureHandler?) {}
+    
     func set(read _: Bool, forMessage _: IterableInAppMessage) {}
+    
+    func set(read _: Bool, forMessage _: IterableInAppMessage, successHandler _: OnSuccessHandler?, failureHandler _: OnFailureHandler?) {}
     
     func getMessage(withId _: String) -> IterableInAppMessage? {
         nil

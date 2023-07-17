@@ -193,6 +193,78 @@ class IterableAPITests: XCTestCase {
         
         wait(for: [expectation], timeout: testExpectationTimeout)
     }
+
+    func testSetEmailWithCallbackSuccess() {
+        let expectation = XCTestExpectation(description: "Set email with callback success")
+
+        let config = IterableConfig()
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
+                
+        internalAPI.setEmail("test@example.com", successHandler: { success in
+            XCTAssertNotNil(success)
+            expectation.fulfill()
+        }, failureHandler: { _, _ in
+            XCTFail("Failed to set email")
+            expectation.fulfill()
+        })
+        internalAPI.register(token: "zeeToken".data(using: .utf8)!)
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+
+    func testSetEmailWithCallbackFailure() {
+        let expectation = XCTestExpectation(description: "Set email with callback failure")
+        
+        let config = IterableConfig()
+        let networkSession = MockNetworkSession(statusCode: 400)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
+
+        internalAPI.setEmail("invalid_email", successHandler: { success in
+            XCTFail("Email should not be set successfully")
+            expectation.fulfill()
+        }, failureHandler: { _, error in
+            XCTAssertNotNil(error)
+            expectation.fulfill()
+        })
+        internalAPI.register(token: "zeeToken".data(using: .utf8)!)
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+
+    func testSetUserIdWithCallbackSuccess() {
+        let expectation = XCTestExpectation(description: "Set user ID with callback success")
+        
+        let config = IterableConfig()
+        let networkSession = MockNetworkSession(statusCode: 200)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
+        
+        internalAPI.setUserId("user123", successHandler: { success in
+            XCTAssertNotNil(success)
+            expectation.fulfill()
+        }, failureHandler: { _, _ in
+            XCTFail("Failed to set user ID")
+            expectation.fulfill()
+        })
+        internalAPI.register(token: "zeeToken".data(using: .utf8)!)
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
+
+    func testSetUserIdWithCallbackFailure() {
+        let expectation = XCTestExpectation(description: "Set user ID with callback failure")
+        
+        let config = IterableConfig()
+        let networkSession = MockNetworkSession(statusCode: 400)
+        let internalAPI = InternalIterableAPI.initializeForTesting(apiKey: IterableAPITests.apiKey, config: config, networkSession: networkSession)
+        
+        internalAPI.setUserId("user123", successHandler: { success in
+            XCTFail("User ID should not be set successfully")
+            expectation.fulfill()
+        }, failureHandler: { _, error in
+            XCTAssertNotNil(error)
+            expectation.fulfill()
+        })
+        internalAPI.register(token: "zeeToken".data(using: .utf8)!)
+        wait(for: [expectation], timeout: testExpectationTimeout)
+    }
     
     func testEmailPersistence() {
         let internalAPI = InternalIterableAPI.initializeForTesting()

@@ -2,6 +2,11 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.4.14
+### Added
+- Success and Failure handlers can now be passed to following functions:
+`InAppManager.remove`, `InAppManager.setRead`, `IterableAPI.setEmail` and `IterableAPI.setUserId`
+
 ## 6.4.13
 ### Added
 - `ITBNotificationServiceExtension` has a new optional delegate in the scenario of wanting to receive and pass along push information (e.g. Firebase)
