@@ -63,6 +63,9 @@ public class EmbeddedSessionManager {
     }
 
     public func startImpression(messageId: String) {
+        if let trackingImpression = currentlyTrackingImpressions[messageId], trackingImpression.tracking {
+            return
+        }
         if let _ = currentlyTrackingImpressions[messageId] {
             if let index = session?.impressions.firstIndex(where: { $0.messageId == messageId }) {
                 session?.impressions[index].displayCount += 1
