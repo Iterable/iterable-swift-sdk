@@ -4,7 +4,23 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 6.4.15
 ### Added
-- `config.dataRegion` which configures the iOS SDK to use API endpoints for the Iterable EU data center. This configuration defaults to API endpoints for the US data center.
+- This release allows you to use projects hosted on Iterable's EU data center. If your project is hosted on Iterable's [European data center (EUDC)](https://support.iterable.com/hc/articles/17572750887444), configure the SDK to use Iterable's EU-based API endpoints:
+
+_Swift_
+
+```swift
+let config = IterableConfig()
+config.dataRegion = IterableDataRegion.EU
+IterableAPI.initialize(apiKey: "<YOUR_API_KEY>", launchOptions: launchOptions, config: config)
+```
+
+_Objective-C_
+
+```objectivec
+IterableConfig *config = [[IterableConfig alloc] init];
+config.dataRegion = IterableDataRegion.EU;
+[IterableAPI initializeWithApiKey:@"<YOUR_API_KEY>" launchOptions:launchOptions config:config];
+```
 
 ## 6.4.14
 ### Added
