@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## 6.4.15
+### Added
+- `config.dataRegion` which configures the iOS SDK to use API endpoints for the Iterable EU data center. This configuration defaults to API endpoints for the US data center.
+
 ## 6.4.14
 ### Added
 - Success and Failure handlers can now be passed to following functions:
