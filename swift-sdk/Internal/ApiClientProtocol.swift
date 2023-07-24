@@ -46,7 +46,7 @@ protocol ApiClientProtocol: AnyObject {
 
     func getRemoteConfiguration() -> Pending<RemoteConfiguration, SendRequestError>
     
-    @discardableResult func subscribeUser(_email: String, userId: String?, subscriptionId: String, subscriptionGroup: String) -> Pending<SendRequestValue, SendRequestError>
+    @discardableResult func subscribeUser(_email: String?, userId: String?, subscriptionId: String, subscriptionGroup: String) -> Pending<SendRequestValue, SendRequestError>
     
-    @discardableResult func unSubscribeUser(_email: String, userId: String?, subscriptionId: String, subscriptionGroup: String) -> Pending<SendRequestValue, SendRequestError>
+    @discardableResult func unSubscribeUser(_email: String?, userId: String?, subscriptionId: String, subscriptionGroup: String) -> Pending<SendRequestValue, SendRequestError>
 }

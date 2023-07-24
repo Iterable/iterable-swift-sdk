@@ -408,7 +408,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     @discardableResult
-    func subscribeUser(_email: String,
+    func subscribeUser(_email: String?,
                        userId: String?,
                        subscriptionId: String,
                        subscriptionGroup: String,
@@ -418,7 +418,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     }
     
     @discardableResult
-    func unSubscribeUser(_email: String,
+    func unSubscribeUser(_email: String?,
                        userId: String?,
                        subscriptionId: String,
                        subscriptionGroup: String,

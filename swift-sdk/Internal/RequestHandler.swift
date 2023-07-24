@@ -258,7 +258,7 @@ class RequestHandler: RequestHandlerProtocol {
     }
     
     @discardableResult
-    func subscribeUser(_email: String,
+    func subscribeUser(_email: String?,
                        userId: String?,
                        subscriptionId: String,
                        subscriptionGroup: String,
@@ -273,7 +273,7 @@ class RequestHandler: RequestHandlerProtocol {
     }
     
     @discardableResult
-    func unSubscribeUser(_email: String,
+    func unSubscribeUser(_email: String?,
                        userId: String?,
                        subscriptionId: String,
                        subscriptionGroup: String,

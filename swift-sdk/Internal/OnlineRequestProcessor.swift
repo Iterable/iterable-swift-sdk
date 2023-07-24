@@ -234,7 +234,7 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     }
     
     @discardableResult
-    func subscribeUser(_email: String,
+    func subscribeUser(_email: String?,
                     userId: String?,
                     subscriptionId: String,
                     subscriptionGroup: String,
@@ -247,7 +247,7 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     }
     
     @discardableResult
-    func unSubscribeUser(_email: String,
+    func unSubscribeUser(_email: String?,
                     userId: String?,
                     subscriptionId: String,
                     subscriptionGroup: String,

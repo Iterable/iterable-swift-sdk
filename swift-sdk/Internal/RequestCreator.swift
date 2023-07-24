@@ -442,7 +442,7 @@ struct RequestCreator {
         return .success(.get(createGetRequest(forPath: Const.Path.getRemoteConfiguration, withArgs: args as! [String: String])))
     }
     
-    func createSubscribeUserRequest(_email: String, userId: String?, subscriptionId: String, subscriptionGroup: String) -> Result<IterableRequest, IterableError> {
+    func createSubscribeUserRequest(_email: String?, userId: String?, subscriptionId: String, subscriptionGroup: String) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
             ITBError(Self.authMissingMessage)
             return .failure(IterableError.general(description: Self.authMissingMessage))
@@ -453,13 +453,13 @@ struct RequestCreator {
         if !userId!.isEmpty {
             endpoint = Const.Path.subscriptions + subscriptionGroup + "/" + subscriptionId + "/byUserId/" + userId!
         } else {
-            endpoint = Const.Path.subscriptions + subscriptionGroup + "/" + subscriptionId + "/user/" + _email
+            endpoint = Const.Path.subscriptions + subscriptionGroup + "/" + subscriptionId + "/user/" + _email!
         }
         
         return .success(.patch(createPatchRequest(forPath: endpoint, withArgs: [String: String]())))
     }
     
-    func createUnSubscribeUserRequest(_email: String, userId: String?, subscriptionId: String, subscriptionGroup: String) -> Result<IterableRequest, IterableError> {
+    func createUnSubscribeUserRequest(_email: String?, userId: String?, subscriptionId: String, subscriptionGroup: String) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
             ITBError(Self.authMissingMessage)
             return .failure(IterableError.general(description: Self.authMissingMessage))
@@ -470,7 +470,7 @@ struct RequestCreator {
         if !userId!.isEmpty {
             endpoint = Const.Path.subscriptions + subscriptionGroup + "/" + subscriptionId + "/byUserId/" + userId!
         } else {
-            endpoint = Const.Path.subscriptions + subscriptionGroup + "/" + subscriptionId + "/user/" + _email
+            endpoint = Const.Path.subscriptions + subscriptionGroup + "/" + subscriptionId + "/user/" + _email!
         }
         
         return .success(.delete(createDeleteRequest(forPath: endpoint, withArgs: [String: String]())))

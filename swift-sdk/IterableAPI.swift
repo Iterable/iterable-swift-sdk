@@ -691,7 +691,7 @@ import UIKit
     /// Subscribe user by email or userId
     ///
     /// - Parameters:
-    ///    - email: Subscribe by email
+    ///    - email: Subscribe by email, but it's optional
     ///    - usrId: Subscribe by userId, but it's optional
     ///    - subscriptionId: Subscription Group ID
     ///    - subscriptionGroup: Subscription Group Name
@@ -700,7 +700,7 @@ import UIKit
     ///
     /// - SeeAlso: OnSuccessHandler, OnFailureHandler
     @objc(subscribeUser:userId:subscriptionId:subscriptionGroup:onSuccess:onFailure:)
-    public static func subscribeUser(_email: String,
+    public static func subscribeUser(_email: String?,
                                      userId: String?,
                                      subscriptionId: String,
                                      subscriptionGroup: String,
@@ -717,7 +717,7 @@ import UIKit
     /// UnSubscribe user by email or userId
     ///
     /// - Parameters:
-    ///    - email: Subscribe by email
+    ///    - email: Subscribe by email, but it's optional
     ///    - usrId: Subscribe by userId, but it's optional
     ///    - subscriptionId: Subscription Group ID
     ///    - subscriptionGroup: Subscription Group Name
@@ -726,7 +726,7 @@ import UIKit
     ///
     /// - SeeAlso: OnSuccessHandler, OnFailureHandler
     @objc(unSubscribeUser:userId:subscriptionId:subscriptionGroup:onSuccess:onFailure:)
-    public static func unSubscribeUser(_email: String,
+    public static func unSubscribeUser(_email: String?,
                                      userId: String?,
                                      subscriptionId: String,
                                      subscriptionGroup: String,
