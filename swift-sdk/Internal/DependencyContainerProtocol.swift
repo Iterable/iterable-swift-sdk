@@ -70,22 +70,31 @@ extension DependencyContainerProtocol {
                                                      networkSession: networkSession,
                                                      deviceMetadata: deviceMetadata,
                                                      dateProvider: dateProvider)
-        if let persistenceContextProvider = createPersistenceContextProvider() {
-            let healthMonitorDataProvider = createHealthMonitorDataProvider(persistenceContextProvider: persistenceContextProvider)
-            let healthMonitor = HealthMonitor(dataProvider: healthMonitorDataProvider,
+        lazy var offlineProcessor:OfflineRequestProcessor? = nil
+        lazy var healthMonitor: HealthMonitor? = nil
+        
+        
+        if(offlineMode) {
+            if let persistenceContextProvider = createPersistenceContextProvider() {
+                
+                let healthMonitorDataProvider = createHealthMonitorDataProvider(persistenceContextProvider: persistenceContextProvider)
+            
+            healthMonitor = HealthMonitor(dataProvider: healthMonitorDataProvider,
                                               dateProvider: dateProvider,
                                               networkSession: networkSession)
-            let offlineProcessor = OfflineRequestProcessor(apiKey: apiKey,
+            offlineProcessor = OfflineRequestProcessor(apiKey: apiKey,
                                                            authProvider: authProvider,
                                                            authManager: authManager,
                                                            endpoint: endpoint,
                                                            deviceMetadata: deviceMetadata,
                                                            taskScheduler: createTaskScheduler(persistenceContextProvider: persistenceContextProvider,
-                                                                                              healthMonitor: healthMonitor),
+                                                                                              healthMonitor: healthMonitor!),
                                                            taskRunner: createTaskRunner(persistenceContextProvider: persistenceContextProvider,
-                                                                                        healthMonitor: healthMonitor),
+                                                                                        healthMonitor: healthMonitor!),
                                                            notificationCenter: notificationCenter)
-            return RequestHandler(onlineProcessor: onlineProcessor,
+        }
+       
+           return RequestHandler(onlineProcessor: onlineProcessor,
                                   offlineProcessor: offlineProcessor,
                                   healthMonitor: healthMonitor,
                                   offlineMode: offlineMode)
