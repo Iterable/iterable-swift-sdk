@@ -56,9 +56,9 @@ extension DependencyContainerProtocol {
                     dateProvider: dateProvider)
     }
 
-    func createEmbeddedMessagingManager(config: IterableConfig,
-                                        apiClient: ApiClientProtocol) -> IterableEmbeddedMessagingManagerProtocol {
-        EmbeddedMessagingManager(apiClient: apiClient)
+    func createEmbeddedManager(config: IterableConfig,
+                                        apiClient: ApiClientProtocol) -> IterableEmbeddedManagerProtocol {
+        IterableEmbeddedManager(apiClient: apiClient)
     }
     
     func createRequestHandler(apiKey: String,

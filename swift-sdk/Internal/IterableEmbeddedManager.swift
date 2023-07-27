@@ -5,7 +5,7 @@
 import Foundation
 import UIKit
 
-class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtocol {
+class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
     init(apiClient: ApiClientProtocol) {
         ITBInfo()
         
@@ -23,11 +23,11 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
         return messages
     }
     
-    public func addUpdateListener(_ listener: IterableEmbeddedMessagingUpdateDelegate) {
+    public func addUpdateListener(_ listener: IterableEmbeddedUpdateDelegate) {
         listeners.add(listener)
     }
     
-    public func removeUpdateListener(_ listener: IterableEmbeddedMessagingUpdateDelegate) {
+    public func removeUpdateListener(_ listener: IterableEmbeddedUpdateDelegate) {
         listeners.remove(listener)
     }
 
@@ -110,12 +110,12 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
     
     private func notifyDelegatesOfInvalidApiKeyOrSyncStop() {
         for listener in listeners.allObjects {
-            listener.onInvalidApiKeyOrSyncStop()
+            listener.onEmbeddedMessagingDisabled()
         }
     }
     private var apiClient: ApiClientProtocol
     
     private var messages: [IterableEmbeddedMessage] = []
     
-    private var listeners: NSHashTable<IterableEmbeddedMessagingUpdateDelegate> = NSHashTable(options: [.weakMemory])
+    private var listeners: NSHashTable<IterableEmbeddedUpdateDelegate> = NSHashTable(options: [.weakMemory])
 }

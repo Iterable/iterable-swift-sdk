@@ -38,7 +38,6 @@ extension IterableEmbeddedMessage {
         public let mediaUrl: String?
         
         public let buttons: [EmbeddedMessageElementsButton]?
-        public let images: [EmbeddedMessageElementsImage]?
         public let text: [EmbeddedMessageElementsText]?
         public let defaultAction: EmbeddedMessageElementsDefaultAction?
         
@@ -46,11 +45,6 @@ extension IterableEmbeddedMessage {
             public let id: String
             public let title: String?
             public let action: EmbeddedMessageElementsButtonAction?
-        }
-
-        public struct EmbeddedMessageElementsImage: Codable {
-            public let id: String
-            public let url: String?
         }
 
         public struct EmbeddedMessageElementsText: Codable {

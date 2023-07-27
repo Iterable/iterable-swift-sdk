@@ -4,13 +4,13 @@
 
 import Foundation
 
-class EmptyEmbeddedMessagingManager: IterableEmbeddedMessagingManagerProtocol {
+class EmptyEmbeddedManager: IterableEmbeddedManagerProtocol {
    
-    func addUpdateListener(_ listener: IterableEmbeddedMessagingUpdateDelegate) {
+    func addUpdateListener(_ listener: IterableEmbeddedUpdateDelegate) {
         
     }
     
-    func removeUpdateListener(_ listener: IterableEmbeddedMessagingUpdateDelegate) {
+    func removeUpdateListener(_ listener: IterableEmbeddedUpdateDelegate) {
         
     }
     

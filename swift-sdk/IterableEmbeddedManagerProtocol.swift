@@ -1,0 +1,14 @@
+//
+//  Copyright © 2023 Iterable. All rights reserved.
+//
+
+import Foundation
+
+@objc public protocol IterableEmbeddedManagerProtocol {
+    func getMessages() -> [IterableEmbeddedMessage]
+    
+    func addUpdateListener(_ listener: IterableEmbeddedUpdateDelegate)
+    func removeUpdateListener(_ listener: IterableEmbeddedUpdateDelegate)
+    
+    func syncMessages(completion: @escaping () -> Void)
+}
