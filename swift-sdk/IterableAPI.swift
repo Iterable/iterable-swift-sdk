@@ -210,14 +210,14 @@ import UIKit
         return implementation.inAppManager
     }
     
-    public static var embeddedMessagingManager: IterableEmbeddedMessagingManagerProtocol {
+    public static var embeddedManager: IterableEmbeddedManagerProtocol {
         guard let implementation = implementation else {
             ITBError("The Iterable SDK is not initialized yet. Embedded Messaging will not function.")
             assertionFailure("The Iterable SDK is not initialized yet. Embedded Messaging will not function.")
-            return EmptyEmbeddedMessagingManager()
+            return EmptyEmbeddedManager()
         }
         
-        return implementation.embeddedMessagingManager
+        return implementation.embeddedManager
     }
     
     // MARK: - API Request Calls
