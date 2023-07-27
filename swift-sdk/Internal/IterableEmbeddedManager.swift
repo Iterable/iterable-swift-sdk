@@ -23,6 +23,14 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
         return messages
     }
     
+    public func getMessages(for placementId: String? = nil) -> [IterableEmbeddedMessage] {
+        guard let placementId = placementId else {
+            return messages
+        }
+
+        return messages.filter { $0.metadata.placementId == placementId }
+    }
+    
     public func addUpdateListener(_ listener: IterableEmbeddedUpdateDelegate) {
         listeners.add(listener)
     }
@@ -61,18 +69,19 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
         apiClient.getEmbeddedMessages()
             .onCompletion(
                 receiveValue: { embeddedMessagesPayload in
-                    let fetchedMessages = embeddedMessagesPayload.embeddedMessages
-                    
-                    // TODO: decide if parsing errors should be accounted for here
-                    
-                    let processor = EmbeddedMessagingProcessor(currentMessages: self.messages,
-                                                               fetchedMessages: fetchedMessages)
-                    
-                    self.setMessages(processor)
-                    self.trackNewlyRetrieved(processor)
-                    self.notifyUpdateDelegates(processor)
-                    completion()
-                },
+                                let placements = embeddedMessagesPayload.embeddedMessages
+                                let fetchedMessages = placements.flatMap { $0.messages }
+                                
+                                // TODO: decide if parsing errors should be accounted for here
+                                
+                                let processor = EmbeddedMessagingProcessor(currentMessages: self.messages,
+                                                                           fetchedMessages: fetchedMessages)
+                                
+                                self.setMessages(processor)
+                                self.trackNewlyRetrieved(processor)
+                                self.notifyUpdateDelegates(processor)
+                                completion()
+                            },
                 
                 receiveError: { sendRequestError in
                     //TODO: This check can go away once eligibility based retrieval comes in place.

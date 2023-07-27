@@ -18,8 +18,8 @@ public final class IterableEmbeddedMessage: NSObject {
         self.payload = payload
     }
     
-    convenience init(messageId: String, campaignId: Int? = nil, isProof: Bool? = nil) {
-        let metadata = EmbeddedMessageMetadata(messageId: messageId, campaignId: campaignId, isProof: isProof)
+    convenience init(messageId: String, campaignId: Int? = nil, isProof: Bool? = nil, placementId: String? = nil) {
+        let metadata = EmbeddedMessageMetadata(messageId: messageId, campaignId: campaignId, isProof: isProof, placementId: placementId)
         
         self.init(metadata: metadata)
     }
@@ -30,6 +30,14 @@ extension IterableEmbeddedMessage {
         public let messageId: String
         public let campaignId: Int?
         public let isProof: Bool?
+        public let placementId: String?
+        
+        init(messageId: String, campaignId: Int? = nil, isProof: Bool? = nil, placementId: String? = nil) {
+                    self.messageId = messageId
+                    self.campaignId = campaignId
+                    self.isProof = isProof
+                    self.placementId = placementId
+                }
     }
 
     public struct EmbeddedMessageElements: Codable {

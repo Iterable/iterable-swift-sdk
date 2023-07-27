@@ -37,22 +37,23 @@ struct AnyDecodable: Decodable {
 
 
 struct EmbeddedMessagingSerialization {
-    static func encode(messages: [IterableEmbeddedMessage]) -> Data {
-        guard let encoded = try? JSONEncoder().encode(EmbeddedMessagesPayload(embeddedMessages: messages)) else {
-            ITBError("unable to encode embedded messages into JSON payload")
+    static func encode(placements: [Placement]) -> Data {
+        guard let encoded = try? JSONEncoder().encode(PlacementsPayload(embeddedMessages: placements)) else {
+            ITBError("unable to encode placements into JSON payload")
             return Data()
         }
         
         return encoded
     }
     
-    static func decode(messages: Data) -> [IterableEmbeddedMessage] {
-        guard let decoded = try? JSONDecoder().decode(EmbeddedMessagesPayload.self, from: messages) else {
-            ITBError("unable to decode JSON payload into embedded messages")
+    static func decode(placements: Data) -> [IterableEmbeddedMessage] {
+        guard let decoded = try? JSONDecoder().decode(PlacementsPayload.self, from: placements) else {
+            ITBError("unable to decode JSON payload into placements")
             return []
         }
         
-        return decoded.embeddedMessages
+        let messages = decoded.embeddedMessages.flatMap { $0.messages }
+        return messages
     }
     
     static func encode(payload: [AnyHashable: Any]?) -> Data? {
@@ -72,8 +73,13 @@ struct EmbeddedMessagingSerialization {
     }
 }
 
-struct EmbeddedMessagesPayload: Codable {
-    let embeddedMessages: [IterableEmbeddedMessage]
+struct Placement: Codable {
+    let placementId: String?
+    let messages: [IterableEmbeddedMessage]
+}
+
+struct PlacementsPayload: Codable {
+    let embeddedMessages: [Placement]
 }
 
 extension IterableEmbeddedMessage: Codable {

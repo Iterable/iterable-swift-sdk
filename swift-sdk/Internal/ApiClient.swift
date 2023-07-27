@@ -219,7 +219,7 @@ extension ApiClient: ApiClientProtocol {
     
     // MARK: - Embedded Messaging
     
-    func getEmbeddedMessages() -> Pending<EmbeddedMessagesPayload, SendRequestError> {
+    func getEmbeddedMessages() -> Pending<PlacementsPayload, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createGetEmbeddedMessagesRequest() }
         return send(iterableRequestResult: result)
     }

@@ -17,6 +17,10 @@ class EmptyEmbeddedManager: IterableEmbeddedManagerProtocol {
     func getMessages() -> [IterableEmbeddedMessage] {
         return []
     }
+    
+    func getMessages(for placementId: String? = nil) -> [IterableEmbeddedMessage] {
+        return []
+    }
 
     func syncMessages(completion: @escaping () -> Void) {
         
