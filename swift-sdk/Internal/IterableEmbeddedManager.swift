@@ -69,8 +69,8 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
         apiClient.getEmbeddedMessages()
             .onCompletion(
                 receiveValue: { embeddedMessagesPayload in
-                                let placements = embeddedMessagesPayload.embeddedMessages
-                                let fetchedMessages = placements.flatMap { $0.messages }
+                                let placements = embeddedMessagesPayload.placements
+                                let fetchedMessages = placements.flatMap { $0.embeddedMessages }
                                 
                                 // TODO: decide if parsing errors should be accounted for here
                                 
