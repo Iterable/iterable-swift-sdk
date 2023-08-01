@@ -56,6 +56,19 @@ extension DependencyContainerProtocol {
                     dateProvider: dateProvider)
     }
     
+    fileprivate func createOfflineRequestProcessor(_ apiKey: String, _ authProvider: AuthProvider?, _ authManager: IterableAuthManagerProtocol, _ endpoint: String, _ deviceMetadata: DeviceMetadata, _ persistenceContextProvider: IterablePersistenceContextProvider, _ healthMonitor: HealthMonitor) -> OfflineRequestProcessor {
+        return OfflineRequestProcessor(apiKey: apiKey,
+                                       authProvider: authProvider,
+                                       authManager: authManager,
+                                       endpoint: endpoint,
+                                       deviceMetadata: deviceMetadata,
+                                       taskScheduler: createTaskScheduler(persistenceContextProvider: persistenceContextProvider,
+                                                                          healthMonitor: healthMonitor),
+                                       taskRunner: createTaskRunner(persistenceContextProvider: persistenceContextProvider,
+                                                                    healthMonitor: healthMonitor),
+                                       notificationCenter: notificationCenter)
+    }
+    
     func createRequestHandler(apiKey: String,
                               config: IterableConfig,
                               endpoint: String,
@@ -75,16 +88,7 @@ extension DependencyContainerProtocol {
             let healthMonitor = HealthMonitor(dataProvider: healthMonitorDataProvider,
                                               dateProvider: dateProvider,
                                               networkSession: networkSession)
-            let offlineProcessor = OfflineRequestProcessor(apiKey: apiKey,
-                                                           authProvider: authProvider,
-                                                           authManager: authManager,
-                                                           endpoint: endpoint,
-                                                           deviceMetadata: deviceMetadata,
-                                                           taskScheduler: createTaskScheduler(persistenceContextProvider: persistenceContextProvider,
-                                                                                              healthMonitor: healthMonitor),
-                                                           taskRunner: createTaskRunner(persistenceContextProvider: persistenceContextProvider,
-                                                                                        healthMonitor: healthMonitor),
-                                                           notificationCenter: notificationCenter)
+            let offlineProcessor = createOfflineRequestProcessor(apiKey, authProvider, authManager, endpoint, deviceMetadata, persistenceContextProvider, healthMonitor)
             return RequestHandler(onlineProcessor: onlineProcessor,
                                   offlineProcessor: offlineProcessor,
                                   healthMonitor: healthMonitor,
