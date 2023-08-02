@@ -55,8 +55,10 @@ class IterableTaskScheduler {
                 try persistenceContext.deleteAllTasks()
                 try persistenceContext.save()
             } catch let error {
-                ITBError("deleteAllTasks: \(error.localizedDescription)")
-                self?.healthMonitor.onDeleteAllTasksError()
+                DispatchQueue.main.async {
+                    ITBError("deleteAllTasks: \(error.localizedDescription)")
+                    self?.healthMonitor.onDeleteAllTasksError()
+                }
             }
         }
     }

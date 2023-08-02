@@ -160,7 +160,13 @@ struct CoreDataPersistenceContext: IterablePersistenceContext {
     
     func deleteAllTasks() throws {
         let taskManagedObjects: [IterableTaskManagedObject] = try CoreDataUtil.findAll(context: managedObjectContext, entity: PersistenceConst.Entity.Task.name)
-        taskManagedObjects.forEach { managedObjectContext.delete($0) }
+        taskManagedObjects.forEach {
+            if !$0.isDeleted {
+                managedObjectContext.delete($0)
+            } else {
+                ITBDebug("task already deleted")
+            }
+        }
     }
     
     func countTasks() throws -> Int {
