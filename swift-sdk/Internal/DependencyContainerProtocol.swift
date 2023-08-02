@@ -70,11 +70,11 @@ extension DependencyContainerProtocol {
                                                      networkSession: networkSession,
                                                      deviceMetadata: deviceMetadata,
                                                      dateProvider: dateProvider)
-        lazy var offlineProcessor:OfflineRequestProcessor? = nil
+        lazy var offlineProcessor: OfflineRequestProcessor? = nil
         lazy var healthMonitor: HealthMonitor? = nil
         
         
-        if(offlineMode) {
+        if offlineMode {
             if let persistenceContextProvider = createPersistenceContextProvider() {
                 
                 let healthMonitorDataProvider = createHealthMonitorDataProvider(persistenceContextProvider: persistenceContextProvider)
