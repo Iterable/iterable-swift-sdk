@@ -22,6 +22,12 @@ config.dataRegion = IterableDataRegion.EU;
 [IterableAPI initializeWithApiKey:@"<YOUR_API_KEY>" launchOptions:launchOptions config:config];
 ```
 
+### Fixed
+- Offline Mode is now off by default. Offline mode components will only load when the `offlineMode` configuration for RequestHandler is set to true.
+
+### Changed
+- Offline mode configuration now persists throughout the current app session. Changes will take effect from the next app session.
+
 ## 6.4.14
 ### Added
 - Success and Failure handlers can now be passed to following functions:
