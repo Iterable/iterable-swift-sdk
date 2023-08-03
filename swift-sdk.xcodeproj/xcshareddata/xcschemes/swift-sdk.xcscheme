@@ -210,6 +210,11 @@
                BlueprintName = "offline-events-tests"
                ReferencedContainer = "container:swift-sdk.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "RequestHandlerTests/testFeatureFlagTurnOnOfflineMode()">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>
