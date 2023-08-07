@@ -6,7 +6,7 @@ import Foundation
 
 @objc public protocol IterableEmbeddedManagerProtocol {
     func getMessages() -> [IterableEmbeddedMessage]
-    func getMessages(for placementId: String?) -> [IterableEmbeddedMessage]
+    func getMessages(for placementId: Int) -> [IterableEmbeddedMessage]
     
     func addUpdateListener(_ listener: IterableEmbeddedUpdateDelegate)
     func removeUpdateListener(_ listener: IterableEmbeddedUpdateDelegate)

@@ -74,7 +74,7 @@ struct EmbeddedMessagingSerialization {
 }
 
 struct Placement: Codable {
-    let placementId: String?
+    let placementId: Int?
     let embeddedMessages: [IterableEmbeddedMessage]
 }
 

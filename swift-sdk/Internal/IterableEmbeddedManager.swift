@@ -23,10 +23,7 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
         return messages
     }
     
-    public func getMessages(for placementId: String? = nil) -> [IterableEmbeddedMessage] {
-        guard let placementId = placementId else {
-            return messages
-        }
+    public func getMessages(for placementId: Int) -> [IterableEmbeddedMessage] {
 
         return messages.filter { $0.metadata.placementId == placementId }
     }
@@ -66,9 +63,13 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
 
     
     private func retrieveEmbeddedMessages(completion: @escaping () -> Void) {
+        print("retrieve embeddeded messages")
         apiClient.getEmbeddedMessages()
             .onCompletion(
                 receiveValue: { embeddedMessagesPayload in
+                    
+                                print("got embeddedMessagesPayload")
+                    print(embeddedMessagesPayload)
                                 let placements = embeddedMessagesPayload.placements
                                 let fetchedMessages = placements.flatMap { $0.embeddedMessages }
                                 
@@ -84,6 +85,7 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
                             },
                 
                 receiveError: { sendRequestError in
+                    print("receive error: \(sendRequestError)")
                     //TODO: This check can go away once eligibility based retrieval comes in place.
                     if sendRequestError.reason == "SUBSCRIPTION_INACTIVE" ||
                         sendRequestError.reason == "Invalid API Key" {

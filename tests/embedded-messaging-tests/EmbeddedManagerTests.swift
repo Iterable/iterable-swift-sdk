@@ -74,9 +74,9 @@ final class EmbeddedManagerTests: XCTestCase {
             return ids.map { IterableEmbeddedMessage(messageId: $0) }
         }
         
-        override func getEmbeddedMessages() -> IterableSDK.Pending<IterableSDK.EmbeddedMessagesPayload, IterableSDK.SendRequestError> {
+        override func getEmbeddedMessages() -> IterableSDK.Pending<IterableSDK.PlacementsPayload, IterableSDK.SendRequestError> {
             if newMessages {
-                let messages = EmbeddedMessagesPayload(embeddedMessages: makeBlankMessagesList(with: ["1"]))
+                let messages = PlacementsPayload(placements: [Placement(placementId: 0, embeddedMessages: makeBlankMessagesList(with: ["1"]))])
                 
                 return Fulfill(value: messages)
             }
