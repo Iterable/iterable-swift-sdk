@@ -19,6 +19,12 @@ protocol LocalStorageProtocol {
     
     var offlineMode: Bool { get set }
     
+    var anonymousUserEvents: [[AnyHashable: Any]]? { get set }
+    
+    var criteriaData: [Criteria]? { get set }
+    
+    var anonymousSessions: IterableAnonSessionsWrapper? { get set }
+    
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo?
     
     func save(attributionInfo: IterableAttributionInfo?, withExpiration expiration: Date?)

@@ -10,6 +10,14 @@ enum Endpoint {
     static let api = Endpoint.apiHostName + Const.apiPath
 }
 
+enum EventType {
+    static let track = "track"
+    static let trackPurchase = "trackPurchase"
+    static let cartUpdate = "cartUpdate"
+    static let anonSession = "anonSession"
+    static let tokenRegistration = "tokenRegistration"
+}
+
 enum Const {
     static let apiPath = "/api/"
     
@@ -50,7 +58,10 @@ enum Const {
         static let deviceId = "itbl_device_id"
         static let sdkVersion = "itbl_sdk_version"
         static let offlineMode = "itbl_offline_mode"
-        
+        static let anonymousUserEvents = "itbl_anonymous_user_events"
+        static let criteriaData = "itbl_criteria_data"
+        static let anonymousSessions = "itbl_anon_sessions"
+
         static let attributionInfoExpiration = 24
     }
     
@@ -166,6 +177,11 @@ enum JsonKey {
     static let notificationsEnabled = "notificationsEnabled"
     
     static let contentType = "Content-Type"
+    
+    static let createNewFields = "createNewFields"
+    static let eventType = "eventType"
+    static let eventTimeStamp = "eventTimeStamp"
+
     
     enum ActionButton {
         static let identifier = "identifier"

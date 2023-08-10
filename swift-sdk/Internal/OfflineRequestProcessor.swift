@@ -50,6 +50,21 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
     }
     
     @discardableResult
+    func updateCart(items: [CommerceItem],
+                    createdAt: Int,
+                    onSuccess: OnSuccessHandler?,
+                    onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createUpdateCartRequest(items: items, createdAt: createdAt)
+        }
+        
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
+    }
+    
+    @discardableResult
     func trackPurchase(_ total: NSNumber,
                        items: [CommerceItem],
                        dataFields: [AnyHashable: Any]?,
@@ -63,6 +78,28 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
                                                       dataFields: dataFields,
                                                       campaignId: campaignId,
                                                       templateId: templateId)
+        }
+        
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
+    }
+    
+    @discardableResult
+    func trackPurchase(_ total: NSNumber,
+                       items: [CommerceItem],
+                       dataFields: [AnyHashable: Any]?,
+                       withUser user: [AnyHashable: Any],
+                       createdAt: Int,
+                       onSuccess: OnSuccessHandler?,
+                       onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createTrackPurchaseRequest(total,
+                                                      items: items,
+                                                      dataFields: dataFields,
+                                                      withUser: user,
+                                                      createdAt: createdAt)
         }
         
         return sendIterableRequest(requestGenerator: requestGenerator,
@@ -102,6 +139,23 @@ struct OfflineRequestProcessor: RequestProcessorProtocol {
         let requestGenerator = { (requestCreator: RequestCreator) in
             requestCreator.createTrackEventRequest(event,
                                                    dataFields: dataFields)
+        }
+
+        return sendIterableRequest(requestGenerator: requestGenerator,
+                                   successHandler: onSuccess,
+                                   failureHandler: onFailure,
+                                   identifier: #function)
+    }
+    
+    @discardableResult
+    func track(event: String,
+               withBody body: [AnyHashable: Any]?,
+               onSuccess: OnSuccessHandler? = nil,
+               onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
+        ITBInfo()
+        let requestGenerator = { (requestCreator: RequestCreator) in
+            requestCreator.createTrackEventRequest(event,
+                                                   withBody: body)
         }
 
         return sendIterableRequest(requestGenerator: requestGenerator,

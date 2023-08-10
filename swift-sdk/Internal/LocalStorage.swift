@@ -67,6 +67,30 @@ struct LocalStorage: LocalStorageProtocol {
         }
     }
     
+    var anonymousUserEvents: [[AnyHashable: Any]]? {
+        get {
+            iterableUserDefaults.anonymousUserEvents
+        } set {
+            iterableUserDefaults.anonymousUserEvents = newValue
+        }
+    }
+    
+    var anonymousSessions: IterableAnonSessionsWrapper? {
+        get {
+            iterableUserDefaults.anonymousSessions
+        } set {
+            iterableUserDefaults.anonymousSessions = newValue
+        }
+    }
+    
+    var criteriaData: [Criteria]? {
+        get {
+            iterableUserDefaults.criteriaData
+        } set {
+            iterableUserDefaults.criteriaData = newValue
+        }
+    }
+    
     func getAttributionInfo(currentDate: Date) -> IterableAttributionInfo? {
         iterableUserDefaults.getAttributionInfo(currentDate: currentDate)
     }
