@@ -124,6 +124,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     func setEmail(_ email: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
         ITBInfo()
         
+        if email == nil {
+            anonymousUserManager.logout()
+        }
+        
         if _email == email && email != nil && authToken != nil {
             checkAndUpdateAuthToken(authToken)
             return
@@ -147,6 +151,10 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     func setUserId(_ userId: String?, authToken: String? = nil, successHandler: OnSuccessHandler? = nil, failureHandler: OnFailureHandler? = nil) {
         ITBInfo()
+        
+        if userId == nil {
+            anonymousUserManager.logout()
+        }
         
         if _userId == userId && userId != nil && authToken != nil {
             checkAndUpdateAuthToken(authToken)
@@ -277,10 +285,11 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
     
     @discardableResult
     func updateCart(items: [CommerceItem],
+                    withUser user: [AnyHashable:Any],
                     createdAt: Int,
                     onSuccess: OnSuccessHandler? = nil,
                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        return requestHandler.updateCart(items: items, createdAt: createdAt, onSuccess: onSuccess, onFailure: onFailure)
+        return requestHandler.updateCart(items: items, withUser: user, createdAt: createdAt, onSuccess: onSuccess, onFailure: onFailure)
     }
     
     @discardableResult

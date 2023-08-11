@@ -98,11 +98,13 @@ class RequestHandler: RequestHandlerProtocol {
     
     @discardableResult
     func updateCart(items: [CommerceItem],
+                    withUser user: [AnyHashable:Any],
                     createdAt: Int,
                     onSuccess: OnSuccessHandler?,
                     onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError> {
         sendUsingRequestProcessor { processor in
             processor.updateCart(items: items,
+                                 withUser: user,
                                  createdAt: createdAt,
                                  onSuccess: onSuccess,
                                  onFailure: onFailure)

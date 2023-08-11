@@ -6,6 +6,7 @@ import Foundation
 
 /// `InternalIterableAPI` will delegate all network related calls to this struct.
 struct OnlineRequestProcessor: RequestProcessorProtocol {
+    
     init(apiKey: String,
          authProvider: AuthProvider?,
          authManager: IterableAuthManagerProtocol?,
@@ -87,10 +88,11 @@ struct OnlineRequestProcessor: RequestProcessorProtocol {
     
     @discardableResult
     func updateCart(items: [CommerceItem],
+                    withUser user: [AnyHashable:Any],
                     createdAt: Int,
                     onSuccess: OnSuccessHandler? = nil,
                     onFailure: OnFailureHandler? = nil) -> Pending<SendRequestValue, SendRequestError> {
-        sendRequest(requestProvider: { apiClient.updateCart(items: items, createdAt: createdAt) },
+        sendRequest(requestProvider: { apiClient.updateCart(items: items, withUser: user, createdAt: createdAt) },
                     successHandler: onSuccess,
                     failureHandler: onFailure,
                     requestIdentifier: "updateCart")

@@ -45,6 +45,7 @@ protocol RequestHandlerProtocol: AnyObject {
     
     @discardableResult
     func updateCart(items: [CommerceItem],
+                    withUser user: [AnyHashable:Any],
                     createdAt: Int,
                     onSuccess: OnSuccessHandler?,
                     onFailure: OnFailureHandler?) -> Pending<SendRequestValue, SendRequestError>

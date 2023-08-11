@@ -16,6 +16,7 @@ import Foundation
     func createKnownUser()
     func getAnonCriteria()
     func syncNonSyncedEvents()
+    func logout()
 }
 
 public class AnonymousUserManager: AnonymousUserManagerProtocol {
@@ -38,7 +39,7 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
     public func trackAnonEvent(name: String, dataFields: [AnyHashable: Any]?) {
         var body = [AnyHashable: Any]()
         body.setValue(for: JsonKey.eventName, value: name)
-        body.setValue(for: JsonKey.Body.createdAt, value: Int(Date().timeIntervalSince1970))
+        body.setValue(for: JsonKey.Body.createdAt, value: Int(dateProvider.currentDate.timeIntervalSince1970))
         body.setValue(for: JsonKey.createNewFields, value: true)
         if let dataFields = dataFields {
             body[JsonKey.dataFields] = dataFields
@@ -120,12 +121,18 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
         let userId = IterableUtil.generateUUID()
         print("userID: \(userId)")
         IterableAPI.setUserId(userId)
-        IterableAPI.updateUser(convertToDictionary(data: localStorage.anonymousSessions), mergeNestedObjects: false)
-        syncEvents()
+        IterableAPI.updateUser(convertToDictionary(data: localStorage.anonymousSessions), mergeNestedObjects: false, onSuccess: { result in
+            self.syncEvents()
+        })
     }
     
     public func syncNonSyncedEvents() {
         syncEvents()
+    }
+    
+    public func logout() {
+        localStorage.anonymousSessions = nil
+        localStorage.anonymousUserEvents = nil
     }
     
     private func syncEvents() {
@@ -159,7 +166,10 @@ public class AnonymousUserManager: AnonymousUserManagerProtocol {
                         })
                         break
                     case EventType.cartUpdate:
-                        IterableAPI.implementation?.updateCart(items: convertCommerceItems(from: eventData[JsonKey.Commerce.items] as! [[AnyHashable: Any]]), createdAt: eventData[JsonKey.Body.createdAt] as? Int ?? 0, onSuccess: {result in
+                        var userDict = [AnyHashable: Any]()
+                        userDict[JsonKey.userId] = localStorage.userId
+                        userDict[JsonKey.createNewFields] = true
+                        IterableAPI.implementation?.updateCart(items: convertCommerceItems(from: eventData[JsonKey.Commerce.items] as! [[AnyHashable: Any]]), withUser: userDict, createdAt: eventData[JsonKey.Body.createdAt] as? Int ?? 0, onSuccess: {result in
                             successfulSyncedData.append(eventData[JsonKey.eventTimeStamp] as? Int ?? 0)
                         })
                         break

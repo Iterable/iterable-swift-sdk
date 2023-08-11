@@ -127,6 +127,7 @@ class ApiClient {
 // MARK: - API REQUEST CALLS
 
 extension ApiClient: ApiClientProtocol {
+    
     func register(registerTokenInfo: RegisterTokenInfo, notificationsEnabled: Bool) -> Pending<SendRequestValue, SendRequestError> {
         let result = createRequestCreator().flatMap { $0.createRegisterTokenRequest(registerTokenInfo: registerTokenInfo,
                                                                                     notificationsEnabled: notificationsEnabled) }
@@ -161,8 +162,8 @@ extension ApiClient: ApiClientProtocol {
         return send(iterableRequestResult: result)
     }
     
-    func updateCart(items: [CommerceItem], createdAt: Int) -> Pending<SendRequestValue, SendRequestError> {
-        let result = createRequestCreator().flatMap { $0.createUpdateCartRequest(items: items, createdAt: createdAt) }
+    func updateCart(items: [CommerceItem], withUser user: [AnyHashable:Any], createdAt: Int) -> Pending<SendRequestValue, SendRequestError> {
+        let result = createRequestCreator().flatMap { $0.createUpdateCartRequest(items: items, withUser: user, createdAt: createdAt) }
         
         return sendWithoutCreatedAt(iterableRequestResult: result)
     }

@@ -107,19 +107,14 @@ struct RequestCreator {
         return .success(.post(createPostRequest(path: Const.Path.updateCart, body: body)))
     }
     
-    func createUpdateCartRequest(items: [CommerceItem], createdAt: Int) -> Result<IterableRequest, IterableError> {
+    func createUpdateCartRequest(items: [CommerceItem], withUser user: [AnyHashable: Any], createdAt: Int) -> Result<IterableRequest, IterableError> {
         if case .none = auth.emailOrUserId {
             ITBError(Self.authMissingMessage)
             return .failure(IterableError.general(description: Self.authMissingMessage))
         }
-        
-        var apiUserDict = [AnyHashable: Any]()
-        
-        setCurrentUser(inDict: &apiUserDict)
-        
         let itemsToSerialize = items.map { $0.toDictionary() }
         
-        let body: [String: Any] = [JsonKey.Commerce.user: apiUserDict,
+        let body: [String: Any] = [JsonKey.Commerce.user: user,
                                    JsonKey.Body.createdAt: createdAt,
                                    JsonKey.Commerce.items: itemsToSerialize]
         
