@@ -238,14 +238,9 @@ final class EmbeddedManagerTests: XCTestCase {
             newMessages = true
         }
         
-        // New method to populate the messages
         func populateMessages(_ messages: [IterableEmbeddedMessage]) {
             self.mockMessages = messages
-            self.newMessages = true  // Automatically set newMessages to true
-        }
-
-        private func makeBlankMessagesList(with ids: [String]) -> [IterableEmbeddedMessage] {
-            return ids.map { IterableEmbeddedMessage(messageId: $0) }
+            self.newMessages = true
         }
         
         func setInvalidAPIKey() {
