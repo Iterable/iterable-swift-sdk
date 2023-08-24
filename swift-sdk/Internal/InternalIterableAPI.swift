@@ -506,7 +506,9 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         }
         
         if config.autoPushRegistration {
-            disableDeviceForCurrentUser()
+            disableDeviceForCurrentUser(onFailure:  { [weak self] reason, data in
+                self?.config.authDelegate?.onLogoutPreviousUserFailed(reason)
+            })
         }
         
         _email = nil
