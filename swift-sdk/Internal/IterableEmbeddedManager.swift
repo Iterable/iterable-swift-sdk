@@ -11,10 +11,14 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
         
         self.apiClient = apiClient
         super.init()
+        addForegroundObservers()
     }
     
+    var onDeinit: (() -> Void)?
     deinit {
         ITBInfo()
+        removeForegroundObservers()
+        onDeinit?()
     }
     
     public func getMessages() -> [IterableEmbeddedMessage] {
@@ -63,13 +67,9 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
 
     
     private func retrieveEmbeddedMessages(completion: @escaping () -> Void) {
-        print("retrieve embeddeded messages")
         apiClient.getEmbeddedMessages()
             .onCompletion(
                 receiveValue: { embeddedMessagesPayload in
-                    
-                                print("got embeddedMessagesPayload")
-                    print(embeddedMessagesPayload)
                                 let placements = embeddedMessagesPayload.placements
                                 let fetchedMessages = placements.flatMap { $0.embeddedMessages }
                                 
