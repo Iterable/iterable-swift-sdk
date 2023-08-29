@@ -28,7 +28,7 @@ public struct ResolvedMessage {
     }
 }
 
-class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtocol {
+class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
     init(apiClient: ApiClientProtocol) {
         ITBInfo()
         
@@ -111,11 +111,16 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
         }
     }
     
-    public func addUpdateListener(_ listener: IterableEmbeddedMessagingUpdateDelegate) {
+    public func getMessages(for placementId: Int) -> [IterableEmbeddedMessage] {
+
+        return messages.filter { $0.metadata.placementId == placementId }
+    }
+    
+    public func addUpdateListener(_ listener: IterableEmbeddedUpdateDelegate) {
         listeners.add(listener)
     }
     
-    public func removeUpdateListener(_ listener: IterableEmbeddedMessagingUpdateDelegate) {
+    public func removeUpdateListener(_ listener: IterableEmbeddedUpdateDelegate) {
         listeners.remove(listener)
     }
 
@@ -146,23 +151,29 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
 
     
     private func retrieveEmbeddedMessages(completion: @escaping () -> Void) {
+        print("retrieve embeddeded messages")
         apiClient.getEmbeddedMessages()
             .onCompletion(
                 receiveValue: { embeddedMessagesPayload in
-                    let fetchedMessages = embeddedMessagesPayload.embeddedMessages
                     
-                    // TODO: decide if parsing errors should be accounted for here
-                    
-                    let processor = EmbeddedMessagingProcessor(currentMessages: self.messages,
-                                                               fetchedMessages: fetchedMessages)
-                    
-                    self.setMessages(processor)
-                    self.trackNewlyRetrieved(processor)
-                    self.notifyUpdateDelegates(processor)
-                    completion()
-                },
+                                print("got embeddedMessagesPayload")
+                    print(embeddedMessagesPayload)
+                                let placements = embeddedMessagesPayload.placements
+                                let fetchedMessages = placements.flatMap { $0.embeddedMessages }
+                                
+                                // TODO: decide if parsing errors should be accounted for here
+                                
+                                let processor = EmbeddedMessagingProcessor(currentMessages: self.messages,
+                                                                           fetchedMessages: fetchedMessages)
+                                
+                                self.setMessages(processor)
+                                self.trackNewlyRetrieved(processor)
+                                self.notifyUpdateDelegates(processor)
+                                completion()
+                            },
                 
                 receiveError: { sendRequestError in
+                    print("receive error: \(sendRequestError)")
                     //TODO: This check can go away once eligibility based retrieval comes in place.
                     if sendRequestError.reason == "SUBSCRIPTION_INACTIVE" ||
                         sendRequestError.reason == "Invalid API Key" {
@@ -198,12 +209,12 @@ class EmbeddedMessagingManager: NSObject, IterableEmbeddedMessagingManagerProtoc
     
     private func notifyDelegatesOfInvalidApiKeyOrSyncStop() {
         for listener in listeners.allObjects {
-            listener.onInvalidApiKeyOrSyncStop()
+            listener.onEmbeddedMessagingDisabled()
         }
     }
     private var apiClient: ApiClientProtocol
     
     private var messages: [IterableEmbeddedMessage] = []
     
-    private var listeners: NSHashTable<IterableEmbeddedMessagingUpdateDelegate> = NSHashTable(options: [.weakMemory])
+    private var listeners: NSHashTable<IterableEmbeddedUpdateDelegate> = NSHashTable(options: [.weakMemory])
 }

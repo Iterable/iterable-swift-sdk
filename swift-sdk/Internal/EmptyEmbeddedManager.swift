@@ -4,21 +4,25 @@
 
 import Foundation
 
-class EmptyEmbeddedMessagingManager: IterableEmbeddedMessagingManagerProtocol {
+class EmptyEmbeddedManager: IterableEmbeddedManagerProtocol {
     func resolveMessages(_ messages: [IterableEmbeddedMessage], completion: @escaping ([ResolvedMessage]) -> Void) {
         
     }
     
    
-    func addUpdateListener(_ listener: IterableEmbeddedMessagingUpdateDelegate) {
+    func addUpdateListener(_ listener: IterableEmbeddedUpdateDelegate) {
         
     }
     
-    func removeUpdateListener(_ listener: IterableEmbeddedMessagingUpdateDelegate) {
+    func removeUpdateListener(_ listener: IterableEmbeddedUpdateDelegate) {
         
     }
     
     func getMessages() -> [IterableEmbeddedMessage] {
+        return []
+    }
+    
+    func getMessages(for placementId: Int) -> [IterableEmbeddedMessage] {
         return []
     }
 
