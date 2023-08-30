@@ -548,7 +548,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
             if token != nil {
                 self?.completeUserLogin()
             }
-        })
+        }, onFailure: nil)
     }
     
     private func completeUserLogin() {
