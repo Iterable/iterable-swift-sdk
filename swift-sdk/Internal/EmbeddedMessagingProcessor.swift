@@ -5,51 +5,48 @@
 import Foundation
 
 struct EmbeddedMessagingProcessor {
-    init(currentMessages: [IterableEmbeddedMessage], fetchedMessages: [IterableEmbeddedMessage]) {
+    init(currentMessages: [Int: [IterableEmbeddedMessage]], fetchedMessages: [Int: [IterableEmbeddedMessage]]) {
         self.currentMessages = currentMessages
         self.fetchedMessages = fetchedMessages
     }
-    
-    func processedMessagesList() -> [IterableEmbeddedMessage] {
-        // TODO: understand/handle case of message with same message ID but different contents
-        
+
+    func processedMessagesList() -> [Int: [IterableEmbeddedMessage]] {
         return fetchedMessages
     }
 
-    func newlyRetrievedMessages() -> [IterableEmbeddedMessage] {
-        return getNewMessages()
-    }
-    
-    func newlyRemovedMessageIds() -> [String] {
-        return getCurrentMessageIds().filter { !getFetchedMessageIds().contains($0) }
-    }
-
-//    func placementIdsToNotify() -> [String] {
-//        // TODO: account for removed placement IDs, this only counts new ones for now
-//        
-//        return getNewMessages()
-//            .map { $0.metadata.placementId }
-//    }
-    
-    // MARK: - PRIVATE/INTERNAL
-    
-    private let currentMessages: [IterableEmbeddedMessage]
-    private let fetchedMessages: [IterableEmbeddedMessage]
-    
-    private func getNewMessages() -> [IterableEmbeddedMessage] {
-        let currentMessageIds = currentMessages.map { $0.metadata.messageId }
+    func newlyRetrievedMessages() -> [Int: [IterableEmbeddedMessage]] {
+        var newMessages: [Int: [IterableEmbeddedMessage]] = [:]
         
-        return fetchedMessages
-            .filter { message in
-                !currentMessageIds.contains(where: { $0 == message.metadata.messageId })
+        for (placementId, fetchedMessagesList) in fetchedMessages {
+            let currentMessageIds = currentMessages[placementId]?.map { $0.metadata.messageId } ?? []
+            let newFetchedMessages = fetchedMessagesList.filter { !currentMessageIds.contains($0.metadata.messageId) }
+            
+            if !newFetchedMessages.isEmpty {
+                newMessages[placementId] = newFetchedMessages
             }
+        }
+        
+        return newMessages
     }
-    
-    private func getCurrentMessageIds() -> [String] {
-        return currentMessages.map { $0.metadata.messageId }
+
+    func newlyRemovedMessageIds() -> [Int: [String]] {
+        var removedMessageIds: [Int: [String]] = [:]
+
+        for (placementId, messages) in currentMessages {
+            let currentMessageIds = messages.map { $0.metadata.messageId }
+            let fetchedMessageIds = fetchedMessages[placementId]?.map { $0.metadata.messageId } ?? []
+            
+            let removedIds = currentMessageIds.filter { !fetchedMessageIds.contains($0) }
+            if !removedIds.isEmpty {
+                removedMessageIds[placementId] = removedIds
+            }
+        }
+
+        return removedMessageIds
     }
-    
-    private func getFetchedMessageIds() -> [String] {
-        return fetchedMessages.map { $0.metadata.messageId }
-    }
+
+    // MARK: - PRIVATE/INTERNAL
+
+    private let currentMessages: [Int: [IterableEmbeddedMessage]]
+    private let fetchedMessages: [Int: [IterableEmbeddedMessage]]
 }

@@ -34,24 +34,30 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
         
         self.apiClient = apiClient
         super.init()
+        addForegroundObservers()
     }
     
+    var onDeinit: (() -> Void)?
     deinit {
         ITBInfo()
+        removeForegroundObservers()
+        onDeinit?()
     }
     
     public func getMessages() -> [IterableEmbeddedMessage] {
-        ITBInfo()
-        
-        return messages
+        return Array(messages.values.flatMap { $0 })
+    }
+    
+    public func getMessages(for placementId: Int) -> [IterableEmbeddedMessage] {
+        return messages[placementId] ?? []
     }
     
     public func resolveMessages(_ messages: [IterableEmbeddedMessage], completion: @escaping ([ResolvedMessage]) -> Void) {
-        var resolvedMessages: [ResolvedMessage] = []
+        var resolvedMessages: [Int: ResolvedMessage] = [:]
 
         let group = DispatchGroup()
 
-        for message in messages {
+        for (index, message) in messages.enumerated() {
             group.enter()
 
             let title = message.elements?.title
@@ -59,7 +65,7 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
             let imageUrl = message.elements?.mediaUrl
             let buttonText = message.elements?.buttons?.first?.title
             let buttonTwoText = message.elements?.buttons?.count ?? 0 > 1 ? message.elements?.buttons?[1].title : nil
-            
+
             DispatchQueue.global().async {
                 if let imageUrl = imageUrl, let url = URL(string: imageUrl) {
                     var request = URLRequest(url: url)
@@ -86,7 +92,7 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
                                                               message: message)
 
                         DispatchQueue.main.async {
-                            resolvedMessages.append(resolvedMessage)
+                            resolvedMessages[index] = resolvedMessage
                         }
 
                     }.resume()
@@ -98,7 +104,7 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
                                                           buttonTwoText: buttonTwoText,
                                                           message: message)
                     DispatchQueue.main.async {
-                        resolvedMessages.append(resolvedMessage)
+                        resolvedMessages[index] = resolvedMessage
                         group.leave()
                     }
                 }
@@ -107,13 +113,9 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
         }
 
         group.notify(queue: .main) {
-            completion(resolvedMessages)
+            let sortedResolvedMessages = resolvedMessages.sorted { $0.key < $1.key }.map { $0.value }
+            completion(sortedResolvedMessages)
         }
-    }
-    
-    public func getMessages(for placementId: Int) -> [IterableEmbeddedMessage] {
-
-        return messages.filter { $0.metadata.placementId == placementId }
     }
     
     public func addUpdateListener(_ listener: IterableEmbeddedUpdateDelegate) {
@@ -129,6 +131,10 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
     }
 
     // MARK: - PRIVATE/INTERNAL
+    private var apiClient: ApiClientProtocol
+    private var messages: [Int: [IterableEmbeddedMessage]] = [:]
+    private var listeners: NSHashTable<IterableEmbeddedUpdateDelegate> = NSHashTable(options: [.weakMemory])
+    private var trackedMessageIds: Set<String> = Set()
     
     private func addForegroundObservers() {
         NotificationCenter.default.addObserver(self,
@@ -142,39 +148,34 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
                                                   name: UIApplication.didBecomeActiveNotification,
                                                   object: nil)
     }
-    
-    
+
     @objc private func onAppDidBecomeActiveNotification(notification: Notification) {
         ITBInfo()
         syncMessages { }
     }
-
     
     private func retrieveEmbeddedMessages(completion: @escaping () -> Void) {
-        print("retrieve embeddeded messages")
         apiClient.getEmbeddedMessages()
             .onCompletion(
                 receiveValue: { embeddedMessagesPayload in
+                    let placements = embeddedMessagesPayload.placements
                     
-                                print("got embeddedMessagesPayload")
-                    print(embeddedMessagesPayload)
-                                let placements = embeddedMessagesPayload.placements
-                                let fetchedMessages = placements.flatMap { $0.embeddedMessages }
-                                
-                                // TODO: decide if parsing errors should be accounted for here
-                                
-                                let processor = EmbeddedMessagingProcessor(currentMessages: self.messages,
-                                                                           fetchedMessages: fetchedMessages)
-                                
-                                self.setMessages(processor)
-                                self.trackNewlyRetrieved(processor)
-                                self.notifyUpdateDelegates(processor)
-                                completion()
-                            },
-                
+                    var fetchedMessagesDict: [Int: [IterableEmbeddedMessage]] = [:]
+                    for placement in placements {
+                        fetchedMessagesDict[placement.placementId!] = placement.embeddedMessages
+                    }
+                    
+                    let processor = EmbeddedMessagingProcessor(currentMessages: self.messages,
+                                                               fetchedMessages: fetchedMessagesDict)
+                    
+                    self.setMessages(processor)
+                    self.trackNewlyRetrieved(processor)
+                    self.notifyUpdateDelegates(processor)
+                    completion()
+                },
                 receiveError: { sendRequestError in
                     print("receive error: \(sendRequestError)")
-                    //TODO: This check can go away once eligibility based retrieval comes in place.
+                    
                     if sendRequestError.reason == "SUBSCRIPTION_INACTIVE" ||
                         sendRequestError.reason == "Invalid API Key" {
                         self.notifyDelegatesOfInvalidApiKeyOrSyncStop()
@@ -189,19 +190,31 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
     
     private func setMessages(_ processor: EmbeddedMessagingProcessor) {
         messages = processor.processedMessagesList()
+        cleanUpTrackedMessageIds(messages)
     }
     
+    private func cleanUpTrackedMessageIds(_ currentMessages: [Int: [IterableEmbeddedMessage]]) {
+        let currentUniqueKeys = Set(currentMessages.flatMap { placement, messages in
+            messages.map { "\(placement)-\($0.metadata.messageId)" }
+        })
+        trackedMessageIds = trackedMessageIds.intersection(currentUniqueKeys)
+    }
+
     private func trackNewlyRetrieved(_ processor: EmbeddedMessagingProcessor) {
-        for message in processor.newlyRetrievedMessages() {
-            IterableAPI.track(embeddedMessageReceived: message)
+        for (placementId, messages) in processor.newlyRetrievedMessages() {
+            for message in messages {
+                let messageId = message.metadata.messageId
+                let uniqueKey = "\(placementId)-\(messageId)"
+                
+                if !trackedMessageIds.contains(uniqueKey) {
+                    IterableAPI.track(embeddedMessageReceived: message)
+                    trackedMessageIds.insert(uniqueKey)
+                }
+            }
         }
     }
     
     private func notifyUpdateDelegates(_ processor: EmbeddedMessagingProcessor) {
-        // TODO: filter `messages` by `placementId` and notify objects in `listeners` that have that placement ID
-        
-//        let placementIdsToUpdate = processor.placementIdsToNotify()
-        
         for listener in listeners.allObjects {
             listener.onMessagesUpdated()
         }
@@ -212,9 +225,4 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
             listener.onEmbeddedMessagingDisabled()
         }
     }
-    private var apiClient: ApiClientProtocol
-    
-    private var messages: [IterableEmbeddedMessage] = []
-    
-    private var listeners: NSHashTable<IterableEmbeddedUpdateDelegate> = NSHashTable(options: [.weakMemory])
 }
