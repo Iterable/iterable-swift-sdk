@@ -1,5 +1,5 @@
 //
-//  IterableBannerView.swift
+//  IterableEmbeddedView.swift
 //  Fiterable
 //
 //  Created by Vivek on 25/05/23.
@@ -8,39 +8,39 @@
 import Foundation
 import UIKit
 
-public protocol IterableBannerViewDelegate: NSObject {
+public protocol IterableEmbeddedViewDelegate: NSObject {
     func didPressPrimaryButton(button: UIButton, viewTag: Int, message: IterableEmbeddedMessage?)
     func didPressSecondaryButton(button: UIButton, viewTag: Int, message: IterableEmbeddedMessage?)
-    func didPressBanner(banner: IterableBannerView, viewTag: Int, message: IterableEmbeddedMessage?)
+    func didPressBanner(banner: IterableEmbeddedView, viewTag: Int, message: IterableEmbeddedMessage?)
 }
 
 @IBDesignable
-public class IterableBannerView:UIView {
+public class IterableEmbeddedView:UIView {
     
     // Delegate Methods
-    weak public var iterableBannerViewDelegate: IterableBannerViewDelegate!
+    weak public var iterableEmbeddedViewDelegate: IterableEmbeddedViewDelegate!
     
     /// Set background color of view in container view.
     @IBOutlet weak public var contentView: UIView!
     @IBOutlet weak var innerContentView: UIView!
     
-    /// IterableBannerView Title Label
+    /// IterableEmbeddedView Title Label
     @IBOutlet weak public var labelTitle: UILabel!
     
-    /// IterableBannerView Description Label
+    /// IterableEmbeddedView Description Label
     @IBOutlet weak public var labelDescription: UILabel!
     
-    /// IterableBannerView Primary button.
+    /// IterableEmbeddedView Primary button.
     @IBOutlet weak public var primaryBtn: IterableEMButton!
     
-    /// IterableBannerView Secondary button.
+    /// IterableEmbeddedView Secondary button.
     @IBOutlet weak public var secondaryBtn: IterableEMButton!
     
-    /// IterableBannerView Buttons stack view
+    /// IterableEmbeddedView Buttons stack view
     @IBOutlet weak var buttonStackView: UIStackView!
     @IBOutlet weak var horizontalButtonStackViewSpacer: UIView!
     
-    /// IterableBannerView Image View.
+    /// IterableEmbeddedView Image View.
     @IBOutlet weak public var imgView: UIImageView!
     @IBOutlet weak public var cardImageView: UIImageView!
     @IBOutlet weak var cardImageTopConstraint: NSLayoutConstraint!
@@ -134,8 +134,8 @@ public class IterableBannerView:UIView {
     }
 
     
-    // MARK: IterableBannerView init method
-     /// IterableBannerView init method
+    // MARK: IterableEmbeddedView init method
+     /// IterableEmbeddedView init method
      required init?(coder aDecoder: NSCoder) {
          super.init(coder: aDecoder)
          xibSetup()
@@ -157,7 +157,7 @@ public class IterableBannerView:UIView {
     }
     
     func loadViewFromNib() -> UIView? {
-        let nib = UINib(nibName: "IterableBannerView", bundle: .module)
+        let nib = UINib(nibName: "IterableEmbeddedView", bundle: .module)
         let view = nib.instantiate(withOwner: self, options: nil).first as? UIView
         view?.backgroundColor = UIColor.clear
         self.clipsToBounds = false
@@ -165,7 +165,7 @@ public class IterableBannerView:UIView {
     }
     
     // MARK: Assign Default Value
-    ///setDefaultValue assign default values to IterableBannerView
+    ///setDefaultValue assign default values to IterableEmbeddedView
     func setDefaultValue() {
         bannerBackgroundColor = UIColor.white
         bannerBorderWidth = 0
@@ -208,8 +208,8 @@ public class IterableBannerView:UIView {
         if let defaultActionData = message?.elements?.defaultAction?.data, !defaultActionData.isEmpty {
             IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: nil, clickedUrl: defaultActionData)
         }
-        if (iterableBannerViewDelegate != nil) {
-            iterableBannerViewDelegate.didPressBanner(banner: self, viewTag: self.tag, message: message)
+        if (iterableEmbeddedViewDelegate != nil) {
+            iterableEmbeddedViewDelegate.didPressBanner(banner: self, viewTag: self.tag, message: message)
         }
         else { }
     }
@@ -387,8 +387,8 @@ public class IterableBannerView:UIView {
             IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
         }
 
-        if (iterableBannerViewDelegate != nil) {
-            iterableBannerViewDelegate.didPressPrimaryButton(button: sender, viewTag: self.tag, message: message)
+        if (iterableEmbeddedViewDelegate != nil) {
+            iterableEmbeddedViewDelegate.didPressPrimaryButton(button: sender, viewTag: self.tag, message: message)
         }
         else { }
     }
@@ -458,8 +458,8 @@ public class IterableBannerView:UIView {
             let clickedUrl = actionData
             IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
         }
-        if (iterableBannerViewDelegate != nil) {
-            iterableBannerViewDelegate.didPressSecondaryButton(button: sender, viewTag: self.tag, message: message)
+        if (iterableEmbeddedViewDelegate != nil) {
+            iterableEmbeddedViewDelegate.didPressSecondaryButton(button: sender, viewTag: self.tag, message: message)
         }
         else  { }
         
