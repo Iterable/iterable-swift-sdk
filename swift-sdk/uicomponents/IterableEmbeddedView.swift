@@ -203,17 +203,23 @@ public class IterableEmbeddedView:UIView {
         imgViewHeight = 100
     }
 
-    
     @IBAction func bannerPressed(_ sender: UITapGestureRecognizer) {
+        var clickedUrl: String?
         if let defaultActionData = message?.elements?.defaultAction?.data, !defaultActionData.isEmpty {
-            IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: nil, clickedUrl: defaultActionData)
+            clickedUrl = defaultActionData
+        } else if let defaultActionType = message?.elements?.defaultAction?.type, !defaultActionType.isEmpty {
+            clickedUrl = defaultActionType
         }
+                
+        if let clickedUrl = clickedUrl, let message = message {
+            IterableAPI.embeddedManager.embeddedMessageClicked(message: message, buttonIdentifier: nil, clickedUrl: clickedUrl)
+        }
+
         if (iterableEmbeddedViewDelegate != nil) {
             iterableEmbeddedViewDelegate.didPressBanner(banner: self, viewTag: self.tag, message: message)
         }
         else { }
     }
-    
     
     // MARK: Banner
     /// Banner Background Color
@@ -375,22 +381,26 @@ public class IterableEmbeddedView:UIView {
     /// Primary button on touchup inside event.
     @IBAction public func primaryButtonPressed(_ sender: UIButton) {
         var buttonIdentifier: String?
-        if let buttonData = message?.elements?.buttons?.first,
-           let actionData = buttonData.action?.data,
-           !actionData.isEmpty {
-            
+        var clickedUrl: String?
+        if let buttonData = message?.elements?.buttons?.first {
             if !buttonData.id.isEmpty {
                 buttonIdentifier = buttonData.id
             }
             
-            let clickedUrl = actionData
-            IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
+            if let actionData = buttonData.action?.data, !actionData.isEmpty {
+                clickedUrl = actionData
+            } else if let actionType = buttonData.action?.type {
+                clickedUrl = actionType
+            }
+        }
+        
+        if let clickedUrl = clickedUrl, let message = message {
+            IterableAPI.embeddedManager.embeddedMessageClicked(message: message, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
         }
 
-        if (iterableEmbeddedViewDelegate != nil) {
-            iterableEmbeddedViewDelegate.didPressPrimaryButton(button: sender, viewTag: self.tag, message: message)
+        if let delegate = iterableEmbeddedViewDelegate {
+            delegate.didPressPrimaryButton(button: sender, viewTag: self.tag, message: message)
         }
-        else { }
     }
     
     // MARK: Second Button
@@ -447,22 +457,26 @@ public class IterableEmbeddedView:UIView {
     /// Secondary button on press event
     @IBAction func secondaryButtonPressed(_ sender: UIButton) {
         var buttonIdentifier: String?
-        if let buttonData = message?.elements?.buttons?.dropFirst().first,
-           let actionData = buttonData.action?.data,
-           !actionData.isEmpty {
-            
+        var clickedUrl: String?
+        if let buttonData = message?.elements?.buttons?.dropFirst().first {
             if !buttonData.id.isEmpty {
                 buttonIdentifier = buttonData.id
             }
             
-            let clickedUrl = actionData
-            IterableAPI.track(embeddedMessageClick: message!, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
+            if let actionData = buttonData.action?.data, !actionData.isEmpty {
+                clickedUrl = actionData
+            } else if let actionType = buttonData.action?.type {
+                clickedUrl = actionType
+            }
         }
-        if (iterableEmbeddedViewDelegate != nil) {
-            iterableEmbeddedViewDelegate.didPressSecondaryButton(button: sender, viewTag: self.tag, message: message)
-        }
-        else  { }
         
+        if let clickedUrl = clickedUrl, let message = message {
+            IterableAPI.embeddedManager.embeddedMessageClicked(message: message, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
+        }
+
+        if let delegate = iterableEmbeddedViewDelegate {
+            delegate.didPressSecondaryButton(button: sender, viewTag: self.tag, message: message)
+        }
     }
     
     // MARK: Image

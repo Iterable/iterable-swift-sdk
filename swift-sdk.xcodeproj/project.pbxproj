@@ -11,6 +11,8 @@
 		00B6FACE210E88ED007535CF /* prod-1.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 00B6FACD210E874D007535CF /* prod-1.mobileprovision */; };
 		00B6FAD1210E8D90007535CF /* dev-1.mobileprovision in Resources */ = {isa = PBXBuildFile; fileRef = 00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */; };
 		00CB31B621096129004ACDEC /* TestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00CB31B4210960C4004ACDEC /* TestUtils.swift */; };
+		1C962E332AB3F711001D7356 /* IterableEmbeddedView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1C962E322AB3F711001D7356 /* IterableEmbeddedView.xib */; };
+		1C962E352AB3F79F001D7356 /* EmbeddedHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C962E342AB3F79F001D7356 /* EmbeddedHelper.swift */; };
 		1CBFFE1A2A97AEEF00ED57EE /* EmbeddedManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBFFE162A97AEEE00ED57EE /* EmbeddedManagerTests.swift */; };
 		1CBFFE1B2A97AEEF00ED57EE /* EmbeddedMessagingProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBFFE172A97AEEE00ED57EE /* EmbeddedMessagingProcessorTests.swift */; };
 		1CBFFE1C2A97AEEF00ED57EE /* EmbeddedSessionManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBFFE182A97AEEE00ED57EE /* EmbeddedSessionManagerTests.swift */; };
@@ -175,8 +177,6 @@
 		55E02D39253F8D86009DB8BC /* WebViewProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E02D38253F8D86009DB8BC /* WebViewProtocolTests.swift */; };
 		55E6F462238E066400808BCE /* DeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E6F45E238E066400808BCE /* DeepLinkTests.swift */; };
 		55E9BE3429F9F5E6000C9FF2 /* DependencyContainerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E9BE3329F9F5E6000C9FF2 /* DependencyContainerProtocol.swift */; };
-		560ACF482A308C8A007F9503 /* IterableBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560ACF462A308C8A007F9503 /* IterableBannerView.swift */; };
-		564BCC302A30B60500A699B9 /* IterableBannerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 560ACF452A308C8A007F9503 /* IterableBannerView.xib */; };
 		5B49BB3E27CFB71500E6F00C /* PopupInboxSessionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B49BB3D27CFB71500E6F00C /* PopupInboxSessionUITests.swift */; };
 		5B5AA711284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */; };
 		5B5AA712284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */; };
@@ -530,6 +530,8 @@
 		00B6FACD210E874D007535CF /* prod-1.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = "prod-1.mobileprovision"; sourceTree = "<group>"; };
 		00B6FAD0210E8D90007535CF /* dev-1.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = "dev-1.mobileprovision"; sourceTree = "<group>"; };
 		00CB31B4210960C4004ACDEC /* TestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUtils.swift; sourceTree = "<group>"; };
+		1C962E322AB3F711001D7356 /* IterableEmbeddedView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = IterableEmbeddedView.xib; sourceTree = "<group>"; };
+		1C962E342AB3F79F001D7356 /* EmbeddedHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmbeddedHelper.swift; sourceTree = "<group>"; };
 		1CBFFE162A97AEEE00ED57EE /* EmbeddedManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmbeddedManagerTests.swift; sourceTree = "<group>"; };
 		1CBFFE172A97AEEE00ED57EE /* EmbeddedMessagingProcessorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmbeddedMessagingProcessorTests.swift; sourceTree = "<group>"; };
 		1CBFFE182A97AEEE00ED57EE /* EmbeddedSessionManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmbeddedSessionManagerTests.swift; sourceTree = "<group>"; };
@@ -911,6 +913,7 @@
 			children = (
 				1CCA911F2A27FA8700AEA213 /* MiscEmbeddedClasses.swift */,
 				1CCA91212A28075A00AEA213 /* EmbeddedSessionManager.swift */,
+				1C962E342AB3F79F001D7356 /* EmbeddedHelper.swift */,
 				551FA75D2988AC930072D0A9 /* EmptyEmbeddedManager.swift */,
 				551FA75F2988AC990072D0A9 /* IterableEmbeddedManager.swift */,
 				553449A029C2621E002E4599 /* EmbeddedMessagingProcessor.swift */,
@@ -954,16 +957,6 @@
 			);
 			name = misc;
 			path = "swift-sdk/misc";
-			sourceTree = "<group>";
-		};
-		55684317298C8036006A5EB4 /* embedded-messaging-tests */ = {
-			isa = PBXGroup;
-			children = (
-				55684318298C8052006A5EB4 /* EmbeddedManagerTests.swift */,
-				553449A229C26A95002E4599 /* EmbeddedMessagingProcessorTests.swift */,
-				55C87D33299EE633002013D0 /* EmbeddedMessagingSerializationTests.swift */,
-			);
-			path = "embedded-messaging-tests";
 			sourceTree = "<group>";
 		};
 		560ACF442A308C8A007F9503 /* uicomponents */ = {
@@ -1198,6 +1191,7 @@
 			isa = PBXGroup;
 			children = (
 				560ACF452A308C8A007F9503 /* IterableBannerView.xib */,
+				1C962E322AB3F711001D7356 /* IterableEmbeddedView.xib */,
 				AC219C522260006600B98631 /* Assets.xcassets */,
 				AC50865224C60172001DC132 /* IterableDataModel.xcdatamodeld */,
 				AC219C4F225FEDBD00B98631 /* SampleInboxCell.xib */,
@@ -1929,8 +1923,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				564BCC302A30B60500A699B9 /* IterableBannerView.xib in Resources */,
 				AC219C532260006600B98631 /* Assets.xcassets in Resources */,
+				1C962E332AB3F711001D7356 /* IterableEmbeddedView.xib in Resources */,
 				AC219C51225FEDBD00B98631 /* SampleInboxCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2030,6 +2024,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1CCA91222A28075A00AEA213 /* EmbeddedSessionManager.swift in Sources */,
+				1C962E352AB3F79F001D7356 /* EmbeddedHelper.swift in Sources */,
 				1CCA91202A27FA8700AEA213 /* MiscEmbeddedClasses.swift in Sources */,
 				AC31B042232AB53500BE25EB /* InboxImpressionTracker.swift in Sources */,
 				55D54656239AE5750093ED1E /* IterableLogUtil.swift in Sources */,
@@ -2061,7 +2056,6 @@
 				AC684A86222EF75C00F29749 /* InAppMessageParser.swift in Sources */,
 				AC72A0C920CF4CE2004D7997 /* IterableAction.swift in Sources */,
 				AC72A0CA20CF4CE2004D7997 /* ActionRunner.swift in Sources */,
-				560ACF482A308C8A007F9503 /* IterableBannerView.swift in Sources */,
 				ACC3FDB1253724DB0004A2E0 /* InAppCalculations.swift in Sources */,
 				ACD6116C2107D004003E7F6B /* NetworkHelper.swift in Sources */,
 				ACC362B624D16D91002C67BA /* IterableRequest.swift in Sources */,

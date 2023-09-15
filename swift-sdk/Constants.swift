@@ -374,6 +374,7 @@ enum MobileDeviceType: String, Codable {
     case push
     case universalLink
     case inApp
+    case embedded
 }
 
 // Lowest level that will be logged. By default the LogLevel is set to LogLevel.info.
