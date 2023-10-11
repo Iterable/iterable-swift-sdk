@@ -46,6 +46,8 @@ public class IterableEmbeddedView:UIView {
     @IBOutlet weak var cardImageTopConstraint: NSLayoutConstraint!
     @IBOutlet weak var titleToTopConstraint: NSLayoutConstraint!
     
+    @IBOutlet weak var noButtonsConstraint: NSLayoutConstraint!
+    
     @IBOutlet weak public var imageViewWidthConstraint:NSLayoutConstraint!
     @IBOutlet weak public var imageViewHeightConstraint:NSLayoutConstraint!
     
@@ -540,6 +542,18 @@ public class IterableEmbeddedView:UIView {
     
     public func updateButtonConstraints() {
         let bothButtonsVisible = !primaryBtn.isHidden && !secondaryBtn.isHidden
+        let bothButtonsNotVisible = primaryBtn.isHidden && secondaryBtn.isHidden
+        
+        if bothButtonsNotVisible {
+            buttonStackView.isHidden = true
+            noButtonsConstraint.isActive = true
+            return
+        }
+        
+        if (noButtonsConstraint != nil) && noButtonsConstraint.isActive {
+            buttonStackView.isHidden = false
+            noButtonsConstraint.isActive = false
+        }
 
         if !bothButtonsVisible {
             buttonStackView.axis = .horizontal

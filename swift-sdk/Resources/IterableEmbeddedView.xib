@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22154" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22130"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="IterableBannerView" customModule="IterableSDK">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="IterableEmbeddedView" customModule="IterableSDK">
             <connections>
                 <outlet property="buttonStackView" destination="bou-qy-tfe" id="dOH-Uj-tbp"/>
                 <outlet property="cardImageTopConstraint" destination="QPV-u9-oRb" id="lhS-1C-4fk"/>
@@ -21,6 +21,7 @@
                 <outlet property="innerContentView" destination="W3z-UY-cBI" id="msi-Zr-grK"/>
                 <outlet property="labelDescription" destination="jZp-8m-qQK" id="7w6-Dc-0Eb"/>
                 <outlet property="labelTitle" destination="YhJ-Xr-beZ" id="Exm-nY-rKJ"/>
+                <outlet property="noButtonsConstraint" destination="9Ub-8u-rzB" id="V5t-nj-cpe"/>
                 <outlet property="primaryBtn" destination="YGa-gx-1CN" id="Lcm-cS-Ypz"/>
                 <outlet property="secondaryBtn" destination="OCw-J1-Uta" id="its-mn-K7E"/>
                 <outlet property="titleToTopConstraint" destination="GlZ-AF-Kcz" id="6p3-it-rkn"/>
@@ -105,6 +106,7 @@ Description text</string>
                     <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                     <constraints>
                         <constraint firstAttribute="bottom" secondItem="bou-qy-tfe" secondAttribute="bottom" constant="16" id="2GF-UL-6Gf"/>
+                        <constraint firstAttribute="bottom" secondItem="0Q3-lN-ixZ" secondAttribute="bottom" constant="16" id="9Ub-8u-rzB"/>
                         <constraint firstAttribute="trailing" secondItem="WQD-hj-6fI" secondAttribute="trailing" id="ASx-ig-Tev"/>
                         <constraint firstItem="0Q3-lN-ixZ" firstAttribute="leading" secondItem="W3z-UY-cBI" secondAttribute="leading" constant="16" id="CYI-wT-5Bu"/>
                         <constraint firstItem="0Q3-lN-ixZ" firstAttribute="top" secondItem="W3z-UY-cBI" secondAttribute="top" constant="16" id="GlZ-AF-Kcz"/>
