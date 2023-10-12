@@ -135,7 +135,7 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
         listeners.remove(listener)
     }
 
-    public func syncMessages(completion: @escaping () -> Void) {
+    public func syncMessages(completion: @escaping (Error?) -> Void) {
         retrieveEmbeddedMessages(completion: completion)
     }
 
@@ -164,10 +164,10 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
 
     @objc private func onAppDidBecomeActiveNotification(notification: Notification) {
         ITBInfo()
-        syncMessages { }
+        syncMessages { _ in }
     }
     
-    private func retrieveEmbeddedMessages(completion: @escaping () -> Void) {
+    private func retrieveEmbeddedMessages(completion: @escaping (Error?) -> Void) {
         apiClient.getEmbeddedMessages()
             .onCompletion(
                 receiveValue: { embeddedMessagesPayload in
@@ -184,7 +184,7 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
                     self.setMessages(processor)
                     self.trackNewlyRetrieved(processor)
                     self.notifyUpdateDelegates(processor)
-                    completion()
+                    completion(nil)
                 },
                 receiveError: { sendRequestError in
                     print("receive error: \(sendRequestError)")
@@ -196,7 +196,7 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
                     } else {
                         ITBError()
                     }
-                    completion()
+                    completion(sendRequestError)
                 }
             )
     }

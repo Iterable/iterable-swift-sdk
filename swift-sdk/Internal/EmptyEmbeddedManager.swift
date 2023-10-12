@@ -26,7 +26,7 @@ class EmptyEmbeddedManager: IterableEmbeddedManagerProtocol {
         return []
     }
 
-    func syncMessages(completion: @escaping () -> Void) {
+    func syncMessages(completion: @escaping (Error?) -> Void) {
         
     }
     

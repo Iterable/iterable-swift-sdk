@@ -28,7 +28,7 @@ final class EmbeddedManagerTests: XCTestCase {
         manager.addUpdateListener(view1)
         
         mockApiClient.haveNewEmbeddedMessages()
-        manager.syncMessages { }
+        manager.syncMessages { _ in }
         
         wait(for: [condition1], timeout: 2)
     }
@@ -57,7 +57,7 @@ final class EmbeddedManagerTests: XCTestCase {
                                               urlOpener: MockUrlOpener(),
                                               allowedProtocols: [])
         
-        manager.syncMessages {}
+        manager.syncMessages { _ in}
         
         let messagesForPlacement2 = manager.getMessages(for: 2)
         
@@ -94,7 +94,7 @@ final class EmbeddedManagerTests: XCTestCase {
         
         manager.addUpdateListener(view)
         
-        manager.syncMessages {
+        manager.syncMessages { _ in
             syncMessagesExpectation.fulfill()
         }
         
@@ -120,7 +120,7 @@ final class EmbeddedManagerTests: XCTestCase {
         
         manager.addUpdateListener(view)
         
-        manager.syncMessages { }
+        manager.syncMessages { _ in }
         
         wait(for: [condition], timeout: 2)
     }
@@ -152,7 +152,7 @@ final class EmbeddedManagerTests: XCTestCase {
             1: [IterableEmbeddedMessage(messageId: "1", placementId: 1),
             IterableEmbeddedMessage(messageId: "2", placementId: 1)]
         ])
-        manager.syncMessages { }
+        manager.syncMessages { _ in }
 
         XCTAssertTrue(delegate1Called, "Delegate 1 should have been notified.")
         XCTAssertTrue(delegate2Called, "Delegate 2 should have been notified.")
@@ -178,7 +178,7 @@ final class EmbeddedManagerTests: XCTestCase {
         mockApiClient.populateMessages([
             1: [IterableEmbeddedMessage(messageId: "1", placementId: 1)]
         ])
-        manager.syncMessages { }
+        manager.syncMessages { _ in }
         
         XCTAssertTrue(delegateCalled, "Delegate should have been notified.")
 
@@ -189,7 +189,7 @@ final class EmbeddedManagerTests: XCTestCase {
         mockApiClient.populateMessages([
             1: [IterableEmbeddedMessage(messageId: "2", placementId: 1)]
         ])
-        manager.syncMessages { }
+        manager.syncMessages { _ in }
         
         XCTAssertFalse(delegateCalled, "Delegate should not have been notified after being removed.")
     }

@@ -10,6 +10,6 @@ public protocol IterableEmbeddedManagerProtocol {
     func resolveMessages(_ messages: [IterableEmbeddedMessage], completion: @escaping ([ResolvedMessage]) -> Void)
     func addUpdateListener(_ listener: IterableEmbeddedUpdateDelegate)
     func removeUpdateListener(_ listener: IterableEmbeddedUpdateDelegate)
-    func syncMessages(completion: @escaping () -> Void)
+    func syncMessages(completion: @escaping (Error?) -> Void)
     func embeddedMessageClicked(message: IterableEmbeddedMessage?, buttonIdentifier: String?, clickedUrl: String)
 }
