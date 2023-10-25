@@ -62,7 +62,7 @@ public class EmbeddedSessionManager {
         }
     }
 
-    public func startImpression(messageId: String) {
+    public func startImpression(messageId: String, placementId: String) {
         if let trackingImpression = currentlyTrackingImpressions[messageId], trackingImpression.tracking {
             return
         }
@@ -71,7 +71,7 @@ public class EmbeddedSessionManager {
                 session?.impressions[index].displayCount += 1
             }
         } else {
-            let newImpression = IterableEmbeddedImpression(messageId: messageId, displayCount: 1, displayDuration: 0)
+            let newImpression = IterableEmbeddedImpression(messageId: messageId, placementId: placementId, displayCount: 1, displayDuration: 0)
             session?.impressions.append(newImpression)
             currentlyTrackingImpressions[messageId] = (totalDisplayDuration: 0, startTime: Date(), tracking: true)
         }
