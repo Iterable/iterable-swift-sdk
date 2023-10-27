@@ -62,7 +62,7 @@ public class EmbeddedSessionManager {
         }
     }
 
-    public func startImpression(messageId: String, placementId: Int64) {
+    public func startImpression(messageId: String, placementId: Double) {
         if let trackingImpression = currentlyTrackingImpressions[messageId], trackingImpression.tracking {
             return
         }

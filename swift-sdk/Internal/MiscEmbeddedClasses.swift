@@ -13,7 +13,7 @@ public class IterableEmbeddedImpression: NSObject, Codable {
     public let messageId: String
     
     /// The placement ID of message
-    public let placementId: Int64
+    public let placementId: Double
     
     /// How many times this message was displayed
     public var displayCount: Int
@@ -22,7 +22,7 @@ public class IterableEmbeddedImpression: NSObject, Codable {
     public var displayDuration: TimeInterval
     
     public init(messageId: String,
-                placementId: Int64,
+                placementId: Double,
                 displayCount: Int,
                 displayDuration: TimeInterval) {
         self.messageId = messageId
