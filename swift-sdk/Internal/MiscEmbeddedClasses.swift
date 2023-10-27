@@ -49,7 +49,6 @@ final public class IterableEmbeddedSession: NSObject, Codable {
     public var isActive: Bool
     
     public init(embeddedSessionId: String = UUID().uuidString,
-                placementId: String? = nil,
                 embeddedSessionStart: Date,
                 embeddedSessionEnd: Date? = nil,
                 impressions: [IterableEmbeddedImpression],
