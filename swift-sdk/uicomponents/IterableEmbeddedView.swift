@@ -122,13 +122,13 @@ public class IterableEmbeddedView:UIView {
                 imgView.isHidden = true
                 let shouldShowCardImageView = EMimage != nil
                 cardImageView.isHidden = !shouldShowCardImageView
-                cardImageTopConstraint.isActive = true
-                titleToTopConstraint.isActive = false
+                cardImageTopConstraint?.isActive = true // Constraints becomes nil in listviews when scrolling as it gets disconnected when resusing cells
+                titleToTopConstraint?.isActive = false // Constraints becomes nil in listviews when scrolling as it gets disconnected when resusing cells
             case "banner", .none, .some:
                 imgView.isHidden = EMimage == nil
                 cardImageView.isHidden = true
-                cardImageTopConstraint.isActive = false
-                titleToTopConstraint.isActive = true
+                cardImageTopConstraint?.isActive = false // Constraints becomes nil in listviews when scrolling as it gets disconnected when resusing cells
+                titleToTopConstraint?.isActive = true // Constraints becomes nil in listviews when scrolling as it gets disconnected when resusing cells
             }
         }
     }
