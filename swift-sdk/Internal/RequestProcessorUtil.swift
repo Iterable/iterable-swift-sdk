@@ -18,7 +18,7 @@ struct RequestProcessorUtil {
         .onError { error in
             if error.httpStatusCode == 401, error.iterableCode == JsonValue.Code.invalidJwtPayload {
                 ITBError("invalid JWT token, trying again: \(error.reason ?? "")")
-                authManager?.requestNewAuthToken(hasFailedPriorAuth: true) { _ in
+                authManager?.requestNewAuthToken(hasFailedPriorAuth: false) { _ in
                     requestProvider().onSuccess { json in
                         reportSuccess(result: result, value: json, successHandler: onSuccess, identifier: identifier)
                     }.onError { error in
