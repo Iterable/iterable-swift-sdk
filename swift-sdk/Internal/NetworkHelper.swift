@@ -28,6 +28,9 @@ extension NetworkError: LocalizedError {
 }
 
 struct NetworkHelper {
+    static let maxRetryCount = 5
+    static let retryDelaySeconds = 2
+    
     static func getData(fromUrl url: URL, usingSession networkSession: NetworkSessionProtocol) -> Pending<Data, Error> {
         let fulfill = Fulfill<Data, Error>()
         
@@ -73,28 +76,45 @@ struct NetworkHelper {
         #endif
         
         let fulfill = Fulfill<T, NetworkError>()
-        
-        networkSession.makeRequest(request) { data, response, error in
-            let result = createResultFromNetworkResponse(data: data,
-                                                         converter: converter,
-                                                         response: response,
-                                                         error: error)
             
-            switch result {
-            case let .success(value):
-                #if NETWORK_DEBUG
-                print("request with id: \(requestId) successfully sent, response:")
-                print(value)
-                #endif
-                fulfill.resolve(with: value)
-            case let .failure(error):
-                #if NETWORK_DEBUG
-                print("request with id: \(requestId) errored")
-                print(error)
-                #endif
-                fulfill.reject(with: error)
+        func sendRequestWithRetries(request: URLRequest, retriesLeft: Int) {
+            networkSession.makeRequest(request) { data, response, error in
+                let result = createResultFromNetworkResponse(data: data,
+                                                             converter: converter,
+                                                             response: response,
+                                                             error: error)
+                switch result {
+                    case let .success(value):
+                        #if NETWORK_DEBUG
+                        print("request with id: \(requestId) successfully sent, response:")
+                        print(value)
+                        #endif
+                        fulfill.resolve(with: value)
+                    case let .failure(error):
+                        if error.httpStatusCode ?? 0 >= 500 && retriesLeft > 0 {
+                            #if NETWORK_DEBUG
+                            print("retry attempt: \(maxRetryCount-retriesLeft+1) for url: \(request.url?.absoluteString ?? "")")
+                            print(error)
+                            #endif
+                            var delay: DispatchTimeInterval = .seconds(0)
+                            if (retriesLeft <= 3) {
+                                delay = .seconds(retryDelaySeconds)
+                            }
+                            DispatchQueue.global().asyncAfter(deadline: .now() + delay) {
+                                sendRequestWithRetries(request: request, retriesLeft: retriesLeft - 1)
+                            }
+                        } else {
+                            #if NETWORK_DEBUG
+                            print("request with id: \(requestId) errored")
+                            print(error)
+                            #endif
+                            fulfill.reject(with: error)
+                        }
+                }
             }
         }
+        
+        sendRequestWithRetries(request: request, retriesLeft: maxRetryCount)
         
         return fulfill
     }

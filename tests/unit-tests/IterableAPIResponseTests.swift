@@ -152,6 +152,30 @@ class IterableAPIResponseTests: XCTestCase {
         wait(for: [xpectation], timeout: testExpectationTimeout)
     }
     
+    func testSendRequestWithRetry() {
+        let xpectation = expectation(description: "retry on status code >= 500")
+        
+        let networkSession = MockNetworkSession { _ in
+            MockNetworkSession.MockResponse(statusCode: 503,
+                                            data: Data(),
+                                            delay: 0)
+        }
+        
+        let iterableRequest = IterableRequest.post(PostRequest(path: "", args: nil, body: [:]))
+        
+        let apiClient = createApiClient(networkSession: networkSession)
+        var urlRequest = apiClient.convertToURLRequest(iterableRequest: iterableRequest)!
+        urlRequest.timeoutInterval = 1
+                
+        RequestSender.sendRequest(urlRequest, usingSession: networkSession).onError { sendError in
+            xpectation.fulfill()
+            XCTAssert(sendError.reason!.lowercased().contains("internal server error"))
+        }
+        
+        wait(for: [xpectation], timeout: testExpectationTimeout)
+    }
+
+    
     func testNetworkTimeoutResponse() {
         let xpectation = expectation(description: "timeout network response")
         
