@@ -43,6 +43,12 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
     public func syncMessages(completion: @escaping () -> Void) {
         retrieveEmbeddedMessages(completion: completion)
     }
+    
+    public func handleEmbeddedClick() {
+        for listener in listeners.allObjects {
+            listener.onTapAction()
+        }
+    }
 
     // MARK: - PRIVATE/INTERNAL
     
