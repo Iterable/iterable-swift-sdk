@@ -44,9 +44,10 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
         retrieveEmbeddedMessages(completion: completion)
     }
     
-    public func handleEmbeddedClick() {
+    public func handleEmbeddedClick(action: IterableAction) {
+        
         for listener in listeners.allObjects {
-            listener.onTapAction()
+            listener.onTapAction(action: action)
         }
     }
 

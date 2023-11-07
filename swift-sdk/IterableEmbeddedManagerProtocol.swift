@@ -12,5 +12,5 @@ import Foundation
     func removeUpdateListener(_ listener: IterableEmbeddedUpdateDelegate)
     
     func syncMessages(completion: @escaping () -> Void)
-    func handleEmbeddedClick() -> Void
+    func handleEmbeddedClick(action: IterableAction) -> Void
 }
