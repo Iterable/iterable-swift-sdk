@@ -60,7 +60,6 @@ extension DependencyContainerProtocol {
                                         apiClient: ApiClientProtocol) -> IterableEmbeddedManagerProtocol {
         IterableEmbeddedManager(apiClient: apiClient,
                                 urlDelegate: config.urlDelegate,
-                                customActionDelegate: config.customActionDelegate,
                                 urlOpener: urlOpener,
                                 allowedProtocols: config.allowedProtocols)
     }

@@ -8,14 +8,12 @@ import UIKit
 class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
     init(apiClient: ApiClientProtocol,
          urlDelegate: IterableURLDelegate?,
-         customActionDelegate: IterableCustomActionDelegate?,
          urlOpener: UrlOpenerProtocol,
          allowedProtocols: [String]) {
          ITBInfo()
         
         self.apiClient = apiClient
         self.urlDelegate = urlDelegate
-        self.customActionDelegate = customActionDelegate
         self.urlOpener = urlOpener
         self.allowedProtocols = allowedProtocols
         
@@ -67,9 +65,7 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
             print("Invalid URL: \(clickedUrl)")
         }
         
-//        for listener in listeners.allObjects {
-//            listener.onTapAction(action: action)
-//        }
+
     }
     
     private func handleClick(clickedUrl url: URL?, forMessage message: IterableEmbeddedMessage) {
@@ -79,29 +75,15 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
         }
 
         switch embeddedClickedUrl {
-            case let .iterableCustomAction(name: iterableCustomActionName):
-                handleIterableCustomAction(name: iterableCustomActionName, forMessage: message)
-            case let .customAction(name: customActionName):
-                handleUrlOrAction(urlOrAction: customActionName)
             case let .localResource(name: localResourceName):
                 handleUrlOrAction(urlOrAction: localResourceName)
             case .regularUrl:
                 handleUrlOrAction(urlOrAction: theUrl.absoluteString)
+            default:
+                handleUrlOrAction(urlOrAction: theUrl.absoluteString)
         }
     }
     
-    private func handleIterableCustomAction(name: String, forMessage message: IterableEmbeddedMessage) {
-        guard let iterableCustomActionName = IterableCustomActionName(rawValue: name) else {
-            return
-        }
-        print("iterable custom action name: \(iterableCustomActionName) on embeddedMessage: \(message)")
-        switch iterableCustomActionName {
-            case .delete:
-                break;
-            case .dismiss:
-                break
-        }
-    }
     
     private func createAction(fromUrlOrAction urlOrAction: String) -> IterableAction? {
         if let parsedUrl = URL(string: urlOrAction), let _ = parsedUrl.scheme {
@@ -122,7 +104,6 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
             ActionRunner.execute(action: action,
                                          context: context,
                                          urlHandler: IterableUtil.urlHandler(fromUrlDelegate: self?.urlDelegate, inContext: context),
-                                         customActionHandler: IterableUtil.customActionHandler(fromCustomActionDelegate: self?.customActionDelegate, inContext: context),
                                          urlOpener: self?.urlOpener,
                                          allowedProtocols: self?.allowedProtocols ?? [])
         }
@@ -131,7 +112,6 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
     // MARK: - PRIVATE/INTERNAL
     private var apiClient: ApiClientProtocol
     private let urlDelegate: IterableURLDelegate?
-    private let customActionDelegate: IterableCustomActionDelegate?
     private let urlOpener: UrlOpenerProtocol
     private let allowedProtocols: [String]
     private var messages: [IterableEmbeddedMessage] = []
