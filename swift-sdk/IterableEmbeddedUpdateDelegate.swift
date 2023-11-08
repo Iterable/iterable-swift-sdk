@@ -7,5 +7,4 @@ import Foundation
 @objc public protocol IterableEmbeddedUpdateDelegate {
     func onMessagesUpdated()
     func onEmbeddedMessagingDisabled()
-//    func onTapAction(action: IterableEmbeddedMessage.EmbeddedMessageElements.EmbeddedMessageElementsDefaultAction)
 }

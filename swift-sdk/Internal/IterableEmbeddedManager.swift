@@ -65,7 +65,7 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
             print("Invalid URL: \(clickedUrl)")
         }
         
-
+        IterableAPI.track(embeddedMessageClick: message, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
     }
     
     private func handleClick(clickedUrl url: URL?, forMessage message: IterableEmbeddedMessage) {
@@ -82,6 +82,8 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
             default:
                 handleUrlOrAction(urlOrAction: theUrl.absoluteString)
         }
+        
+
     }
     
     
