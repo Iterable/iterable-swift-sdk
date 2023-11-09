@@ -57,47 +57,31 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
             print("Error: message is nil.")
             return
         }
-        
-        // Step 1: Handle the clicked URL
+
         if let url = URL(string: clickedUrl) {
             handleClick(clickedUrl: url, forMessage: message)
         } else {
             print("Invalid URL: \(clickedUrl)")
         }
-        
-        IterableAPI.track(embeddedMessageClick: message, buttonIdentifier: buttonIdentifier, clickedUrl: clickedUrl)
     }
     
-    private func handleClick(clickedUrl url: URL?, forMessage message: IterableEmbeddedMessage) {
-        guard let theUrl = url, let embeddedClickedUrl = EmbeddedHelper.parse(embeddedUrl: theUrl) else {
-            ITBError("Could not parse url: \(url?.absoluteString ?? "nil")")
-            return
-        }
-
-        switch embeddedClickedUrl {
-            case let .localResource(name: localResourceName):
-                handleUrlOrAction(urlOrAction: localResourceName)
-            case .regularUrl:
-                handleUrlOrAction(urlOrAction: theUrl.absoluteString)
-            default:
-                handleUrlOrAction(urlOrAction: theUrl.absoluteString)
-        }
+    private func handleClick(clickedUrl url: URL, forMessage message: IterableEmbeddedMessage) {
         
-
+        handleUrl(url: url.absoluteString)
     }
     
     
-    private func createAction(fromUrlOrAction urlOrAction: String) -> IterableAction? {
-        if let parsedUrl = URL(string: urlOrAction), let _ = parsedUrl.scheme {
-            return IterableAction.actionOpenUrl(fromUrlString: urlOrAction)
+    private func createAction(fromUrlOrAction url: String) -> IterableAction? {
+        if let parsedUrl = URL(string: url), let _ = parsedUrl.scheme {
+            return IterableAction.actionOpenUrl(fromUrlString: url)
         } else {
-            return IterableAction.action(fromDictionary: ["type": urlOrAction])
+            return IterableAction.action(fromDictionary: ["type": url])
         }
     }
     
-    private func handleUrlOrAction(urlOrAction: String) {
-        guard let action = createAction(fromUrlOrAction: urlOrAction) else {
-            ITBError("Could not create action from: \(urlOrAction)")
+    private func handleUrl(url: String) {
+        guard let action = createAction(fromUrlOrAction: url) else {
+            ITBError("Could not create action from: \(url)")
             return
         }
 
