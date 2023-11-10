@@ -92,6 +92,7 @@ struct NetworkHelper {
                         fulfill.resolve(with: value)
                     case let .failure(error):
                         if error.httpStatusCode ?? 0 >= 500 && retriesLeft > 0 {
+                            print("url::sendRequestWithRetries: \(request.url)::\(retriesLeft)")
                             #if NETWORK_DEBUG
                             print("retry attempt: \(maxRetryCount-retriesLeft+1) for url: \(request.url?.absoluteString ?? "")")
                             print(error)
