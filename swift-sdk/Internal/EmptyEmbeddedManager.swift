@@ -26,7 +26,7 @@ class EmptyEmbeddedManager: IterableEmbeddedManagerProtocol {
         
     }
     
-    public func handleEmbeddedClick(message: IterableEmbeddedMessage?, buttonIdentifier: String?, clickedUrl: String) {
+    public func handleEmbeddedClick(message: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String) {
 
     }
     
