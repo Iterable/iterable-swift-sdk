@@ -172,6 +172,13 @@
 		5B5AA717284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */; };
 		5B6C3C1127CE871F00B9A753 /* NavInboxSessionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B6C3C1027CE871F00B9A753 /* NavInboxSessionUITests.swift */; };
 		5B88BC482805D09D004016E5 /* NetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B88BC472805D09D004016E5 /* NetworkSession.swift */; };
+		9FF05EAC2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
+		9FF05EAD2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
+		9FF05EAE2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
+		9FF05EAF2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
+		9FF05EB02AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
+		9FF05EB12AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
+		9FF05EB22AFEA5FA005311F7 /* MockAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */; };
 		AC02480822791E2100495FB9 /* IterableInboxNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */; };
 		AC02CAA6234E50B5006617E0 /* RegistrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */; };
 		AC03094B21E532470003A288 /* InAppPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC03094A21E532470003A288 /* InAppPersistence.swift */; };
@@ -568,6 +575,7 @@
 		5B6C3C1027CE871F00B9A753 /* NavInboxSessionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavInboxSessionUITests.swift; sourceTree = "<group>"; };
 		5B88BC472805D09D004016E5 /* NetworkSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSession.swift; sourceTree = "<group>"; };
 		5BFC7CED27FC9AF300E77479 /* inbox-ui-tests-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "inbox-ui-tests-app.entitlements"; sourceTree = "<group>"; };
+		9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockAuthManager.swift; sourceTree = "<group>"; };
 		AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxNavigationViewController.swift; sourceTree = "<group>"; };
 		AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTests.swift; sourceTree = "<group>"; };
 		AC03094A21E532470003A288 /* InAppPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPersistence.swift; sourceTree = "<group>"; };
@@ -1360,6 +1368,7 @@
 				5588DF7D28C04494000697D7 /* MockUrlDelegate.swift */,
 				5588DF8D28C044DE000697D7 /* MockUrlOpener.swift */,
 				5588DFD528C04683000697D7 /* MockWebView.swift */,
+				9FF05EAB2AFEA5FA005311F7 /* MockAuthManager.swift */,
 			);
 			path = common;
 			sourceTree = "<group>";
@@ -2089,6 +2098,7 @@
 				ACA2A91A24AB266F001DFD17 /* Mocks.swift in Sources */,
 				5588DFAB28C045AE000697D7 /* MockInAppFetcher.swift in Sources */,
 				AC29D05C24B5A7E000A9E019 /* CI.swift in Sources */,
+				9FF05EB12AFEA5FA005311F7 /* MockAuthManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2102,6 +2112,7 @@
 				AC2C668720D3435700D46CC9 /* ActionRunnerTests.swift in Sources */,
 				00CB31B621096129004ACDEC /* TestUtils.swift in Sources */,
 				AC89661E2124FBCE0051A6CD /* AutoRegistrationTests.swift in Sources */,
+				9FF05EAF2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */,
 				ACA8D1A921965B7D001B1332 /* InAppTests.swift in Sources */,
 				5588DFB928C045E3000697D7 /* MockInAppDelegate.swift in Sources */,
 				5588DFD128C0465E000697D7 /* MockAPNSTypeChecker.swift in Sources */,
@@ -2198,6 +2209,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5588DFB828C045E3000697D7 /* MockInAppDelegate.swift in Sources */,
+				9FF05EAE2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */,
 				5588DF7028C0442D000697D7 /* MockDateProvider.swift in Sources */,
 				5588DFF028C046FF000697D7 /* MockMessageViewControllerEventTracker.swift in Sources */,
 				ACB37AB124026C1E0093A8EA /* SampleInboxViewDelegateImplementations.swift in Sources */,
@@ -2261,6 +2273,7 @@
 				ACC6A8502323910D003CC4BE /* UITestsHelper.swift in Sources */,
 				5588DFAA28C045AE000697D7 /* MockInAppFetcher.swift in Sources */,
 				ACFF4287246569D300FDF10D /* CommonExtensions.swift in Sources */,
+				9FF05EB02AFEA5FA005311F7 /* MockAuthManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2287,6 +2300,7 @@
 				5588DFCE28C0465E000697D7 /* MockAPNSTypeChecker.swift in Sources */,
 				5588DFDE28C046B7000697D7 /* MockLocalStorage.swift in Sources */,
 				ACA8D1A52196309C001B1332 /* Common.swift in Sources */,
+				9FF05EAC2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */,
 				5588DFB628C045E3000697D7 /* MockInAppDelegate.swift in Sources */,
 				5588DF8628C044BE000697D7 /* MockCustomActionDelegate.swift in Sources */,
 				AC995F992166EE490099A184 /* CommonMocks.swift in Sources */,
@@ -2325,6 +2339,7 @@
 				5588DF7C28C04463000697D7 /* MockNotificationResponse.swift in Sources */,
 				5588DFD428C0465E000697D7 /* MockAPNSTypeChecker.swift in Sources */,
 				5588DFE428C046B7000697D7 /* MockLocalStorage.swift in Sources */,
+				9FF05EB22AFEA5FA005311F7 /* MockAuthManager.swift in Sources */,
 				ACC362C924D2CA8C002C67BA /* Common.swift in Sources */,
 				ACC362C524D2C190002C67BA /* TaskProcessorTests.swift in Sources */,
 				AC2AED4224EBC60C000EE5F3 /* TaskRunnerTests.swift in Sources */,
@@ -2343,6 +2358,7 @@
 				5588DFE728C046D7000697D7 /* MockInboxState.swift in Sources */,
 				ACFF42A424656CCE00FDF10D /* ViewController.swift in Sources */,
 				5588DF7F28C04494000697D7 /* MockUrlDelegate.swift in Sources */,
+				9FF05EAD2AFEA5FA005311F7 /* MockAuthManager.swift in Sources */,
 				5588DF8728C044BE000697D7 /* MockCustomActionDelegate.swift in Sources */,
 				5588DFD728C04683000697D7 /* MockWebView.swift in Sources */,
 				5588DFEF28C046FF000697D7 /* MockMessageViewControllerEventTracker.swift in Sources */,
