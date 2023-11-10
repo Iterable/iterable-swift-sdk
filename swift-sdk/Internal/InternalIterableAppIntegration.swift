@@ -147,6 +147,8 @@ struct InternalIterableAppIntegration {
             switch silentPush.notificationType {
             case .update:
                 _ = inAppNotifiable?.scheduleSync()
+            case .updateEmbedded:
+                IterableAPI.embeddedManager.syncMessages {}
             case .remove:
                 if let messageId = silentPush.messageId {
                     inAppNotifiable?.onInAppRemoved(messageId: messageId)
