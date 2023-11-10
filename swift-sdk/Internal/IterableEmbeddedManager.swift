@@ -51,23 +51,13 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
         retrieveEmbeddedMessages(completion: completion)
     }
     
-    public func handleEmbeddedClick(message: IterableEmbeddedMessage?, buttonIdentifier: String?, clickedUrl: String) {
-        print("called embeddedMessageClicked IterableEmbeddedManager method.")
-        guard let message = message else {
-            print("Error: message is nil.")
-            return
-        }
+    public func handleEmbeddedClick(message: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String) {
 
         if let url = URL(string: clickedUrl) {
-            handleClick(clickedUrl: url, forMessage: message)
+            handleUrl(url: url.absoluteString)
         } else {
             print("Invalid URL: \(clickedUrl)")
         }
-    }
-    
-    private func handleClick(clickedUrl url: URL, forMessage message: IterableEmbeddedMessage) {
-        
-        handleUrl(url: url.absoluteString)
     }
     
     
