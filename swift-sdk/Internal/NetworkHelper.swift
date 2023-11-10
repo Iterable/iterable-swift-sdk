@@ -77,7 +77,7 @@ struct NetworkHelper {
         
         let fulfill = Fulfill<T, NetworkError>()
             
-        func sendRequestWithRetries(request: URLRequest, retriesLeft: Int) {
+        func sendRequestWithRetries(request: URLRequest, requestId: String, retriesLeft: Int) {
             networkSession.makeRequest(request) { data, response, error in
                 let result = createResultFromNetworkResponse(data: data,
                                                              converter: converter,
@@ -129,11 +129,11 @@ struct NetworkHelper {
             }
             
             DispatchQueue.global().asyncAfter(deadline: .now() + delay) {
-                sendRequestWithRetries(request: request, retriesLeft: retriesLeft - 1)
+                sendRequestWithRetries(request: request, requestId: requestId, retriesLeft: retriesLeft - 1)
             }
         }
         
-        sendRequestWithRetries(request: request, retriesLeft: maxRetryCount)
+        sendRequestWithRetries(request: request, requestId: requestId, retriesLeft: maxRetryCount)
         
         return fulfill
     }
