@@ -55,8 +55,9 @@ struct NetworkHelper {
     static func sendRequest<T>(_ request: URLRequest,
                                converter: @escaping (Data) throws -> T?,
                                usingSession networkSession: NetworkSessionProtocol) -> Pending<T, NetworkError> {
-        #if NETWORK_DEBUG
+        
         let requestId = IterableUtil.generateUUID()
+        #if NETWORK_DEBUG
         print()
         print("====================================================>")
         print("sending request: \(request)")
