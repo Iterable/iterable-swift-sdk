@@ -96,6 +96,33 @@ final class EmbeddedManagerTests: XCTestCase {
         
         wait(for: [syncMessagesExpectation, delegateExpectation], timeout: 2)
     }
+    
+    func testManagerReset() {
+        let syncMessagesExpectation = expectation(description: "syncMessages should complete")
+        
+        let mockApiClient = MockApiClient()
+        
+        mockApiClient.populateMessages([
+            IterableEmbeddedMessage(messageId: "1", placementId: 1),
+            IterableEmbeddedMessage(messageId: "2", placementId: 1),
+        ])
+        
+        let manager = IterableEmbeddedManager(apiClient: mockApiClient,
+                                              urlDelegate: nil,
+                                              urlOpener: MockUrlOpener(),
+                                              allowedProtocols: [])
+        
+        manager.syncMessages {
+            syncMessagesExpectation.fulfill()
+        }
+        
+        wait(for: [syncMessagesExpectation], timeout: 2)
+        
+        manager.reset()
+        
+        XCTAssertEqual(manager.getMessages().count, 0)
+    }
+    
     func testSyncMessagesFailedDueToInvalidAPIKey() {
         let condition = expectation(description: "syncMessages should notify of disabled messaging due to invalid API Key")
         

@@ -60,6 +60,11 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
         }
     }
     
+    public func reset() {
+        let processor = EmbeddedMessagingProcessor(currentMessages: self.messages, fetchedMessages: [])
+        self.setMessages(processor)
+        self.notifyUpdateDelegates(processor)
+    }
     
     private func createAction(fromUrlOrAction url: String) -> IterableAction? {
         if let parsedUrl = URL(string: url), let _ = parsedUrl.scheme {

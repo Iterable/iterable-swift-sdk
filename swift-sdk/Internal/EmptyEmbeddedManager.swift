@@ -30,6 +30,10 @@ class EmptyEmbeddedManager: IterableEmbeddedManagerProtocol {
 
     }
     
+    func reset() {
+        
+    }
+    
     func track(click message: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String) {
             
     }

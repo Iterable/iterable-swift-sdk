@@ -13,4 +13,5 @@ import Foundation
     
     func syncMessages(completion: @escaping () -> Void)
     func handleEmbeddedClick(message: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String)
+    func reset()
 }

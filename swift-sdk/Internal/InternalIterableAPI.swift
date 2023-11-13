@@ -548,6 +548,7 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         authManager.logoutUser()
                 
         _ = inAppManager.reset()
+        _ = embeddedManager.reset()
         
         try? requestHandler.handleLogout()
     }
