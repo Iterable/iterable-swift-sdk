@@ -526,7 +526,7 @@ class AuthTests: XCTestCase {
     }
     
     func testAuthTokenRefreshRetryOnlyOnce() throws {
-        throw XCTSkip("skipping this test")
+        throw XCTSkip("skipping this test - auth token retries should occur more than once")
         
         let condition1 = expectation(description: "\(#function) - callback not called correctly in some form")
         condition1.expectedFulfillmentCount = 2
