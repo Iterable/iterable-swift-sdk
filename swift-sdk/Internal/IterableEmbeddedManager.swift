@@ -6,10 +6,17 @@ import Foundation
 import UIKit
 
 class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
-    init(apiClient: ApiClientProtocol) {
-        ITBInfo()
+    init(apiClient: ApiClientProtocol,
+         urlDelegate: IterableURLDelegate?,
+         urlOpener: UrlOpenerProtocol,
+         allowedProtocols: [String]) {
+         ITBInfo()
         
         self.apiClient = apiClient
+        self.urlDelegate = urlDelegate
+        self.urlOpener = urlOpener
+        self.allowedProtocols = allowedProtocols
+        
         super.init()
         addForegroundObservers()
     }
@@ -43,8 +50,53 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
     public func syncMessages(completion: @escaping () -> Void) {
         retrieveEmbeddedMessages(completion: completion)
     }
+    
+    public func handleEmbeddedClick(message: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String) {
+
+        if let url = URL(string: clickedUrl) {
+            handleUrl(url: url.absoluteString)
+        } else {
+            print("Invalid URL: \(clickedUrl)")
+        }
+    }
+    
+    public func reset() {
+        let processor = EmbeddedMessagingProcessor(currentMessages: self.messages, fetchedMessages: [])
+        self.setMessages(processor)
+        self.notifyUpdateDelegates(processor)
+    }
+    
+    private func createAction(fromUrlOrAction url: String) -> IterableAction? {
+        if let parsedUrl = URL(string: url), let _ = parsedUrl.scheme {
+            return IterableAction.actionOpenUrl(fromUrlString: url)
+        } else {
+            return IterableAction.action(fromDictionary: ["type": url])
+        }
+    }
+    
+    private func handleUrl(url: String) {
+        guard let action = createAction(fromUrlOrAction: url) else {
+            ITBError("Could not create action from: \(url)")
+            return
+        }
+
+        let context = IterableActionContext(action: action, source: .embedded)
+        DispatchQueue.main.async { [weak self] in
+            ActionRunner.execute(action: action,
+                                         context: context,
+                                         urlHandler: IterableUtil.urlHandler(fromUrlDelegate: self?.urlDelegate, inContext: context),
+                                         urlOpener: self?.urlOpener,
+                                         allowedProtocols: self?.allowedProtocols ?? [])
+        }
+    }
 
     // MARK: - PRIVATE/INTERNAL
+    private var apiClient: ApiClientProtocol
+    private let urlDelegate: IterableURLDelegate?
+    private let urlOpener: UrlOpenerProtocol
+    private let allowedProtocols: [String]
+    private var messages: [IterableEmbeddedMessage] = []
+    private var listeners: NSHashTable<IterableEmbeddedUpdateDelegate> = NSHashTable(options: [.weakMemory])
     
     private func addForegroundObservers() {
         NotificationCenter.default.addObserver(self,
@@ -124,9 +176,4 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
             listener.onEmbeddedMessagingDisabled()
         }
     }
-    private var apiClient: ApiClientProtocol
-    
-    private var messages: [IterableEmbeddedMessage] = []
-    
-    private var listeners: NSHashTable<IterableEmbeddedUpdateDelegate> = NSHashTable(options: [.weakMemory])
 }
