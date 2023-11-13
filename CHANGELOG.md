@@ -4,11 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 6.4.16
 ### Added
-- `sendRequestWithRetries` function added as part of the `NetworkHelperclass` which automatically retries network request when a 500 and above status code is returned in the response
+- `sendRequestWithRetries` function added as part of the `NetworkHelperclass`
+- For an API request that results in a 500-level error response, the SDK now executes up to five retries. Before each of the final three attempts, there is a two-second delay. 
 
 ### Changed
 - updates `sendRequest` in `RequestProcessorUtil` to retry the API request that resulted in a 401 response upon receipt of a new JWT
 - updates `NetworkHelper` class logic to use `sendRequestWithRetries`method which wraps the original `networkSession.makeRequest`
+- When an API request fails with a 401 because of an invalid JWT token, the SDK now immediately requests a new JWT token for the signed-in user.
 
 ## 6.4.15
 ### Added
