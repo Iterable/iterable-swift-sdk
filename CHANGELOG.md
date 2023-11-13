@@ -2,9 +2,9 @@
 All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## 6.5.0
+## 6.4.16
 ### Added
-- `sendRequewstWithRetries` function added as part of the `NetworkHelperclass` which allows for multiple retries to be triggered when a 500 and above status code is returned in the response
+- `sendRequestWithRetries` function added as part of the `NetworkHelperclass` which allows for multiple retries to be triggered when a 500 and above status code is returned in the response
 
 ### Changed
 - updates `sendRequest` in `RequestProcessorUtil` to retry the API request that resulted in a 401 response upon receipt of a new JWT
