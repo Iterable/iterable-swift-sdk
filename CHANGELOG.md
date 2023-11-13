@@ -7,7 +7,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - `sendRequewstWithRetries` function added as part of the `NetworkHelperclass` which allows for multiple retries to be triggered when a 500 and above status code is returned in the response
 
 ### Changed
-- updates `sendRequest` in `RequestProcessorUtil` to request a new token regardless of if the prior authentication attempt failed
+- updates `sendRequest` in `RequestProcessorUtil` to retries API request that resulted in a 401 response upon receipt of a new JWT
 
 ## 6.4.15
 ### Added
