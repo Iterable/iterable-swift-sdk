@@ -185,6 +185,7 @@
 		5B5AA717284F1A6D0093FED4 /* MockNetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5AA710284F1A6D0093FED4 /* MockNetworkSession.swift */; };
 		5B6C3C1127CE871F00B9A753 /* NavInboxSessionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B6C3C1027CE871F00B9A753 /* NavInboxSessionUITests.swift */; };
 		5B88BC482805D09D004016E5 /* NetworkSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B88BC472805D09D004016E5 /* NetworkSession.swift */; };
+		9FF05EB42B001D29005311F7 /* IterableActionRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FF05EB32B001D29005311F7 /* IterableActionRunner.swift */; };
 		AC02480822791E2100495FB9 /* IterableInboxNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */; };
 		AC02CAA6234E50B5006617E0 /* RegistrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */; };
 		AC03094B21E532470003A288 /* InAppPersistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC03094A21E532470003A288 /* InAppPersistence.swift */; };
@@ -594,6 +595,7 @@
 		5B6C3C1027CE871F00B9A753 /* NavInboxSessionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavInboxSessionUITests.swift; sourceTree = "<group>"; };
 		5B88BC472805D09D004016E5 /* NetworkSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSession.swift; sourceTree = "<group>"; };
 		5BFC7CED27FC9AF300E77479 /* inbox-ui-tests-app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "inbox-ui-tests-app.entitlements"; sourceTree = "<group>"; };
+		9FF05EB32B001D29005311F7 /* IterableActionRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableActionRunner.swift; sourceTree = "<group>"; };
 		AC02480722791E2100495FB9 /* IterableInboxNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IterableInboxNavigationViewController.swift; sourceTree = "<group>"; };
 		AC02CAA5234E50B5006617E0 /* RegistrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegistrationTests.swift; sourceTree = "<group>"; };
 		AC03094A21E532470003A288 /* InAppPersistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InAppPersistence.swift; sourceTree = "<group>"; };
@@ -1275,6 +1277,7 @@
 				AC2C668120D32F2800D46CC9 /* InternalIterableAppIntegration.swift */,
 				AC2B79F621E6A38900A59080 /* NotificationHelper.swift */,
 				ACEDF41C2183C2EC000B9BFE /* Pending.swift */,
+				9FF05EB32B001D29005311F7 /* IterableActionRunner.swift */,
 			);
 			path = Internal;
 			sourceTree = "<group>";
@@ -2054,6 +2057,7 @@
 				AC684A88222F4FDD00F29749 /* InAppDisplayer.swift in Sources */,
 				AC72A0D220CF4D12004D7997 /* IterableUtil.swift in Sources */,
 				AC32E16821DD55B900BD4F83 /* OrderedDictionary.swift in Sources */,
+				9FF05EB42B001D29005311F7 /* IterableActionRunner.swift in Sources */,
 				ACF406232507BC72005FD775 /* NetworkMonitor.swift in Sources */,
 				AC1712892416AEF400F2BB0E /* WebViewProtocol.swift in Sources */,
 				AC3C10F9213F46A900A9B839 /* IterableLogging.swift in Sources */,
