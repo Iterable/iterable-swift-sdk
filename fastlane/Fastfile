@@ -1,0 +1,52 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+ios_app_extensions_podspec = "Iterable-iOS-AppExtensions.podspec"
+ios_sdk_podspec = "Iterable-iOS-SDK.podspec"
+
+platform :ios do
+
+  desc "Release a new version with a patch bump_type"
+  lane :patch do
+    release("patch") # we could use __method__.to_s instead of duplicating the name
+  end
+
+  desc "Release a new version with a minor bump_type"
+  lane :minor do
+    release("minor")
+  end
+
+  desc "Release a new version with a major bump_type"
+  lane :major do
+    release("major")
+  end
+
+  def release(type)
+    version = version_bump_podspec(path: ios_app_extensions_podspec,
+                                   bump_type: type)
+    version = version_bump_podspec(path: ios_sdk_podspec,
+                                   bump_type: type)
+    clean_cocoapods_cache
+    pod_lib_lint
+    git_add(path: ios_app_extensions_podspec)
+    git_add(path: ios_sdk_podspec)
+    git_commit(path: [ios_app_extensions_podspec, ios_sdk_podspec],
+               message: "#{version} release")
+    add_git_tag(tag: "#{version}")
+    push_to_git_remote
+    pod_push
+  end
+end
