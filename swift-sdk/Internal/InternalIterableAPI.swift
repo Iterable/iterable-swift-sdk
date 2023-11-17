@@ -82,18 +82,16 @@ final class InternalIterableAPI: NSObject, PushTrackerProtocol, AuthProvider {
         self.dependencyContainer.createAuthManager(config: self.config)
     }()
     
-<<<<<<< HEAD
     lazy var embeddedManager: IterableEmbeddedManagerProtocol = {
         self.dependencyContainer.createEmbeddedManager(config: self.config,
                                                                 apiClient: self.apiClient)
     }()
-=======
+    
     var apiEndPointForTest: String {
         get {
             apiEndPoint
         }
     }
->>>>>>> master
     
     // MARK: - SDK Functions
     
