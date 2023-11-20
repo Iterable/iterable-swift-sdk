@@ -11,7 +11,7 @@ import UIKit
         if let rootViewController = AppExtensionHelper.application?.delegate?.window??.rootViewController {
             return rootViewController
         } else {
-            return AppExtensionHelper.application?.windows.first?.rootViewController
+            return AppExtensionHelper.application?.windows.filter {$0.isKeyWindow}.first?.rootViewController
         }
     }
     
