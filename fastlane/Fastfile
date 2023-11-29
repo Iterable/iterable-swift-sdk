@@ -4,8 +4,20 @@ ios_sdk_podspec = "Iterable-iOS-SDK.podspec"
 
 platform :ios do
 
-  desc "set release version with specified version and push"
-  lane :set_release_version do |options|
+  desc "execute full automated iOS SDK release"
+  lane :release_sdk do
+    set_version = prompt(text: "Please set the release version number")
+    set_output_dir = prompt(text: "Please specify an output directory")
+   
+    bump_release_version(version:set_version)
+    clean_and_lint
+    build_xcframework(output_dir:set_output_dir)
+    tag_version(version:set_version)
+    pod_trunk_push
+  end 
+
+  desc "bump release version with specified version and push"
+  lane :bump_release_version do |options|
     version = options[:version]
 
     # set new version number
@@ -22,12 +34,15 @@ platform :ios do
     push_to_git_remote
   end
 
-  desc "clean, lint, create xcframework and zip"
-  lane :build_xcframework do |options|
-    output_dir = options[:output_dir]
-    # clean and create xcframework zips
+  desc "clean cocaopods cache and pod lib lint"
+  lane :clean_and_lint do
     clean_cocoapods_cache
     pod_lib_lint
+  end
+
+  desc "create xcframework and zip"
+  lane :build_xcframework do |options|
+    output_dir = options[:output_dir]
     
     # create xcframework IterableSDK
     create_xcframework(
@@ -47,7 +62,7 @@ platform :ios do
       xcframework_output_directory: output_dir,
     )
 
-    # zip files
+    # zip xcframework
     zip(
       path: "./#{output_dir}/IterableSDK.xcframework",
       output_path: "./#{output_dir}/IterableSDK.xcframework.zip"
