@@ -22,20 +22,29 @@ platform :ios do
     push_to_git_remote
   end
 
-  desc "create xcframework and zip"
+  desc "clean, lint, create xcframework and zip"
   lane :build_xcframework do |options|
     output_dir = options[:output_dir]
     # clean and create xcframework zips
     clean_cocoapods_cache
     pod_lib_lint
     
+    # create xcframework IterableSDK
     create_xcframework(
       workspace: "swift-sdk.xcodeproj/project.xcworkspace",
       scheme: "swift-sdk",
+      product_name: "IterableSDK",
       destinations: ['iOS', 'maccatalyst'],
       xcframework_output_directory: output_dir,
-      archive_path: output_dir, 
-      build_settings: "SKIP_INSTALL='NO' BUILD_LIBRARY_FOR_DISTRIBUTION='YES'",
+    )
+
+    # create xcframework IterableAppExtensions
+    create_xcframework(
+      workspace: "swift-sdk.xcodeproj/project.xcworkspace",
+      scheme: "swift-sdk",
+      product_name: "IterableAppExtensions",
+      destinations: ['iOS', 'maccatalyst'],
+      xcframework_output_directory: output_dir,
     )
 
     # zip files
