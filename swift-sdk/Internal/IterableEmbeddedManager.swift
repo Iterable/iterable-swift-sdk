@@ -54,7 +54,6 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
     }
     
     public func handleEmbeddedClick(message: IterableEmbeddedMessage, buttonIdentifier: String?, clickedUrl: String) {
-        // Step 1: Handle the clicked URL
         if let url = URL(string: clickedUrl) {
             handleClick(clickedUrl: url, forMessage: message)
         } else {
