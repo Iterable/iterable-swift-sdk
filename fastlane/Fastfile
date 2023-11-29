@@ -4,8 +4,8 @@ ios_sdk_podspec = "Iterable-iOS-SDK.podspec"
 
 platform :ios do
 
-  desc "iOS SDK Release with specified version"
-  lane :ios_release do |options|
+  desc "set release version with specified version and push"
+  lane :set_release_version do |options|
     version = options[:version]
 
     # set new version number
@@ -20,14 +20,15 @@ platform :ios do
     git_commit(path: [ios_app_extensions_podspec, ios_sdk_podspec],
                message: "#{version} release")
     push_to_git_remote
+  end
 
+  desc "create xcframework and zip"
+  lane :build_xcframework do |options|
+    output_dir = options[:output_dir]
     # clean and create xcframework zips
     clean_cocoapods_cache
     pod_lib_lint
-  end
-
-  lane :build_xcframework do |options|
-    output_dir = options[:output_dir]
+    
     create_xcframework(
       workspace: "swift-sdk.xcodeproj/project.xcworkspace",
       scheme: "swift-sdk",
@@ -36,8 +37,27 @@ platform :ios do
       archive_path: output_dir, 
       build_settings: "SKIP_INSTALL='NO' BUILD_LIBRARY_FOR_DISTRIBUTION='YES'",
     )
-    
-    add_git_tag(tag: "#{version}")
-    pod_push
+
+    # zip files
+    zip(
+      path: "./#{output_dir}/IterableSDK.xcframework",
+      output_path: "./#{output_dir}/IterableSDK.xcframework.zip"
+    )
+    zip(
+      path: "./#{output_dir}/IterableAppExtensions.xcframework",
+      output_path: "./#{output_dir}/IterableAppExtensions.xcframework.zip"
+    )
+  end
+
+  desc "add git tag version and push"
+  lane :tag_version do |options|
+    add_git_tag(tag: "#{options[:version]}")
+    push_git_tags
+  end
+
+  desc "push pod trunk"
+  lane :pod_trunk_push do
+    pod_push(path: "Iterable-iOS-AppExtensions.podspec", allow_warnings: true)
+    pod_push(path: "Iterable-iOS-SDK.podspec", allow_warnings: true)
   end
 end
