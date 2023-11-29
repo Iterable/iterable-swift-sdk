@@ -1,52 +1,43 @@
-# This file contains the fastlane.tools configuration
-# You can find the documentation at https://docs.fastlane.tools
-#
-# For a list of all available actions, check out
-#
-#     https://docs.fastlane.tools/actions
-#
-# For a list of all available plugins, check out
-#
-#     https://docs.fastlane.tools/plugins/available-plugins
-#
-
-# Uncomment the line if you want fastlane to automatically update itself
-# update_fastlane
-
 default_platform(:ios)
 ios_app_extensions_podspec = "Iterable-iOS-AppExtensions.podspec"
 ios_sdk_podspec = "Iterable-iOS-SDK.podspec"
 
 platform :ios do
 
-  desc "Release a new version with a patch bump_type"
-  lane :patch do
-    release("patch") # we could use __method__.to_s instead of duplicating the name
-  end
+  desc "iOS SDK Release with specified version"
+  lane :ios_release do |options|
+    version = options[:version]
 
-  desc "Release a new version with a minor bump_type"
-  lane :minor do
-    release("minor")
-  end
-
-  desc "Release a new version with a major bump_type"
-  lane :major do
-    release("major")
-  end
-
-  def release(type)
-    version = version_bump_podspec(path: ios_app_extensions_podspec,
-                                   bump_type: type)
-    version = version_bump_podspec(path: ios_sdk_podspec,
-                                   bump_type: type)
-    clean_cocoapods_cache
-    pod_lib_lint
+    # set new version number
+    version_bump_podspec(path: ios_app_extensions_podspec,
+                         version_number: version)
+    version_bump_podspec(path: ios_sdk_podspec,
+                         version_number: version)
+    
+    # commit new version podspecs and push to git remote
     git_add(path: ios_app_extensions_podspec)
     git_add(path: ios_sdk_podspec)
     git_commit(path: [ios_app_extensions_podspec, ios_sdk_podspec],
                message: "#{version} release")
-    add_git_tag(tag: "#{version}")
     push_to_git_remote
+
+    # clean and create xcframework zips
+    clean_cocoapods_cache
+    pod_lib_lint
+  end
+
+  lane :build_xcframework do |options|
+    output_dir = options[:output_dir]
+    create_xcframework(
+      workspace: "swift-sdk.xcodeproj/project.xcworkspace",
+      scheme: "swift-sdk",
+      destinations: ['iOS', 'maccatalyst'],
+      xcframework_output_directory: output_dir,
+      archive_path: output_dir, 
+      build_settings: "SKIP_INSTALL='NO' BUILD_LIBRARY_FOR_DISTRIBUTION='YES'",
+    )
+    
+    add_git_tag(tag: "#{version}")
     pod_push
   end
 end
