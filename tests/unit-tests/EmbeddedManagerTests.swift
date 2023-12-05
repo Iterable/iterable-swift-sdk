@@ -179,6 +179,40 @@ final class EmbeddedManagerTests: XCTestCase {
         waitForExpectations(timeout: 1, handler: nil)
     }
 
+    func testUpdateMessagesIsCalled() {
+        let expectation = XCTestExpectation(description: "onMessagesUpdated called")
+        
+        let notification = """
+        {
+            "itbl": {
+                "messageId": "background_notification",
+                "isGhostPush": true
+            },
+            "notificationType": "UpdateEmbedded",
+            "messageId": "messageId"
+        }
+        """.toJsonDict()
+        
+        let mockApiClient = MockApiClient()
+        let manager = IterableEmbeddedManager(apiClient: mockApiClient)
+        
+        let updateDelegate = ViewWithUpdateDelegate(
+            onMessagesUpdatedCallback: {
+                expectation.fulfill()
+            },
+            onEmbeddedMessagingDisabledCallback: nil
+        )
+        
+        manager.addUpdateListener(updateDelegate)
+        mockApiClient.haveNewEmbeddedMessages()
+                
+        let appIntegration = InternalIterableAppIntegration(tracker: MockPushTracker(), inAppNotifiable: EmptyInAppManager(), embeddedNotifiable: manager)
+        
+        appIntegration.application(MockApplicationStateProvider(applicationState: .background), didReceiveRemoteNotification: notification, fetchCompletionHandler: nil)
+        
+        wait(for: [expectation], timeout: 5.0)
+    }
+    
     //didBecomeActiveNotification
     func testManagerSyncsOnForeground() {
         let expectation = XCTestExpectation(description: "onMessagesUpdated called")

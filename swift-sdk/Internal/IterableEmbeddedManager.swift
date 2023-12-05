@@ -5,7 +5,11 @@
 import Foundation
 import UIKit
 
-class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
+protocol IterableInternalEmbeddedManagerProtocol: IterableEmbeddedManagerProtocol, EmbeddedNotifiable {
+    // we can add the internal delegate methods here
+}
+
+class IterableEmbeddedManager: NSObject, IterableInternalEmbeddedManagerProtocol {
     init(apiClient: ApiClientProtocol) {
         ITBInfo()
         
@@ -38,10 +42,6 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
     
     public func removeUpdateListener(_ listener: IterableEmbeddedUpdateDelegate) {
         listeners.remove(listener)
-    }
-
-    public func syncMessages(completion: @escaping () -> Void) {
-        retrieveEmbeddedMessages(completion: completion)
     }
 
     // MARK: - PRIVATE/INTERNAL
@@ -129,4 +129,10 @@ class IterableEmbeddedManager: NSObject, IterableEmbeddedManagerProtocol {
     private var messages: [IterableEmbeddedMessage] = []
     
     private var listeners: NSHashTable<IterableEmbeddedUpdateDelegate> = NSHashTable(options: [.weakMemory])
+}
+
+extension IterableEmbeddedManager: EmbeddedNotifiable {
+    public func syncMessages(completion: @escaping () -> Void) {
+        retrieveEmbeddedMessages(completion: completion)
+    }
 }
