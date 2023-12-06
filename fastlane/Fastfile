@@ -22,6 +22,7 @@ platform :ios do
       skip_codesigning: true,
       export_method: "development",
       export_team_id: "BP98Z28R86",
+      export_xcargs: "-allowProvisioningUpdates"
     )
   end
 
