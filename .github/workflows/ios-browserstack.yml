@@ -17,8 +17,8 @@ jobs:
         with:
           url: "https://api-cloud.browserstack.com/app-automate/xcuitest/v2/app"
           method: "POST"
-          username: "justinyu_cIqvyB"
-          password: "TszLVeLKEjzwXpVUSB48"
+          username: ${{ secrets.BROWSERSTACK_USERNAME }}
+          password: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
           files: '{ "file": ${{ github.workspace }}/build-swift-sample-app/swift-sample-app.ipa", "custom_id": "swift-sample-app" }'
 
       - name: get browserstack app_url
@@ -33,8 +33,8 @@ jobs:
         with:
           url: "https://api-cloud.browserstack.com/app-automate/xcuitest/v2/test-suite"
           method: "POST"
-          username: "justinyu_cIqvyB"
-          password: "TszLVeLKEjzwXpVUSB48"
+          username: ${{ secrets.BROWSERSTACK_USERNAME }}
+          password: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
           files: '{ "file": ${{ github.workspace }}/build-swift-sample-app/swift-sample-app-ui-test.zip", "custom_id": "swift-sample-app-ui-test" }'
 
       - name: get browserstack test_suite_url
