@@ -128,7 +128,6 @@
 		ACA3A12C20E2F6AF00FEF74F = {
 			isa = PBXGroup;
 			children = (
-				C3353E972B1E65390031F9FE /* swift-sample-app-ui-test */,
 				ACA3A13720E2F6AF00FEF74F /* swift-sample-app */,
 				ACA3A14F20E2F83E00FEF74F /* swift-sample-app-notification-extension */,
 				ACA3A13620E2F6AF00FEF74F /* Products */,
@@ -149,6 +148,7 @@
 		ACA3A13720E2F6AF00FEF74F /* swift-sample-app */ = {
 			isa = PBXGroup;
 			children = (
+				C3353E972B1E65390031F9FE /* swift-sample-app-ui-test */,
 				AC5ECD9D20E303F50081E1DA /* ViewControllers */,
 				AC5ECD9B20E3038B0081E1DA /* Deep Link Handling */,
 				ACFA148620E3034800AF4A5A /* Assets */,
